@@ -1,0 +1,44 @@
+'use client';
+
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { translations, Lang } from './translations';
+
+
+interface LangContextValue {
+  lang: Lang;
+  t: typeof translations.en;
+  toggleLang: () => void;
+}
+
+const LangContext = createContext<LangContextValue>({
+  lang: 'en',
+  t: translations.en,
+  toggleLang: () => {},
+});
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>('en');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('lang') as Lang | null;
+    if (stored === 'en' || stored === 'zh') setLang(stored);
+  }, []);
+
+  const toggleLang = useCallback(() => {
+    setLang(prev => {
+      const next = prev === 'en' ? 'zh' : 'en';
+      localStorage.setItem('lang', next);
+      return next;
+    });
+  }, []);
+
+  return (
+    <LangContext.Provider value={{ lang, t: translations[lang] as typeof translations.en, toggleLang }}>
+      {children}
+    </LangContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  return useContext(LangContext);
+}
