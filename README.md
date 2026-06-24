@@ -20,7 +20,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
-| **Cookbook** | `/cookbook` | Step-by-step deployment recipes (VPS llama.cpp, Mac Ollama, RTX 4090 vLLM, Docker Compose stack) |
+| **Cookbook** | `/cookbook` | 22 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 33 real GPUs |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
@@ -63,7 +63,8 @@ app/                        # Next.js App Router pages
   quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
     page.tsx
   benchmarks/page.tsx       # Charts + matrix
-  cookbook/page.tsx         # Recipe cards + modal
+  cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
+  cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   globals.css               # Glass / glow utilities, grid background
@@ -77,7 +78,7 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   10 models, each with arch + per-quant stats + "today" feed
+    models.ts               #   51 models (base + models-extra + models-extra-2)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   33 GPUs (NVIDIA consumer/pro, Apple Silicon, CPU RAM)

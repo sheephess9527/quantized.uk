@@ -8,10 +8,12 @@ import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
 import Link from 'next/link';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { getRecommendations } from '@/lib/utils/recommend';
+import { cn } from '@/lib/utils/cn';
 
 export default function QuantHubPage() {
   const { t, lang } = useLanguage();
   const { gpu, hasProfile } = useHardwareProfile();
+  const [applyProfileFilter, setApplyProfileFilter] = useState(true);
   const [filters, setFilters] = useState<HubFilters>({
     search: '', paramRange: '', category: '', hardware: '', format: '',
   });
@@ -22,9 +24,12 @@ export default function QuantHubPage() {
     return new Set(recs.map(r => r.model.id));
   }, [gpu]);
 
+  const compatibleCount = profileModelIds?.size ?? models.length;
+
   const filtered = useMemo(() => {
+    const useProfile = applyProfileFilter && profileModelIds;
     return models.filter(m => {
-      if (profileModelIds && !profileModelIds.has(m.id)) return false;
+      if (useProfile && !profileModelIds!.has(m.id)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!m.name.toLowerCase().includes(q) && !m.family.toLowerCase().includes(q)) return false;
@@ -42,41 +47,64 @@ export default function QuantHubPage() {
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;
       return true;
     });
-  }, [filters, profileModelIds]);
+  }, [filters, profileModelIds, applyProfileFilter]);
+
+  const total = models.length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.hub.title}</h1>
-        <p className="text-slate-400">{t.hub.subtitle}</p>
+        <p className="text-slate-400">
+          {t.hub.subtitle}
+          <span className="text-slate-500"> · </span>
+          <span className="text-violet-400/80">{t.hub.indexedCount.replace('{total}', String(total))}</span>
+        </p>
       </div>
 
       {hasProfile && gpu && (
         <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-slate-400">
-            {t.hub.profileFilter.replace('{gpu}', gpu.name).replace('{count}', String(filtered.length))}
+            {applyProfileFilter
+              ? t.hub.profileFilter
+                  .replace('{count}', String(compatibleCount))
+                  .replace('{total}', String(total))
+                  .replace('{gpu}', gpu.name)
+              : t.hub.profileFilterAll.replace('{total}', String(total))}
           </p>
-          <Link
-            href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=4096&sort=quality`}
-            className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            {t.hub.profileLink} →
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setApplyProfileFilter(v => !v)}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
+                applyProfileFilter
+                  ? 'text-slate-400 border-white/[0.08] hover:text-slate-200 hover:border-white/15'
+                  : 'bg-violet-500/15 text-violet-300 border-violet-500/25'
+              )}
+            >
+              {applyProfileFilter
+                ? t.hub.showAllModels.replace('{total}', String(total))
+                : t.hub.showGpuMatches}
+            </button>
+            <Link
+              href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=4096&sort=quality`}
+              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              {t.hub.profileLink} →
+            </Link>
+          </div>
         </div>
       )}
 
-      {/* Filters */}
       <div className="mb-8">
         <FilterBar
           filters={filters}
           onChange={setFilters}
           count={filtered.length}
-          total={models.length}
+          total={total}
         />
       </div>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-slate-600">
           <p className="text-lg mb-2">{t.hub.noResults}</p>

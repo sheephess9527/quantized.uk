@@ -22,7 +22,7 @@ Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN=quantized.uk` in your environment (or Cloudfla
 |------|-------|-------|
 | **Models** | `lib/data/models.ts`, `models-extra.ts`, `models-extra-2.ts` | Primary data moat — see below |
 | **HF live stats** | `lib/data/hf-repos.ts`, `scripts/fetch-hf-stats.mjs` | Keep both maps in sync |
-| **Cookbook articles** | `lib/data/cookbook.ts`, `cookbook-extra.ts` | Standalone pages at `/cookbook/[slug]/` |
+| **Cookbook articles** | `lib/data/cookbook.ts`, `cookbook-extra.ts`, `cookbook-extra-2.ts` | Standalone pages at `/cookbook/[slug]/` |
 | **Benchmarks** | `lib/data/benchmarks.ts` | Speed / PPL matrix data |
 | **GPUs** | `lib/data/gpus.ts` | Hardware database for VRAM calculator |
 | **Translations** | `lib/i18n/translations.ts` | EN + ZH required for UI strings |

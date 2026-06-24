@@ -64,6 +64,7 @@ export const translations = {
     hub: {
       title: 'Quant Hub',
       subtitle: 'Structured index of open-source quantized models — no file hosting, just precise metadata',
+      indexedCount: '{total} models in index',
       search: 'Search models...',
       filters: { all: 'All', params: 'Parameters', category: 'Category', hardware: 'Hardware', format: 'Format' },
       paramRanges: { '≤3B': '≤3B', '7B': '7B', '14B': '14B', '32B': '32B', '70B+': '70B+' },
@@ -80,8 +81,11 @@ export const translations = {
       },
       noResults: 'No models match your filters.',
       clearFilters: 'Clear filters',
-      profileFilter: 'Showing {count} models that fit your {gpu} (4K context)',
-      profileLink: 'Full compatibility list',
+      profileFilter: '{count} of {total} models fit your {gpu} (4K context)',
+      profileFilterAll: 'Viewing all {total} models — GPU filter off',
+      showAllModels: 'Show all {total}',
+      showGpuMatches: 'GPU matches only',
+      profileLink: 'VRAM compatibility list',
       detail: {
         backToHub: 'Back to Quant Hub',
         context: 'Max Context',
@@ -463,6 +467,7 @@ export const translations = {
     hub: {
       title: '量化模型库',
       subtitle: '开源量化模型结构化索引 — 不托管文件，只提供精准元数据',
+      indexedCount: '索引共 {total} 个模型',
       search: '搜索模型...',
       filters: { all: '全部', params: '参数量', category: '用途分类', hardware: '目标硬件', format: '量化格式' },
       paramRanges: { '≤3B': '≤3B', '7B': '7B', '14B': '14B', '32B': '32B', '70B+': '70B+' },
@@ -479,8 +484,11 @@ export const translations = {
       },
       noResults: '没有符合条件的模型。',
       clearFilters: '清除筛选',
-      profileFilter: '显示适配 {gpu} 的 {count} 个模型（4K 上下文）',
-      profileLink: '查看完整兼容列表',
+      profileFilter: '{count} / {total} 个模型适配 {gpu}（4K 上下文）',
+      profileFilterAll: '正在查看全部 {total} 个模型 — 已关闭 GPU 筛选',
+      showAllModels: '显示全部 {total} 个',
+      showGpuMatches: '仅看 GPU 适配',
+      profileLink: '显存兼容列表',
       detail: {
         backToHub: '返回模型库',
         context: '最大上下文',

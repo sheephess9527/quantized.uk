@@ -1,4 +1,5 @@
 import { extraArticles } from './cookbook-extra';
+import { extraArticles2 } from './cookbook-extra-2';
 
 export interface Article {
   id: string;
@@ -200,4 +201,4 @@ volumes:
   },
 ];
 
-export const articles: Article[] = [...baseArticles, ...extraArticles];
+export const articles: Article[] = [...baseArticles, ...extraArticles, ...extraArticles2];

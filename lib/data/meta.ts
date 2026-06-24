@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'Quant Hub: show-all toggle when GPU profile active; Cookbook +7 guides (8GB GPU, WSL2, Docker GPU, Nginx, AMD ROCm)',
+    zh: 'Quant Hub：GPU 档案筛选时可一键显示全部模型；Cookbook 新增 7 篇（8GB 显卡、WSL2、Docker GPU、Nginx、AMD ROCm）',
+  },
+  {
+    date: '2026-06-24',
     en: 'Privacy Policy + Plausible analytics, cookbook standalone pages (/cookbook/[slug]), model index expanded to 51',
     zh: '隐私政策 + Plausible 分析、Cookbook 独立文章页（/cookbook/[slug]）、模型库扩展至 51 个',
   },
