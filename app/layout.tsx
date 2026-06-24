@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/lib/i18n/context';
 import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Plausible from '@/components/analytics/Plausible';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'quantized.uk — AI Quantization Intelligence',
-    description: 'VRAM calculator, 30+ quantized models, CLI generator, format wizard.',
+    description: 'VRAM calculator, 50+ quantized models, CLI generator, format wizard.',
   },
   metadataBase: new URL('https://quantized.uk'),
 };
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="bg-bg text-slate-100 font-sans antialiased">
+        <Plausible />
         <LanguageProvider>
           <HardwareProfileProvider>
             <Navbar />

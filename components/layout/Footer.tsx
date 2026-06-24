@@ -91,10 +91,17 @@ export default function Footer() {
             <Link href="/legal/" className="hover:text-slate-400 transition-colors underline underline-offset-2">
               {t.legal.linkLabel}
             </Link>
+            {' · '}
+            <Link href="/privacy/" className="hover:text-slate-400 transition-colors underline underline-offset-2">
+              {t.privacy.linkLabel}
+            </Link>
           </p>
           <div className="flex items-center gap-4">
             <Link href="/legal/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
               {t.legal.linkLabel}
+            </Link>
+            <Link href="/privacy/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+              {t.privacy.linkLabel}
             </Link>
             <a
               href="https://github.com/sheephess9527/quantized.uk"

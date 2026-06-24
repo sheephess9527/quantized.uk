@@ -1,6 +1,7 @@
 export type { QuantVariant, ModelArch, QuantModel } from './types';
 import type { QuantModel } from './types';
 import { extraModels } from './models-extra';
+import { extraModels2 } from './models-extra-2';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -215,7 +216,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2];
 
 export const todayFeed = [
   { id: 1, type: 'new' as const, modelId: 'qwen2.5-72b', format: 'GGUF', detail: 'Q4_K_M · 43.6 GB', quantizer: 'bartowski', hardware: 'RTX 4090 ×2' },

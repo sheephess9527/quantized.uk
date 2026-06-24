@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'Privacy Policy + Plausible analytics, cookbook standalone pages (/cookbook/[slug]), model index expanded to 51',
+    zh: '隐私政策 + Plausible 分析、Cookbook 独立文章页（/cookbook/[slug]）、模型库扩展至 51 个',
+  },
+  {
+    date: '2026-06-24',
     en: 'Added Terms & Disclaimer page (/legal) with trademark notice and liability disclaimer',
     zh: '新增使用条款与免责声明页面（/legal），含商标声明和责任限制',
   },

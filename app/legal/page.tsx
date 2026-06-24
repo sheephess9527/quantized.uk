@@ -44,7 +44,8 @@ export default function LegalPage() {
       </div>
 
       <p className="text-xs text-slate-600 mt-10 text-center leading-relaxed">
-        {l.footerNote}
+        {l.footerNote}{' '}
+        <Link href="/privacy/" className="text-violet-400 hover:text-violet-300">{t.privacy.linkLabel}</Link>
       </p>
     </div>
   );

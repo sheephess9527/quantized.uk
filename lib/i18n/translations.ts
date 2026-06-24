@@ -149,6 +149,8 @@ export const translations = {
       readTime: 'min read',
       difficulty: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' },
       readGuide: 'Read Guide →',
+      backToIndex: 'Back to Cookbook',
+      licenseNote: 'Deployment guides are educational. Each model is subject to its own license — read the official Hugging Face model card before downloading or deploying.',
     },
     calc: {
       title: 'VRAM / RAM Calculator',
@@ -319,6 +321,68 @@ export const translations = {
         },
       ],
     },
+    privacy: {
+      badge: 'Privacy',
+      title: 'Privacy Policy',
+      subtitle: 'How quantized.uk handles analytics, local storage, and third-party services.',
+      lastUpdated: 'Last updated: 24 June 2026',
+      backHome: 'Back to Home',
+      footerNote: 'Questions? Open an issue on',
+      linkLabel: 'Privacy Policy',
+      sections: [
+        {
+          title: '1. Overview',
+          paragraphs: [
+            'quantized.uk is a static website. We do not operate user accounts, collect payment information, or sell personal data.',
+            'This policy explains what limited data may be processed when you visit the site and how you can control it.',
+          ],
+        },
+        {
+          title: '2. Analytics (Plausible)',
+          paragraphs: [
+            'We use Plausible Analytics (plausible.io), a privacy-friendly analytics service, to understand aggregate traffic — e.g. which pages are visited and from which countries.',
+            'Plausible does not use cookies, does not track you across websites, and does not collect personal identifiers. IP addresses are anonymised before storage.',
+            'Analytics only loads when the site operator sets NEXT_PUBLIC_PLAUSIBLE_DOMAIN at build time. If unset, no analytics script is included.',
+            'For more detail, see the Plausible data policy: https://plausible.io/data-policy',
+          ],
+        },
+        {
+          title: '3. Local Storage',
+          paragraphs: [
+            'Your browser may store preferences locally via localStorage: language choice (EN/ZH) and optional hardware profile (selected GPU).',
+            'This data never leaves your device unless you explicitly share a URL (e.g. VRAM calculator query params). We do not read or sync localStorage server-side.',
+            'You can clear this data anytime via your browser settings.',
+          ],
+        },
+        {
+          title: '4. Hosting & Logs',
+          paragraphs: [
+            'The site is hosted on Cloudflare Pages. Cloudflare may process standard web server logs (IP address, user agent, requested URL) for security and delivery.',
+            'We do not receive or store those logs directly. Refer to Cloudflare\'s privacy policy for their data practices.',
+          ],
+        },
+        {
+          title: '5. Third-Party Links',
+          paragraphs: [
+            'Pages link to external sites (Hugging Face, GitHub, framework docs). Those sites have their own privacy policies.',
+            'Clicking external links is at your own discretion.',
+          ],
+        },
+        {
+          title: '6. Children',
+          paragraphs: [
+            'This site is intended for developers and technical users. We do not knowingly collect data from children under 16.',
+          ],
+        },
+        {
+          title: '7. Changes',
+          paragraphs: [
+            'We may update this policy. Material changes will be noted in the site changelog.',
+            'Continued use after updates constitutes acceptance of the revised policy.',
+          ],
+        },
+      ],
+    },
     common: {
       new: 'New',
       hot: 'Hot',
@@ -484,6 +548,8 @@ export const translations = {
       readTime: '分钟阅读',
       difficulty: { beginner: '入门', intermediate: '进阶', advanced: '高级' },
       readGuide: '阅读指南 →',
+      backToIndex: '返回指南目录',
+      licenseNote: '部署指南仅供学习参考。每个模型均有独立许可协议 — 下载或部署前请阅读 Hugging Face 官方模型卡。',
     },
     calc: {
       title: '显存 / 内存计算器',
@@ -650,6 +716,68 @@ export const translations = {
           paragraphs: [
             '我们可能随时更新本条款。条款变更后继续使用本站即视为接受更新后的条款。',
             '重大变更将在首页数据更新日志中注明。',
+          ],
+        },
+      ],
+    },
+    privacy: {
+      badge: '隐私',
+      title: '隐私政策',
+      subtitle: '说明 quantized.uk 如何处理分析数据、本地存储和第三方服务。',
+      lastUpdated: '最后更新：2026 年 6 月 24 日',
+      backHome: '返回首页',
+      footerNote: '有疑问？请在 GitHub 提交 issue：',
+      linkLabel: '隐私政策',
+      sections: [
+        {
+          title: '1. 概述',
+          paragraphs: [
+            'quantized.uk 是一个静态网站。我们不运营用户账户、不收集支付信息、不出售个人数据。',
+            '本政策说明您访问本站时可能处理的有限数据，以及您如何控制这些数据。',
+          ],
+        },
+        {
+          title: '2. 分析统计（Plausible）',
+          paragraphs: [
+            '我们使用 Plausible Analytics（plausible.io）这一注重隐私的分析服务，了解聚合流量 — 例如哪些页面被访问、来自哪些国家。',
+            'Plausible 不使用 Cookie、不跨站追踪、不收集个人标识符。IP 地址在存储前会被匿名化。',
+            '仅当站点运营者在构建时设置 NEXT_PUBLIC_PLAUSIBLE_DOMAIN 环境变量时才会加载分析脚本；未设置则不包含任何分析代码。',
+            '更多细节请参阅 Plausible 数据政策：https://plausible.io/data-policy',
+          ],
+        },
+        {
+          title: '3. 本地存储',
+          paragraphs: [
+            '浏览器可能通过 localStorage 保存偏好：语言选择（中/英）和可选的硬件档案（所选 GPU）。',
+            '这些数据不会离开您的设备，除非您主动分享 URL（如显存计算器的查询参数）。我们不会在服务端读取或同步 localStorage。',
+            '您可随时通过浏览器设置清除这些数据。',
+          ],
+        },
+        {
+          title: '4. 托管与日志',
+          paragraphs: [
+            '本站托管于 Cloudflare Pages。Cloudflare 可能处理标准 Web 服务器日志（IP、User-Agent、请求 URL）以保障安全与内容分发。',
+            '我们不直接接收或存储这些日志。请参阅 Cloudflare 隐私政策了解其数据处理方式。',
+          ],
+        },
+        {
+          title: '5. 第三方链接',
+          paragraphs: [
+            '页面包含指向外部网站的链接（Hugging Face、GitHub、框架文档等），这些网站有各自的隐私政策。',
+            '点击外部链接由您自行决定。',
+          ],
+        },
+        {
+          title: '6. 未成年人',
+          paragraphs: [
+            '本站面向开发者和技术用户。我们不会有意收集 16 岁以下儿童的数据。',
+          ],
+        },
+        {
+          title: '7. 变更',
+          paragraphs: [
+            '我们可能更新本政策。重大变更将在站点 changelog 中注明。',
+            '更新后继续使用本站即视为接受修订后的政策。',
           ],
         },
       ],

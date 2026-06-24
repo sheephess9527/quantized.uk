@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-06-24T02:18:14.444Z",
+  "fetchedAt": "2026-06-24T02:31:03.426Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 21,
+  "modelCount": 33,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -128,6 +128,78 @@
       "downloads": 1984,
       "likes": 12,
       "lastModified": "2024-12-23T15:40:30.000Z"
+    },
+    "gemma-2-2b": {
+      "repo": "bartowski/gemma-2-2b-it-GGUF",
+      "downloads": 301843,
+      "likes": 98,
+      "lastModified": "2024-08-05T19:14:36.000Z"
+    },
+    "gemma-2-27b": {
+      "repo": "bartowski/gemma-2-27b-it-GGUF",
+      "downloads": 7149,
+      "likes": 174,
+      "lastModified": "2024-08-03T22:54:43.000Z"
+    },
+    "qwen2.5-0.5b": {
+      "repo": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+      "downloads": 205756,
+      "likes": 105,
+      "lastModified": "2024-09-20T06:20:24.000Z"
+    },
+    "qwen2.5-1.5b": {
+      "repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "downloads": 283601,
+      "likes": 121,
+      "lastModified": "2024-09-20T06:31:38.000Z"
+    },
+    "mistral-7b-v0.3": {
+      "repo": "bartowski/Mistral-7B-Instruct-v0.3-GGUF",
+      "downloads": 32896,
+      "likes": 41,
+      "lastModified": "2024-05-22T19:09:41.000Z"
+    },
+    "deepseek-r1-distill-qwen-7b": {
+      "repo": "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF",
+      "downloads": 51523,
+      "likes": 131,
+      "lastModified": "2025-03-07T19:13:17.000Z"
+    },
+    "deepseek-r1-distill-qwen-32b": {
+      "repo": "bartowski/DeepSeek-R1-Distill-Qwen-32B-GGUF",
+      "downloads": 18224,
+      "likes": 306,
+      "lastModified": "2025-01-22T15:19:08.000Z"
+    },
+    "olmo-2-7b": {
+      "repo": "bartowski/OLMo-2-1124-7B-Instruct-GGUF",
+      "downloads": 1681,
+      "likes": 12,
+      "lastModified": "2024-11-27T12:42:17.000Z"
+    },
+    "internlm2-7b": {
+      "repo": "bartowski/internlm2_5-7b-chat-GGUF",
+      "downloads": 1038,
+      "likes": 0,
+      "lastModified": "2024-07-03T20:05:12.000Z"
+    },
+    "internlm2-20b": {
+      "repo": "bartowski/internlm2_5-20b-chat-GGUF",
+      "downloads": 1700,
+      "likes": 8,
+      "lastModified": "2024-08-05T19:50:00.000Z"
+    },
+    "aya-23-8b": {
+      "repo": "bartowski/aya-23-8B-GGUF",
+      "downloads": 3498,
+      "likes": 55,
+      "lastModified": "2024-05-23T20:09:08.000Z"
+    },
+    "falcon-3-10b": {
+      "repo": "bartowski/Falcon3-10B-Instruct-GGUF",
+      "downloads": 4276,
+      "likes": 3,
+      "lastModified": "2024-12-23T04:26:29.000Z"
     }
   }
 }
