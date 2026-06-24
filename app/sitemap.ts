@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { SITE_URL } from '@/lib/seo';
+import { canonical } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
@@ -22,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const cookbookPages = articles.map(a => `/cookbook/${a.id}/`);
 
   return [...staticPages, ...modelPages, ...cookbookPages].map(path => ({
-    url: `${SITE_URL}${path}`,
+    url: canonical(path),
     lastModified: new Date(dataLastUpdated),
     changeFrequency: path.includes('quant-hub/') && path !== '/quant-hub/'
       ? 'weekly' as const
