@@ -237,6 +237,88 @@ export const translations = {
       selectFirst: 'Select framework, environment and model above',
       envOptions: { linux: 'Linux / Ubuntu', mac: 'macOS Terminal', docker: 'Docker', compose: 'Docker Compose' },
     },
+    legal: {
+      badge: 'Legal',
+      title: 'Terms & Disclaimer',
+      subtitle: 'Please read before using calculators, benchmarks, or deployment guides on this site.',
+      lastUpdated: 'Last updated: 24 June 2026',
+      backHome: 'Back to Home',
+      footerNote: 'This page is provided for transparency. It does not constitute legal advice.',
+      linkLabel: 'Terms & Disclaimer',
+      sections: [
+        {
+          title: '1. About This Site',
+          paragraphs: [
+            'quantized.uk is an independent, community-driven reference site for LLM quantization. We provide metadata indexes, calculators, benchmarks, and deployment guides to help developers run models on their own hardware.',
+            'We do not host, distribute, or sell model weights. All model files are hosted by third parties (primarily Hugging Face and individual quantizers).',
+          ],
+        },
+        {
+          title: '2. No Affiliation',
+          paragraphs: [
+            'quantized.uk is not affiliated with, endorsed by, or sponsored by Meta, NVIDIA, Alibaba (Qwen), Mistral AI, Google, Microsoft, Hugging Face, or any other company whose products are referenced on this site.',
+            'References to product names are for identification and descriptive purposes only.',
+          ],
+        },
+        {
+          title: '3. Data Accuracy Disclaimer',
+          paragraphs: [
+            'VRAM estimates, benchmark numbers, perplexity loss figures, and speed data are approximations compiled from community sources, published benchmarks, and editorial curation. They are provided for planning purposes only.',
+            'Actual memory usage and inference speed depend on your hardware, driver version, framework build, context length, batch size, and model revision. Always verify against official model cards and your own testing before production deployment.',
+            'Hugging Face download and like counts are fetched from the public Hugging Face API at build time and may be outdated between deployments.',
+          ],
+        },
+        {
+          title: '4. No Warranty',
+          paragraphs: [
+            'This site and all tools are provided "as is" without warranty of any kind, express or implied, including but not limited to accuracy, fitness for a particular purpose, or non-infringement.',
+            'We do not guarantee that any model, quant format, or configuration will work on your hardware or meet your quality requirements.',
+          ],
+        },
+        {
+          title: '5. Limitation of Liability',
+          paragraphs: [
+            'To the fullest extent permitted by applicable law, the operators of quantized.uk shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of this site, including but not limited to hardware damage, data loss, failed deployments, or reliance on calculated VRAM estimates.',
+            'You are solely responsible for decisions made based on information from this site.',
+          ],
+        },
+        {
+          title: '6. Third-Party Trademarks',
+          paragraphs: [
+            'Llama, Meta, Qwen, Mistral, Gemma, Phi, Granite, Codestral, Mixtral, DeepSeek, RTX, GeForce, CUDA, Apple, Mac, M1, M2, M3, Hugging Face, GGUF, llama.cpp, Ollama, vLLM, ExLlamaV2, and other names are trademarks of their respective owners.',
+            'Use of these names on quantized.uk does not imply endorsement. All trademarks remain the property of their respective holders.',
+          ],
+        },
+        {
+          title: '7. Model Licenses',
+          paragraphs: [
+            'Each AI model is subject to its own license (e.g. Meta Llama License, Qwen License, Apache 2.0, MIT). quantized.uk does not grant any license to use model weights.',
+            'Before downloading or deploying any model, you must read and comply with the license terms on the official Hugging Face model card. Deployment guides on this site are educational and do not override those license terms.',
+          ],
+        },
+        {
+          title: '8. External Links',
+          paragraphs: [
+            'This site links to third-party websites including Hugging Face, GitHub, and framework documentation. We are not responsible for the content, availability, or practices of external sites.',
+            'Following external links is at your own risk.',
+          ],
+        },
+        {
+          title: '9. Open Source',
+          paragraphs: [
+            'The quantized.uk website source code is open source and available on GitHub. Contributions and issue reports are welcome.',
+            'Content data files (model metadata, benchmarks) are curated manually and may be updated without notice.',
+          ],
+        },
+        {
+          title: '10. Changes',
+          paragraphs: [
+            'We may update these terms at any time. Continued use of the site after changes constitutes acceptance of the updated terms.',
+            'Material changes will be noted in the site changelog on the homepage.',
+          ],
+        },
+      ],
+    },
     common: {
       new: 'New',
       hot: 'Hot',
@@ -489,6 +571,88 @@ export const translations = {
       outputTab: { cmd: '启动命令', compose: 'docker-compose.yml', notes: '注意事项' },
       selectFirst: '请先在上方选择框架、环境和模型',
       envOptions: { linux: 'Linux / Ubuntu', mac: 'macOS 终端', docker: 'Docker', compose: 'Docker Compose' },
+    },
+    legal: {
+      badge: '法律声明',
+      title: '使用条款与免责声明',
+      subtitle: '使用本站计算器、基准数据或部署指南前，请阅读以下内容。',
+      lastUpdated: '最后更新：2026 年 6 月 24 日',
+      backHome: '返回首页',
+      footerNote: '本页面仅供透明披露之用，不构成法律意见。',
+      linkLabel: '条款与免责',
+      sections: [
+        {
+          title: '1. 关于本站',
+          paragraphs: [
+            'quantized.uk 是一个独立的、社区驱动的 LLM 量化技术参考站。我们提供元数据索引、计算器、基准测试和部署指南，帮助开发者在自有硬件上运行模型。',
+            '我们不托管、分发或销售模型权重文件。所有模型文件均由第三方（主要为 Hugging Face 及各位量化作者）托管。',
+          ],
+        },
+        {
+          title: '2. 非官方声明',
+          paragraphs: [
+            'quantized.uk 与 Meta、NVIDIA、阿里巴巴（Qwen）、Mistral AI、Google、Microsoft、Hugging Face 或本站引用的任何其他公司均无关联、未获背书或赞助。',
+            '提及产品名称仅用于识别和描述目的。',
+          ],
+        },
+        {
+          title: '3. 数据准确性免责',
+          paragraphs: [
+            '显存估算、基准数字、困惑度损失和速度数据均为近似值，来源于社区资料、公开基准和人工整理，仅供规划参考。',
+            '实际内存占用和推理速度取决于你的硬件、驱动版本、框架编译、上下文长度、batch size 和模型版本。生产部署前请务必对照官方模型卡并自行实测验证。',
+            'Hugging Face 下载量和点赞数在构建时从公开 API 获取，两次部署之间可能已过时。',
+          ],
+        },
+        {
+          title: '4. 无担保声明',
+          paragraphs: [
+            '本站及所有工具均按「现状」提供，不附带任何明示或暗示的担保，包括但不限于准确性、特定用途适用性或非侵权性。',
+            '我们不保证任何模型、量化格式或配置能在你的硬件上正常运行或满足你的质量要求。',
+          ],
+        },
+        {
+          title: '5. 责任限制',
+          paragraphs: [
+            '在适用法律允许的最大范围内，quantized.uk 运营方不对因使用本站而产生的任何直接、间接、附带或后果性损害承担责任，包括但不限于硬件损坏、数据丢失、部署失败或依赖显存估算所产生的后果。',
+            '基于本站信息做出的决策由你自行承担全部责任。',
+          ],
+        },
+        {
+          title: '6. 第三方商标',
+          paragraphs: [
+            'Llama、Meta、Qwen、Mistral、Gemma、Phi、Granite、Codestral、Mixtral、DeepSeek、RTX、GeForce、CUDA、Apple、Mac、M1、M2、M3、Hugging Face、GGUF、llama.cpp、Ollama、vLLM、ExLlamaV2 等名称均为其各自所有者的商标。',
+            '在本站使用这些名称不暗示任何背书。所有商标归其各自持有者所有。',
+          ],
+        },
+        {
+          title: '7. 模型许可',
+          paragraphs: [
+            '每个 AI 模型均受其自身许可协议约束（如 Meta Llama License、Qwen License、Apache 2.0、MIT 等）。quantized.uk 不授予任何模型权重使用许可。',
+            '下载或部署任何模型前，你必须阅读并遵守 Hugging Face 官方模型卡上的许可条款。本站部署指南仅供教育参考，不凌驾于上述许可条款之上。',
+          ],
+        },
+        {
+          title: '8. 外部链接',
+          paragraphs: [
+            '本站链接至 Hugging Face、GitHub 及各类框架文档等第三方网站。我们不对外部网站的内容、可用性或做法负责。',
+            '访问外部链接风险自负。',
+          ],
+        },
+        {
+          title: '9. 开源',
+          paragraphs: [
+            'quantized.uk 网站源代码以开源形式发布在 GitHub 上，欢迎贡献和提交 Issue。',
+            '内容数据文件（模型元数据、基准数据）为人工整理，可能随时更新而不另行通知。',
+          ],
+        },
+        {
+          title: '10. 条款变更',
+          paragraphs: [
+            '我们可能随时更新本条款。条款变更后继续使用本站即视为接受更新后的条款。',
+            '重大变更将在首页数据更新日志中注明。',
+          ],
+        },
+      ],
     },
     common: {
       new: '最新',

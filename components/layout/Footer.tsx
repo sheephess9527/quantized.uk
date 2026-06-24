@@ -87,17 +87,25 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-600">
-            © 2026 quantized.uk — Data for reference only. Always verify with official sources.
+            © 2026 quantized.uk —{' '}
+            <Link href="/legal/" className="hover:text-slate-400 transition-colors underline underline-offset-2">
+              {t.legal.linkLabel}
+            </Link>
           </p>
-          <a
-            href="https://github.com/sheephess9527/quantized.uk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
-          >
-            <Github size={12} />
-            {t.common.githubLink}
-          </a>
+          <div className="flex items-center gap-4">
+            <Link href="/legal/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+              {t.legal.linkLabel}
+            </Link>
+            <a
+              href="https://github.com/sheephess9527/quantized.uk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            >
+              <Github size={12} />
+              {t.common.githubLink}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

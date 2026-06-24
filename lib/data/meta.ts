@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'Added Terms & Disclaimer page (/legal) with trademark notice and liability disclaimer',
+    zh: '新增使用条款与免责声明页面（/legal），含商标声明和责任限制',
+  },
+  {
+    date: '2026-06-24',
     en: 'Phase 3: HF live stats pipeline, model A vs B compare tool, cookbook expanded to 15 guides',
     zh: 'Phase 3：HF 实时数据管道、模型 A vs B 对比工具、Cookbook 扩展至 15 篇',
   },

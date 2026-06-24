@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/cli-gen/',
     '/tools/format-wizard/',
     '/tools/compare/',
+    '/legal/',
   ];
 
   const modelPages = models.map(m => `/quant-hub/${m.id}/`);
