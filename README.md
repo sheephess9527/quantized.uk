@@ -16,11 +16,12 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 
 | Feature | Route | What it does |
 |---|---|---|
-| **Dashboard** | `/` | Hero, live stats, "Today" feed, format heat map, format radar chart, quick links to tools |
+| **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, format heat map, format radar chart, quick links to tools |
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats |
+| **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | Step-by-step deployment recipes (VPS llama.cpp, Mac Ollama, RTX 4090 vLLM, Docker Compose stack) |
-| **VRAM Calculator** | `/tools/vram-calc` | Compute model weights + KV cache + activation overhead; verdict against 33 real GPUs |
+| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 33 real GPUs |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM across Linux / Mac / Docker / Compose |
 
 ### Design language
@@ -58,19 +59,22 @@ app/                        # Next.js App Router pages
   layout.tsx                # Root layout: Inter font + LanguageProvider + Navbar/Footer
   page.tsx                  # Dashboard
   quant-hub/page.tsx        # Model index (client: filter state)
+  quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
+    page.tsx
   benchmarks/page.tsx       # Charts + matrix
   cookbook/page.tsx         # Recipe cards + modal
-  tools/vram-calc/page.tsx  # VRAM calculator wrapper
+  tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   globals.css               # Glass / glow utilities, grid background
 
 components/
   layout/                   # Navbar (with lang toggle + Tools dropdown), Footer
   home/                     # HeroSection, StatsBar, TodayBoard, FormatHeatmap, QuickAccess, FormatRadar
-  hub/                      # ModelCard, FilterBar
+  hub/                      # ModelCard, ModelDetail, FilterBar
   tools/                    # VRAMCalculator, CLIGenerator
 
 lib/
+  stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
     models.ts               #   10 models, each with arch + per-quant stats + "today" feed
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
@@ -82,6 +86,7 @@ lib/
     context.tsx             #   LanguageProvider + useLanguage() hook
   utils/
     vram.ts                 #   calcVRAM(), getVerdict(), quant BPW tables
+    recommend.ts            #   getRecommendations() — GPU→model reverse lookup
     cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM
     cn.ts                   #   clsx + tailwind-merge helper
 
@@ -104,6 +109,58 @@ activation_buffer = 10% of the above
 ```
 
 `getVerdict(totalGB, gpuVram)` returns `green` / `yellow` / `red` so the calculator can colour-code each GPU.
+
+### VRAM calculator modes (`components/tools/VRAMCalculator.tsx`)
+
+The calculator supports two modes, toggled at the top of the page:
+
+| Mode | Direction | Use case |
+|---|---|---|
+| **Forward** (`mode=forward`) | Model → VRAM | Pick a model + quant + context → see memory breakdown and per-GPU verdict |
+| **Reverse** (`mode=reverse`) | GPU → Models | Pick your GPU + context → list all compatible model×quant configs |
+
+Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
+
+**Shareable URLs** — all calculator state is synced to query params via `window.history.replaceState`:
+
+```
+# Forward: model + quant + context
+/tools/vram-calc/?mode=forward&model=llama-3.1-8b&quant=Q4_K_M&ctx=4096&batch=1
+
+# Reverse: GPU + sort order
+/tools/vram-calc/?mode=reverse&gpu=rtx4060ti16&ctx=4096&batch=1&sort=quality
+
+# Optional: exclude marginal (yellow) fits in reverse mode
+/tools/vram-calc/?mode=reverse&gpu=rtx4090&ctx=8192&sort=speed&yellow=0
+```
+
+Supported `sort` values: `quality` (lowest PPL loss), `speed` (highest tok/s), `vram` (smallest footprint).
+
+### Model detail pages (`app/quant-hub/[modelId]/`)
+
+Each model gets a statically generated detail page via `generateStaticParams()`. Pages include:
+
+- Model metadata, hardware tags, and bilingual description
+- Summary cards (max context, variant count, best quality quant, accuracy retained)
+- Full quant comparison table (format, level, BPW, VRAM, PPL loss, speed, HF link)
+- CTA buttons: "Calculate VRAM" (pre-fills calculator) and "Hugging Face"
+
+Model cards in the hub link to their detail page; the HF shortcut opens in a new tab without navigating away.
+
+### Homepage stats (`lib/stats.ts`)
+
+`getSiteStats()` computes real numbers from the data files — never hardcoded:
+
+```ts
+{
+  modelCount: models.length,        // currently 10
+  formatCount: quantFormats.length, // currently 5
+  gpuCount: gpuDatabase.length,     // currently 33
+  avgAccuracy: '97.x%',             // 100 − min(pplLossPercent) per model, averaged
+}
+```
+
+`StatsBar` imports this at render time so the dashboard always reflects actual data.
 
 ### CLI generation (`lib/utils/cli.ts`)
 
@@ -172,9 +229,55 @@ pages_build_output_dir = "out"
 
 All content is data-driven — no code changes required to add data:
 
-- **New model** → append to `lib/data/models.ts` (include `arch` and per-quant stats so the VRAM calculator and hub work)
+- **New model** → append to `lib/data/models.ts` (include `arch` and per-quant stats so the VRAM calculator, hub, detail page, and reverse lookup all work automatically)
 - **New GPU** → append to `lib/data/gpus.ts`
 - **New recipe** → append to `lib/data/cookbook.ts` (provide both EN and ZH fields)
 - **New UI string** → add to both `en` and `zh` in `lib/i18n/translations.ts`
 
 Push to `main` and Cloudflare Pages rebuilds and redeploys automatically.
+
+Adding a model to `models.ts` automatically:
+- Increments the homepage model count via `getSiteStats()`
+- Generates a new `/quant-hub/[modelId]/` page at build time
+- Makes the model appear in VRAM reverse lookup results
+
+---
+
+## 8. Changelog
+
+### 2026-06-24 — Model details, GPU reverse lookup, trust fixes
+
+**Trust & accuracy**
+- Homepage stats now computed from real data (`lib/stats.ts`) instead of hardcoded values (was "30+ models", now reflects actual count)
+- Footer GitHub link points to [github.com/sheephess9527/quantized.uk](https://github.com/sheephess9527/quantized.uk) (was generic `github.com`)
+- Copyright year updated to 2026
+
+**Model detail pages** (`/quant-hub/[modelId]/`)
+- 10 statically generated detail pages (one per model in `models.ts`)
+- Quant variant comparison table with per-row HF links and VRAM calculator deep links
+- Hub model cards are now clickable → navigate to detail page
+- Per-model `generateMetadata()` for SEO titles and descriptions
+
+**VRAM calculator enhancements**
+- **Forward mode** (Model → VRAM): original behaviour — pick model, see memory breakdown + GPU verdicts
+- **Reverse mode** (GPU → Models): pick GPU, list all compatible model×quant configs
+- Sort reverse results by quality, speed, or VRAM footprint
+- Toggle to include/exclude marginal (yellow) fits
+- Shareable URL params synced to browser address bar
+- "Copy share link" button for Reddit / Discord / forum sharing
+
+**New files**
+| File | Purpose |
+|---|---|
+| `lib/stats.ts` | `getSiteStats()` — dynamic homepage statistics |
+| `lib/utils/recommend.ts` | `getRecommendations()` — GPU→model reverse lookup engine |
+| `app/quant-hub/[modelId]/page.tsx` | SSG model detail route |
+| `components/hub/ModelDetail.tsx` | Model detail page UI |
+
+**i18n**
+- Added `hub.detail.*` strings (EN/ZH) for model detail pages
+- Added `calc.modeForward`, `calc.modeReverse`, `calc.sortBy`, `calc.shareLink`, etc. (EN/ZH) for calculator modes
+
+**Build output**
+- 19 static pages (was 9): +10 model detail pages
+- Commit: `fea3184` on `main`
