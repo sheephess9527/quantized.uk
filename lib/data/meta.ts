@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'Quant Hub: default to all 51 models visible; scale stats bar; clearer GPU filter UX',
+    zh: 'Quant Hub：默认显示全部 51 个模型；规模统计条；GPU 筛选提示更清晰',
+  },
+  {
+    date: '2026-06-24',
     en: 'SEO: canonical URLs, JSON-LD, per-page metadata, Google/Bing verification env vars',
     zh: 'SEO：canonical URL、JSON-LD 结构化数据、页面级 metadata、Google/Bing 验证环境变量',
   },

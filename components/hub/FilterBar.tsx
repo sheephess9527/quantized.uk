@@ -17,9 +17,10 @@ interface Props {
   onChange: (f: HubFilters) => void;
   count: number;
   total: number;
+  profileFilterActive?: boolean;
 }
 
-export default function FilterBar({ filters, onChange, count, total }: Props) {
+export default function FilterBar({ filters, onChange, count, total, profileFilterActive }: Props) {
   const { t } = useLanguage();
 
   const set = (key: keyof HubFilters) => (val: string) =>
@@ -104,7 +105,12 @@ export default function FilterBar({ filters, onChange, count, total }: Props) {
       </div>
 
       <div className="flex items-center justify-between pt-1">
-        <p className="text-xs text-slate-600">
+        <p className={cn(
+          'text-xs font-medium',
+          count < total
+            ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400/70'
+            : 'text-slate-600',
+        )}>
           {count} / {total} models
         </p>
         {hasActiveFilters && (
