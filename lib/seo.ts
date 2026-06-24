@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
+
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';
+
+/** Search engine HTML-tag verification codes (public in page source). */
+export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dxbkmE';
+export const BING_SITE_VERIFICATION = '877CF3677E0C08A6443342CE11C95E22';
 
 const DEFAULT_DESCRIPTION =
   'LLM quantization intelligence — VRAM calculator, 50+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
@@ -53,14 +59,11 @@ export function pageMetadata({
   };
 }
 
-import type { Metadata } from 'next';
-
 export function buildVerification(): Metadata['verification'] {
-  const google = process.env.GOOGLE_SITE_VERIFICATION;
-  const bing = process.env.BING_SITE_VERIFICATION;
-  if (!google && !bing) return undefined;
+  const google = process.env.GOOGLE_SITE_VERIFICATION ?? GOOGLE_SITE_VERIFICATION;
+  const bing = process.env.BING_SITE_VERIFICATION ?? BING_SITE_VERIFICATION;
   return {
-    ...(google ? { google } : {}),
-    ...(bing ? { other: { 'msvalidate.01': bing } } : {}),
+    google,
+    other: { 'msvalidate.01': bing },
   };
 }
