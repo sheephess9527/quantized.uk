@@ -324,10 +324,10 @@ export const translations = {
           ],
         },
         {
-          title: '9. Open Source',
+          title: '9. Content Updates',
           paragraphs: [
-            'The quantized.uk website source code is open source and available on GitHub. Contributions and issue reports are welcome.',
-            'Content data files (model metadata, benchmarks) are curated manually and may be updated without notice.',
+            'Model metadata, benchmarks, and deployment guides on this site are curated manually and may be updated without notice.',
+            'Material data changes are noted in the homepage changelog. See the About page for how often the index is refreshed.',
           ],
         },
         {
@@ -349,9 +349,9 @@ export const translations = {
       linkLabel: 'About',
       maintainerTitle: 'Who maintains this?',
       maintainerBody:
-        'quantized.uk is an indie, open-source project started by a developer who got tired of guessing VRAM requirements and digging through scattered Hugging Face repos. The site is maintained in public on GitHub — bugs, wrong numbers, and missing models are fixed via issues and pull requests from the community.',
+        'quantized.uk is an indie side project by a developer who got tired of guessing VRAM requirements and digging through scattered Hugging Face repos. It is maintained in spare time — data gets corrected and expanded as new models ship and as real-world testing surfaces better numbers.',
       cta: 'Found a wrong VRAM number? Know a model we should add?',
-      ctaIssues: 'Open a GitHub issue',
+      ctaChangelog: 'Homepage changelog',
       ctaHub: 'Browse the model index',
       sections: [
         {
@@ -378,15 +378,15 @@ export const translations = {
         {
           title: 'How often things update',
           paragraphs: [
-            'There is no fixed schedule — updates happen when new models ship or the community reports gaps. Model index and cookbook articles typically grow in batches every few weeks. The homepage changelog lists every data change with dates.',
-            'The site rebuilds on each push to main. HF stats refresh automatically at build time. If you need something added urgently, a GitHub issue is the fastest way to get our attention.',
+            'There is no fixed schedule — updates happen when new models ship or gaps are spotted. Model index and cookbook articles typically grow in batches every few weeks. The homepage changelog lists every data change with dates.',
+            'HF download stats refresh automatically on each site rebuild. Major updates are noted in the changelog — that is the best place to see what changed recently.',
           ],
         },
         {
-          title: 'How to contribute',
+          title: 'How data improves',
           paragraphs: [
-            'The entire site is static TypeScript — no backend, no accounts. Adding a model means editing a file in lib/data/ and opening a PR. See CONTRIBUTING.md in the repo for field definitions and quality guidelines.',
-            'Benchmark submissions, cookbook recipes, and translation fixes are equally welcome. You do not need permission — just open a PR or issue.',
+            'Model entries, benchmarks, and cookbook guides are curated manually from community releases and hands-on testing. We prioritise models people actually download and hardware configs readers actually use.',
+            'If a number looks wrong, cross-check with our VRAM calculator and the official Hugging Face model card — then watch the homepage changelog for corrections in the next data batch.',
           ],
         },
         {
@@ -404,7 +404,7 @@ export const translations = {
       subtitle: 'How quantized.uk handles analytics, local storage, and third-party services.',
       lastUpdated: 'Last updated: 24 June 2026',
       backHome: 'Back to Home',
-      footerNote: 'Questions? Open an issue on',
+      footerNote: 'Questions? Read our',
       linkLabel: 'Privacy Policy',
       sections: [
         {
@@ -800,10 +800,10 @@ export const translations = {
           ],
         },
         {
-          title: '9. 开源',
+          title: '9. 内容更新',
           paragraphs: [
-            'quantized.uk 网站源代码以开源形式发布在 GitHub 上，欢迎贡献和提交 Issue。',
-            '内容数据文件（模型元数据、基准数据）为人工整理，可能随时更新而不另行通知。',
+            '本站模型元数据、基准数据和部署指南均为人工整理，可能随时更新而不另行通知。',
+            '重大数据变更会在首页 changelog 中注明。更新频率说明见「关于」页面。',
           ],
         },
         {
@@ -825,9 +825,9 @@ export const translations = {
       linkLabel: '关于我们',
       maintainerTitle: '谁在维护？',
       maintainerBody:
-        'quantized.uk 是一个独立的个人开源项目，起因很简单：不想再靠猜显存、翻遍 Hugging Face 找量化版本。站点在 GitHub 上公开维护 — 数据错误、缺模型、工具 bug 都通过 Issue 和 PR 由社区一起修。',
+        'quantized.uk 是一个开发者业余维护的独立项目，起因很简单：不想再靠猜显存、翻遍 Hugging Face 找量化版本。利用空余时间更新 — 有新模型发布或实测发现更准的数字时，就会修正和扩充数据。',
       cta: '发现显存数据不对？知道该收录哪个模型？',
-      ctaIssues: '提交 GitHub Issue',
+      ctaChangelog: '首页更新日志',
       ctaHub: '浏览模型库',
       sections: [
         {
@@ -854,15 +854,15 @@ export const translations = {
         {
           title: '更新频率',
           paragraphs: [
-            '没有固定排期 — 有新模型、社区反馈缺口时就更新。模型库和 Cookbook 通常每隔几周批量扩充一批。首页 changelog 记录每次数据变更及日期。',
-            '每次推送到 main 分支都会触发站点重建，HF 统计在构建时自动刷新。如需紧急添加某模型，提 GitHub Issue 是最快的方式。',
+            '没有固定排期 — 有新模型发布或发现数据缺口时更新。模型库和 Cookbook 通常每隔几周批量扩充一批。首页 changelog 记录每次数据变更及日期。',
+            'HF 下载统计在每次站点重建时自动刷新。重大变更会记在 changelog 里 — 想了解最近改了什么，看那里最直观。',
           ],
         },
         {
-          title: '如何参与',
+          title: '数据如何改进',
           paragraphs: [
-            '整站是纯静态 TypeScript — 无后端、无账户。添加模型只需编辑 lib/data/ 下的文件并提 PR。字段定义和质量标准见仓库中的 CONTRIBUTING.md。',
-            '基准数据、Cookbook 教程、翻译修正同样欢迎。不需要事先申请 — 直接提 PR 或 Issue 即可。',
+            '模型条目、基准数据和 Cookbook 教程均根据社区发布和亲手实测人工整理。优先收录大家真正在下载的模型、读者真正在用的硬件配置。',
+            '如果某个数字看起来不对，先用显存计算器和 Hugging Face 官方模型卡交叉验证 — 后续数据批次会在首页 changelog 中修正。',
           ],
         },
         {
@@ -880,7 +880,7 @@ export const translations = {
       subtitle: '说明 quantized.uk 如何处理分析数据、本地存储和第三方服务。',
       lastUpdated: '最后更新：2026 年 6 月 24 日',
       backHome: '返回首页',
-      footerNote: '有疑问？请在 GitHub 提交 issue：',
+      footerNote: '有疑问？请阅读',
       linkLabel: '隐私政策',
       sections: [
         {

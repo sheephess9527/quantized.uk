@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, ArrowLeft, Github, ExternalLink } from 'lucide-react';
+import { Heart, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { dataLastUpdated } from '@/lib/data/meta';
 
@@ -33,17 +33,7 @@ export default function AboutPage() {
 
       <div className="glass rounded-2xl p-6 mb-8 border border-violet-500/10">
         <p className="text-sm font-medium text-slate-200 mb-2">{a.maintainerTitle}</p>
-        <p className="text-sm text-slate-400 leading-relaxed mb-4">{a.maintainerBody}</p>
-        <a
-          href="https://github.com/sheephess9527/quantized.uk"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300 transition-colors"
-        >
-          <Github size={14} />
-          sheephess9527/quantized.uk
-          <ExternalLink size={10} className="opacity-50" />
-        </a>
+        <p className="text-sm text-slate-400 leading-relaxed">{a.maintainerBody}</p>
       </div>
 
       <div className="space-y-8">
@@ -64,14 +54,9 @@ export default function AboutPage() {
       <div className="mt-10 glass rounded-xl px-4 py-4 text-center">
         <p className="text-sm text-slate-400 mb-3">{a.cta}</p>
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
-          <a
-            href="https://github.com/sheephess9527/quantized.uk/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            {a.ctaIssues}
-          </a>
+          <Link href="/" className="text-violet-400 hover:text-violet-300 transition-colors">
+            {a.ctaChangelog}
+          </Link>
           <Link href="/quant-hub/" className="text-violet-400 hover:text-violet-300 transition-colors">
             {a.ctaHub}
           </Link>

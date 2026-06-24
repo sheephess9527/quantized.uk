@@ -40,14 +40,7 @@ export default function PrivacyPage() {
 
       <p className="text-xs text-slate-600 mt-10 text-center">
         {p.footerNote}{' '}
-        <a
-          href="https://github.com/sheephess9527/quantized.uk/issues"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-violet-400 hover:text-violet-300"
-        >
-          GitHub
-        </a>
+        <Link href="/about/" className="text-violet-400 hover:text-violet-300">{t.about.linkLabel}</Link>
         {' · '}
         <Link href="/legal/" className="text-violet-400 hover:text-violet-300">{t.legal.linkLabel}</Link>
       </p>
