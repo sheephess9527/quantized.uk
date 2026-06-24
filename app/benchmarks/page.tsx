@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { useLanguage } from '@/lib/i18n/context';
 import { speedBenchmarks, pplBenchmarks, matrixData } from '@/lib/data/benchmarks';
+import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
 
 const SPEED_COLORS = ['#7c3aed', '#7c3aed', '#7c3aed', '#06b6d4', '#06b6d4', '#22c55e', '#22c55e', '#22c55e'];
 
@@ -157,6 +158,8 @@ export default function BenchmarksPage() {
             </table>
           </div>
         </section>
+
+        <MethodologyPanel />
       </div>
     </div>
   );

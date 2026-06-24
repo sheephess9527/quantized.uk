@@ -15,6 +15,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
     openGraph: {
       title: `${model.name} | quantized.uk`,
       description: model.description.en,
+      images: [{ url: '/og.svg', width: 1200, height: 630 }],
     },
   };
 }

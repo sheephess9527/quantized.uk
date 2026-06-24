@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Menu, X, Zap, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
+import HardwareProfileSelector from '@/components/layout/HardwareProfileSelector';
 
 const navLinks = (t: ReturnType<typeof useLanguage>['t']) => [
   { href: '/',             label: t.nav.home },
@@ -15,8 +16,9 @@ const navLinks = (t: ReturnType<typeof useLanguage>['t']) => [
 ];
 
 const toolLinks = (t: ReturnType<typeof useLanguage>['t']) => [
-  { href: '/tools/vram-calc', label: t.nav.vramCalc },
-  { href: '/tools/cli-gen',   label: t.nav.cliGen },
+  { href: '/tools/vram-calc',     label: t.nav.vramCalc },
+  { href: '/tools/cli-gen',       label: t.nav.cliGen },
+  { href: '/tools/format-wizard', label: t.nav.formatWizard },
 ];
 
 export default function Navbar() {
@@ -93,6 +95,9 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+          <div className="hidden lg:block">
+            <HardwareProfileSelector compact />
+          </div>
           <button
             onClick={toggleLang}
             className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"

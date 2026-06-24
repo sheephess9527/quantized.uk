@@ -13,6 +13,7 @@ const FRAMEWORKS: { id: Framework; label: string; color: string }[] = [
   { id: 'llamacpp', label: 'llama.cpp',  color: '#7c3aed' },
   { id: 'ollama',   label: 'Ollama',     color: '#06b6d4' },
   { id: 'vllm',     label: 'vLLM',       color: '#f97316' },
+  { id: 'exllama',  label: 'ExLlamaV2',  color: '#eab308' },
 ];
 
 const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli']['envOptions'] }[] = [
@@ -45,6 +46,9 @@ export default function CLIGenerator() {
     }
     if (framework === 'vllm') {
       return selectedModel.quants.filter(q => q.format === 'AWQ' || q.format === 'GPTQ').map(q => `${q.format} ${q.level}`);
+    }
+    if (framework === 'exllama') {
+      return selectedModel.quants.filter(q => q.format === 'EXL2').map(q => q.level);
     }
     return selectedModel.quants.map(q => `${q.format} ${q.level}`);
   }, [selectedModel, framework]);

@@ -22,7 +22,8 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | Step-by-step deployment recipes (VPS llama.cpp, Mac Ollama, RTX 4090 vLLM, Docker Compose stack) |
 | **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 33 real GPUs |
-| **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM across Linux / Mac / Docker / Compose |
+| **Format Wizard** | `/tools/format-wizard` | 3-question wizard → personalised GGUF / AWQ / EXL2 recommendation |
+| **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
 ### Design language
 
@@ -245,7 +246,39 @@ Adding a model to `models.ts` automatically:
 
 ## 8. Changelog
 
-### 2026-06-24 — Model details, GPU reverse lookup, trust fixes
+### 2026-06-24 (b) — Phase 1 & 2: trust, SEO, hardware profile, format wizard
+
+**Phase 1 — Trust & SEO**
+- Today Feed → honest "Editor's Picks" (no fake timestamps), links to model detail pages
+- Format Heat Index methodology disclaimer
+- Benchmarks page: collapsible test methodology panel with framework versions and sources
+- Homepage data changelog (`lib/data/meta.ts`)
+- `sitemap.xml` + `robots.txt` auto-generated at build
+- Static OG share image (`public/og.svg`) + per-page metadata layouts
+- `metadataBase` + Twitter card metadata
+
+**Phase 2 — Product depth**
+- **Hardware profile** — navbar GPU selector, saved in `localStorage`, filters Quant Hub + pre-fills VRAM reverse mode
+- **Format Wizard** (`/tools/format-wizard`) — 3 questions → ranked format recommendation with reasoning
+- **ExLlamaV2 CLI** — fourth framework option in CLI generator
+- **30 models** — expanded from 10 via `lib/data/models-extra.ts` (Qwen2.5-72B, DeepSeek-R1, Llama 3.3 70B, etc.)
+
+**New files**
+| File | Purpose |
+|---|---|
+| `lib/data/meta.ts` | Changelog, data sources, benchmark methodology |
+| `lib/data/types.ts` | Shared model type definitions |
+| `lib/data/models-extra.ts` | 20 additional models |
+| `lib/hardware-profile/context.tsx` | GPU profile provider (localStorage) |
+| `lib/utils/format-wizard.ts` | Format recommendation scoring engine |
+| `components/home/DataChangelog.tsx` | Homepage update log |
+| `components/benchmarks/MethodologyPanel.tsx` | Benchmark test conditions |
+| `components/tools/FormatWizard.tsx` | Format wizard UI |
+| `components/layout/HardwareProfileSelector.tsx` | Navbar GPU picker |
+| `app/sitemap.ts` / `app/robots.ts` | SEO infrastructure |
+| `public/og.svg` | Static Open Graph image |
+
+### 2026-06-24 (a) — Model details, GPU reverse lookup, trust fixes
 
 **Trust & accuracy**
 - Homepage stats now computed from real data (`lib/stats.ts`) instead of hardcoded values (was "30+ models", now reflects actual count)

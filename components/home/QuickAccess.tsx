@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Calculator, Terminal } from 'lucide-react';
+import { Calculator, Terminal, Wand2 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 
 export default function QuickAccess() {
@@ -27,6 +27,16 @@ export default function QuickAccess() {
       title: t.home.quickAccess.cliTitle,
       desc: t.home.quickAccess.cliDesc,
       accent: '#06b6d4',
+    },
+    {
+      href: '/tools/format-wizard',
+      icon: Wand2,
+      iconColor: 'text-orange-400',
+      glowClass: 'group-hover:glow-cyan',
+      borderHover: 'group-hover:border-orange-500/30',
+      title: t.home.quickAccess.wizardTitle,
+      desc: t.home.quickAccess.wizardDesc,
+      accent: '#f97316',
     },
   ];
 

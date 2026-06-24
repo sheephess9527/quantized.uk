@@ -3,9 +3,10 @@
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { quantFormats } from '@/lib/data/formats';
+import { dataSources } from '@/lib/data/meta';
 
 export default function FormatHeatmap() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   return (
     <div className="glass rounded-2xl p-5 flex flex-col h-full">
@@ -51,6 +52,7 @@ export default function FormatHeatmap() {
       </ul>
 
       <p className="text-xs text-slate-600 mt-3">{t.home.formatHeat.vsLastWeek}</p>
+      <p className="text-xs text-slate-700 mt-1 leading-relaxed">{dataSources.formatHeat[lang]}</p>
     </div>
   );
 }

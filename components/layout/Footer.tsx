@@ -19,8 +19,9 @@ export default function Footer() {
     {
       title: t.nav.tools,
       links: [
-        { label: t.nav.vramCalc, href: '/tools/vram-calc' },
-        { label: t.nav.cliGen,   href: '/tools/cli-gen' },
+        { label: t.nav.vramCalc,      href: '/tools/vram-calc' },
+        { label: t.nav.cliGen,        href: '/tools/cli-gen' },
+        { label: t.nav.formatWizard,  href: '/tools/format-wizard' },
       ],
     },
     {

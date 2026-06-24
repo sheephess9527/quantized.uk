@@ -5,15 +5,26 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import ModelCard from '@/components/hub/ModelCard';
 import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
+import Link from 'next/link';
+import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { getRecommendations } from '@/lib/utils/recommend';
 
 export default function QuantHubPage() {
   const { t, lang } = useLanguage();
+  const { gpu, hasProfile } = useHardwareProfile();
   const [filters, setFilters] = useState<HubFilters>({
     search: '', paramRange: '', category: '', hardware: '', format: '',
   });
 
+  const profileModelIds = useMemo(() => {
+    if (!gpu) return null;
+    const recs = getRecommendations(gpu.vram, 4096, 1, 'quality', true);
+    return new Set(recs.map(r => r.model.id));
+  }, [gpu]);
+
   const filtered = useMemo(() => {
     return models.filter(m => {
+      if (profileModelIds && !profileModelIds.has(m.id)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!m.name.toLowerCase().includes(q) && !m.family.toLowerCase().includes(q)) return false;
@@ -31,7 +42,7 @@ export default function QuantHubPage() {
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, profileModelIds]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
@@ -40,6 +51,20 @@ export default function QuantHubPage() {
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.hub.title}</h1>
         <p className="text-slate-400">{t.hub.subtitle}</p>
       </div>
+
+      {hasProfile && gpu && (
+        <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-slate-400">
+            {t.hub.profileFilter.replace('{gpu}', gpu.name).replace('{count}', String(filtered.length))}
+          </p>
+          <Link
+            href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=4096&sort=quality`}
+            className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+          >
+            {t.hub.profileLink} →
+          </Link>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="mb-8">

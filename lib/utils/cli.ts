@@ -1,4 +1,4 @@
-export type Framework = 'llamacpp' | 'ollama' | 'vllm';
+export type Framework = 'llamacpp' | 'ollama' | 'vllm' | 'exllama';
 export type Env = 'linux' | 'mac' | 'docker' | 'compose';
 
 export interface CLIOptions {
@@ -27,7 +27,76 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
   if (framework === 'llamacpp') return generateLlamaCpp(opts);
   if (framework === 'ollama')   return generateOllama(opts);
   if (framework === 'vllm')     return generateVLLM(opts);
+  if (framework === 'exllama')  return generateExLlama(opts);
   return { command: '# Select a framework', notes: [] };
+}
+
+function generateExLlama(opts: CLIOptions): CLIOutput {
+  const { env, modelName, quantLevel, contextLen, port, apiKey } = opts;
+  const bpw = quantLevel.replace(/[^0-9.]/g, '') || '4.65';
+  const modelDir = modelName.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
+  const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
+
+  const serverCmd = [
+    `python -m exllamav2.server \\`,
+    `  -m ./models/${modelDir}-exl2-${bpw}bpw \\`,
+    `  -c ${contextLen} \\`,
+    `  -host 0.0.0.0 -port ${port}${apiKeyFlag}`,
+  ].join('\n');
+
+  if (env === 'docker') {
+    const command = [
+      `docker run --rm -it \\`,
+      `  --gpus all \\`,
+      `  -p ${port}:${port} \\`,
+      `  -v $(pwd)/models:/models \\`,
+      `  ghcr.io/turboderp/exllamav2:latest \\`,
+      `  -m /models/${modelDir}-exl2-${bpw}bpw \\`,
+      `  -c ${contextLen} \\`,
+      `  -host 0.0.0.0 -port ${port}`,
+    ].join('\n');
+    return { command, notes: ['Requires NVIDIA GPU (Ampere+ recommended)', 'Model must be in EXL2 format from turboderp or equivalent'] };
+  }
+
+  if (env === 'compose') {
+    const compose = `version: "3.8"
+services:
+  exllama:
+    image: ghcr.io/turboderp/exllamav2:latest
+    container_name: exllama-server
+    ports:
+      - "${port}:${port}"
+    volumes:
+      - ./models:/models
+    command: >
+      -m /models/${modelDir}-exl2-${bpw}bpw
+      -c ${contextLen}
+      -host 0.0.0.0
+      -port ${port}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped`;
+    return { command: serverCmd, compose, notes: ['Fastest inference for NVIDIA consumer GPUs', 'Download EXL2 quants from Hugging Face (turboderp repos)'] };
+  }
+
+  const installCmd = env === 'mac'
+    ? `# ExLlamaV2 requires NVIDIA CUDA — not supported on Apple Silicon\n# Use Ollama with GGUF instead`
+    : `# Install ExLlamaV2\npip install exllamav2\n\n# Download EXL2 model (example)\nhuggingface-cli download turboderp/Llama-3.1-8B-instruct-exl2 --include "*${bpw}bpw*" --local-dir ./models/${modelDir}-exl2-${bpw}bpw\n\n# Run`;
+
+  return {
+    command: `${installCmd}\n${serverCmd}`,
+    notes: [
+      'ExLlamaV2 is NVIDIA-only — fastest consumer GPU inference for EXL2 quants',
+      `Recommended quant: ${quantLevel} (adjust bpw in model path)`,
+      `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`,
+      'Alternative: TabbyAPI wraps ExLlamaV2 with a polished web UI',
+    ],
+  };
 }
 
 function generateLlamaCpp(opts: CLIOptions): CLIOutput {

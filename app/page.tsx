@@ -4,6 +4,7 @@ import TodayBoard from '@/components/home/TodayBoard';
 import FormatHeatmap from '@/components/home/FormatHeatmap';
 import QuickAccess from '@/components/home/QuickAccess';
 import FormatRadar from '@/components/home/FormatRadar';
+import DataChangelog from '@/components/home/DataChangelog';
 
 export default function HomePage() {
   return (
@@ -31,6 +32,9 @@ export default function HomePage() {
             <FormatRadar />
           </div>
         </div>
+
+        {/* Row 3: Data changelog */}
+        <DataChangelog />
       </div>
     </>
   );

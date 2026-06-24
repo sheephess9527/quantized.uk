@@ -10,6 +10,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
+import { useHardwareProfile } from '@/lib/hardware-profile/context';
 
 type Mode = 'forward' | 'reverse';
 type VerdictColor = 'green' | 'yellow' | 'red';
@@ -31,6 +32,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 
 export default function VRAMCalculator() {
   const { t } = useLanguage();
+  const { gpuId: profileGpuId } = useHardwareProfile();
   const searchParams = useSearchParams();
   const urlInitialized = useRef(false);
 
@@ -61,13 +63,15 @@ export default function VRAMCalculator() {
     }
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
-    if (searchParams.get('gpu')) setSelectedGpuId(searchParams.get('gpu')!);
+    const gpuParam = searchParams.get('gpu');
+    if (gpuParam) setSelectedGpuId(gpuParam);
+    else if (profileGpuId) setSelectedGpuId(profileGpuId);
     if (searchParams.get('sort') === 'speed' || searchParams.get('sort') === 'vram') {
       setSortBy(searchParams.get('sort') as SortBy);
     }
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     urlInitialized.current = true;
-  }, [searchParams]);
+  }, [searchParams, profileGpuId]);
 
   const syncUrl = useCallback(() => {
     if (!urlInitialized.current) return;

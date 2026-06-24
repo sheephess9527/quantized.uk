@@ -1,39 +1,12 @@
-export interface QuantVariant {
-  format: 'GGUF' | 'AWQ' | 'EXL2' | 'GPTQ' | 'HQQ';
-  level: string;
-  bpw: number;
-  vramGB: number;
-  pplLossPercent: number;
-  speedRTX4090?: number;
-  hfSearchUrl: string;
-}
-
-export interface ModelArch {
-  layers: number;
-  attHeads: number;
-  kvHeads: number;
-  headDim: number;
-}
-
-export interface QuantModel {
-  id: string;
-  name: string;
-  family: string;
-  params: number;
-  paramLabel: string;
-  categories: string[];
-  hardwareTags: string[];
-  contextLength: number;
-  arch: ModelArch;
-  quants: QuantVariant[];
-  description: { en: string; zh: string };
-}
+export type { QuantVariant, ModelArch, QuantModel } from './types';
+import type { QuantModel } from './types';
+import { extraModels } from './models-extra';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
 }
 
-export const models: QuantModel[] = [
+const baseModels: QuantModel[] = [
   {
     id: 'llama-3.1-8b',
     name: 'Llama 3.1 8B Instruct',
@@ -242,10 +215,12 @@ export const models: QuantModel[] = [
   },
 ];
 
+export const models: QuantModel[] = [...baseModels, ...extraModels];
+
 export const todayFeed = [
-  { id: 1, type: 'new' as const, model: 'Qwen2.5-72B-Instruct', format: 'GGUF', detail: 'Q4_K_M · 43.6 GB · bartowski', hardware: 'RTX 4090 ×2', hoursAgo: 2 },
-  { id: 2, type: 'hot' as const, model: 'DeepSeek-R1-Distill-Qwen-14B', format: 'EXL2', detail: '4.65bpw · 9.8 GB · turboderp', hardware: 'RTX 4090', hoursAgo: 5 },
-  { id: 3, type: 'new' as const, model: 'Llama-3.3-70B-Instruct', format: 'GGUF', detail: 'Q5_K_M · 50.1 GB · unsloth', hardware: 'A100 80G', hoursAgo: 8 },
-  { id: 4, type: 'upd' as const, model: 'Mistral-Small-24B-Instruct', format: 'AWQ', detail: 'INT4 · 14.2 GB · city96', hardware: 'RTX 3090', hoursAgo: 12 },
-  { id: 5, type: 'hot' as const, model: 'Qwen2.5-Coder-32B-Instruct', format: 'GGUF', detail: 'Q4_K_M · 22.0 GB · bartowski', hardware: 'RTX 4090', hoursAgo: 18 },
+  { id: 1, type: 'new' as const, modelId: 'qwen2.5-72b', format: 'GGUF', detail: 'Q4_K_M · 43.6 GB', quantizer: 'bartowski', hardware: 'RTX 4090 ×2' },
+  { id: 2, type: 'hot' as const, modelId: 'deepseek-r1-distill-qwen-14b', format: 'EXL2', detail: '4.65bpw · 9.8 GB', quantizer: 'turboderp', hardware: 'RTX 4090' },
+  { id: 3, type: 'new' as const, modelId: 'llama-3.3-70b', format: 'GGUF', detail: 'Q5_K_M · 50.1 GB', quantizer: 'unsloth', hardware: 'A100 80G' },
+  { id: 4, type: 'upd' as const, modelId: 'mistral-small-24b', format: 'AWQ', detail: 'INT4 · 14.2 GB', quantizer: 'city96', hardware: 'RTX 3090' },
+  { id: 5, type: 'hot' as const, modelId: 'qwen2.5-coder-32b', format: 'GGUF', detail: 'Q4_K_M · 22.0 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
 ];
