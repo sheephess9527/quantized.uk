@@ -51,9 +51,12 @@ export default function Footer() {
                 quantized<span className="text-violet-400">.uk</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-48">
+            <p className="text-xs text-slate-500 leading-relaxed max-w-48 mb-3">
               {t.nav.tagline}. Bridging research and real deployment.
             </p>
+            <Link href="/about/" className="text-xs text-slate-500 hover:text-violet-400 transition-colors">
+              {t.about.linkLabel} →
+            </Link>
           </div>
 
           {/* Links */}
@@ -102,6 +105,9 @@ export default function Footer() {
             </Link>
             <Link href="/privacy/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
               {t.privacy.linkLabel}
+            </Link>
+            <Link href="/about/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+              {t.about.linkLabel}
             </Link>
             <a
               href="https://github.com/sheephess9527/quantized.uk"

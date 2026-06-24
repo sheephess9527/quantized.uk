@@ -339,6 +339,65 @@ export const translations = {
         },
       ],
     },
+    about: {
+      badge: 'About',
+      title: 'About quantized.uk',
+      subtitle: 'A practical reference for running quantized LLMs on your own hardware — built by someone who actually does it.',
+      lastUpdated: 'Page last updated: 24 June 2026',
+      dataRefresh: 'Data last refreshed: {date}',
+      backHome: 'Back to Home',
+      linkLabel: 'About',
+      maintainerTitle: 'Who maintains this?',
+      maintainerBody:
+        'quantized.uk is an indie, open-source project started by a developer who got tired of guessing VRAM requirements and digging through scattered Hugging Face repos. The site is maintained in public on GitHub — bugs, wrong numbers, and missing models are fixed via issues and pull requests from the community.',
+      cta: 'Found a wrong VRAM number? Know a model we should add?',
+      ctaIssues: 'Open a GitHub issue',
+      ctaHub: 'Browse the model index',
+      sections: [
+        {
+          title: 'Why this exists',
+          paragraphs: [
+            'Running LLMs locally should not require a PhD in quantization. Yet most knowledge lives in Reddit threads, Discord messages, and model cards written for researchers — not for someone staring at a 12GB VRAM bar wondering if Q4_K_M will fit.',
+            'quantized.uk exists to answer the questions people actually ask before downloading a 20GB file: Will it fit? Which format? How much quality do I lose? What is the exact command to run it?',
+          ],
+        },
+        {
+          title: 'What we publish',
+          paragraphs: [
+            'A searchable index of 50+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
+            'We index metadata and link to Hugging Face — we do not host, distribute, or sell model weights. Each model remains subject to its own license.',
+          ],
+        },
+        {
+          title: 'How we source data',
+          paragraphs: [
+            'Model stats are manually curated from Hugging Face model cards, community quant releases (bartowski, turboderp, unsloth, and others), and local benchmark runs where possible. Hugging Face download counts are fetched from the public API at each site build.',
+            'Numbers are planning estimates, not guarantees. We document our methodology on the Benchmarks page and mark editorial estimates (like format heat) clearly. Always verify against your own hardware before production use.',
+          ],
+        },
+        {
+          title: 'How often things update',
+          paragraphs: [
+            'There is no fixed schedule — updates happen when new models ship or the community reports gaps. Model index and cookbook articles typically grow in batches every few weeks. The homepage changelog lists every data change with dates.',
+            'The site rebuilds on each push to main. HF stats refresh automatically at build time. If you need something added urgently, a GitHub issue is the fastest way to get our attention.',
+          ],
+        },
+        {
+          title: 'How to contribute',
+          paragraphs: [
+            'The entire site is static TypeScript — no backend, no accounts. Adding a model means editing a file in lib/data/ and opening a PR. See CONTRIBUTING.md in the repo for field definitions and quality guidelines.',
+            'Benchmark submissions, cookbook recipes, and translation fixes are equally welcome. You do not need permission — just open a PR or issue.',
+          ],
+        },
+        {
+          title: 'What we are not',
+          paragraphs: [
+            'quantized.uk is not affiliated with Meta, NVIDIA, Alibaba, Mistral, Google, Hugging Face, or any model vendor. We are not a company, a hosting provider, or a model distributor.',
+            'For legal terms, liability limits, and trademark notices, see the Terms & Disclaimer page.',
+          ],
+        },
+      ],
+    },
     privacy: {
       badge: 'Privacy',
       title: 'Privacy Policy',
@@ -752,6 +811,65 @@ export const translations = {
           paragraphs: [
             '我们可能随时更新本条款。条款变更后继续使用本站即视为接受更新后的条款。',
             '重大变更将在首页数据更新日志中注明。',
+          ],
+        },
+      ],
+    },
+    about: {
+      badge: '关于',
+      title: '关于 quantized.uk',
+      subtitle: '一份面向「真在自己硬件上跑模型」的量化参考站 — 由同样在做这件事的人维护。',
+      lastUpdated: '页面最后更新：2026 年 6 月 24 日',
+      dataRefresh: '数据最后刷新：{date}',
+      backHome: '返回首页',
+      linkLabel: '关于我们',
+      maintainerTitle: '谁在维护？',
+      maintainerBody:
+        'quantized.uk 是一个独立的个人开源项目，起因很简单：不想再靠猜显存、翻遍 Hugging Face 找量化版本。站点在 GitHub 上公开维护 — 数据错误、缺模型、工具 bug 都通过 Issue 和 PR 由社区一起修。',
+      cta: '发现显存数据不对？知道该收录哪个模型？',
+      ctaIssues: '提交 GitHub Issue',
+      ctaHub: '浏览模型库',
+      sections: [
+        {
+          title: '为什么做这个站',
+          paragraphs: [
+            '本地跑 LLM 不该先读一篇论文。可大部分知识散落在 Reddit、Discord 和写给研究者的模型卡里 — 而不是写给盯着 12GB 显存条、犹豫 Q4_K_M 能不能塞进去的人。',
+            'quantized.uk 要回答的是下载 20GB 文件之前真正会问的问题：够不够显存？该用哪种格式？质量损失多少？启动命令怎么写？',
+          ],
+        },
+        {
+          title: '我们提供什么',
+          paragraphs: [
+            '50+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
+            '我们只索引元数据并链接到 Hugging Face — 不托管、不分发、不出售模型权重。每个模型仍受其自身许可协议约束。',
+          ],
+        },
+        {
+          title: '数据从哪来',
+          paragraphs: [
+            '模型数据来自 Hugging Face 模型卡、社区量化发布（bartowski、turboderp、unsloth 等），以及在条件允许时的本地实测。HF 下载量在每次构建时从公开 API 拉取。',
+            '所有数字都是规划估算，非承诺。方法论见 Benchmarks 页面；编辑估算（如格式热度）会明确标注。生产部署前请务必在自己的硬件上验证。',
+          ],
+        },
+        {
+          title: '更新频率',
+          paragraphs: [
+            '没有固定排期 — 有新模型、社区反馈缺口时就更新。模型库和 Cookbook 通常每隔几周批量扩充一批。首页 changelog 记录每次数据变更及日期。',
+            '每次推送到 main 分支都会触发站点重建，HF 统计在构建时自动刷新。如需紧急添加某模型，提 GitHub Issue 是最快的方式。',
+          ],
+        },
+        {
+          title: '如何参与',
+          paragraphs: [
+            '整站是纯静态 TypeScript — 无后端、无账户。添加模型只需编辑 lib/data/ 下的文件并提 PR。字段定义和质量标准见仓库中的 CONTRIBUTING.md。',
+            '基准数据、Cookbook 教程、翻译修正同样欢迎。不需要事先申请 — 直接提 PR 或 Issue 即可。',
+          ],
+        },
+        {
+          title: '我们不是什么',
+          paragraphs: [
+            'quantized.uk 与 Meta、NVIDIA、阿里、Mistral、Google、Hugging Face 或任何模型厂商无关联。我们不是公司、不是托管商、不是模型分发平台。',
+            '法律条款、责任限制和商标声明见「使用条款与免责声明」页面。',
           ],
         },
       ],

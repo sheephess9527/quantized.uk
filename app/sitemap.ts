@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/compare/',
     '/legal/',
     '/privacy/',
+    '/about/',
   ];
 
   const modelPages = models.map(m => `/quant-hub/${m.id}/`);

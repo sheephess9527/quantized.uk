@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'Added About page (/about) — maintainer story, update cadence, contribution guide',
+    zh: '新增关于页面（/about）— 维护者介绍、更新频率、参与贡献方式',
+  },
+  {
+    date: '2026-06-24',
     en: 'Quant Hub: default to all 51 models visible; scale stats bar; clearer GPU filter UX',
     zh: 'Quant Hub：默认显示全部 51 个模型；规模统计条；GPU 筛选提示更清晰',
   },
