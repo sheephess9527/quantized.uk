@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Zap, ExternalLink } from 'lucide-react';
+import { Zap, Github, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 
 export default function Footer() {
@@ -109,6 +109,15 @@ export default function Footer() {
             <Link href="/about/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
               {t.about.linkLabel}
             </Link>
+            <a
+              href="https://github.com/sheephess9527/quantized.uk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            >
+              <Github size={12} />
+              {t.common.githubLink}
+            </a>
           </div>
         </div>
       </div>

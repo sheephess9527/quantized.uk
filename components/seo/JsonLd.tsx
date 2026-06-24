@@ -31,6 +31,7 @@ export function SiteJsonLd() {
           '@type': 'Organization',
           name: SITE_NAME,
           url: SITE_URL,
+          sameAs: ['https://github.com/sheephess9527/quantized.uk'],
         },
       ]}
     />
