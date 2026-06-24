@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/vram-calc/',
     '/tools/cli-gen/',
     '/tools/format-wizard/',
+    '/tools/compare/',
   ];
 
   const modelPages = models.map(m => `/quant-hub/${m.id}/`);

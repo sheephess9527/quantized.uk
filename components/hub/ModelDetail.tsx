@@ -6,6 +6,8 @@ import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
+import { hfRepoMap } from '@/lib/data/hf-repos';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -29,6 +31,8 @@ interface Props {
 export default function ModelDetail({ model }: Props) {
   const { t, lang } = useLanguage();
   const d = t.hub.detail;
+  const hf = getHFStats(model.id);
+  const hfRepo = hf?.repo ?? hfRepoMap[model.id];
 
   const bestQuant = model.quants.reduce((best, q) =>
     q.pplLossPercent < best.pplLossPercent ? q : best,
@@ -60,6 +64,19 @@ export default function ModelDetail({ model }: Props) {
         </div>
         <p className="text-slate-500 mb-2">{model.family}</p>
         <p className="text-slate-400 max-w-3xl leading-relaxed">{model.description[lang]}</p>
+
+        {hf && hf.downloads > 0 && (
+          <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-slate-500">
+            <span>⬇ {formatDownloads(hf.downloads)} {d.hfDownloads}</span>
+            <span>♥ {hf.likes} {d.hfLikes}</span>
+            {hfRepo && (
+              <a href={`https://huggingface.co/${hfRepo}`} target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 font-mono">
+                {hfRepo}
+              </a>
+            )}
+            <span className="text-slate-700">· {d.hfFetched} {new Date(hfStats.fetchedAt).toLocaleDateString()}</span>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2 mt-4">
           {model.hardwareTags.map(hw => (
@@ -93,7 +110,7 @@ export default function ModelDetail({ model }: Props) {
           {d.calcVram}
         </Link>
         <a
-          href={model.quants[0]?.hfSearchUrl ?? '#'}
+          href={hfRepo ? `https://huggingface.co/${hfRepo}` : (model.quants[0]?.hfSearchUrl ?? '#')}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"
@@ -101,6 +118,12 @@ export default function ModelDetail({ model }: Props) {
           {t.hub.model.viewHF}
           <ExternalLink size={14} />
         </a>
+        <Link
+          href={`/tools/compare/?a=${model.id}&b=qwen2.5-7b`}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"
+        >
+          {d.compare}
+        </Link>
       </div>
 
       <div className="glass rounded-2xl overflow-hidden">

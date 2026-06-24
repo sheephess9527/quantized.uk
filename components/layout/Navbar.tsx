@@ -19,6 +19,7 @@ const toolLinks = (t: ReturnType<typeof useLanguage>['t']) => [
   { href: '/tools/vram-calc',     label: t.nav.vramCalc },
   { href: '/tools/cli-gen',       label: t.nav.cliGen },
   { href: '/tools/format-wizard', label: t.nav.formatWizard },
+  { href: '/tools/compare',     label: t.nav.modelCompare },
 ];
 
 export default function Navbar() {

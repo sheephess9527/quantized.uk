@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "fetch-hf": "node scripts/fetch-hf-stats.mjs",
+    "prebuild": "node scripts/fetch-hf-stats.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

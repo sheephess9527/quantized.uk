@@ -1,3 +1,5 @@
+import { extraArticles } from './cookbook-extra';
+
 export interface Article {
   id: string;
   title: string;
@@ -20,7 +22,7 @@ interface Section {
   code?: { lang: string; content: string };
 }
 
-export const articles: Article[] = [
+const baseArticles: Article[] = [
   {
     id: 'llama-vps-llamacpp',
     title: 'Run Llama 3.1 8B on a €20/month VPS',
@@ -197,3 +199,5 @@ volumes:
     ],
   },
 ];
+
+export const articles: Article[] = [...baseArticles, ...extraArticles];

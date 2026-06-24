@@ -1,0 +1,133 @@
+{
+  "fetchedAt": "2026-06-24T02:01:16.914Z",
+  "source": "https://huggingface.co/api/models",
+  "modelCount": 21,
+  "models": {
+    "llama-3.1-8b": {
+      "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
+      "downloads": 270168,
+      "likes": 361,
+      "lastModified": "2024-12-01T04:12:27.000Z"
+    },
+    "llama-3.1-70b": {
+      "repo": "bartowski/Meta-Llama-3.1-70B-Instruct-GGUF",
+      "downloads": 15584,
+      "likes": 71,
+      "lastModified": "2024-07-29T16:56:18.000Z"
+    },
+    "llama-3.2-3b": {
+      "repo": "bartowski/Llama-3.2-3B-Instruct-GGUF",
+      "downloads": 228658,
+      "likes": 215,
+      "lastModified": "2024-10-08T14:01:10.000Z"
+    },
+    "llama-3.2-1b": {
+      "repo": "bartowski/Llama-3.2-1B-Instruct-GGUF",
+      "downloads": 308929,
+      "likes": 166,
+      "lastModified": "2024-10-08T14:00:29.000Z"
+    },
+    "llama-3.3-70b": {
+      "repo": "unsloth/Llama-3.3-70B-Instruct-GGUF",
+      "downloads": 31021,
+      "likes": 121,
+      "lastModified": "2025-05-10T04:18:57.000Z"
+    },
+    "qwen2.5-7b": {
+      "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF",
+      "downloads": 173196,
+      "likes": 157,
+      "lastModified": "2024-09-20T06:38:28.000Z"
+    },
+    "qwen2.5-14b": {
+      "repo": "Qwen/Qwen2.5-14B-Instruct-GGUF",
+      "downloads": 93307,
+      "likes": 57,
+      "lastModified": "2024-09-20T06:43:49.000Z"
+    },
+    "qwen2.5-32b": {
+      "repo": "Qwen/Qwen2.5-32B-Instruct-GGUF",
+      "downloads": 32458,
+      "likes": 45,
+      "lastModified": "2024-09-20T06:52:34.000Z"
+    },
+    "qwen2.5-72b": {
+      "repo": "Qwen/Qwen2.5-72B-Instruct-GGUF",
+      "downloads": 2985,
+      "likes": 44,
+      "lastModified": "2024-09-20T07:12:41.000Z"
+    },
+    "qwen2.5-3b": {
+      "repo": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+      "downloads": 238099,
+      "likes": 140,
+      "lastModified": "2024-09-20T06:34:33.000Z"
+    },
+    "qwen2.5-coder-7b": {
+      "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
+      "downloads": 150879,
+      "likes": 289,
+      "lastModified": "2024-11-12T07:59:32.000Z"
+    },
+    "qwen2.5-coder-32b": {
+      "repo": "bartowski/Qwen2.5-Coder-32B-Instruct-GGUF",
+      "downloads": 39597,
+      "likes": 111,
+      "lastModified": "2024-11-10T22:39:25.000Z"
+    },
+    "deepseek-r1-distill-qwen-14b": {
+      "repo": "bartowski/DeepSeek-R1-Distill-Qwen-14B-GGUF",
+      "downloads": 47573,
+      "likes": 236,
+      "lastModified": "2025-03-10T16:49:14.000Z"
+    },
+    "deepseek-r1-distill-llama-70b": {
+      "repo": "bartowski/DeepSeek-R1-Distill-Llama-70B-GGUF",
+      "downloads": 47717,
+      "likes": 42,
+      "lastModified": "2025-01-22T15:19:01.000Z"
+    },
+    "deepseek-coder-v2-lite": {
+      "repo": "bartowski/DeepSeek-Coder-V2-Lite-Instruct-GGUF",
+      "downloads": 76493,
+      "likes": 166,
+      "lastModified": "2024-06-20T17:12:43.000Z"
+    },
+    "phi-3.5-mini": {
+      "repo": "bartowski/Phi-3.5-mini-instruct-GGUF",
+      "downloads": 68067,
+      "likes": 81,
+      "lastModified": "2024-09-15T07:35:15.000Z"
+    },
+    "mistral-nemo-12b": {
+      "repo": "bartowski/Mistral-Nemo-Instruct-2407-GGUF",
+      "downloads": 15088,
+      "likes": 117,
+      "lastModified": "2024-11-05T00:16:41.000Z"
+    },
+    "mistral-small-24b": {
+      "repo": "bartowski/Mistral-Small-Instruct-2409-GGUF",
+      "downloads": 4394,
+      "likes": 53,
+      "lastModified": "2024-09-19T02:51:18.000Z"
+    },
+    "gemma-2-9b": {
+      "repo": "bartowski/gemma-2-9b-it-GGUF",
+      "downloads": 25689,
+      "likes": 231,
+      "lastModified": "2024-07-15T18:57:00.000Z"
+    },
+    "codestral-22b": {
+      "repo": "bartowski/Codestral-22B-v0.1-GGUF",
+      "downloads": 4452,
+      "likes": 194,
+      "lastModified": "2024-06-05T17:00:40.000Z"
+    },
+    "granite-3.1-8b": {
+      "repo": "bartowski/granite-3.1-8b-instruct-GGUF",
+      "downloads": 1984,
+      "likes": 12,
+      "lastModified": "2024-12-23T15:40:30.000Z"
+    }
+  }
+}

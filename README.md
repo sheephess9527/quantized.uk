@@ -246,6 +246,23 @@ Adding a model to `models.ts` automatically:
 
 ## 8. Changelog
 
+### 2026-06-24 (c) — Phase 3: HF pipeline, model compare, cookbook ×15
+
+**HF data pipeline**
+- `scripts/fetch-hf-stats.mjs` runs on `prebuild` — fetches downloads/likes from Hugging Face API
+- Stats cached in `lib/data/hf-stats.json`, displayed on model detail pages
+- Repo mapping in `lib/data/hf-repos.ts` (25 models with known HF repos)
+
+**Model compare tool** (`/tools/compare`)
+- Side-by-side A vs B comparison: params, VRAM, PPL, speed, format count
+- GPU profile integration for fit verdict
+- Shareable URL: `?a=llama-3.1-8b&b=qwen2.5-7b&ctx=4096`
+
+**Cookbook expansion** (4 → 15 articles)
+- RTX 4060 Ti guide, DeepSeek-R1 EXL2 vs GGUF, ExLlamaV2 setup, dual-GPU 70B
+- Qwen2.5-Coder 32B on 4090, Mac M3 Pro limits, Windows CUDA llama.cpp
+- TabbyAPI, custom GGUF quantizing, vLLM production tuning, CPU OpenBLAS
+
 ### 2026-06-24 (b) — Phase 1 & 2: trust, SEO, hardware profile, format wizard
 
 **Phase 1 — Trust & SEO**
