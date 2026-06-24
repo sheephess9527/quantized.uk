@@ -1,12 +1,15 @@
 'use client';
 
 import { useLanguage } from '@/lib/i18n/context';
+import { getSiteStats } from '@/lib/stats';
+
+const siteStats = getSiteStats();
 
 const stats = [
-  { value: '30+',   keyName: 'models'   },
-  { value: '5',     keyName: 'formats'  },
-  { value: '33',    keyName: 'gpus'     },
-  { value: '96.8%', keyName: 'accuracy' },
+  { value: String(siteStats.modelCount), keyName: 'models'   },
+  { value: String(siteStats.formatCount), keyName: 'formats'  },
+  { value: String(siteStats.gpuCount),    keyName: 'gpus'     },
+  { value: siteStats.avgAccuracy,         keyName: 'accuracy' },
 ] as const;
 
 export default function StatsBar() {

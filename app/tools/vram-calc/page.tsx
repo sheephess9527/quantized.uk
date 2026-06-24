@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import VRAMCalculator from '@/components/tools/VRAMCalculator';
 
@@ -15,7 +16,9 @@ export default function VRAMCalcPage() {
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.calc.title}</h1>
         <p className="text-slate-400 max-w-2xl">{t.calc.subtitle}</p>
       </div>
-      <VRAMCalculator />
+      <Suspense fallback={<div className="glass rounded-2xl p-8 text-center text-slate-600 text-sm">Loading...</div>}>
+        <VRAMCalculator />
+      </Suspense>
     </div>
   );
 }

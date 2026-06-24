@@ -1,6 +1,7 @@
 'use client';
 
-import { ExternalLink, Cpu, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { ExternalLink, Zap } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
@@ -33,11 +34,14 @@ export default function ModelCard({ model, lang }: Props) {
   const bestQuant = model.quants.find(q => q.speedRTX4090 === maxSpeed);
 
   return (
-    <div className="glass glass-hover rounded-2xl p-5 flex flex-col gap-4 group transition-all duration-200 hover:scale-[1.01]">
+    <Link
+      href={`/quant-hub/${model.id}/`}
+      className="glass glass-hover rounded-2xl p-5 flex flex-col gap-4 group transition-all duration-200 hover:scale-[1.01]"
+    >
       {/* Header */}
       <div>
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-sm font-semibold text-slate-100 leading-snug">{model.name}</h3>
+          <h3 className="text-sm font-semibold text-slate-100 leading-snug group-hover:text-violet-200 transition-colors">{model.name}</h3>
           <span className="badge shrink-0 bg-white/[0.05] text-slate-400 border-white/[0.08] font-mono text-xs">
             {model.paramLabel}
           </span>
@@ -106,17 +110,27 @@ export default function ModelCard({ model, lang }: Props) {
             </>
           )}
         </div>
-        <a
-          href={model.quants[0]?.hfSearchUrl ?? '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 transition-colors"
-          onClick={e => e.stopPropagation()}
+        <span
+          role="link"
+          tabIndex={0}
+          onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open(model.quants[0]?.hfSearchUrl ?? '#', '_blank', 'noopener,noreferrer');
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(model.quants[0]?.hfSearchUrl ?? '#', '_blank', 'noopener,noreferrer');
+            }
+          }}
+          className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
         >
           {t.hub.model.viewHF}
           <ExternalLink size={10} />
-        </a>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
