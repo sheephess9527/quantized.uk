@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import ModelDetail from '@/components/hub/ModelDetail';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { canonical, defaultRobots } from '@/lib/seo';
 
 export function generateStaticParams() {
   return models.map(m => ({ modelId: m.id }));
@@ -9,12 +11,16 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { modelId: string } }): Metadata {
   const model = models.find(m => m.id === params.modelId);
   if (!model) return { title: 'Model Not Found | quantized.uk' };
+  const url = canonical(`/quant-hub/${model.id}`);
   return {
     title: `${model.name} — Quant Variants & VRAM | quantized.uk`,
     description: model.description.en,
+    alternates: { canonical: url },
+    robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,
       description: model.description.en,
+      url,
       images: [{ url: '/og.svg', width: 1200, height: 630 }],
     },
   };
@@ -32,5 +38,22 @@ export default function ModelDetailPage({ params }: { params: { modelId: string 
       </div>
     );
   }
-  return <ModelDetail model={model} />;
+  const url = canonical(`/quant-hub/${model.id}`);
+  return (
+    <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: model.name,
+          applicationCategory: 'LLM',
+          description: model.description.en,
+          url,
+          operatingSystem: 'Cross-platform',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        }}
+      />
+      <ModelDetail model={model} />
+    </>
+  );
 }

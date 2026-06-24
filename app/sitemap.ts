@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
-
-const BASE = 'https://quantized.uk';
+import { dataLastUpdated } from '@/lib/data/meta';
+import { SITE_URL } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
@@ -22,8 +22,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const cookbookPages = articles.map(a => `/cookbook/${a.id}/`);
 
   return [...staticPages, ...modelPages, ...cookbookPages].map(path => ({
-    url: `${BASE}${path}`,
-    lastModified: new Date('2026-06-24'),
+    url: `${SITE_URL}${path}`,
+    lastModified: new Date(dataLastUpdated),
     changeFrequency: path.includes('quant-hub/') && path !== '/quant-hub/'
       ? 'weekly' as const
       : path.startsWith('/cookbook/') && path !== '/cookbook/'

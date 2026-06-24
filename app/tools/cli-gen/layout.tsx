@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'VRAM / RAM Calculator for LLMs | quantized.uk',
+  title: 'CLI Script Generator for LLMs | quantized.uk',
   description:
-    'Calculate LLM memory for any model, quant format, and context length. Forward and reverse GPU lookup with shareable URLs.',
-  path: '/tools/vram-calc',
+    'Generate ready-to-run llama.cpp, Ollama, vLLM, and ExLlamaV2 commands for Linux, Mac, Docker, and Docker Compose.',
+  path: '/tools/cli-gen',
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {

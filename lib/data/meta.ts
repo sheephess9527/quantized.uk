@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-24',
+    en: 'SEO: canonical URLs, JSON-LD, per-page metadata, Google/Bing verification env vars',
+    zh: 'SEO：canonical URL、JSON-LD 结构化数据、页面级 metadata、Google/Bing 验证环境变量',
+  },
+  {
+    date: '2026-06-24',
     en: 'Quant Hub: show-all toggle when GPU profile active; Cookbook +7 guides (8GB GPU, WSL2, Docker GPU, Nginx, AMD ROCm)',
     zh: 'Quant Hub：GPU 档案筛选时可一键显示全部模型；Cookbook 新增 7 篇（8GB 显卡、WSL2、Docker GPU、Nginx、AMD ROCm）',
   },

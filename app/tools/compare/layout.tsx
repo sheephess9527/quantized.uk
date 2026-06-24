@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Model Comparison | quantized.uk',
+export const metadata: Metadata = pageMetadata({
+  title: 'LLM Model Comparison Tool | quantized.uk',
   description: 'Side-by-side comparison of quantized LLMs — VRAM, speed, quality, and GPU fit.',
-  openGraph: { title: 'LLM Model Compare Tool | quantized.uk' },
-};
+  path: '/tools/compare',
+});
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;
