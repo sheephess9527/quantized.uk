@@ -62,6 +62,11 @@ const hfRepoMap = {
   'llama-4-scout-17b': 'unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF',
   'llama-4-maverick-17b': 'unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF',
   'llama-3.1-405b': 'bartowski/Meta-Llama-3.1-405B-Instruct-GGUF',
+  'qwen3-32b': 'Qwen/Qwen3-32B-GGUF',
+  'qwen3-30b-a3b': 'Qwen/Qwen3-30B-A3B-GGUF',
+  'qwen3-235b-a22b': 'Qwen/Qwen3-235B-A22B-GGUF',
+  'deepseek-v3': 'deepseek-ai/DeepSeek-V3',
+  'deepseek-r1': 'deepseek-ai/DeepSeek-R1',
 };
 
 async function fetchRepo(repo) {

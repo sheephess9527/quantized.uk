@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-26',
+    en: 'Model index +5: Qwen3 32B, 30B-A3B MoE, 235B-A22B, DeepSeek-V3, DeepSeek-R1 (63 total)',
+    zh: '模型库 +5：Qwen3 32B、30B-A3B MoE、235B-A22B、DeepSeek-V3、DeepSeek-R1（共 63 个）',
+  },
+  {
+    date: '2026-06-26',
     en: 'Model index +7: Qwen3 8B/14B, Gemma 3 4B/12B, Llama 4 Scout/Maverick, Llama 3.1 405B (58 total)',
     zh: '模型库 +7：Qwen3 8B/14B、Gemma 3 4B/12B、Llama 4 Scout/Maverick、Llama 3.1 405B（共 58 个）',
   },

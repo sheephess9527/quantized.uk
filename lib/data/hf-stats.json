@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-06-25T04:34:40.947Z",
+  "fetchedAt": "2026-06-25T04:40:00.209Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 37,
+  "modelCount": 42,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -224,6 +224,36 @@
       "downloads": 10707,
       "likes": 49,
       "lastModified": "2025-06-18T00:37:35.000Z"
+    },
+    "qwen3-32b": {
+      "repo": "Qwen/Qwen3-32B-GGUF",
+      "downloads": 10126,
+      "likes": 69,
+      "lastModified": "2025-05-09T07:16:46.000Z"
+    },
+    "qwen3-30b-a3b": {
+      "repo": "Qwen/Qwen3-30B-A3B-GGUF",
+      "downloads": 11636,
+      "likes": 72,
+      "lastModified": "2025-05-21T06:25:14.000Z"
+    },
+    "qwen3-235b-a22b": {
+      "repo": "Qwen/Qwen3-235B-A22B-GGUF",
+      "downloads": 692,
+      "likes": 10,
+      "lastModified": "2025-05-21T06:27:12.000Z"
+    },
+    "deepseek-v3": {
+      "repo": "deepseek-ai/DeepSeek-V3",
+      "downloads": 1023877,
+      "likes": 4092,
+      "lastModified": "2025-03-27T04:01:45.000Z"
+    },
+    "deepseek-r1": {
+      "repo": "deepseek-ai/DeepSeek-R1",
+      "downloads": 7167057,
+      "likes": 13414,
+      "lastModified": "2025-03-27T04:01:59.000Z"
     }
   }
 }

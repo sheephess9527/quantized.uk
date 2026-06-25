@@ -414,7 +414,7 @@ export const translations = {
         {
           title: 'What we publish',
           paragraphs: [
-            'A searchable index of 58+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
+            'A searchable index of 63+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
             'We index metadata and link to Hugging Face — we do not host, distribute, or sell model weights. Each model remains subject to its own license.',
           ],
         },
@@ -948,7 +948,7 @@ export const translations = {
         {
           title: '我们提供什么',
           paragraphs: [
-            '58+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
+            '63+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
             '我们只索引元数据并链接到 Hugging Face — 不托管、不分发、不出售模型权重。每个模型仍受其自身许可协议约束。',
           ],
         },

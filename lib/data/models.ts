@@ -3,6 +3,7 @@ import type { QuantModel } from './types';
 import { extraModels } from './models-extra';
 import { extraModels2 } from './models-extra-2';
 import { extraModels3 } from './models-extra-3';
+import { extraModels4 } from './models-extra-4';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -217,14 +218,13 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4];
 
 export const todayFeed = [
-  { id: 1, type: 'new' as const, modelId: 'qwen3-8b', format: 'GGUF', detail: 'Q4_K_M · 5.8 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
-  { id: 2, type: 'hot' as const, modelId: 'qwen3-14b', format: 'EXL2', detail: '4.65bpw · 10.0 GB', quantizer: 'turboderp', hardware: 'RTX 4090' },
-  { id: 3, type: 'new' as const, modelId: 'gemma-3-12b-it', format: 'GGUF', detail: 'Q4_K_M · 8.8 GB', quantizer: 'bartowski', hardware: 'RTX 4060 Ti 16G' },
-  { id: 4, type: 'hot' as const, modelId: 'llama-4-scout-17b', format: 'GGUF', detail: 'Q4_K_M · 68 GB', quantizer: 'bartowski', hardware: 'A100 80G' },
-  { id: 5, type: 'new' as const, modelId: 'qwen2.5-72b', format: 'GGUF', detail: 'Q4_K_M · 43.6 GB', quantizer: 'bartowski', hardware: 'RTX 4090 ×2' },
+  { id: 1, type: 'hot' as const, modelId: 'qwen3-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · 3B active', quantizer: 'bartowski', hardware: 'RTX 4060 Ti 16G' },
+  { id: 2, type: 'new' as const, modelId: 'qwen3-32b', format: 'GGUF', detail: 'Q4_K_M · 22.5 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
+  { id: 3, type: 'hot' as const, modelId: 'deepseek-r1', format: 'GGUF', detail: '671B MoE · distill for local', quantizer: 'bartowski', hardware: 'A100 80G×4' },
+  { id: 4, type: 'new' as const, modelId: 'qwen3-8b', format: 'GGUF', detail: 'Q4_K_M · 5.8 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
+  { id: 5, type: 'upd' as const, modelId: 'qwen3-235b-a22b', format: 'GGUF', detail: 'Q4_K_M · 142 GB', quantizer: 'bartowski', hardware: 'H100 80G×2' },
   { id: 6, type: 'hot' as const, modelId: 'deepseek-r1-distill-qwen-14b', format: 'EXL2', detail: '4.65bpw · 9.8 GB', quantizer: 'turboderp', hardware: 'RTX 4090' },
-  { id: 7, type: 'upd' as const, modelId: 'llama-3.3-70b', format: 'GGUF', detail: 'Q5_K_M · 50.1 GB', quantizer: 'unsloth', hardware: 'A100 80G' },
 ];
