@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-25',
+    en: 'Cookbook TOC scroll highlight, code block copy, Quant Hub Markdown export',
+    zh: 'Cookbook 目录滚动高亮、代码块一键复制、Quant Hub Markdown 导出',
+  },
+  {
+    date: '2026-06-25',
     en: 'Cookbook reading progress bar, model HF link copy, Quant Hub shareable filter URLs',
     zh: 'Cookbook 阅读进度条、模型 HF 链接复制、Quant Hub 可分享筛选 URL',
   },

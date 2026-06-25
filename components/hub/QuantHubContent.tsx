@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Link2 } from 'lucide-react';
+import { Link2, FileDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
@@ -21,6 +21,7 @@ import {
   hasActiveHubFilters,
   EMPTY_HUB_FILTERS,
 } from '@/lib/utils/hub-url';
+import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { cn } from '@/lib/utils/cn';
 
 const HUB_STATS = (() => {
@@ -46,6 +47,7 @@ export default function QuantHubContent() {
   const [gpuFilterId, setGpuFilterId] = useState<string | null>(null);
   const [filters, setFilters] = useState<HubFilters>(EMPTY_HUB_FILTERS);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [exportCopied, setExportCopied] = useState(false);
 
   useEffect(() => {
     const parsed = parseHubSearchParams(searchParams);
@@ -117,6 +119,32 @@ export default function QuantHubContent() {
     } catch { /* denied */ }
   };
 
+  const exportMarkdown = async () => {
+    const md = buildHubMarkdown(filtered, gpuFilterId, filters, {
+      title: t.hub.export.title,
+      generated: t.hub.export.generated,
+      models: t.hub.export.models,
+      gpu: t.hub.export.gpu,
+      search: t.hub.export.search,
+      params: t.hub.filters.params,
+      category: t.hub.filters.category,
+      hardware: t.hub.filters.hardware,
+      format: t.hub.filters.format,
+      colModel: t.hub.export.colModel,
+      colParams: t.hub.export.colParams,
+      colMinVram: t.hub.export.colMinVram,
+      colBestQuant: t.hub.export.colBestQuant,
+      colLink: t.hub.export.colLink,
+      categoryLabels: t.hub.categories,
+      hardwareLabels: t.hub.hardware,
+    });
+    try {
+      await navigator.clipboard.writeText(md);
+      setExportCopied(true);
+      setTimeout(() => setExportCopied(false), 2000);
+    } catch { /* denied */ }
+  };
+
   const clearAll = () => {
     setFilters(EMPTY_HUB_FILTERS);
     setGpuFilterId(null);
@@ -141,15 +169,26 @@ export default function QuantHubContent() {
             <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
           </p>
         </div>
-        {filtersActive && (
-          <button
-            onClick={copyShareLink}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-violet-300 border border-violet-500/25 bg-violet-500/10 hover:bg-violet-500/20 transition-all shrink-0"
-          >
-            <Link2 size={12} />
-            {linkCopied ? t.hub.shareCopied : t.hub.shareLink}
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {filtered.length > 0 && (
+            <button
+              onClick={exportMarkdown}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-300 border border-cyan-500/25 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all"
+            >
+              <FileDown size={12} />
+              {exportCopied ? t.hub.export.copied : t.hub.export.copy}
+            </button>
+          )}
+          {filtersActive && (
+            <button
+              onClick={copyShareLink}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-violet-300 border border-violet-500/25 bg-violet-500/10 hover:bg-violet-500/20 transition-all"
+            >
+              <Link2 size={12} />
+              {linkCopied ? t.hub.shareCopied : t.hub.shareLink}
+            </button>
+          )}
+        </div>
       </div>
 
       <HubScaleStats

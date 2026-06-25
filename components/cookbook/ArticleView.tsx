@@ -5,8 +5,10 @@ import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
 import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
+import CodeBlock from '@/components/cookbook/CodeBlock';
 import ReadingProgress from '@/components/cookbook/ReadingProgress';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import { useActiveSection } from '@/lib/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
 
 const difficultyColors = {
@@ -23,6 +25,7 @@ export default function ArticleView({ article }: Props) {
   const { t, lang } = useLanguage();
 
   const title = lang === 'zh' ? article.titleZh : article.title;
+  const activeSection = useActiveSection(article.content.length, 'section-');
 
   return (
     <>
@@ -60,12 +63,12 @@ export default function ArticleView({ article }: Props) {
       </header>
 
       <div className="lg:hidden mb-6">
-        <ArticleToc article={article} />
+        <ArticleToc article={article} activeIndex={activeSection} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
         <div className="hidden lg:block">
-          <ArticleToc article={article} />
+          <ArticleToc article={article} activeIndex={activeSection} />
         </div>
 
         <div id="article-content" className="space-y-8 min-w-0">
@@ -78,17 +81,7 @@ export default function ArticleView({ article }: Props) {
               {lang === 'zh' ? section.bodyZh : section.body}
             </p>
             {section.code && (
-              <div className="code-block">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
-                  <span className="ml-1 text-xs text-slate-600">{section.code.lang}</span>
-                </div>
-                <pre className="text-xs text-slate-300 leading-relaxed overflow-x-auto">
-                  <code>{section.code.content}</code>
-                </pre>
-              </div>
+              <CodeBlock lang={section.code.lang} content={section.code.content} />
             )}
           </section>
         ))}
