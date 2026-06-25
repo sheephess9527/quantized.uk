@@ -10,6 +10,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
+import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
 
 const formatColors: Record<string, string> = {
@@ -46,6 +47,9 @@ export default function ModelDetail({ model }: Props) {
     ?? model.quants[0];
 
   const compareTarget = getSimilarModels(model.id, 1)[0]?.id ?? 'qwen2.5-7b';
+  const defaultHfUrl = hfRepo
+    ? `https://huggingface.co/${hfRepo}`
+    : defaultQuant.hfSearchUrl;
 
   const calcUrl = (quantLevel: string) =>
     `/tools/vram-calc/?mode=forward&model=${model.id}&quant=${encodeURIComponent(quantLevel)}&ctx=4096&batch=1`;
@@ -129,6 +133,11 @@ export default function ModelDetail({ model }: Props) {
         >
           {d.compare}
         </Link>
+        <CopyButton
+          text={defaultHfUrl}
+          label={d.copyHfSearch}
+          copiedLabel={d.hfCopied}
+        />
       </div>
 
       <div className="glass rounded-2xl overflow-hidden">
@@ -192,6 +201,12 @@ export default function ModelDetail({ model }: Props) {
                           HF
                           <ExternalLink size={9} />
                         </a>
+                        <CopyButton
+                          text={quant.hfSearchUrl}
+                          label={d.copyLink}
+                          copiedLabel={d.hfCopied}
+                          size="sm"
+                        />
                       </div>
                     </td>
                   </tr>

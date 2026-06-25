@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
 import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
+import ReadingProgress from '@/components/cookbook/ReadingProgress';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { cn } from '@/lib/utils/cn';
 
@@ -24,6 +25,8 @@ export default function ArticleView({ article }: Props) {
   const title = lang === 'zh' ? article.titleZh : article.title;
 
   return (
+    <>
+      <ReadingProgress targetId="article-content" />
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
       <Breadcrumbs
         items={[
@@ -65,7 +68,7 @@ export default function ArticleView({ article }: Props) {
           <ArticleToc article={article} />
         </div>
 
-        <div className="space-y-8 min-w-0">
+        <div id="article-content" className="space-y-8 min-w-0">
         {article.content.map((section, i) => (
           <section key={i} id={sectionId(i)} className="glass rounded-2xl p-6 scroll-mt-28">
             <h2 className="text-lg font-semibold text-slate-200 mb-3">
@@ -98,5 +101,6 @@ export default function ArticleView({ article }: Props) {
         </div>
       </div>
     </div>
+    </>
   );
 }

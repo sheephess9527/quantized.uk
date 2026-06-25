@@ -121,6 +121,8 @@ export const translations = {
         clear: 'Clear',
         activeHint: '{count} of {total} models fit this GPU',
       },
+      shareLink: 'Copy filter link',
+      shareCopied: 'Link copied!',
       similar: {
         title: 'Similar models',
         compareWith: 'Compare with {name}',
@@ -148,6 +150,9 @@ export const translations = {
         hfDownloads: 'HF downloads',
         hfLikes: 'likes',
         hfFetched: 'stats from',
+        copyHfSearch: 'Copy HF link',
+        copyLink: 'Copy',
+        hfCopied: 'Copied!',
       },
     },
     compare: {
@@ -635,6 +640,8 @@ export const translations = {
         clear: '清除',
         activeHint: '共 {total} 个模型中 {count} 个适配此 GPU',
       },
+      shareLink: '复制筛选链接',
+      shareCopied: '链接已复制！',
       similar: {
         title: '相似模型',
         compareWith: '与 {name} 对比',
@@ -662,6 +669,9 @@ export const translations = {
         hfDownloads: 'HF 下载量',
         hfLikes: '点赞',
         hfFetched: '数据更新于',
+        copyHfSearch: '复制 HF 链接',
+        copyLink: '复制',
+        hfCopied: '已复制！',
       },
     },
     compare: {

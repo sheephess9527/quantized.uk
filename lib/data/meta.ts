@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-25',
+    en: 'Cookbook reading progress bar, model HF link copy, Quant Hub shareable filter URLs',
+    zh: 'Cookbook 阅读进度条、模型 HF 链接复制、Quant Hub 可分享筛选 URL',
+  },
+  {
+    date: '2026-06-25',
     en: 'Breadcrumb nav + JSON-LD, cookbook article TOC, Quant Hub GPU quick-filter chips',
     zh: '面包屑导航 + JSON-LD、Cookbook 文章目录锚点、Quant Hub GPU 一键筛选芯片',
   },
