@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Calculator, Terminal, Wand2 } from 'lucide-react';
+import { Calculator, Terminal, Wand2, GitCompareArrows } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 
 export default function QuickAccess() {
@@ -9,7 +9,7 @@ export default function QuickAccess() {
 
   const tools = [
     {
-      href: '/tools/vram-calc',
+      href: '/tools/vram-calc/',
       icon: Calculator,
       iconColor: 'text-violet-400',
       glowClass: 'group-hover:glow-purple',
@@ -19,7 +19,7 @@ export default function QuickAccess() {
       accent: '#7c3aed',
     },
     {
-      href: '/tools/cli-gen',
+      href: '/tools/cli-gen/',
       icon: Terminal,
       iconColor: 'text-cyan-400',
       glowClass: 'group-hover:glow-cyan',
@@ -29,7 +29,7 @@ export default function QuickAccess() {
       accent: '#06b6d4',
     },
     {
-      href: '/tools/format-wizard',
+      href: '/tools/format-wizard/',
       icon: Wand2,
       iconColor: 'text-orange-400',
       glowClass: 'group-hover:glow-cyan',
@@ -37,6 +37,16 @@ export default function QuickAccess() {
       title: t.home.quickAccess.wizardTitle,
       desc: t.home.quickAccess.wizardDesc,
       accent: '#f97316',
+    },
+    {
+      href: '/tools/compare/',
+      icon: GitCompareArrows,
+      iconColor: 'text-emerald-400',
+      glowClass: 'group-hover:glow-cyan',
+      borderHover: 'group-hover:border-emerald-500/30',
+      title: t.home.quickAccess.compareTitle,
+      desc: t.home.quickAccess.compareDesc,
+      accent: '#22c55e',
     },
   ];
 

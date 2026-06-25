@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-06-24';
+export const dataLastUpdated = '2026-06-25';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-06-25',
+    en: 'Homepage explore strip, 404 page, multi-model benchmarks (Qwen 7B/32B, DeepSeek-R1 14B), llms.txt for AI crawlers',
+    zh: '首页探索区块、404 页面、多模型基准测试（Qwen 7B/32B、DeepSeek-R1 14B）、AI 爬虫 llms.txt',
+  },
   {
     date: '2026-06-24',
     en: 'Added About page (/about) — maintainer story, update cadence, contribution guide',

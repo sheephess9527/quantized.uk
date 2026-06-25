@@ -1,0 +1,29 @@
+# quantized.uk
+
+> LLM quantization intelligence for developers running models on consumer hardware.
+
+## What this site is
+
+- Static reference site (no model hosting, no accounts)
+- 51+ quantized LLM index with VRAM, speed, and quality metadata
+- Tools: VRAM calculator, format wizard, CLI generator, model compare
+- 22 deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)
+- Real-hardware benchmarks (RTX 4090/3090, Apple Silicon)
+
+## Key URLs
+
+- Home: https://quantized.uk/
+- Model index: https://quantized.uk/quant-hub/
+- VRAM calculator: https://quantized.uk/tools/vram-calc/
+- Cookbook: https://quantized.uk/cookbook/
+- Benchmarks: https://quantized.uk/benchmarks/
+- About: https://quantized.uk/about/
+- Sitemap: https://quantized.uk/sitemap.xml
+
+## Languages
+
+English default UI; Chinese toggle (client-side, same URLs).
+
+## Contact
+
+No public source repository link. See /about/ for maintenance and update policy.

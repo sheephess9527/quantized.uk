@@ -26,7 +26,7 @@ export default function BenchmarksPage() {
     name: `${b.hardware}\n${b.framework}`,
     shortName: b.hardware.replace('RTX ', 'RTX\n').replace('M3 ', 'M3\n').replace('M2 ', 'M2\n'),
     tokensPerSec: b.tokensPerSec,
-    label: `${b.hardware} · ${b.framework} · ${b.quant}`,
+    label: `${b.model} · ${b.hardware} · ${b.framework} · ${b.quant}`,
     color: b.color,
   }));
 
@@ -128,7 +128,7 @@ export default function BenchmarksPage() {
         {/* Matrix table */}
         <section>
           <div className="glass rounded-2xl p-6 overflow-x-auto">
-            <SectionHeader title={t.bench.tableTitle} subtitle={t.bench.speedSubtitle} />
+            <SectionHeader title={t.bench.tableTitle} subtitle={t.bench.tableSubtitle} />
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/[0.06]">
@@ -142,6 +142,7 @@ export default function BenchmarksPage() {
               <tbody>
                 {matrixData.map((row, i) => (
                   <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                    <td className="py-2.5 px-3 text-slate-200 text-xs font-medium">{row.model}</td>
                     <td className="py-2.5 px-3 text-slate-300 text-xs">{row.hardware}</td>
                     <td className="py-2.5 px-3 text-slate-400 text-xs font-mono">{row.framework}</td>
                     <td className="py-2.5 px-3">
