@@ -8,7 +8,7 @@ export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dx
 export const BING_SITE_VERIFICATION = '877CF3677E0C08A6443342CE11C95E22';
 
 const DEFAULT_DESCRIPTION =
-  'LLM quantization intelligence — VRAM calculator, 50+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
+  'LLM quantization intelligence — VRAM calculator, 58+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
 
 /** Trailing-slash canonical URL (matches next.config trailingSlash: true). */
 export function canonical(path = ''): string {

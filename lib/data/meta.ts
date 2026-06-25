@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-06-25';
+export const dataLastUpdated = '2026-06-26';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-06-26',
+    en: 'Model index +7: Qwen3 8B/14B, Gemma 3 4B/12B, Llama 4 Scout/Maverick, Llama 3.1 405B (58 total)',
+    zh: '模型库 +7：Qwen3 8B/14B、Gemma 3 4B/12B、Llama 4 Scout/Maverick、Llama 3.1 405B（共 58 个）',
+  },
   {
     date: '2026-06-25',
     en: 'Cookbook TOC scroll highlight, code block copy, Quant Hub Markdown export',

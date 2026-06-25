@@ -55,6 +55,13 @@ const hfRepoMap = {
   'stablelm-2-12b': 'bartowski/stablelm-2-12b-chat-GGUF',
   'falcon-3-10b': 'bartowski/Falcon3-10B-Instruct-GGUF',
   'jamba-1.5-mini': 'bartowski/jamba-1.5-mini-GGUF',
+  'qwen3-8b': 'Qwen/Qwen3-8B-GGUF',
+  'qwen3-14b': 'Qwen/Qwen3-14B-GGUF',
+  'gemma-3-4b-it': 'bartowski/gemma-3-4b-it-GGUF',
+  'gemma-3-12b-it': 'bartowski/gemma-3-12b-it-GGUF',
+  'llama-4-scout-17b': 'unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF',
+  'llama-4-maverick-17b': 'unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF',
+  'llama-3.1-405b': 'bartowski/Meta-Llama-3.1-405B-Instruct-GGUF',
 };
 
 async function fetchRepo(repo) {

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'quantized.uk — AI Quantization Intelligence',
-    description: 'VRAM calculator, 50+ quantized models, CLI generator, format wizard.',
+    description: 'VRAM calculator, 58+ quantized models, CLI generator, format wizard.',
   },
 };
 

@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-06-25T03:48:48.470Z",
+  "fetchedAt": "2026-06-25T04:34:40.947Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 33,
+  "modelCount": 37,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -200,6 +200,30 @@
       "downloads": 4322,
       "likes": 3,
       "lastModified": "2024-12-23T04:26:29.000Z"
+    },
+    "qwen3-8b": {
+      "repo": "Qwen/Qwen3-8B-GGUF",
+      "downloads": 87197,
+      "likes": 208,
+      "lastModified": "2025-05-21T06:31:50.000Z"
+    },
+    "qwen3-14b": {
+      "repo": "Qwen/Qwen3-14B-GGUF",
+      "downloads": 30134,
+      "likes": 104,
+      "lastModified": "2025-05-09T07:16:19.000Z"
+    },
+    "llama-4-scout-17b": {
+      "repo": "unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF",
+      "downloads": 29336,
+      "likes": 155,
+      "lastModified": "2025-06-17T15:28:28.000Z"
+    },
+    "llama-4-maverick-17b": {
+      "repo": "unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF",
+      "downloads": 10707,
+      "likes": 49,
+      "lastModified": "2025-06-18T00:37:35.000Z"
     }
   }
 }

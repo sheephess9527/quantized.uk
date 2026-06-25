@@ -5,7 +5,7 @@
 ## What this site is
 
 - Static reference site (no model hosting, no accounts)
-- 51+ quantized LLM index with VRAM, speed, and quality metadata
+- 58+ quantized LLM index with VRAM, speed, and quality metadata
 - Tools: VRAM calculator, format wizard, CLI generator, model compare
 - 22 deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)
 - Real-hardware benchmarks (RTX 4090/3090, Apple Silicon)
