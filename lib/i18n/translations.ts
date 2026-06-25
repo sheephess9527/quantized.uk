@@ -116,6 +116,12 @@ export const translations = {
       showAllModels: 'Show all {total}',
       showGpuMatches: 'GPU matches only',
       profileLink: 'VRAM compatibility list',
+      similar: {
+        title: 'Similar models',
+        compareWith: 'Compare with {name}',
+        minVram: 'min VRAM',
+        accuracy: 'accuracy',
+      },
       detail: {
         backToHub: 'Back to Quant Hub',
         context: 'Max Context',
@@ -185,6 +191,7 @@ export const translations = {
       difficulty: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' },
       readGuide: 'Read Guide →',
       backToIndex: 'Back to Cookbook',
+      related: { title: 'Related guides' },
       licenseNote: 'Deployment guides are educational. Each model is subject to its own license — read the official Hugging Face model card before downloading or deploying.',
     },
     calc: {
@@ -617,6 +624,12 @@ export const translations = {
       showAllModels: '显示全部 {total} 个',
       showGpuMatches: '仅看 GPU 适配',
       profileLink: '显存兼容列表',
+      similar: {
+        title: '相似模型',
+        compareWith: '与 {name} 对比',
+        minVram: '最低显存',
+        accuracy: '精度',
+      },
       detail: {
         backToHub: '返回模型库',
         context: '最大上下文',
@@ -686,6 +699,7 @@ export const translations = {
       difficulty: { beginner: '入门', intermediate: '进阶', advanced: '高级' },
       readGuide: '阅读指南 →',
       backToIndex: '返回指南目录',
+      related: { title: '相关指南' },
       licenseNote: '部署指南仅供学习参考。每个模型均有独立许可协议 — 下载或部署前请阅读 Hugging Face 官方模型卡。',
     },
     calc: {

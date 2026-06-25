@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Clock, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
+import RelatedArticles from '@/components/cookbook/RelatedArticles';
 import { cn } from '@/lib/utils/cn';
 
 const difficultyColors = {
@@ -76,6 +77,8 @@ export default function ArticleView({ article }: Props) {
           </section>
         ))}
       </div>
+
+      <RelatedArticles articleId={article.id} />
 
       <div className="mt-10 glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
         {t.cookbook.licenseNote}

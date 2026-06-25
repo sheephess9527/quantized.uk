@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils/cn';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
+import SimilarModels from '@/components/hub/SimilarModels';
+import { getSimilarModels } from '@/lib/utils/related';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -41,6 +43,8 @@ export default function ModelDetail({ model }: Props) {
   const defaultQuant = model.quants.find(q => q.level === 'Q4_K_M')
     ?? model.quants.find(q => q.format === 'GGUF')
     ?? model.quants[0];
+
+  const compareTarget = getSimilarModels(model.id, 1)[0]?.id ?? 'qwen2.5-7b';
 
   const calcUrl = (quantLevel: string) =>
     `/tools/vram-calc/?mode=forward&model=${model.id}&quant=${encodeURIComponent(quantLevel)}&ctx=4096&batch=1`;
@@ -119,7 +123,7 @@ export default function ModelDetail({ model }: Props) {
           <ExternalLink size={14} />
         </a>
         <Link
-          href={`/tools/compare/?a=${model.id}&b=qwen2.5-7b`}
+          href={`/tools/compare/?a=${model.id}&b=${compareTarget}`}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"
         >
           {d.compare}
@@ -196,6 +200,8 @@ export default function ModelDetail({ model }: Props) {
           </table>
         </div>
       </div>
+
+      <SimilarModels modelId={model.id} />
     </div>
   );
 }

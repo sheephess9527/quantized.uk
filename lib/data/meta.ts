@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-25',
+    en: 'Related cookbook guides, similar-model cards on detail pages, hero latest-update badge',
+    zh: 'Cookbook 相关指南推荐、模型详情页相似模型卡片、首页 Hero 最新更新徽章',
+  },
+  {
+    date: '2026-06-25',
     en: 'Homepage explore strip, 404 page, multi-model benchmarks (Qwen 7B/32B, DeepSeek-R1 14B), llms.txt for AI crawlers',
     zh: '首页探索区块、404 页面、多模型基准测试（Qwen 7B/32B、DeepSeek-R1 14B）、AI 爬虫 llms.txt',
   },

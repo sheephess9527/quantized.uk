@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calculator } from 'lucide-react';
+import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { changelog } from '@/lib/data/meta';
 
 const formatBadges = [
   { name: 'GGUF',  color: 'bg-violet-500/15 text-violet-300 border-violet-500/25' },
@@ -14,7 +15,8 @@ const formatBadges = [
 ];
 
 export default function HeroSection() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const latest = changelog[0];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-14">
@@ -38,15 +40,29 @@ export default function HeroSection() {
       />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        {/* Badge */}
+        {/* Badges */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-8"
+          className="flex flex-col items-center gap-2 mb-8"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-          {t.home.hero.badge}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+            {t.home.hero.badge}
+          </div>
+          {latest && (
+            <a
+              href="#changelog"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors max-w-md"
+            >
+              <Sparkles size={12} className="shrink-0" />
+              <span className="truncate">
+                <span className="text-cyan-500/70 font-mono mr-1.5">{latest.date}</span>
+                {latest[lang]}
+              </span>
+            </a>
+          )}
         </motion.div>
 
         {/* Headline */}
@@ -79,14 +95,14 @@ export default function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-3"
         >
           <Link
-            href="/quant-hub"
+            href="/quant-hub/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
           >
             {t.home.hero.ctaPrimary}
             <ArrowRight size={14} />
           </Link>
           <Link
-            href="/tools/vram-calc"
+            href="/tools/vram-calc/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-slate-200 font-semibold text-sm transition-all duration-150 hover:scale-[1.02]"
           >
             <Calculator size={14} className="text-cyan-400" />

@@ -7,7 +7,7 @@ export default function DataChangelog() {
   const { t, lang } = useLanguage();
 
   return (
-    <div className="glass rounded-2xl p-5">
+    <div id="changelog" className="glass rounded-2xl p-5 scroll-mt-28">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="section-title text-lg">{t.home.changelog.title}</h2>
