@@ -42,6 +42,16 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-26',
+    en: 'Model index +4: Qwen3 4B, Qwen3-Coder 30B-A3B, Mistral Large 3, GLM-4-9B (67 total)',
+    zh: '模型库 +4：Qwen3 4B、Qwen3-Coder 30B-A3B、Mistral Large 3、GLM-4-9B（共 67 个）',
+  },
+  {
+    date: '2026-06-26',
+    en: 'QA fixes: HF stats merge on failure, ≤3B filter, CLI/VRAM tool bugs, i18n polish',
+    zh: 'QA 修复：HF 统计合并、≤3B 筛选、CLI/VRAM 工具 bug、i18n 优化',
+  },
+  {
+    date: '2026-06-26',
     en: 'Model index +5: Qwen3 32B, 30B-A3B MoE, 235B-A22B, DeepSeek-V3, DeepSeek-R1 (63 total)',
     zh: '模型库 +5：Qwen3 32B、30B-A3B MoE、235B-A22B、DeepSeek-V3、DeepSeek-R1（共 63 个）',
   },

@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-06-25T05:51:42.319Z",
+  "fetchedAt": "2026-06-25T05:59:38.137Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 43,
+  "modelCount": 46,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -260,6 +260,24 @@
       "downloads": 2248,
       "likes": 26,
       "lastModified": "2024-05-12T21:16:40.000Z"
+    },
+    "qwen3-4b": {
+      "repo": "Qwen/Qwen3-4B-GGUF",
+      "downloads": 361838,
+      "likes": 109,
+      "lastModified": "2025-05-21T06:32:23.000Z"
+    },
+    "mistral-large-3": {
+      "repo": "mistralai/Mistral-Large-3-675B-Instruct-2512",
+      "downloads": 2902,
+      "likes": 233,
+      "lastModified": "2025-12-19T17:07:53.000Z"
+    },
+    "glm-4-9b-chat": {
+      "repo": "zai-org/glm-4-9b-chat-hf",
+      "downloads": 28368,
+      "likes": 25,
+      "lastModified": "2025-01-27T05:26:17.000Z"
     }
   }
 }

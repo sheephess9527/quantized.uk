@@ -29,6 +29,8 @@ export const speedBenchmarks: SpeedResult[] = [
   { model: 'Llama 3.1 8B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 148, color: '#7c3aed' },
   { model: 'Qwen2.5 7B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 155, color: '#7c3aed' },
   { model: 'Qwen3 8B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 142, color: '#7c3aed' },
+  { model: 'Qwen3 4B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 168, color: '#7c3aed' },
+  { model: 'Qwen3-Coder 30B-A3B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 92, color: '#7c3aed' },
   { model: 'DeepSeek-R1 14B', hardware: 'RTX 4090', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', tokensPerSec: 128, color: '#f97316' },
   { model: 'Qwen2.5 32B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 44, color: '#7c3aed' },
   { model: 'Qwen3 32B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 42, color: '#7c3aed' },

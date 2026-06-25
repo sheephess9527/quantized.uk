@@ -4,6 +4,7 @@ import { extraModels } from './models-extra';
 import { extraModels2 } from './models-extra-2';
 import { extraModels3 } from './models-extra-3';
 import { extraModels4 } from './models-extra-4';
+import { extraModels5 } from './models-extra-5';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -218,13 +219,13 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5];
 
 export const todayFeed = [
-  { id: 1, type: 'hot' as const, modelId: 'qwen3-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · 3B active', quantizer: 'bartowski', hardware: 'RTX 4060 Ti 16G' },
-  { id: 2, type: 'new' as const, modelId: 'qwen3-32b', format: 'GGUF', detail: 'Q4_K_M · 22.5 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
-  { id: 3, type: 'hot' as const, modelId: 'deepseek-r1', format: 'GGUF', detail: '671B MoE · distill for local', quantizer: 'bartowski', hardware: 'A100 80G×4' },
-  { id: 4, type: 'new' as const, modelId: 'qwen3-8b', format: 'GGUF', detail: 'Q4_K_M · 5.8 GB', quantizer: 'bartowski', hardware: 'RTX 4090' },
-  { id: 5, type: 'upd' as const, modelId: 'qwen3-235b-a22b', format: 'GGUF', detail: 'Q4_K_M · 142 GB', quantizer: 'bartowski', hardware: 'H100 80G×2' },
+  { id: 1, type: 'new' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · agentic coder', quantizer: 'bartowski', hardware: 'RTX 4090' },
+  { id: 2, type: 'new' as const, modelId: 'qwen3-4b', format: 'GGUF', detail: 'Q4_K_M · 3.2 GB · 8GB friendly', quantizer: 'bartowski', hardware: 'RTX 4060 8G' },
+  { id: 3, type: 'hot' as const, modelId: 'qwen3-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · 3B active', quantizer: 'bartowski', hardware: 'RTX 4060 Ti 16G' },
+  { id: 4, type: 'new' as const, modelId: 'mistral-large-3', format: 'GGUF', detail: '675B MoE · 41B active', quantizer: 'community', hardware: 'H200 8×' },
+  { id: 5, type: 'upd' as const, modelId: 'glm-4-9b-chat', format: 'GGUF', detail: 'Q4_K_M · 6.2 GB · EN/ZH', quantizer: 'bartowski', hardware: 'RTX 4090' },
   { id: 6, type: 'hot' as const, modelId: 'deepseek-r1-distill-qwen-14b', format: 'EXL2', detail: '4.65bpw · 9.8 GB', quantizer: 'turboderp', hardware: 'RTX 4090' },
 ];
