@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Clock, ChevronRight, Code2, Terminal, Server, Layers } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { articles } from '@/lib/data/cookbook';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { cn } from '@/lib/utils/cn';
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -33,6 +34,12 @@ export default function CookbookPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.cookbook },
+        ]}
+      />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.cookbook.title}</h1>
         <p className="text-slate-400">{t.cookbook.subtitle}</p>

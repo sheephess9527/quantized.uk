@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Calculator, ExternalLink, Zap } from 'lucide-react';
+import { Calculator, ExternalLink, Zap } from 'lucide-react';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
@@ -51,13 +52,13 @@ export default function ModelDetail({ model }: Props) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-      <Link
-        href="/quant-hub/"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-6"
-      >
-        <ArrowLeft size={14} />
-        {d.backToHub}
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.quantHub, href: '/quant-hub/' },
+          { label: model.name },
+        ]}
+      />
 
       <div className="mb-8">
         <div className="flex flex-wrap items-start gap-3 mb-3">

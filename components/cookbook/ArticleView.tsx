@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-import { Clock, ArrowLeft } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
+import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { cn } from '@/lib/utils/cn';
 
 const difficultyColors = {
@@ -20,14 +21,19 @@ interface Props {
 export default function ArticleView({ article }: Props) {
   const { t, lang } = useLanguage();
 
-  return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-      <Link href="/cookbook/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-8">
-        <ArrowLeft size={14} />
-        {t.cookbook.backToIndex}
-      </Link>
+  const title = lang === 'zh' ? article.titleZh : article.title;
 
-      <header className="mb-10">
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.cookbook, href: '/cookbook/' },
+          { label: title },
+        ]}
+      />
+
+      <header className="mb-8">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className={cn('badge text-xs', difficultyColors[article.difficulty])}>
             {t.cookbook.difficulty[article.difficulty]}
@@ -39,9 +45,7 @@ export default function ArticleView({ article }: Props) {
             <Clock size={10} /> {article.readTime} {t.cookbook.readTime}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-slate-100 mb-3">
-          {lang === 'zh' ? article.titleZh : article.title}
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-100 mb-3">{title}</h1>
         <p className="text-slate-400 leading-relaxed">
           {lang === 'zh' ? article.descriptionZh : article.description}
         </p>
@@ -52,9 +56,18 @@ export default function ArticleView({ article }: Props) {
         </div>
       </header>
 
-      <div className="space-y-8">
+      <div className="lg:hidden mb-6">
+        <ArticleToc article={article} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
+        <div className="hidden lg:block">
+          <ArticleToc article={article} />
+        </div>
+
+        <div className="space-y-8 min-w-0">
         {article.content.map((section, i) => (
-          <section key={i} className="glass rounded-2xl p-6">
+          <section key={i} id={sectionId(i)} className="glass rounded-2xl p-6 scroll-mt-28">
             <h2 className="text-lg font-semibold text-slate-200 mb-3">
               {lang === 'zh' ? section.headingZh : section.heading}
             </h2>
@@ -76,12 +89,13 @@ export default function ArticleView({ article }: Props) {
             )}
           </section>
         ))}
-      </div>
 
-      <RelatedArticles articleId={article.id} />
+        <RelatedArticles articleId={article.id} />
 
-      <div className="mt-10 glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
-        {t.cookbook.licenseNote}
+        <div className="glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
+          {t.cookbook.licenseNote}
+        </div>
+        </div>
       </div>
     </div>
   );

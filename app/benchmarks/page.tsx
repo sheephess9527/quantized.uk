@@ -7,6 +7,7 @@ import {
 import { useLanguage } from '@/lib/i18n/context';
 import { speedBenchmarks, pplBenchmarks, matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 const SPEED_COLORS = ['#7c3aed', '#7c3aed', '#7c3aed', '#06b6d4', '#06b6d4', '#22c55e', '#22c55e', '#22c55e'];
 
@@ -38,7 +39,12 @@ export default function BenchmarksPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-      {/* Header */}
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.benchmarks },
+        ]}
+      />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.bench.title}</h1>
         <p className="text-slate-400">{t.bench.subtitle}</p>

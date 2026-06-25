@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, ArrowLeft } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { dataLastUpdated } from '@/lib/data/meta';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function AboutPage() {
   const { t } = useLanguage();
@@ -11,13 +12,12 @@ export default function AboutPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-8"
-      >
-        <ArrowLeft size={14} />
-        {a.backHome}
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: a.title },
+        ]}
+      />
 
       <div className="mb-10">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-06-25',
+    en: 'Breadcrumb nav + JSON-LD, cookbook article TOC, Quant Hub GPU quick-filter chips',
+    zh: '面包屑导航 + JSON-LD、Cookbook 文章目录锚点、Quant Hub GPU 一键筛选芯片',
+  },
+  {
+    date: '2026-06-25',
     en: 'Related cookbook guides, similar-model cards on detail pages, hero latest-update badge',
     zh: 'Cookbook 相关指南推荐、模型详情页相似模型卡片、首页 Hero 最新更新徽章',
   },

@@ -3,12 +3,19 @@
 import { Suspense } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import VRAMCalculator from '@/components/tools/VRAMCalculator';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function VRAMCalcPage() {
   const { t } = useLanguage();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.vramCalc },
+        ]}
+      />
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
           ⚡ {t.nav.vramCalc}

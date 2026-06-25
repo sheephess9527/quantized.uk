@@ -3,9 +3,12 @@
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
+import { gpuDatabase } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
 import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
+import GpuQuickChips from '@/components/hub/GpuQuickChips';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import Link from 'next/link';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { getRecommendations } from '@/lib/utils/recommend';
@@ -26,25 +29,29 @@ const HUB_STATS = (() => {
 
 export default function QuantHubPage() {
   const { t, lang } = useLanguage();
-  const { gpu, hasProfile } = useHardwareProfile();
-  const [applyProfileFilter, setApplyProfileFilter] = useState(false);
+  const { gpu: profileGpu, hasProfile } = useHardwareProfile();
+  const [gpuFilterId, setGpuFilterId] = useState<string | null>(null);
   const [filters, setFilters] = useState<HubFilters>({
     search: '', paramRange: '', category: '', hardware: '', format: '',
   });
 
-  const profileModelIds = useMemo(() => {
-    if (!gpu) return null;
-    const recs = getRecommendations(gpu.vram, 4096, 1, 'quality', true);
-    return new Set(recs.map(r => r.model.id));
-  }, [gpu]);
+  const filterGpu = useMemo(
+    () => (gpuFilterId ? gpuDatabase.find(g => g.id === gpuFilterId) ?? null : null),
+    [gpuFilterId],
+  );
 
-  const compatibleCount = profileModelIds?.size ?? models.length;
+  const gpuFilterModelIds = useMemo(() => {
+    if (!filterGpu) return null;
+    const recs = getRecommendations(filterGpu.vram, 4096, 1, 'quality', true);
+    return new Set(recs.map(r => r.model.id));
+  }, [filterGpu]);
+
+  const compatibleCount = gpuFilterModelIds?.size ?? models.length;
   const total = models.length;
 
   const filtered = useMemo(() => {
-    const useProfile = applyProfileFilter && profileModelIds;
     return models.filter(m => {
-      if (useProfile && !profileModelIds!.has(m.id)) return false;
+      if (gpuFilterModelIds && !gpuFilterModelIds.has(m.id)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!m.name.toLowerCase().includes(q) && !m.family.toLowerCase().includes(q)) return false;
@@ -62,13 +69,19 @@ export default function QuantHubPage() {
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;
       return true;
     });
-  }, [filters, profileModelIds, applyProfileFilter]);
+  }, [filters, gpuFilterModelIds]);
 
-  const hiddenByProfile = applyProfileFilter && profileModelIds
-    ? total - compatibleCount
-    : 0;
+  const hiddenByGpu = gpuFilterModelIds ? total - compatibleCount : 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <Breadcrumbs
+        items={[
+          { label: t.nav.home, href: '/' },
+          { label: t.nav.quantHub },
+        ]}
+      />
+
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.hub.title}</h1>
         <p className="text-slate-400">
@@ -85,30 +98,32 @@ export default function QuantHubPage() {
         buckets={HUB_STATS.buckets}
       />
 
-      {hasProfile && gpu && applyProfileFilter && (
-        <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-amber-500/20 bg-amber-500/[0.04]">
+      <GpuQuickChips selectedGpuId={gpuFilterId} onSelect={setGpuFilterId} />
+
+      {filterGpu && (
+        <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-emerald-500/20 bg-emerald-500/[0.04]">
           <div>
-            <p className="text-sm text-amber-200/90">
+            <p className="text-sm text-emerald-200/90">
               {t.hub.profileFilter
                 .replace('{count}', String(compatibleCount))
                 .replace('{total}', String(total))
-                .replace('{gpu}', gpu.name)}
+                .replace('{gpu}', filterGpu.name)}
             </p>
-            {hiddenByProfile > 0 && (
-              <p className="text-xs text-amber-200/50 mt-0.5">
-                {t.hub.gpuFilterHiding.replace('{hidden}', String(hiddenByProfile))}
+            {hiddenByGpu > 0 && (
+              <p className="text-xs text-emerald-200/50 mt-0.5">
+                {t.hub.gpuFilterHiding.replace('{hidden}', String(hiddenByGpu))}
               </p>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={() => setApplyProfileFilter(false)}
+              onClick={() => setGpuFilterId(null)}
               className="px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-500/15 text-violet-300 border border-violet-500/25 hover:bg-violet-500/25 transition-all"
             >
               {t.hub.showAllModels.replace('{total}', String(total))}
             </button>
             <Link
-              href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=4096&sort=quality`}
+              href={`/tools/vram-calc/?mode=reverse&gpu=${filterGpu.id}&ctx=4096&sort=quality`}
               className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
             >
               {t.hub.profileLink} →
@@ -117,18 +132,18 @@ export default function QuantHubPage() {
         </div>
       )}
 
-      {hasProfile && gpu && !applyProfileFilter && (
+      {hasProfile && profileGpu && !gpuFilterId && (
         <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-slate-400">
             {t.hub.profileFilterAll.replace('{total}', String(total))}
           </p>
           <button
-            onClick={() => setApplyProfileFilter(true)}
+            onClick={() => setGpuFilterId(profileGpu.id)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 border border-white/[0.08] hover:text-slate-200 hover:border-white/15 transition-all"
           >
             {t.hub.filterByMyGpu
-              .replace('{gpu}', gpu.name)
-              .replace('{count}', String(compatibleCount))}
+              .replace('{gpu}', profileGpu.name)
+              .replace('{count}', String(countModelsForGpu(profileGpu.id)))}
           </button>
         </div>
       )}
@@ -139,7 +154,7 @@ export default function QuantHubPage() {
           onChange={setFilters}
           count={filtered.length}
           total={total}
-          profileFilterActive={applyProfileFilter && !!profileModelIds}
+          profileFilterActive={!!gpuFilterModelIds}
         />
       </div>
 
@@ -158,7 +173,10 @@ export default function QuantHubPage() {
         <div className="text-center py-20 text-slate-600">
           <p className="text-lg mb-2">{t.hub.noResults}</p>
           <button
-            onClick={() => setFilters({ search: '', paramRange: '', category: '', hardware: '', format: '' })}
+            onClick={() => {
+              setFilters({ search: '', paramRange: '', category: '', hardware: '', format: '' });
+              setGpuFilterId(null);
+            }}
             className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
           >
             {t.hub.clearFilters}
@@ -173,4 +191,11 @@ export default function QuantHubPage() {
       )}
     </div>
   );
+}
+
+function countModelsForGpu(gpuId: string): number {
+  const gpu = gpuDatabase.find(g => g.id === gpuId);
+  if (!gpu) return 0;
+  const recs = getRecommendations(gpu.vram, 4096, 1, 'quality', true);
+  return new Set(recs.map(r => r.model.id)).size;
 }
