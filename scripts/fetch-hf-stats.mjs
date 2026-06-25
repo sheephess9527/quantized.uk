@@ -10,8 +10,6 @@ import { hfRepoMap } from '../lib/data/hf-repos.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, '../lib/data/hf-stats.json');
 
-const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGING_FACE_HUB_TOKEN;
-
 function loadExisting() {
   if (!fs.existsSync(OUT)) return {};
   try {
@@ -23,10 +21,9 @@ function loadExisting() {
 }
 
 async function fetchRepo(repo) {
-  const headers = { 'User-Agent': 'quantized.uk-build/1.0' };
-  if (HF_TOKEN) headers.Authorization = `Bearer ${HF_TOKEN}`;
-
-  const res = await fetch(`https://huggingface.co/api/models/${repo}`, { headers });
+  const res = await fetch(`https://huggingface.co/api/models/${repo}`, {
+    headers: { 'User-Agent': 'quantized.uk-build/1.0' },
+  });
   if (!res.ok) throw new Error(`HF API ${res.status} for ${repo}`);
   const data = await res.json();
   return {
@@ -75,9 +72,6 @@ async function main() {
 
   fs.writeFileSync(OUT, JSON.stringify(output, null, 2));
   console.log(`\nWrote ${OUT} (${ok} ok, ${fail} failed, ${kept} kept from cache)`);
-  if (fail > 0 && !HF_TOKEN) {
-    console.log('Tip: set HF_TOKEN for gated Hugging Face repos');
-  }
 }
 
 main().catch(err => {
