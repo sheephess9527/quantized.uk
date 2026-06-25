@@ -42,6 +42,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var l=localStorage.getItem('lang');if(l==='zh'||l==='en')document.documentElement.lang=l;}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="bg-bg text-slate-100 font-sans antialiased">
         <SiteJsonLd />
         <Plausible />

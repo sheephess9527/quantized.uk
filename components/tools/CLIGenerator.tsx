@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Terminal, Copy, Check, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
@@ -53,6 +53,13 @@ export default function CLIGenerator() {
     return selectedModel.quants.map(q => `${q.format} ${q.level}`);
   }, [selectedModel, framework]);
 
+  useEffect(() => {
+    if (availableQuants.length === 0) return;
+    if (!availableQuants.includes(quantLevel)) {
+      setQuantLevel(availableQuants[0]);
+    }
+  }, [availableQuants, quantLevel]);
+
   const output = useMemo(() => {
     if (!modelId) return null;
     return generateCLI({
@@ -95,7 +102,7 @@ export default function CLIGenerator() {
             {FRAMEWORKS.map(f => (
               <button
                 key={f.id}
-                onClick={() => { setFramework(f.id); setQuantLevel('Q4_K_M'); }}
+                onClick={() => setFramework(f.id)}
                 className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-150 border"
                 style={
                   framework === f.id

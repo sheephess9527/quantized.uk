@@ -31,7 +31,9 @@ export default function ModelCard({ model, lang }: Props) {
   const uniqueFormats = Array.from(new Set(model.quants.map(q => q.format)));
   const minVram = Math.min(...model.quants.map(q => q.vramGB));
   const maxSpeed = Math.max(...model.quants.filter(q => q.speedRTX4090).map(q => q.speedRTX4090 ?? 0));
-  const bestQuant = model.quants.find(q => q.speedRTX4090 === maxSpeed);
+  const bestQuant = model.quants.reduce((best, q) =>
+    !best || (q.pplLossPercent ?? Infinity) < (best.pplLossPercent ?? Infinity) ? q : best,
+  );
 
   return (
     <Link

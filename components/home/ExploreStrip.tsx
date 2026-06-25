@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ChevronRight, Layers, BookOpen, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { getSiteStats } from '@/lib/stats';
+import { articles } from '@/lib/data/cookbook';
 
 const stats = getSiteStats();
 
@@ -54,7 +55,7 @@ export default function ExploreStrip() {
             ))}
           </ul>
           <Link href="/cookbook/" className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300">
-            {e.cookbookCta} <ChevronRight size={12} />
+            {e.cookbookCta.replace('{count}', String(articles.length))} <ChevronRight size={12} />
           </Link>
         </div>
 

@@ -111,7 +111,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
             ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400/70'
             : 'text-slate-600',
         )}>
-          {count} / {total} models
+          {t.hub.modelCount.replace('{count}', String(count)).replace('{total}', String(total))}
         </p>
         {hasActiveFilters && (
           <button

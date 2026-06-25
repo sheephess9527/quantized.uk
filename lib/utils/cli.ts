@@ -214,7 +214,7 @@ volumes:
   webui_data:`;
 
     const command = `# After docker compose up -d:\ndocker exec ollama ollama pull ${ollamaModel}`;
-    return { command, compose, notes: ['Open WebUI available at http://localhost:3000', 'OpenAI-compatible API at http://localhost:${port}/v1'] };
+    return { command, compose, notes: ['Open WebUI available at http://localhost:3000', `OpenAI-compatible API at http://localhost:${port}/v1`] };
   }
 
   if (env === 'docker') {

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useLayoutEffect, useCallback, ReactNode } from 'react';
 import { translations, Lang } from './translations';
 
 
@@ -16,18 +16,31 @@ const LangContext = createContext<LangContextValue>({
   toggleLang: () => {},
 });
 
+function readStoredLang(): Lang {
+  if (typeof window === 'undefined') return 'en';
+  try {
+    const stored = localStorage.getItem('lang') as Lang | null;
+    if (stored === 'en' || stored === 'zh') return stored;
+  } catch {
+    /* private browsing */
+  }
+  return 'en';
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>('en');
 
-  useEffect(() => {
-    const stored = localStorage.getItem('lang') as Lang | null;
-    if (stored === 'en' || stored === 'zh') setLang(stored);
+  useLayoutEffect(() => {
+    const stored = readStoredLang();
+    setLang(stored);
+    document.documentElement.lang = stored;
   }, []);
 
   const toggleLang = useCallback(() => {
     setLang(prev => {
       const next = prev === 'en' ? 'zh' : 'en';
       localStorage.setItem('lang', next);
+      document.documentElement.lang = next;
       return next;
     });
   }, []);

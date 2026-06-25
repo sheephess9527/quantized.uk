@@ -50,12 +50,22 @@ export default function VRAMCalculator() {
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
 
   useEffect(() => {
     if (urlInitialized.current) return;
     const m = searchParams.get('mode') === 'reverse' ? 'reverse' : 'forward';
     setMode(m);
-    if (searchParams.get('model')) setSelectedModelId(searchParams.get('model')!);
+    const modelParam = searchParams.get('model');
+    if (modelParam) {
+      if (modelParam === 'custom' || models.some(md => md.id === modelParam)) {
+        setSelectedModelId(modelParam);
+        setInvalidModelId(null);
+      } else {
+        setSelectedModelId('');
+        setInvalidModelId(modelParam);
+      }
+    }
     if (searchParams.get('quant')) {
       const q = searchParams.get('quant')!;
       setSelectedQuant(q);
@@ -127,7 +137,12 @@ export default function VRAMCalculator() {
     return getRecommendations(selectedGpu.vram, contextLen, batchSize, sortBy, includeYellow);
   }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow]);
 
-  const showForwardResult = mode === 'forward' && (selectedModelId !== '' || parseFloat(customParams) > 0);
+  const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
+  const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
+    selectedModelId === 'custom' ||
+    !!selectedModel ||
+    selectedModelId === ''
+  );
   const showReverseResult = mode === 'reverse' && selectedGpuId !== '';
 
   const copyShareLink = () => {
@@ -188,7 +203,7 @@ export default function VRAMCalculator() {
                 <div className="relative">
                   <select
                     value={selectedModelId}
-                    onChange={e => setSelectedModelId(e.target.value)}
+                    onChange={e => { setSelectedModelId(e.target.value); setInvalidModelId(null); }}
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.modelPlaceholder}</option>
@@ -362,6 +377,16 @@ export default function VRAMCalculator() {
 
         {/* Right: Results */}
         <div>
+          {(invalidModelId || modelLookupFailed) && (
+            <div className="glass rounded-2xl p-5 border border-amber-500/20 mb-4">
+              <p className="text-sm text-amber-300">
+                {t.calc.unknownModel.replace('{id}', invalidModelId ?? selectedModelId)}
+              </p>
+              <Link href="/quant-hub/" className="text-xs text-violet-400 hover:text-violet-300 mt-2 inline-block">
+                {t.calc.browseModels}
+              </Link>
+            </div>
+          )}
           {mode === 'forward' && showForwardResult && (
             <div className="space-y-4">
               <div className="glass rounded-2xl p-5">

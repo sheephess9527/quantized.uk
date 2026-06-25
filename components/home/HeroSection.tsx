@@ -127,7 +127,7 @@ export default function HeroSection() {
               {fmt.name}
             </motion.div>
           ))}
-          <span className="text-xs text-slate-600 ml-1">& more</span>
+          <span className="text-xs text-slate-600 ml-1">{t.home.hero.andMore}</span>
         </motion.div>
       </div>
 

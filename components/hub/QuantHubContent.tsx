@@ -22,19 +22,13 @@ import {
   EMPTY_HUB_FILTERS,
 } from '@/lib/utils/hub-url';
 import { buildHubMarkdown } from '@/lib/utils/hub-export';
+import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
 import { cn } from '@/lib/utils/cn';
 
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
   const formats = new Set(models.flatMap(m => m.quants.map(q => q.format))).size;
-  const buckets = {
-    small: models.filter(m => m.params <= 3).length,
-    mid7: models.filter(m => m.params > 3 && m.params <= 9).length,
-    mid14: models.filter(m => m.params > 9 && m.params <= 20).length,
-    large32: models.filter(m => m.params > 20 && m.params <= 50).length,
-    xl: models.filter(m => m.params > 50).length,
-  };
-  return { families, formats, buckets };
+  return { families, formats, buckets: paramBucketCounts(models) };
 })();
 
 export default function QuantHubContent() {
@@ -91,16 +85,13 @@ export default function QuantHubContent() {
       if (gpuFilterModelIds && !gpuFilterModelIds.has(m.id)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
-        if (!m.name.toLowerCase().includes(q) && !m.family.toLowerCase().includes(q)) return false;
+        if (
+          !m.name.toLowerCase().includes(q) &&
+          !m.family.toLowerCase().includes(q) &&
+          !m.id.toLowerCase().includes(q)
+        ) return false;
       }
-      if (filters.paramRange) {
-        const p = m.params;
-        if (filters.paramRange === '≤3B'  && p > 3)   return false;
-        if (filters.paramRange === '7B'   && (p <= 3 || p > 9))   return false;
-        if (filters.paramRange === '14B'  && (p <= 9 || p > 20))  return false;
-        if (filters.paramRange === '32B'  && (p <= 20 || p > 50)) return false;
-        if (filters.paramRange === '70B+' && p <= 50) return false;
-      }
+      if (filters.paramRange && !matchesParamRange(m.params, filters.paramRange as ParamRange)) return false;
       if (filters.category && !m.categories.includes(filters.category)) return false;
       if (filters.hardware && !m.hardwareTags.includes(filters.hardware)) return false;
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;
