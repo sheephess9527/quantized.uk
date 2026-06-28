@@ -4,7 +4,19 @@
 
 A full-stack static intelligence website for indie developers and geeks who run quantized LLMs locally. It answers the questions people actually have: *"Will this model fit in my VRAM? Which quant format should I pick? How much quality do I lose? What's the exact command to run it?"*
 
-**Live:** https://quantized.uk
+**Live:** https://quantized.uk · **Repo:** `sheephess9527/quantized.uk` · **Host:** Cloudflare Pages
+
+---
+
+## 📌 New maintainer? Start here
+
+You're an AI agent or a new account picking this up cold. Read this box, then do the [Handoff Checklist](#8-handoff-checklist-do-this-first).
+
+- **What it is:** Next.js 14 **static-export** site. No backend, no database, no runtime API. All content is hardcoded TypeScript under `lib/data/`.
+- **Run it:** `npm install && npm run dev` → http://localhost:3000. Build: `npm run build` → static files in `out/`.
+- **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
+- **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
+- **Biggest footguns:** Cloudflare *Pages* not *Workers*; output dir is `out` not `.next`; Next.js ≥ 14.2.35; every UI string needs both languages. Full list in [§6](#6-deployment--cloudflare-pages).
 
 ---
 
@@ -78,7 +90,11 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   51 models (base + models-extra + models-extra-2)
+    models.ts               #   67 models — exports combined `models` array
+    models-extra*.ts        #   models-extra .. models-extra-5 (base 10 + 5 packs)
+    cookbook*.ts            #   cookbook + cookbook-extra + cookbook-extra-2 (22 guides)
+    hf-repos.ts / .mjs      #   HF repo mapping for the build-time stats fetch
+    hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   33 GPUs (NVIDIA consumer/pro, Apple Silicon, CPU RAM)
@@ -193,6 +209,8 @@ npm run lint
 
 The production build emits flat HTML/JS/CSS into `out/`. You can preview it with any static server (`npx serve out`).
 
+> **Note on `prebuild`:** `npm run build` first runs `scripts/fetch-hf-stats.mjs` (via the `prebuild` hook) to refresh Hugging Face download/like counts. It fails gracefully — on any network/API error it keeps the cached `lib/data/hf-stats.json` and exits 0, so **builds work fully offline**. Run it standalone with `npm run fetch-hf`.
+
 ---
 
 ## 6. Deployment — Cloudflare Pages
@@ -245,7 +263,97 @@ Adding a model to `models.ts` automatically:
 
 ---
 
-## 8. Changelog
+## 8. Handoff Checklist (do this first)
+
+A fresh agent/account taking over should run this top to bottom:
+
+1. **Clone & install:** `git clone <repo> && cd quantized.uk && npm install`
+2. **Run locally:** `npm run dev` → http://localhost:3000. Click through every page (Dashboard, Quant Hub + a model detail, Benchmarks, Cookbook + an article, VRAM Calc both modes, Format Wizard, CLI Gen) and the **EN/中文** toggle (top-right) to confirm rendering.
+3. **Build:** `npm run build`, then confirm `out/index.html` has real content (not a placeholder). Preview with `npx serve out`.
+4. **Make a change → deploy:** edit data → `npm run build` to type-check & lint → `git commit` → `git push origin main`. Cloudflare Pages rebuilds automatically (~2–3 min). Watch the deploy log in the Pages dashboard if nothing appears.
+5. **Gate before every commit:** `npm run build` must pass — it runs the same type-check + lint Cloudflare runs.
+
+### Git workflow
+
+- **Remote:** `origin` → `sheephess9527/quantized.uk`
+- **Production branch:** `main` — Cloudflare Pages builds & deploys from here on every push.
+- **Agent dev branch:** `claude/quantized-uk-platform-yxfz9v` (used for Claude-driven work).
+- Pushing to `main` triggers a live deploy. Always `git push -u origin <branch>`; retry with backoff on transient network errors. Don't open a PR unless asked.
+- If a push is rejected (`fetch first`), another session pushed in parallel — `git pull --rebase origin main`, resolve, then push.
+
+### Where to make each change
+
+| I want to… | Edit |
+|---|---|
+| Add a model | `lib/data/models-extra-5.ts` (or a new `models-extra-6.ts` imported by `models.ts`). Include `arch` + `quants` |
+| Add a GPU to the calculator | `lib/data/gpus.ts` |
+| Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
+| Add/track a quant format | `lib/data/formats.ts` (+ `formatRadarData`) |
+| Add benchmark rows | `lib/data/benchmarks.ts` |
+| Map a model to its HF repo | `lib/data/hf-repos.ts` **and** `hf-repos.mjs` (keep both in sync) |
+| Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
+| Tweak the VRAM formula | `lib/utils/vram.ts` |
+| Tweak generated commands | `lib/utils/cli.ts` |
+| Restyle a surface | `app/globals.css` utilities + Tailwind in components |
+
+### Data schema cheat-sheet (the contract — build fails if you break it)
+
+```ts
+// lib/data/models.ts → each model in `models`
+interface QuantVariant {
+  format: 'GGUF' | 'AWQ' | 'EXL2' | 'GPTQ' | 'HQQ';
+  level: string;            // 'Q4_K_M', 'INT4', '4.65bpw'
+  bpw: number;              // bits per weight — drives VRAM math
+  vramGB: number;           // approx weights-only size
+  pplLossPercent: number;   // perplexity loss vs FP16, %
+  speedRTX4090?: number;    // tok/s reference
+  hfSearchUrl: string;      // use the hf('terms') helper
+}
+interface ModelArch { layers: number; attHeads: number; kvHeads: number; headDim: number; }
+interface QuantModel {
+  id: string; name: string; family: string;
+  params: number;           // billions, numeric (8.03)
+  paramLabel: string;       // '8B'
+  categories: string[];     // 'general' | 'instruct' | 'code' | 'small' ...
+  hardwareTags: string[];   // 'consumer-gpu' | 'mac' | 'cpu-vps' | 'datacenter'
+  contextLength: number;
+  arch: ModelArch;          // REQUIRED — VRAM calculator + reverse lookup read this
+  quants: QuantVariant[];
+  description: { en: string; zh: string };
+}
+
+// lib/data/gpus.ts → `gpuDatabase`
+interface GPU {
+  id: string; name: string;
+  vram: number;             // GB (Apple = unified memory)
+  type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
+  isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
+}
+
+// lib/data/cookbook.ts → `articles` (note: flat *Zh fields, not nested {en,zh})
+interface Section { heading; headingZh; body; bodyZh: string; code?: { lang: string; content: string }; }
+interface Article {
+  id; title; titleZh; description; descriptionZh: string;
+  category: 'edge' | 'server' | 'docker' | 'mac';
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  readTime: number; tags: string[]; publishedAt: string;  // 'YYYY-MM-DD'
+  content: Section[];
+}
+```
+
+Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, zh }`; `cookbook.ts` uses flat `*Zh` fields — match the file you're editing.
+
+### Known gotchas
+
+- **Bilingual completeness:** add a string to `en` but forget `zh` → the Chinese UI shows `undefined`. Always add both, and keep `zh`'s shape identical to `en` (the `t` cast in `context.tsx` hides mismatches otherwise).
+- **`Set` spread:** `[...new Set(...)]` fails to down-level under the bundler target — use `Array.from(new Set(...))`.
+- **Static-export limits:** no route handlers, no request-time data fetching, no `next/image` optimization (`images.unoptimized: true`). Everything is build-time only. `generateStaticParams()` is how dynamic routes (`[modelId]`, `[slug]`) become static pages.
+- **`trailingSlash: true`** — internal links resolve to `/path/`. Keep links consistent.
+- **HF repo map drift:** `hf-repos.ts` (app) and `hf-repos.mjs` (build script) are separate files — update both.
+
+---
+
+## 9. Changelog
 
 ### 2026-06-24 (c) — Phase 3: HF pipeline, model compare, cookbook ×15
 
