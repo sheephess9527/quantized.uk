@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/lib/i18n/context';
@@ -22,6 +22,22 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://quantized.uk'),
   alternates: { canonical: canonical('/') },
   robots: defaultRobots,
+  manifest: '/site.webmanifest',
+  applicationName: 'quantized',
+  appleWebApp: {
+    capable: true,
+    title: 'quantized',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: ['/icon.svg'],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   ...(buildVerification() ? { verification: buildVerification() } : {}),
   openGraph: {
     title: 'quantized.uk — AI Quantization Intelligence',
@@ -37,6 +53,13 @@ export const metadata: Metadata = {
     title: 'quantized.uk — AI Quantization Intelligence',
     description: 'VRAM calculator, 67+ quantized models, CLI generator, format wizard.',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0a0a0f',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

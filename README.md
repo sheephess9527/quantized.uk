@@ -440,3 +440,43 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 **Build output**
 - 19 static pages (was 9): +10 model detail pages
 - Commit: `fea3184` on `main`
+
+---
+
+## 10. PWA & App Icon (Add to Home Screen)
+
+The site is an installable PWA — on iPhone, **Share → Add to Home Screen** drops a
+custom icon that launches the site **fullscreen** (no Safari chrome). On Android/desktop
+Chrome it installs the same way via the web manifest.
+
+**What makes it work** (all wired in `app/layout.tsx` + `public/`):
+- `public/site.webmanifest` — `display: standalone`, theme/background `#0a0a0f`, icon set
+- `apple-mobile-web-app-capable=yes`, `apple-mobile-web-app-title=quantized`, status-bar style (via `metadata.appleWebApp`)
+- `theme-color` (via the `viewport` export) + `viewportFit: 'cover'` for notch/safe-area
+- `apple-touch-icon.png` (180×180) for the iOS home-screen icon
+
+**Icon design** — `public/icon.svg` is the master (a quantization *staircase*: a continuous
+signal discretised into violet→cyan steps, with sample dots, on a dark glass tile). Edit the
+SVG, then regenerate the PNGs. This environment has no ImageMagick/sharp, so we rasterise with
+the bundled Chromium. Key quirks learned: this Chromium renders an `<img>` SVG at its intrinsic
+size (ignores CSS downscaling) and clamps `--force-device-scale-factor` to a floor of `0.5`, and
+viewports ≤128px screenshot blank. The reliable recipe:
+
+```bash
+cd public
+SVG=/tmp/icon-fluid.svg
+sed 's/ width="512" height="512"//' icon.svg > "$SVG"   # viewBox-only → scales to container
+cat > /tmp/wrap.html <<HTML
+<!doctype html><meta charset="utf-8">
+<style>*{margin:0;padding:0}html,body{width:100%;height:100%;background:#0a0812;overflow:hidden}
+img{position:fixed;inset:0;width:100%;height:100%}</style><img src="file://$SVG">
+HTML
+CHROME=/opt/pw-browsers/chromium-*/chrome-linux/chrome
+ren(){ T=$1; W=$((T*2)); "$CHROME" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+  --user-data-dir=/tmp/cd$T --force-device-scale-factor=0.5 --virtual-time-budget=3000 \
+  --screenshot="$2" --window-size="$W,$W" file:///tmp/wrap.html; }   # 2×window + 0.5 dsf = T px
+ren 512 icon-512.png; ren 192 icon-192.png; ren 180 apple-touch-icon.png
+```
+
+Favicons under ~48px render blank in this Chromium, so the favicon is served as the SVG
+(`/icon.svg`) with the PNGs as fallback — all declared in `metadata.icons`.

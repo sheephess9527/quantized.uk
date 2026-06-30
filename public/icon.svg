@@ -1,0 +1,55 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#241b34"/>
+      <stop offset="0.55" stop-color="#120f1d"/>
+      <stop offset="1" stop-color="#0a0812"/>
+    </linearGradient>
+    <radialGradient id="glowV" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(150 120) scale(360)">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(394 410) scale(360)">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stair" x1="110" y1="150" x2="402" y2="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="0.5" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="11"/>
+    </filter>
+  </defs>
+
+  <!-- glass tile background -->
+  <rect width="512" height="512" rx="0" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glowV)"/>
+  <rect width="512" height="512" fill="url(#glowC)"/>
+
+  <!-- analog signal being quantized (behind) -->
+  <path d="M104 150 C 196 156 232 344 408 350" fill="none"
+    stroke="#e9d5ff" stroke-opacity="0.22" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- neon glow under the staircase -->
+  <polyline points="110,150 168,150 168,200 226,200 226,250 284,250 284,300 342,300 342,350 402,350"
+    fill="none" stroke="url(#stair)" stroke-width="32"
+    stroke-linejoin="round" stroke-linecap="round" filter="url(#soft)" opacity="0.85"/>
+
+  <!-- quantization staircase -->
+  <polyline points="110,150 168,150 168,200 226,200 226,250 284,250 284,300 342,300 342,350 402,350"
+    fill="none" stroke="url(#stair)" stroke-width="32"
+    stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- sample points at each quantization level -->
+  <g fill="#f8fafc">
+    <circle cx="110" cy="150" r="8.5"/>
+    <circle cx="168" cy="200" r="8.5"/>
+    <circle cx="226" cy="250" r="8.5"/>
+    <circle cx="284" cy="300" r="8.5"/>
+    <circle cx="342" cy="350" r="8.5"/>
+  </g>
+</svg>
