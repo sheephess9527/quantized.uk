@@ -78,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LanguageProvider>
           <HardwareProfileProvider>
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen pt-[env(safe-area-inset-top)]">{children}</main>
             <Footer />
           </HardwareProfileProvider>
         </LanguageProvider>

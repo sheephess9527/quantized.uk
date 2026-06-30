@@ -32,9 +32,9 @@ export default function Navbar() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-14">
+    <nav className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
       <div className="absolute inset-0 bg-bg/80 backdrop-blur-xl border-b border-white/[0.06]" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center glow-purple group-hover:scale-105 transition-transform">
@@ -119,7 +119,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="absolute top-14 left-0 right-0 bg-bg/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden">
+        <div className="absolute top-full left-0 right-0 bg-bg/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden">
           <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
             {[...navLinks(t), ...toolLinks(t)].map(({ href, label }) => (
               <Link
