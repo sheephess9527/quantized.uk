@@ -17,6 +17,7 @@ You're an AI agent or a new account picking this up cold. Read this box, then do
 - **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
 - **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
 - **Biggest footguns:** Cloudflare *Pages* not *Workers*; output dir is `out` not `.next`; Next.js ≥ 14.2.35; every UI string needs both languages. Full list in [§6](#6-deployment--cloudflare-pages).
+- **Docs discipline:** read `CLAUDE.md` first — it's the working agreement. **Every change updates `README.md` (changelog + affected section) and `CLAUDE.md` (if a convention changed) in the same commit.** A behaviour change that touches neither doc is incomplete.
 
 ---
 
@@ -354,6 +355,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-06-24 (d) — PWA install, custom app icon, iOS safe areas
+
+- **Installable PWA / Add to Home Screen** — `public/site.webmanifest` (standalone display,
+  theme color), `apple-touch-icon` + iOS web-app meta (fullscreen launch, `quantized` label),
+  `theme-color` + `viewportFit: cover`. Wired via `metadata`/`viewport` in `app/layout.tsx`.
+- **Custom app icon** — quantization-staircase mark (violet→cyan, glass tile) as master
+  `public/icon.svg`; rasterised PNG set (180/192/512) for iOS/Android/favicon. See §10.
+- **iOS safe-area fix** — Navbar + `<main>` pad by `env(safe-area-inset-top)` so content clears
+  the status bar / notch in standalone mode; `body` pads bottom/sides (home indicator, landscape).
+- **Docs discipline** — added `CLAUDE.md` (working agreement); every change now updates README +
+  CLAUDE.md in the same commit.
 
 ### 2026-06-24 (c) — Phase 3: HF pipeline, model compare, cookbook ×15
 
