@@ -39,6 +39,12 @@ npm run lint
   Dynamic routes become static via `generateStaticParams()`.
 - **Data-driven:** add content in `lib/data/*.ts` (satisfy the interfaces in `lib/data/types.ts`).
 - **`Array.from(new Set(...))`**, never `[...new Set(...)]` (bundler target won't down-level it).
+- **Fonts via `next/font` only** (self-hosted; Tailwind reads `--font-inter`/`--font-mono`).
+  Never add a Google Fonts `@import`/`<link>` — it's render-blocking and double-loads.
+- **Recharts must be lazy** — import chart components via `next/dynamic` (`ssr: false` + a
+  skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
+- **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
+  platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes.
 - **PWA safe areas:** the app is installable (iOS Add to Home Screen, standalone). Respect
   `env(safe-area-inset-*)` — top handled by Navbar + `<main>`, bottom/sides by `body` in
   `globals.css`. Test any top-bar / full-height change against the notch.

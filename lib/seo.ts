@@ -53,7 +53,7 @@ export function pageMetadata({
       title,
       description,
       url,
-      images: [{ url: '/og.svg', width: 1200, height: 630 }],
+      images: [{ url: '/og.png', width: 1200, height: 630 }],
     },
     robots: defaultRobots,
   };

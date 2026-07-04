@@ -356,6 +356,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-06-24 (e) — Perf & share-card fixes
+
+- **OG image now PNG** — social platforms don't render SVG `og:image`, so shares had no preview
+  card. `public/og.png` (1200×630) is rendered from `og.svg` (master, kept in repo) with the
+  Chromium recipe (§10); refreshed copy ("67+ Models") and added the staircase motif from the
+  app icon. Refs updated in `app/layout.tsx` + `lib/seo.ts`.
+- **Fonts self-hosted via `next/font`** — removed the render-blocking Google Fonts `@import`
+  from `globals.css` (Inter was being downloaded twice). JetBrains Mono now loads through
+  `next/font` too; Tailwind `sans`/`mono` point at `--font-inter`/`--font-mono` variables.
+- **Charts lazy-loaded** — Recharts is dynamically imported (`ssr: false` + skeletons):
+  `FormatRadarLazy` on the dashboard, `BenchCharts` on `/benchmarks`. First-load JS:
+  home 289→191 kB (−34%), benchmarks 230→128 kB (−44%).
+
 ### 2026-06-24 (d) — PWA install, custom app icon, iOS safe areas
 
 - **Installable PWA / Add to Home Screen** — `public/site.webmanifest` (standalone display,

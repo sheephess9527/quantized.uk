@@ -3,7 +3,7 @@ import StatsBar from '@/components/home/StatsBar';
 import TodayBoard from '@/components/home/TodayBoard';
 import FormatHeatmap from '@/components/home/FormatHeatmap';
 import QuickAccess from '@/components/home/QuickAccess';
-import FormatRadar from '@/components/home/FormatRadar';
+import FormatRadar from '@/components/home/FormatRadarLazy';
 import ExploreStrip from '@/components/home/ExploreStrip';
 import DataChangelog from '@/components/home/DataChangelog';
 

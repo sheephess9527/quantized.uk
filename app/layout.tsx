@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/lib/i18n/context';
 import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
@@ -13,6 +13,13 @@ const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -46,7 +53,7 @@ export const metadata: Metadata = {
     url: canonical('/'),
     siteName: 'quantized.uk',
     locale: 'en_GB',
-    images: [{ url: '/og.svg', width: 1200, height: 630, alt: 'quantized.uk' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -64,7 +71,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
