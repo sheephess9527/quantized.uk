@@ -96,31 +96,35 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <div className="hidden lg:block">
+          <div className="hidden sm:block max-w-[9.5rem]">
             <HardwareProfileSelector compact />
           </div>
           <button
             onClick={toggleLang}
             className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
             title={lang === 'en' ? 'Switch to Chinese' : '切换为英文'}
+            aria-label={lang === 'en' ? 'Switch to Chinese' : 'Switch to English'}
           >
             {t.nav.langToggle}
           </button>
 
-          {/* Mobile menu button */}
           <button
             className="md:hidden p-1.5 text-slate-400 hover:text-slate-200"
             onClick={() => setMobileOpen(v => !v)}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="absolute top-full left-0 right-0 bg-bg/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden">
           <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
+            <div className="sm:hidden px-1 pb-2 mb-1 border-b border-white/[0.06]">
+              <HardwareProfileSelector />
+            </div>
             {[...navLinks(t), ...toolLinks(t)].map(({ href, label }) => (
               <Link
                 key={href}

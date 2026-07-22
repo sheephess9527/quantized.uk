@@ -6,6 +6,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { generateCLI, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
+import { trackEvent } from '@/lib/analytics';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
@@ -81,6 +82,7 @@ export default function CLIGenerator() {
     if (text) {
       navigator.clipboard.writeText(text);
       setCopied(true);
+      trackEvent('CLI Copy', { framework, tab: activeTab });
       setTimeout(() => setCopied(false), 2000);
     }
   };

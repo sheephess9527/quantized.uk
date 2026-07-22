@@ -39,9 +39,19 @@ export const translations = {
       },
       formatHeat: {
         title: 'Format Heat Index',
-        subtitle: 'Community adoption · this week',
-        vsLastWeek: 'vs last week',
+        subtitle: 'Editorial adoption estimate',
+        vsLastWeek: 'Editorial estimate',
       },
+      jobPaths: {
+        title: 'Start here',
+        path8gb: 'I have 8GB VRAM',
+        path8gbDesc: 'Starter guide for consumer cards',
+        pathCli: 'I need a run command',
+        pathCliDesc: 'llama.cpp, Ollama, vLLM, ExLlama',
+        pathFormat: 'Which quant format?',
+        pathFormatDesc: '3 questions → GGUF / AWQ / EXL2',
+      },
+      dataUpdated: 'Data updated {date}',
       quickAccess: {
         title: 'Quick Tools',
         vramTitle: 'VRAM Calculator',
@@ -522,6 +532,10 @@ export const translations = {
       cookbook: 'Cookbook',
       vramCalc: 'VRAM Calculator',
     },
+    footer: {
+      feedback: 'Feedback',
+      brandExtra: 'Bridging research and real deployment.',
+    },
     common: {
       new: 'New',
       hot: 'Hot',
@@ -577,9 +591,19 @@ export const translations = {
       },
       formatHeat: {
         title: '格式热度指数',
-        subtitle: '社区采用率 · 本周统计',
-        vsLastWeek: '较上周',
+        subtitle: '社区采用估算（编辑整理）',
+        vsLastWeek: '编辑估算',
       },
+      jobPaths: {
+        title: '从这里开始',
+        path8gb: '我有 8GB 显存',
+        path8gbDesc: '消费级显卡入门部署指南',
+        pathCli: '我要启动命令',
+        pathCliDesc: 'llama.cpp / Ollama / vLLM / ExLlama',
+        pathFormat: '该用哪种量化格式？',
+        pathFormatDesc: '3 个问题 → GGUF / AWQ / EXL2',
+      },
+      dataUpdated: '数据更新于 {date}',
       quickAccess: {
         title: '快捷工具',
         vramTitle: '显存计算器',
@@ -1059,6 +1083,10 @@ export const translations = {
       hub: '模型库',
       cookbook: '部署指南',
       vramCalc: '显存计算器',
+    },
+    footer: {
+      feedback: '反馈',
+      brandExtra: '连接研究与真实部署。',
     },
     common: {
       new: '最新',

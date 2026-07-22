@@ -10,6 +10,14 @@ export const BING_SITE_VERIFICATION = '877CF3677E0C08A6443342CE11C95E22';
 const DEFAULT_DESCRIPTION =
   'LLM quantization intelligence — VRAM calculator, 67+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
 
+/** Prefer PNG for social previews (X/LinkedIn often skip SVG). */
+export const OG_IMAGE = {
+  url: '/og.png',
+  width: 1200,
+  height: 630,
+  alt: 'quantized.uk — Run LLMs on consumer hardware',
+};
+
 /** Trailing-slash canonical URL (matches next.config trailingSlash: true). */
 export function canonical(path = ''): string {
   if (!path || path === '/') return `${SITE_URL}/`;
@@ -37,13 +45,7 @@ export function pageMetadata({
   title: string;
   description?: string;
   path?: string;
-}): {
-  title: string;
-  description: string;
-  alternates: { canonical: string };
-  openGraph: { title: string; description: string; url: string; images: { url: string; width: number; height: number }[] };
-  robots: typeof defaultRobots;
-} {
+}): Metadata {
   const url = canonical(path);
   return {
     title,
@@ -53,7 +55,15 @@ export function pageMetadata({
       title,
       description,
       url,
-      images: [{ url: '/og.png', width: 1200, height: 630 }],
+      siteName: SITE_NAME,
+      type: 'website',
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [OG_IMAGE.url],
     },
     robots: defaultRobots,
   };

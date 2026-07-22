@@ -11,6 +11,7 @@ import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { trackEvent } from '@/lib/analytics';
 
 type Mode = 'forward' | 'reverse';
 type VerdictColor = 'green' | 'yellow' | 'red';
@@ -148,6 +149,7 @@ export default function VRAMCalculator() {
   const copyShareLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setLinkCopied(true);
+    trackEvent('VRAM Share', { mode });
     setTimeout(() => setLinkCopied(false), 2000);
   };
 

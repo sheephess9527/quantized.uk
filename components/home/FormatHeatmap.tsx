@@ -1,6 +1,5 @@
 'use client';
 
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { quantFormats } from '@/lib/data/formats';
 import { dataSources } from '@/lib/data/meta';
@@ -28,18 +27,7 @@ export default function FormatHeatmap() {
                   {fmt.name}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-slate-300">{fmt.heatPercent}%</span>
-                <span className="flex items-center gap-0.5 text-xs">
-                  {fmt.heatTrend > 0 ? (
-                    <><TrendingUp size={10} className="text-emerald-400" /><span className="text-emerald-400">+{fmt.heatTrend}%</span></>
-                  ) : fmt.heatTrend < 0 ? (
-                    <><TrendingDown size={10} className="text-red-400" /><span className="text-red-400">{fmt.heatTrend}%</span></>
-                  ) : (
-                    <><Minus size={10} className="text-slate-600" /><span className="text-slate-600">0%</span></>
-                  )}
-                </span>
-              </div>
+              <span className="text-xs font-semibold text-slate-300">{fmt.heatPercent}%</span>
             </div>
             <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
               <div
@@ -51,8 +39,7 @@ export default function FormatHeatmap() {
         ))}
       </ul>
 
-      <p className="text-xs text-slate-600 mt-3">{t.home.formatHeat.vsLastWeek}</p>
-      <p className="text-xs text-slate-700 mt-1 leading-relaxed">{dataSources.formatHeat[lang]}</p>
+      <p className="text-xs text-slate-600 mt-3 leading-relaxed">{dataSources.formatHeat[lang]}</p>
     </div>
   );
 }

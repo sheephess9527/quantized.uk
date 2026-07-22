@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       description: article.description,
       url,
       type: 'article',
-      images: [{ url: '/og.svg', width: 1200, height: 630 }],
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
     },
   };
 }

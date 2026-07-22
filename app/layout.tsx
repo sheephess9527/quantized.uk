@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Plausible from '@/components/analytics/Plausible';
 import { SiteJsonLd } from '@/components/seo/JsonLd';
-import { buildVerification, canonical, defaultRobots } from '@/lib/seo';
+import { buildVerification, canonical, defaultRobots, OG_IMAGE } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -39,6 +39,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
@@ -53,12 +54,13 @@ export const metadata: Metadata = {
     url: canonical('/'),
     siteName: 'quantized.uk',
     locale: 'en_GB',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'quantized.uk — AI Quantization Intelligence',
     description: 'VRAM calculator, 67+ quantized models, CLI generator, format wizard.',
+    images: [OG_IMAGE.url],
   },
 };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { changelog } from '@/lib/data/meta';
@@ -17,20 +17,17 @@ const formatBadges = [
 export default function HeroSection() {
   const { t, lang } = useLanguage();
   const latest = changelog[0];
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-14">
-      {/* Radial gradient */}
+    <section className="relative flex items-center justify-center overflow-hidden pt-20 pb-12 sm:pt-24 sm:pb-16 min-h-[min(70vh,640px)]">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: 'radial-gradient(ellipse 90% 60% at 50% -10%, rgba(109,40,217,0.22) 0%, transparent 70%)',
         }}
       />
-      {/* Grid */}
       <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
-
-      {/* Floating orb */}
       <div
         className="absolute top-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none"
         style={{
@@ -40,12 +37,11 @@ export default function HeroSection() {
       />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        {/* Badges */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-2 mb-8"
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center gap-2 mb-6"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
@@ -65,33 +61,30 @@ export default function HeroSection() {
           )}
         </motion.div>
 
-        {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.1 }}
-          className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6"
+          transition={{ duration: 0.45, delay: 0.05 }}
+          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[0.95] mb-5"
         >
           <span className="text-slate-100">{t.home.hero.title1}&nbsp;</span>
           <br />
           <span className="text-gradient">{t.home.hero.title2}</span>
         </motion.h1>
 
-        {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.2 }}
-          className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed"
         >
           {t.home.hero.subtitle}
         </motion.p>
 
-        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.3 }}
+          transition={{ duration: 0.45, delay: 0.15 }}
           className="flex flex-wrap items-center justify-center gap-3"
         >
           <Link
@@ -110,29 +103,17 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Format badges */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-3"
-        >
-          {formatBadges.map((fmt, i) => (
-            <motion.div
-              key={fmt.name}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3.5 + i * 0.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
-              className={`badge text-xs font-mono font-semibold ${fmt.color}`}
-            >
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5">
+          {formatBadges.map(fmt => (
+            <span key={fmt.name} className={`badge text-xs font-mono font-semibold ${fmt.color}`}>
               {fmt.name}
-            </motion.div>
+            </span>
           ))}
           <span className="text-xs text-slate-600 ml-1">{t.home.hero.andMore}</span>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-bg to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-bg to-transparent pointer-events-none" />
     </section>
   );
 }

@@ -24,6 +24,8 @@ import {
 import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
 import { cn } from '@/lib/utils/cn';
+import { trackEvent } from '@/lib/analytics';
+import DataFreshness from '@/components/home/DataFreshness';
 
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
@@ -106,6 +108,7 @@ export default function QuantHubContent() {
     try {
       await navigator.clipboard.writeText(hubShareUrl(gpuFilterId, filters));
       setLinkCopied(true);
+      trackEvent('Hub Share');
       setTimeout(() => setLinkCopied(false), 2000);
     } catch { /* denied */ }
   };
@@ -132,6 +135,7 @@ export default function QuantHubContent() {
     try {
       await navigator.clipboard.writeText(md);
       setExportCopied(true);
+      trackEvent('Hub Export MD', { count: filtered.length });
       setTimeout(() => setExportCopied(false), 2000);
     } catch { /* denied */ }
   };
@@ -159,6 +163,7 @@ export default function QuantHubContent() {
             <span className="text-slate-500"> · </span>
             <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
           </p>
+          <DataFreshness className="mt-1.5" />
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           {filtered.length > 0 && (

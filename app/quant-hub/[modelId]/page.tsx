@@ -21,7 +21,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
       title: `${model.name} | quantized.uk`,
       description: model.description.en,
       url,
-      images: [{ url: '/og.svg', width: 1200, height: 630 }],
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
     },
   };
 }

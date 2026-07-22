@@ -16,8 +16,8 @@ export const dataSources = {
     zh: 'RTX 4090 / 3090 / M3 Max 本地实测；llama.cpp b4000+、ExLlamaV2 0.2.x、vLLM 0.6.x、Ollama 0.3.x',
   },
   formatHeat: {
-    en: 'Editorial estimate based on Hugging Face GGUF download share and r/LocalLLaMA discussion volume — not a live feed',
-    zh: '基于 Hugging Face GGUF 下载占比和 r/LocalLLaMA 讨论量的编辑估算 — 非实时数据',
+    en: 'Editorial estimate from HF GGUF share and community discussion volume — not live analytics',
+    zh: '基于 HF GGUF 下载占比与社区讨论量的编辑估算 — 非实时统计',
   },
 } as const;
 
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-06-26',
+    en: 'UX for real traffic: job paths, mobile GPU profile, OG/favicon, honest format heat, feedback email',
+    zh: '面向真实访问：任务入口、移动端 GPU 档案、OG/图标、格式热度诚实标注、反馈邮箱',
+  },
   {
     date: '2026-06-26',
     en: 'Model index +4: Qwen3 4B, Qwen3-Coder 30B-A3B, Mistral Large 3, GLM-4-9B (67 total)',
