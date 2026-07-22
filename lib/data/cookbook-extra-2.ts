@@ -12,6 +12,11 @@ export const extraArticles2: Article[] = [
     readTime: 8,
     tags: ['8GB VRAM', 'RTX 3060', 'RTX 4060', 'GGUF', 'Ollama'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Ollama 0.6+ · llama.cpp CUDA · Qwen3-8B / R1-Distill-8B Q4_K_M',
+      zh: 'Ollama 0.6+ · llama.cpp CUDA · Qwen3-8B / R1-Distill-8B Q4_K_M',
+    },
     content: [
       {
         heading: 'What fits comfortably',
@@ -80,6 +85,11 @@ export const extraArticles2: Article[] = [
     readTime: 10,
     tags: ['WSL2', 'Windows', 'Ollama', 'NVIDIA', 'CUDA'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Windows 11 · WSL2 Ubuntu · NVIDIA driver 560+ · Ollama Linux install',
+      zh: 'Windows 11 · WSL2 Ubuntu · NVIDIA 驱动 560+ · Ollama Linux 安装',
+    },
     content: [
       {
         heading: 'Prerequisites',
@@ -114,6 +124,11 @@ export const extraArticles2: Article[] = [
     readTime: 9,
     tags: ['Docker', 'Ollama', 'NVIDIA', 'GPU', 'Compose'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Docker 27+ · nvidia-container-toolkit · ollama/ollama image',
+      zh: 'Docker 27+ · nvidia-container-toolkit · ollama/ollama 镜像',
+    },
     content: [
       {
         heading: 'docker-compose.yml',

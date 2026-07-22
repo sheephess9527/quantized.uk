@@ -10,6 +10,7 @@ export interface HubFilters {
   category: string;
   hardware: string;
   format: string;
+  recency: string;
 }
 
 interface Props {
@@ -28,9 +29,11 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
 
   const hasActiveFilters =
     filters.search || filters.paramRange || filters.category ||
-    filters.hardware || filters.format;
+    filters.hardware || filters.format || filters.recency;
 
-  const clearAll = () => onChange({ search: '', paramRange: '', category: '', hardware: '', format: '' });
+  const clearAll = () => onChange({
+    search: '', paramRange: '', category: '', hardware: '', format: '', recency: '',
+  });
 
   const renderGroup = (
     label: string,
@@ -72,7 +75,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {renderGroup(t.hub.filters.params, 'paramRange', [
           { value: '≤3B',  label: '≤3B' },
           { value: '7B',   label: '7B'  },
@@ -101,6 +104,10 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           { value: 'EXL2', label: 'EXL2' },
           { value: 'GPTQ', label: 'GPTQ' },
           { value: 'HQQ',  label: 'HQQ'  },
+        ])}
+
+        {renderGroup(t.hub.filters.recency, 'recency', [
+          { value: 'recent', label: t.hub.recency.recent },
         ])}
       </div>
 

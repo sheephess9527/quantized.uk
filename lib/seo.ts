@@ -8,7 +8,7 @@ export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dx
 export const BING_SITE_VERIFICATION = '877CF3677E0C08A6443342CE11C95E22';
 
 const DEFAULT_DESCRIPTION =
-  'LLM quantization intelligence — VRAM calculator, 67+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
+  'LLM quantization intelligence — VRAM calculator, 71+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
 
 /** Prefer PNG for social previews (X/LinkedIn often skip SVG). */
 export const OG_IMAGE = {

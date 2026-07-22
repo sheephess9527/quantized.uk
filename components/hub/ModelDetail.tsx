@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Calculator, ExternalLink, Zap } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useLanguage } from '@/lib/i18n/context';
-import { QuantModel } from '@/lib/data/models';
+import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
@@ -12,6 +12,7 @@ import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
 import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
+import { isSuperseded, quantConfidence } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -72,6 +73,22 @@ export default function ModelDetail({ model }: Props) {
           </span>
         </div>
         <p className="text-slate-500 mb-2">{model.family}</p>
+        {isSuperseded(model) && (
+          <div className="mb-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/90 max-w-3xl">
+            <span className="font-semibold">{t.hub.model.superseded}</span>
+            {model.supersededBy && (
+              <>
+                {' · '}
+                <Link href={`/quant-hub/${model.supersededBy}/`} className="underline text-amber-100 hover:text-white">
+                  {t.hub.model.prefer.replace(
+                    '{name}',
+                    models.find(m => m.id === model.supersededBy)?.name ?? model.supersededBy,
+                  )}
+                </Link>
+              </>
+            )}
+          </div>
+        )}
         <p className="text-slate-400 max-w-3xl leading-relaxed">{model.description[lang]}</p>
 
         {hf && hf.downloads > 0 && (
@@ -144,6 +161,7 @@ export default function ModelDetail({ model }: Props) {
         <div className="px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-lg font-semibold text-slate-200">{d.quantTable}</h2>
           <p className="text-xs text-slate-500 mt-1">{d.quantTableSub}</p>
+          <p className="text-[11px] text-slate-600 mt-1">{t.hub.confidence.legend}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -155,6 +173,7 @@ export default function ModelDetail({ model }: Props) {
                 <th className="text-right px-3 py-3 font-medium">{d.colVram}</th>
                 <th className="text-right px-3 py-3 font-medium">{d.colPplLoss}</th>
                 <th className="text-right px-3 py-3 font-medium">{d.colSpeed}</th>
+                <th className="text-left px-3 py-3 font-medium">{t.hub.confidence.col}</th>
                 <th className="text-right px-5 py-3 font-medium">{d.colActions}</th>
               </tr>
             </thead>
@@ -162,6 +181,7 @@ export default function ModelDetail({ model }: Props) {
               {model.quants.map((quant, i) => {
                 const level = quantLevelKey(quant);
                 const isBest = quant.pplLossPercent === bestQuant.pplLossPercent;
+                const conf = quantConfidence(model.id, quant);
                 return (
                   <tr
                     key={`${quant.format}-${quant.level}-${i}`}
@@ -183,6 +203,16 @@ export default function ModelDetail({ model }: Props) {
                     <td className="px-3 py-3 text-right font-mono text-slate-400">{quant.pplLossPercent.toFixed(1)}%</td>
                     <td className="px-3 py-3 text-right font-mono text-orange-300">
                       {quant.speedRTX4090 ? `${quant.speedRTX4090} tok/s` : '—'}
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={cn(
+                        'badge text-[10px]',
+                        conf === 'measured' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                        conf === 'community' && 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                        conf === 'estimated' && 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+                      )}>
+                        {t.hub.confidence[conf]}
+                      </span>
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">

@@ -23,6 +23,7 @@ import {
 } from '@/lib/utils/hub-url';
 import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
+import { isRecentModel } from '@/lib/utils/model-meta';
 import { cn } from '@/lib/utils/cn';
 import { trackEvent } from '@/lib/analytics';
 import DataFreshness from '@/components/home/DataFreshness';
@@ -94,6 +95,7 @@ export default function QuantHubContent() {
         ) return false;
       }
       if (filters.paramRange && !matchesParamRange(m.params, filters.paramRange as ParamRange)) return false;
+      if (filters.recency === 'recent' && !isRecentModel(m)) return false;
       if (filters.category && !m.categories.includes(filters.category)) return false;
       if (filters.hardware && !m.hardwareTags.includes(filters.hardware)) return false;
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;

@@ -42,6 +42,13 @@ export const translations = {
         subtitle: 'Editorial adoption estimate',
         vsLastWeek: 'Editorial estimate',
       },
+      weekly: {
+        title: 'This week’s updates',
+        subtitle: 'New models, recency tags, and data cadence',
+        viewHub: 'Browse recent models',
+        viewChangelog: 'Full changelog',
+        rss: 'RSS',
+      },
       jobPaths: {
         title: 'Start here',
         path8gb: 'I have 8GB VRAM',
@@ -108,8 +115,9 @@ export const translations = {
       filterByMyGpu: 'Filter for {gpu} ({count} fit)',
       modelCount: '{count} / {total} models',
       search: 'Search models...',
-      filters: { all: 'All', params: 'Parameters', category: 'Category', hardware: 'Hardware', format: 'Format' },
+      filters: { all: 'All', params: 'Parameters', category: 'Category', hardware: 'Hardware', format: 'Format', recency: 'Recency' },
       paramRanges: { '≤3B': '≤3B', '7B': '7B', '14B': '14B', '32B': '32B', '70B+': '70B+' },
+      recency: { recent: 'Recently added' },
       categories: { general: 'General', code: 'Code', multimodal: 'Multimodal', instruct: 'Instruct' },
       hardware: { 'consumer-gpu': 'Consumer GPU', mac: 'Mac / Apple Silicon', 'cpu-vps': 'CPU / VPS', 'pro-gpu': 'Pro GPU' },
       model: {
@@ -120,6 +128,16 @@ export const translations = {
         accuracy: 'Accuracy',
         speed: 'tok/s',
         formats: 'Formats',
+        superseded: 'Superseded',
+        prefer: 'Prefer {name}',
+        newBadge: 'New',
+      },
+      confidence: {
+        measured: 'Measured',
+        estimated: 'Estimated',
+        community: 'Community',
+        col: 'Source',
+        legend: 'Measured = site benchmarks · Estimated = formula · Community = public reports',
       },
       noResults: 'No models match your filters.',
       clearFilters: 'Clear filters',
@@ -231,6 +249,8 @@ export const translations = {
       toc: { title: 'On this page', label: 'Table of contents' },
       code: { copy: 'Copy', copied: 'Copied!' },
       licenseNote: 'Deployment guides are educational. Each model is subject to its own license — read the official Hugging Face model card before downloading or deploying.',
+      verified: 'Verified stack',
+      verifiedOn: 'Last verified {date}',
     },
     calc: {
       title: 'VRAM / RAM Calculator',
@@ -428,7 +448,7 @@ export const translations = {
         {
           title: 'What we publish',
           paragraphs: [
-            'A searchable index of 67+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
+            'A searchable index of 71+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
             'We index metadata and link to Hugging Face — we do not host, distribute, or sell model weights. Each model remains subject to its own license.',
           ],
         },
@@ -594,6 +614,13 @@ export const translations = {
         subtitle: '社区采用估算（编辑整理）',
         vsLastWeek: '编辑估算',
       },
+      weekly: {
+        title: '本周更新',
+        subtitle: '新模型、最近新增标签与数据节奏',
+        viewHub: '浏览最近模型',
+        viewChangelog: '完整更新日志',
+        rss: 'RSS',
+      },
       jobPaths: {
         title: '从这里开始',
         path8gb: '我有 8GB 显存',
@@ -660,8 +687,9 @@ export const translations = {
       filterByMyGpu: '按 {gpu} 筛选（{count} 个适配）',
       modelCount: '{count} / {total} 个模型',
       search: '搜索模型...',
-      filters: { all: '全部', params: '参数量', category: '用途分类', hardware: '目标硬件', format: '量化格式' },
+      filters: { all: '全部', params: '参数量', category: '用途分类', hardware: '目标硬件', format: '量化格式', recency: '时效' },
       paramRanges: { '≤3B': '≤3B', '7B': '7B', '14B': '14B', '32B': '32B', '70B+': '70B+' },
+      recency: { recent: '最近新增' },
       categories: { general: '通用对话', code: '代码生成', multimodal: '多模态', instruct: '指令微调' },
       hardware: { 'consumer-gpu': '消费级显卡', mac: 'Mac / 苹果芯片', 'cpu-vps': 'CPU / 轻量VPS', 'pro-gpu': '专业 GPU' },
       model: {
@@ -672,6 +700,16 @@ export const translations = {
         accuracy: '精度',
         speed: 'tok/s',
         formats: '可用格式',
+        superseded: '已过时',
+        prefer: '建议改用 {name}',
+        newBadge: '新',
+      },
+      confidence: {
+        measured: '实测',
+        estimated: '估算',
+        community: '社区',
+        col: '来源',
+        legend: '实测 = 本站基准 · 估算 = 公式推算 · 社区 = 公开报告',
       },
       noResults: '没有符合条件的模型。',
       clearFilters: '清除筛选',
@@ -783,6 +821,8 @@ export const translations = {
       toc: { title: '本文目录', label: '文章目录' },
       code: { copy: '复制', copied: '已复制！' },
       licenseNote: '部署指南仅供学习参考。每个模型均有独立许可协议 — 下载或部署前请阅读 Hugging Face 官方模型卡。',
+      verified: '已验证技术栈',
+      verifiedOn: '最近验证 {date}',
     },
     calc: {
       title: '显存 / 内存计算器',
@@ -980,7 +1020,7 @@ export const translations = {
         {
           title: '我们提供什么',
           paragraphs: [
-            '67+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
+            '71+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
             '我们只索引元数据并链接到 Hugging Face — 不托管、不分发、不出售模型权重。每个模型仍受其自身许可协议约束。',
           ],
         },

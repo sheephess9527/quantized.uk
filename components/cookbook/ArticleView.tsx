@@ -55,6 +55,17 @@ export default function ArticleView({ article }: Props) {
         <p className="text-slate-400 leading-relaxed">
           {lang === 'zh' ? article.descriptionZh : article.description}
         </p>
+        {article.verifiedAt && article.verifiedStack && (
+          <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-3 text-xs text-slate-400 max-w-2xl">
+            <p className="font-semibold text-cyan-300/90 mb-1">{t.cookbook.verified}</p>
+            <p className="font-mono text-slate-300 leading-relaxed">
+              {lang === 'zh' ? article.verifiedStack.zh : article.verifiedStack.en}
+            </p>
+            <p className="text-slate-600 mt-1.5">
+              {t.cookbook.verifiedOn.replace('{date}', article.verifiedAt)}
+            </p>
+          </div>
+        )}
         <div className="flex flex-wrap gap-1.5 mt-4">
           {article.tags.map(tag => (
             <span key={tag} className="badge text-xs bg-white/[0.04] text-slate-500 border-white/[0.07] font-mono">{tag}</span>

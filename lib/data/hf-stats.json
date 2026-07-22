@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-07-22T06:03:53.933Z",
+  "fetchedAt": "2026-07-22T06:44:23.304Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 47,
+  "modelCount": 51,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -284,6 +284,30 @@
       "downloads": 1547146,
       "likes": 1170,
       "lastModified": "2025-12-03T08:05:17.000Z"
+    },
+    "gemma-3-27b-it": {
+      "repo": "google/gemma-3-27b-it",
+      "downloads": 749324,
+      "likes": 2002,
+      "lastModified": "2025-03-21T20:29:02.000Z"
+    },
+    "deepseek-r1-distill-llama-8b": {
+      "repo": "bartowski/DeepSeek-R1-Distill-Llama-8B-GGUF",
+      "downloads": 8820,
+      "likes": 53,
+      "lastModified": "2025-01-22T15:19:31.000Z"
+    },
+    "phi-4": {
+      "repo": "bartowski/phi-4-GGUF",
+      "downloads": 10795,
+      "likes": 62,
+      "lastModified": "2025-01-11T04:10:35.000Z"
+    },
+    "qwen3-1.7b": {
+      "repo": "Qwen/Qwen3-1.7B-GGUF",
+      "downloads": 19401,
+      "likes": 54,
+      "lastModified": "2025-05-09T07:16:01.000Z"
     }
   }
 }

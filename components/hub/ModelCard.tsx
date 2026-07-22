@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { ExternalLink, Zap } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { QuantModel } from '@/lib/data/models';
+import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
+import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -48,7 +49,23 @@ export default function ModelCard({ model, lang }: Props) {
             {model.paramLabel}
           </span>
         </div>
+        <div className="flex flex-wrap gap-1 mb-1.5">
+          {isRecentModel(model) && (
+            <span className="badge text-[10px] bg-cyan-500/15 text-cyan-300 border-cyan-500/25">{t.hub.model.newBadge}</span>
+          )}
+          {isSuperseded(model) && (
+            <span className="badge text-[10px] bg-amber-500/10 text-amber-400/90 border-amber-500/20">{t.hub.model.superseded}</span>
+          )}
+        </div>
         <p className="text-xs text-slate-500 mb-2">{model.family}</p>
+        {isSuperseded(model) && model.supersededBy && (
+          <p className="text-[11px] text-amber-400/80 mb-1.5">
+            {t.hub.model.prefer.replace(
+              '{name}',
+              models.find(m => m.id === model.supersededBy)?.name ?? model.supersededBy,
+            )}
+          </p>
+        )}
         <p className="text-xs text-slate-500 leading-relaxed">
           {model.description[lang]}
         </p>

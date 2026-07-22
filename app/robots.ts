@@ -8,3 +8,5 @@ export default function robots(): MetadataRoute.Robots {
     host: SITE_URL,
   };
 }
+
+// RSS also at /feed.xml (static route handler)

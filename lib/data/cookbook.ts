@@ -12,6 +12,10 @@ export interface Article {
   readTime: number;
   tags: string[];
   publishedAt: string;
+  /** Last day commands/stack were re-checked (YYYY-MM-DD) */
+  verifiedAt?: string;
+  /** Short stack string shown on article header */
+  verifiedStack?: { en: string; zh: string };
   content: Section[];
 }
 
@@ -35,6 +39,11 @@ const baseArticles: Article[] = [
     readTime: 8,
     tags: ['llama.cpp', 'VPS', 'Linux', 'GGUF', 'API'],
     publishedAt: '2025-06-10',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Ubuntu 22.04/24.04 · llama.cpp CUDA/CPU · Q4_K_M GGUF · 16GB+ RAM',
+      zh: 'Ubuntu 22.04/24.04 · llama.cpp CUDA/CPU · Q4_K_M GGUF · 16GB+ 内存',
+    },
     content: [
       {
         heading: 'Requirements',
