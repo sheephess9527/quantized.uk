@@ -92,7 +92,7 @@ lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
     models.ts               #   67 models — exports combined `models` array
-    models-extra*.ts        #   models-extra .. models-extra-5 (base 10 + 5 packs)
+    models-extra*.ts        #   models-extra .. models-extra-6 (packs → 71 models total)
     cookbook*.ts            #   cookbook + cookbook-extra + cookbook-extra-2 (22 guides)
     hf-repos.ts / .mjs      #   HF repo mapping for the build-time stats fetch
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
@@ -286,7 +286,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-5.ts` (or a new `models-extra-6.ts` imported by `models.ts`). Include `arch` + `quants` |
+| Add a model | `lib/data/models-extra-6.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` (+ `formatRadarData`) |
@@ -348,13 +348,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - **Bilingual completeness:** add a string to `en` but forget `zh` → the Chinese UI shows `undefined`. Always add both, and keep `zh`'s shape identical to `en` (the `t` cast in `context.tsx` hides mismatches otherwise).
 - **`Set` spread:** `[...new Set(...)]` fails to down-level under the bundler target — use `Array.from(new Set(...))`.
-- **Static-export limits:** no route handlers, no request-time data fetching, no `next/image` optimization (`images.unoptimized: true`). Everything is build-time only. `generateStaticParams()` is how dynamic routes (`[modelId]`, `[slug]`) become static pages.
+- **Static-export limits:** no request-time data fetching, no `next/image` optimization (`images.unoptimized: true`). Everything is build-time only. `generateStaticParams()` is how dynamic routes (`[modelId]`, `[slug]`) become static pages. Static route handlers are OK only with `export const dynamic = 'force-static'` (e.g. `/feed.xml`).
 - **`trailingSlash: true`** — internal links resolve to `/path/`. Keep links consistent.
-- **HF repo map drift:** `hf-repos.ts` (app) and `hf-repos.mjs` (build script) are separate files — update both.
+- **HF repo map:** single source `lib/data/hf-repos.mjs` (build script + `hf-repos.ts` re-export). Edit the `.mjs` only.
 
 ---
 
 ## 9. Changelog
+
+### 2026-07-22 — Cadence pack A+B+C (freshness + trust + rhythm)
+
+- **71 models** — `models-extra-6.ts`: Gemma 3 27B IT, DeepSeek-R1-Distill-Llama-8B, Phi-4 14B, Qwen3 1.7B; Editor’s Picks refreshed.
+- **Cadence fields** on `QuantModel` / `QuantVariant` / cookbook `Article` (`status`, `supersededBy`, `addedAt`, `confidence`, `verifiedAt`, `verifiedStack`) — see `lib/data/types.ts`, helpers in `lib/utils/model-meta.ts`.
+- **Superseded** legacy entries (OpenChat, Zephyr, WizardLM-2, Yi-1.5-34B, Solar) point to Qwen3 successors; cards/detail show amber prefer link.
+- **Confidence column** on model quant tables (measured / estimated / community).
+- **Hub “Recently added”** filter (`?recency=recent`, 45-day window via `addedAt`).
+- **Home “This week’s updates”** + **`/feed.xml` RSS** (static route handler).
+- **Cookbook verified stack** banners on 8GB, WSL2, Docker Ollama, VPS llama.cpp guides.
+- **Benchmarks** matrix/speed rows for R1-Llama-8B, Phi-4, Qwen3-Coder 30B-A3B.
+- **`dataLastUpdated`** / changelog bumped to 2026-07-22. Conventions in `CLAUDE.md`.
 
 ### 2026-06-24 (e) — Perf & share-card fixes
 

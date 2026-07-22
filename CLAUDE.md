@@ -21,6 +21,18 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
+**Live snapshot (2026-07-22 cadence pack `d7cce75`):**
+
+| Surface | Notes |
+|--------|--------|
+| Models | **71** in index (`models-extra` … `models-extra-6`) |
+| Cookbook | **22** guides; key ones carry `verifiedAt` + `verifiedStack` |
+| Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
+| Home | Job paths, weekly updates block, data freshness line, honest format heat |
+| Feed | `/feed.xml` — RSS of changelog + recent models |
+| Tools | VRAM, CLI, format wizard, compare |
+| Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
+
 ## Commands
 
 ```bash
@@ -29,15 +41,18 @@ npm run build    # type-check + lint + static export → out/   (gate before eve
 npm run lint
 ```
 
-`build` runs a `prebuild` HF-stats fetch that fails gracefully offline.
+`build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
+stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
 
 ## Conventions (must follow)
 
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI.
-- **Static-export only:** no route handlers, no request-time fetching, no `next/image` opt.
+- **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
-- **Data-driven:** add content in `lib/data/*.ts` (satisfy the interfaces in `lib/data/types.ts`).
+  **Allowed exception:** route handlers that are **fully static**
+  (`export const dynamic = 'force-static'`) e.g. `app/feed.xml/route.ts` for RSS.
+- **Data-driven:** add content in `lib/data/*.ts` (satisfy `lib/data/types.ts`).
 - **`Array.from(new Set(...))`**, never `[...new Set(...)]` (bundler target won't down-level it).
 - **Fonts via `next/font` only** (self-hosted; Tailwind reads `--font-inter`/`--font-mono`).
   Never add a Google Fonts `@import`/`<link>` — it's render-blocking and double-loads.
@@ -48,20 +63,95 @@ npm run lint
 - **PWA safe areas:** the app is installable (iOS Add to Home Screen, standalone). Respect
   `env(safe-area-inset-*)` — top handled by Navbar + `<main>`, bottom/sides by `body` in
   `globals.css`. Test any top-bar / full-height change against the notch.
+- **PowerShell:** use `npm.cmd`, `Set-Location` before commands; avoid Unix-only chaining.
+
+## Model data model (cadence fields)
+
+Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
+
+| Field | Where | Purpose |
+|-------|--------|---------|
+| `status?: 'active' \| 'superseded'` | `QuantModel` | Mark legacy models (still listed) |
+| `supersededBy?: string` | `QuantModel` | Preferred replacement model `id` |
+| `addedAt?: string` | `QuantModel` | `YYYY-MM-DD` — powers Hub **Recently added** (default window **45 days**) |
+| `confidence?: 'measured' \| 'estimated' \| 'community'` | `QuantVariant` | Optional; UI defaults via `quantConfidence()` |
+| `verifiedAt` / `verifiedStack` | `Article` (cookbook) | Stack re-check banner on article pages |
+
+**Adding models**
+
+1. Prefer `lib/data/models-extra-6.ts` (or new `models-extra-N.ts` + import in `models.ts`).
+2. Set `addedAt` to today when shipping a freshness batch.
+3. Wire `hfRepoMap` in **`lib/data/hf-repos.mjs` only** (single source; `hf-repos.ts` re-exports).
+4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks.
+5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
+6. Refresh SEO copy that hardcodes model counts (`lib/seo.ts`, layouts, `public/llms.txt`).
+
+**Superseding models** — set `status: 'superseded'` + `supersededBy`; do **not** delete (keeps
+links/SEO). Card + detail show amber “Prefer {name}”.
+
+**Measured confidence** — models in the site-side benchmark set (see `MEASURED_MODEL_IDS` in
+`model-meta.ts`) with `speedRTX4090` default to **measured**; otherwise **estimated** unless
+`confidence` is set explicitly.
+
+## Content cadence (product priority)
+
+With real traffic, **freshness > new tools**. Suggested rhythm:
+
+| Cadence | Action |
+|---------|--------|
+| Weekly | Refresh `todayFeed` + one `changelog` line; bump `dataLastUpdated` |
+| Biweekly | +1–3 real flagship models with `addedAt` |
+| Monthly | Re-verify 1 high-traffic cookbook (`verifiedAt` / `verifiedStack`) |
+| Quarterly | Supersede more legacy models; trim noise |
+
+Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=recent` +
+`/feed.xml` are the three surfaces that should reflect every cadence ship.
+
+## Key paths agents touch often
+
+```
+lib/data/types.ts           # QuantModel / QuantVariant / Article fields
+lib/data/models.ts          # concat packs + todayFeed
+lib/data/models-extra-*.ts  # model packs (currently through extra-6)
+lib/data/meta.ts            # dataLastUpdated + changelog
+lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
+lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
+lib/utils/hub-url.ts        # shareable Hub filters incl. recency
+lib/i18n/translations.ts    # en + zh always
+app/feed.xml/route.ts       # RSS (force-static)
+components/home/WeeklyUpdates.tsx
+components/home/JobPaths.tsx
+```
 
 ## Git & deploy
 
-- Work on `main` (small fixes) or the agent branch `claude/quantized-uk-platform-yxfz9v`.
+- Work on `main` (small fixes) or an agent feature branch if isolated.
 - **Pushing to `main` auto-deploys** via Cloudflare Pages (build `npm run build`, output `out`).
-- Always `git push -u origin <branch>`; on `fetch first` rejection, `git pull --rebase origin main`.
+- Always `git push origin main`; on `fetch first` rejection, `git pull --rebase origin main`,
+  resolve conflicts, continue rebase, push again.
 - Don't open a PR unless asked.
+- **Do not put** private GitHub org/user links on public site pages (Footer / About / live copy).
+  Repo may exist for deploy; site privacy posture is “no public source repo”.
 
 ## Deploy footguns (full list in README §6)
 
 Cloudflare **Pages** not Workers · output dir `out` not `.next` · Next.js ≥ 14.2.35 ·
-if a deploy command is forced, use `true` (not `done`).
+if a deploy command is forced, use `true` (not `done`). · No required env vars for build
+(optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` defaults to `quantized.uk` in code).
 
 ## Icons
 
 Master is `public/icon.svg`; regenerate PNGs with the bundled Chromium recipe in README §10
 (this env has no ImageMagick/sharp). Update all sizes together after editing the SVG.
+Also keep `public/favicon.svg` in sync when the mark changes.
+
+## Recent ships (summary for context)
+
+| When | Commit theme |
+|------|----------------|
+| 2026-07-22 | **Cadence pack A+B+C** — +4 models → 71; superseded tags; confidence column; Hub recent; weekly block; RSS; cookbook verified stack |
+| 2026-06-26 | Real-traffic UX — job paths, mobile GPU profile, honest format heat, feedback email, Plausible events |
+| 2026-06-26 | Model packs — Qwen3 MoE/32B, DeepSeek-V3/R1, Mistral Large 3, GLM-4, etc. |
+| Earlier | PWA, safe areas, self-hosted fonts, lazy charts, OG PNG, QA fixes (≤3B filter, CLI quant sync, HF merge) |
+
+Prefer **continuing the cadence** (data + labels + verified guides) over inventing a fifth tool.
