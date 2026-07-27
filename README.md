@@ -360,6 +360,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-07-22 (c) — OG PNG + full cookbook verified stacks
+
+- Re-rendered `public/og.png` from `og.svg` (Chrome headless, 1200×630) with **71+ Models** copy.
+- All **22** cookbook articles now have `verifiedAt` + `verifiedStack` (not only the 4 high-traffic guides).
+
 ### 2026-07-22 (b) — Docs sync after cadence pack
 
 - Fixed stale counts/structure in README (71 models, project tree, HF map = `.mjs` only).

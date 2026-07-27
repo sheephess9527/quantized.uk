@@ -51,6 +51,11 @@ export const extraArticles2: Article[] = [
     readTime: 7,
     tags: ['M1', 'M2', '8GB RAM', 'Ollama', 'Metal'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'M1/M2 8GB · Ollama Metal · 3B Q4 or 7B Q2/Q3 · ctx ≤2K · close browsers',
+      zh: 'M1/M2 8GB · Ollama Metal · 3B Q4 或 7B Q2/Q3 · 上下文 ≤2K · 先关浏览器',
+    },
     content: [
       {
         heading: 'Memory budget',
@@ -163,6 +168,11 @@ export const extraArticles2: Article[] = [
     readTime: 11,
     tags: ['Nginx', 'API', 'TLS', 'Ollama', 'llama.cpp'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Nginx · TLS · proxy_read_timeout 300s · Ollama/llama.cpp /v1 · rate limit',
+      zh: 'Nginx · TLS · proxy_read_timeout 300s · Ollama/llama.cpp /v1 · 限流',
+    },
     content: [
       {
         heading: 'Basic proxy to Ollama',
@@ -197,6 +207,11 @@ export const extraArticles2: Article[] = [
     readTime: 12,
     tags: ['AMD', 'ROCm', 'llama.cpp', 'HIP', 'Linux'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Linux · ROCm 6.x · llama.cpp GGML_HIP=ON · RX 7900/6800 class',
+      zh: 'Linux · ROCm 6.x · llama.cpp GGML_HIP=ON · RX 7900/6800 级',
+    },
     content: [
       {
         heading: 'Supported hardware',
@@ -231,6 +246,11 @@ export const extraArticles2: Article[] = [
     readTime: 6,
     tags: ['Windows', 'Ollama', 'NVIDIA', 'Desktop'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Windows 11 · Ollama native installer · NVIDIA GPU auto · API :11434',
+      zh: 'Windows 11 · Ollama 原生安装包 · NVIDIA 自动 GPU · API :11434',
+    },
     content: [
       {
         heading: 'Install',

@@ -12,6 +12,11 @@ export const extraArticles: Article[] = [
     readTime: 7,
     tags: ['RTX 4060 Ti', 'GGUF', 'EXL2', 'VRAM'],
     publishedAt: '2026-06-20',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'RTX 4060 Ti 16G · GGUF Q4 / EXL2 · llama.cpp or ExLlamaV2 · 4K–8K ctx',
+      zh: 'RTX 4060 Ti 16G · GGUF Q4 / EXL2 · llama.cpp 或 ExLlamaV2 · 4K–8K 上下文',
+    },
     content: [
       { heading: 'Sweet spot models', headingZh: '最佳甜点模型', body: 'With 16GB VRAM you can comfortably run 7–14B models at Q4_K_M with 4K–8K context. Qwen2.5 7B, Llama 3.1 8B, and DeepSeek-R1-Distill 14B are top picks.', bodyZh: '16GB 显存可流畅运行 7–14B 模型的 Q4_K_M，上下文 4K–8K。推荐 Qwen2.5 7B、Llama 3.1 8B、DeepSeek-R1-Distill 14B。', code: { lang: 'text', content: 'Qwen2.5 7B Q4_K_M  → ~5.4 GB weights + ~2 GB KV @ 4K ctx\nLlama 3.1 8B Q4_K_M → ~5.7 GB weights + ~2 GB KV @ 4K ctx\nR1-Distill 14B EXL2 4.65bpw → ~9.8 GB total @ 4K ctx' } },
       { heading: 'Use the VRAM calculator', headingZh: '使用显存计算器', body: 'Always verify with our reverse GPU lookup before downloading a 20GB+ GGUF file.', bodyZh: '下载 20GB+ 的 GGUF 文件前，务必用反向 GPU 查询验证。', code: { lang: 'text', content: 'https://quantized.uk/tools/vram-calc/?mode=reverse&gpu=rtx4060ti16&ctx=4096&sort=quality' } },
@@ -28,6 +33,11 @@ export const extraArticles: Article[] = [
     readTime: 9,
     tags: ['DeepSeek-R1', 'EXL2', 'GGUF', 'ExLlamaV2'],
     publishedAt: '2026-06-21',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'RTX 4090 · R1-Distill-Qwen-14B · EXL2 4.65bpw vs GGUF Q4_K_M · ExLlamaV2 / llama.cpp',
+      zh: 'RTX 4090 · R1-Distill-Qwen-14B · EXL2 4.65bpw vs GGUF Q4_K_M · ExLlamaV2 / llama.cpp',
+    },
     content: [
       { heading: 'Speed vs simplicity', headingZh: '速度 vs 简便性', body: 'EXL2 via ExLlamaV2 delivers ~35% faster inference than GGUF via llama.cpp on the same 14B model. GGUF wins on setup simplicity and Ollama compatibility.', bodyZh: 'ExLlamaV2 跑 EXL2 比 llama.cpp 跑 GGUF 快约 35%。GGUF 在部署简便性和 Ollama 兼容性上更优。', code: { lang: 'text', content: 'EXL2 4.65bpw → ~128 tok/s (ExLlamaV2, RTX 4090)\nGGUF Q4_K_M  → ~95 tok/s (llama.cpp, RTX 4090)' } },
       { heading: 'Download EXL2', headingZh: '下载 EXL2', body: 'Grab the turboderp EXL2 quant from Hugging Face. Use TabbyAPI or ExLlamaV2 server for OpenAI-compatible API.', bodyZh: '从 Hugging Face 下载 turboderp 的 EXL2 量化。用 TabbyAPI 或 ExLlamaV2 server 提供 OpenAI 兼容 API。', code: { lang: 'bash', content: 'huggingface-cli download turboderp/DeepSeek-R1-Distill-Qwen-14B-exl2 \\\n  --include "*4.65bpw*" --local-dir ./models/r1-14b-exl2' } },
@@ -44,6 +54,11 @@ export const extraArticles: Article[] = [
     readTime: 10,
     tags: ['ExLlamaV2', 'EXL2', 'RTX 4090', 'API'],
     publishedAt: '2026-06-21',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Python 3.10+ · CUDA 12.x · ExLlamaV2 · EXL2 model dir · RTX 4090',
+      zh: 'Python 3.10+ · CUDA 12.x · ExLlamaV2 · EXL2 模型目录 · RTX 4090',
+    },
     content: [
       { heading: 'Install', headingZh: '安装', body: 'ExLlamaV2 requires NVIDIA CUDA. Python 3.10+ recommended.', bodyZh: 'ExLlamaV2 需要 NVIDIA CUDA，推荐 Python 3.10+。', code: { lang: 'bash', content: 'pip install exllamav2\n# Or clone for latest:\ngit clone https://github.com/turboderp/exllamav2\ncd exllamav2 && pip install -r requirements.txt' } },
       { heading: 'Run inference', headingZh: '运行推理', body: 'Point at a downloaded EXL2 model directory. Adjust -c for context length.', bodyZh: '指向已下载的 EXL2 模型目录，用 -c 调整上下文长度。', code: { lang: 'bash', content: 'python examples/chat.py \\\n  -m ./models/Llama-3.1-8B-exl2-4.65bpw \\\n  -c 4096 -gs 16' } },
@@ -60,6 +75,11 @@ export const extraArticles: Article[] = [
     readTime: 11,
     tags: ['70B', 'Multi-GPU', 'llama.cpp', 'tensor-split'],
     publishedAt: '2026-06-22',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: '2× RTX 3090 24G · llama.cpp CUDA · --tensor-split · 70B Q4_K_M',
+      zh: '2× RTX 3090 24G · llama.cpp CUDA · --tensor-split · 70B Q4_K_M',
+    },
     content: [
       { heading: 'Tensor split', headingZh: '张量切分', body: 'Use --tensor-split to distribute layers across GPUs. Q4_K_M 70B needs ~44GB weights — tight but workable on 48GB total.', bodyZh: '用 --tensor-split 将层分布到多卡。Q4_K_M 70B 权重约 44GB，48GB 总量勉强可行。', code: { lang: 'bash', content: './build/bin/llama-server \\\n  -m ./models/Llama-3.1-70B-Q4_K_M.gguf \\\n  --tensor-split 24,24 \\\n  -c 4096 -ngl 99 \\\n  --host 0.0.0.0 --port 8080' } },
     ],
@@ -75,6 +95,11 @@ export const extraArticles: Article[] = [
     readTime: 8,
     tags: ['Qwen2.5-Coder', '32B', 'RTX 4090', 'GGUF'],
     publishedAt: '2026-06-22',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'RTX 4090 24G · Qwen2.5-Coder 32B Q4_K_M · llama.cpp -ngl 99 · ctx 4K',
+      zh: 'RTX 4090 24G · Qwen2.5-Coder 32B Q4_K_M · llama.cpp -ngl 99 · 4K 上下文',
+    },
     content: [
       { heading: 'Quant choice', headingZh: '量化选择', body: 'Q4_K_M uses ~22GB for weights alone. Drop to Q3_K_M or EXL2 3.5bpw if you need 8K+ context.', bodyZh: 'Q4_K_M 权重约 22GB。如需 8K+ 上下文，降至 Q3_K_M 或 EXL2 3.5bpw。', code: { lang: 'text', content: 'Q4_K_M: best quality, ~22 GB weights\nQ3_K_M: saves ~4 GB, acceptable for code\nEXL2 3.5bpw: fastest, ~16 GB weights' } },
       { heading: 'Recommended command', headingZh: '推荐命令', body: 'llama.cpp with full GPU offload and 4K context is the sweet spot.', bodyZh: 'llama.cpp 全 GPU 卸载 + 4K 上下文是最佳平衡点。', code: { lang: 'bash', content: './build/bin/llama-server \\\n  -m ./models/Qwen2.5-Coder-32B-Q4_K_M.gguf \\\n  -ngl 99 -c 4096 --host 0.0.0.0 --port 8080' } },
@@ -91,6 +116,11 @@ export const extraArticles: Article[] = [
     readTime: 6,
     tags: ['Mac', 'M3 Pro', 'Ollama', 'Unified Memory'],
     publishedAt: '2026-06-22',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'M3 Pro 18/36GB · Ollama Metal · 7–14B Q4 · avoid 32B on 18GB',
+      zh: 'M3 Pro 18/36GB · Ollama Metal · 7–14B Q4 · 18GB 避免 32B',
+    },
     content: [
       { heading: '18GB M3 Pro', headingZh: '18GB M3 Pro', body: 'Stick to 7–8B models at Q4. Avoid 14B+ unless you accept very short context.', bodyZh: '坚持 7–8B Q4 模型。除非接受极短上下文，否则避免 14B+。', code: { lang: 'text', content: '✓ Llama 3.1 8B Q4_K_M (ctx 8K)\n✓ Qwen2.5 7B Q4_K_M\n✗ Qwen2.5 14B Q4_K_M (needs 36GB+)' } },
       { heading: '36GB M3 Pro', headingZh: '36GB M3 Pro', body: '14B models at Q4_K_M with 8K context work well. 32B requires Q3 or heavy context sacrifice.', bodyZh: '14B Q4_K_M + 8K 上下文运行良好。32B 需 Q3 或大幅缩减上下文。', code: { lang: 'bash', content: 'ollama pull qwen2.5:14b\nollama run qwen2.5:14b' } },
@@ -107,6 +137,11 @@ export const extraArticles: Article[] = [
     readTime: 9,
     tags: ['Windows', 'llama.cpp', 'CUDA', 'GGUF'],
     publishedAt: '2026-06-23',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp LLAMA_CUDA=ON',
+      zh: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp LLAMA_CUDA=ON',
+    },
     content: [
       { heading: 'Prerequisites', headingZh: '前置条件', body: 'Install Visual Studio Build Tools, CMake, and CUDA Toolkit 12.x.', bodyZh: '安装 Visual Studio Build Tools、CMake 和 CUDA Toolkit 12.x。', code: { lang: 'powershell', content: 'winget install Kitware.CMake\n# CUDA: download from developer.nvidia.com/cuda-downloads' } },
       { heading: 'Build', headingZh: '编译', body: 'Enable CUDA backend during CMake configure.', bodyZh: 'CMake 配置时启用 CUDA 后端。', code: { lang: 'powershell', content: 'git clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DLLAMA_CUDA=ON\ncmake --build build --config Release -j' } },
@@ -123,6 +158,11 @@ export const extraArticles: Article[] = [
     readTime: 8,
     tags: ['TabbyAPI', 'ExLlamaV2', 'API', 'EXL2'],
     publishedAt: '2026-06-23',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'TabbyAPI · ExLlamaV2 · EXL2 models/ · OpenAI API :5000',
+      zh: 'TabbyAPI · ExLlamaV2 · EXL2 models/ · OpenAI API :5000',
+    },
     content: [
       { heading: 'Install TabbyAPI', headingZh: '安装 TabbyAPI', body: 'TabbyAPI is the most popular ExLlamaV2 server wrapper with a built-in UI.', bodyZh: 'TabbyAPI 是最流行的 ExLlamaV2 服务封装，自带 Web UI。', code: { lang: 'bash', content: 'git clone https://github.com/theroyallab/tabbyAPI\ncd tabbyAPI\npip install -r requirements.txt' } },
       { heading: 'Configure and run', headingZh: '配置并运行', body: 'Place EXL2 models in the models/ directory and start the API server.', bodyZh: '将 EXL2 模型放入 models/ 目录并启动 API 服务。', code: { lang: 'bash', content: 'python main.py --port 5000\n# API: http://localhost:5000/v1/chat/completions' } },
@@ -139,6 +179,11 @@ export const extraArticles: Article[] = [
     readTime: 12,
     tags: ['GGUF', 'llama.cpp', 'quantize', 'custom'],
     publishedAt: '2026-06-23',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'llama.cpp convert_hf_to_gguf.py · llama-quantize · Q4_K_M target',
+      zh: 'llama.cpp convert_hf_to_gguf.py · llama-quantize · 目标 Q4_K_M',
+    },
     content: [
       { heading: 'Convert HF to GGUF', headingZh: 'HF 转 GGUF', body: 'First convert the safetensors model to FP16 GGUF, then quantize.', bodyZh: '先将 safetensors 模型转为 FP16 GGUF，再量化。', code: { lang: 'bash', content: 'python convert_hf_to_gguf.py ./my-model --outfile my-model-f16.gguf\n./build/bin/llama-quantize my-model-f16.gguf my-model-Q4_K_M.gguf Q4_K_M' } },
     ],
@@ -154,6 +199,11 @@ export const extraArticles: Article[] = [
     readTime: 10,
     tags: ['vLLM', 'AWQ', 'production', 'API'],
     publishedAt: '2026-06-23',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'vLLM 0.6+ · AWQ · gpu-memory-utilization 0.75–0.85 · max-model-len tuned',
+      zh: 'vLLM 0.6+ · AWQ · gpu-memory-utilization 0.75–0.85 · max-model-len 调优',
+    },
     content: [
       { heading: 'Memory tuning', headingZh: '显存调优', body: 'Start at 0.85 gpu-memory-utilization. Lower to 0.75 if you see OOM on long contexts.', bodyZh: '从 0.85 gpu-memory-utilization 开始。长上下文 OOM 时降至 0.75。', code: { lang: 'bash', content: 'python -m vllm.entrypoints.openai.api_server \\\n  --model Qwen/Qwen2.5-7B-Instruct-AWQ \\\n  --quantization awq \\\n  --gpu-memory-utilization 0.85 \\\n  --max-model-len 32768 \\\n  --max-num-seqs 32' } },
     ],
@@ -169,6 +219,11 @@ export const extraArticles: Article[] = [
     readTime: 7,
     tags: ['CPU', 'llama.cpp', 'OpenBLAS', 'VPS'],
     publishedAt: '2026-06-24',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'CPU-only VPS · llama.cpp OpenBLAS · -t physical cores · 8B Q4_K_M',
+      zh: '纯 CPU VPS · llama.cpp OpenBLAS · -t 物理核心数 · 8B Q4_K_M',
+    },
     content: [
       { heading: 'Thread count', headingZh: '线程数', body: 'Set -t to physical core count (not hyperthreads). Use -tb 1 for single-batch interactive use.', bodyZh: '-t 设为物理核心数（非超线程）。单 batch 交互用 -tb 1。', code: { lang: 'bash', content: './build/bin/llama-server \\\n  -m ./models/Llama-3.1-8B-Q4_K_M.gguf \\\n  -t 8 -tb 1 -c 4096 \\\n  --host 0.0.0.0 --port 8080' } },
       { heading: 'Expected performance', headingZh: '预期性能', body: 'A 8-core VPS with OpenBLAS achieves ~8–15 tok/s on 8B Q4_K_M. Usable for personal API, not production throughput.', bodyZh: '8 核 VPS + OpenBLAS 在 8B Q4_K_M 上约 8–15 tok/s，适合个人 API，不适合生产吞吐。', code: { lang: 'text', content: 'Hetzner CX32 (8 vCPU, 32GB): ~12 tok/s\nAWS c7i.2xlarge (8 vCPU): ~15 tok/s' } },

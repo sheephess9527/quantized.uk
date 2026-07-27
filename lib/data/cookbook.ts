@@ -86,6 +86,11 @@ const baseArticles: Article[] = [
     readTime: 6,
     tags: ['Ollama', 'Mac', 'Apple Silicon', 'Metal', 'GGUF'],
     publishedAt: '2025-06-14',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'macOS 14+ · Apple Silicon · Ollama 0.6+ · Metal · Qwen3-8B / Llama 3.1 8B Q4',
+      zh: 'macOS 14+ · 苹果芯片 · Ollama 0.6+ · Metal · Qwen3-8B / Llama 3.1 8B Q4',
+    },
     content: [
       {
         heading: 'Install Ollama',
@@ -97,9 +102,9 @@ const baseArticles: Article[] = [
       {
         heading: 'Pull and run a model',
         headingZh: '拉取并运行模型',
-        body: 'Ollama defaults to Q4_K_M GGUF which is ideal for most use cases.',
-        bodyZh: 'Ollama 默认使用 Q4_K_M GGUF，适合大多数使用场景。',
-        code: { lang: 'bash', content: '# Pull Llama 3.1 8B (default Q4_K_M, ~5.7 GB)\nollama pull llama3.1:8b\n\n# Or pull Qwen2.5 7B for better multilingual\nollama pull qwen2.5:7b\n\n# Run interactively\nollama run llama3.1:8b' },
+        body: 'Ollama defaults to Q4_K_M GGUF which is ideal for most use cases. Prefer Qwen3 8B when available for stronger reasoning.',
+        bodyZh: 'Ollama 默认使用 Q4_K_M GGUF。有 Qwen3 8B 时优先拉取，推理更强。',
+        code: { lang: 'bash', content: '# Pull Llama 3.1 8B (default Q4_K_M, ~5.7 GB)\nollama pull llama3.1:8b\n\n# Stronger 2026 default for multilingual + thinking:\n# ollama pull qwen3:8b\n\n# Or Qwen2.5 7B\nollama pull qwen2.5:7b\n\n# Run interactively\nollama run llama3.1:8b' },
       },
       {
         heading: 'OpenAI-compatible API',
@@ -121,6 +126,11 @@ const baseArticles: Article[] = [
     readTime: 12,
     tags: ['vLLM', 'AWQ', 'NVIDIA', 'RTX 4090', 'API', 'Docker'],
     publishedAt: '2025-06-18',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'CUDA 12.1+ · vLLM 0.6+ · AWQ INT4 · RTX 4090 24GB · OpenAI API :8000',
+      zh: 'CUDA 12.1+ · vLLM 0.6+ · AWQ INT4 · RTX 4090 24GB · OpenAI API :8000',
+    },
     content: [
       {
         heading: 'Why vLLM + AWQ?',
@@ -156,6 +166,11 @@ const baseArticles: Article[] = [
     readTime: 5,
     tags: ['Docker', 'Ollama', 'Open WebUI', 'Compose', 'GGUF'],
     publishedAt: '2025-06-20',
+    verifiedAt: '2026-07-22',
+    verifiedStack: {
+      en: 'Docker Compose v2 · ollama/ollama · open-webui · optional NVIDIA deploy.resources',
+      zh: 'Docker Compose v2 · ollama/ollama · open-webui · 可选 NVIDIA deploy.resources',
+    },
     content: [
       {
         heading: 'The complete docker-compose.yml',

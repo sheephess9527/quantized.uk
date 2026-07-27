@@ -1,312 +1,312 @@
 {
-  "fetchedAt": "2026-07-22T06:44:23.304Z",
+  "fetchedAt": "2026-07-27T02:39:03.850Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 51,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
-      "downloads": 258496,
-      "likes": 379,
+      "downloads": 282887,
+      "likes": 382,
       "lastModified": "2024-12-01T04:12:27.000Z"
     },
     "llama-3.1-70b": {
       "repo": "bartowski/Meta-Llama-3.1-70B-Instruct-GGUF",
-      "downloads": 18210,
+      "downloads": 22277,
       "likes": 73,
       "lastModified": "2024-07-29T16:56:18.000Z"
     },
     "llama-3.2-3b": {
       "repo": "bartowski/Llama-3.2-3B-Instruct-GGUF",
-      "downloads": 171853,
+      "downloads": 169866,
       "likes": 228,
       "lastModified": "2024-10-08T14:01:10.000Z"
     },
     "llama-3.2-1b": {
       "repo": "bartowski/Llama-3.2-1B-Instruct-GGUF",
-      "downloads": 263185,
+      "downloads": 202362,
       "likes": 171,
       "lastModified": "2024-10-08T14:00:29.000Z"
     },
     "llama-3.3-70b": {
       "repo": "unsloth/Llama-3.3-70B-Instruct-GGUF",
-      "downloads": 21267,
-      "likes": 122,
+      "downloads": 20501,
+      "likes": 123,
       "lastModified": "2025-05-10T04:18:57.000Z"
     },
     "qwen2.5-7b": {
       "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF",
-      "downloads": 72300,
-      "likes": 167,
+      "downloads": 77441,
+      "likes": 169,
       "lastModified": "2024-09-20T06:38:28.000Z"
     },
     "qwen2.5-14b": {
       "repo": "Qwen/Qwen2.5-14B-Instruct-GGUF",
-      "downloads": 25796,
-      "likes": 61,
+      "downloads": 30985,
+      "likes": 62,
       "lastModified": "2024-09-20T06:43:49.000Z"
     },
     "qwen2.5-32b": {
       "repo": "Qwen/Qwen2.5-32B-Instruct-GGUF",
-      "downloads": 4896,
+      "downloads": 4538,
       "likes": 45,
       "lastModified": "2024-09-20T06:52:34.000Z"
     },
     "qwen2.5-72b": {
       "repo": "Qwen/Qwen2.5-72B-Instruct-GGUF",
-      "downloads": 3130,
-      "likes": 45,
+      "downloads": 3038,
+      "likes": 46,
       "lastModified": "2024-09-20T07:12:41.000Z"
     },
     "qwen2.5-3b": {
       "repo": "Qwen/Qwen2.5-3B-Instruct-GGUF",
-      "downloads": 182778,
-      "likes": 147,
+      "downloads": 186019,
+      "likes": 151,
       "lastModified": "2024-09-20T06:34:33.000Z"
     },
     "qwen2.5-coder-7b": {
       "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
-      "downloads": 179438,
-      "likes": 339,
+      "downloads": 193471,
+      "likes": 347,
       "lastModified": "2024-11-12T07:59:32.000Z"
     },
     "qwen2.5-coder-32b": {
       "repo": "bartowski/Qwen2.5-Coder-32B-Instruct-GGUF",
-      "downloads": 41729,
-      "likes": 114,
+      "downloads": 36403,
+      "likes": 118,
       "lastModified": "2024-11-10T22:39:25.000Z"
     },
     "deepseek-r1-distill-qwen-14b": {
       "repo": "bartowski/DeepSeek-R1-Distill-Qwen-14B-GGUF",
-      "downloads": 25281,
-      "likes": 239,
+      "downloads": 35924,
+      "likes": 241,
       "lastModified": "2025-03-10T16:49:14.000Z"
     },
     "deepseek-r1-distill-llama-70b": {
       "repo": "bartowski/DeepSeek-R1-Distill-Llama-70B-GGUF",
-      "downloads": 79191,
+      "downloads": 69088,
       "likes": 44,
       "lastModified": "2025-01-22T15:19:01.000Z"
     },
     "deepseek-coder-v2-lite": {
       "repo": "bartowski/DeepSeek-Coder-V2-Lite-Instruct-GGUF",
-      "downloads": 57317,
+      "downloads": 61927,
       "likes": 178,
       "lastModified": "2024-06-20T17:12:43.000Z"
     },
     "phi-3.5-mini": {
       "repo": "bartowski/Phi-3.5-mini-instruct-GGUF",
-      "downloads": 114105,
-      "likes": 82,
+      "downloads": 134841,
+      "likes": 83,
       "lastModified": "2024-09-15T07:35:15.000Z"
     },
     "mistral-nemo-12b": {
       "repo": "bartowski/Mistral-Nemo-Instruct-2407-GGUF",
-      "downloads": 32539,
-      "likes": 119,
+      "downloads": 33437,
+      "likes": 120,
       "lastModified": "2024-11-05T00:16:41.000Z"
     },
     "mistral-small-24b": {
       "repo": "bartowski/Mistral-Small-Instruct-2409-GGUF",
-      "downloads": 3064,
+      "downloads": 2560,
       "likes": 53,
       "lastModified": "2024-09-19T02:51:18.000Z"
     },
     "gemma-2-9b": {
       "repo": "bartowski/gemma-2-9b-it-GGUF",
-      "downloads": 20920,
+      "downloads": 21662,
       "likes": 232,
       "lastModified": "2024-07-15T18:57:00.000Z"
     },
     "codestral-22b": {
       "repo": "bartowski/Codestral-22B-v0.1-GGUF",
-      "downloads": 28809,
+      "downloads": 29582,
       "likes": 197,
       "lastModified": "2024-06-05T17:00:40.000Z"
     },
     "granite-3.1-8b": {
       "repo": "bartowski/granite-3.1-8b-instruct-GGUF",
-      "downloads": 3304,
+      "downloads": 2233,
       "likes": 12,
       "lastModified": "2024-12-23T15:40:30.000Z"
     },
     "gemma-2-2b": {
       "repo": "bartowski/gemma-2-2b-it-GGUF",
-      "downloads": 184289,
+      "downloads": 166923,
       "likes": 100,
       "lastModified": "2024-08-05T19:14:36.000Z"
     },
     "gemma-2-27b": {
       "repo": "bartowski/gemma-2-27b-it-GGUF",
-      "downloads": 5646,
+      "downloads": 4669,
       "likes": 174,
       "lastModified": "2024-08-03T22:54:43.000Z"
     },
     "qwen2.5-0.5b": {
       "repo": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
-      "downloads": 160391,
-      "likes": 112,
+      "downloads": 170419,
+      "likes": 113,
       "lastModified": "2024-09-20T06:20:24.000Z"
     },
     "qwen2.5-1.5b": {
       "repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
-      "downloads": 204403,
-      "likes": 131,
+      "downloads": 210805,
+      "likes": 133,
       "lastModified": "2024-09-20T06:31:38.000Z"
     },
     "mistral-7b-v0.3": {
       "repo": "bartowski/Mistral-7B-Instruct-v0.3-GGUF",
-      "downloads": 17691,
-      "likes": 43,
+      "downloads": 19401,
+      "likes": 44,
       "lastModified": "2024-05-22T19:09:41.000Z"
     },
     "deepseek-r1-distill-qwen-7b": {
       "repo": "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF",
-      "downloads": 58453,
-      "likes": 140,
+      "downloads": 69694,
+      "likes": 141,
       "lastModified": "2025-03-07T19:13:17.000Z"
     },
     "deepseek-r1-distill-qwen-32b": {
       "repo": "bartowski/DeepSeek-R1-Distill-Qwen-32B-GGUF",
-      "downloads": 28862,
-      "likes": 310,
+      "downloads": 29465,
+      "likes": 316,
       "lastModified": "2025-01-22T15:19:08.000Z"
     },
     "olmo-2-7b": {
       "repo": "bartowski/OLMo-2-1124-7B-Instruct-GGUF",
-      "downloads": 14482,
+      "downloads": 14782,
       "likes": 12,
       "lastModified": "2024-11-27T12:42:17.000Z"
     },
     "internlm2-7b": {
       "repo": "bartowski/internlm2_5-7b-chat-GGUF",
-      "downloads": 490,
+      "downloads": 495,
       "likes": 0,
       "lastModified": "2024-07-03T20:05:12.000Z"
     },
     "internlm2-20b": {
       "repo": "bartowski/internlm2_5-20b-chat-GGUF",
-      "downloads": 716,
+      "downloads": 814,
       "likes": 8,
       "lastModified": "2024-08-05T19:50:00.000Z"
     },
     "aya-23-8b": {
       "repo": "bartowski/aya-23-8B-GGUF",
-      "downloads": 1186,
+      "downloads": 1175,
       "likes": 55,
       "lastModified": "2024-05-23T20:09:08.000Z"
     },
     "falcon-3-10b": {
       "repo": "bartowski/Falcon3-10B-Instruct-GGUF",
-      "downloads": 2532,
+      "downloads": 2427,
       "likes": 3,
       "lastModified": "2024-12-23T04:26:29.000Z"
     },
     "qwen3-8b": {
       "repo": "Qwen/Qwen3-8B-GGUF",
-      "downloads": 151119,
-      "likes": 227,
+      "downloads": 172452,
+      "likes": 231,
       "lastModified": "2025-05-21T06:31:50.000Z"
     },
     "qwen3-14b": {
       "repo": "Qwen/Qwen3-14B-GGUF",
-      "downloads": 84763,
-      "likes": 113,
+      "downloads": 91469,
+      "likes": 114,
       "lastModified": "2025-05-09T07:16:19.000Z"
     },
     "llama-4-scout-17b": {
       "repo": "unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF",
-      "downloads": 39739,
-      "likes": 157,
+      "downloads": 32246,
+      "likes": 158,
       "lastModified": "2025-06-17T15:28:28.000Z"
     },
     "llama-4-maverick-17b": {
       "repo": "unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF",
-      "downloads": 6856,
+      "downloads": 6594,
       "likes": 49,
       "lastModified": "2025-06-18T00:37:35.000Z"
     },
     "qwen3-32b": {
       "repo": "Qwen/Qwen3-32B-GGUF",
-      "downloads": 26430,
+      "downloads": 24369,
       "likes": 68,
       "lastModified": "2025-05-09T07:16:46.000Z"
     },
     "qwen3-30b-a3b": {
       "repo": "Qwen/Qwen3-30B-A3B-GGUF",
-      "downloads": 91106,
-      "likes": 73,
+      "downloads": 94526,
+      "likes": 74,
       "lastModified": "2025-05-21T06:25:14.000Z"
     },
     "qwen3-235b-a22b": {
       "repo": "Qwen/Qwen3-235B-A22B-GGUF",
-      "downloads": 917,
+      "downloads": 927,
       "likes": 10,
       "lastModified": "2025-05-21T06:27:12.000Z"
     },
     "deepseek-v3": {
       "repo": "deepseek-ai/DeepSeek-V3",
-      "downloads": 1081740,
+      "downloads": 1227741,
       "likes": 4102,
       "lastModified": "2025-03-27T04:01:45.000Z"
     },
     "deepseek-r1": {
       "repo": "deepseek-ai/DeepSeek-R1",
-      "downloads": 8786112,
-      "likes": 13492,
+      "downloads": 8929922,
+      "likes": 13508,
       "lastModified": "2025-03-27T04:01:59.000Z"
     },
     "yi-1.5-34b": {
       "repo": "bartowski/Yi-1.5-34B-Chat-GGUF",
-      "downloads": 540,
+      "downloads": 1305,
       "likes": 26,
       "lastModified": "2024-05-12T21:16:40.000Z"
     },
     "qwen3-4b": {
       "repo": "Qwen/Qwen3-4B-GGUF",
-      "downloads": 297646,
-      "likes": 120,
+      "downloads": 289340,
+      "likes": 124,
       "lastModified": "2025-05-21T06:32:23.000Z"
     },
     "mistral-large-3": {
       "repo": "mistralai/Mistral-Large-3-675B-Instruct-2512",
-      "downloads": 815,
+      "downloads": 868,
       "likes": 239,
       "lastModified": "2026-07-15T12:22:43.000Z"
     },
     "glm-4-9b-chat": {
       "repo": "zai-org/glm-4-9b-chat-hf",
-      "downloads": 22705,
+      "downloads": 21846,
       "likes": 25,
       "lastModified": "2025-01-27T05:26:17.000Z"
     },
     "qwen3-coder-30b-a3b": {
       "repo": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-      "downloads": 1547146,
-      "likes": 1170,
+      "downloads": 1533665,
+      "likes": 1178,
       "lastModified": "2025-12-03T08:05:17.000Z"
     },
     "gemma-3-27b-it": {
       "repo": "google/gemma-3-27b-it",
-      "downloads": 749324,
-      "likes": 2002,
+      "downloads": 841567,
+      "likes": 2003,
       "lastModified": "2025-03-21T20:29:02.000Z"
     },
     "deepseek-r1-distill-llama-8b": {
       "repo": "bartowski/DeepSeek-R1-Distill-Llama-8B-GGUF",
-      "downloads": 8820,
+      "downloads": 9191,
       "likes": 53,
       "lastModified": "2025-01-22T15:19:31.000Z"
     },
     "phi-4": {
       "repo": "bartowski/phi-4-GGUF",
-      "downloads": 10795,
+      "downloads": 10848,
       "likes": 62,
       "lastModified": "2025-01-11T04:10:35.000Z"
     },
     "qwen3-1.7b": {
       "repo": "Qwen/Qwen3-1.7B-GGUF",
-      "downloads": 19401,
-      "likes": 54,
+      "downloads": 22190,
+      "likes": 55,
       "lastModified": "2025-05-09T07:16:01.000Z"
     }
   }

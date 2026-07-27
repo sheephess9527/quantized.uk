@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-07-22',
+    en: 'Polish: re-rendered og.png (71+ models), all 22 cookbook guides have verified stack banners',
+    zh: '打磨：重渲 og.png（71+ 模型文案），全部 22 篇 Cookbook 已加验证技术栈条',
+  },
+  {
+    date: '2026-07-22',
     en: 'Cadence pack: +4 models (Gemma 3 27B, R1-Llama-8B, Phi-4, Qwen3 1.7B), superseded tags, measured/estimated labels, Hub “recent”, weekly updates, RSS, cookbook verified stack (71 models)',
     zh: '保鲜组合：+4 模型（Gemma 3 27B、R1-Llama-8B、Phi-4、Qwen3 1.7B）、过时标注、实测/估算、Hub「最近新增」、本周更新、RSS、Cookbook 验证栈（共 71 个）',
   },
