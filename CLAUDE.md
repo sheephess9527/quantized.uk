@@ -139,11 +139,14 @@ Cloudflare **Pages** not Workers · output dir `out` not `.next` · Next.js ≥ 
 if a deploy command is forced, use `true` (not `done`). · No required env vars for build
 (optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` defaults to `quantized.uk` in code).
 
-## Icons
+## Icons & OG
 
-Master is `public/icon.svg`; regenerate PNGs with the bundled Chromium recipe in README §10
-(this env has no ImageMagick/sharp). Update all sizes together after editing the SVG.
+Master app mark is `public/icon.svg`; regenerate PNGs with the bundled Chromium recipe in
+README §10 (this env has no ImageMagick/sharp). Update all sizes together after editing the SVG.
 Also keep `public/favicon.svg` in sync when the mark changes.
+
+**OG:** master text lives in `public/og.svg`; ship `public/og.png` for social (platforms ignore SVG).
+After changing model-count copy in `og.svg`, re-render PNG via README §10 so shares stay accurate.
 
 ## Recent ships (summary for context)
 

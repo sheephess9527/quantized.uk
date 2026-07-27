@@ -28,4 +28,4 @@ English default UI; Chinese toggle (client-side, same URLs).
 
 ## Contact
 
-No public source repository link. See /about/ for maintenance and update policy.
+No public source repository link on the site. Feedback: hello@quantized.uk. See /about/ for maintenance and update policy.

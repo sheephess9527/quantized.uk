@@ -2,6 +2,8 @@
 
 Thank you for helping build the most practical LLM quantization reference on the web. This site is **fully static** — all content lives in TypeScript data files under `lib/data/`. No database, no API server.
 
+Also read **`CLAUDE.md`** (working agreement) and the **README.md** handoff box before large changes.
+
 ## Quick start
 
 ```bash
@@ -12,7 +14,7 @@ npm run dev        # http://localhost:3000
 npm run build      # static export → out/
 ```
 
-Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN=quantized.uk` in your environment (or Cloudflare Pages) to enable privacy-friendly analytics. See `.env.example`.
+Analytics: Plausible defaults to domain `quantized.uk` in code (optional override via `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`). See `.env.example`.
 
 ---
 
@@ -20,13 +22,13 @@ Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN=quantized.uk` in your environment (or Cloudfla
 
 | Area | Files | Notes |
 |------|-------|-------|
-| **Models** | `lib/data/models.ts`, `models-extra.ts`, `models-extra-2.ts` | Primary data moat — see below |
-| **HF live stats** | `lib/data/hf-repos.ts`, `scripts/fetch-hf-stats.mjs` | Keep both maps in sync |
-| **Cookbook articles** | `lib/data/cookbook.ts`, `cookbook-extra.ts`, `cookbook-extra-2.ts` | Standalone pages at `/cookbook/[slug]/` |
+| **Models** | `lib/data/models-extra-6.ts` (or new pack) + import in `models.ts` | Primary data moat — see below |
+| **HF live stats** | `lib/data/hf-repos.mjs` only | `hf-repos.ts` re-exports; do not duplicate in the fetch script |
+| **Cookbook articles** | `lib/data/cookbook.ts`, `cookbook-extra.ts`, `cookbook-extra-2.ts` | Prefer `verifiedAt` + `verifiedStack` on high-traffic guides |
 | **Benchmarks** | `lib/data/benchmarks.ts` | Speed / PPL matrix data |
 | **GPUs** | `lib/data/gpus.ts` | Hardware database for VRAM calculator |
 | **Translations** | `lib/i18n/translations.ts` | EN + ZH required for UI strings |
-| **Changelog** | `lib/data/meta.ts` | Add entry for user-visible data changes |
+| **Changelog** | `lib/data/meta.ts` | Bump `dataLastUpdated` + top `changelog` entry |
 
 ---
 
@@ -34,10 +36,10 @@ Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN=quantized.uk` in your environment (or Cloudfla
 
 ### 1. Pick the right file
 
-- **Core / flagship models** → `lib/data/models.ts` (`baseModels`)
-- **Batch additions** → `lib/data/models-extra.ts` or `models-extra-2.ts`
+- **Core / flagship models** → `lib/data/models.ts` (`baseModels`) only if truly foundational
+- **Batch additions** → latest pack (`models-extra-6.ts` as of 2026-07) or new `models-extra-N.ts` imported from `models.ts`
 
-Keep each file manageable (~20 entries). Add a new `models-extra-N.ts` when a file grows large.
+Keep each file manageable (~20 entries).
 
 ### 2. Model entry schema
 
@@ -55,6 +57,8 @@ See `lib/data/types.ts`:
   contextLength: 131072,
   arch: { layers: 28, attHeads: 28, kvHeads: 4, headDim: 128 },
   description: { en: '...', zh: '...' },
+  addedAt: '2026-07-22',         // optional YYYY-MM-DD — Hub “Recently added” (45 days)
+  // status: 'superseded', supersededBy: 'qwen3-8b',  // optional legacy redirect
   quants: [
     {
       format: 'GGUF',            // GGUF | AWQ | EXL2 | GPTQ | HQQ
@@ -63,6 +67,7 @@ See `lib/data/types.ts`:
       vramGB: 5.4,               // Total VRAM incl. ~10% overhead at ctx=4096, batch=1
       pplLossPercent: 3.0,       // WikiText-2 PPL loss vs FP16 baseline
       speedRTX4090: 155,         // tokens/sec on RTX 4090 (optional)
+      confidence: 'community',   // optional: measured | estimated | community
       hfSearchUrl: 'https://huggingface.co/models?search=...',
     },
   ],
@@ -72,21 +77,19 @@ See `lib/data/types.ts`:
 ### 3. Data quality guidelines
 
 - **VRAM**: Use the site calculator to sanity-check. Round to one decimal.
-- **PPL loss**: Cite a source (your own run, published benchmark, or model card). If estimated, say so in the PR.
+- **PPL loss**: Cite a source (your own run, published benchmark, or model card). If estimated, leave `confidence` unset or set `estimated`.
 - **Speed**: RTX 4090, llama.cpp CUDA or ExLlamaV2, prompt_len=128, gen_len=128, batch=1 — match `lib/data/meta.ts` methodology.
 - **At least 2 quant variants** per model when community quants exist (e.g. Q4_K_M + AWQ).
 - **Bilingual descriptions** required (EN + ZH).
+- **Freshness**: set `addedAt` on new models so they appear under Hub `?recency=recent` and homepage weekly block.
 
 ### 4. Wire up Hugging Face stats (optional but preferred)
 
-Add a primary GGUF repo to **both**:
+Add a primary repo id to **`lib/data/hf-repos.mjs` only** (e.g. `bartowski/...` or official `Qwen/...-GGUF`).
 
-- `lib/data/hf-repos.ts`
-- `scripts/fetch-hf-stats.mjs` (`hfRepoMap`)
+Build-time fetch merges with existing `hf-stats.json` on failure — no token required.
 
-Use the most popular community quant (often `bartowski/...` or official `Qwen/...-GGUF`).
-
-### 5. Verify
+### 5. Ship checklist
 
 ```bash
 npm run build
@@ -96,55 +99,38 @@ Confirm:
 
 - New page at `/quant-hub/<your-model-id>/`
 - Model appears in Quant Hub filters and VRAM calculator dropdown
-- `getSiteStats()` homepage count increments
+- Homepage stats count increments
+- If user-visible: `meta.ts` changelog + `dataLastUpdated`
+- Hardcoded “N+ models” copy in SEO/layouts/`llms.txt` if you care about marketing numbers
+- README §9 changelog + CLAUDE.md if conventions changed
 
 ---
 
-## Adding a cookbook article
+## Cookbook guides
 
-1. Add an `Article` object to `lib/data/cookbook.ts` or `cookbook-extra.ts`
-2. Required fields: `id`, bilingual title/description, `category`, `difficulty`, `readTime`, `tags`, `publishedAt`, `content[]`
-3. Each content section needs bilingual `heading` + `body`; `code` blocks are optional
-4. Static page auto-generates via `app/cookbook/[slug]/page.tsx`
-5. Add slug to sitemap (automatic if imported in `lib/data/cookbook.ts`)
+- Add articles in `cookbook-extra-2.ts` (or a new pack) and export through `cookbook.ts`.
+- High-traffic guides should set:
 
-**Categories:** `edge` | `server` | `docker` | `mac`  
-**Difficulty:** `beginner` | `intermediate` | `advanced`
-
-Focus on **battle-tested, reproducible** guides — exact commands, hardware tested, gotchas included.
-
----
-
-## Submitting benchmark data
-
-Edit `lib/data/benchmarks.ts`. Include:
-
-- Model + quant level tested
-- Hardware (GPU, driver, framework version)
-- Metric (tok/s or PPL)
-- Test conditions matching our methodology panel on `/benchmarks`
+```typescript
+verifiedAt: '2026-07-22',
+verifiedStack: {
+  en: 'Ollama 0.6+ · llama.cpp CUDA · …',
+  zh: 'Ollama 0.6+ · llama.cpp CUDA · …',
+},
+```
 
 ---
 
-## i18n
+## Docs discipline
 
-All user-facing strings go in `lib/i18n/translations.ts` under both `en` and `zh`. The type system uses `as const` — mirror structure exactly.
-
----
-
-## PR checklist
-
-- [ ] `npm run build` passes with no errors
-- [ ] New model IDs are unique and URL-safe
-- [ ] EN + ZH descriptions provided
-- [ ] `lib/data/meta.ts` changelog entry added (for data changes)
-- [ ] HF repo map updated if applicable
-- [ ] No unrelated refactors
+Same as `CLAUDE.md`: behaviour change without README/CLAUDE update is incomplete.
 
 ---
 
-## Code of conduct
+## Deploy
 
-Be constructive. Quantization data is often approximate — cite sources, flag estimates, and prefer reproducible measurements over hype.
+Push to `main` → Cloudflare Pages builds `npm run build` → publishes `out/`.
 
-Questions? Open a [GitHub issue](https://github.com/sheephess9527/quantized.uk/issues).
+Do **not** put private GitHub profile/repo URLs on live site pages (Footer / About / marketing copy).
+
+Questions? Site feedback: `hello@quantized.uk` (Footer).

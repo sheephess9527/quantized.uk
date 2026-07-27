@@ -78,35 +78,39 @@ app/                        # Next.js App Router pages
   benchmarks/page.tsx       # Charts + matrix
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
+  feed.xml/route.ts         # RSS (force-static)
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   globals.css               # Glass / glow utilities, grid background
 
 components/
-  layout/                   # Navbar (with lang toggle + Tools dropdown), Footer
-  home/                     # HeroSection, StatsBar, TodayBoard, FormatHeatmap, QuickAccess, FormatRadar
-  hub/                      # ModelCard, ModelDetail, FilterBar
-  tools/                    # VRAMCalculator, CLIGenerator
+  layout/                   # Navbar (lang + GPU profile + Tools), Footer
+  home/                     # Hero, JobPaths, WeeklyUpdates, StatsBar, TodayBoard, …
+  hub/                      # ModelCard, ModelDetail, FilterBar (incl. recency)
+  tools/                    # VRAMCalculator, CLIGenerator, FormatWizard, ModelCompare
 
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   67 models — exports combined `models` array
-    models-extra*.ts        #   models-extra .. models-extra-6 (packs → 71 models total)
-    cookbook*.ts            #   cookbook + cookbook-extra + cookbook-extra-2 (22 guides)
-    hf-repos.ts / .mjs      #   HF repo mapping for the build-time stats fetch
+    models.ts               #   71 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-6 (packs)
+    types.ts                #   QuantModel fields (status, addedAt, confidence, …)
+    cookbook*.ts            #   cookbook + extras (22 guides; verifiedAt on key articles)
+    hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   33 GPUs (NVIDIA consumer/pro, Apple Silicon, CPU RAM)
-    cookbook.ts             #   4 deployment recipes (bilingual)
+    meta.ts                 #   dataLastUpdated + changelog
   i18n/
     translations.ts         #   EN/ZH dictionary
     context.tsx             #   LanguageProvider + useLanguage() hook
   utils/
     vram.ts                 #   calcVRAM(), getVerdict(), quant BPW tables
     recommend.ts            #   getRecommendations() — GPU→model reverse lookup
-    cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM
+    model-meta.ts           #   isRecentModel, quantConfidence, superseded helpers
+    hub-url.ts              #   shareable Hub filter URLs
+    cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM / ExLlama
     cn.ts                   #   clsx + tailwind-merge helper
 
 next.config.js              # output: 'export', trailingSlash, images.unoptimized
@@ -172,7 +176,7 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 
 ```ts
 {
-  modelCount: models.length,        // currently 10
+  modelCount: models.length,        // currently 71
   formatCount: quantFormats.length, // currently 5
   gpuCount: gpuDatabase.length,     // currently 33
   avgAccuracy: '97.x%',             // 100 − min(pplLossPercent) per model, averaged
@@ -291,7 +295,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` (+ `formatRadarData`) |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
-| Map a model to its HF repo | `lib/data/hf-repos.ts` **and** `hf-repos.mjs` (keep both in sync) |
+| Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
 | Tweak generated commands | `lib/utils/cli.ts` |
@@ -355,6 +359,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-07-22 (b) — Docs sync after cadence pack
+
+- Fixed stale counts/structure in README (71 models, project tree, HF map = `.mjs` only).
+- Rewrote **CONTRIBUTING.md** for packs through `extra-6`, cadence fields, verified cookbook, feedback email.
+- `og.svg` marketing line → 71+ models (re-render `og.png` with §10 recipe if share cards must match).
+- `llms.txt` contact line → `hello@quantized.uk`.
 
 ### 2026-07-22 — Cadence pack A+B+C (freshness + trust + rhythm)
 
