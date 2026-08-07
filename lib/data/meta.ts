@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-07-22';
+export const dataLastUpdated = '2026-08-07';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-08-07',
+    en: 'Model index +4 → 75: GPT-OSS 20B/120B (native MXFP4), GLM-4.5-Air 106B-A12B, Devstral Small 1.1 — MoE-heavy batch for 16GB cards and unified-memory Macs',
+    zh: '模型索引 +4 → 75：GPT-OSS 20B/120B（原生 MXFP4）、GLM-4.5-Air 106B-A12B、Devstral Small 1.1 —— 面向 16GB 显卡与统一内存 Mac 的 MoE 批次',
+  },
   {
     date: '2026-07-22',
     en: 'Polish: re-rendered og.png (71+ models), all 22 cookbook guides have verified stack banners',

@@ -21,11 +21,11 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-07-22 cadence pack `d7cce75`):**
+**Live snapshot (2026-08-07 MoE freshness batch):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **71** in index (`models-extra` … `models-extra-6`) |
+| Models | **75** in index (`models-extra` … `models-extra-7`) |
 | Cookbook | **22** guides; key ones carry `verifiedAt` + `verifiedStack` |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Job paths, weekly updates block, data freshness line, honest format heat |
@@ -79,7 +79,7 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 
 **Adding models**
 
-1. Prefer `lib/data/models-extra-6.ts` (or new `models-extra-N.ts` + import in `models.ts`).
+1. Prefer `lib/data/models-extra-7.ts` (or new `models-extra-N.ts` + import in `models.ts`).
 2. Set `addedAt` to today when shipping a freshness batch.
 3. Wire `hfRepoMap` in **`lib/data/hf-repos.mjs` only** (single source; `hf-repos.ts` re-exports).
 4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks.
@@ -92,6 +92,15 @@ links/SEO). Card + detail show amber “Prefer {name}”.
 **Measured confidence** — models in the site-side benchmark set (see `MEASURED_MODEL_IDS` in
 `model-meta.ts`) with `speedRTX4090` default to **measured**; otherwise **estimated** unless
 `confidence` is set explicitly.
+
+**Natively-quantized weights** (e.g. GPT-OSS ships as MXFP4) — the released checkpoint *is* the
+quantized one, so set `pplLossPercent: 0.0` on that row and say why in `description`. Don't invent
+a loss figure against an FP16 original that was never published. Use the vendor's own name as
+`level` (`'MXFP4'`); `level` is a free string, only `format` is a union.
+
+**`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
+math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
+(vs the usual 128) halves its KV footprint and a copy-pasted 128 would silently overstate it.
 
 ## Content cadence (product priority)
 
@@ -112,7 +121,7 @@ Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=re
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-6)
+lib/data/models-extra-*.ts  # model packs (currently through extra-7)
 lib/data/meta.ts            # dataLastUpdated + changelog
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
@@ -152,6 +161,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-07 | **MoE freshness batch** — +4 models → 75 (`extra-7`): GPT-OSS 20B/120B native MXFP4, GLM-4.5-Air, Devstral Small 1.1; feed + counts + og.png |
 | 2026-07-22 | **Cadence pack A+B+C** — +4 models → 71; superseded tags; confidence column; Hub recent; weekly block; RSS; cookbook verified stack |
 | 2026-06-26 | Real-traffic UX — job paths, mobile GPU profile, honest format heat, feedback email, Plausible events |
 | 2026-06-26 | Model packs — Qwen3 MoE/32B, DeepSeek-V3/R1, Mistral Large 3, GLM-4, etc. |

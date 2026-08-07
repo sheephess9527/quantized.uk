@@ -5,7 +5,7 @@
 ## What this site is
 
 - Static reference site (no model hosting, no accounts)
-- 71+ quantized LLM index with VRAM, speed, and quality metadata
+- 75+ quantized LLM index with VRAM, speed, and quality metadata
 - RSS updates feed: https://quantized.uk/feed.xml
 - Tools: VRAM calculator, format wizard, CLI generator, model compare
 - 22 deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)

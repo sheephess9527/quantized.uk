@@ -92,8 +92,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   71 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-6 (packs)
+    models.ts               #   75 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-7 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (22 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -176,7 +176,7 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 
 ```ts
 {
-  modelCount: models.length,        // currently 71
+  modelCount: models.length,        // currently 75
   formatCount: quantFormats.length, // currently 5
   gpuCount: gpuDatabase.length,     // currently 33
   avgAccuracy: '97.x%',             // 100 − min(pplLossPercent) per model, averaged
@@ -290,7 +290,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-6.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-7.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` (+ `formatRadarData`) |
@@ -359,6 +359,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-08-07 — Cadence pack: MoE freshness batch (75 models)
+
+- **75 models** — new pack `lib/data/models-extra-7.ts` (`extraModels7`), all `addedAt: 2026-08-07`:
+  - **GPT-OSS 20B** (21B total / 3.6B active) and **GPT-OSS 120B** (117B / 5.1B active) — OpenAI
+    open-weight MoE, shipped *natively* in MXFP4. Listed with a `MXFP4` quant level and
+    `pplLossPercent: 0.0`, because the released checkpoint already is the 4-bit one; there is no
+    FP16 original to lose quality against. This is the first entry where a quant row is the
+    reference rather than a degradation of it.
+  - **GLM-4.5-Air** (106B / 12B active) — agentic/reasoning MoE, Q4 ≈ 64GB.
+  - **Devstral Small 1.1 24B** — Mistral + All Hands agentic coder, Q4 ≈ 14GB on a 16GB card.
+- Arch fields (`layers` / `attHeads` / `kvHeads` / `headDim`) verified against published model
+  configs, since they feed the VRAM calculator's KV-cache math — GPT-OSS uses `headDim: 64`,
+  which is half the usual 128 and materially changes long-context KV estimates.
+- `hfRepoMap` entries added in `lib/data/hf-repos.mjs` for all four.
+- **Editor's Picks / `todayFeed`** refreshed to the new batch (4 new + 2 hot).
+- **`dataLastUpdated`** → `2026-08-07`, changelog entry added (drives Home weekly block,
+  Hub `?recency=recent`, and `/feed.xml`).
+- Marketing copy **71+ → 75+**: `lib/seo.ts`, `lib/i18n/translations.ts` (en + zh),
+  `app/layout.tsx`, `app/quant-hub/layout.tsx`, `public/llms.txt`, `public/og.svg`;
+  `public/og.png` re-rendered (1200×630, §10 recipe).
+- Cookbook `verifiedAt` left at `2026-07-22` — the monthly re-verify is not due yet.
 
 ### 2026-07-22 (c) — OG PNG + full cookbook verified stacks
 

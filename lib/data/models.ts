@@ -6,6 +6,7 @@ import { extraModels3 } from './models-extra-3';
 import { extraModels4 } from './models-extra-4';
 import { extraModels5 } from './models-extra-5';
 import { extraModels6 } from './models-extra-6';
+import { extraModels7 } from './models-extra-7';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -220,14 +221,14 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7];
 
 /** Editor's Picks — refresh with each data cadence */
 export const todayFeed = [
-  { id: 1, type: 'new' as const, modelId: 'deepseek-r1-distill-llama-8b', format: 'GGUF', detail: 'Q4_K_M · 5.6 GB · R1 on 8GB', quantizer: 'bartowski', hardware: 'RTX 4060 8G' },
-  { id: 2, type: 'new' as const, modelId: 'qwen3-1.7b', format: 'GGUF', detail: 'Q4_K_M · 1.4 GB · edge', quantizer: 'bartowski', hardware: 'CPU / NUC' },
-  { id: 3, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · agentic coder', quantizer: 'bartowski', hardware: 'RTX 4090' },
-  { id: 4, type: 'new' as const, modelId: 'phi-4', format: 'GGUF', detail: 'Q4_K_M · 9.1 GB', quantizer: 'bartowski', hardware: 'RTX 4070 12G' },
-  { id: 5, type: 'upd' as const, modelId: 'gemma-3-27b-it', format: 'GGUF', detail: 'Q4_K_M · 16 GB · multimodal', quantizer: 'bartowski', hardware: 'RTX 4090' },
+  { id: 1, type: 'new' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: 'MXFP4 · 12.8 GB · native 4-bit', quantizer: 'openai', hardware: 'RTX 4070 Ti 16G' },
+  { id: 2, type: 'new' as const, modelId: 'devstral-small-2507', format: 'GGUF', detail: 'Q4_K_M · 14.3 GB · agentic coder', quantizer: 'unsloth', hardware: 'RTX 4080 16G' },
+  { id: 3, type: 'new' as const, modelId: 'gpt-oss-120b', format: 'GGUF', detail: 'MXFP4 · 61 GB · 5.1B active', quantizer: 'openai', hardware: 'H100 80G / M3 Ultra' },
+  { id: 4, type: 'new' as const, modelId: 'glm-4.5-air', format: 'GGUF', detail: 'Q4_K_M · 64 GB · 12B active', quantizer: 'unsloth', hardware: '2× 48GB' },
+  { id: 5, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · agentic coder', quantizer: 'bartowski', hardware: 'RTX 4090' },
   { id: 6, type: 'hot' as const, modelId: 'qwen3-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · 3B active', quantizer: 'bartowski', hardware: 'RTX 4060 Ti 16G' },
 ];
