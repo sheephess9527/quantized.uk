@@ -8,7 +8,7 @@
 - 75+ quantized LLM index with VRAM, speed, and quality metadata
 - RSS updates feed: https://quantized.uk/feed.xml
 - Tools: VRAM calculator, format wizard, CLI generator, model compare
-- 22 deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)
+- 23 deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)
 - Real-hardware benchmarks (RTX 4090/3090, Apple Silicon)
 
 ## Key URLs

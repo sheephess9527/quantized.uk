@@ -27,6 +27,9 @@ export const quantBPW: Record<string, number> = {
   'Q4_K_M':   4.85,
   'Q4_K_S':   4.58,
   'Q4_0':     4.55,
+  // Native release format for GPT-OSS (MoE weights are already 4.25-bit).
+  // Not a re-quantization — see lib/data/models-extra-7.ts.
+  'MXFP4':    4.25,
   'Q3_K_M':   3.87,
   'Q3_K_S':   3.50,
   'Q2_K':     2.63,
@@ -46,7 +49,7 @@ export const quantBPW: Record<string, number> = {
 };
 
 export const quantGroups: Record<string, string[]> = {
-  'GGUF': ['Q2_K', 'Q3_K_M', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
+  'GGUF': ['Q2_K', 'Q3_K_M', 'MXFP4', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
   'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],

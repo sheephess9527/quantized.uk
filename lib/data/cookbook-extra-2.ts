@@ -274,4 +274,88 @@ export const extraArticles2: Article[] = [
       },
     ],
   },
+  {
+    id: 'gpt-oss-mxfp4-local',
+    title: 'Run GPT-OSS 20B (and 120B) locally without re-quantizing',
+    titleZh: '本地运行 GPT-OSS 20B（及 120B）——不要重新量化',
+    description: 'GPT-OSS ships natively in MXFP4, so the usual "download the Q4_K_M" habit makes it bigger and worse. Sizing, the right flags, and how MoE expert-offload puts the 120B on a 24GB card.',
+    descriptionZh: 'GPT-OSS 原生就是 MXFP4，习惯性去下 Q4_K_M 反而更大更差。本文讲清显存怎么算、该用哪些参数，以及如何用 MoE 专家卸载在 24GB 卡上跑 120B。',
+    category: 'edge',
+    difficulty: 'intermediate',
+    readTime: 9,
+    tags: ['GPT-OSS', 'MXFP4', 'MoE', 'llama.cpp', 'Ollama', 'GGUF'],
+    publishedAt: '2026-08-08',
+    content: [
+      {
+        heading: 'The one thing to get right: MXFP4 is the original',
+        headingZh: '最关键的一点：MXFP4 就是原版',
+        body: 'Almost every other model on this site is published in BF16 and quantized by the community afterwards, so "find the Q4_K_M" is the right reflex. GPT-OSS breaks that reflex. OpenAI post-trained it with the MoE weights already in MXFP4 (~4.25 bits), and those MoE weights are over 90% of the parameters. The MXFP4 checkpoint is not a lossy copy of something better — it is the model. Converting it up to Q8_0, or sideways to Q4_K_M, gives you a file that is larger and no more accurate, because the precision it is padding back was never there.',
+        bodyZh: '本站几乎所有其他模型都是 BF16 发布、社区事后量化，所以"找 Q4_K_M"是对的直觉。GPT-OSS 打破了这个直觉：OpenAI 在后训练阶段就把 MoE 权重做成了 MXFP4（约 4.25 bit），而 MoE 权重占参数量 90% 以上。这份 MXFP4 权重不是某个更好版本的有损副本——它本身就是模型。把它转成 Q8_0 或平移到 Q4_K_M，只会得到一个更大但并不更准的文件，因为你补回去的精度从来就不存在。',
+        code: {
+          lang: 'text',
+          content: 'gpt-oss-20b   MXFP4 (native) ~12.8 GB   ← use this\ngpt-oss-20b   Q8_0  (upcast)  ~13.8 GB   bigger, not better\n\ngpt-oss-120b  MXFP4 (native) ~61 GB     ← use this\n\nRule: for GPT-OSS, "bigger quant" buys you nothing.\nSpend the VRAM on context length instead.',
+        },
+      },
+      {
+        heading: 'Sizing it for your card',
+        headingZh: '按你的显卡估算',
+        body: 'The 20B fits a 16GB card with room for a useful context window. Note that GPT-OSS uses a head dimension of 64 rather than the usual 128, which halves its KV cache compared to a same-layer-count model — long context is unusually cheap here. Use the VRAM calculator with the MXFP4 level selected; picking Q4_K_M instead will overstate your weights by roughly 14%.',
+        bodyZh: '20B 在 16GB 卡上可跑，且还剩下够用的上下文空间。注意 GPT-OSS 的 head dim 是 64 而非常见的 128，同层数下 KV cache 直接减半——长上下文在这个模型上便宜得反常。用显存计算器时记得选 MXFP4 档；选 Q4_K_M 会把权重高估约 14%。',
+        code: {
+          lang: 'text',
+          content: 'gpt-oss-20b @ MXFP4, batch=1\n  weights                    ~12.8 GB\n  KV cache @  8K ctx          ~0.4 GB\n  KV cache @ 32K ctx          ~1.5 GB\n  KV cache @ 131K ctx         ~6.2 GB\n\n16GB card  → comfortable to ~32K ctx\n24GB card  → full 131K ctx with headroom',
+        },
+      },
+      {
+        heading: 'Fastest path: Ollama',
+        headingZh: '最省事：Ollama',
+        body: 'Ollama pulls the MXFP4 build by default, so there is no quant tag to choose and no way to accidentally get a re-quantized one. This is the right starting point unless you need custom flags.',
+        bodyZh: 'Ollama 默认拉取的就是 MXFP4 构建，没有量化档位可选，也就不会误拿到重新量化的版本。除非你需要自定义参数，否则从这里开始最合适。',
+        code: {
+          lang: 'bash',
+          content: 'ollama pull gpt-oss:20b\nollama run gpt-oss:20b\n\n# 120B — needs ~61GB of combined VRAM+RAM\nollama pull gpt-oss:120b\n\n# OpenAI-compatible endpoint stays on :11434\ncurl http://localhost:11434/v1/chat/completions \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model":"gpt-oss:20b","messages":[{"role":"user","content":"hi"}]}\'',
+        },
+      },
+      {
+        heading: 'llama.cpp: pass --jinja or the output gets strange',
+        headingZh: 'llama.cpp：必须加 --jinja，否则输出会很怪',
+        body: 'GPT-OSS was trained on OpenAI\'s "harmony" response format, which separates the reasoning channel from the final answer. That structure lives in the model\'s chat template, so llama.cpp needs --jinja to apply it. Skip the flag and you get raw channel markers bleeding into replies, or a model that never stops talking — a failure that reads like a broken quant but is purely a template problem.',
+        bodyZh: 'GPT-OSS 使用 OpenAI 的 "harmony" 响应格式训练，该格式把推理通道与最终回答分开。这个结构写在模型的 chat template 里，所以 llama.cpp 需要 --jinja 才会套用。不加这个参数，你会看到通道标记直接漏进回复里，或者模型停不下来——这个现象很像量化坏了，其实纯粹是模板问题。',
+        code: {
+          lang: 'bash',
+          content: '# 20B, all layers on a 16GB+ GPU\nllama-server \\\n  -hf ggml-org/gpt-oss-20b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --ctx-size 32768 \\\n  --host 0.0.0.0 --port 8080\n\n# --jinja       applies the harmony chat template  (do not omit)\n# -ngl 99       offload every layer to the GPU\n# --ctx-size    raise freely — KV cache is cheap on this model',
+        },
+      },
+      {
+        heading: 'Running the 120B on a 24GB consumer card',
+        headingZh: '在 24GB 消费级显卡上跑 120B',
+        body: 'This is where the MoE architecture pays off. Only 5.1B parameters are active per token, so the expert weights are read sparsely — which makes them the ideal thing to leave in system RAM. Keep attention and the dense layers on the GPU, push the MoE experts to CPU, and a 61GB model becomes usable on a 24GB card. It is not fast, but it is a genuinely different outcome from "does not fit".',
+        bodyZh: '这正是 MoE 架构的价值所在。每个 token 只激活 5.1B 参数，专家权重是稀疏读取的——因此它们最适合留在系统内存里。把注意力层和稠密层放显卡、MoE 专家推给 CPU，61GB 的模型就能在 24GB 卡上跑起来。速度不快，但这和"装不下"是两种结果。',
+        code: {
+          lang: 'bash',
+          content: '# Offload the MoE experts of N layers to CPU RAM\nllama-server \\\n  -hf ggml-org/gpt-oss-120b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --n-cpu-moe 28 \\\n  --ctx-size 16384\n\n# Tune --n-cpu-moe down until you OOM, then back off by 2.\n# Lower value = more experts on GPU = faster.\n# Needs ~64GB system RAM. Expect single-digit tok/s.',
+        },
+      },
+      {
+        heading: 'Reasoning effort is a dial, not a fixed cost',
+        headingZh: '推理强度是可调的，不是固定开销',
+        body: 'GPT-OSS exposes low / medium / high reasoning effort. High spends far more tokens thinking before answering, which on local hardware is the difference between a snappy assistant and one that pauses for a minute. Set it low for chat and autocomplete, high only for problems that actually need the chain of thought.',
+        bodyZh: 'GPT-OSS 支持 low / medium / high 三档推理强度。high 会在回答前消耗多得多的 token 思考，在本地硬件上这就是"响应利落的助手"和"卡一分钟"的区别。日常对话和补全用 low，只在真正需要思维链的问题上开 high。',
+        code: {
+          lang: 'text',
+          content: 'Simplest portable form — put it in the system message:\n\n  System: Reasoning: low\n\nRough local cost on a 16GB card (20B):\n  low     fast, chat-grade latency\n  medium  noticeably more thinking tokens\n  high    can multiply time-to-first-answer several times over\n\nStart at low. Raise it per-task, not globally.',
+        },
+      },
+      {
+        heading: 'Common failure modes',
+        headingZh: '常见故障对照',
+        body: 'Most GPT-OSS problems reported locally are one of four things, and none of them are the quantization. Check these before hunting for a different build.',
+        bodyZh: '本地跑 GPT-OSS 报的问题绝大多数是以下四种之一，且没有一种是量化的锅。换构建之前先对照检查。',
+        code: {
+          lang: 'text',
+          content: 'Channel markers in the output, or it never stops\n  → missing --jinja (harmony template not applied)\n\n"unknown model architecture" on load\n  → llama.cpp / Ollama predates gpt-oss support; update\n\nSlower than expected on the 120B\n  → --n-cpu-moe too high; lower it until GPU VRAM is nearly full\n\nFile is much bigger than ~12.8GB (20B)\n  → you downloaded an upcast build; get the MXFP4 one',
+        },
+      },
+    ],
+  },
 ];

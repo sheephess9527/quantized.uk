@@ -26,7 +26,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **75** in index (`models-extra` … `models-extra-7`) |
-| Cookbook | **22** guides; key ones carry `verifiedAt` + `verifiedStack` |
+| Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack` |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Job paths, weekly updates block, data freshness line, honest format heat |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
@@ -97,6 +97,14 @@ links/SEO). Card + detail show amber “Prefer {name}”.
 quantized one, so set `pplLossPercent: 0.0` on that row and say why in `description`. Don't invent
 a loss figure against an FP16 original that was never published. Use the vendor's own name as
 `level` (`'MXFP4'`); `level` is a free string, only `format` is a union.
+**Also add the level to `quantBPW` + `quantGroups` in `lib/utils/vram.ts`** — that table is static
+and does *not* read from model data, so a model whose native format is missing there can only be
+sized with the wrong bpw. (The CLI generator is fine; it derives levels from `model.quants`.)
+
+**Never set `verifiedAt` you didn't earn** — it means "commands re-checked on this date". Agent
+environments here have no GPU and no HF network access, so most stacks can't actually be run. An
+unverified guide simply omits the field; back-dating or copying a sibling's date silently degrades
+the badge on all 23 guides. Same rule for `verifiedStack`.
 
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
@@ -161,6 +169,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-08 | **GPT-OSS follow-through** — `gpt-oss-mxfp4-local` guide (23); MXFP4 added to VRAM calculator (Q4_K_M had overstated GPT-OSS weights ~14%) |
 | 2026-08-07 | **MoE freshness batch** — +4 models → 75 (`extra-7`): GPT-OSS 20B/120B native MXFP4, GLM-4.5-Air, Devstral Small 1.1; feed + counts + og.png |
 | 2026-07-22 | **Cadence pack A+B+C** — +4 models → 71; superseded tags; confidence column; Hub recent; weekly block; RSS; cookbook verified stack |
 | 2026-06-26 | Real-traffic UX — job paths, mobile GPU profile, honest format heat, feedback email, Plausible events |

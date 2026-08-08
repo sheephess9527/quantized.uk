@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-08-07';
+export const dataLastUpdated = '2026-08-08';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-08-08',
+    en: 'New cookbook: running GPT-OSS 20B/120B locally without re-quantizing (23 guides). VRAM calculator now offers MXFP4 — picking Q4_K_M for GPT-OSS overstated weights by ~14%',
+    zh: '新增 Cookbook：本地运行 GPT-OSS 20B/120B 且不重新量化（共 23 篇）。显存计算器新增 MXFP4 档 —— 此前给 GPT-OSS 选 Q4_K_M 会把权重高估约 14%',
+  },
   {
     date: '2026-08-07',
     en: 'Model index +4 → 75: GPT-OSS 20B/120B (native MXFP4), GLM-4.5-Air 106B-A12B, Devstral Small 1.1 — MoE-heavy batch for 16GB cards and unified-memory Macs',

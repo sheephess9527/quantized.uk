@@ -360,6 +360,29 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-08 — GPT-OSS cookbook + MXFP4 in the VRAM calculator (23 guides)
+
+Follow-up to the 08-07 model batch: the models landed, but the two surfaces a visitor actually
+uses after finding them did not support their native format.
+
+- **VRAM calculator now offers `MXFP4` (4.25 bpw)** — `lib/utils/vram.ts`, added to `quantBPW`
+  and into the `GGUF` group in `quantGroups`. Previously the only way to size a GPT-OSS model was
+  to pick `Q4_K_M` (4.85), which **overstated weights by ~14%** (12.8GB → 14.6GB on the 20B), i.e.
+  the calculator told 16GB-card owners the model was tighter than it is. The CLI generator was
+  unaffected — it derives levels from each model's own `quants` array, so `MXFP4` already flowed
+  through there.
+- **New cookbook guide** `gpt-oss-mxfp4-local` in `lib/data/cookbook-extra-2.ts` (**23 guides**):
+  why re-quantizing GPT-OSS makes it larger and no better, per-context VRAM sizing, the `--jinja`
+  requirement for the harmony chat template, MoE expert offload (`--n-cpu-moe`) to run the 120B on
+  a 24GB card, reasoning-effort tuning, and a failure-mode table.
+- **No `verifiedAt` on the new guide.** The field means "commands were re-checked on this date";
+  this environment has no GPU and no network access to Hugging Face, so the commands could not be
+  run. Setting it would have made the badge meaningless everywhere it appears. See the rule now
+  recorded in `CLAUDE.md`.
+- Guide count `22 → 23` in `app/cookbook/layout.tsx` and `public/llms.txt`
+  (`components/home/ExploreStrip.tsx` already derives it from `articles.length`).
+- `dataLastUpdated` → `2026-08-08` + changelog entry.
+
 ### 2026-08-07 — Cadence pack: MoE freshness batch (75 models)
 
 - **75 models** — new pack `lib/data/models-extra-7.ts` (`extraModels7`), all `addedAt: 2026-08-07`:
