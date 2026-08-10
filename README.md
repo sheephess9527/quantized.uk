@@ -360,6 +360,32 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-08 (b) — Traffic-informed model batch (79 models)
+
+First batch picked against observed page traffic rather than model-release news. The top-5 pages
+were the homepage plus four cookbook guides — `amd-rocm-llamacpp`, `wsl2-ollama-gpu`,
+`dual-gpu-70b-llamacpp`, `mac-m3-pro-limits` — i.e. **all four are non-standard-hardware guides,
+none is a single-NVIDIA-card guide**. Volume was far too low to be conclusive (single-digit views),
+so this is treated as a directional hypothesis: the site's pull is hardware-constrained readers.
+Selection followed from that — nothing in this batch is a 400B-class flagship.
+
+- **79 models** — new pack `lib/data/models-extra-8.ts` (`extraModels8`), all `addedAt: 2026-08-08`:
+  - **Qwen3-VL 8B** — current-gen multimodal that still fits a 12GB card at Q4 (~5.9GB).
+  - **Qwen3-VL 30B-A3B** — multimodal MoE, ~3B active, suits unified memory and CPU offload.
+  - **Magistral Small 1.2 24B** — `[THINK]`-tagged reasoning at Q4 ~14GB, i.e. on a 16GB card.
+  - **Seed-OSS 36B** — dense, native 512K context; Q4 weights ~22GB (24GB card or 2×16GB).
+- **Qwen2-VL 7B marked `superseded` → `qwen3-vl-8b`** (kept listed, per the no-delete rule).
+- Arch fields cross-checked against published configs and against the site's own sibling entries;
+  a search result claiming Magistral is 32 layers / hidden 14336 was discarded as unreliable
+  (that is Mistral 7B's shape — the 24B Small family is 40 layers, matching `mistral-small-24b`
+  and `devstral-small-2507` already in the index).
+- Seed-OSS's `contextLength: 524288` is honest but expensive: 512K of KV cache is ~128GB on its
+  own at fp16, which the model description says outright rather than letting the calculator
+  surprise someone.
+- Editor's Picks refreshed; `hfRepoMap` entries added; counts `75+ → 79+` across
+  `lib/seo.ts`, `lib/i18n/translations.ts` (en + zh), `app/layout.tsx`,
+  `app/quant-hub/layout.tsx`, `public/llms.txt`, `public/og.svg`; `og.png` re-rendered.
+
 ### 2026-08-08 — GPT-OSS cookbook + MXFP4 in the VRAM calculator (23 guides)
 
 Follow-up to the 08-07 model batch: the models landed, but the two surfaces a visitor actually

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-08-08',
+    en: 'Model index +4 → 79: Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B — picked for constrained hardware (multimodal on a 12GB card, small-active MoE for unified memory, 512K context at dual-GPU size). Qwen2-VL 7B marked superseded',
+    zh: '模型索引 +4 → 79：Qwen3-VL 8B / 30B-A3B、Magistral Small 1.2、Seed-OSS 36B —— 面向受限硬件挑选（12GB 卡上的多模态、适合统一内存的小激活 MoE、双卡尺寸的 512K 上下文）。Qwen2-VL 7B 标记为过时',
+  },
+  {
+    date: '2026-08-08',
     en: 'New cookbook: running GPT-OSS 20B/120B locally without re-quantizing (23 guides). VRAM calculator now offers MXFP4 — picking Q4_K_M for GPT-OSS overstated weights by ~14%',
     zh: '新增 Cookbook：本地运行 GPT-OSS 20B/120B 且不重新量化（共 23 篇）。显存计算器新增 MXFP4 档 —— 此前给 GPT-OSS 选 Q4_K_M 会把权重高估约 14%',
   },

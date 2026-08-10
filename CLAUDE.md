@@ -21,11 +21,11 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-08-07 MoE freshness batch):**
+**Live snapshot (2026-08-08 traffic-informed batch):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **75** in index (`models-extra` … `models-extra-7`) |
+| Models | **79** in index (`models-extra` … `models-extra-8`) |
 | Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack` |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Job paths, weekly updates block, data freshness line, honest format heat |
@@ -79,7 +79,7 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 
 **Adding models**
 
-1. Prefer `lib/data/models-extra-7.ts` (or new `models-extra-N.ts` + import in `models.ts`).
+1. Prefer `lib/data/models-extra-8.ts` (or new `models-extra-N.ts` + import in `models.ts`).
 2. Set `addedAt` to today when shipping a freshness batch.
 3. Wire `hfRepoMap` in **`lib/data/hf-repos.mjs` only** (single source; `hf-repos.ts` re-exports).
 4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks.
@@ -112,6 +112,19 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
 
 ## Content cadence (product priority)
 
+**Who actually shows up (2026-08-08, weak signal — treat as hypothesis, not fact).** The first
+traffic snapshot put the homepage plus four cookbook guides in the top five:
+`amd-rocm-llamacpp`, `wsl2-ollama-gpu`, `dual-gpu-70b-llamacpp`, `mac-m3-pro-limits`. All four are
+**non-standard-hardware** guides; no single-NVIDIA-card guide made the list. Volume was single
+digits, so do not over-fit — but when choosing between two equally "newsworthy" models, prefer the
+one a constrained reader can actually run (AMD / Windows / Apple silicon / multi-GPU / CPU offload)
+over the 400B flagship. Re-check this against real numbers before treating it as settled.
+
+**Model-facing changes are a four-step path, not one step.** A visitor goes
+*home → model detail → VRAM calculator → cookbook guide*. Shipping a model into only the first two
+leaves the calculator giving wrong numbers (see the MXFP4 gap) and the guide missing. Verify all
+four before calling a model batch done.
+
 With real traffic, **freshness > new tools**. Suggested rhythm:
 
 | Cadence | Action |
@@ -129,7 +142,7 @@ Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=re
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-7)
+lib/data/models-extra-*.ts  # model packs (currently through extra-8)
 lib/data/meta.ts            # dataLastUpdated + changelog
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
@@ -169,6 +182,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-08 | **Traffic-informed batch** — +4 models → 79 (`extra-8`): Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B; Qwen2-VL superseded. Picked for constrained hardware, not release news |
 | 2026-08-08 | **GPT-OSS follow-through** — `gpt-oss-mxfp4-local` guide (23); MXFP4 added to VRAM calculator (Q4_K_M had overstated GPT-OSS weights ~14%) |
 | 2026-08-07 | **MoE freshness batch** — +4 models → 75 (`extra-7`): GPT-OSS 20B/120B native MXFP4, GLM-4.5-Air, Devstral Small 1.1; feed + counts + og.png |
 | 2026-07-22 | **Cadence pack A+B+C** — +4 models → 71; superseded tags; confidence column; Hub recent; weekly block; RSS; cookbook verified stack |

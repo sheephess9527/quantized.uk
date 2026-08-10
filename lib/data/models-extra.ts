@@ -325,6 +325,8 @@ export const extraModels: QuantModel[] = [
     name: 'Qwen2-VL 7B Instruct',
     family: 'Alibaba Qwen2',
     params: 8.29,
+    status: 'superseded',
+    supersededBy: 'qwen3-vl-8b',
     paramLabel: '7B',
     categories: ['multimodal', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
