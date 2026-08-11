@@ -3,6 +3,8 @@ import type { Article } from './cookbook';
 export const extraArticles2: Article[] = [
   {
     id: '8gb-gpu-starter-guide',
+    gpuPreset: { gpuId: 'rtx4060', ctx: 4096 },
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-4b', 'qwen3-vl-8b'],
     title: '8GB GPU Starter Guide: 3060 / 4060 / 3070',
     titleZh: '8GB 显卡入门指南：3060 / 4060 / 3070',
     description: 'The most common local LLM hardware tier — which models, quants, and context lengths actually fit in 8GB VRAM.',
@@ -81,6 +83,8 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'wsl2-ollama-gpu',
+    gpuPreset: { gpuId: 'rtx4060ti16', ctx: 8192 },
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'gpt-oss-20b'],
     title: 'WSL2 + Ollama GPU Passthrough on Windows',
     titleZh: 'Windows WSL2 + Ollama GPU 透传',
     description: 'Run Ollama with NVIDIA GPU acceleration inside WSL2 — the most reliable Windows path for local LLMs.',
@@ -198,6 +202,8 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'amd-rocm-llamacpp',
+    gpuPreset: { gpuId: 'rx7900xtx', ctx: 8192 },
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
     title: 'AMD GPU + llama.cpp via ROCm (Quick Start)',
     titleZh: 'AMD 显卡 + llama.cpp ROCm 快速入门',
     description: 'Run GGUF models on Radeon RX 7900 / 6800 series with llama.cpp HIP backend — what works and what does not.',
@@ -276,6 +282,8 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'gpt-oss-mxfp4-local',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 32768 },
+    relatedModelIds: ['gpt-oss-20b', 'gpt-oss-120b'],
     title: 'Run GPT-OSS 20B (and 120B) locally without re-quantizing',
     titleZh: '本地运行 GPT-OSS 20B（及 120B）——不要重新量化',
     description: 'GPT-OSS ships natively in MXFP4, so the usual "download the Q4_K_M" habit makes it bigger and worse. Sizing, the right flags, and how MoE expert-offload puts the 120B on a 24GB card.',

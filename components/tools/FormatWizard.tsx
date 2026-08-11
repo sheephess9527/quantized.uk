@@ -22,7 +22,7 @@ export default function FormatWizard() {
   const w = t.wizard;
 
   const [hardware, setHardware] = useState<HardwareType>(
-    gpu?.type === 'apple' ? 'mac' : gpu?.isCPU ? 'cpu' : gpu ? 'nvidia' : 'nvidia',
+    gpu?.type === 'apple' ? 'mac' : gpu?.type === 'amd' ? 'amd' : gpu?.isCPU ? 'cpu' : 'nvidia',
   );
   const [priority, setPriority] = useState<Priority>('quality');
   const [useCase, setUseCase] = useState<UseCase>('chat');
@@ -40,7 +40,7 @@ export default function FormatWizard() {
   const steps = [
     { label: w.stepHardware, content: (
       <div className="flex flex-wrap gap-2">
-        {(['nvidia', 'mac', 'cpu'] as HardwareType[]).map(h => (
+        {(['nvidia', 'amd', 'mac', 'cpu'] as HardwareType[]).map(h => (
           <button key={h} onClick={() => setHardware(h)}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
               hardware === h ? 'bg-violet-500/15 text-violet-300 border-violet-500/30' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>

@@ -48,6 +48,9 @@ export default function CookbookArticlePage({ params }: { params: { slug: string
           description: article.description,
           url,
           datePublished: article.publishedAt,
+          // verifiedAt means "commands re-checked on this date" — the closest
+          // honest mapping to dateModified. Omitted when the guide has none.
+          ...(article.verifiedAt ? { dateModified: article.verifiedAt } : {}),
           author: { '@type': 'Organization', name: 'quantized.uk' },
           publisher: { '@type': 'Organization', name: 'quantized.uk' },
         }}

@@ -3,6 +3,8 @@ import type { Article } from './cookbook';
 export const extraArticles: Article[] = [
   {
     id: 'rtx4060ti-what-to-run',
+    gpuPreset: { gpuId: 'rtx4060ti16', ctx: 8192 },
+    relatedModelIds: ['qwen3-14b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
     title: 'What Can You Run on RTX 4060 Ti 16G?',
     titleZh: 'RTX 4060 Ti 16G 能跑什么模型？',
     description: 'A practical guide to picking the right model and quant level for NVIDIA\'s best budget 16GB card.',
@@ -66,6 +68,7 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'dual-gpu-70b-llamacpp',
+    relatedModelIds: ['llama-3.3-70b', 'llama-3.1-70b', 'seed-oss-36b'],
     title: 'Running 70B on Dual RTX 3090 with llama.cpp',
     titleZh: '双 RTX 3090 运行 70B（llama.cpp）',
     description: 'Tensor-split across two 24GB cards to run Llama 3.1 70B or Qwen2.5 72B at Q4.',
@@ -107,6 +110,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'mac-m3-pro-limits',
+    gpuPreset: { gpuId: 'm3-pro-18', ctx: 8192 },
+    relatedModelIds: ['qwen3-8b', 'qwen3-vl-8b', 'gpt-oss-20b'],
     title: 'Mac M3 Pro: Realistic Model Limits',
     titleZh: 'Mac M3 Pro：实际模型运行极限',
     description: 'What actually fits in 18GB or 36GB unified memory with Ollama and llama.cpp.',

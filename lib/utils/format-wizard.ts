@@ -1,4 +1,4 @@
-export type HardwareType = 'nvidia' | 'mac' | 'cpu';
+export type HardwareType = 'nvidia' | 'amd' | 'mac' | 'cpu';
 export type Priority = 'quality' | 'speed' | 'ease';
 export type UseCase = 'chat' | 'code' | 'api';
 
@@ -33,6 +33,19 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
     else { score -= 30; }
   }
 
+  if (input.hardware === 'amd') {
+    if (format === 'GGUF') {
+      score += 32;
+      reasons.push({ en: 'GGUF via llama.cpp ROCm (or the Vulkan backend) is the only consistently supported path on Radeon', zh: 'GGUF 经 llama.cpp ROCm（或 Vulkan 后端）是 Radeon 上唯一稳定可用的路径' });
+    } else if (format === 'EXL2') {
+      score -= 60;
+      reasons.push({ en: 'ExLlamaV2 is CUDA-only — EXL2 will not run on ROCm at all', zh: 'ExLlamaV2 仅支持 CUDA —— EXL2 在 ROCm 上完全无法运行' });
+    } else {
+      score -= 35;
+      reasons.push({ en: 'AWQ/GPTQ/HQQ kernels are CUDA-first; ROCm support is partial and version-sensitive', zh: 'AWQ/GPTQ/HQQ 的算子以 CUDA 为先，ROCm 支持不完整且对版本敏感' });
+    }
+  }
+
   if (input.hardware === 'nvidia') {
     if (format === 'EXL2' && input.priority === 'speed') { score += 25; reasons.push({ en: 'EXL2 via ExLlamaV2 delivers the fastest consumer-GPU inference', zh: 'EXL2 + ExLlamaV2 在消费级 GPU 上推理速度最快' }); }
     if (format === 'AWQ' && input.useCase === 'api') { score += 20; reasons.push({ en: 'AWQ + vLLM is optimised for high-throughput API serving', zh: 'AWQ + vLLM 针对高吞吐 API 服务优化' }); }
@@ -62,6 +75,7 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
 function recommendFramework(format: string, input: WizardInput): string {
   if (input.hardware === 'mac') return 'Ollama / llama.cpp';
   if (input.hardware === 'cpu') return 'llama.cpp';
+  if (input.hardware === 'amd') return 'Ollama / llama.cpp (ROCm)';
   if (format === 'EXL2') return 'ExLlamaV2';
   if (format === 'AWQ' && input.useCase === 'api') return 'vLLM';
   if (format === 'GPTQ') return 'vLLM / AutoGPTQ';

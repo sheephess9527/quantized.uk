@@ -26,11 +26,11 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **79** in index (`models-extra` … `models-extra-8`) |
-| Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack` |
+| Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack`, 7 carry `gpuPreset`/`relatedModelIds` |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Job paths, weekly updates block, data freshness line, honest format heat |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM, CLI, format wizard, compare |
+| Tools | VRAM (43 GPUs incl. **AMD**), CLI, format wizard (NVIDIA/AMD/Mac/CPU), compare |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -76,6 +76,8 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 | `addedAt?: string` | `QuantModel` | `YYYY-MM-DD` — powers Hub **Recently added** (default window **45 days**) |
 | `confidence?: 'measured' \| 'estimated' \| 'community'` | `QuantVariant` | Optional; UI defaults via `quantConfidence()` |
 | `verifiedAt` / `verifiedStack` | `Article` (cookbook) | Stack re-check banner on article pages |
+| `gpuPreset?: { gpuId, ctx? }` | `Article` (cookbook) | Prefills the reverse VRAM lookup; `gpuId` must exist in `gpus.ts` |
+| `relatedModelIds?: string[]` | `Article` (cookbook) | Renders hub links in `GuideNextSteps` |
 
 **Adding models**
 
@@ -120,10 +122,20 @@ digits, so do not over-fit — but when choosing between two equally "newsworthy
 one a constrained reader can actually run (AMD / Windows / Apple silicon / multi-GPU / CPU offload)
 over the 400B flagship. Re-check this against real numbers before treating it as settled.
 
+**Serve that audience in the tools, not just the content.** AMD was the clearest example: an AMD
+guide was the #2 page while `gpuDatabase` had zero Radeon entries and the format wizard steered
+AMD users to CUDA-only EXL2. Before adding another guide for a hardware class, check that the
+VRAM calculator, `GPU['type']`, `HardwareType` in `lib/utils/format-wizard.ts`, and
+`FormatWizard.tsx`'s type mapping all actually know that hardware exists.
+
 **Model-facing changes are a four-step path, not one step.** A visitor goes
 *home → model detail → VRAM calculator → cookbook guide*. Shipping a model into only the first two
 leaves the calculator giving wrong numbers (see the MXFP4 gap) and the guide missing. Verify all
 four before calling a model batch done.
+The path runs backwards too: guides are where the traffic lands, so a guide should carry
+`gpuPreset` + `relatedModelIds` (see `components/cookbook/GuideNextSteps.tsx`) to send readers into
+the hub and the reverse VRAM lookup. Set `gpuPreset` only when one real GPU id represents the
+guide's hardware — leave it off for multi-GPU guides rather than faking a combined card.
 
 With real traffic, **freshness > new tools**. Suggested rhythm:
 
@@ -182,6 +194,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-08 | **AMD first-class** — 10 Radeon GPUs added (43 total); format wizard stopped recommending CUDA-only EXL2 to AMD; guides route into tools via `gpuPreset`/`relatedModelIds` |
 | 2026-08-08 | **Traffic-informed batch** — +4 models → 79 (`extra-8`): Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B; Qwen2-VL superseded. Picked for constrained hardware, not release news |
 | 2026-08-08 | **GPT-OSS follow-through** — `gpt-oss-mxfp4-local` guide (23); MXFP4 added to VRAM calculator (Q4_K_M had overstated GPT-OSS weights ~14%) |
 | 2026-08-07 | **MoE freshness batch** — +4 models → 75 (`extra-7`): GPT-OSS 20B/120B native MXFP4, GLM-4.5-Air, Devstral Small 1.1; feed + counts + og.png |

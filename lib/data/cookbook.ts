@@ -16,6 +16,14 @@ export interface Article {
   verifiedAt?: string;
   /** Short stack string shown on article header */
   verifiedStack?: { en: string; zh: string };
+  /**
+   * Hardware this guide targets — prefills the reverse VRAM lookup so a reader
+   * can go straight from "how do I run it" to "what else fits my card".
+   * `gpuId` must exist in lib/data/gpus.ts.
+   */
+  gpuPreset?: { gpuId: string; ctx?: number };
+  /** Model ids this guide is actually about — rendered as links into the hub */
+  relatedModelIds?: string[];
   content: Section[];
 }
 

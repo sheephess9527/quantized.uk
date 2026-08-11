@@ -13,6 +13,7 @@ const FEATURED_GPU_IDS = [
   'rtx4060ti16',
   'rtx4060ti',
   'rtx3090',
+  'rx7900xtx',
   'm3-max-48',
   'm3-16',
 ] as const;
@@ -39,7 +40,7 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
     if (profileGpu && !ids.includes(profileGpu.id)) {
       ids.unshift(profileGpu.id);
     }
-    return ids.slice(0, 7);
+    return ids.slice(0, 8);
   }, [profileGpu]);
 
   const counts = useMemo(() => {

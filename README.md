@@ -33,9 +33,9 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
-| **Cookbook** | `/cookbook` | 22 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 33 real GPUs |
-| **Format Wizard** | `/tools/format-wizard` | 3-question wizard → personalised GGUF / AWQ / EXL2 recommendation |
+| **Cookbook** | `/cookbook` | 23 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
+| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 43 real GPUs (incl. AMD Radeon) |
+| **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
 ### Design language
@@ -95,12 +95,12 @@ lib/
     models.ts               #   75 models — exports combined `models` array + todayFeed
     models-extra*.ts        #   models-extra .. models-extra-7 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
-    cookbook*.ts            #   cookbook + extras (22 guides; verifiedAt on key articles)
+    cookbook*.ts            #   cookbook + extras (23 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   33 GPUs (NVIDIA consumer/pro, Apple Silicon, CPU RAM)
+    gpus.ts                 #   43 GPUs (NVIDIA consumer/pro, AMD Radeon/ROCm, Apple Silicon, CPU RAM)
     meta.ts                 #   dataLastUpdated + changelog
   i18n/
     translations.ts         #   EN/ZH dictionary
@@ -178,7 +178,7 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 {
   modelCount: models.length,        // currently 75
   formatCount: quantFormats.length, // currently 5
-  gpuCount: gpuDatabase.length,     // currently 33
+  gpuCount: gpuDatabase.length,     // currently 43
   avgAccuracy: '97.x%',             // 100 − min(pplLossPercent) per model, averaged
 }
 ```
@@ -359,6 +359,43 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-08-08 (c) — AMD is a first-class target + guides now route into the tools
+
+Same traffic reading as (b): the top-5 pages are the homepage plus four non-standard-hardware
+cookbook guides, `amd-rocm-llamacpp` among them. Two things were broken for exactly those readers.
+
+**AMD was unsupported by the tools, while an AMD guide was the #2 page.**
+
+- `gpuDatabase` had **no AMD entries at all** — the `'amd'` member of the `GPU['type']` union
+  existed but was never used. A reader arriving on the ROCm guide could not select their card in
+  the VRAM calculator. Added 10: RX 7900 XTX / XT / GRE, 7800 XT, 7700 XT, 6900 XT, 6800 XT,
+  6700 XT, PRO W7900 48G, Instinct MI100 32G (**33 → 43 GPUs**; `getSiteStats()` picks this up
+  automatically).
+- **The Format Wizard actively gave AMD users a wrong answer.** `HardwareType` was
+  `'nvidia' | 'mac' | 'cpu'`, so AMD users had to pick "NVIDIA" — and with priority = speed the
+  wizard then recommended **EXL2 via ExLlamaV2, which is CUDA-only and cannot run on ROCm**.
+  Added `'amd'` to `HardwareType` with scoring that reflects reality: GGUF (llama.cpp ROCm/Vulkan)
+  strongly preferred, EXL2 pushed to last with an explicit reason, AWQ/GPTQ/HQQ penalised for
+  partial ROCm support. `FormatWizard.tsx` now maps `gpu.type === 'amd'` instead of falling
+  through to `'nvidia'`.
+- `GpuQuickChips` featured list gained `rx7900xtx` (7 → 8 chips).
+
+**Guides did not route readers into the tools.** Only 1 of 23 guides mentioned the reverse VRAM
+lookup, and it did so as an unclickable plain-text code block.
+
+- New optional `Article` fields in `lib/data/cookbook.ts`: `gpuPreset` (`{ gpuId, ctx }`) and
+  `relatedModelIds`.
+- New `components/cookbook/GuideNextSteps.tsx` — renders a prefilled reverse-lookup link
+  (`/tools/vram-calc/?mode=reverse&gpu=…&ctx=…&sort=quality`) plus links to the models the guide
+  covers. Returns `null` when a guide sets neither field, so unwired guides are unaffected.
+- Wired 7 guides: `amd-rocm-llamacpp`, `wsl2-ollama-gpu`, `mac-m3-pro-limits`,
+  `dual-gpu-70b-llamacpp` (models only — no single GPU entry represents a 2×24GB split),
+  `gpt-oss-mxfp4-local`, `8gb-gpu-starter-guide`, `rtx4060ti-what-to-run`.
+- `t.cookbook.nextSteps` added in **both** `en` and `zh`.
+
+**SEO:** cookbook `Article` JSON-LD now emits `dateModified` from `verifiedAt` (omitted when the
+guide has none, so it stays an honest claim).
 
 ### 2026-08-08 (b) — Traffic-informed model batch (79 models)
 

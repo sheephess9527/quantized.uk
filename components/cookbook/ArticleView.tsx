@@ -4,6 +4,7 @@ import { Clock } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
+import GuideNextSteps from '@/components/cookbook/GuideNextSteps';
 import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
 import CodeBlock from '@/components/cookbook/CodeBlock';
 import ReadingProgress from '@/components/cookbook/ReadingProgress';
@@ -96,6 +97,8 @@ export default function ArticleView({ article }: Props) {
             )}
           </section>
         ))}
+
+        <GuideNextSteps article={article} />
 
         <RelatedArticles articleId={article.id} />
 
