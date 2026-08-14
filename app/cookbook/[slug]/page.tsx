@@ -1,7 +1,7 @@
 import { articles } from '@/lib/data/cookbook';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots } from '@/lib/seo';
+import { canonical, defaultRobots, languageAlternates } from '@/lib/seo';
 import type { Metadata } from 'next';
 
 export function generateStaticParams() {
@@ -15,7 +15,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   return {
     title: `${article.title} | quantized.uk Cookbook`,
     description: article.description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages: languageAlternates(`/cookbook/${article.id}`) },
     robots: defaultRobots,
     openGraph: {
       title: article.title,

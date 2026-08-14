@@ -4,7 +4,7 @@ import ModelDetail from '@/components/hub/ModelDetail';
 import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots } from '@/lib/seo';
+import { canonical, defaultRobots, languageAlternates } from '@/lib/seo';
 
 export function generateStaticParams() {
   return models.map(m => ({ modelId: m.id }));
@@ -17,7 +17,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   return {
     title: `${model.name} — Quant Variants & VRAM | quantized.uk`,
     description: model.description.en,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages: languageAlternates(`/quant-hub/${model.id}`) },
     robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,

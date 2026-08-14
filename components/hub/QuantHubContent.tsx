@@ -11,7 +11,7 @@ import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
 import GpuQuickChips from '@/components/hub/GpuQuickChips';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { getRecommendations } from '@/lib/utils/recommend';
 import {

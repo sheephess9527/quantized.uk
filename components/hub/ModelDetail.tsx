@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { Calculator, ExternalLink, Zap } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useLanguage } from '@/lib/i18n/context';

@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState, useLayoutEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useCallback, ReactNode } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { translations, Lang } from './translations';
-
+import { langFromPathname, mirrorPath } from './routing';
 
 interface LangContextValue {
   lang: Lang;
@@ -16,34 +17,22 @@ const LangContext = createContext<LangContextValue>({
   toggleLang: () => {},
 });
 
-function readStoredLang(): Lang {
-  if (typeof window === 'undefined') return 'en';
-  try {
-    const stored = localStorage.getItem('lang') as Lang | null;
-    if (stored === 'en' || stored === 'zh') return stored;
-  } catch {
-    /* private browsing */
-  }
-  return 'en';
-}
-
+/**
+ * Language comes from the URL, not localStorage.
+ *
+ * `usePathname()` resolves during static prerendering, so `/zh/**` pages ship
+ * Chinese text inside the HTML instead of swapping it in after hydration —
+ * which is what makes the Chinese edition indexable at all. It also makes a
+ * Chinese page shareable: the URL carries the language.
+ */
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('en');
-
-  useLayoutEffect(() => {
-    const stored = readStoredLang();
-    setLang(stored);
-    document.documentElement.lang = stored;
-  }, []);
+  const pathname = usePathname();
+  const router = useRouter();
+  const lang = langFromPathname(pathname);
 
   const toggleLang = useCallback(() => {
-    setLang(prev => {
-      const next = prev === 'en' ? 'zh' : 'en';
-      localStorage.setItem('lang', next);
-      document.documentElement.lang = next;
-      return next;
-    });
-  }, []);
+    router.push(mirrorPath(pathname ?? '/'));
+  }, [router, pathname]);
 
   return (
     <LangContext.Provider value={{ lang, t: translations[lang] as typeof translations.en, toggleLang }}>

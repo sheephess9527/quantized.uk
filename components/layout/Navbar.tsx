@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, Zap, ChevronDown } from 'lucide-react';

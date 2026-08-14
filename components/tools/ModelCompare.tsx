@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { useSearchParams } from 'next/navigation';
 import { GitCompare, Copy, Check, Trophy } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';

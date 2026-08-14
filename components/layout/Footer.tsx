@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { Zap, ExternalLink, Mail } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';

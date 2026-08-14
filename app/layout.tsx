@@ -77,7 +77,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var l=localStorage.getItem('lang');if(l==='zh'||l==='en')document.documentElement.lang=l;}catch(e){}})();`,
+            // Language now comes from the URL, so the <html lang> can be corrected
+            // before paint without waiting for React. The static attribute stays
+            // "en" because a single root layout serves both trees.
+            __html: `(function(){try{var p=location.pathname;document.documentElement.lang=(p==='/zh'||p.indexOf('/zh/')===0)?'zh':'en';}catch(e){}})();`,
           }}
         />
       </head>

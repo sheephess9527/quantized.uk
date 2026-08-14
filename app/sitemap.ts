@@ -2,7 +2,8 @@ import { MetadataRoute } from 'next';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { canonical } from '@/lib/seo';
+import { canonical, languageAlternates } from '@/lib/seo';
+import { toZhPath } from '@/lib/i18n/routing';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
@@ -48,10 +49,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ];
 
-  return entries.map(e => ({
-    url: canonical(e.path),
-    lastModified: e.lastModified,
-    changeFrequency: e.changeFrequency,
-    priority: e.priority,
-  }));
+  // Both language trees are listed, and every entry carries the full hreflang
+  // set. Listing only one side makes the other look like an orphan duplicate.
+  return entries.flatMap(e => {
+    const languages = languageAlternates(e.path);
+    const common = {
+      lastModified: e.lastModified,
+      changeFrequency: e.changeFrequency,
+      priority: e.priority,
+      alternates: { languages },
+    };
+    return [
+      { url: canonical(e.path), ...common },
+      { url: canonical(toZhPath(e.path || '/')), ...common },
+    ];
+  });
 }

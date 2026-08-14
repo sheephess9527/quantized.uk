@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { useSearchParams } from 'next/navigation';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';

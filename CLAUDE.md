@@ -31,6 +31,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Home | Job paths, weekly updates block, data freshness line, honest format heat |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (43 GPUs incl. **AMD**), CLI, format wizard (NVIDIA/AMD/Mac/CPU), compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 232 pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -48,6 +49,16 @@ stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos
 
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI.
+- **Language comes from the URL.** English at `/`, Chinese at `/zh/**`. `LanguageProvider` reads
+  `usePathname()`; there is no `localStorage` language any more. This is deliberate — it is what
+  puts Chinese text into the static HTML so it can be indexed.
+  - **Adding a page means adding two**: the English route *and* an `app/zh/**` mirror that
+    re-exports it with Chinese metadata and `path: '/zh/...'`. A missing mirror silently 404s
+    every Chinese reader who clicks through to it.
+  - **Link with `@/components/i18n/LocalLink`, never bare `next/link`**, in anything rendered
+    inside both trees — a bare href throws Chinese readers back to English.
+  - hreflang comes free from `pageMetadata()`; hand-rolled `alternates` (the two dynamic English
+    routes) must pass `languages: languageAlternates(path)` explicitly.
 - **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
@@ -197,6 +208,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-08 | **Chinese edition indexable** — `/zh/**` mirror (232 pages), URL-driven i18n, `LocalLink`, hreflang + sitemap alternates |
 | 2026-08-08 | **AMD first-class** — 10 Radeon GPUs added (43 total); format wizard stopped recommending CUDA-only EXL2 to AMD; guides route into tools via `gpuPreset`/`relatedModelIds` |
 | 2026-08-08 | **Traffic-informed batch** — +4 models → 79 (`extra-8`): Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B; Qwen2-VL superseded. Picked for constrained hardware, not release news |
 | 2026-08-08 | **GPT-OSS follow-through** — `gpt-oss-mxfp4-local` guide (23); MXFP4 added to VRAM calculator (Q4_K_M had overstated GPT-OSS weights ~14%) |

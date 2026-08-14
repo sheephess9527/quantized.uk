@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, Layers, BookOpen, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { getSiteStats } from '@/lib/stats';

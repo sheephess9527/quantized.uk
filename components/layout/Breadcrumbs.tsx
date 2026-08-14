@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { ChevronRight } from 'lucide-react';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical } from '@/lib/seo';

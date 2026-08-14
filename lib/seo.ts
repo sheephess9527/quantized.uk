@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { toEnPath, toZhPath } from '@/lib/i18n/routing';
 
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';
@@ -37,6 +38,19 @@ export const defaultRobots = {
   },
 };
 
+/**
+ * hreflang pair for a path in either tree. Google needs both URLs to declare
+ * each other, otherwise `/` and `/zh/` look like duplicate content rather than
+ * translations. `x-default` points at English.
+ */
+export function languageAlternates(path = '') {
+  return {
+    'en': canonical(toEnPath(path || '/')),
+    'zh-Hans': canonical(toZhPath(path || '/')),
+    'x-default': canonical(toEnPath(path || '/')),
+  };
+}
+
 export function pageMetadata({
   title,
   description = DEFAULT_DESCRIPTION,
@@ -50,7 +64,7 @@ export function pageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages: languageAlternates(path) },
     openGraph: {
       title,
       description,

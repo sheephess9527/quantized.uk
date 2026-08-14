@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { todayFeed, models } from '@/lib/data/models';

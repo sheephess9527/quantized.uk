@@ -362,6 +362,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-08 (e) — Chinese edition becomes indexable: `/zh/**` routes + hreflang
+
+The site had a complete Chinese translation that **no search engine could see**. i18n was
+client-only (React Context + `localStorage`), so every built page shipped English HTML and Chinese
+appeared only after a click. Roughly half the site's content was worth zero in search, and the
+`WebSite` JSON-LD claimed `inLanguage: ['en','zh']` — a claim no crawler could verify.
+
+**URL is now the source of truth for language.** English stays at the root (existing URLs are
+untouched — that was a hard constraint); Chinese mirrors it under `/zh`. Subpath rather than
+subdomain, so both trees share domain authority.
+
+- `lib/i18n/routing.ts` — `langFromPathname` / `toEnPath` / `toZhPath` / `mirrorPath` /
+  `localizeHref`.
+- `LanguageProvider` derives language from `usePathname()` instead of `localStorage`, and
+  `toggleLang` now navigates to the mirrored URL rather than mutating state. **This is what makes
+  the translation indexable:** `usePathname()` resolves during static prerendering, so `/zh/**`
+  pages carry Chinese in the HTML. Verified on the built output — `/zh/` contains 1503 CJK
+  characters vs 2 at `/`.
+- `components/i18n/LocalLink.tsx` — drop-in `next/link` replacement that keeps a reader inside
+  their language tree. Swapped across all 19 link-rendering components; without it a Chinese
+  reader clicking any nav item would land back in English.
+- **113 new routes** under `app/zh/**` (11 static + 79 models + 23 guides), each re-exporting the
+  English page component with its own Chinese metadata. Total build: **119 → 232 pages**.
+- **hreflang** on every page in both trees (`en`, `zh-Hans`, `x-default`) via
+  `languageAlternates()` in `lib/seo.ts`, plus per-URL `xhtml:link` alternates in the sitemap
+  (113 → 226 URLs). Without these the two trees read as duplicate content rather than translations.
+- `<html lang>` is corrected before paint by a path-based inline script; the static attribute
+  stays `en` because a single root layout serves both trees.
+- `llms.txt` notes the Chinese edition.
+
+**Known limitation:** the `lang` attribute in the raw HTML is `en` for `/zh/**` until the inline
+script runs. hreflang and canonical — the signals Google actually uses for language targeting —
+are correct in the static markup. Fixing the attribute properly needs multi-root layouts
+(`app/(en)/` + `app/(zh)/`), which would mean moving every existing page file; not worth the
+regression risk for a weak signal.
+
 ### 2026-08-08 (d) — Hub → cookbook links + honest sitemap dates
 
 Completes the internal-link loop opened in (c), and fixes a sitemap signal that was inert.
