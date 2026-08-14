@@ -134,7 +134,10 @@ leaves the calculator giving wrong numbers (see the MXFP4 gap) and the guide mis
 four before calling a model batch done.
 The path runs backwards too: guides are where the traffic lands, so a guide should carry
 `gpuPreset` + `relatedModelIds` (see `components/cookbook/GuideNextSteps.tsx`) to send readers into
-the hub and the reverse VRAM lookup. Set `gpuPreset` only when one real GPU id represents the
+the hub and the reverse VRAM lookup.
+The hub direction is automatic: `guideLinksForModel()` reverses `relatedModelIds` and falls back to
+a `hardwareTag → guides` map, so wiring a guide's `relatedModelIds` also populates
+`ModelGuides` on every model it names — one edit, both directions. Set `gpuPreset` only when one real GPU id represents the
 guide's hardware — leave it off for multi-GPU guides rather than faking a combined card.
 
 With real traffic, **freshness > new tools**. Suggested rhythm:

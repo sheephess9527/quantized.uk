@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import ModelDetail from '@/components/hub/ModelDetail';
+import ModelGuides from '@/components/hub/ModelGuides';
+import { guideLinksForModel } from '@/lib/utils/model-guides';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots } from '@/lib/seo';
 
@@ -54,6 +56,9 @@ export default function ModelDetailPage({ params }: { params: { modelId: string 
         }}
       />
       <ModelDetail model={model} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16">
+        <ModelGuides guides={guideLinksForModel(model)} />
+      </div>
     </>
   );
 }

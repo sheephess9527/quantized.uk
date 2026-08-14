@@ -146,6 +146,12 @@ export const translations = {
       showAllModels: 'Show all {total}',
       showGpuMatches: 'GPU matches only',
       profileLink: 'VRAM compatibility list',
+      guides: {
+        title: 'How to actually run this',
+        subtitle: 'Deployment guides for this model and this class of hardware.',
+        coversThis: 'covers this model',
+        difficulty: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' },
+      },
       gpuChips: {
         label: 'Quick GPU filter (4K context)',
         clear: 'Clear',
@@ -724,6 +730,12 @@ export const translations = {
       showAllModels: '显示全部 {total} 个',
       showGpuMatches: '仅看 GPU 适配',
       profileLink: '显存兼容列表',
+      guides: {
+        title: '怎么把它跑起来',
+        subtitle: '针对本模型及同类硬件的部署指南。',
+        coversThis: '包含此模型',
+        difficulty: { beginner: '入门', intermediate: '进阶', advanced: '高级' },
+      },
       gpuChips: {
         label: '按 GPU 一键筛选（4K 上下文）',
         clear: '清除',

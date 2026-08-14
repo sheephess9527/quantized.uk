@@ -19,17 +19,39 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/about/',
   ];
 
-  const modelPages = models.map(m => `/quant-hub/${m.id}/`);
-  const cookbookPages = articles.map(a => `/cookbook/${a.id}/`);
+  // A sitemap where every URL claims the same lastmod carries no information —
+  // crawlers discount it. Each entry reports the date that page's own content
+  // actually changed: addedAt for models, verifiedAt (else publishedAt) for
+  // guides, and the site-wide data date only for pages driven by it.
+  const siteDate = new Date(dataLastUpdated);
 
-  return [...staticPages, ...modelPages, ...cookbookPages].map(path => ({
-    url: canonical(path),
-    lastModified: new Date(dataLastUpdated),
-    changeFrequency: path.includes('quant-hub/') && path !== '/quant-hub/'
-      ? 'weekly' as const
-      : path.startsWith('/cookbook/') && path !== '/cookbook/'
-        ? 'monthly' as const
-        : 'monthly' as const,
-    priority: path === '' ? 1 : path.startsWith('/tools/') ? 0.9 : path.startsWith('/cookbook/') ? 0.8 : 0.7,
+  type Entry = { path: string; lastModified: Date; changeFrequency: 'weekly' | 'monthly'; priority: number };
+
+  const entries: Entry[] = [
+    ...staticPages.map(path => ({
+      path,
+      lastModified: siteDate,
+      changeFrequency: 'monthly' as const,
+      priority: path === '' ? 1 : path.startsWith('/tools/') ? 0.9 : 0.7,
+    })),
+    ...models.map(m => ({
+      path: `/quant-hub/${m.id}/`,
+      lastModified: m.addedAt ? new Date(m.addedAt) : siteDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+    ...articles.map(a => ({
+      path: `/cookbook/${a.id}/`,
+      lastModified: new Date(a.verifiedAt ?? a.publishedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+  ];
+
+  return entries.map(e => ({
+    url: canonical(e.path),
+    lastModified: e.lastModified,
+    changeFrequency: e.changeFrequency,
+    priority: e.priority,
   }));
 }

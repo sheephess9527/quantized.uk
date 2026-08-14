@@ -86,14 +86,15 @@ app/                        # Next.js App Router pages
 components/
   layout/                   # Navbar (lang + GPU profile + Tools), Footer
   home/                     # Hero, JobPaths, WeeklyUpdates, StatsBar, TodayBoard, …
-  hub/                      # ModelCard, ModelDetail, FilterBar (incl. recency)
+  hub/                      # ModelCard, ModelDetail, ModelGuides, FilterBar (incl. recency)
+  cookbook/                 # ArticleView, GuideNextSteps (guide → hub/calculator)
   tools/                    # VRAMCalculator, CLIGenerator, FormatWizard, ModelCompare
 
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   75 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-7 (packs)
+    models.ts               #   79 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-8 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (23 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -109,6 +110,7 @@ lib/
     vram.ts                 #   calcVRAM(), getVerdict(), quant BPW tables
     recommend.ts            #   getRecommendations() — GPU→model reverse lookup
     model-meta.ts           #   isRecentModel, quantConfidence, superseded helpers
+    model-guides.ts         #   guideLinksForModel() — model → cookbook links (hub direction)
     hub-url.ts              #   shareable Hub filter URLs
     cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM / ExLlama
     cn.ts                   #   clsx + tailwind-merge helper
@@ -359,6 +361,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-08-08 (d) — Hub → cookbook links + honest sitemap dates
+
+Completes the internal-link loop opened in (c), and fixes a sitemap signal that was inert.
+
+- **`ModelGuides` on all 79 model pages** (`components/hub/ModelGuides.tsx` +
+  `lib/utils/model-guides.ts`). Previously the hub linked to the cookbook **nowhere** — a reader
+  on a model page had no route to "how do I actually run this", and the guides (the only pages
+  drawing traffic) got no internal links from the 79 largest page group on the site.
+  - Exact matches come from reversing `article.relatedModelIds`; the rest fill in from a curated
+    `hardwareTag → guides` map, labelled differently so a hardware suggestion never claims to
+    cover the specific model.
+  - Exact matches are sorted by `relatedModelIds.length` ascending — the more focused guide wins.
+    Without this, article file order decided which matches survived the cap, which pushed the
+    dedicated `gpt-oss-mxfp4-local` guide off the GPT-OSS pages entirely.
+  - `guideLinksForModel()` returns a **minimal** `GuideLink`, not the `Article`. The page is a
+    server component, so full guide bodies (23 guides of prose and code blocks) never enter the
+    79 client bundles.
+- **Per-page `lastModified` in `app/sitemap.ts`.** Every URL previously reported
+  `dataLastUpdated`, so all 119 entries claimed the same date — a uniform lastmod is discounted
+  by crawlers. Now models report `addedAt`, guides report `verifiedAt ?? publishedAt`, and only
+  pages genuinely driven by the site-wide data date report it. Output went from 1 distinct date
+  to 4.
+- `t.hub.guides` added in **both** `en` and `zh`.
 
 ### 2026-08-08 (c) — AMD is a first-class target + guides now route into the tools
 
