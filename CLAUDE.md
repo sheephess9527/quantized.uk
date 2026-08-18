@@ -45,6 +45,11 @@ npm run lint
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
 
+`build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
+`<html lang>` for the `/zh` tree and **exits non-zero if any Chinese page links into the English
+tree**. Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
+flaky network. Never "fix" it by removing the postbuild hook.
+
 ## Conventions (must follow)
 
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
@@ -56,9 +61,21 @@ stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos
     re-exports it with Chinese metadata and `path: '/zh/...'`. A missing mirror silently 404s
     every Chinese reader who clicks through to it.
   - **Link with `@/components/i18n/LocalLink`, never bare `next/link`**, in anything rendered
-    inside both trees — a bare href throws Chinese readers back to English.
+    inside both trees — a bare href throws Chinese readers back to English. This applies to
+    **page files too**, not just `components/` — that is exactly how 23 guide links leaked.
+    `npm run build` now fails on any such leak (`scripts/localize-export.mjs`); trust the gate,
+    not your reading of the diff.
+  - **Anything language-dependent that a server component emits needs an explicit `lang` prop.**
+    The `/zh` mirrors re-export the English component, so it cannot read `usePathname()`. JSON-LD
+    is the one that bites: headline, description, `url` and `inLanguage` must follow the reader,
+    or a Chinese page advertises the English URL its own canonical tag disowns
+    (see `app/quant-hub/[modelId]/page.tsx`, `app/cookbook/[slug]/page.tsx`).
+  - **Never compare a raw `usePathname()` against an English href** — it is `/zh/...` for half the
+    site. Run it through `toEnPath()` first (this silently killed every nav highlight in the
+    Chinese tree).
   - hreflang comes free from `pageMetadata()`; hand-rolled `alternates` (the two dynamic English
-    routes) must pass `languages: languageAlternates(path)` explicitly.
+    routes) must pass `languages: languageAlternates(path)` explicitly, and `openGraph` needs
+    `...ogLocale(path)`.
 - **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
@@ -110,9 +127,16 @@ links/SEO). Card + detail show amber “Prefer {name}”.
 quantized one, so set `pplLossPercent: 0.0` on that row and say why in `description`. Don't invent
 a loss figure against an FP16 original that was never published. Use the vendor's own name as
 `level` (`'MXFP4'`); `level` is a free string, only `format` is a union.
-**Also add the level to `quantBPW` + `quantGroups` in `lib/utils/vram.ts`** — that table is static
-and does *not* read from model data, so a model whose native format is missing there can only be
-sized with the wrong bpw. (The CLI generator is fine; it derives levels from `model.quants`.)
+**Also add the level to `quantBPW` + `quantGroups` in `lib/utils/vram.ts`** — a level missing from
+those tables cannot be *selected* in the calculator at all, and custom-model sizing falls through
+to the `?? 4.85` default. (The CLI generator is fine; it derives levels from `model.quants`.)
+Missing entries are easy to miss by eye — `EXL2 3.5bpw` sat unlisted while six model rows used it.
+
+Since 2026-08-18 the calculator prefers **the model's own `quant.bpw`** over the generic table
+whenever the selected model actually ships the selected level, so per-model reality wins and the
+forward/reverse modes agree. The table is still what custom (non-indexed) models are sized with,
+so keep it honest — and keep a model row's `bpw` honest too, because it is now what the reader
+sees.
 
 **Never set `verifiedAt` you didn't earn** — it means "commands re-checked on this date". Agent
 environments here have no GPU and no HF network access, so most stacks can't actually be run. An
@@ -208,6 +232,8 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-18 | **`/zh` audit** — `<html lang>` patched at export (113 pages), 5 page files still on bare `next/link` (23 guide links leaked), JSON-LD/breadcrumbs localized, nav highlight fixed; build now gates on link leaks |
+| 2026-08-18 | **Calculator correctness** — `EXL2 3.5bpw` added to `vram.ts`; forward mode uses model-measured bpw (GPT-OSS Q8_0 was overstated 67%) |
 | 2026-08-08 | **Chinese edition indexable** — `/zh/**` mirror (232 pages), URL-driven i18n, `LocalLink`, hreflang + sitemap alternates |
 | 2026-08-08 | **AMD first-class** — 10 Radeon GPUs added (43 total); format wizard stopped recommending CUDA-only EXL2 to AMD; guides route into tools via `gpuPreset`/`relatedModelIds` |
 | 2026-08-08 | **Traffic-informed batch** — +4 models → 79 (`extra-8`): Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B; Qwen2-VL superseded. Picked for constrained hardware, not release news |

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalLink';
 import { Clock, ChevronRight, Code2, Terminal, Server, Layers } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { articles } from '@/lib/data/cookbook';

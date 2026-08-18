@@ -115,6 +115,10 @@ lib/
     cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM / ExLlama
     cn.ts                   #   clsx + tailwind-merge helper
 
+scripts/
+  fetch-hf-stats.mjs        # prebuild — refresh HF downloads/likes (fails gracefully offline)
+  localize-export.mjs       # postbuild — patch <html lang> for /zh, fail on English link leaks
+
 next.config.js              # output: 'export', trailingSlash, images.unoptimized
 wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 ```
@@ -134,6 +138,17 @@ activation_buffer = 10% of the above
 ```
 
 `getVerdict(totalGB, gpuVram)` returns `green` / `yellow` / `red` so the calculator can colour-code each GPU.
+
+**Which `bpw` gets used.** `quantBPW` is a *generic* per-level table and is the fallback, not the
+authority. When a model is selected and it actually ships the chosen level, the calculator uses
+that model's own `quant.bpw` instead — some models are far off the generic figure (GPT-OSS ships
+mostly-MXFP4 MoE weights, so its Q8_0 is 5.10 bpw, not 8.5). Reverse mode has always sized from
+`quant.bpw`; forward mode was corrected on 2026-08-18. Two consequences worth remembering:
+
+- A level missing from `quantBPW` still breaks things — it cannot be *selected*, and custom-model
+  sizing falls through to the `?? 4.85` default. Adding a new level means adding it to **both**
+  `quantBPW` and `quantGroups`.
+- The generic table is what a custom (non-indexed) model is sized with, so keep it honest.
 
 ### VRAM calculator modes (`components/tools/VRAMCalculator.tsx`)
 
@@ -199,6 +214,25 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 const t = translations[lang] as typeof translations.en;
 ```
 
+### i18n: what the build checks for you
+
+`npm run build` ends with `scripts/localize-export.mjs` (`postbuild`), which does two things to
+`out/` that no amount of type-checking can:
+
+1. Rewrites `<html lang="en">` → `lang="zh-Hans"` on every `out/zh/**` page. A single App Router
+   root layout serves both trees, so the attribute is a compile-time constant.
+2. **Fails the build** if any page under `out/zh/**` links to the English version of a page that
+   exists. This is the one i18n mistake that is invisible everywhere else: components are shared
+   across both trees, so a single bare `next/link` quietly exiles Chinese readers, and nothing in
+   `next build`, `next lint` or code review catches it.
+
+If the build fails with "link(s) escape the Chinese tree", the fix is always the same — use
+`@/components/i18n/LocalLink` instead of `next/link`. Server components that cannot use a hook
+should branch on an explicit `lang` prop (see `app/quant-hub/[modelId]/page.tsx`).
+
+Structured data has the same trap: JSON-LD is emitted from the shared component, so it must be
+localized too, or a Chinese page advertises a URL its own canonical tag disowns.
+
 ### TypeScript / bundler gotcha
 
 `[...new Set(...)]` fails to down-level with the bundler module target. Use `Array.from(new Set(...))` instead (see `ModelCard.tsx`).
@@ -215,6 +249,11 @@ npm run lint
 ```
 
 The production build emits flat HTML/JS/CSS into `out/`. You can preview it with any static server (`npx serve out`).
+
+> **Note on `postbuild`:** `npm run build` ends with `scripts/localize-export.mjs`, which patches
+> `<html lang>` for the Chinese tree and **fails the build** if a `/zh` page links into the English
+> tree. Unlike `prebuild` this one is a gate, not a best-effort refresh — a non-zero exit here is a
+> real bug in the export (see §4, "i18n: what the build checks for you").
 
 > **Note on `prebuild`:** `npm run build` first runs `scripts/fetch-hf-stats.mjs` (via the `prebuild` hook) to refresh Hugging Face download/like counts. It fails gracefully — on any network/API error it keeps the cached `lib/data/hf-stats.json` and exits 0, so **builds work fully offline**. Run it standalone with `npm run fetch-hf`.
 
@@ -362,6 +401,52 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-18 — Chinese-edition audit: the /zh tree stops leaking, and the calculator stops lying
+
+A full review of the `/zh` work shipped on 2026-08-08. The routes and hreflang were right; four
+things underneath them were not, and all four were invisible in `next build`.
+
+**1. `<html lang="en">` on all 113 Chinese pages.** The previous entry logged this as an accepted
+limitation, on the theory that only hreflang matters. It also decides how a screen reader
+pronounces the page, and it is the one language signal in the markup that contradicted the other
+two. Fixed without multi-root layouts: `scripts/localize-export.mjs` runs as `postbuild` and
+rewrites `lang="en"` → `lang="zh-Hans"` across `out/zh/**` (113/113 patched). `LanguageProvider`
+keeps it correct across client-side navigation, where no fresh document is ever parsed; the inline
+head script now only matters for the shared 404, which no build step can localize.
+
+**2. Five pages still used bare `next/link`** — `cookbook`, `about`, `legal`, `privacy`,
+`not-found`. The 2026-08-08 entry claimed the swap covered every link-rendering component; it
+missed the page files. Effect: **every one of the 23 guide cards on `/zh/cookbook/` linked to the
+English guide**, on the surface that takes the most traffic. Now `LocalLink`, and the postbuild
+script **fails the build** if any Chinese page links to an English page that exists — the leak is
+only visible in exported HTML, so that is where it is now checked.
+
+**3. Structured data described the wrong page.** `/zh/quant-hub/*` and `/zh/cookbook/*` re-exported
+the English component, so 102 Chinese pages emitted JSON-LD carrying the English headline,
+description and `url` — contradicting their own canonical tag. Both page components now take a
+`lang` prop that the `/zh` mirror passes, and emit `inLanguage`. `Breadcrumbs` had the same split:
+localized links, English URLs in `BreadcrumbList`. Also added `og:locale` (`zh_CN` / `en_GB`) via
+`ogLocale()` in `lib/seo.ts`.
+
+**4. Nav highlighting was dead across the entire Chinese tree.** `isActive()` tested the raw
+pathname against English hrefs, so on `/zh/**` no nav item and no tools dropdown ever lit up. It
+now compares against `toEnPath(pathname)`. `toggleLang` also preserved neither query nor hash —
+switching language on a filtered Hub view silently reset the reader's filters.
+
+**Calculator correctness (unrelated to i18n, found in the same sweep):**
+
+- `EXL2 3.5bpw` was used by **6 model rows** but missing from `quantBPW` / `quantGroups` — the
+  exact footgun CLAUDE.md documents for MXFP4, hit again. The level was unselectable, and anything
+  sized against it fell through to the `?? 4.85` default.
+- **Forward mode ignored each model's own measured bpw**, always taking the generic per-level
+  table. Reverse mode has always sized from `quant.bpw`, so the two halves of one tool disagreed
+  about the same model. Forward mode now prefers the model's own row when it ships that level.
+  For GPT-OSS this is not a rounding difference: **Q8_0 was overstated by 67%** (21.1 GB vs
+  12.7 GB) and Q4_K_M by 18% — enough to tell a 16GB-card owner that a model that fits does not.
+
+**Docs:** `llms.txt` still described language as a "client-side toggle, same URLs", which had been
+false since the `/zh` ship.
+
 ### 2026-08-08 (e) — Chinese edition becomes indexable: `/zh/**` routes + hreflang
 
 The site had a complete Chinese translation that **no search engine could see**. i18n was
@@ -392,11 +477,10 @@ subdomain, so both trees share domain authority.
   stays `en` because a single root layout serves both trees.
 - `llms.txt` notes the Chinese edition.
 
-**Known limitation:** the `lang` attribute in the raw HTML is `en` for `/zh/**` until the inline
-script runs. hreflang and canonical — the signals Google actually uses for language targeting —
-are correct in the static markup. Fixing the attribute properly needs multi-root layouts
-(`app/(en)/` + `app/(zh)/`), which would mean moving every existing page file; not worth the
-regression risk for a weak signal.
+**Known limitation (resolved 2026-08-18):** the `lang` attribute in the raw HTML was `en` for
+`/zh/**` until the inline script ran. Rather than multi-root layouts (`app/(en)/` + `app/(zh)/`,
+which would mean moving every existing page file), the exported HTML is now patched by
+`scripts/localize-export.mjs` as a `postbuild` step — see the 2026-08-18 entry.
 
 ### 2026-08-08 (d) — Hub → cookbook links + honest sitemap dates
 

@@ -1,8 +1,14 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
-import { canonical, defaultRobots, languageAlternates, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import ModelDetailPage from '../../../quant-hub/[modelId]/page';
 
-export { generateStaticParams, default } from '../../../quant-hub/[modelId]/page';
+export { generateStaticParams } from '../../../quant-hub/[modelId]/page';
+
+/** Same component as the English route, told which language it is rendering in. */
+export default function ZhModelDetailPage({ params }: { params: { modelId: string } }) {
+  return <ModelDetailPage params={params} lang="zh" />;
+}
 
 export function generateMetadata({ params }: { params: { modelId: string } }): Metadata {
   const model = models.find(m => m.id === params.modelId);
@@ -20,6 +26,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
       url,
       siteName: SITE_NAME,
       images: [OG_IMAGE],
+      ...ogLocale(path),
     },
   };
 }

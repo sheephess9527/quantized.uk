@@ -51,6 +51,15 @@ export function languageAlternates(path = '') {
   };
 }
 
+/** OG locale for a path — a Chinese page announcing en_GB reads as a mistranslation. */
+export function ogLocale(path = '') {
+  const isZh = path === '/zh' || path.startsWith('/zh/');
+  return {
+    locale: isZh ? 'zh_CN' : 'en_GB',
+    alternateLocale: isZh ? 'en_GB' : 'zh_CN',
+  };
+}
+
 export function pageMetadata({
   title,
   description = DEFAULT_DESCRIPTION,
@@ -72,6 +81,7 @@ export function pageMetadata({
       siteName: SITE_NAME,
       type: 'website',
       images: [OG_IMAGE],
+      ...ogLocale(path),
     },
     twitter: {
       card: 'summary_large_image',

@@ -14,7 +14,7 @@
 
 ## Key URLs
 
-- Home: https://quantized.uk/
+- Home: https://quantized.uk/ (Chinese: https://quantized.uk/zh/)
 - Model index: https://quantized.uk/quant-hub/
 - VRAM calculator: https://quantized.uk/tools/vram-calc/
 - Cookbook: https://quantized.uk/cookbook/
@@ -25,7 +25,11 @@
 
 ## Languages
 
-English default UI; Chinese toggle (client-side, same URLs).
+- English at the root: https://quantized.uk/
+- Chinese (Simplified) under /zh/: https://quantized.uk/zh/
+- Language is carried by the URL, not a cookie or toggle state. Every page has a
+  hreflang-paired mirror in the other tree, and both are prerendered — the
+  Chinese text is in the HTML, not swapped in by JavaScript.
 
 ## Contact
 

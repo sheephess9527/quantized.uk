@@ -39,6 +39,8 @@ export const quantBPW: Record<string, number> = {
   'GPTQ INT8':8.0,
   'EXL2 2bpw':2.0,
   'EXL2 3bpw':3.0,
+  // Widely-shipped rung for 70B-class models on 2×24GB — six model rows use it.
+  'EXL2 3.5bpw':3.5,
   'EXL2 4bpw':4.0,
   'EXL2 4.65bpw':4.65,
   'EXL2 5bpw':5.0,
@@ -52,7 +54,7 @@ export const quantGroups: Record<string, string[]> = {
   'GGUF': ['Q2_K', 'Q3_K_M', 'MXFP4', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
-  'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],
+  'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 3.5bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],
   'HQQ':  ['HQQ 2bit', 'HQQ 4bit'],
   'Full': ['FP16', 'BF16', 'FP32'],
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useCallback, useEffect, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { translations, Lang } from './translations';
 import { langFromPathname, mirrorPath } from './routing';
@@ -30,8 +30,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const lang = langFromPathname(pathname);
 
+  // A single root layout serves both trees, so `<html lang>` is emitted as "en"
+  // for every page. The static export is patched per tree at build time
+  // (scripts/localize-export.mjs); this keeps it correct across client-side
+  // navigation, where no fresh document is ever parsed.
+  useEffect(() => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+  }, [lang]);
+
   const toggleLang = useCallback(() => {
-    router.push(mirrorPath(pathname ?? '/'));
+    // Hub filters live in the query string (lib/utils/hub-url.ts). Dropping
+    // them on a language switch silently resets the reader's view.
+    const suffix = typeof window === 'undefined' ? '' : window.location.search + window.location.hash;
+    router.push(mirrorPath(pathname ?? '/') + suffix);
   }, [router, pathname]);
 
   return (

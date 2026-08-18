@@ -108,18 +108,26 @@ export default function VRAMCalculator() {
   const selectedGpu = gpuDatabase.find(g => g.id === selectedGpuId);
 
   const calcInput = useMemo(() => {
-    const bpw = quantBPW[selectedQuant] ?? 4.85;
+    const tableBpw = quantBPW[selectedQuant] ?? 4.85;
     if (selectedModel) {
+      // `quantBPW` is a generic per-level table; a model that actually ships
+      // this level carries its own measured bpw, which can differ sharply —
+      // GPT-OSS's Q4_K_M is 4.10, not the table's 4.85, because most of its MoE
+      // weights stay in native MXFP4. Reverse mode already sizes from
+      // `quant.bpw`, so preferring it here is also what stops the two halves of
+      // this calculator disagreeing about the same model.
+      const own = selectedModel.quants.find(q => quantLevelKey(q) === selectedQuant);
       return {
         paramsB: selectedModel.params,
         layers: selectedModel.arch.layers,
         kvHeads: selectedModel.arch.kvHeads,
         headDim: selectedModel.arch.headDim,
-        bpw,
+        bpw: own?.bpw ?? tableBpw,
         contextLength: contextLen,
         batchSize,
       };
     }
+    const bpw = tableBpw;
     return {
       paramsB: parseFloat(customParams) || 7,
       layers: parseInt(customLayers) || 32,

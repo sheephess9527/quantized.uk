@@ -77,10 +77,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            // Language now comes from the URL, so the <html lang> can be corrected
-            // before paint without waiting for React. The static attribute stays
-            // "en" because a single root layout serves both trees.
-            __html: `(function(){try{var p=location.pathname;document.documentElement.lang=(p==='/zh'||p.indexOf('/zh/')===0)?'zh':'en';}catch(e){}})();`,
+            // Belt and braces for `<html lang>`: the exported /zh HTML is patched
+            // to zh-Hans at build time (scripts/localize-export.mjs) so crawlers
+            // see it, and LanguageProvider keeps it right across client-side
+            // navigation. This runs before paint on the one page the build step
+            // cannot patch — the shared 404, served at any URL.
+            __html: `(function(){try{var p=location.pathname;document.documentElement.lang=(p==='/zh'||p.indexOf('/zh/')===0)?'zh-Hans':'en';}catch(e){}})();`,
           }}
         />
       </head>

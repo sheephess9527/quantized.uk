@@ -4,6 +4,8 @@ import Link from '@/components/i18n/LocalLink';
 import { ChevronRight } from 'lucide-react';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical } from '@/lib/seo';
+import { useLanguage } from '@/lib/i18n/context';
+import { localizeHref } from '@/lib/i18n/routing';
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,6 +17,11 @@ interface Props {
 }
 
 export default function Breadcrumbs({ items }: Props) {
+  const { lang } = useLanguage();
+
+  // Hrefs are written in canonical English form and localized on render, so the
+  // structured data has to be localized too — a Chinese page whose breadcrumb
+  // trail cites English URLs contradicts its own canonical tag.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -22,7 +29,7 @@ export default function Breadcrumbs({ items }: Props) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.label,
-      ...(item.href ? { item: canonical(item.href) } : {}),
+      ...(item.href ? { item: canonical(localizeHref(item.href, lang)) } : {}),
     })),
   };
 

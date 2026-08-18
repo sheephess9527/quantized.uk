@@ -7,6 +7,7 @@
     "fetch-hf": "node scripts/fetch-hf-stats.mjs",
     "prebuild": "node scripts/fetch-hf-stats.mjs",
     "build": "next build",
+    "postbuild": "node scripts/localize-export.mjs",
     "start": "next start",
     "lint": "next lint"
   },

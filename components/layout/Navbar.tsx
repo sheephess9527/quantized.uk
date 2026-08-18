@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, Zap, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { toEnPath } from '@/lib/i18n/routing';
 import { cn } from '@/lib/utils/cn';
 import HardwareProfileSelector from '@/components/layout/HardwareProfileSelector';
 
@@ -28,8 +29,12 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
 
+  // Nav hrefs are written in the English (canonical) form and localized by
+  // LocalLink, so the active test has to compare against the de-prefixed path —
+  // otherwise nothing is ever highlighted anywhere in the /zh tree.
+  const basePath = toEnPath(pathname ?? '/');
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+    href === '/' ? basePath === '/' : basePath.startsWith(href);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)]">
@@ -69,7 +74,7 @@ export default function Navbar() {
               onBlur={() => setTimeout(() => setToolsOpen(false), 150)}
               className={cn(
                 'flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150',
-                pathname.startsWith('/tools')
+                basePath.startsWith('/tools')
                   ? 'text-violet-300 bg-violet-500/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
               )}
