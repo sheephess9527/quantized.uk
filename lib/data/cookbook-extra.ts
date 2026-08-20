@@ -144,12 +144,12 @@ export const extraArticles: Article[] = [
     publishedAt: '2026-06-23',
     verifiedAt: '2026-07-22',
     verifiedStack: {
-      en: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp LLAMA_CUDA=ON',
-      zh: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp LLAMA_CUDA=ON',
+      en: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
+      zh: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
     },
     content: [
       { heading: 'Prerequisites', headingZh: '前置条件', body: 'Install Visual Studio Build Tools, CMake, and CUDA Toolkit 12.x.', bodyZh: '安装 Visual Studio Build Tools、CMake 和 CUDA Toolkit 12.x。', code: { lang: 'powershell', content: 'winget install Kitware.CMake\n# CUDA: download from developer.nvidia.com/cuda-downloads' } },
-      { heading: 'Build', headingZh: '编译', body: 'Enable CUDA backend during CMake configure.', bodyZh: 'CMake 配置时启用 CUDA 后端。', code: { lang: 'powershell', content: 'git clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DLLAMA_CUDA=ON\ncmake --build build --config Release -j' } },
+      { heading: 'Build', headingZh: '编译', body: 'Enable CUDA backend during CMake configure.', bodyZh: 'CMake 配置时启用 CUDA 后端。', code: { lang: 'powershell', content: 'git clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j' } },
     ],
   },
   {

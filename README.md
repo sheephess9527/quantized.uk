@@ -206,6 +206,24 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 
 `generateCLI(opts)` dispatches by framework and environment, emitting both a shell command and (where relevant) a `docker-compose.yml`. AWQ/GPTQ quant flags are injected automatically for vLLM.
 
+**The display name is not an identifier.** `modelName` ("Llama 3.1 8B Instruct") is for humans. It
+is not a repo id, not a GGUF filename and not an Ollama tag, and every command that treated it as
+one was broken (see the 2026-08-20 changelog entry). Real identifiers come from `hfRepo`, passed in
+from `hfRepoMap`.
+
+**`hfRepo` is not always a GGUF repo.** `hfRepoMap` exists to source HF stats, so for 14 of 79
+models it points at the original weights (`openai/gpt-oss-20b`). `ggufRepoId()` gates on a `-GGUF`
+suffix before any GGUF command uses it; without that gate the fix reintroduces the bug it fixed,
+just with a more convincing-looking repo. When no GGUF repo is known the command shows a visible
+placeholder — **an obvious placeholder beats a plausible wrong answer**, which is the rule for
+vLLM (needs FP16/AWQ/GPTQ weights, not the GGUF repos this site maps) and ExLlamaV2 (per-model
+repos, not derivable) too.
+
+**Build flags track llama.cpp, not memory.** The `LLAMA_*` CMake options were renamed to `GGML_*`;
+the old names are silently ignored and yield a CPU-only build that looks successful. If you touch
+a build command, check it against the flag names used elsewhere in the repo (`GGML_HIP` in the AMD
+guide) before trusting the one in front of you.
+
 ### i18n gotcha
 
 `translations[lang]` infers a union type that doesn't match `typeof translations.en`. The fix is an explicit cast in `context.tsx`:
@@ -400,6 +418,56 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-08-20 — The CLI generator emitted commands that could not run
+
+Four of the tool's five outputs were broken, each in a way that looks fine on screen. The generator
+only ever received the model's **display name**, so everything downstream was a guess:
+
+| Framework | Was emitted | Why it fails |
+|---|---|---|
+| vLLM | `--model Llama 3.1 8B Instruct` | three stray argv entries; server never starts |
+| Ollama | `ollama pull llama-3.1-8b-instruct` | library tags are curated (`qwen2.5:7b`) — this 404s |
+| llama.cpp | `huggingface-cli download <repo-id>` | unresolved placeholder, while `hfRepoMap` held the real repo |
+| llama.cpp | `--include "Llama-3.1-8B-Instruct-Q4_K_M.gguf"` | real file is `Meta-…`; `--include` matches nothing and exits 0 |
+
+`generateCLI` now takes `hfRepo` from `hfRepoMap`, derives the GGUF filename from the repo name
+(the actual convention: `bartowski/Meta-Llama-3.1-8B-Instruct-GGUF` ships
+`Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf`), and Ollama runs the GGUF straight from Hugging Face
+(`ollama run hf.co/<repo>:<QUANT>`), which works for every mapped model and pins the quant.
+
+**The trap in that fix:** `hfRepoMap` exists to source download/like stats, so for **14 of 79
+models** it points at the original weights (`openai/gpt-oss-20b`, `deepseek-ai/DeepSeek-R1`), not a
+GGUF conversion. Feeding those to a GGUF command reproduces exactly the failure being fixed, so
+`ggufRepoId()` only accepts a repo ending in `-GGUF`; the rest fall back to a visible placeholder
+plus a note. vLLM and ExLlamaV2 keep placeholders on purpose — vLLM serves FP16/AWQ/GPTQ, not the
+GGUF repos this site maps, and EXL2 repos are per-model and not derivable.
+
+**Stale llama.cpp build flags.** `LLAMA_CUDA` / `LLAMA_METAL` / `LLAMA_BLAS` were renamed to
+`GGML_*` long before the b4000-series this site targets; CMake silently ignores the old names and
+produces a **CPU-only build that appears to work** — the worst failure mode for a copy-paste
+command. Fixed in the generator and in the two guides that carried it (`llama-vps-llamacpp`,
+`llamacpp-windows-cuda`). The repo's own AMD guide already used `GGML_HIP`, so the codebase was
+inconsistent with itself. Also `-j$(nproc)` on the macOS path — `nproc` is GNU coreutils and does
+not exist on a stock macOS; now `-j$(sysctl -n hw.ncpu)`.
+
+> **`verifiedAt` was deliberately not bumped** on the two edited guides. This was a desk
+> correction, not a stack re-run on real hardware — bumping the date is the one thing that would
+> have made the badge dishonest.
+
+**Hub filters:**
+
+- `HQQ` was a hardcoded filter chip matching **zero of 79 models** — a filter whose only possible
+  outcome was an empty result set. Format chips are now derived from the data
+  (`SHIPPED_FORMATS` in `lib/utils/hub-url.ts`), so the vocabulary cannot drift from it again.
+- `hubShareUrl()` hardcoded `/quant-hub/`, so a Chinese reader copying their filter link handed a
+  friend an English URL. It now shares the page the reader is on. Same class of leak as a bare
+  `next/link`, but in a clipboard string — invisible to the postbuild markup gate.
+
+**Cadence:** `dataLastUpdated` was 12 days stale and the changelog stopped at 2026-08-08, so
+neither the `/zh` ship nor the audit before it reached Weekly updates, the Hub recency filter, or
+`/feed.xml` — the three surfaces that are supposed to reflect every ship. Bumped to 2026-08-20 with
+four entries covering both.
 
 ### 2026-08-18 — Chinese-edition audit: the /zh tree stops leaking, and the calculator stops lying
 

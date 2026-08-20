@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-08-08 traffic-informed batch):**
+**Live snapshot (2026-08-20):**
 
 | Surface | Notes |
 |--------|--------|
@@ -106,6 +106,17 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 | `verifiedAt` / `verifiedStack` | `Article` (cookbook) | Stack re-check banner on article pages |
 | `gpuPreset?: { gpuId, ctx? }` | `Article` (cookbook) | Prefills the reverse VRAM lookup; `gpuId` must exist in `gpus.ts` |
 | `relatedModelIds?: string[]` | `Article` (cookbook) | Renders hub links in `GuideNextSteps` |
+
+**Identifiers vs display names (CLI generator)** — `model.name` is for humans. Commands need real
+identifiers: pass `hfRepo` from `hfRepoMap`, and gate it through `ggufRepoId()` before using it in
+a GGUF command — **14 of 79 entries map the original weights, not a GGUF conversion**, because
+that map's job is HF stats. When the right repo isn't derivable (vLLM needs FP16/AWQ/GPTQ, EXL2
+repos are per-model), emit a visible `<placeholder>`: an obvious placeholder beats a plausible
+wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`; CMake
+ignores the old names and silently produces a CPU-only build.
+
+**Filter vocabularies come from the data** — `SHIPPED_FORMATS` in `hub-url.ts` derives the format
+chips from `models`. Hand-typed lists drift: `HQQ` sat in the Hub as a chip matching zero models.
 
 **Adding models**
 
@@ -232,6 +243,9 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-20 | **CLI generator was emitting unrunnable commands** — display name used as repo id/Ollama tag/filename; now `hfRepo` + `ggufRepoId()` gate; `GGML_*` build flags; `sysctl -n hw.ncpu` on macOS |
+| 2026-08-20 | **Hub filters** — format chips derived from data (`HQQ` matched 0 models); share URL keeps the reader's language |
+| 2026-08-20 | **Cadence** — `dataLastUpdated` → 2026-08-20; changelog caught up (`/zh` ship + audit had never reached Weekly/RSS/recency) |
 | 2026-08-18 | **`/zh` audit** — `<html lang>` patched at export (113 pages), 5 page files still on bare `next/link` (23 guide links leaked), JSON-LD/breadcrumbs localized, nav highlight fixed; build now gates on link leaks |
 | 2026-08-18 | **Calculator correctness** — `EXL2 3.5bpw` added to `vram.ts`; forward mode uses model-measured bpw (GPT-OSS Q8_0 was overstated 67%) |
 | 2026-08-08 | **Chinese edition indexable** — `/zh/**` mirror (232 pages), URL-driven i18n, `LocalLink`, hreflang + sitemap alternates |

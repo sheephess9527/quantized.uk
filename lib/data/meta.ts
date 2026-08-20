@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-08-08';
+export const dataLastUpdated = '2026-08-20';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,26 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-08-20',
+    en: 'CLI generator now emits commands that actually run: the real GGUF repo and filename instead of a placeholder, `ollama run hf.co/…` instead of a tag that 404s, and a repo id for vLLM instead of the model\'s display name. llama.cpp build flags updated to the GGML_* names (the old LLAMA_* ones are ignored, giving a silent CPU-only build)',
+    zh: 'CLI 生成器现在给出真能跑的命令：用真实 GGUF 仓库与文件名替代占位符，Ollama 改用 `ollama run hf.co/…`（原先生成的 tag 会 404），vLLM 传仓库 id 而非模型展示名。llama.cpp 编译参数改为 GGML_* 新命名（旧的 LLAMA_* 会被忽略，静默编出纯 CPU 版本）',
+  },
+  {
+    date: '2026-08-20',
+    en: 'VRAM calculator: forward mode now uses each model\'s own measured bits-per-weight instead of the generic per-level table, matching what reverse mode always did. GPT-OSS 20B at Q8_0 was overstated by 67% (21.1GB → 12.7GB). EXL2 3.5bpw is selectable again',
+    zh: '显存计算器：正向模式改用模型自身实测 bpw，而非通用档位表（反向模式一直如此）。GPT-OSS 20B 的 Q8_0 此前被高估 67%（21.1GB → 12.7GB）。EXL2 3.5bpw 档位恢复可选',
+  },
+  {
+    date: '2026-08-18',
+    en: 'Chinese edition audit: every /zh page now declares zh-Hans in the HTML itself, the 23 guide links on /zh/cookbook stopped bouncing readers to English, and structured data on 102 Chinese pages describes the Chinese page rather than the English one',
+    zh: '中文站审计：/zh 页面的 HTML 现在自身声明 zh-Hans；/zh/cookbook 上 23 个指南链接不再把读者弹回英文站；102 个中文页面的结构化数据改为描述中文页本身',
+  },
+  {
+    date: '2026-08-18',
+    en: 'Chinese edition is now indexable: /zh/** mirrors all 113 pages with hreflang pairing, and the Chinese text is baked into the static HTML rather than swapped in after load',
+    zh: '中文站现已可被索引：/zh/** 镜像全部 113 个页面并配对 hreflang，中文文本直接写入静态 HTML，而非加载后再替换',
+  },
   {
     date: '2026-08-08',
     en: 'Model index +4 → 79: Qwen3-VL 8B / 30B-A3B, Magistral Small 1.2, Seed-OSS 36B — picked for constrained hardware (multimodal on a 12GB card, small-active MoE for unified memory, 512K context at dual-GPU size). Qwen2-VL 7B marked superseded',

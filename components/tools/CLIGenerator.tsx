@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Terminal, Copy, Check, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
+import { hfRepoMap } from '@/lib/data/hf-repos';
 import { generateCLI, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
 import { trackEvent } from '@/lib/analytics';
@@ -68,6 +69,7 @@ export default function CLIGenerator() {
       env,
       modelId,
       modelName: selectedModel?.name ?? modelId,
+      hfRepo: hfRepoMap[modelId as keyof typeof hfRepoMap],
       quantLevel,
       gpuLayers,
       contextLen,

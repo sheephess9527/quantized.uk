@@ -3,6 +3,7 @@
 import { Search, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
+import { SHIPPED_FORMATS } from '@/lib/utils/hub-url';
 
 export interface HubFilters {
   search: string;
@@ -98,13 +99,11 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           { value: 'pro-gpu',      label: t.hub.hardware['pro-gpu']      },
         ])}
 
-        {renderGroup(t.hub.filters.format, 'format', [
-          { value: 'GGUF', label: 'GGUF' },
-          { value: 'AWQ',  label: 'AWQ'  },
-          { value: 'EXL2', label: 'EXL2' },
-          { value: 'GPTQ', label: 'GPTQ' },
-          { value: 'HQQ',  label: 'HQQ'  },
-        ])}
+        {renderGroup(
+          t.hub.filters.format,
+          'format',
+          SHIPPED_FORMATS.map(f => ({ value: f, label: f })),
+        )}
 
         {renderGroup(t.hub.filters.recency, 'recency', [
           { value: 'recent', label: t.hub.recency.recent },

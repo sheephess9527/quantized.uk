@@ -65,7 +65,7 @@ const baseArticles: Article[] = [
         headingZh: '安装 llama.cpp',
         body: 'Build from source for best CPU performance with OpenBLAS acceleration.',
         bodyZh: '从源码编译以获得最佳 CPU 性能，启用 OpenBLAS 加速。',
-        code: { lang: 'bash', content: 'sudo apt update && sudo apt install -y build-essential cmake libopenblas-dev\ngit clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS\ncmake --build build --config Release -j$(nproc)' },
+        code: { lang: 'bash', content: 'sudo apt update && sudo apt install -y build-essential cmake libopenblas-dev\ngit clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS\ncmake --build build --config Release -j$(nproc)' },
       },
       {
         heading: 'Download the model',
