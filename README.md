@@ -419,6 +419,41 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-23 — Homepage layout: two stacked overlaps, and the hero clipped on phones
+
+Reported from a screenshot of the live site, reproduced in headless Chromium at 1440px, so none of
+this was a photo artifact.
+
+**Two negative margins overlapping each other.** `StatsBar` carried `-mt-8 relative z-10`, from when
+it sat directly under the hero and was meant to straddle its bottom edge. `JobPaths` was inserted
+between the two in the 2026-06-26 ship and the margin was never revisited, so the stats card spent
+that time painted on top of the job-path cards, covering all three descriptions. `JobPaths` had its
+own `-mt-2`, which slid it under the hero's absolutely-positioned fade strip (`bottom-0 h-16`) —
+absolutely-positioned boxes paint above a later *static* sibling, so 8px of opaque gradient sliced
+the "START HERE" label in half. Both negative margins removed; the section order (job paths before
+stats) is deliberate and unchanged.
+
+**The hero was clipped on every phone.** The changelog pill is capped at `max-w-md` (448px), wider
+than a phone viewport. The hero is a flex container, and its content div is a flex item with the
+default `min-width: auto`, which refuses to shrink below min-content — so the block sized to 480px
+inside a 385px viewport and `overflow-hidden` on the section silently cut the right-hand side off:
+the *VRAM Calculator* CTA and the format badges were partly unreachable. Fixed with `w-full min-w-0`
+on the flex item and `max-w-full sm:max-w-md` on the pill.
+
+**Navbar overflowed at the `md` breakpoint.** The compact GPU `<select>` had no `w-full`, so it
+sized to its widest option ("Radeon PRO W7900 48G", 239px) and ignored the `max-w-[9.5rem]` cap on
+its wrapper, pushing itself and the language toggle past the right edge at 768px. Added `w-full`,
+plus `whitespace-nowrap` on the nav links and toggle and a narrower cap at `md`, so the bar stays on
+one line instead of wrapping "Quant Hub" and "中文" onto two.
+
+**Page-level horizontal scroll at 320px** on `/tools/compare/` (a non-wrapping button row) and
+`/benchmarks/` (a `w-72` chart skeleton). Both now shrink.
+
+Verified by sweeping **14 pages × 9 viewport widths (126 combinations)** in headless Chromium and
+asserting `documentElement.scrollWidth === clientWidth` on each: clean everywhere. Tables and code
+blocks that legitimately scroll inside their own `overflow-x: auto` container were checked for a
+scrollable ancestor and left alone — they are the correct pattern, not overflow.
+
 ### 2026-08-20 — The CLI generator emitted commands that could not run
 
 Four of the tool's five outputs were broken, each in a way that looks fine on screen. The generator

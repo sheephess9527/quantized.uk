@@ -88,6 +88,16 @@ flaky network. Never "fix" it by removing the postbuild hook.
   skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
 - **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
   platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes.
+- **Negative margins are a maintenance hazard here.** `-mt-*` on a section only stays correct while
+  the section above it never changes. Two of them had silently gone wrong: `StatsBar`'s `-mt-8`
+  (meant to straddle the hero) overlapped `JobPaths` once that was inserted between them. Also note
+  an absolutely-positioned box paints **above** a later static sibling, so pulling a section up into
+  the hero's `bottom-0` fade strip clips it. Prefer normal spacing.
+- **Check narrow widths in a fixed-width iframe, not `--window-size`.** Headless Chromium enforces a
+  minimum window width and then crops the screenshot, which fakes an overflow that isn't there (and
+  hides real ones). Load the page in a 390px iframe and read `documentElement.scrollWidth` instead.
+  A table or code block whose `right` exceeds the viewport is fine **if** it has an
+  `overflow-x: auto` ancestor — check for one before "fixing" it.
 - **PWA safe areas:** the app is installable (iOS Add to Home Screen, standalone). Respect
   `env(safe-area-inset-*)` — top handled by Navbar + `<main>`, bottom/sides by `body` in
   `globals.css`. Test any top-bar / full-height change against the notch.
@@ -243,6 +253,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-23 | **Homepage layout** — `StatsBar` `-mt-8` overlapped the job-path cards; hero clipped on phones (flex `min-width:auto` + `max-w-md` pill); navbar overflowed at `md`; 126 page×width combos now assert no horizontal scroll |
 | 2026-08-20 | **CLI generator was emitting unrunnable commands** — display name used as repo id/Ollama tag/filename; now `hfRepo` + `ggufRepoId()` gate; `GGML_*` build flags; `sysctl -n hw.ncpu` on macOS |
 | 2026-08-20 | **Hub filters** — format chips derived from data (`HQQ` matched 0 models); share URL keeps the reader's language |
 | 2026-08-20 | **Cadence** — `dataLastUpdated` → 2026-08-20; changelog caught up (`/zh` ship + audit had never reached Weekly/RSS/recency) |

@@ -17,8 +17,8 @@ const BenchCharts = dynamic(() => import('@/components/benchmarks/BenchCharts'),
         <section key={h}>
           <div className="glass rounded-2xl p-6">
             <div className="mb-5">
-              <div className="h-6 w-48 rounded bg-white/[0.06] animate-pulse" />
-              <div className="h-4 w-72 rounded bg-white/[0.04] animate-pulse mt-2" />
+              <div className="h-6 w-full max-w-[12rem] rounded bg-white/[0.06] animate-pulse" />
+              <div className="h-4 w-full max-w-[18rem] rounded bg-white/[0.04] animate-pulse mt-2" />
             </div>
             <div className="rounded-xl bg-white/[0.03] animate-pulse" style={{ height: h }} />
           </div>

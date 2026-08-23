@@ -17,7 +17,11 @@ export default function HardwareProfileSelector({ compact = false }: { compact?:
           value={gpuId}
           onChange={e => setGpuId(e.target.value)}
           className={cn(
-            'appearance-none pl-7 pr-7 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer',
+            // w-full is what makes the navbar's max-w-[9.5rem] cap actually
+            // bite. Without it the select sizes to its widest <option>
+            // ("Radeon PRO W7900 48G") — 239px — and pushed itself and the
+            // language toggle off the right edge at the md breakpoint.
+            'w-full appearance-none pl-7 pr-7 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer',
             hasProfile
               ? 'bg-violet-500/10 text-violet-300 border-violet-500/20'
               : 'bg-white/[0.03] text-slate-500 border-white/[0.06] hover:text-slate-300',

@@ -57,7 +57,7 @@ export default function Navbar() {
               key={href}
               href={href}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150',
+                'px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150',
                 isActive(href)
                   ? 'text-violet-300 bg-violet-500/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
@@ -73,7 +73,7 @@ export default function Navbar() {
               onClick={() => setToolsOpen(v => !v)}
               onBlur={() => setTimeout(() => setToolsOpen(false), 150)}
               className={cn(
-                'flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150',
+                'flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150',
                 basePath.startsWith('/tools')
                   ? 'text-violet-300 bg-violet-500/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
@@ -101,12 +101,12 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <div className="hidden sm:block max-w-[9.5rem]">
+          <div className="hidden sm:block max-w-[7rem] lg:max-w-[9.5rem]">
             <HardwareProfileSelector compact />
           </div>
           <button
             onClick={toggleLang}
-            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
             title={lang === 'en' ? 'Switch to Chinese' : '切换为英文'}
             aria-label={lang === 'en' ? 'Switch to Chinese' : 'Switch to English'}
           >

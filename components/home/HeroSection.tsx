@@ -36,7 +36,12 @@ export default function HeroSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      {/* min-w-0: this is a flex item, and the default min-width:auto refuses to
+          shrink below its content's min-content width. The changelog pill below
+          is capped at max-w-md (448px), which is wider than a phone — without
+          this the whole hero block sized to 480px and the section's
+          overflow-hidden silently clipped the CTAs off the right edge. */}
+      <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 text-center">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,7 +55,7 @@ export default function HeroSection() {
           {latest && (
             <a
               href="#changelog"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors max-w-md"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors max-w-full sm:max-w-md"
             >
               <Sparkles size={12} className="shrink-0" />
               <span className="truncate">

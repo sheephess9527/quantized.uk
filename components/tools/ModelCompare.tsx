@@ -85,9 +85,9 @@ export default function ModelCompare() {
         ))}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <label className="text-xs text-slate-500">{c.context}</label>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
           {[2048, 4096, 8192, 16384].map(p => (
             <button key={p} onClick={() => setContextLen(p)}
               className={cn('px-2 py-1 rounded-lg text-xs font-mono border transition-all',

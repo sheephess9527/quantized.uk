@@ -16,7 +16,11 @@ export default function StatsBar() {
   const { t } = useLanguage();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-10">
+    // `-mt-8 relative z-10` used to make this card straddle the bottom of the
+    // hero, back when it sat directly under it. JobPaths was later inserted in
+    // between and the negative margin was never revisited, so the card spent
+    // that time overlapping the job-path cards and covering their descriptions.
+    <div className="max-w-7xl mx-auto px-4 sm:px-6">
       <div className="glass rounded-2xl p-1">
         <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
           {stats.map(({ value, keyName }) => (
