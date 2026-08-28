@@ -5,14 +5,22 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { changelog } from '@/lib/data/meta';
+import { quantFormats } from '@/lib/data/formats';
+import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 
-const formatBadges = [
-  { name: 'GGUF',  color: 'bg-violet-500/15 text-violet-300 border-violet-500/25' },
-  { name: 'AWQ',   color: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' },
-  { name: 'EXL2',  color: 'bg-orange-500/15 text-orange-300 border-orange-500/25' },
-  { name: 'GPTQ',  color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25' },
-  { name: 'HQQ',   color: 'bg-yellow-500/15 text-yellow-300 border-yellow-500/25' },
-];
+/**
+ * These badges sit directly under "Explore Models" and read as "formats you
+ * will find here", so they list only formats an indexed model actually ships.
+ * formats.ts also documents HQQ, which no model uses — advertising it here
+ * walked the reader into a Hub that has no HQQ filter and no HQQ results.
+ * Colours come from the format data rather than a second hardcoded copy.
+ */
+const formatBadges = quantFormats
+  .filter(f => SHIPPED_FORMATS.includes(f.name))
+  .map(f => ({
+    name: f.name,
+    color: `${f.bgClass.replace('/10', '/15')} ${f.textClass} ${f.borderClass.replace('/20', '/25')}`,
+  }));
 
 export default function HeroSection() {
   const { t, lang } = useLanguage();

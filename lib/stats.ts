@@ -1,10 +1,14 @@
 import { models } from '@/lib/data/models';
-import { quantFormats } from '@/lib/data/formats';
 import { gpuDatabase } from '@/lib/data/gpus';
+import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 
 export function getSiteStats() {
   const modelCount = models.length;
-  const formatCount = quantFormats.length;
+  // Sits next to "models indexed" and "GPUs in database", so it has to be an
+  // inventory count: formats you can actually find a model in. formats.ts
+  // documents HQQ too, but no indexed model ships it — counting it here
+  // advertised a format the Hub has no filter for.
+  const formatCount = SHIPPED_FORMATS.length;
   const gpuCount = gpuDatabase.length;
 
   const accuracies = models.map(m => {

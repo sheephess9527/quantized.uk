@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-08-20';
+export const dataLastUpdated = '2026-08-23';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,21 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-08-23',
+    en: 'Format surfaces now agree with the index: the homepage badges, the "formats tracked" stat and the Hub filters all derive from the formats an indexed model actually ships (4). HQQ stays in the format explainer as reference, but no longer advertises a browse path with no results',
+    zh: '格式相关的展示与索引对齐：首页徽章、"格式追踪"统计与 Hub 筛选均改为从实际有模型的格式推导（4 种）。HQQ 仍保留在格式科普中作为参考，但不再引导到没有结果的浏览路径',
+  },
+  {
+    date: '2026-08-23',
+    en: 'Format wizard: quant levels are now per-format — choosing "easiest setup" used to print EXL2 · Q4_K_M and AWQ · Q4_K_M, levels that exist in neither format. The runtime column also follows the format, so an AMD reader no longer sees EXL2 recommended with a ROCm runtime next to the reason explaining EXL2 cannot run on ROCm',
+    zh: '格式向导：量化档位改为按格式区分 —— 此前选择"最易上手"会给出 EXL2 · Q4_K_M、AWQ · Q4_K_M 这类两种格式里都不存在的档位。框架推荐也改为跟随格式，AMD 读者不会再看到 EXL2 配 ROCm 运行时，却在旁边读到"EXL2 无法在 ROCm 上运行"',
+  },
+  {
+    date: '2026-08-23',
+    en: 'Homepage layout: the stats bar had been painted on top of the job-path cards since those were introduced, covering all three descriptions, and the hero was clipped on phones — the VRAM calculator button and format badges were partly unreachable. Navbar no longer overflows at tablet width',
+    zh: '首页排版：统计条自 job path 卡片引入后就一直盖在卡片上，遮住全部三行说明；Hero 在手机上被裁切，显存计算器按钮与格式徽章有一部分点不到。导航栏在平板宽度下不再溢出',
+  },
   {
     date: '2026-08-20',
     en: 'CLI generator now emits commands that actually run: the real GGUF repo and filename instead of a placeholder, `ollama run hf.co/…` instead of a tag that 404s, and a repo id for vLLM instead of the model\'s display name. llama.cpp build flags updated to the GGML_* names (the old LLAMA_* ones are ignored, giving a silent CPU-only build)',

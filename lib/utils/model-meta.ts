@@ -1,4 +1,15 @@
+import { models } from '@/lib/data/models';
 import type { QuantConfidence, QuantModel, QuantVariant } from '@/lib/data/types';
+
+/**
+ * Quant formats at least one indexed model actually ships — derived, never
+ * typed out, so no surface can advertise a format the index cannot show.
+ * `lib/data/formats.ts` documents one more (HQQ) as reference material; that is
+ * editorial content, not inventory, and the two must not be conflated.
+ */
+export const SHIPPED_FORMATS: string[] = Array.from(
+  new Set(models.flatMap(m => m.quants.map(q => q.format))),
+).sort();
 
 /** Models with published site-side speed / matrix numbers → default measured for VRAM/speed fields. */
 const MEASURED_MODEL_IDS = new Set([

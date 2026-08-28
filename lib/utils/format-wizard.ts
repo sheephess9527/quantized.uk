@@ -17,7 +17,10 @@ export interface WizardResult {
   reasons: { en: string; zh: string }[];
 }
 
-const FORMATS = ['GGUF', 'AWQ', 'EXL2', 'GPTQ', 'HQQ'] as const;
+import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
+
+/** Only recommend formats the index can actually show a model in. */
+const FORMATS = SHIPPED_FORMATS;
 
 function scoreFormat(input: WizardInput, format: string): { score: number; reasons: { en: string; zh: string }[] } {
   let score = 50;
@@ -72,29 +75,45 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
   return { score, reasons };
 }
 
+/**
+ * The runtime has to follow the *format* first. Keying off hardware first meant
+ * an AMD reader saw "EXL2 → Ollama / llama.cpp (ROCm)" sitting directly beside
+ * this row's own reason, "ExLlamaV2 is CUDA-only — EXL2 will not run on ROCm at
+ * all". Hardware only decides which GGUF runtime to name.
+ */
 function recommendFramework(format: string, input: WizardInput): string {
-  if (input.hardware === 'mac') return 'Ollama / llama.cpp';
+  if (format === 'EXL2') return 'ExLlamaV2 (CUDA only)';
+  if (format === 'AWQ') return input.useCase === 'api' ? 'vLLM' : 'vLLM (CUDA only)';
+  if (format === 'GPTQ') return 'vLLM / AutoGPTQ (CUDA only)';
+  if (format === 'HQQ') return 'transformers + HQQ (CUDA only)';
+
+  // GGUF — the one format that runs everywhere.
+  if (input.hardware === 'mac') return 'Ollama / llama.cpp (Metal)';
   if (input.hardware === 'cpu') return 'llama.cpp';
   if (input.hardware === 'amd') return 'Ollama / llama.cpp (ROCm)';
-  if (format === 'EXL2') return 'ExLlamaV2';
-  if (format === 'AWQ' && input.useCase === 'api') return 'vLLM';
-  if (format === 'GPTQ') return 'vLLM / AutoGPTQ';
-  if (input.priority === 'ease') return 'Ollama';
-  return 'llama.cpp';
+  return input.priority === 'ease' ? 'Ollama' : 'llama.cpp';
 }
 
+/**
+ * Quant levels are per-format vocabularies. The old fallback returned the GGUF
+ * level `Q4_K_M` for every format, so choosing "easiest setup" — the common
+ * path — printed "EXL2 · Q4_K_M" and "AWQ · Q4_K_M", levels that do not exist
+ * in either format.
+ */
 function recommendQuant(format: string, input: WizardInput): string {
-  if (input.priority === 'quality') {
-    if (format === 'GGUF') return 'Q6_K';
-    if (format === 'EXL2') return '5.0bpw';
-    return 'INT4';
+  switch (format) {
+    case 'GGUF':
+      return input.priority === 'quality' ? 'Q6_K' : 'Q4_K_M';
+    case 'EXL2':
+      return input.priority === 'quality' ? '5.0bpw' : '4.65bpw';
+    case 'AWQ':
+    case 'GPTQ':
+      return 'INT4';
+    case 'HQQ':
+      return input.priority === 'quality' ? '4bit' : '2bit';
+    default:
+      return 'INT4';
   }
-  if (input.priority === 'speed') {
-    if (format === 'EXL2') return '4.65bpw';
-    if (format === 'GGUF') return 'Q4_K_M';
-    return 'INT4';
-  }
-  return 'Q4_K_M';
 }
 
 export function runFormatWizard(input: WizardInput): WizardResult[] {

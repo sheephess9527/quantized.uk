@@ -419,6 +419,40 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-23 (b) — Format surfaces stop advertising something the index cannot show
+
+The 2026-08-20 batch derived the Hub's format chips from the data, which dropped `HQQ` (zero of 79
+models ship it). It did not touch the other three places that name formats, so the site started
+contradicting itself: the homepage hero badged **HQQ**, the stats bar counted **5 formats tracked**,
+and the format wizard could recommend HQQ — all of them walking a reader into a Hub with no HQQ
+filter and no HQQ results.
+
+`SHIPPED_FORMATS` moved to `lib/utils/model-meta.ts` (a neutral module — it was in `hub-url.ts`,
+which imports a component type) and is now the single source for every format vocabulary:
+
+- **Hero badges** derive from it, with colours read from `formats.ts` instead of a second hardcoded
+  copy of the palette.
+- **`getSiteStats().formatCount`** counts formats with at least one indexed model. It sits beside
+  "models indexed" and "GPUs in database", so it has to be an inventory count.
+- **Format wizard** only scores formats the index can show.
+
+HQQ stays documented in `lib/data/formats.ts` and in the Format Heat Index — that is an editorial
+adoption estimate, which is reference content, not an inventory claim. The two must not be conflated.
+
+**Format wizard, two further defects found by running it across every hardware × priority
+combination rather than reading it:**
+
+- `recommendQuant` fell through to the GGUF level `Q4_K_M` for *every* format whenever priority was
+  `ease` — the common path. Readers were told to fetch "EXL2 · Q4_K_M" and "AWQ · Q4_K_M", levels
+  that exist in neither format. Quant levels are now per-format vocabularies.
+- `recommendFramework` keyed off hardware before format, so an AMD reader saw
+  **"EXL2 → Ollama / llama.cpp (ROCm)"** printed directly beside that row's own reason,
+  *"ExLlamaV2 is CUDA-only — EXL2 will not run on ROCm at all"*. The runtime now follows the format;
+  hardware only decides which GGUF runtime to name.
+
+**Cadence:** `dataLastUpdated` → 2026-08-23, with the layout fix and both of the above added to the
+changelog so Weekly updates, `?recency=recent` and `/feed.xml` reflect them.
+
 ### 2026-08-23 — Homepage layout: two stacked overlaps, and the hero clipped on phones
 
 Reported from a screenshot of the live site, reproduced in headless Chromium at 1440px, so none of

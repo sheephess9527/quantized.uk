@@ -125,8 +125,20 @@ repos are per-model), emit a visible `<placeholder>`: an obvious placeholder bea
 wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`; CMake
 ignores the old names and silently produces a CPU-only build.
 
-**Filter vocabularies come from the data** — `SHIPPED_FORMATS` in `hub-url.ts` derives the format
-chips from `models`. Hand-typed lists drift: `HQQ` sat in the Hub as a chip matching zero models.
+**Format vocabularies come from the data** — `SHIPPED_FORMATS` in `lib/utils/model-meta.ts` is the
+single source: Hub chips, hero badges, the "formats tracked" stat and the format wizard all derive
+from it. Hand-typed lists drift, and they drift *separately* — fixing only the Hub left the homepage
+badging `HQQ` and counting 5 formats while the Hub offered 4. `formats.ts` documents one more format
+than the index ships; that is editorial reference content (the Heat Index is an adoption estimate),
+**not** an inventory count. Never conflate the two.
+
+**Per-format vocabularies don't share a fallback** — quant levels belong to one format only. The
+wizard's `recommendQuant` fell through to `Q4_K_M` for every format, telling readers to fetch
+"EXL2 · Q4_K_M". Likewise a recommended runtime must follow the **format**, not the hardware, or the
+row contradicts its own reason text (EXL2 recommended with a ROCm runtime).
+
+**Run the tools, don't read them.** Both wizard bugs survived review and were obvious the moment the
+function was called across every hardware × priority combination. Same for the CLI generator.
 
 **Adding models**
 
@@ -253,6 +265,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-23 | **Format surfaces** — hero badges / `formats tracked` / wizard now derive from `SHIPPED_FORMATS` (HQQ was advertised with 0 models); wizard emitted `EXL2 · Q4_K_M` and recommended ROCm for CUDA-only EXL2 |
 | 2026-08-23 | **Homepage layout** — `StatsBar` `-mt-8` overlapped the job-path cards; hero clipped on phones (flex `min-width:auto` + `max-w-md` pill); navbar overflowed at `md`; 126 page×width combos now assert no horizontal scroll |
 | 2026-08-20 | **CLI generator was emitting unrunnable commands** — display name used as repo id/Ollama tag/filename; now `hfRepo` + `ggufRepoId()` gate; `GGML_*` build flags; `sysctl -n hw.ncpu` on macOS |
 | 2026-08-20 | **Hub filters** — format chips derived from data (`HQQ` matched 0 models); share URL keeps the reader's language |
