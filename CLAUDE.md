@@ -84,6 +84,13 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **`Array.from(new Set(...))`**, never `[...new Set(...)]` (bundler target won't down-level it).
 - **Fonts via `next/font` only** (self-hosted; Tailwind reads `--font-inter`/`--font-mono`).
   Never add a Google Fonts `@import`/`<link>` — it's render-blocking and double-loads.
+- **Never animate above-the-fold content from JS.** In a static export, `initial={{ opacity: 0 }}`
+  is serialised into the HTML, so the element ships invisible and cannot paint until the bundle
+  hydrates. The homepage `<h1>` did exactly this and cost **LCP P75 3.1s** (Google grades CWV at
+  P75; 2.5s is the "good" bound). Use the CSS classes in `globals.css`: `.hero-lift` for an LCP
+  element (transform only — never invisible), `.hero-rise` for supporting elements. Check with
+  `--disable-javascript`: above-the-fold content must render in full. framer-motion is **not** a
+  dependency any more — do not reintroduce it for an entrance animation.
 - **Recharts must be lazy** — import chart components via `next/dynamic` (`ssr: false` + a
   skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
 - **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
@@ -265,6 +272,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-08-23 | **LCP** — homepage `<h1>` shipped as `opacity:0` (framer-motion `initial`), so the LCP text waited on hydration; CSS keyframes instead, framer-motion dropped, First Load JS 202→169 kB |
 | 2026-08-23 | **Format surfaces** — hero badges / `formats tracked` / wizard now derive from `SHIPPED_FORMATS` (HQQ was advertised with 0 models); wizard emitted `EXL2 · Q4_K_M` and recommended ROCm for CUDA-only EXL2 |
 | 2026-08-23 | **Homepage layout** — `StatsBar` `-mt-8` overlapped the job-path cards; hero clipped on phones (flex `min-width:auto` + `max-w-md` pill); navbar overflowed at `md`; 126 page×width combos now assert no horizontal scroll |
 | 2026-08-20 | **CLI generator was emitting unrunnable commands** — display name used as repo id/Ollama tag/filename; now `hfRepo` + `ggufRepoId()` gate; `GGML_*` build flags; `sysctl -n hw.ncpu` on macOS |

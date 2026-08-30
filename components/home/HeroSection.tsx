@@ -1,7 +1,6 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { changelog } from '@/lib/data/meta';
@@ -25,7 +24,6 @@ const formatBadges = quantFormats
 export default function HeroSection() {
   const { t, lang } = useLanguage();
   const latest = changelog[0];
-  const reduceMotion = useReducedMotion();
 
   return (
     <section className="relative flex items-center justify-center overflow-hidden pt-20 pb-12 sm:pt-24 sm:pb-16 min-h-[min(70vh,640px)]">
@@ -50,12 +48,7 @@ export default function HeroSection() {
           this the whole hero block sized to 480px and the section's
           overflow-hidden silently clipped the CTAs off the right edge. */}
       <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col items-center gap-2 mb-6"
-        >
+        <div className="hero-rise flex flex-col items-center gap-2 mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
             {t.home.hero.badge}
@@ -72,34 +65,23 @@ export default function HeroSection() {
               </span>
             </a>
           )}
-        </motion.div>
+        </div>
 
-        <motion.h1
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.05 }}
-          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[0.95] mb-5"
-        >
+        {/* .hero-lift, not .hero-rise: this is the LCP element, so it animates
+            transform only and is never rendered invisible. */}
+        <h1 className="hero-lift text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[0.95] mb-5">
           <span className="text-slate-100">{t.home.hero.title1}&nbsp;</span>
           <br />
           <span className="text-gradient">{t.home.hero.title2}</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.1 }}
-          className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed"
+        <p
+          className="hero-rise [animation-delay:0.1s] text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed"
         >
           {t.home.hero.subtitle}
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.15 }}
-          className="flex flex-wrap items-center justify-center gap-3"
-        >
+        <div className="hero-rise [animation-delay:0.15s] flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/quant-hub/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
@@ -114,7 +96,7 @@ export default function HeroSection() {
             <Calculator size={14} className="text-cyan-400" />
             {t.home.hero.ctaSecondary}
           </Link>
-        </motion.div>
+        </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5">
           {formatBadges.map(fmt => (

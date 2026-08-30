@@ -419,6 +419,43 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-08-23 (c) — The LCP element shipped invisible (LCP P75 3.1s on a static site)
+
+Cloudflare RUM (24h, bots excluded) reported **LCP P50 2,148ms / P75 3,108ms**. P75 is the figure
+Google grades Core Web Vitals on, and 3.1s is "needs improvement" — on a site whose entire premise
+is prerendered static HTML.
+
+The cause was in the markup, not the network. The homepage `<h1>` — the LCP element — was a
+`motion.h1` with `initial={{ opacity: 0, y: 16 }}`, so framer-motion serialised that initial state
+into the export:
+
+```html
+<h1 class="..." style="opacity:0;transform:translateY(16px)">
+```
+
+The largest text on the page could not paint until the bundle downloaded, React hydrated and
+framer-motion ran its 0.05s delay plus 0.45s animation. Four elements shipped that way; with
+JavaScript disabled the hero stayed blank permanently.
+
+Replaced with CSS keyframes in `globals.css`. Two classes, because the distinction matters:
+
+- **`.hero-lift`** for the LCP element — animates `transform` only, so it is never invisible and
+  never a non-candidate for LCP.
+- **`.hero-rise`** for the smaller supporting elements, with staggered `animation-delay`.
+
+Both are disabled under `prefers-reduced-motion`, which is what `useReducedMotion()` was doing.
+
+`framer-motion` was imported by exactly one file, so it is now removed from the dependency tree
+entirely: **homepage First Load JS 202 kB → 169 kB (−33 kB)**. Verified by rendering the export with
+`--disable-javascript`: the hero — headline, subtitle, both CTAs, format badges — paints in full.
+
+**The rule this leaves behind:** never drive the entrance of above-the-fold content from JS in a
+static export. `initial={{ opacity: 0 }}` on anything above the fold is a self-inflicted LCP
+regression that no amount of caching or CDN tuning can fix.
+
+**Traffic note (24h, single-digit volume — a hint, not a finding):** two of the top five URLs were
+`/zh` pages, and `/tools/cli-gen/` was #1 — the tool whose output was unrunnable until 2026-08-20.
+
 ### 2026-08-23 (b) — Format surfaces stop advertising something the index cannot show
 
 The 2026-08-20 batch derived the Hub's format chips from the data, which dropped `HQQ` (zero of 79

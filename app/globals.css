@@ -36,6 +36,35 @@ body {
 
 ::selection { background: rgba(124,58,237,0.35); color: #f1f5f9; }
 
+/*
+ * Hero entrance animation — CSS, deliberately not framer-motion.
+ *
+ * The homepage hero holds the LCP element. Driving its entrance from JS means
+ * `initial={{ opacity: 0 }}` is serialised into the static HTML, so the largest
+ * text on the page ships invisible and cannot paint until the bundle downloads
+ * and React hydrates. Cloudflare RUM had LCP at P50 2.15s / P75 3.11s on a
+ * prerendered static site because of it.
+ *
+ * `.hero-lift` is for the LCP element itself: transform only, never a chance of
+ * being invisible. `.hero-rise` fades the smaller supporting bits in.
+ */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hero-lift {
+  from { transform: translateY(16px); }
+  to   { transform: none; }
+}
+
+.hero-rise { animation: hero-rise 0.4s ease-out both; }
+.hero-lift { animation: hero-lift 0.45s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-lift { animation: none; }
+}
+
 @layer components {
   .glass {
     @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.07] rounded-xl;
