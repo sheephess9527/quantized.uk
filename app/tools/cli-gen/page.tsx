@@ -3,6 +3,8 @@
 import { useLanguage } from '@/lib/i18n/context';
 import CLIGenerator from '@/components/tools/CLIGenerator';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import ToolExplainer from '@/components/tools/ToolExplainer';
+import { cliGenContent } from '@/lib/data/tool-content';
 
 export default function CLIGenPage() {
   const { t } = useLanguage();
@@ -23,6 +25,7 @@ export default function CLIGenPage() {
         <p className="text-slate-400 max-w-2xl">{t.cli.subtitle}</p>
       </div>
       <CLIGenerator />
+      <ToolExplainer content={cliGenContent} toolName={t.cli.title} path="/tools/cli-gen/" />
     </div>
   );
 }

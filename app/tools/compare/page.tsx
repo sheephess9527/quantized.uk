@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import ModelCompare from '@/components/tools/ModelCompare';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import ToolExplainer from '@/components/tools/ToolExplainer';
+import { compareContent } from '@/lib/data/tool-content';
 
 export default function ComparePage() {
   const { t } = useLanguage();
@@ -26,6 +28,7 @@ export default function ComparePage() {
       <Suspense fallback={<div className="glass rounded-2xl p-8 text-center text-slate-600 text-sm">Loading...</div>}>
         <ModelCompare />
       </Suspense>
+      <ToolExplainer content={compareContent} toolName={t.compare.title} path="/tools/compare/" />
     </div>
   );
 }

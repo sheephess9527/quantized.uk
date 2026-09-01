@@ -419,6 +419,37 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (e) — External audit round 4: the tool pages had nothing to read
+
+**P1-4 — four pages, one `h1` each, no body text.** `/tools/vram-calc/` and its three siblings were
+bare interactive widgets: nothing for a search engine to rank on terms like "LLM VRAM calculator"
+(the audit's point — among the highest-volume queries in this niche), and nothing for a first-time
+reader to calibrate the numbers against.
+
+Each page now carries 2–3 explanatory sections and a visible FAQ, in both languages, with
+`SoftwareApplication` and `FAQPage` schema. The copy is written **from the code that runs** — the
+three terms in `calcVRAM`, the `ggufRepoId` gate in `cli.ts`, the elimination logic in
+`format-wizard.ts` — so the prose cannot drift away from the tool it describes. Content lives in
+`lib/data/tool-content.ts` as `{ en, zh }` pairs like every other reader-facing field; rendering and
+schema are in `components/tools/ToolExplainer.tsx`.
+
+The FAQ is rendered visibly on purpose: Google requires FAQPage markup to correspond to content the
+reader can actually see.
+
+What the pages now say, in short: the VRAM page derives the three terms of the estimate, explains
+why grouped-query attention decides the shape of the KV-cache curve, and states the gap against a
+real file (4.62 GB estimated vs bartowski's 4.58 GiB); the CLI page explains why a display name is
+not an identifier and why `LLAMA_*` build flags silently produce a CPU-only binary; the wizard page
+explains that quant levels belong to exactly one format; the compare page warns that perplexity is
+only comparable within a model family.
+
+**Verified:** `h2` count per page 4 / 4 / 4 / 3 (audit asked for ≥3), FAQPage and
+SoftwareApplication present on all eight pages across both trees, 66 page × width combinations show
+no horizontal overflow.
+
+**Still open:** P1-1 remainder, P2-1/P2-2 (GPU and format landing pages), P3-5 (searchable model
+dropdown), P3-8 (GPU verdict density).
+
 ### 2026-09-01 (d) — External audit round 3: an unreadable chart, and a scare that wasn't
 
 **P3-1 — the speed chart said almost nothing.** Its x-axis was derived from `hardware` alone, so 13

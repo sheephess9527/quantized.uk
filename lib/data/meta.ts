@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'The four tool pages now explain themselves. Each carried a single heading and no body text — a bare widget with nothing to calibrate against. They now document how the VRAM estimate is derived, why context length dominates it, where the CLI identifiers come from, and why some commands show a placeholder, plus a FAQ on each, in both languages',
+    zh: '四个工具页现在会自我说明。此前每页只有一个标题、没有任何正文 —— 一个孤立的交互控件，读者无从校准。现在它们分别说明显存估算如何得出、为何上下文长度主导结果、CLI 命令里的标识符从哪来、以及为什么有些命令是占位符，并各配一组常见问题，中英双语',
+  },
+  {
+    date: '2026-09-01',
     en: 'The inference speed chart is readable again: 13 of its 18 bars were all labelled "RTX 4090", so nothing on screen said which model each one measured. Every bar now names its model and hardware, and a key explains what the colours mean (they encode the framework, which was never stated). Tap targets on phones meet the 44px minimum',
     zh: '推理速度图恢复可读：18 根柱子里有 13 根标签都是 "RTX 4090"，屏幕上没有任何信息表明每根对应哪个模型。现在每根柱子都标注模型与硬件，并新增图例说明颜色含义（颜色一直代表推理框架，但此前从未说明）。手机端点击目标达到 44px 下限',
   },

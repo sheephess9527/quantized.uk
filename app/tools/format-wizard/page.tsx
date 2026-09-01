@@ -3,6 +3,8 @@
 import { useLanguage } from '@/lib/i18n/context';
 import FormatWizard from '@/components/tools/FormatWizard';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import ToolExplainer from '@/components/tools/ToolExplainer';
+import { formatWizardContent } from '@/lib/data/tool-content';
 
 export default function FormatWizardPage() {
   const { t } = useLanguage();
@@ -23,6 +25,7 @@ export default function FormatWizardPage() {
         <p className="text-slate-400 max-w-2xl">{t.wizard.subtitle}</p>
       </div>
       <FormatWizard />
+      <ToolExplainer content={formatWizardContent} toolName={t.wizard.title} path="/tools/format-wizard/" />
     </div>
   );
 }
