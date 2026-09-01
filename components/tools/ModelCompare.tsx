@@ -8,6 +8,7 @@ import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { models } from '@/lib/data/models';
 import { compareModels } from '@/lib/utils/compare';
 import { cn } from '@/lib/utils/cn';
+import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 
 export default function ModelCompare() {
@@ -76,10 +77,14 @@ export default function ModelCompare() {
               className={selectCls}
             >
               <option value="">{c.selectModel}</option>
-              {models.map(m => (
-                <option key={m.id} value={m.id} disabled={side === 'a' ? m.id === modelBId : m.id === modelAId}>
-                  {m.name} ({m.paramLabel})
-                </option>
+              {groupedModels().map(group => (
+                <optgroup key={group.bucket} label={group.bucket}>
+                  {group.models.map(m => (
+                    <option key={m.id} value={m.id} disabled={side === 'a' ? m.id === modelBId : m.id === modelAId}>
+                      {m.name} ({m.paramLabel})
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>

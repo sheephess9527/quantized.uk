@@ -9,6 +9,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
+import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
@@ -33,7 +34,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 
 export default function VRAMCalculator() {
   const { t } = useLanguage();
-  const { gpuId: profileGpuId } = useHardwareProfile();
+  const { gpuId: profileGpuId, gpu: profileGpu } = useHardwareProfile();
   const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
@@ -141,6 +142,14 @@ export default function VRAMCalculator() {
 
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
+  // Cards that clear the estimate comfortably, smallest first — "the cheapest
+  // card that runs this" is the question behind the 43-bar list.
+  const greenGpus = useMemo(
+    () => gpuDatabase.filter(g => getVerdict(result.totalGB, g.vram) === 'green').sort((a, b) => a.vram - b.vram),
+    [result.totalGB],
+  );
+  const smallestGreen = greenGpus[0];
+
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
     return getRecommendations(selectedGpu.vram, contextLen, batchSize, sortBy, includeYellow);
@@ -219,8 +228,12 @@ export default function VRAMCalculator() {
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.modelPlaceholder}</option>
-                    {models.map(m => (
-                      <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
+                    {groupedModels().map(group => (
+                      <optgroup key={group.bucket} label={group.bucket}>
+                        {group.models.map(m => (
+                          <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
+                        ))}
+                      </optgroup>
                     ))}
                     <option value="custom">{t.calc.customLabel}</option>
                   </select>
@@ -433,7 +446,54 @@ export default function VRAMCalculator() {
 
               <div className="glass rounded-2xl p-5">
                 <h3 className="text-sm font-semibold text-slate-300 mb-3">{t.calc.hwTitle}</h3>
-                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+
+                {/* 43 bars, almost all green in the common case, is a lot of ink
+                    for very little answer. The useful facts are: how many cards
+                    clear it, the smallest one that does, and — if the reader has
+                    told us their card — the verdict for that card specifically.
+                    The full list stays one click away. */}
+                <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                  {greenGpus.length === 0
+                    ? t.calc.hwSummaryNone
+                    : t.calc.hwSummary
+                        .replace('{green}', String(greenGpus.length))
+                        .replace('{total}', String(gpuDatabase.length))
+                        .replace('{smallest}', smallestGreen!.name)
+                        .replace('{vram}', String(smallestGreen!.vram))}
+                </p>
+
+                {profileGpu && (
+                  <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
+                      <span className="text-xs text-slate-300 font-medium">{profileGpu.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                        <div
+                          className={cn('h-full rounded-full', verdictConfig[getVerdict(result.totalGB, profileGpu.vram)].bar)}
+                          style={{ width: `${Math.min(100, (result.totalGB / profileGpu.vram) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-xs text-slate-500 shrink-0">
+                        {result.totalGB.toFixed(1)} / {profileGpu.vram}G
+                      </span>
+                    </div>
+                    <p className={cn('text-xs mt-2', verdictConfig[getVerdict(result.totalGB, profileGpu.vram)].label)}>
+                      {getVerdict(result.totalGB, profileGpu.vram) === 'green'
+                        ? t.calc.hwAdviceGreen.replace('{spare}', (profileGpu.vram - result.totalGB).toFixed(1))
+                        : getVerdict(result.totalGB, profileGpu.vram) === 'yellow'
+                          ? t.calc.hwAdviceYellow
+                          : t.calc.hwAdviceRed}
+                    </p>
+                  </div>
+                )}
+
+                <details className="group">
+                  <summary className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer min-h-[44px] flex items-center">
+                    {t.calc.hwShowAll.replace('{total}', String(gpuDatabase.length))}
+                  </summary>
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
                   {gpuDatabase.map(gpu => {
                     const v = getVerdict(result.totalGB, gpu.vram);
                     const cfg = verdictConfig[v];
@@ -452,7 +512,8 @@ export default function VRAMCalculator() {
                       </div>
                     );
                   })}
-                </div>
+                  </div>
+                </details>
                 <div className="flex items-center gap-4 mt-3 text-xs text-slate-600">
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />{t.calc.green}</span>
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />{t.calc.yellow}</span>

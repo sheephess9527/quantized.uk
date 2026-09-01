@@ -7,6 +7,7 @@ import { models } from '@/lib/data/models';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { generateCLI, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
+import { groupedModels } from '@/lib/utils/model-groups';
 import { trackEvent } from '@/lib/analytics';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
@@ -160,8 +161,12 @@ export default function CLIGenerator() {
               className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
             >
               <option value="">{t.calc.modelPlaceholder}</option>
-              {models.map(m => (
-                <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
+              {groupedModels().map(group => (
+                <optgroup key={group.bucket} label={group.bucket}>
+                  {group.models.map(m => (
+                    <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
+                  ))}
+                </optgroup>
               ))}
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />

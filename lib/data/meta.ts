@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'The calculator answers instead of listing. Its hardware panel showed 43 bars, almost all green — a lot of ink for very little answer. It now leads with the fact you came for ("fits comfortably on 16 of 43 cards — smallest is the Instinct MI100 32G"), gives a verdict for your own card if you have set one, and keeps the full list one click away. The 79-model dropdowns in all three tools are grouped by size instead of listed in data-entry order',
+    zh: '计算器改为给结论，而不是罗列。硬件面板此前平铺 43 根柱子且大多为绿色 —— 占了大量篇幅却几乎没有回答问题。现在它先给出你真正想要的事实（"43 张卡中 16 张可从容运行 —— 最小的是 Instinct MI100 32G"），如果你设置了自己的显卡还会单独给出裁决，完整列表则收在一次点击之后。三个工具里 79 项的模型下拉也改为按尺寸分组，不再按录入顺序排列',
+  },
+  {
+    date: '2026-09-01',
     en: 'New: a page per GPU. All 43 cards in the database now have one — "RTX 4060 Ti 16G — what LLMs can it run?" answers with 51 of the 79 indexed models, each at the best quant level that still leaves headroom at 4K context, grouped by size. The data always existed; it had only ever been a filter parameter, never a page. 88 new pages across both languages',
     zh: '新增：每张显卡一个页面。数据库中全部 43 张卡都已覆盖 —— "RTX 4060 Ti 16G 能跑哪些大模型？"给出 79 个索引模型中的 51 个，各自取 4K 上下文下仍留有余量的最佳量化档位，并按尺寸分组。这些数据一直都在，只是此前仅作为筛选参数存在，从未成为页面。中英合计新增 88 个页面',
   },

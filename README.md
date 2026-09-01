@@ -419,6 +419,32 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (g) — External audit round 6: answering instead of listing
+
+**P3-8 — the hardware verdict was 43 bars of almost-all-green.** High ink, low answer. The panel now
+leads with the fact the reader came for — *"fits comfortably on 16 of 43 cards — smallest is the
+Instinct MI100 32G"* — because "the cheapest card that runs this" is the question behind the list.
+If a hardware profile is set, that card gets its own verdict with a one-line consequence (how much
+headroom, or what to lower). The full 43 stay behind a `<details>`, collapsed.
+
+**P3-5 — 79 options in data-entry order.** The model dropdowns in the calculator, CLI generator and
+compare tool listed every model in the order it was added to the data files, which carries no
+meaning to a reader. They are now grouped by parameter bucket via native `<optgroup>` and sorted by
+name inside each group.
+
+> Native `<optgroup>` over a custom combobox on purpose. The audit suggested a searchable listbox;
+> a native select keeps keyboard behaviour, screen-reader semantics and the platform pickers on iOS
+> and Android — all of which a hand-rolled listbox must reimplement and usually gets wrong — and
+> type-to-jump already works in it. This is the 80% at a fraction of the risk; a real combobox
+> remains open if browsing 79 grouped options still proves slow.
+
+**Verified:** summary line renders with the right count and smallest card, `<details>` present and
+collapsed by default with all 43 rows inside, 5 `<optgroup>` elements in the calculator and CLI
+generator (10 in compare, which has two selects), 54 page × width combinations show no horizontal
+overflow.
+
+**Still open:** P1-1 remainder, P2-2 (format comparison pages).
+
 ### 2026-09-01 (f) — External audit round 5: 43 GPUs that were only ever a filter
 
 **P2-1 — a page per GPU.** The audit called this the largest single growth opportunity, and it was
