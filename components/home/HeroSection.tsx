@@ -84,14 +84,14 @@ export default function HeroSection() {
         <div className="hero-rise [animation-delay:0.15s] flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/quant-hub/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
+            className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
           >
             {t.home.hero.ctaPrimary}
             <ArrowRight size={14} />
           </Link>
           <Link
             href="/tools/vram-calc/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass glass-hover text-slate-200 font-semibold text-sm transition-all duration-150 hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl glass glass-hover text-slate-200 font-semibold text-sm transition-all duration-150 hover:scale-[1.02]"
           >
             <Calculator size={14} className="text-cyan-400" />
             {t.home.hero.ctaSecondary}

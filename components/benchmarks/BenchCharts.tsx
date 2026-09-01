@@ -7,6 +7,30 @@ import {
 import { useLanguage } from '@/lib/i18n/context';
 import { speedBenchmarks, pplBenchmarks } from '@/lib/data/benchmarks';
 
+/** `RTX 4060 Ti 16G` → `4060 Ti`, `M3 Max 48G` → `M3 Max`. Capacity is in the tooltip. */
+function shortenHardware(hw: string): string {
+  return hw.replace(/^RTX /, '').replace(/ \d+G$/, '');
+}
+
+/**
+ * Two-line axis tick: model on top, hardware underneath. A single angled line
+ * long enough to carry both would overlap at 18 bars; two short lines fit the
+ * ~55px each bar gets on desktop and stay legible on a phone.
+ */
+function SpeedTick({ x, y, payload }: { x?: number; y?: number; payload?: { value?: string } }) {
+  const [model = '', hw = ''] = String(payload?.value ?? '').split('\u0000');
+  return (
+    <g transform={`translate(${x ?? 0},${y ?? 0})`}>
+      <text textAnchor="end" transform="rotate(-35)" fill="#94a3b8" fontSize={9} dy={0}>
+        {model}
+      </text>
+      <text textAnchor="end" transform="rotate(-35)" fill="#64748b" fontSize={8} dy={10}>
+        {hw}
+      </text>
+    </g>
+  );
+}
+
 function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="mb-5">
@@ -19,13 +43,24 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 export default function BenchCharts() {
   const { t } = useLanguage();
 
-  const speedData = speedBenchmarks.map(b => ({
-    name: `${b.hardware}\n${b.framework}`,
-    shortName: b.hardware.replace('RTX ', 'RTX\n').replace('M3 ', 'M3\n').replace('M2 ', 'M2\n'),
+  const speedData = speedBenchmarks.map((b, i) => ({
+    // The axis used to be derived from `hardware` alone, so 13 of the 18 bars
+    // were all labelled "RTX 4090" and nothing on screen said which model or
+    // framework each one measured. Every bar now names the two dimensions that
+    // actually vary between them; framework stays encoded in the colour, which
+    // the key underneath the chart now explains.
+    key: `${b.model}-${b.hardware}-${b.framework}-${i}`,
+    // Precomputed as a plain string field: a function `dataKey` on XAxis makes
+    // Recharts lose the category mapping and the bars stop rendering entirely.
+    axisLabel: `${b.model}\u0000${shortenHardware(b.hardware)}\u0000${i}`,
     tokensPerSec: b.tokensPerSec,
     label: `${b.model} · ${b.hardware} · ${b.framework} · ${b.quant}`,
     color: b.color,
   }));
+
+  const frameworkKey = Array.from(
+    new Map(speedBenchmarks.map(b => [b.framework, b.color])).entries(),
+  );
 
   const pplData = pplBenchmarks.map(b => ({
     quant: b.quant,
@@ -39,17 +74,15 @@ export default function BenchCharts() {
       <section>
         <div className="glass rounded-2xl p-6">
           <SectionHeader title={t.bench.speedTitle} subtitle={t.bench.speedSubtitle} />
-          <div className="h-72">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={speedData} margin={{ top: 4, right: 16, left: 0, bottom: 48 }}>
+              <BarChart data={speedData} margin={{ top: 4, right: 16, left: 0, bottom: 64 }}>
                 <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
                 <XAxis
-                  dataKey="shortName"
-                  tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'Inter, sans-serif' }}
+                  dataKey="axisLabel"
+                  tick={<SpeedTick />}
                   interval={0}
-                  angle={-30}
-                  textAnchor="end"
-                  height={56}
+                  height={72}
                 />
                 <YAxis
                   tick={{ fill: '#64748b', fontSize: 10 }}
@@ -62,14 +95,28 @@ export default function BenchCharts() {
                   formatter={(val: number) => [`${val} tok/s`, 'Speed']}
                   labelFormatter={(_, payload) => payload?.[0]?.payload?.label ?? ''}
                 />
-                <Bar dataKey="tokensPerSec" radius={[4, 4, 0, 0]}>
-                  {speedData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} fillOpacity={0.85} />
+                {/* The chart is already lazy-loaded (ssr:false), so it appears
+                    late; animating it from zero again only delays the numbers.
+                    It also makes the render deterministic for the screenshot
+                    checks this repo relies on. */}
+                <Bar dataKey="tokensPerSec" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+                  {speedData.map(entry => (
+                    <Cell key={entry.key} fill={entry.color} fillOpacity={0.85} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
+          {/* Bar colour has always encoded the framework; nothing on the page
+              said so, which made a third dimension of the chart unreadable. */}
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-slate-500">
+            {frameworkKey.map(([framework, color]) => (
+              <li key={framework} className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: color, opacity: 0.85 }} />
+                {framework}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

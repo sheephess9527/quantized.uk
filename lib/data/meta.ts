@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'The inference speed chart is readable again: 13 of its 18 bars were all labelled "RTX 4090", so nothing on screen said which model each one measured. Every bar now names its model and hardware, and a key explains what the colours mean (they encode the framework, which was never stated). Tap targets on phones meet the 44px minimum',
+    zh: '推理速度图恢复可读：18 根柱子里有 13 根标签都是 "RTX 4090"，屏幕上没有任何信息表明每根对应哪个模型。现在每根柱子都标注模型与硬件，并新增图例说明颜色含义（颜色一直代表推理框架，但此前从未说明）。手机端点击目标达到 44px 下限',
+  },
+  {
+    date: '2026-09-01',
     en: 'The homepage quality figure now names the level it describes: 97.1% retained at Q4_K_M, median across all 79 models, with the 1.4–5.2% spread shown beside it. The old "98.4% avg accuracy" averaged whichever quant level happened to be each model\'s best, so it moved whenever a level was added to the data. The Chinese benchmarks table is also fully translated — its notes column had been English-only',
     zh: '首页的质量数字现在会说明自己描述的是哪一档：Q4_K_M 下保留 97.1%，取全部 79 个模型的中位数，并在旁标注 1.4–5.2% 的区间。旧的"98.4% 平均精度"是对每个模型各自最好的那一档求平均，因此往数据里补一个档位就会让它变动。中文版基准表格也已完整翻译 —— 此前备注列整列是英文',
   },

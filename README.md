@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (d) — External audit round 3: an unreadable chart, and a scare that wasn't
+
+**P3-1 — the speed chart said almost nothing.** Its x-axis was derived from `hardware` alone, so 13
+of 18 bars read "RTX 4090" and the screen never named the model or framework each bar measured — the
+two dimensions that actually vary. A custom two-line tick now labels every bar **model over
+hardware**, and a colour key underneath states what the bar colours have always encoded (the
+framework), which nothing on the page had ever said.
+
+> **A false alarm worth recording.** Mid-fix the screenshots showed no bars at all, on my build *and*
+> on the deployed baseline. It looked like a serious pre-existing bug. Probing the SVG found all 18
+> `recharts-bar-rectangle` nodes present — my first selector was simply wrong, and the bars were
+> invisible only because Recharts' entrance animation does not advance under headless virtual time.
+> Not a bug. `isAnimationActive={false}` was set anyway: the chart is already lazy-loaded
+> (`ssr: false`), so animating it from zero a second time only delays the numbers, and it makes the
+> render deterministic for the screenshot checks this repo depends on.
+
+**P3-4 — tap targets.** `Browse recent models`, `RSS`, `Full changelog`, `View All` were 16px tall;
+the language toggle 26px, logo 28px, hamburger 30px. All now clear 44px, using padding cancelled by
+matching negative margin so nothing moves visually. Measured at 390px: every named target is
+44–46px.
+
+**Not in this round:** P1-1 remainder, P1-4 (tool-page copy + FAQPage), P2-1/P2-2 (GPU and format
+landing pages), P3-5 (searchable model dropdown), P3-8 (GPU verdict density).
+
 ### 2026-09-01 (c) — External audit round 2: the one number that could not defend itself
 
 **P3-2 — `98.4% Avg Accuracy Retained` measured the wrong thing.** It averaged

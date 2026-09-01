@@ -100,6 +100,10 @@ body {
     @apply text-slate-400 text-sm mt-1;
   }
   .card-action {
-    @apply text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer;
+    /* min-h + matching negative margin: the hit area reaches the 44px WCAG
+       target while the negative margin cancels the padding, so nothing moves
+       visually. These links were 16px tall — a miss on any phone. */
+    @apply inline-flex items-center text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer
+           min-h-[44px] py-2.5 -my-2.5;
   }
 }

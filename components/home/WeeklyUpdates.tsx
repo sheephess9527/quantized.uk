@@ -29,13 +29,13 @@ export default function WeeklyUpdates() {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/quant-hub/?recency=recent"
-            className="inline-flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300"
+            className="inline-flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 py-2.5 -my-2.5 min-h-[44px]"
           >
             {w.viewHub} <ArrowRight size={12} />
           </Link>
           <a
             href="/feed.xml"
-            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-orange-400"
+            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-orange-400 py-2.5 -my-2.5 min-h-[44px]"
           >
             <Rss size={12} /> {w.rss}
           </a>
@@ -71,7 +71,7 @@ export default function WeeklyUpdates() {
           </li>
         ))}
       </ul>
-      <a href="#changelog" className="inline-block mt-3 text-xs text-slate-600 hover:text-slate-400">
+      <a href="#changelog" className="inline-flex items-center min-h-[44px] mt-1 text-xs text-slate-600 hover:text-slate-400">
         {w.viewChangelog} →
       </a>
     </section>

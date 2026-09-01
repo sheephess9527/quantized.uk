@@ -41,7 +41,7 @@ export default function Navbar() {
       <div className="absolute inset-0 bg-bg/80 backdrop-blur-xl border-b border-white/[0.06]" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group min-h-[44px]">
           <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center glow-purple group-hover:scale-105 transition-transform">
             <Zap size={14} className="text-white" />
           </div>
@@ -106,7 +106,7 @@ export default function Navbar() {
           </div>
           <button
             onClick={toggleLang}
-            className="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
+            className="px-2.5 min-h-[44px] inline-flex items-center rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
             title={lang === 'en' ? 'Switch to Chinese' : '切换为英文'}
             aria-label={lang === 'en' ? 'Switch to Chinese' : 'Switch to English'}
           >
@@ -114,7 +114,7 @@ export default function Navbar() {
           </button>
 
           <button
-            className="md:hidden p-1.5 text-slate-400 hover:text-slate-200"
+            className="md:hidden p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 hover:text-slate-200"
             onClick={() => setMobileOpen(v => !v)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}

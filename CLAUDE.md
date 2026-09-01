@@ -295,6 +295,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **Chart + touch targets** — speed chart labelled 13 of 18 bars "RTX 4090"; now model-over-hardware with a framework colour key. Recharts animation off (headless screenshots can't advance it — a missing bar is an artifact, not a bug). Tap targets ≥44px |
 | 2026-09-01 | **Honest numbers** — homepage stat now names its level (Q4_K_M median, 97.1%, with spread) instead of averaging incomparable rows; benchmark notes translated; `SearchAction` added |
 | 2026-09-01 | **Hub was invisible** — `useSearchParams` kept all 79 model cards out of the static HTML; `useUrlQuery()` instead (30 KB → 275 KB, 0 → 80 headings). Also: calculator no longer answers before a model is picked, `/` had no hreflang, 404 canonicalised to the homepage, `/zh/feed.xml` + `/rss.xml` added |
 | 2026-09-01 | **Cadence miss** — the LCP ship updated the docs but not `lib/data/meta.ts`, so it never reached Weekly/RSS/recency; build now also gates on `undefined` rendering in `/zh` |
