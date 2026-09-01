@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-08-23';
+export const dataLastUpdated = '2026-09-01';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-01',
+    en: 'Homepage paints without waiting for JavaScript: the headline was being shipped as opacity:0 and only became visible after the bundle loaded, which put real-user LCP at P75 3.1s on a prerendered site. Entrance animation is now pure CSS and framer-motion is gone — 33 kB less JavaScript on first load',
+    zh: '首页无需等待 JavaScript 即可绘制：此前标题以 opacity:0 发出，要等 bundle 加载后才可见，导致预渲染站点的真实用户 LCP P75 达 3.1 秒。入场动画改为纯 CSS，framer-motion 已移除 —— 首屏 JavaScript 减少 33 kB',
+  },
   {
     date: '2026-08-23',
     en: 'Format surfaces now agree with the index: the homepage badges, the "formats tracked" stat and the Hub filters all derive from the formats an indexed model actually ships (4). HQQ stays in the format explainer as reference, but no longer advertises a browse path with no results',

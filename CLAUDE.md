@@ -46,8 +46,9 @@ npm run lint
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
 
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
-`<html lang>` for the `/zh` tree and **exits non-zero if any Chinese page links into the English
-tree**. Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
+`<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
+tree or renders the literal text `undefined`** (a key present in `en` but missing in `zh`
+type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
 flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
@@ -224,6 +225,12 @@ With real traffic, **freshness > new tools**. Suggested rhythm:
 | Monthly | Re-verify 1 high-traffic cookbook (`verifiedAt` / `verifiedStack`) |
 | Quarterly | Supersede more legacy models; trim noise |
 
+**A ship is not done when the code is right.** `lib/data/meta.ts` is part of the change, not
+paperwork after it: a commit that alters behaviour but leaves `dataLastUpdated` and `changelog`
+untouched is invisible on the site's own three cadence surfaces, and leaves the "last updated" date
+pointing at an older ship — which then misleads anyone verifying a deploy. This has now been missed
+twice; check `git show --stat` for `lib/data/meta.ts` before calling a batch complete.
+
 Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=recent` +
 `/feed.xml` are the three surfaces that should reflect every cadence ship.
 
@@ -272,6 +279,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **Cadence miss** — the LCP ship updated the docs but not `lib/data/meta.ts`, so it never reached Weekly/RSS/recency; build now also gates on `undefined` rendering in `/zh` |
 | 2026-08-23 | **LCP** — homepage `<h1>` shipped as `opacity:0` (framer-motion `initial`), so the LCP text waited on hydration; CSS keyframes instead, framer-motion dropped, First Load JS 202→169 kB |
 | 2026-08-23 | **Format surfaces** — hero badges / `formats tracked` / wizard now derive from `SHIPPED_FORMATS` (HQQ was advertised with 0 models); wizard emitted `EXL2 · Q4_K_M` and recommended ROCm for CUDA-only EXL2 |
 | 2026-08-23 | **Homepage layout** — `StatsBar` `-mt-8` overlapped the job-path cards; hero clipped on phones (flex `min-width:auto` + `max-w-md` pill); navbar overflowed at `md`; 126 page×width combos now assert no horizontal scroll |

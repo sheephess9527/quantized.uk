@@ -419,6 +419,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 — The LCP ship never reached the site's own changelog
+
+`992168e` (the LCP fix) updated `README.md` and `CLAUDE.md` but not
+`lib/data/meta.ts`, so it never appeared in Weekly updates, `?recency=recent` or `/feed.xml` — the
+three surfaces §"Content cadence" names as the ones every ship must reach. This is the identical
+miss the 2026-08-20 entry was written about, repeated three ships later: a rule in CLAUDE.md was not
+enough to prevent it.
+
+A side effect worth noting for anyone verifying a deploy: because that commit changed no dated
+content, the site kept reporting **2026-08-23** afterwards. The date on the page proves the
+*format/wizard* batch is live; it says nothing about later commits. To check whether the LCP fix
+specifically is deployed, look at the `<h1>` — it must carry no inline `opacity:0`.
+
+Fixed: entry added (en + zh), `dataLastUpdated` → 2026-09-01.
+
+**New build gate — missing `zh` translations.** `translations[lang]` is typed as
+`typeof translations.en`, so a key present in `en` and missing in `zh` type-checks fine and renders
+the literal string **"undefined"** to Chinese readers. Nothing in `next build`, `next lint` or code
+review catches it; it is only visible in the exported markup, which is where it is now checked.
+`scripts/localize-export.mjs` fails the build if any `out/zh/**` page renders `undefined` as text.
+Inline `<script>` blocks are stripped first — minified React payloads contain the token legitimately.
+
+Verified against three shapes a missing translation actually takes (`undefined` alone, embedded
+mid-sentence, and leading a phrase) and against normal Chinese copy for false positives.
+
+> Honest limitation: this gate would **not** have caught the miss above. It catches a translation
+> that is absent, not a ship that forgot to write a changelog entry at all. Nothing automatic
+> catches the latter — it stays a discipline item.
+
 ### 2026-08-23 (c) — The LCP element shipped invisible (LCP P75 3.1s on a static site)
 
 Cloudflare RUM (24h, bots excluded) reported **LCP P50 2,148ms / P75 3,108ms**. P75 is the figure

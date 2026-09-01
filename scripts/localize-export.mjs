@@ -70,7 +70,26 @@ for (const file of files) {
   }
 }
 
+// --------------------------------------------- 3. missing zh translations
+// `translations.ts` is keyed en/zh, and a key present in `en` but missing in
+// `zh` does not fail the type-check — it renders the string "undefined" to
+// Chinese readers. That is only ever visible in the exported markup.
+// Inline <script> blocks legitimately contain the token `undefined` (minified
+// React/Next payloads), so they are stripped before looking at rendered text.
+function rendersUndefined(html) {
+  const text = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+  return /(?:^|>)[^<]*\bundefined\b/.test(text);
+}
+const undefinedPages = files.filter(file => rendersUndefined(readFileSync(file, 'utf8')));
+
 console.log(`localize-export: lang="zh-Hans" on ${patched}/${files.length} Chinese pages`);
+
+if (undefinedPages.length) {
+  console.error(`\nlocalize-export: "undefined" rendered on ${undefinedPages.length} Chinese page(s):\n`);
+  for (const file of undefinedPages.slice(0, 10)) console.error(`  ${relative(OUT, file)}`);
+  console.error('\nA key exists in `en` but not in `zh` (lib/i18n/translations.ts), or a data\nrecord is missing its zh field. Both render as the literal text "undefined".\n');
+  process.exit(1);
+}
 
 if (leaks.length) {
   const byPage = new Map();
