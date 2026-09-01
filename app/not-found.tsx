@@ -1,39 +1,20 @@
-'use client';
+import type { Metadata } from 'next';
+import NotFoundContent from '@/components/layout/NotFoundContent';
 
-import Link from '@/components/i18n/LocalLink';
-import { Home, Search, BookOpen, Calculator } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+/**
+ * A server component so it can carry its own metadata. Inheriting the root
+ * layout's made every 404 claim the homepage's title and, worse, a canonical
+ * pointing at `/` — telling crawlers that a missing page *is* the homepage.
+ * `alternates: {}` clears the inherited canonical rather than self-referencing
+ * a URL that does not exist.
+ */
+export const metadata: Metadata = {
+  title: 'Page not found | quantized.uk',
+  description: 'This page does not exist. Browse the model index, tools, or deployment guides instead.',
+  alternates: {},
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
-  const { t } = useLanguage();
-  const n = t.notFound;
-
-  const links = [
-    { href: '/', icon: Home, label: n.home },
-    { href: '/quant-hub/', icon: Search, label: n.hub },
-    { href: '/cookbook/', icon: BookOpen, label: n.cookbook },
-    { href: '/tools/vram-calc/', icon: Calculator, label: n.vramCalc },
-  ];
-
-  return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4 sm:px-6 pt-24 pb-16">
-      <div className="text-center max-w-lg">
-        <p className="text-6xl font-extrabold text-gradient mb-2">404</p>
-        <h1 className="text-xl font-bold text-slate-200 mb-2">{n.title}</h1>
-        <p className="text-sm text-slate-500 leading-relaxed mb-8">{n.subtitle}</p>
-        <div className="grid grid-cols-2 gap-3">
-          {links.map(({ href, icon: Icon, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="glass glass-hover rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-slate-400 hover:text-violet-300 transition-colors"
-            >
-              <Icon size={14} />
-              {label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  return <NotFoundContent />;
 }

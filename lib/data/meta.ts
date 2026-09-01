@@ -42,6 +42,16 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'The model index is now in the HTML. /quant-hub/ was rendered entirely in the browser, so its static page carried no headings and none of the 79 model names — the site\'s most valuable page was blank to search engines and to anyone without JavaScript. It now ships all 79 cards and filters on top of them',
+    zh: '模型索引进入 HTML。此前 /quant-hub/ 完全由浏览器渲染，静态页面里没有任何标题、也没有 79 个模型名 —— 全站最核心的页面对搜索引擎和无 JavaScript 环境等于空白。现在 79 张卡片直接写入 HTML，筛选在其之上叠加',
+  },
+  {
+    date: '2026-09-01',
+    en: 'VRAM calculator no longer answers a question you did not ask: with no model selected it used to fall through to a generic 7B and print 4.98 GB plus a green verdict on all 43 GPUs. Chinese readers get their own RSS feed at /zh/feed.xml, every page now advertises its feed, and /rss.xml resolves instead of 404ing',
+    zh: '显存计算器不再回答你没问的问题：此前未选模型时会回落到通用 7B，给出 4.98 GB 并对全部 43 张显卡打绿灯。中文读者现在有独立的 /zh/feed.xml 订阅源，每个页面都声明了自己的 feed，/rss.xml 也不再 404',
+  },
+  {
+    date: '2026-09-01',
     en: 'Homepage paints without waiting for JavaScript: the headline was being shipped as opacity:0 and only became visible after the bundle loaded, which put real-user LCP at P75 3.1s on a prerendered site. Entrance animation is now pure CSS and framer-motion is gone — 33 kB less JavaScript on first load',
     zh: '首页无需等待 JavaScript 即可绘制：此前标题以 opacity:0 发出，要等 bundle 加载后才可见，导致预渲染站点的真实用户 LCP P75 达 3.1 秒。入场动画改为纯 CSS，framer-motion 已移除 —— 首屏 JavaScript 减少 33 kB',
   },

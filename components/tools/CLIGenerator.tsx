@@ -42,7 +42,16 @@ export default function CLIGenerator() {
   const selectedModel = models.find(m => m.id === modelId);
 
   const availableQuants = useMemo(() => {
-    if (!selectedModel) return ['Q4_K_M', 'Q4_K_S', 'Q6_K', 'Q8_0', 'AWQ INT4', 'EXL2 4.65bpw'];
+    // The no-model fallback used to list every level regardless of framework,
+    // so llama.cpp offered `AWQ INT4` and `EXL2 4.65bpw` — formats it cannot
+    // load. The per-model branches below already filter correctly; this one
+    // has to follow the same rule (same class of bug as the format wizard).
+    if (!selectedModel) {
+      if (framework === 'llamacpp' || framework === 'ollama') return ['Q4_K_M', 'Q4_K_S', 'Q6_K', 'Q8_0'];
+      if (framework === 'vllm') return ['AWQ INT4', 'GPTQ INT4'];
+      if (framework === 'exllama') return ['4.65bpw', '5.0bpw', '3.5bpw'];
+      return ['Q4_K_M'];
+    }
     if (framework === 'llamacpp' || framework === 'ollama') {
       return selectedModel.quants.filter(q => q.format === 'GGUF').map(q => q.level);
     }

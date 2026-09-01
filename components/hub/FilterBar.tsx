@@ -68,7 +68,11 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
       <div className="relative">
         <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
         <input
-          type="text"
+          type="search"
+          id="hub-search"
+          // A placeholder is not an accessible name: it disappears on focus and
+          // several screen readers ignore it entirely.
+          aria-label={t.hub.search}
           placeholder={t.hub.search}
           value={filters.search}
           onChange={e => set('search')(e.target.value)}

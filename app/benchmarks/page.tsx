@@ -61,6 +61,12 @@ export default function BenchmarksPage() {
           <div className="glass rounded-2xl p-6 overflow-x-auto">
             <SectionHeader title={t.bench.tableTitle} subtitle={t.bench.tableSubtitle} />
             <table className="w-full text-sm">
+              {/* Visually redundant with the SectionHeader above, but a table
+                  needs its own accessible name — screen readers announce the
+                  caption when entering table navigation mode. */}
+              <caption className="sr-only">
+                {t.bench.tableTitle} — {t.bench.tableSubtitle}
+              </caption>
               <thead>
                 <tr className="border-b border-white/[0.06]">
                   {Object.values(t.bench.cols).map(col => (

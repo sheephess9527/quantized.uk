@@ -60,6 +60,22 @@ export function ogLocale(path = '') {
   };
 }
 
+/**
+ * RSS autodiscovery. Without this the feed exists but no reader can find it —
+ * browser extensions and feed clients look for this link tag, not for a URL
+ * someone remembered. Each tree advertises its own feed.
+ */
+export function feedAlternates(path = '') {
+  const isZh = path === '/zh' || path.startsWith('/zh/');
+  return {
+    types: {
+      'application/rss+xml': [
+        { url: `${SITE_URL}${isZh ? '/zh' : ''}/feed.xml`, title: `${SITE_NAME} — updates` },
+      ],
+    },
+  };
+}
+
 export function pageMetadata({
   title,
   description = DEFAULT_DESCRIPTION,
@@ -73,7 +89,7 @@ export function pageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url, languages: languageAlternates(path) },
+    alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     openGraph: {
       title,
       description,

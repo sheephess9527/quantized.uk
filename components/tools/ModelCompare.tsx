@@ -2,18 +2,18 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from '@/components/i18n/LocalLink';
-import { useSearchParams } from 'next/navigation';
 import { GitCompare, Copy, Check, Trophy } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { models } from '@/lib/data/models';
 import { compareModels } from '@/lib/utils/compare';
 import { cn } from '@/lib/utils/cn';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 
 export default function ModelCompare() {
   const { t, lang } = useLanguage();
   const { gpu } = useHardwareProfile();
-  const searchParams = useSearchParams();
+  const searchParams = useUrlQuery();
   const c = t.compare;
 
   const [modelAId, setModelAId] = useState('');
@@ -22,6 +22,7 @@ export default function ModelCompare() {
   const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
+    if (!searchParams) return;
     if (searchParams.get('a')) setModelAId(searchParams.get('a')!);
     if (searchParams.get('b')) setModelBId(searchParams.get('b')!);
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);

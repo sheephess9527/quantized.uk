@@ -419,6 +419,53 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (b) — External audit round 1: the model index was never in the HTML
+
+Working from an external review (`quantized.uk 优化实施清单`, 2026-09-01). Every claim was
+reproduced against the build before being acted on; two turned out larger than reported.
+
+**P0-2 — `/quant-hub/` shipped no content.** The static page was 29.8 KB with **zero headings and
+zero model names**: the index of all 79 models, the site's most valuable page, was blank to crawlers
+and to anyone without JavaScript. Root cause was `useSearchParams()`, which opts its whole subtree
+out of prerendering in a static export — Next renders the Suspense fallback (`Loading…`) and nothing
+else. Replaced with `useUrlQuery()` (`lib/hooks/useUrlQuery.ts`), which reads the query after mount:
+the page prerenders unfiltered and JS refines it. **29.8 KB → 275 KB, 0 → 80 headings (1 `h1` + 79
+`h3`)**, and `?recency=recent` still narrows to 12 cards after hydration. The same hook fixed the
+VRAM calculator and compare tool, which were client-only for the same reason.
+
+**P0-1 — the calculator answered before it was asked.** With no model selected, `showForwardResult`
+explicitly allowed `selectedModelId === ''`, so the panel fell through to the custom-model defaults
+(7B / 32 layers / 8 kvHeads) and presented **4.98 GB plus a green verdict on all 43 GPUs** as though
+it were an answer. Now shows the placeholder that already existed.
+
+**P0-3 — `/` was the one page with no hreflang.** It inherited root-layout metadata, which sets
+`canonical` but no `languages`, while `/zh/` pointed back at it. A one-way pair reads as duplicate
+content rather than a translation. The homepage now has its own metadata.
+
+**P1-2 — the 404 canonicalised to the homepage**, and reused its title, telling crawlers a missing
+page *is* `/`. `not-found.tsx` is now a server component with its own metadata (`alternates: {}`
+clears the inherited canonical rather than self-referencing a URL that does not exist).
+
+**P1-3 — RSS existed but was unfindable.** No autodiscovery link anywhere, `/rss.xml` 404, and
+Chinese readers were pushed to an English feed. Feed generation moved to `lib/feed/build.ts` and is
+now bilingual: `/zh/feed.xml` carries Chinese entries pointing at Chinese URLs, `/rss.xml` serves the
+alias (a static export cannot redirect; the channel's `atom:self` still names `/feed.xml`), and
+`feedAlternates()` puts the discovery tag on every page, per tree.
+
+**P3 fixes:** context presets read `2K / 4K / 128K` instead of `2.048K / 131.072K` (they are token
+counts — the divisor is 1024, not 1000); the CLI generator's no-model fallback no longer offers
+`AWQ INT4` / `EXL2 4.65bpw` under llama.cpp (the per-model branches were already correct — same
+class as the format-wizard bug); Hub search input has an `aria-label`; the benchmarks table has a
+caption.
+
+**Larger than reported:** P1-6 (trailing slash) is not one link on the homepage — **50 distinct
+model URLs** across both trees, appearing hundreds of times, render without one. Cause: Next's
+`trailingSlash` normalisation skips a path whose last segment contains a dot, so every model id like
+`qwen2.5-7b` loses the slash the source code supplies. Not yet fixed — see below.
+
+**Not in this round:** P0-4 (data-layer i18n), P1-1 remainder, P1-4 (tool-page copy + FAQPage),
+P1-5, P1-6, P2-1/P2-2 (GPU and format landing pages), P3-1/2/4/5/8.
+
 ### 2026-09-01 — The LCP ship never reached the site's own changelog
 
 `992168e` (the LCP fix) updated `README.md` and `CLAUDE.md` but not

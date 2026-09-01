@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Link2, FileDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
@@ -25,6 +25,7 @@ import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
 import { isRecentModel } from '@/lib/utils/model-meta';
 import { cn } from '@/lib/utils/cn';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { trackEvent } from '@/lib/analytics';
 import DataFreshness from '@/components/home/DataFreshness';
 
@@ -37,7 +38,7 @@ const HUB_STATS = (() => {
 export default function QuantHubContent() {
   const { t, lang } = useLanguage();
   const { gpu: profileGpu, hasProfile } = useHardwareProfile();
-  const searchParams = useSearchParams();
+  const searchParams = useUrlQuery();
   const router = useRouter();
   const hydrated = useRef(false);
 
@@ -47,6 +48,7 @@ export default function QuantHubContent() {
   const [exportCopied, setExportCopied] = useState(false);
 
   useEffect(() => {
+    if (!searchParams) return;
     const parsed = parseHubSearchParams(searchParams);
     setGpuFilterId(parsed.gpuFilterId);
     setFilters(parsed.filters);

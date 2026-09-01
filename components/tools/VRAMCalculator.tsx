@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import Link from '@/components/i18n/LocalLink';
-import { useSearchParams } from 'next/navigation';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
@@ -10,6 +9,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
 
@@ -34,7 +34,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 export default function VRAMCalculator() {
   const { t } = useLanguage();
   const { gpuId: profileGpuId } = useHardwareProfile();
-  const searchParams = useSearchParams();
+  const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
   const [mode, setMode] = useState<Mode>('forward');
@@ -54,7 +54,7 @@ export default function VRAMCalculator() {
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (urlInitialized.current) return;
+    if (urlInitialized.current || !searchParams) return;
     const m = searchParams.get('mode') === 'reverse' ? 'reverse' : 'forward';
     setMode(m);
     const modelParam = searchParams.get('model');
@@ -147,10 +147,12 @@ export default function VRAMCalculator() {
   }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow]);
 
   const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
+  // No model selected means no result. Allowing `selectedModelId === ''` here
+  // meant the panel silently fell through to the custom-model defaults (7B /
+  // 32 layers / 8 kvHeads) and presented 4.98 GB plus a green verdict on all 43
+  // GPUs as if it were an answer about a model the reader never picked.
   const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
-    selectedModelId === 'custom' ||
-    !!selectedModel ||
-    selectedModelId === ''
+    selectedModelId === 'custom' || !!selectedModel
   );
   const showReverseResult = mode === 'reverse' && selectedGpuId !== '';
 
@@ -346,7 +348,7 @@ export default function VRAMCalculator() {
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-medium text-slate-400">{t.calc.context}</label>
               <span className="font-mono text-xs text-violet-300">
-                {contextLen >= 1000 ? `${(contextLen / 1000).toFixed(0)}K` : contextLen}
+                {contextLen >= 1024 ? `${contextLen / 1024}K` : contextLen}
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -361,7 +363,8 @@ export default function VRAMCalculator() {
                       : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
                   )}
                 >
-                  {p >= 1000 ? `${p / 1000}K` : p}
+                  {/* 1024, not 1000: these are token counts, and /1000 rendered "2.048K" */}
+                  {p >= 1024 ? `${p / 1024}K` : p}
                 </button>
               ))}
             </div>

@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Plausible from '@/components/analytics/Plausible';
 import { SiteJsonLd } from '@/components/seo/JsonLd';
-import { buildVerification, canonical, defaultRobots, OG_IMAGE } from '@/lib/seo';
+import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description: 'Bridge the gap between research papers and real-world LLM deployment. VRAM calculator, CLI script generator, quantized model hub, and benchmarks.',
   keywords: ['LLM quantization', 'GGUF', 'AWQ', 'EXL2', 'llama.cpp', 'VRAM calculator', 'AI deployment'],
   metadataBase: new URL('https://quantized.uk'),
-  alternates: { canonical: canonical('/') },
+  alternates: { canonical: canonical('/'), ...feedAlternates('/') },
   robots: defaultRobots,
   manifest: '/site.webmanifest',
   applicationName: 'quantized',

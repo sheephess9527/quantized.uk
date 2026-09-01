@@ -77,6 +77,12 @@ flaky network. Never "fix" it by removing the postbuild hook.
   - hreflang comes free from `pageMetadata()`; hand-rolled `alternates` (the two dynamic English
     routes) must pass `languages: languageAlternates(path)` explicitly, and `openGraph` needs
     `...ogLocale(path)`.
+- **`useSearchParams()` empties the page in a static export.** Next cannot know the query at build
+  time, so the whole subtree renders as its Suspense fallback and ships **no content** — that is how
+  `/quant-hub/` spent its life as a 30 KB document with zero headings and zero of the 79 model
+  names. Use `useUrlQuery()` (`lib/hooks/useUrlQuery.ts`), which reads the query after mount: the
+  page prerenders unfiltered and JS refines it. Check any new query-driven page with
+  `grep -c '<h3' out/<path>/index.html`.
 - **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
@@ -279,6 +285,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **Hub was invisible** — `useSearchParams` kept all 79 model cards out of the static HTML; `useUrlQuery()` instead (30 KB → 275 KB, 0 → 80 headings). Also: calculator no longer answers before a model is picked, `/` had no hreflang, 404 canonicalised to the homepage, `/zh/feed.xml` + `/rss.xml` added |
 | 2026-09-01 | **Cadence miss** — the LCP ship updated the docs but not `lib/data/meta.ts`, so it never reached Weekly/RSS/recency; build now also gates on `undefined` rendering in `/zh` |
 | 2026-08-23 | **LCP** — homepage `<h1>` shipped as `opacity:0` (framer-motion `initial`), so the LCP text waited on hydration; CSS keyframes instead, framer-motion dropped, First Load JS 202→169 kB |
 | 2026-08-23 | **Format surfaces** — hero badges / `formats tracked` / wizard now derive from `SHIPPED_FORMATS` (HQQ was advertised with 0 models); wizard emitted `EXL2 · Q4_K_M` and recommended ROCm for CUDA-only EXL2 |
