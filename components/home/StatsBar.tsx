@@ -9,7 +9,7 @@ const stats = [
   { value: String(siteStats.modelCount), keyName: 'models'   },
   { value: String(siteStats.formatCount), keyName: 'formats'  },
   { value: String(siteStats.gpuCount),    keyName: 'gpus'     },
-  { value: siteStats.avgAccuracy,         keyName: 'accuracy' },
+  { value: siteStats.q4Retention,         keyName: 'accuracy' },
 ] as const;
 
 export default function StatsBar() {
@@ -27,6 +27,17 @@ export default function StatsBar() {
             <div key={keyName} className="flex flex-col items-center py-4 px-6">
               <span className="text-2xl font-bold text-gradient">{value}</span>
               <span className="text-xs text-slate-500 mt-0.5">{t.home.stats[keyName]}</span>
+              {keyName === 'accuracy' && (
+                // The only derived number in a row of inventory counts, so it
+                // states its basis inline rather than inviting the reader to
+                // assume one.
+                <span className="text-[10px] text-slate-600 mt-0.5 text-center leading-tight">
+                  {t.home.stats.accuracyNote
+                    .replace('{n}', String(siteStats.q4SampleSize))
+                    .replace('{lo}', String(siteStats.q4Range[0]))
+                    .replace('{hi}', String(siteStats.q4Range[1]))}
+                </span>
+              )}
             </div>
           ))}
         </div>

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'The homepage quality figure now names the level it describes: 97.1% retained at Q4_K_M, median across all 79 models, with the 1.4–5.2% spread shown beside it. The old "98.4% avg accuracy" averaged whichever quant level happened to be each model\'s best, so it moved whenever a level was added to the data. The Chinese benchmarks table is also fully translated — its notes column had been English-only',
+    zh: '首页的质量数字现在会说明自己描述的是哪一档：Q4_K_M 下保留 97.1%，取全部 79 个模型的中位数，并在旁标注 1.4–5.2% 的区间。旧的"98.4% 平均精度"是对每个模型各自最好的那一档求平均，因此往数据里补一个档位就会让它变动。中文版基准表格也已完整翻译 —— 此前备注列整列是英文',
+  },
+  {
+    date: '2026-09-01',
     en: 'The model index is now in the HTML. /quant-hub/ was rendered entirely in the browser, so its static page carried no headings and none of the 79 model names — the site\'s most valuable page was blank to search engines and to anyone without JavaScript. It now ships all 79 cards and filters on top of them',
     zh: '模型索引进入 HTML。此前 /quant-hub/ 完全由浏览器渲染，静态页面里没有任何标题、也没有 79 个模型名 —— 全站最核心的页面对搜索引擎和无 JavaScript 环境等于空白。现在 79 张卡片直接写入 HTML，筛选在其之上叠加',
   },

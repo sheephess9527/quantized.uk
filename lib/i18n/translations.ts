@@ -27,7 +27,8 @@ export const translations = {
         models: 'Models Indexed',
         formats: 'Formats Tracked',
         gpus: 'GPUs in Database',
-        accuracy: 'Avg Accuracy Retained',
+        accuracy: 'Q4_K_M Quality Retained',
+        accuracyNote: 'median across {n} models · range {lo}–{hi}% loss',
       },
       todayBoard: {
         title: "Editor's Picks",
@@ -611,7 +612,8 @@ export const translations = {
         models: '已收录量化模型',
         formats: '支持格式',
         gpus: 'GPU 数据库',
-        accuracy: '平均精度保留率',
+        accuracy: 'Q4_K_M 质量保留率',
+        accuracyNote: '{n} 个模型的中位数 · 损失区间 {lo}–{hi}%',
       },
       todayBoard: {
         title: '编辑推荐',

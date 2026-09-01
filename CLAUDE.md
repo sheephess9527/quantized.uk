@@ -54,7 +54,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
 ## Conventions (must follow)
 
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
-  A missing `zh` renders `undefined` in the Chinese UI.
+  A missing `zh` renders `undefined` in the Chinese UI (the build now gates on that).
+  **Reader-facing *data* fields count too** — translating only `translations.ts` left the whole
+  notes column of `/zh/benchmarks/` in English. Any string in `lib/data/**` that a reader sees is
+  `{ en, zh }`, like `description` on models and `notes` on `MatrixRow`.
 - **Language comes from the URL.** English at `/`, Chinese at `/zh/**`. `LanguageProvider` reads
   `usePathname()`; there is no `localStorage` language any more. This is deliberate — it is what
   puts Chinese text into the static HTML so it can be indexed.
@@ -138,6 +141,13 @@ that map's job is HF stats. When the right repo isn't derivable (vLLM needs FP16
 repos are per-model), emit a visible `<placeholder>`: an obvious placeholder beats a plausible
 wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`; CMake
 ignores the old names and silently produces a CPU-only build.
+
+**A derived number must name its basis.** The homepage stat bar sits beside three inventory counts,
+so anything computed has to say what it is computed over. `98.4% avg accuracy` averaged
+`100 - min(pplLoss)` across models — silently mixing Q4_K_M for 31 models, Q8_0 for 18, Q5_K_M for
+13 — so it tracked the shape of the index, not quantization, and moved whenever a level was added.
+Replaced with one named level (`Q4_K_M`, which all 79 models ship), a median, and the range printed
+under it. If a number cannot state its basis in one line, it does not belong on the homepage.
 
 **Format vocabularies come from the data** — `SHIPPED_FORMATS` in `lib/utils/model-meta.ts` is the
 single source: Hub chips, hero badges, the "formats tracked" stat and the format wizard all derive
@@ -285,6 +295,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **Honest numbers** — homepage stat now names its level (Q4_K_M median, 97.1%, with spread) instead of averaging incomparable rows; benchmark notes translated; `SearchAction` added |
 | 2026-09-01 | **Hub was invisible** — `useSearchParams` kept all 79 model cards out of the static HTML; `useUrlQuery()` instead (30 KB → 275 KB, 0 → 80 headings). Also: calculator no longer answers before a model is picked, `/` had no hreflang, 404 canonicalised to the homepage, `/zh/feed.xml` + `/rss.xml` added |
 | 2026-09-01 | **Cadence miss** — the LCP ship updated the docs but not `lib/data/meta.ts`, so it never reached Weekly/RSS/recency; build now also gates on `undefined` rendering in `/zh` |
 | 2026-08-23 | **LCP** — homepage `<h1>` shipped as `opacity:0` (framer-motion `initial`), so the LCP text waited on hydration; CSS keyframes instead, framer-motion dropped, First Load JS 202→169 kB |

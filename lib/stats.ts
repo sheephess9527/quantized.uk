@@ -11,16 +11,30 @@ export function getSiteStats() {
   const formatCount = SHIPPED_FORMATS.length;
   const gpuCount = gpuDatabase.length;
 
-  const accuracies = models.map(m => {
-    const minLoss = Math.min(...m.quants.map(q => q.pplLossPercent));
-    return 100 - minLoss;
-  });
-  const avgAccuracy = accuracies.reduce((a, b) => a + b, 0) / accuracies.length;
+  // Quality retention, stated against ONE named level.
+  //
+  // This used to average `100 - min(pplLoss)` across models, which silently
+  // mixed incomparable rows: the minimum happened to be Q4_K_M for 31 models,
+  // Q8_0 for 18, Q5_K_M for 13, EXL2 for 6. The result moved whenever a level
+  // was *added* to the data, so it measured the shape of the index rather than
+  // anything about quantization — and it sat on the homepage next to three
+  // honest inventory counts.
+  //
+  // Q4_K_M instead: every one of the 79 models ships it, it is the level most
+  // readers actually run, and a median is robust to the tail. `q4Range` is
+  // exposed so the figure can be shown with its spread rather than alone.
+  const q4Losses = models
+    .flatMap(m => m.quants.filter(q => q.format === 'GGUF' && q.level === 'Q4_K_M'))
+    .map(q => q.pplLossPercent)
+    .sort((a, b) => a - b);
+  const medianQ4Loss = q4Losses[Math.floor(q4Losses.length / 2)];
 
   return {
     modelCount,
     formatCount,
     gpuCount,
-    avgAccuracy: `${avgAccuracy.toFixed(1)}%`,
+    q4Retention: `${(100 - medianQ4Loss).toFixed(1)}%`,
+    q4SampleSize: q4Losses.length,
+    q4Range: [q4Losses[0], q4Losses[q4Losses.length - 1]] as const,
   };
 }

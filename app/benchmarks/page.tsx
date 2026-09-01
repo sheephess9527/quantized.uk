@@ -38,7 +38,7 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 }
 
 export default function BenchmarksPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
@@ -89,7 +89,7 @@ export default function BenchmarksPage() {
                     </td>
                     <td className="py-2.5 px-3 font-mono text-sm font-semibold text-emerald-400">{row.speedTokSec}</td>
                     <td className="py-2.5 px-3 font-mono text-xs text-cyan-400">{row.vramUsedGB} GB</td>
-                    <td className="py-2.5 px-3 text-xs text-slate-500">{row.notes}</td>
+                    <td className="py-2.5 px-3 text-xs text-slate-500">{row.notes[lang]}</td>
                   </tr>
                 ))}
               </tbody>

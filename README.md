@@ -419,6 +419,40 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (c) — External audit round 2: the one number that could not defend itself
+
+**P3-2 — `98.4% Avg Accuracy Retained` measured the wrong thing.** It averaged
+`100 - min(pplLoss)` across models, and the minimum landed on a different level for each: Q4_K_M for
+31 models, Q8_0 for 18, Q5_K_M for 13, EXL2 for 6, MXFP4 for 2. Averaging those is averaging
+incomparable rows — the figure tracked *which levels the index happens to contain* and would move if
+a Q8_0 row were added to any model. It sat on the homepage beside three honest inventory counts.
+
+Replaced with a figure that states its basis: **97.1% retained at Q4_K_M**, the median across all 79
+models (every model ships that level, and it is the one most readers actually run), with the
+**1.4–5.2%** spread printed underneath. `getSiteStats()` now returns `q4Retention`, `q4SampleSize`
+and `q4Range` so the number cannot be shown without its context.
+
+**P0-4 — data-layer i18n.** UI strings were translated; data fields never entered the i18n path, so
+the entire notes column of `/zh/benchmarks/` was English. `MatrixRow.notes` is now `{ en, zh }` like
+every other reader-facing field in `lib/data`. Chinese content on that page went from ~4% to 25% of
+its text.
+
+**P1-5 — `WebSite.potentialAction`.** The Hub's `?q=` filter is a real search endpoint, so the
+`SearchAction` is a claim the site can honour rather than boilerplate. `Organization` gained a
+`logo`.
+
+**P1-6 — investigated, deliberately not fixed.** With `trailingSlash: true`, `next/link` strips the
+trailing slash from any href whose last segment contains a dot, so 50 model URLs like
+`/quant-hub/qwen2.5-7b` render without one and cost a 301. Passing an object href looked like it
+worked — the leak report showed slashed URLs — but every slashed id in that sample was simply
+dot-free; `glm-4.5-air` was still bare. Object hrefs go through the same normalisation, so the
+change was reverted rather than left in as complexity that fixes nothing. The remaining options are
+worse than one redirect hop: renaming ids breaks every existing URL, and dropping to plain `<a>`
+gives up client-side navigation across the whole site. **Accepted as-is.**
+
+> The failed attempt was caught by the `/zh` link gate, not by review: object hrefs bypass
+> `localizeHref`, so the experiment pointed Chinese pages at English URLs and the build refused it.
+
 ### 2026-09-01 (b) — External audit round 1: the model index was never in the HTML
 
 Working from an external review (`quantized.uk 优化实施清单`, 2026-09-01). Every claim was
