@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated } from '@/lib/data/meta';
+import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuSlug } from '@/lib/utils/gpu-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 
@@ -18,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/legal/',
     '/privacy/',
     '/about/',
+    '/gpu/',
   ];
 
   // A sitemap where every URL claims the same lastmod carries no information —
@@ -40,6 +43,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: m.addedAt ? new Date(m.addedAt) : siteDate,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
+    })),
+    // GPU landing pages: derived entirely from data that already existed, so
+    // they carry the site date rather than a date of their own.
+    ...gpuDatabase.map(g => ({
+      path: `/gpu/${gpuSlug(g)}/`,
+      lastModified: siteDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
     })),
     ...articles.map(a => ({
       path: `/cookbook/${a.id}/`,

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'New: a page per GPU. All 43 cards in the database now have one — "RTX 4060 Ti 16G — what LLMs can it run?" answers with 51 of the 79 indexed models, each at the best quant level that still leaves headroom at 4K context, grouped by size. The data always existed; it had only ever been a filter parameter, never a page. 88 new pages across both languages',
+    zh: '新增：每张显卡一个页面。数据库中全部 43 张卡都已覆盖 —— "RTX 4060 Ti 16G 能跑哪些大模型？"给出 79 个索引模型中的 51 个，各自取 4K 上下文下仍留有余量的最佳量化档位，并按尺寸分组。这些数据一直都在，只是此前仅作为筛选参数存在，从未成为页面。中英合计新增 88 个页面',
+  },
+  {
+    date: '2026-09-01',
     en: 'The four tool pages now explain themselves. Each carried a single heading and no body text — a bare widget with nothing to calibrate against. They now document how the VRAM estimate is derived, why context length dominates it, where the CLI identifiers come from, and why some commands show a placeholder, plus a FAQ on each, in both languages',
     zh: '四个工具页现在会自我说明。此前每页只有一个标题、没有任何正文 —— 一个孤立的交互控件，读者无从校准。现在它们分别说明显存估算如何得出、为何上下文长度主导结果、CLI 命令里的标识符从哪来、以及为什么有些命令是占位符，并各配一组常见问题，中英双语',
   },

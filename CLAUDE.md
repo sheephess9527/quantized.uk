@@ -250,6 +250,13 @@ twice; check `git show --stat` for `lib/data/meta.ts` before calling a batch com
 Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=recent` +
 `/feed.xml` are the three surfaces that should reflect every cadence ship.
 
+**GPU landing pages are derived, not authored** — `lib/utils/gpu-page.ts` turns `gpuDatabase` +
+`models` into 43 pages per language. `fitsOnGpu()` reuses `calcVRAM`/`getVerdict`, so a page and the
+calculator's reverse mode return the same set (verified: 51 = 51 for a 4060 Ti 16G). Adding a GPU to
+`gpus.ts` adds two pages automatically; nothing else to write. Slugs come from `gpuSlug()` and are
+deliberately **dot-free** — `next/link` strips the trailing slash from any path whose last segment
+contains a dot.
+
 ## Key paths agents touch often
 
 ```
@@ -295,6 +302,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **GPU landing pages** — 43 cards × 2 languages (`/gpu/rtx-4060-ti-16g/`), derived from `gpuDatabase` + the model index, no new data; 232 → 322 pages |
 | 2026-09-01 | **Tool pages** — all four had one `h1` and no prose; now 2–3 explainer sections + visible FAQ with `FAQPage`/`SoftwareApplication` schema, copy written from the code in `lib/data/tool-content.ts` |
 | 2026-09-01 | **Chart + touch targets** — speed chart labelled 13 of 18 bars "RTX 4090"; now model-over-hardware with a framework colour key. Recharts animation off (headless screenshots can't advance it — a missing bar is an artifact, not a bug). Tap targets ≥44px |
 | 2026-09-01 | **Honest numbers** — homepage stat now names its level (Q4_K_M median, 97.1%, with spread) instead of averaging incomparable rows; benchmark notes translated; `SearchAction` added |

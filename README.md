@@ -419,6 +419,46 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (f) — External audit round 5: 43 GPUs that were only ever a filter
+
+**P2-1 — a page per GPU.** The audit called this the largest single growth opportunity, and it was
+right for a specific reason: the data was already complete. 43 cards with VRAM, vendor and type
+existed only as a *filter parameter* on the Hub and the calculator — never as a destination. "What
+can an RTX 4060 Ti 16G run" is a query with obvious intent and low competition, and answering it
+required no new data at all.
+
+`/gpu/<slug>/` and `/zh/gpu/<slug>/` now exist for all 43, plus an index at `/gpu/`. Each page:
+
+- names the card and how many of the 79 indexed models fit it comfortably;
+- lists them grouped by size bucket, each row showing the **best quant that still fits**, the
+  estimated VRAM and the remaining headroom;
+- explains how the list was built (the calculator's green threshold — at most 88% of the card, so
+  every row has real headroom rather than only just fitting);
+- links into the calculator prefilled for that card, and to the next card up with how many more
+  models it unlocks;
+- carries `ItemList` schema, its own title/description/canonical and a full hreflang pair.
+
+**Derived, not authored.** `lib/utils/gpu-page.ts` reuses `calcVRAM` and `getVerdict`, so a landing
+page and the calculator's reverse mode cannot disagree — verified as an equality, not an
+eyeball: 51 models on both sides for a 4060 Ti 16G, zero difference. Adding a GPU to `gpus.ts` now
+adds two pages by itself.
+
+**Two details worth recording:**
+
+- Slugs are generated dot-free (`rtx-4060-ti-16g`, `mac-m3-max-48g`) specifically to sidestep the
+  `next/link` trailing-slash behaviour documented in the 2026-09-01 (c) entry.
+- The English title was going to read *"What LLMs can a RTX 4060 Ti 16G run?"* — wrong article, on
+  43 pages. Rather than write a pronunciation rule for "an RTX / a Radeon / an A100", the phrase
+  leads with the card instead: **"RTX 4060 Ti 16G — what LLMs can it run?"**, which is also closer
+  to what a reader types.
+
+**Build:** 232 → **322 pages**; sitemap 226 → 314 URLs; `/zh` gate 157/157; 54 page × width
+combinations show no horizontal overflow. The index is linked from the footer so none of the 88 new
+pages is an orphan.
+
+**Still open:** P1-1 remainder, P2-2 (format comparison pages), P3-5 (searchable model dropdown),
+P3-8 (GPU verdict density).
+
 ### 2026-09-01 (e) — External audit round 4: the tool pages had nothing to read
 
 **P1-4 — four pages, one `h1` each, no body text.** `/tools/vram-calc/` and its three siblings were
