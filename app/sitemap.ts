@@ -4,6 +4,7 @@ import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated } from '@/lib/data/meta';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
+import { formatPairs } from '@/lib/utils/format-compare';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 
@@ -21,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/privacy/',
     '/about/',
     '/gpu/',
+    '/formats/',
   ];
 
   // A sitemap where every URL claims the same lastmod carries no information —
@@ -48,6 +50,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // they carry the site date rather than a date of their own.
     ...gpuDatabase.map(g => ({
       path: `/gpu/${gpuSlug(g)}/`,
+      lastModified: siteDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+    ...formatPairs.map(p => ({
+      path: `/formats/${p.slug}/`,
       lastModified: siteDate,
       changeFrequency: 'monthly' as const,
       priority: 0.6,

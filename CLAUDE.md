@@ -302,6 +302,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |
 | 2026-09-01 | **Calculator answers, not lists** — 43 verdict bars → one sentence + your card + collapsed detail; model dropdowns grouped by size (`<optgroup>`, not a custom combobox) |
 | 2026-09-01 | **GPU landing pages** — 43 cards × 2 languages (`/gpu/rtx-4060-ti-16g/`), derived from `gpuDatabase` + the model index, no new data; 232 → 322 pages |
 | 2026-09-01 | **Tool pages** — all four had one `h1` and no prose; now 2–3 explainer sections + visible FAQ with `FAQPage`/`SoftwareApplication` schema, copy written from the code in `lib/data/tool-content.ts` |

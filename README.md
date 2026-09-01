@@ -419,6 +419,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-01 (h) — External audit round 7: format comparisons, and the audit list is done
+
+**P2-2 — "X vs Y" pages.** Six comparisons at `/formats/<a>-vs-<b>/` plus an index, mirrored in
+Chinese: 336 pages total, sitemap 328 URLs.
+
+The generic half of these pages writes itself from `formats.ts` — hardware support, runtime,
+strengths, trade-offs, adoption estimate. The half worth building is the other one: **the models
+that publish weights in both formats**. There the two rows describe the *same* model, so comparing
+their perplexity loss is a measurement rather than an opinion. GGUF vs AWQ has 53 such models, GGUF
+vs EXL2 has 21.
+
+Two decisions carried over from earlier rounds:
+
+- **Pairs are generated from `SHIPPED_FORMATS`, not from `formats.ts`.** HQQ is documented but no
+  model uses it, so `gguf-vs-hqq` would be a comparison page with an empty right-hand column —
+  the same mistake as the Hub chip that matched zero models. Four shipped formats give six pairs.
+- **`awq-vs-gptq` and `exl2-vs-gptq` have no models in common.** Rather than pad them, those pages
+  print *"No model in this index ships both formats… the comparison above is editorial"* and stop.
+  A page that admits the limit of its own evidence is worth more than one that hides it.
+
+**This closes the audit list.** Everything in `quantized.uk 优化实施清单` is either done or recorded
+with a reason:
+
+| | |
+|---|---|
+| Done | P0-1, P0-2, P0-3, P0-4, P1-2, P1-3, P1-4, P1-5, P2-1, P2-2, P3-1 … P3-9 |
+| Not fixed, reason recorded | **P1-6** — `next/link` strips the trailing slash from dotted segments; every workaround costs more than the one redirect hop (2026-09-01 c) |
+| Needs live data | **P1-1** — the LCP cause found in the markup is fixed (2026-08-23); whether P75 now clears 2.5s can only be read from Cloudflare RUM after a few days of traffic |
+
 ### 2026-09-01 (g) — External audit round 6: answering instead of listing
 
 **P3-8 — the hardware verdict was 43 bars of almost-all-green.** High ink, low answer. The panel now

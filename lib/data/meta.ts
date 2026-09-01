@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-01',
+    en: 'New: format comparison pages. GGUF vs AWQ, GGUF vs EXL2 and four more, each comparing hardware support, runtime and adoption — and then listing the models that publish weights in both formats, where the two rows describe the same model and the comparison stops being editorial. Where no model ships both, the page says so rather than implying otherwise',
+    zh: '新增：格式对比页。GGUF 与 AWQ、GGUF 与 EXL2 等六组，对比硬件支持、运行时与采用率，并列出同时发布两种格式权重的模型 —— 此时两行描述的是同一个模型，对比不再只是编辑判断。若没有模型同时提供两种格式，页面会如实说明，而不是含糊带过',
+  },
+  {
+    date: '2026-09-01',
     en: 'The calculator answers instead of listing. Its hardware panel showed 43 bars, almost all green — a lot of ink for very little answer. It now leads with the fact you came for ("fits comfortably on 16 of 43 cards — smallest is the Instinct MI100 32G"), gives a verdict for your own card if you have set one, and keeps the full list one click away. The 79-model dropdowns in all three tools are grouped by size instead of listed in data-entry order',
     zh: '计算器改为给结论，而不是罗列。硬件面板此前平铺 43 根柱子且大多为绿色 —— 占了大量篇幅却几乎没有回答问题。现在它先给出你真正想要的事实（"43 张卡中 16 张可从容运行 —— 最小的是 Instinct MI100 32G"），如果你设置了自己的显卡还会单独给出裁决，完整列表则收在一次点击之后。三个工具里 79 项的模型下拉也改为按尺寸分组，不再按录入顺序排列',
   },
