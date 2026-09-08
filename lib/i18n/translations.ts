@@ -348,6 +348,8 @@ export const translations = {
     },
     calc: {
       tokens: 'tokens',
+      levelNotShipped: 'Estimate only — no {level} build of {model} is in this index, so the size below comes from the generic bits-per-weight table rather than a measured file.',
+      levelNotShippedShips: 'Levels this model ships: {levels}',
       title: 'VRAM / RAM Calculator',
       subtitle: 'Precise memory estimate for any model × quant × context combination',
       model: 'Model',
@@ -1081,6 +1083,8 @@ export const translations = {
     },
     calc: {
       tokens: '个 token',
+      levelNotShipped: '仅为估算 —— 本索引中没有 {model} 的 {level} 版本，因此下面的体积来自通用 bits-per-weight 表，而不是实测文件。',
+      levelNotShippedShips: '该模型实际提供的档位：{levels}',
       title: '显存 / 内存计算器',
       subtitle: '精确计算任意模型 × 量化 × 上下文长度的内存需求',
       model: '模型',

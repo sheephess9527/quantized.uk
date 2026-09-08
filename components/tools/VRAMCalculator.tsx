@@ -114,6 +114,12 @@ export default function VRAMCalculator() {
     if (mode === 'forward') {
       if (selectedModelId) params.set('model', selectedModelId);
       params.set('quant', selectedQuant);
+      // Forward mode judges the answer against the card in the shared profile,
+      // and this rewrites the address bar on every render — so leaving `gpu`
+      // out did not merely omit it from a copied link, it deleted it from a
+      // link that had one. The verdict the sender saw is part of what they are
+      // sharing.
+      if (profileGpuId) params.set('gpu', profileGpuId);
     } else {
       if (selectedGpuId) params.set('gpu', selectedGpuId);
       params.set('sort', sortBy);
@@ -121,11 +127,44 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, sortBy, includeYellow]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
+  /**
+   * Changing the model must not leave the previous model's quant level
+   * selected. Picking Llama 3.1 8B at `EXL2 4.65bpw` and switching to
+   * GPT-OSS 20B — which ships MXFP4, Q8_0 and Q4_K_M and nothing else — left
+   * EXL2 highlighted and printed a confident number for a file that does not
+   * exist, sized from the generic bits-per-weight table.
+   *
+   * The generic vocabulary is still offered on purpose: "what would this model
+   * cost at Q2_K" is a legitimate question for a calculator. It is only the
+   * silent carry-over that is wrong, so the level snaps to one the new model
+   * ships, and anything the reader picks afterwards that the index has no file
+   * for is labelled rather than blocked.
+   */
+  const selectModel = useCallback((id: string) => {
+    setSelectedModelId(id);
+    setInvalidModelId(null);
+    const model = models.find(m => m.id === id);
+    if (!model) return;
+    const levels = model.quants.map(quantLevelKey);
+    if (levels.includes(selectedQuant)) return;
+    // Prefer Q4_K_M — the level nearly every model ships and the one the rest
+    // of the site quotes — then whatever the model's best-quality quant is.
+    const next = levels.includes('Q4_K_M')
+      ? 'Q4_K_M'
+      : quantLevelKey([...model.quants].sort((a, b) => a.pplLossPercent - b.pplLossPercent)[0]);
+    setSelectedQuant(next);
+    setFormatGroup(findFormatGroup(next));
+  }, [selectedQuant]);
+
   const selectedModel = models.find(m => m.id === selectedModelId);
+  /** True when the index has no file for the selected model at this level. */
+  const levelNotShipped =
+    selectedModel !== undefined &&
+    !selectedModel.quants.some(q => quantLevelKey(q) === selectedQuant);
   const selectedGpu = gpuDatabase.find(g => g.id === selectedGpuId);
 
   const calcInput = useMemo(() => {
@@ -245,7 +284,7 @@ export default function VRAMCalculator() {
                 <div className="relative">
                   <select
                     value={selectedModelId}
-                    onChange={e => { setSelectedModelId(e.target.value); setInvalidModelId(null); }}
+                    onChange={e => selectModel(e.target.value)}
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.modelPlaceholder}</option>
@@ -441,6 +480,29 @@ export default function VRAMCalculator() {
               <Link href="/quant-hub/" className="text-xs text-violet-400 hover:text-violet-300 mt-2 inline-block">
                 {t.calc.browseModels}
               </Link>
+            </div>
+          )}
+          {/*
+            A level the index has no file for is still worth estimating — but
+            the reader has to know the difference between "this is what the
+            published quant costs" and "this is what that quant would cost if
+            someone made it". Without this the two look identical, and the
+            number silently comes from the generic bits-per-weight table rather
+            than the model's own measured figure.
+          */}
+          {mode === 'forward' && showForwardResult && levelNotShipped && (
+            <div className="glass rounded-2xl p-4 border border-amber-500/20 mb-4">
+              <p className="text-xs text-amber-300/90 leading-relaxed">
+                {t.calc.levelNotShipped
+                  .replace('{level}', selectedQuant)
+                  .replace('{model}', selectedModel?.name ?? '')}
+              </p>
+              <p className="text-xs text-slate-500 mt-1.5">
+                {t.calc.levelNotShippedShips.replace(
+                  '{levels}',
+                  (selectedModel?.quants ?? []).map(q => quantLevelKey(q)).join(' · '),
+                )}
+              </p>
             </div>
           )}
           {mode === 'forward' && showForwardResult && (

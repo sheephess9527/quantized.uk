@@ -419,6 +419,36 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-08 (e) — Task book §9 verification matrix
+
+Ran the matrix against the built export in a browser rather than reasoning about it. Eight of ten
+rows passed as built, including the one the P0 work was for: the hub says "60 of 79 models fit this
+GPU" with "counts models that load at 4K with no headroom (up to 105%)" underneath, and the GPU page
+says "51 of 79 fit comfortably (≤88%)" — two different questions, each naming its rule. Context
+4K → 16K moves the estimate for dense, MoE and multimodal models alike and keeps `ctx` in the URL.
+Commands emit a real repo id and filename, `--host 127.0.0.1`, `GGML_*` flags, and a visible
+placeholder when the repo is not derivable. `/zh` keeps its language through pages, guides, tool
+params and `feed.xml`. The wizard recommends GGUF with a ROCm or Metal runtime for AMD and Apple and
+never CUDA-only EXL2. Provenance markers (measured / estimated / community) are present on dense,
+MoE and multimodal model pages.
+
+Two rows failed, both fixed:
+
+- **Switching the model kept the previous model's quant level.** Llama 3.1 8B at `EXL2 4.65bpw`,
+  switch to GPT-OSS 20B — which ships MXFP4, Q8_0 and Q4_K_M and nothing else — and EXL2 stayed
+  selected, sizing a file that does not exist from the generic bits-per-weight table. `selectModel()`
+  now snaps to a level the model ships (Q4_K_M where available, else its best-quality quant), and a
+  level the index has no build for renders an "estimate only" notice naming the levels that do
+  exist. The generic vocabulary stays selectable on purpose; only the silent carry-over was wrong.
+- **Forward mode deleted `gpu` from its own URL.** `syncUrl` runs on every render and rewrites the
+  address bar, and its forward branch never wrote `gpu` — which was harmless while the param did
+  nothing in that mode, and became a data-loss bug the moment (d) made it drive the verdict. Opening
+  a link with a card stripped it within a second.
+
+Two apparent failures were the probe, not the site: a 400ms settle was too short for URL params in
+the `/zh` tree, and the CLI generator emits placeholders when no model is selected.
+
+
 ### 2026-09-08 (d) — Task book P1-04 / P1-05: guides that agree with the tools, and text you can read
 
 **P1-04 — the guides were contradicting the calculator.** The 8GB starter guide is the site's

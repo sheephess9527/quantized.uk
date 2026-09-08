@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-08',
+    en: 'Two fixes found by running the verification matrix rather than reading the code. Switching models in the VRAM calculator kept the previous model\'s quant level selected — pick Llama 3.1 8B at EXL2, switch to GPT-OSS 20B, and it confidently sized a file that does not exist; the level now snaps to one the model ships, and any level the index has no build for is labelled as an estimate from the generic table. And the calculator was deleting the card from its own address bar in forward mode, so a shared link lost the hardware the verdict was about',
+    zh: '两处修复，来自实际跑验证矩阵而不是读代码。在显存计算器里切换模型时会保留上一个模型的量化档位 —— 选中 Llama 3.1 8B 的 EXL2 再切到 GPT-OSS 20B，它会一本正经地给出一个并不存在的文件的体积；现在档位会自动切到该模型确实提供的一档，而索引中没有对应构建的档位会被标注为「仅为通用表估算」。另外计算器在正向模式下会把显卡从自己的地址栏里删掉，导致分享出去的链接丢失了这个结论所针对的硬件',
+  },
+  {
+    date: '2026-09-08',
     en: 'Guides and legibility. The 8GB starter guide was overstating VRAM by about 2GB against this site’s own calculator and told readers a 14B "needs 36GB+" when it needs 11 — those and the Mac and dual-GPU guides are rewritten from the index, with prerequisites, a way to check the model really ran on the GPU, and what to do when it does not fit. Reading times are now derived from the article instead of typed by hand (22 of 23 were fiction), a guide rewritten since its last real run says "written against" rather than claiming a verification date, and every text colour on the site now clears the WCAG AA contrast floor — 3,175 text nodes checked, none failing. Charts carry a table of the same figures in the static HTML, filter chips announce whether they are selected, and context lengths print the exact token count',
     zh: '教程与可读性。8GB 入门指南的显存数字比本站计算器高出约 2GB，还告诉读者 14B「需要 36GB 以上」（实际 11GB）—— 该指南连同 Mac 与双卡指南已按索引重写，补上前置条件、如何确认模型真的跑在 GPU 上，以及装不下时该怎么办。阅读时长改为从正文推算而不再手写（23 篇里有 22 篇是虚构的）；最近修改后未重新实机运行的指南改为标注「面向的技术栈」，不再声称验证日期；站内所有文字颜色现已达到 WCAG AA 对比度下限 —— 实测 3,175 个文本节点，无一不达标。图表在静态 HTML 中附带同数据的表格，筛选按钮会播报是否选中，上下文长度会标出精确 token 数',
   },

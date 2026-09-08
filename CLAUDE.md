@@ -202,6 +202,18 @@ monotonic in model size will do this. Rank against a **ceiling derived from the 
 sweep all 43 GPUs × every use case before believing it — the degenerate case was invisible in one
 spot-check and obvious in the sweep.
 
+**Changing the model must re-check the quant level.** The calculator's level chips come from the
+generic `quantGroups` vocabulary, not from the model's own `quants` — which is deliberate ("what
+would this cost at Q2_K" is a fair question) but means a level survives a model change. Llama 3.1 8B
+at `EXL2 4.65bpw` → GPT-OSS 20B (MXFP4 / Q8_0 / Q4_K_M only) left EXL2 selected and priced a file
+nobody has published, from the generic table. `selectModel()` snaps to a shipped level, and
+`levelNotShipped` labels anything the index has no build for.
+
+**`syncUrl` rewrites the address bar on every render**, so a param it does not write is not merely
+absent from a copied link — it is *deleted from the link the reader arrived on*. Forward mode
+omitted `gpu`, which stopped mattering the moment `?gpu=` began driving the forward-mode verdict.
+When you make a param meaningful, add it to `syncUrl` in the same change.
+
 **Two vocabularies for one quant level.** `lib/data/**` stores `{ format: 'AWQ', level: 'INT4' }`;
 `lib/utils/vram.ts` keys the same thing `'AWQ INT4'`. Any link or handoff carrying a quant level must
 go through **`quantLevelKey()`** (`lib/utils/recommend.ts`) — passing `quant.level` raw makes the
