@@ -419,6 +419,65 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-08 (f) — Task book P2: search, feedback, and a measured performance baseline
+
+**Audited before changing anything.** Canonical and hreflang are correct on all 328 indexable pages
+(the earlier "328 missing hreflang" reading was my own case-sensitive regex — Next emits `hrefLang`,
+which HTML parses case-insensitively). The sitemap and the export agree exactly, no `www` URLs
+anywhere, and `/404/` correctly carries `noindex` and no canonical. Filter and compare permutations
+need no indexing policy of their own: a static export serves `/quant-hub/?gpu=x` from
+`/quant-hub/index.html`, whose canonical is the clean URL, so every permutation already consolidates.
+
+**Structured data was describing a page that did not exist.** `ItemList` on the GPU pages set
+`numberOfItems` to the full fit count while emitting only the first 30 items — `numberOfItems: 73`
+above 30 entries. The page renders every fit, so the list now emits every fit. Audited across all
+329 exported pages afterwards: **0 problems** — no `AggregateRating` or `Review` anywhere (nothing
+fabricates a rating or a reviewer identity), `inLanguage` and `url` follow the page's own language,
+every `FAQPage` question appears in the visible text, and no breadcrumb crosses languages.
+
+**43 GPU pages were near-copies.** Measured with 5-gram Jaccard across the exported text:
+`rtx-4070` vs `rtx-4070-super` was **0.971**, mean 0.493 across all pairs. The cause is not
+laziness — the fit list is a function of VRAM, so every 12 GB card of a type returns the same list.
+Each page now states that explicitly and links its same-budget siblings, and says whether the card
+has measured benchmark runs behind it (four of 43 do; the other 39 say plainly that every figure is
+calculated). **This moved the worst pair from 0.971 to 0.956 and the mean from 0.493 to 0.484** —
+the model table dominates the page, so the overlap is inherent. Reported rather than dressed up.
+
+`measuredRowsFor()` needed a fussy match: a prefix match attributed the RTX 4060 Ti 16G's three runs
+to a plain RTX 4060, and dropping capacity would have handed the 16G card's numbers to the 8G one.
+Both the model name and the capacity have to agree; all five hardware strings in `matrixData` now
+resolve to exactly one card.
+
+**Copying a command is not success.** `RunFeedback` asks afterwards instead, on every guide and on
+the CLI generator once there is a command to run. "It ran" records one anonymous count; "I hit a
+problem" shows the reader the **exact text** of the correction email before their mail client opens
+— page, guide, and the configuration already visible in the UI, nothing else. The homepage
+correction entry works the same way. No account, no list, no backend.
+
+**Performance: baseline first, and it is a lab baseline.** No field data — Cloudflare RUM is not
+reachable from here, so nothing below is a P75 of real users.
+
+| Lab (Chromium, 4× CPU throttle + Slow 4G on mobile) | FCP | LCP | CLS |
+|---|---|---|---|
+| Homepage, mobile | 1536 ms | 1536 ms | 0.000 |
+| Quant Hub, mobile | 1456 ms | 1456 ms | 0.000 |
+| Homepage, desktop | 212 ms | 212 ms | 0.000 |
+
+Nothing is near the reference bounds (LCP ≤2.5 s, CLS ≤0.1), so no speculative optimisation was
+made. One correction to an earlier entry: the 2026-08-23 note recorded First Load JS of **169 kB**
+for the homepage; it is **202 kB** today, because the homepage now runs the hardware picker and the
+measured-cases table. Moving `measuredRowsFor` out of `gpu-page.ts` — it dragged the whole benchmark
+matrix into every page that only wanted a fit count — took `/quant-hub` 168 → 166 kB and `/gpu`
+142 → 140 kB. Recharts is absent from every page's static chunk graph, as intended.
+
+Re-verified after all of the above: 3,047 text nodes across 8 pages, 0 below WCAG AA; 0 horizontal
+overflows across 24 page × width combinations.
+
+**Not done: P3 (商业化准备).** It requires the maintainer's real identity, service capabilities and
+customer cases. Inventing any of those is exactly what the task book forbids, so it stays blocked
+pending real information.
+
+
 ### 2026-09-08 (e) — Task book §9 verification matrix
 
 Ran the matrix against the built export in a browser rather than reasoning about it. Eight of ten

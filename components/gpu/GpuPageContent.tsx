@@ -6,7 +6,8 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
-import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 /**
@@ -22,6 +23,8 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   const fits = fitsOnGpu(gpu);
   const groups = groupFitsByBucket(fits);
   const step = nextStepUp(gpu, fits.length);
+  const siblings = sameBudgetCards(gpu);
+  const measured = measuredRowsFor(gpu);
   // Both counts, side by side with their conditions. The Hub's GPU chips use
   // the looser rule; showing only one number here left two pages disagreeing
   // (51 vs 60) with nothing on either saying why.
@@ -122,6 +125,74 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
           </Link>
         </div>
       </section>
+
+      {/*
+        Measured runs, or an explicit statement that there are none.
+        Four of the 43 cards have rows in the benchmark matrix. Without this
+        section every page reads as though its numbers were observed, and the
+        four pages that *do* have observations get no credit for it.
+      */}
+      <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
+        <h2 className="text-lg font-bold text-slate-100 mb-3">{g.measuredTitle}</h2>
+        {measured.length > 0 ? (
+          <>
+            <p className="text-sm text-slate-400 leading-relaxed mb-4">
+              {fill(g.measuredBody, { count: measured.length, gpu: gpu.name })}
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[440px]">
+                <thead>
+                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+                    <th scope="col" className="font-medium py-2 pr-3">{g.colModel}</th>
+                    <th scope="col" className="font-medium py-2 pr-3">{g.colStack}</th>
+                    <th scope="col" className="font-medium py-2 pr-3 text-right">{g.colSpeed}</th>
+                    <th scope="col" className="font-medium py-2 text-right">{g.colVram}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {measured.map((row, i) => (
+                    <tr key={i} className="border-b border-white/[0.04]">
+                      <td className="py-2 pr-3 text-slate-200">{row.model}</td>
+                      <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.framework} · {row.quant}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-emerald-300">{row.speedTokSec}</td>
+                      <td className="py-2 text-right font-mono text-slate-400">{row.vramUsedGB} GB</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}</p>
+        )}
+      </section>
+
+      {/*
+        Cards with the same memory budget return the same list, because the
+        list is a function of VRAM. Saying so — and linking them — is what
+        stops 43 pages from being 43 near-copies: measured before this change,
+        `rtx-4070` and `rtx-4070-super` shared 97% of their 5-grams.
+      */}
+      {siblings.length > 0 && (
+        <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
+          <h2 className="text-lg font-bold text-slate-100 mb-2">{g.sameBudgetTitle}</h2>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            {fill(g.sameBudgetBody, { vram: gpu.vram })}
+          </p>
+          <ul className="flex flex-wrap gap-2 mt-3">
+            {siblings.map(sib => (
+              <li key={sib.id}>
+                <Link
+                  href={`/gpu/${gpuSlug(sib)}/`}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 min-h-[44px] text-sm text-slate-300 hover:border-violet-500/25 hover:text-white transition-all"
+                >
+                  <span aria-hidden>{sib.icon}</span> {sib.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {step && (
         <section className="glass rounded-2xl p-5 sm:p-6 mt-6">

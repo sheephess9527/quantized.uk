@@ -7,6 +7,7 @@ import { models } from '@/lib/data/models';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { generateCLI, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
+import RunFeedback from '@/components/feedback/RunFeedback';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { trackEvent } from '@/lib/analytics';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
@@ -298,6 +299,15 @@ export default function CLIGenerator() {
               <p className="text-sm text-slate-600">{t.cli.selectFirst}</p>
             </div>
           </div>
+        )}
+
+        {/* Only once there is a command to run — asking before that is asking
+            about nothing. `CLI Copy` remains a copy; this is the outcome. */}
+        {selectedModel && (
+          <RunFeedback
+            subject={`quantized.uk — CLI generator (${framework})`}
+            context={`${selectedModel.name} · ${quantLevel} · ${framework}`}
+          />
         )}
       </div>
     </div>

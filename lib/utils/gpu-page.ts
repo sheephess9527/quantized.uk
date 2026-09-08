@@ -55,6 +55,28 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
   return n;
 }
 
+/**
+ * Cards this one shares its answer with.
+ *
+ * The fit list is a function of VRAM and nothing else, so every 12 GB card in
+ * the database returns byte-identical results: measured across the 43 exported
+ * pages, `rtx-4070`, `rtx-4070-super` and `rtx-4070-ti` were **97% identical**
+ * by 5-gram overlap, and the mean across all pairs was 0.49. That is the
+ * definition of mass-generated thin content — pages that differ only in a name.
+ *
+ * The honest fix is not to hide the overlap but to state it: these pages give
+ * the same list *because the memory budget is the same*, and what actually
+ * separates the cards — throughput — is not something this index measures per
+ * card. Naming the siblings turns a duplicate into a useful sentence and gives
+ * each page an internal link its neighbours do not have.
+ *
+ * Same `type` as well as same `vram`: a 16 GB Radeon and a 16 GB GeForce hold
+ * the same models but do not share a runtime story, so they are not siblings.
+ */
+export function sameBudgetCards(gpu: GPU): GPU[] {
+  return gpuDatabase.filter(g => g.id !== gpu.id && g.vram === gpu.vram && g.type === gpu.type);
+}
+
 export interface GpuFit {
   model: QuantModel;
   quant: QuantVariant;

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-08',
+    en: 'Search and feedback groundwork. Hardware pages now say when a card has real measured runs behind it — four of the 43 do — and name the other cards that share its memory budget, because the model list is decided by VRAM and those pages were otherwise near-copies of each other. Structured data was claiming 73 models on pages that listed 30; it now matches what is on the page, on all 329 of them. And guides and the command generator ask whether the thing actually ran: copying a command is not the same as it working, and the correction email shows you its exact text before your mail app opens',
+    zh: '搜索与反馈的基础工作。硬件页面现在会说明这张卡是否有真实实测记录（43 张里有 4 张），并列出显存预算相同的其他显卡 —— 因为能跑哪些模型由显存决定，否则这些页面彼此几乎是副本。结构化数据此前在只列出 30 个模型的页面上声称有 73 个；现在全部 329 个页面都与页面实际内容一致。另外，指南和命令生成器会问你「它真的跑起来了吗」：复制命令不等于它能用；而勘误邮件在打开你的邮件应用之前，会先把要发送的原文完整展示给你',
+  },
+  {
+    date: '2026-09-08',
     en: 'Two fixes found by running the verification matrix rather than reading the code. Switching models in the VRAM calculator kept the previous model\'s quant level selected — pick Llama 3.1 8B at EXL2, switch to GPT-OSS 20B, and it confidently sized a file that does not exist; the level now snaps to one the model ships, and any level the index has no build for is labelled as an estimate from the generic table. And the calculator was deleting the card from its own address bar in forward mode, so a shared link lost the hardware the verdict was about',
     zh: '两处修复，来自实际跑验证矩阵而不是读代码。在显存计算器里切换模型时会保留上一个模型的量化档位 —— 选中 Llama 3.1 8B 的 EXL2 再切到 GPT-OSS 20B，它会一本正经地给出一个并不存在的文件的体积；现在档位会自动切到该模型确实提供的一档，而索引中没有对应构建的档位会被标注为「仅为通用表估算」。另外计算器在正向模式下会把显卡从自己的地址栏里删掉，导致分享出去的链接丢失了这个结论所针对的硬件',
   },

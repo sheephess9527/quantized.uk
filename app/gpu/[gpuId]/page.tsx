@@ -52,8 +52,12 @@ export default function GpuPage({ params, lang = 'en' }: { params: { gpuId: stri
               : `Quantized models that run on a ${gpu.name}`,
           url: canonical(path),
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+          // The page renders every fit, grouped by parameter bucket, with no
+          // truncation — so the list and its count have to agree. This said
+          // `numberOfItems: 73` above 30 emitted items, which is structured
+          // data describing a page that does not exist.
           numberOfItems: fits.length,
-          itemListElement: fits.slice(0, 30).map((fit, i) => ({
+          itemListElement: fits.map((fit, i) => ({
             '@type': 'ListItem',
             position: i + 1,
             name: fit.model.name,

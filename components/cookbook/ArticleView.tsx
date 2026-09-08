@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
 import GuideNextSteps from '@/components/cookbook/GuideNextSteps';
+import RunFeedback from '@/components/feedback/RunFeedback';
 import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
 import CodeBlock from '@/components/cookbook/CodeBlock';
 import ReadingProgress from '@/components/cookbook/ReadingProgress';
@@ -119,6 +120,8 @@ export default function ArticleView({ article }: Props) {
         ))}
 
         <GuideNextSteps article={article} />
+
+        <RunFeedback subject={`quantized.uk — ${article.id}`} context={title} />
 
         <RelatedArticles articleId={article.id} />
 

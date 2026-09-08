@@ -130,6 +130,19 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `FormatRadarLazy` are `ssr: false`; a table placed inside one exists only after hydration, for
   readers already running Recharts. `BenchDataTables` renders from the page instead, so the figures
   are in the exported HTML.
+- **Structured data must describe the page that exists.** `ItemList` on the GPU pages claimed
+  `numberOfItems: 73` while emitting 30. Audit with a walk over `out/**` after any schema change:
+  counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear
+  in the visible text. There is deliberately no `AggregateRating` or `Review` anywhere — the site has
+  no ratings to report, and inventing a reviewer identity is not on the table.
+- **Derived pages are similar by nature; say so rather than hiding it.** The GPU fit list is a
+  function of VRAM, so same-tier cards return the same list (`rtx-4070` vs `rtx-4070-super` were
+  0.971 by 5-gram Jaccard). `sameBudgetCards()` names the siblings on the page and links them; that
+  is honest and useful, but it only moved the worst pair to 0.956 — do not claim it solves
+  duplication.
+- **A copy is not a success.** `CLI Copy` records a copy. `Run Outcome` is the only event that says
+  anything about a run, and only a person clicking "It ran" produces it. Any prefilled `mailto:`
+  shows the reader its exact body first (`RunFeedback`) — never send a setup the reader has not seen.
 - **PWA safe areas:** the app is installable (iOS Add to Home Screen, standalone). Respect
   `env(safe-area-inset-*)` — top handled by Navbar + `<main>`, bottom/sides by `body` in
   `globals.css`. Test any top-bar / full-height change against the notch.
@@ -381,6 +394,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-08 | **Search + feedback (P2)** — GPU pages name their measured runs and same-budget siblings (43 pages were 0.97 similar); `ItemList` claimed 73 items while emitting 30; "did it actually run?" replaces treating a copy as success; lab perf baseline recorded, no field data available |
 | 2026-09-08 | **Guides vs the calculator** — 8GB guide ran ~2GB high and Mac guide told 18GB readers a 14B "needs 36GB+" (it needs 11.0); five guides rewritten from the index. `readTime` was fiction on 22/23, now derived. Contrast: `slate-600` was 2.5:1 — palette raised, 3,175 text nodes now pass AA |
 | 2026-09-08 | **Homepage answers first** — hero asks for your card and your task, then names the largest model that fits, one with room to grow, and the fastest. Pick criteria that were monotonic in model size gave a 4090 the same 0.5B answer as an 8G card; `?gpu=` did nothing in the calculator's forward mode; raw `quant.level` broke the calculator's bpw lookup |
 | 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |
