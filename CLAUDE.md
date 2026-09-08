@@ -317,6 +317,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
 | 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Terminal, Copy, Check, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
@@ -9,6 +9,7 @@ import { generateCLI, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { trackEvent } from '@/lib/analytics';
+import { useHardwareProfile } from '@/lib/hardware-profile/context';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
@@ -28,6 +29,8 @@ const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli'
 
 export default function CLIGenerator() {
   const { t } = useLanguage();
+  const { config, hydrated: configReady, updateConfig } = useHardwareProfile();
+  const seeded = useRef(false);
   const [framework, setFramework] = useState<Framework>('llamacpp');
   const [env, setEnv] = useState<Env>('linux');
   const [modelId, setModelId] = useState('');
@@ -64,6 +67,23 @@ export default function CLIGenerator() {
     }
     return selectedModel.quants.map(q => `${q.format} ${q.level}`);
   }, [selectedModel, framework]);
+
+  // Seed once from the shared config so arriving from the calculator does not
+  // mean re-picking the same model. URL params, when this tool gains them,
+  // would take precedence the same way the calculator does it.
+  useEffect(() => {
+    if (seeded.current || !configReady) return;
+    seeded.current = true;
+    if (config.modelId && config.modelId !== 'custom' && models.some(m => m.id === config.modelId)) {
+      setModelId(config.modelId);
+    }
+    if (config.contextLen) setContextLen(config.contextLen);
+  }, [configReady, config.modelId, config.contextLen]);
+
+  useEffect(() => {
+    if (!seeded.current || !modelId) return;
+    updateConfig({ modelId, contextLen });
+  }, [modelId, contextLen, updateConfig]);
 
   useEffect(() => {
     if (availableQuants.length === 0) return;

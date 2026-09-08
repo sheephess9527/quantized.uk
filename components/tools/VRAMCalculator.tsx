@@ -34,7 +34,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 
 export default function VRAMCalculator() {
   const { t } = useLanguage();
-  const { gpuId: profileGpuId, gpu: profileGpu } = useHardwareProfile();
+  const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig } = useHardwareProfile();
   const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
@@ -54,8 +54,12 @@ export default function VRAMCalculator() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
 
+  // Precedence: URL > stored config > default. A shared link has to win over
+  // whatever the recipient happens to have saved, or the link shows something
+  // other than what the sender saw. Waits for `configReady` so the stored
+  // fallback is not missed on first paint.
   useEffect(() => {
-    if (urlInitialized.current || !searchParams) return;
+    if (urlInitialized.current || !searchParams || !configReady) return;
     const m = searchParams.get('mode') === 'reverse' ? 'reverse' : 'forward';
     setMode(m);
     const modelParam = searchParams.get('model');
@@ -67,13 +71,16 @@ export default function VRAMCalculator() {
         setSelectedModelId('');
         setInvalidModelId(modelParam);
       }
+    } else if (config.modelId) {
+      setSelectedModelId(config.modelId);
     }
-    if (searchParams.get('quant')) {
-      const q = searchParams.get('quant')!;
-      setSelectedQuant(q);
-      setFormatGroup(findFormatGroup(q));
+    const quantParam = searchParams.get('quant') || (modelParam ? '' : config.quantLevel);
+    if (quantParam) {
+      setSelectedQuant(quantParam);
+      setFormatGroup(findFormatGroup(quantParam));
     }
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
+    else if (config.contextLen) setContextLen(config.contextLen);
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
     const gpuParam = searchParams.get('gpu');
     if (gpuParam) setSelectedGpuId(gpuParam);
@@ -83,7 +90,13 @@ export default function VRAMCalculator() {
     }
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     urlInitialized.current = true;
-  }, [searchParams, profileGpuId]);
+  }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen]);
+
+  // Write the reader's choices back so the next tool starts where they left off.
+  useEffect(() => {
+    if (!urlInitialized.current) return;
+    updateConfig({ modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
+  }, [selectedModelId, selectedQuant, contextLen, updateConfig]);
 
   const syncUrl = useCallback(() => {
     if (!urlInitialized.current) return;
@@ -442,6 +455,41 @@ export default function VRAMCalculator() {
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
+
+                {/* The path the task book asks for: a reader who has an answer
+                    here should not have to re-enter it in the next tool. The
+                    shared config already carries model/quant/context, so these
+                    links only need to name the destination. */}
+                {selectedModel && (
+                  <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
+                    <Link
+                      href={`/tools/cli-gen/?model=${selectedModel.id}`}
+                      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+                    >
+                      {t.calc.nextCommand} →
+                    </Link>
+                    <Link
+                      href={`/quant-hub/${selectedModel.id}/`}
+                      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-300"
+                    >
+                      {t.calc.nextGuide} →
+                    </Link>
+                  </div>
+                )}
+
+                {/* Actionable when the answer is "no": the reader is told what
+                    to change and what it would cost, not just that it fails. */}
+                {profileGpu && getVerdict(result.totalGB, profileGpu.vram) !== 'green' && contextLen > 512 && (
+                  <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                    <p className="text-xs font-semibold text-slate-400 mb-1.5">{t.calc.adviceTitle}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      {t.calc.adviceCtx
+                        .replace('{ctx}', contextLen / 2 >= 1024 ? `${contextLen / 2048}K` : String(contextLen / 2))
+                        .replace('{gb}', calcVRAM({ ...calcInput, contextLength: contextLen / 2 }).totalGB.toFixed(2))}
+                    </p>
+                    <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.adviceQuant}</p>
+                  </div>
+                )}
               </div>
 
               <div className="glass rounded-2xl p-5">

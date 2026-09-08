@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-08',
+    en: 'The tools now remember what you picked. Choosing a model in the VRAM calculator and moving to the command generator no longer means entering it again — model, quant level and context length carry across, with a shared link always taking precedence over what you have stored. The calculator also links straight to the command for the configuration on screen, and when a model does not fit your card it says what to change and what that would cost',
+    zh: '工具之间现在会记住你的选择。在显存计算器里选好模型再去命令生成器，不必重新输入一遍 —— 模型、量化档位与上下文长度会带过去，而分享链接始终优先于你本地保存的配置。计算器还能直接跳到当前配置对应的命令；当模型装不进你的显卡时，它会说明该改什么、以及改完是多少',
+  },
+  {
+    date: '2026-09-08',
     en: 'Numbers now say where they come from. The compare tool had a "Q4_K_M VRAM" row that never moved when you changed the context length, beside copy claiming it did — it now shows an estimated row that tracks the control and a published row that is fixed, each labelled. The 6:1 "8B wins" scoreboard is gone: it counted memory twice, counted how much of each model this site happens to index, and treated fewer parameters as an advantage',
     zh: '数字现在会交代自己的来源。对比工具此前有一行 "Q4_K_M 显存" 在切换上下文时纹丝不动，而旁边的说明却声称它会随之变化 —— 现在拆成会跟随控件的预估行和固定的已发布行，各自标注。6:1 "8B 胜出" 的比分已移除：它把内存算了两次、把本站收录了多少变体也算进去，还把参数更少当成优势',
   },

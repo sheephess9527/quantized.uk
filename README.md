@@ -419,6 +419,36 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-08 (b) — Task book P1-02 / P1-03: one configuration across the tools
+
+**P1-02 — shared configuration state.** The calculator, CLI generator and compare tool each asked
+for the same model, quant level and context independently, so moving between them meant answering
+the same questions again. The existing `HardwareProfileProvider` (GPU id in `localStorage`) was
+**grown rather than replaced**: it now carries `{ gpuId, modelId, quantLevel, contextLen }` under a
+new key, migrating the old bare-string value on first read.
+
+Precedence is **URL > stored config > default** everywhere. A shared link has to win over whatever
+the recipient happens to have saved, or the link shows something other than what the sender saw.
+Stored ids are sanitised on read — a model or GPU removed from the index between visits degrades to
+"not set" rather than silently producing a result for something else.
+
+Verified in a browser, not by inspection: loading
+`/tools/vram-calc/?model=qwen2.5-32b&quant=Q5_K_M&ctx=16384` writes the config, and
+`/tools/cli-gen/` **with no URL parameters** then opens on `qwen2.5-32b` and generates its command.
+
+**P1-03 — results that lead somewhere.** The calculator's estimate panel now carries the two exits
+the task book asks for — *generate the launch command for this configuration* and *guides for this
+model* — and when a model does not fit the reader's own card it states what to change and the number
+that change produces ("halving the context to 8K brings the estimate to X GB"), rather than only
+reporting failure.
+
+Fields are added as a tool needs them. System RAM, runtime and OS are **not** in the shared config
+because nothing reads them yet; adding unused fields would be inventing a contract.
+
+**Still open from the task book:** P1-01 (homepage task-first restructure), P1-04 (tutorial
+verification — including the 8GB guide's unexplained 7.7 GB figure), P1-05 (accessibility pass),
+P2, P3.
+
 ### 2026-09-08 — Second external task book: P0 (correctness and traceability)
 
 Each item was reproduced against the repo before any change; two turned out to be defects this

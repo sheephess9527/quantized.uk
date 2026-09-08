@@ -13,7 +13,7 @@ import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 
 export default function ModelCompare() {
   const { t, lang } = useLanguage();
-  const { gpu } = useHardwareProfile();
+  const { gpu, config, hydrated: configReady, updateConfig } = useHardwareProfile();
   const searchParams = useUrlQuery();
   const c = t.compare;
 
@@ -22,12 +22,23 @@ export default function ModelCompare() {
   const [contextLen, setContextLen] = useState(4096);
   const [linkCopied, setLinkCopied] = useState(false);
 
+  // URL wins; the stored context length is the fallback so a reader arriving
+  // from the calculator keeps the length they were just working at.
   useEffect(() => {
-    if (!searchParams) return;
+    if (!searchParams) {
+      if (configReady && config.contextLen) setContextLen(config.contextLen);
+      return;
+    }
+    if (!searchParams.get('ctx') && configReady && config.contextLen) setContextLen(config.contextLen);
     if (searchParams.get('a')) setModelAId(searchParams.get('a')!);
     if (searchParams.get('b')) setModelBId(searchParams.get('b')!);
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
-  }, [searchParams]);
+  }, [searchParams, configReady, config.contextLen]);
+
+  useEffect(() => {
+    if (!configReady) return;
+    updateConfig({ contextLen });
+  }, [contextLen, configReady, updateConfig]);
 
   const syncUrl = useCallback(() => {
     if (!modelAId && !modelBId) return;
