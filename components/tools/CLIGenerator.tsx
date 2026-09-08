@@ -13,11 +13,14 @@ import { useHardwareProfile } from '@/lib/hardware-profile/context';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
-const FRAMEWORKS: { id: Framework; label: string; color: string }[] = [
-  { id: 'llamacpp', label: 'llama.cpp',  color: '#7c3aed' },
-  { id: 'ollama',   label: 'Ollama',     color: '#06b6d4' },
-  { id: 'vllm',     label: 'vLLM',       color: '#f97316' },
-  { id: 'exllama',  label: 'ExLlamaV2',  color: '#eab308' },
+// `textColor` is the variant that clears 4.5:1 on this background; `color`
+// stays the brand value for the chip's fill and border. Only violet needed to
+// move — see the note on QuantFormat in lib/data/formats.ts.
+const FRAMEWORKS: { id: Framework; label: string; color: string; textColor: string }[] = [
+  { id: 'llamacpp', label: 'llama.cpp',  color: '#7c3aed', textColor: '#a78bfa' },
+  { id: 'ollama',   label: 'Ollama',     color: '#06b6d4', textColor: '#06b6d4' },
+  { id: 'vllm',     label: 'vLLM',       color: '#f97316', textColor: '#f97316' },
+  { id: 'exllama',  label: 'ExLlamaV2',  color: '#eab308', textColor: '#eab308' },
 ];
 
 const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli']['envOptions'] }[] = [
@@ -140,8 +143,8 @@ export default function CLIGenerator() {
                 className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-150 border"
                 style={
                   framework === f.id
-                    ? { background: `${f.color}18`, color: f.color, borderColor: `${f.color}30` }
-                    : { background: 'transparent', color: '#475569', borderColor: 'rgba(255,255,255,0.06)' }
+                    ? { background: `${f.color}18`, color: f.textColor, borderColor: `${f.color}30` }
+                    : { background: 'transparent', color: '#8092aa', borderColor: 'rgba(255,255,255,0.06)' }
                 }
               >
                 {f.label}
@@ -158,6 +161,7 @@ export default function CLIGenerator() {
               <button
                 key={e.id}
                 onClick={() => setEnv(e.id)}
+                aria-pressed={env === e.id}
                 className={cn(
                   'py-2 rounded-xl text-xs font-medium transition-all duration-150 border',
                   env === e.id

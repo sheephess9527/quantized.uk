@@ -47,6 +47,10 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         {options.map(({ value, label: l }) => (
           <button
             key={value}
+            // A filter chip is a toggle, and its only "on" signal was a violet
+            // background. Screen readers announced every chip identically,
+            // selected or not.
+            aria-pressed={filters[key] === value}
             onClick={() => set(key)(filters[key] === value ? '' : value)}
             className={cn(
               'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 border',

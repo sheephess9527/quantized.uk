@@ -60,9 +60,38 @@ body {
 .hero-rise { animation: hero-rise 0.4s ease-out both; }
 .hero-lift { animation: hero-lift 0.45s ease-out both; }
 
+/*
+ * Reduced motion, applied to everything rather than to the two hero classes
+ * it originally named. The site also has pulsing dots, hover scale on the
+ * CTAs, an animated progress bar and Tailwind's own animate-* utilities;
+ * honouring the preference for the hero alone and not for those is not
+ * honouring it. Durations go to ~0 rather than `animation: none`, because a
+ * cancelled animation can leave an element in its `from` state, and `both`
+ * fill mode on .hero-rise would have made it permanently invisible.
+ */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .hero-rise,
   .hero-lift { animation: none; }
+}
+
+/*
+ * A visible focus ring. The browser default is a thin dark outline that is
+ * near-invisible on `--bg`, and several components set `focus:outline-none`
+ * with a border colour change that keyboard users cannot rely on. `:focus-visible`
+ * so pointer users do not see it on click.
+ */
+:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @layer components {

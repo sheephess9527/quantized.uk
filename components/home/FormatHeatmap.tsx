@@ -22,7 +22,7 @@ export default function FormatHeatmap() {
                 <span className="text-xs text-slate-500 w-3">{i + 1}</span>
                 <span
                   className="badge text-xs font-mono font-semibold"
-                  style={{ background: `${fmt.color}18`, color: fmt.color, borderColor: `${fmt.color}30` }}
+                  style={{ background: `${fmt.color}18`, color: fmt.textColor, borderColor: `${fmt.color}30` }}
                 >
                   {fmt.name}
                 </span>

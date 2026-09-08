@@ -26,9 +26,9 @@ export default function FormatIndexView() {
               className="block glass glass-hover rounded-2xl p-5 h-full"
             >
               <span className="text-base font-semibold text-slate-100">
-                <span style={{ color: pair.a.color }}>{pair.a.name}</span>
+                <span style={{ color: pair.a.textColor }}>{pair.a.name}</span>
                 <span className="text-slate-600 mx-1.5">vs</span>
-                <span style={{ color: pair.b.color }}>{pair.b.name}</span>
+                <span style={{ color: pair.b.textColor }}>{pair.b.name}</span>
               </span>
               <span className="block text-xs text-slate-500 font-mono mt-1.5">
                 {modelsWithFormat(pair.a.name).length} · {modelsWithFormat(pair.b.name).length} · ⇄ {headToHead(pair).length}

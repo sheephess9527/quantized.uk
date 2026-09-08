@@ -26,7 +26,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **79** in index (`models-extra` … `models-extra-8`) |
-| Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack`, 7 carry `gpuPreset`/`relatedModelIds` |
+| Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
@@ -115,6 +115,21 @@ flaky network. Never "fix" it by removing the postbuild hook.
   hides real ones). Load the page in a 390px iframe and read `documentElement.scrollWidth` instead.
   A table or code block whose `right` exceeds the viewport is fine **if** it has an
   `overflow-x: auto` ancestor — check for one before "fixing" it.
+- **Contrast is a palette decision, not a per-component one.** Tailwind's stock `slate-600` is
+  **2.5:1** on this background and was carrying most of the site's explanatory text. The dim end of
+  the ramp is overridden in `tailwind.config.ts` (`slate` 500/600/700 → 5.92 / 4.60 / 3.11 against
+  the glass surface); fix contrast there, not by rewriting class names. `slate-700` is for
+  decoration only — if it is carrying words, move the usage to `slate-600`. A raw hex applied to
+  text needs its own accessible variant: `QuantFormat` and the CLI framework list carry `textColor`
+  beside `color` so charts keep the saturated brand value. Verify by walking the DOM in a browser
+  and computing the ratio against each node's *painted* background — the current baseline is
+  **3,175 text nodes across 11 pages, 0 below AA**, so any new failure is something you added.
+- **A toggle needs `aria-pressed`.** Filter chips, mode switches and quant/framework chips signalled
+  "selected" with a violet background and nothing else.
+- **A chart's text equivalent must live outside the lazy chart component.** `BenchCharts` and
+  `FormatRadarLazy` are `ssr: false`; a table placed inside one exists only after hydration, for
+  readers already running Recharts. `BenchDataTables` renders from the page instead, so the figures
+  are in the exported HTML.
 - **PWA safe areas:** the app is installable (iOS Add to Home Screen, standalone). Respect
   `env(safe-area-inset-*)` — top handled by Navbar + `<main>`, bottom/sides by `body` in
   `globals.css`. Test any top-bar / full-height change against the notch.
@@ -232,7 +247,20 @@ sees.
 **Never set `verifiedAt` you didn't earn** — it means "commands re-checked on this date". Agent
 environments here have no GPU and no HF network access, so most stacks can't actually be run. An
 unverified guide simply omits the field; back-dating or copying a sibling's date silently degrades
-the badge on all 23 guides. Same rule for `verifiedStack`.
+the badge on all 23 guides. **`verifiedStack` is a separate claim** and survives on its own: it says
+what the guide is *written against*, and `ArticleView` renders it as "Written against" with a
+not-re-run note when there is no date. So a rewrite keeps the stack line and drops the date — you
+never have to choose between deleting useful information and claiming a run that did not happen.
+
+**A guide that contradicts the calculator is worse than no guide.** Every VRAM number in prose must
+come from `calcVRAM` on the model's own row, not from memory: the 8GB starter guide — the
+top-traffic page — spent its life ~2GB high, and `mac-m3-pro-limits` told 18GB readers a 14B "needs
+36GB+" when it needs 11.0. Both had `verifiedAt`. Before editing a guide, run the numbers it cites;
+before adding one, check the level you are citing actually exists in that model's `quants`.
+
+**Derived, not typed.** `readTime` was hand-written and fiction on 22 of 23 guides (5–12 minutes for
+14–75 words). It is gone; `readingMinutes(article, lang)` computes it. Any field a human types once
+and nobody recomputes will drift — prefer a helper over a column.
 
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
@@ -341,6 +369,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-08 | **Guides vs the calculator** — 8GB guide ran ~2GB high and Mac guide told 18GB readers a 14B "needs 36GB+" (it needs 11.0); five guides rewritten from the index. `readTime` was fiction on 22/23, now derived. Contrast: `slate-600` was 2.5:1 — palette raised, 3,175 text nodes now pass AA |
 | 2026-09-08 | **Homepage answers first** — hero asks for your card and your task, then names the largest model that fits, one with room to grow, and the fastest. Pick criteria that were monotonic in model size gave a 4090 the same 0.5B answer as an 8G card; `?gpu=` did nothing in the calculator's forward mode; raw `quant.level` broke the calculator's bpw lookup |
 | 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |
 | 2026-09-01 | **Calculator answers, not lists** — 43 verdict bars → one sentence + your card + collapsed detail; model dropdowns grouped by size (`<optgroup>`, not a custom combobox) |

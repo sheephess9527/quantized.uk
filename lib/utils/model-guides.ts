@@ -1,5 +1,6 @@
 import type { QuantModel } from '@/lib/data/types';
 import { articles } from '@/lib/data/cookbook';
+import { readingMinutes } from '@/lib/utils/reading-time';
 
 /**
  * Minimal guide shape passed from the (server) model page into the client
@@ -11,7 +12,8 @@ export interface GuideLink {
   id: string;
   title: string;
   titleZh: string;
-  readTime: number;
+  /** Derived from the article body, per language — see reading-time.ts */
+  readMin: { en: number; zh: number };
   difficulty: string;
   /** true when a guide names this model explicitly via relatedModelIds */
   exact: boolean;
@@ -32,7 +34,7 @@ function toLink(id: string, exact: boolean): GuideLink | null {
     id: a.id,
     title: a.title,
     titleZh: a.titleZh,
-    readTime: a.readTime,
+    readMin: { en: readingMinutes(a, 'en'), zh: readingMinutes(a, 'zh') },
     difficulty: a.difficulty,
     exact,
   };

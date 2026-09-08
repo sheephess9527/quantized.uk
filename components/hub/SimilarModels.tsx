@@ -68,7 +68,7 @@ export default function SimilarModels({ modelId }: Props) {
               <div className="flex items-center gap-3 text-xs text-slate-500">
                 <span className="font-mono text-violet-300">{minVram.toFixed(1)} GB</span>
                 <span>{s.minVram}</span>
-                <span className="text-slate-700">·</span>
+                <span aria-hidden className="text-slate-700">·</span>
                 <span className="font-mono text-emerald-400">{(100 - bestLoss).toFixed(1)}%</span>
                 <span>{s.accuracy}</span>
               </div>

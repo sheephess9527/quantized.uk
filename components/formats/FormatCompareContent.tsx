@@ -50,8 +50,8 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
             <thead>
               <tr className="border-b border-white/[0.06] text-xs uppercase tracking-wider">
                 <th className="text-left py-2 px-3 font-semibold text-slate-500"> </th>
-                <th className="text-left py-2 px-3 font-semibold" style={{ color: a.color }}>{a.name}</th>
-                <th className="text-left py-2 px-3 font-semibold" style={{ color: b.color }}>{b.name}</th>
+                <th className="text-left py-2 px-3 font-semibold" style={{ color: a.textColor }}>{a.name}</th>
+                <th className="text-left py-2 px-3 font-semibold" style={{ color: b.textColor }}>{b.name}</th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +70,7 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {[a, b].map(fmt => (
           <section key={fmt.id} className="glass rounded-2xl p-5 sm:p-6">
-            <h2 className="text-lg font-bold mb-3" style={{ color: fmt.color }}>{fmt.name}</h2>
+            <h2 className="text-lg font-bold mb-3" style={{ color: fmt.textColor }}>{fmt.name}</h2>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">{fmt.description[lang]}</p>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{c.strengths}</p>
             <ul className="space-y-1.5 mb-4">
@@ -107,9 +107,9 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
                 <thead>
                   <tr className="border-b border-white/[0.06] text-xs text-slate-500 uppercase tracking-wider">
                     <th className="text-left py-2 px-3 font-semibold">{c.thModel}</th>
-                    <th className="text-left py-2 px-3 font-semibold" style={{ color: a.color }}>{a.name} {c.thLevel}</th>
+                    <th className="text-left py-2 px-3 font-semibold" style={{ color: a.textColor }}>{a.name} {c.thLevel}</th>
                     <th className="text-right py-2 px-3 font-semibold">{c.thLoss}</th>
-                    <th className="text-left py-2 px-3 font-semibold" style={{ color: b.color }}>{b.name} {c.thLevel}</th>
+                    <th className="text-left py-2 px-3 font-semibold" style={{ color: b.textColor }}>{b.name} {c.thLevel}</th>
                     <th className="text-right py-2 px-3 font-semibold">{c.thLoss}</th>
                   </tr>
                 </thead>

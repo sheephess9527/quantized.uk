@@ -86,7 +86,7 @@ export default function BenchCharts() {
                 />
                 <YAxis
                   tick={{ fill: '#64748b', fontSize: 10 }}
-                  label={{ value: 'tok/s', angle: -90, position: 'insideLeft', fill: '#475569', fontSize: 11, offset: 8 }}
+                  label={{ value: 'tok/s', angle: -90, position: 'insideLeft', fill: '#8092aa', fontSize: 11, offset: 8 }}
                 />
                 <Tooltip
                   cursor={{ fill: 'rgba(255,255,255,0.03)' }}
@@ -139,14 +139,14 @@ export default function BenchCharts() {
                 <YAxis
                   yAxisId="left"
                   tick={{ fill: '#64748b', fontSize: 10 }}
-                  label={{ value: 'PPL', angle: -90, position: 'insideLeft', fill: '#475569', fontSize: 11 }}
+                  label={{ value: 'PPL', angle: -90, position: 'insideLeft', fill: '#8092aa', fontSize: 11 }}
                   domain={[5.5, 10]}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
                   tick={{ fill: '#64748b', fontSize: 10 }}
-                  label={{ value: 'Loss %', angle: 90, position: 'insideRight', fill: '#475569', fontSize: 11 }}
+                  label={{ value: 'Loss %', angle: 90, position: 'insideRight', fill: '#8092aa', fontSize: 11 }}
                   domain={[0, 55]}
                 />
                 <Tooltip
@@ -154,7 +154,9 @@ export default function BenchCharts() {
                   labelStyle={{ color: '#94a3b8', fontFamily: 'JetBrains Mono, monospace' }}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px', color: '#64748b' }} />
-                <Line yAxisId="left"  type="monotone" dataKey="ppl"  name="PPL (abs)"   stroke="#7c3aed" strokeWidth={2} dot={{ r: 3, fill: '#7c3aed' }} />
+                {/* violet-400, not violet-600: the legend text takes the series colour, and
+                    #7c3aed measured 3.47:1 against the card — under AA for an 11px label. */}
+                <Line yAxisId="left"  type="monotone" dataKey="ppl"  name="PPL (abs)"   stroke="#a78bfa" strokeWidth={2} dot={{ r: 3, fill: '#a78bfa' }} />
                 <Line yAxisId="right" type="monotone" dataKey="loss" name="PPL Loss (%)" stroke="#ef4444" strokeWidth={2} dot={{ r: 3, fill: '#ef4444' }} strokeDasharray="4 2" />
               </LineChart>
             </ResponsiveContainer>

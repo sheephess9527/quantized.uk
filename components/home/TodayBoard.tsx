@@ -52,7 +52,7 @@ export default function TodayBoard() {
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="font-mono text-xs text-slate-500">{item.detail[lang]}</span>
-                    <span className="text-slate-700">·</span>
+                    <span aria-hidden className="text-slate-700">·</span>
                     <span className="text-xs text-slate-600">{item.quantizer}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-1">

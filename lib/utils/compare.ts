@@ -1,5 +1,6 @@
 import { QuantModel } from '@/lib/data/types';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { contextLabel } from '@/lib/utils/context-label';
 
 export type Winner = 'a' | 'b' | 'tie';
 
@@ -103,11 +104,11 @@ export function compareModels(
     // "losing" for having more parameters.
     row('params', 'Parameters', '参数量', modelA.params, modelB.params, n => `${n.toFixed(1)}B`, 'spec'),
     row('context', 'Max Context', '最大上下文', modelA.contextLength, modelB.contextLength,
-      n => (n >= 1024 ? `${Math.round(n / 1024)}K` : String(n)), 'spec'),
+      n => contextLabel(n), 'spec'),
 
     // The row the context control actually drives.
-    row('estVram', `Estimated VRAM @ ${contextLen >= 1024 ? `${Math.round(contextLen / 1024)}K` : contextLen} ctx (Q4_K_M, batch 1)`,
-      `当前上下文下的预估显存 @ ${contextLen >= 1024 ? `${Math.round(contextLen / 1024)}K` : contextLen}（Q4_K_M，batch 1）`,
+    row('estVram', `Estimated VRAM @ ${contextLabel(contextLen)} ctx (Q4_K_M, batch 1)`,
+      `当前上下文下的预估显存 @ ${contextLabel(contextLen)}（Q4_K_M，batch 1）`,
       estA, estB, n => `${n.toFixed(2)} GB`, 'estimated', { lowerIsBetter: true }),
 
     // Published figures. Fixed by definition — they do not move with context.

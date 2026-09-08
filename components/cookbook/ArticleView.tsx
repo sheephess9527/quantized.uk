@@ -11,6 +11,7 @@ import ReadingProgress from '@/components/cookbook/ReadingProgress';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useActiveSection } from '@/lib/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
+import { readingMinutes } from '@/lib/utils/reading-time';
 
 const difficultyColors = {
   beginner:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -49,21 +50,40 @@ export default function ArticleView({ article }: Props) {
             {t.cookbook.categories[article.category]}
           </span>
           <span className="flex items-center gap-1 text-xs text-slate-500">
-            <Clock size={10} /> {article.readTime} {t.cookbook.readTime}
+            <Clock size={10} /> {readingMinutes(article, lang)} {t.cookbook.readTime}
           </span>
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-3">{title}</h1>
         <p className="text-slate-400 leading-relaxed">
           {lang === 'zh' ? article.descriptionZh : article.description}
         </p>
-        {article.verifiedAt && article.verifiedStack && (
-          <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-3 text-xs text-slate-400 max-w-2xl">
-            <p className="font-semibold text-cyan-300/90 mb-1">{t.cookbook.verified}</p>
+        {/*
+          Two different claims, and they used to be one badge. The stack line
+          says what the guide is *written against*; `verifiedAt` says the
+          commands were re-run on that date. A guide rewritten since its last
+          run keeps the first and must lose the second — so the panel renders
+          from `verifiedStack` alone and only adds the date, and the cyan
+          "verified" styling, when there is a date to stand behind.
+        */}
+        {article.verifiedStack && (
+          <div
+            className={cn(
+              'mt-4 rounded-xl border px-4 py-3 text-xs text-slate-400 max-w-2xl',
+              article.verifiedAt
+                ? 'border-cyan-500/20 bg-cyan-500/[0.06]'
+                : 'border-white/[0.08] bg-white/[0.02]',
+            )}
+          >
+            <p className={cn('font-semibold mb-1', article.verifiedAt ? 'text-cyan-300/90' : 'text-slate-400')}>
+              {article.verifiedAt ? t.cookbook.verified : t.cookbook.writtenAgainst}
+            </p>
             <p className="font-mono text-slate-300 leading-relaxed">
               {lang === 'zh' ? article.verifiedStack.zh : article.verifiedStack.en}
             </p>
             <p className="text-slate-600 mt-1.5">
-              {t.cookbook.verifiedOn.replace('{date}', article.verifiedAt)}
+              {article.verifiedAt
+                ? t.cookbook.verifiedOn.replace('{date}', article.verifiedAt)
+                : t.cookbook.notVerified}
             </p>
           </div>
         )}

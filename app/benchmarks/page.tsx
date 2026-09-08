@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useLanguage } from '@/lib/i18n/context';
 import { matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
+import BenchDataTables from '@/components/benchmarks/BenchDataTables';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 // Recharts is the heaviest chunk on this page; defer it so the header,
@@ -55,6 +56,7 @@ export default function BenchmarksPage() {
 
       <div className="space-y-10">
         <BenchCharts />
+        <BenchDataTables />
 
         {/* Matrix table */}
         <section>

@@ -38,7 +38,7 @@ export default function ArticleToc({ article, activeIndex = 0 }: Props) {
                   : 'text-slate-500 border-transparent hover:text-cyan-300 hover:border-cyan-500/40',
               )}
             >
-              <span className="text-slate-700 font-mono mr-1.5">{i + 1}.</span>
+              <span className="text-slate-600 font-mono mr-1.5">{i + 1}.</span>
               {lang === 'zh' ? section.headingZh : section.heading}
             </a>
           </li>

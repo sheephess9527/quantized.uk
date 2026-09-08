@@ -419,6 +419,64 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-08 (d) — Task book P1-04 / P1-05: guides that agree with the tools, and text you can read
+
+**P1-04 — the guides were contradicting the calculator.** The 8GB starter guide is the site's
+top-traffic page and every VRAM figure in it was roughly 2GB high: it listed Llama 3.1 8B Q4_K_M at
+"~7.7 GB @ 4K" where `calcVRAM` returns 5.64, and told 8GB readers that a 14B needed Q3 while
+citing a `Q3_K_M` level the index does not carry for that model. `mac-m3-pro-limits` was worse in
+the discouraging direction — "Qwen2.5 14B Q4_K_M (needs 36GB+)" against an actual 11.0GB, so an
+18GB reader was told to skip a model their machine runs comfortably — and it never mentioned the
+Metal wired-memory ceiling (~75% of RAM), which is the number that actually decides the answer on a
+Mac. `dual-gpu-70b-llamacpp` called 46GB-of-48 "tight but workable" (it is the amber band) and
+documented `--tensor-split 24,24` as if the arguments were gigabytes; they are proportions.
+
+Four guides rewritten from the index — 8GB, WSL2, AMD ROCm, dual-GPU, Mac M3 Pro — each to the
+structure the task book asks for: who it is for, prerequisites, the commands, **how to tell it
+actually ran on the GPU**, what to do when it does not fit, common problems, next steps. Corrections
+worth naming: "Ollama auto-picks a quant for your VRAM" is false (a bare tag is that tag's default
+build on any card; what Ollama picks is the layer split); installing an NVIDIA driver *inside* WSL
+breaks the passthrough the Windows driver provides; `GGML_HIP=ON`, because CMake ignores the
+retired `LLAMA_HIPBLAS` silently and hands you a CPU-only binary; `--host 127.0.0.1`, since
+`llama-server` has no authentication.
+
+**`readTime` was fiction on 22 of 23 guides** — 5 to 12 minutes claimed for bodies of 14 to 75
+words. The field is deleted from the type and from every entry; `readingMinutes()` derives it from
+the article, per language (200 wpm English, 400 cpm Chinese by CJK character count, code by the
+line). The honest numbers are mostly 1 minute, which is the actual state of the cookbook.
+
+**"Verified stack" split from "last verified".** They were one badge behind `verifiedAt &&
+verifiedStack`, so rewriting a guide forced a choice between dropping useful information and
+claiming a re-run that did not happen. The stack line now renders on its own as *Written against*
+with a plain "not re-run since it was last edited" note; the cyan verified styling and the date
+appear only when there is a date to stand behind. This environment has no GPU, so the five
+rewritten guides carry the first and not the second.
+
+**P1-05 — contrast, semantics, motion.** Tailwind's `slate-600` is 2.5:1 on `#0a0a0f`, and it was
+carrying most of the site's explanatory text: methodology lines, data sources, dates, the changelog
+disclaimer. `slate-500` was 4.0. Both are raised in `tailwind.config.ts` — one place rather than
+202 class names — to 4.60 and 5.92 against the glass surface, with `slate-700` at 3.11 for
+decorative use only; the four places it was carrying real text moved up. Two hardcoded colours
+failed as text and were split rather than flattened: formats and frameworks now carry a `textColor`
+beside `color`, so GGUF's violet stays saturated in the charts and legible as a label.
+
+Measured, not asserted: **3,175 text nodes across 11 pages, 0 below WCAG AA.**
+
+Also: filter chips, mode toggles, quant and framework chips gained `aria-pressed` (a violet
+background was the only "selected" signal); `:focus-visible` gives a real focus ring where
+components had set `outline-none`; `prefers-reduced-motion` now applies to everything rather than
+to the two hero classes it happened to name — verified under `reducedMotion: 'reduce'` that the h1
+still paints at full opacity, which is why the rule zeroes durations instead of using
+`animation: none` on a `both`-filled keyframe. The benchmark charts now ship a table of the same
+figures **in the static HTML** — the tables live outside `BenchCharts`, because that component is
+`ssr: false` and anything inside it exists only for readers already running the chart bundle.
+Context lengths go through one `contextLabel()` helper (three call sites had diverged; 6000 tokens
+rendered "5.859375K" in one and "6K" in another) and the preset chips carry the exact token count
+as their accessible name.
+
+No horizontal overflow at 390 / 768 / 1280 across nine pages, both languages.
+
+
 ### 2026-09-08 (c) — Task book P1-01: the homepage starts with your hardware
 
 The homepage led with "Quantize Everything." and then showed the site's inventory. Nothing on the

@@ -100,7 +100,7 @@ export default function ModelDetail({ model }: Props) {
                 {hfRepo}
               </a>
             )}
-            <span className="text-slate-700">· {d.hfFetched} {new Date(hfStats.fetchedAt).toLocaleDateString()}</span>
+            <span className="text-slate-600">· {d.hfFetched} {new Date(hfStats.fetchedAt).toLocaleDateString()}</span>
           </div>
         )}
 

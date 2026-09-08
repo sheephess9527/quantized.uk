@@ -17,6 +17,7 @@ export default function QuickAccess() {
       title: t.home.quickAccess.vramTitle,
       desc: t.home.quickAccess.vramDesc,
       accent: '#7c3aed',
+      accentText: '#a78bfa',
     },
     {
       href: '/tools/cli-gen/',
@@ -27,6 +28,7 @@ export default function QuickAccess() {
       title: t.home.quickAccess.cliTitle,
       desc: t.home.quickAccess.cliDesc,
       accent: '#06b6d4',
+      accentText: '#06b6d4',
     },
     {
       href: '/tools/format-wizard/',
@@ -37,6 +39,7 @@ export default function QuickAccess() {
       title: t.home.quickAccess.wizardTitle,
       desc: t.home.quickAccess.wizardDesc,
       accent: '#f97316',
+      accentText: '#f97316',
     },
     {
       href: '/tools/compare/',
@@ -47,6 +50,7 @@ export default function QuickAccess() {
       title: t.home.quickAccess.compareTitle,
       desc: t.home.quickAccess.compareDesc,
       accent: '#22c55e',
+      accentText: '#22c55e',
     },
   ];
 
@@ -73,7 +77,9 @@ export default function QuickAccess() {
                 <p className="text-xs text-slate-500 leading-relaxed">{tool.desc}</p>
               </div>
             </div>
-            <span className="text-xs font-medium" style={{ color: tool.accent }}>
+            {/* accentText, not accent: violet-600 is 3.3:1 as 12px text here. The
+                icon chip above keeps the brand colour, which is a fill. */}
+            <span className="text-xs font-medium" style={{ color: tool.accentText }}>
               {t.home.quickAccess.openTool}
             </span>
           </Link>

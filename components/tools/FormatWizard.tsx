@@ -41,7 +41,7 @@ export default function FormatWizard() {
     { label: w.stepHardware, content: (
       <div className="flex flex-wrap gap-2">
         {(['nvidia', 'amd', 'mac', 'cpu'] as HardwareType[]).map(h => (
-          <button key={h} onClick={() => setHardware(h)}
+          <button key={h} onClick={() => setHardware(h)} aria-pressed={hardware === h}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
               hardware === h ? 'bg-violet-500/15 text-violet-300 border-violet-500/30' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
             {w.hardware[h]}
@@ -52,7 +52,7 @@ export default function FormatWizard() {
     { label: w.stepPriority, content: (
       <div className="flex flex-wrap gap-2">
         {(['quality', 'speed', 'ease'] as Priority[]).map(p => (
-          <button key={p} onClick={() => setPriority(p)}
+          <button key={p} onClick={() => setPriority(p)} aria-pressed={priority === p}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
               priority === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
             {w.priority[p]}
@@ -63,7 +63,7 @@ export default function FormatWizard() {
     { label: w.stepUseCase, content: (
       <div className="flex flex-wrap gap-2">
         {(['chat', 'code', 'api'] as UseCase[]).map(u => (
-          <button key={u} onClick={() => setUseCase(u)}
+          <button key={u} onClick={() => setUseCase(u)} aria-pressed={useCase === u}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
               useCase === u ? 'bg-orange-500/15 text-orange-300 border-orange-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
             {w.useCase[u]}

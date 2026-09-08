@@ -1,7 +1,17 @@
+/**
+ * `color` is the format's brand colour — bars, fills, badge backgrounds.
+ * `textColor` is the variant that clears 4.5:1 on this site's background, for
+ * anywhere the colour is applied to *text*. GGUF's `#7c3aed` measured 3.30:1
+ * as a label; the other four already passed and their `textColor` is simply
+ * the same value. Keeping both means the charts do not have to be washed out
+ * to make the labels legible.
+ */
 export interface QuantFormat {
   id: string;
   name: string;
   color: string;
+  /** Accessible-on-dark variant of `color`, for text. */
+  textColor: string;
   bgClass: string;
   textClass: string;
   borderClass: string;
@@ -20,6 +30,7 @@ export const quantFormats: QuantFormat[] = [
     id: 'gguf',
     name: 'GGUF',
     color: '#7c3aed',
+    textColor: '#a78bfa',
     bgClass: 'bg-violet-500/10',
     textClass: 'text-violet-300',
     borderClass: 'border-violet-500/20',
@@ -39,6 +50,7 @@ export const quantFormats: QuantFormat[] = [
     id: 'awq',
     name: 'AWQ',
     color: '#06b6d4',
+    textColor: '#06b6d4',
     bgClass: 'bg-cyan-500/10',
     textClass: 'text-cyan-300',
     borderClass: 'border-cyan-500/20',
@@ -58,6 +70,7 @@ export const quantFormats: QuantFormat[] = [
     id: 'exl2',
     name: 'EXL2',
     color: '#f97316',
+    textColor: '#f97316',
     bgClass: 'bg-orange-500/10',
     textClass: 'text-orange-300',
     borderClass: 'border-orange-500/20',
@@ -77,6 +90,7 @@ export const quantFormats: QuantFormat[] = [
     id: 'gptq',
     name: 'GPTQ',
     color: '#22c55e',
+    textColor: '#22c55e',
     bgClass: 'bg-emerald-500/10',
     textClass: 'text-emerald-300',
     borderClass: 'border-emerald-500/20',
@@ -96,6 +110,7 @@ export const quantFormats: QuantFormat[] = [
     id: 'hqq',
     name: 'HQQ',
     color: '#eab308',
+    textColor: '#eab308',
     bgClass: 'bg-yellow-500/10',
     textClass: 'text-yellow-300',
     borderClass: 'border-yellow-500/20',

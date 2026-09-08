@@ -39,8 +39,8 @@ export default function FormatRadar() {
             className="badge text-xs font-mono font-medium transition-all duration-150"
             style={
               active[fmt.name]
-                ? { background: `${fmt.color}20`, color: fmt.color, borderColor: `${fmt.color}35` }
-                : { background: 'transparent', color: '#475569', borderColor: 'rgba(255,255,255,0.06)' }
+                ? { background: `${fmt.color}20`, color: fmt.textColor, borderColor: `${fmt.color}35` }
+                : { background: 'transparent', color: '#8092aa', borderColor: 'rgba(255,255,255,0.06)' }
             }
           >
             {fmt.name}

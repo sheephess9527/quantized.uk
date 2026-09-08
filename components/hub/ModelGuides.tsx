@@ -36,7 +36,7 @@ export default function ModelGuides({ guides }: { guides: GuideLink[] }) {
                 </span>
                 <span className="flex items-center gap-2 text-xs text-slate-600 mt-1">
                   <span className="inline-flex items-center gap-1">
-                    <Clock size={10} /> {guide.readTime} min
+                    <Clock size={10} /> {guide.readMin[lang]} {t.cookbook.readTime}
                   </span>
                   <span>·</span>
                   <span>{g.difficulty[guide.difficulty as keyof typeof g.difficulty] ?? guide.difficulty}</span>

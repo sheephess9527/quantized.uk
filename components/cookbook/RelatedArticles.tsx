@@ -5,6 +5,7 @@ import { Clock, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { getRelatedArticles } from '@/lib/utils/related';
 import { cn } from '@/lib/utils/cn';
+import { readingMinutes } from '@/lib/utils/reading-time';
 
 const difficultyColors = {
   beginner: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -44,7 +45,7 @@ export default function RelatedArticles({ articleId }: Props) {
                   </span>
                   <span className="flex items-center gap-1 text-xs text-slate-600">
                     <Clock size={10} />
-                    {article.readTime} {t.cookbook.readTime}
+                    {readingMinutes(article, lang)} {t.cookbook.readTime}
                   </span>
                 </div>
                 <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors line-clamp-2">

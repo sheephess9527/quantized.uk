@@ -9,6 +9,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
+import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
@@ -208,6 +209,7 @@ export default function VRAMCalculator() {
             <button
               key={m}
               onClick={() => setMode(m)}
+              aria-pressed={mode === m}
               className={cn(
                 'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
                 mode === m
@@ -291,6 +293,7 @@ export default function VRAMCalculator() {
                     <button
                       key={g}
                       onClick={() => { setFormatGroup(g); setSelectedQuant(quantGroups[g][0]); }}
+                      aria-pressed={formatGroup === g}
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all duration-150',
                         formatGroup === g
@@ -307,6 +310,7 @@ export default function VRAMCalculator() {
                     <button
                       key={q}
                       onClick={() => setSelectedQuant(q)}
+                      aria-pressed={selectedQuant === q}
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                         selectedQuant === q
@@ -380,7 +384,10 @@ export default function VRAMCalculator() {
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-medium text-slate-400">{t.calc.context}</label>
               <span className="font-mono text-xs text-violet-300">
-                {contextLen >= 1024 ? `${contextLen / 1024}K` : contextLen}
+                {contextLabel(contextLen)}
+                <span className="ml-1.5 text-[10px] font-normal text-slate-500">
+                  {contextLen.toLocaleString('en-US')} {t.calc.tokens}
+                </span>
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -388,6 +395,11 @@ export default function VRAMCalculator() {
                 <button
                   key={p}
                   onClick={() => setContextLen(p)}
+                  aria-pressed={contextLen === p}
+                  // The chip is a rounded label; the exact token count is what
+                  // the number actually means, so it is the accessible name.
+                  aria-label={exactLabel(p)}
+                  title={exactLabel(p)}
                   className={cn(
                     'px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                     contextLen === p
@@ -395,8 +407,7 @@ export default function VRAMCalculator() {
                       : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
                   )}
                 >
-                  {/* 1024, not 1000: these are token counts, and /1000 rendered "2.048K" */}
-                  {p >= 1024 ? `${p / 1024}K` : p}
+                  {contextLabel(p)}
                 </button>
               ))}
             </div>
@@ -414,7 +425,7 @@ export default function VRAMCalculator() {
               onChange={e => setBatchSize(Number(e.target.value))}
               className="w-full accent-violet-500 h-1.5 rounded-full"
             />
-            <div className="flex justify-between text-xs text-slate-700 mt-1">
+            <div className="flex justify-between text-xs text-slate-600 mt-1">
               <span>1</span><span>4</span><span>8</span><span>16</span>
             </div>
           </div>

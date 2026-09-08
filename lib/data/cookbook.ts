@@ -9,7 +9,6 @@ export interface Article {
   descriptionZh: string;
   category: 'edge' | 'server' | 'docker' | 'mac';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  readTime: number;
   tags: string[];
   publishedAt: string;
   /** Last day commands/stack were re-checked (YYYY-MM-DD) */
@@ -44,7 +43,6 @@ const baseArticles: Article[] = [
     descriptionZh: '使用 llama.cpp 服务模式在低价 Linux VPS 上搭建私有 LLM API 的完整教程。',
     category: 'server',
     difficulty: 'beginner',
-    readTime: 8,
     tags: ['llama.cpp', 'VPS', 'Linux', 'GGUF', 'API'],
     publishedAt: '2025-06-10',
     verifiedAt: '2026-07-22',
@@ -91,7 +89,6 @@ const baseArticles: Article[] = [
     descriptionZh: '用 Ollama 榨干苹果芯片性能，运行多个模型，搭建 OpenAI 兼容 API，调优 Metal GPU 层数。',
     category: 'mac',
     difficulty: 'beginner',
-    readTime: 6,
     tags: ['Ollama', 'Mac', 'Apple Silicon', 'Metal', 'GGUF'],
     publishedAt: '2025-06-14',
     verifiedAt: '2026-07-22',
@@ -131,7 +128,6 @@ const baseArticles: Article[] = [
     descriptionZh: '用 vLLM 的连续批处理技术，在单张 RTX 4090 上提供生产级多模型 API 服务。',
     category: 'server',
     difficulty: 'intermediate',
-    readTime: 12,
     tags: ['vLLM', 'AWQ', 'NVIDIA', 'RTX 4090', 'API', 'Docker'],
     publishedAt: '2025-06-18',
     verifiedAt: '2026-07-22',
@@ -171,7 +167,6 @@ const baseArticles: Article[] = [
     descriptionZh: '一键部署的 Docker Compose 方案，给你一个本地 ChatGPT 体验。',
     category: 'docker',
     difficulty: 'beginner',
-    readTime: 5,
     tags: ['Docker', 'Ollama', 'Open WebUI', 'Compose', 'GGUF'],
     publishedAt: '2025-06-20',
     verifiedAt: '2026-07-22',

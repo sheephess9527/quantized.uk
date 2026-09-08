@@ -7,6 +7,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { articles } from '@/lib/data/cookbook';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { cn } from '@/lib/utils/cn';
+import { readingMinutes } from '@/lib/utils/reading-time';
 
 const categoryIcons: Record<string, React.ElementType> = {
   all:    Layers,
@@ -84,7 +85,7 @@ export default function CookbookPage() {
               </div>
               <div className="flex items-center gap-1 text-xs text-slate-600 shrink-0">
                 <Clock size={10} />
-                {article.readTime} {t.cookbook.readTime}
+                {readingMinutes(article, lang)} {t.cookbook.readTime}
               </div>
             </div>
 

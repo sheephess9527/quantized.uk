@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-08',
+    en: 'Guides and legibility. The 8GB starter guide was overstating VRAM by about 2GB against this site’s own calculator and told readers a 14B "needs 36GB+" when it needs 11 — those and the Mac and dual-GPU guides are rewritten from the index, with prerequisites, a way to check the model really ran on the GPU, and what to do when it does not fit. Reading times are now derived from the article instead of typed by hand (22 of 23 were fiction), a guide rewritten since its last real run says "written against" rather than claiming a verification date, and every text colour on the site now clears the WCAG AA contrast floor — 3,175 text nodes checked, none failing. Charts carry a table of the same figures in the static HTML, filter chips announce whether they are selected, and context lengths print the exact token count',
+    zh: '教程与可读性。8GB 入门指南的显存数字比本站计算器高出约 2GB，还告诉读者 14B「需要 36GB 以上」（实际 11GB）—— 该指南连同 Mac 与双卡指南已按索引重写，补上前置条件、如何确认模型真的跑在 GPU 上，以及装不下时该怎么办。阅读时长改为从正文推算而不再手写（23 篇里有 22 篇是虚构的）；最近修改后未重新实机运行的指南改为标注「面向的技术栈」，不再声称验证日期；站内所有文字颜色现已达到 WCAG AA 对比度下限 —— 实测 3,175 个文本节点，无一不达标。图表在静态 HTML 中附带同数据的表格，筛选按钮会播报是否选中，上下文长度会标出精确 token 数',
+  },
+  {
+    date: '2026-09-08',
     en: 'The homepage now starts with your hardware. Pick your card and what you want it for, and it answers with the largest model that fits, one that leaves room for longer context, and the fastest measured — each with the memory maths and a link into the calculator. Popular cards, a sample of the real-hardware benchmark rows, and a place to report a wrong number sit below it; the format heat index and radar moved to the formats page, and the full changelog is still here, collapsed',
     zh: '首页现在从你的硬件开始。选好显卡和用途，它会给出装得下的最大模型、留有余量的一个，以及实测最快的一个 —— 每个都附显存算法和进入计算器的链接。下方是常见显卡、真机基准的样本行，以及反馈数字错误的入口；格式热度与雷达图移到了格式页，完整更新日志仍在本页，默认折叠',
   },

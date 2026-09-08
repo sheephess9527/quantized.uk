@@ -57,7 +57,7 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
   return (
     <div className="mb-4">
       <p className="text-xs text-slate-600 mb-2">
-        {q.label} <span className="text-slate-700">· {q.fitLabel}</span>
+        {q.label} <span className="text-slate-600">· {q.fitLabel}</span>
       </p>
       <div className="flex flex-wrap gap-2">
         {chipIds.map(id => {
