@@ -33,8 +33,12 @@ export default function WeeklyUpdates() {
           >
             {w.viewHub} <ArrowRight size={12} />
           </Link>
+          {/* The head advertises /zh/feed.xml on the Chinese tree; this visible
+              link used to send the same reader to the English feed. It is not a
+              `LocalLink` because the leak gate skips asset-looking paths, so the
+              language is resolved explicitly here. */}
           <a
-            href="/feed.xml"
+            href={lang === 'zh' ? '/zh/feed.xml' : '/feed.xml'}
             className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-orange-400 py-2.5 -my-2.5 min-h-[44px]"
           >
             <Rss size={12} /> {w.rss}

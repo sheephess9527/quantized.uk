@@ -145,10 +145,15 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const repoId = hfRepo ?? '<hf-gguf-repo-id>';
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
 
+  // Loopback by default. `--host 0.0.0.0` publishes an unauthenticated
+  // inference server to every interface on the machine, which is not what
+  // "run it on my laptop" should mean. The Docker/Compose paths below still
+  // bind 0.0.0.0 because inside a container that *is* the local interface and
+  // the port mapping is what controls exposure.
   const serverCmd = [
     `./build/bin/llama-server \\`,
     `  -m ./models/${modelFile} \\`,
-    `  --host 0.0.0.0 --port ${port} \\`,
+    `  --host 127.0.0.1 --port ${port} \\`,
     `  -ngl ${gpuLayers} \\`,
     `  -c ${contextLen} \\`,
     `  -t ${threads}${apiKeyFlag}`,
@@ -201,17 +206,23 @@ services:
   // before the b4000-series this site targets. The old names are silently
   // ignored by CMake, which yields a CPU-only build that "works" and is 20×
   // slower — the worst possible failure mode for a copy-paste command.
-  const downloadCmd = `# Download model\nhuggingface-cli download ${repoId} --include "${modelFile}" --local-dir ./models`;
+  const downloadCmd = [
+    `# Download the model (installs the CLI the next line needs)`,
+    `pip install -U "huggingface_hub[cli]"`,
+    `huggingface-cli download ${repoId} --include "${modelFile}" --local-dir ./models`,
+  ].join('\n');
   const installCmd = env === 'mac'
-    ? `# Install on macOS\nbrew install cmake\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`
-    : `# Install on Linux (with CUDA)\nsudo apt install build-essential cmake\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
+    ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`
+    : `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\nsudo apt install -y build-essential cmake git\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
 
   return {
     command: `${installCmd}\n${serverCmd}`,
     notes: [
       `-ngl ${gpuLayers}: number of layers offloaded to GPU (set to 99 for full GPU)`,
       `-c ${contextLen}: context length in tokens`,
-      `API endpoint: http://localhost:${port}/v1/chat/completions (OpenAI-compatible)`,
+      `API endpoint: http://127.0.0.1:${port}/v1/chat/completions (OpenAI-compatible)`,
+      `Health check once it starts: curl -s http://127.0.0.1:${port}/health — expect {"status":"ok"}`,
+      'To reach it from another machine, replace 127.0.0.1 with 0.0.0.0 and put it behind auth first',
       'Large models ship sharded (…-00001-of-00002.gguf) — point -m at the first shard',
       ...(hfRepo
         ? []

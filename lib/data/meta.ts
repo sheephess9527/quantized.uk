@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-01';
+export const dataLastUpdated = '2026-09-08';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,21 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-08',
+    en: 'Numbers now say where they come from. The compare tool had a "Q4_K_M VRAM" row that never moved when you changed the context length, beside copy claiming it did — it now shows an estimated row that tracks the control and a published row that is fixed, each labelled. The 6:1 "8B wins" scoreboard is gone: it counted memory twice, counted how much of each model this site happens to index, and treated fewer parameters as an advantage',
+    zh: '数字现在会交代自己的来源。对比工具此前有一行 "Q4_K_M 显存" 在切换上下文时纹丝不动，而旁边的说明却声称它会随之变化 —— 现在拆成会跟随控件的预估行和固定的已发布行，各自标注。6:1 "8B 胜出" 的比分已移除：它把内存算了两次、把本站收录了多少变体也算进去，还把参数更少当成优势',
+  },
+  {
+    date: '2026-09-08',
+    en: 'Model cards stopped combining configurations. The stats row showed the smallest VRAM of any quant beside the fastest speed of another, as if both were available at once; it now reports one named configuration (Q4_K_M · RTX 4090 · batch 1). The GPU chips and hardware pages still count differently — 60 versus 51 on a 4060 Ti 16G — but both now share one function and each says which rule it used',
+    zh: '模型卡片不再拼接不同配置。统计行此前把某个档位的最低显存与另一个档位的最快速度并排展示，仿佛两者可以同时获得；现在统一为一套具名配置（Q4_K_M · RTX 4090 · batch 1）。显卡快捷筛选与硬件页的计数仍然不同 —— 4060 Ti 16G 上是 60 与 51 —— 但两者现在共用同一个函数，且各自说明了所用规则',
+  },
+  {
+    date: '2026-09-08',
+    en: 'Correctness fixes in the generated commands: the local llama.cpp server now binds 127.0.0.1 instead of publishing an unauthenticated endpoint on every interface, the download step installs the CLI it uses, and the claim that vLLM is CUDA-only was simply wrong — it ships official ROCm builds. The Chinese homepage no longer carries English text in Editor\'s Picks, and its RSS link points at the Chinese feed the page header already advertised',
+    zh: '生成命令的修正：本机 llama.cpp 服务改为绑定 127.0.0.1，不再把未鉴权的端点暴露在所有网卡上；下载步骤会先安装它所需的 CLI；此前"vLLM 仅支持 CUDA"的说法是错的 —— 它提供官方 ROCm 构建。中文首页的编辑推荐不再夹带英文，其 RSS 链接也指向页面头部早已声明的中文订阅源',
+  },
   {
     date: '2026-09-01',
     en: 'New: format comparison pages. GGUF vs AWQ, GGUF vs EXL2 and four more, each comparing hardware support, runtime and adoption — and then listing the models that publish weights in both formats, where the two rows describe the same model and the comparison stops being editorial. Where no model ships both, the page says so rather than implying otherwise',

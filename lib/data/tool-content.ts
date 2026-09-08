@@ -36,8 +36,8 @@ export const vramCalcContent: ToolContent = {
     {
       heading: { en: 'How the estimate is calculated', zh: '这个估算是怎么算出来的' },
       body: {
-        en: 'Three terms are added. **Model weights** are `params × bpw ÷ 8`, converted to GiB, plus 2% for embedding and norm tensors that most quantizers keep at higher precision. **KV cache** is `2 (K and V) × layers × kv_heads × head_dim × context × batch × 2 bytes`, the last factor being fp16 cache. **Activation buffer** is a flat 10% of the first two, covering the transient tensors an inference runtime allocates per forward pass. When you pick an indexed model the calculator uses that model\'s own measured bits-per-weight rather than the generic per-level table, because the two can differ sharply — GPT-OSS ships mostly-MXFP4 weights, so its Q8_0 is 5.10 bpw, not 8.5.',
-        zh: '三项相加。**模型权重** = `参数量 × bpw ÷ 8`，换算为 GiB，再加 2%，用于覆盖多数量化器保持较高精度的 embedding 与 norm 张量。**KV 缓存** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 2 字节`，最后一项是 fp16 缓存。**激活缓冲**取前两项之和的 10%，对应推理运行时每次前向分配的临时张量。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
+        en: 'Three terms are added. **Model weights** are `params × bpw ÷ 8`, plus 2% for embedding and norm tensors that most quantizers keep at higher precision. **KV cache** is `2 (K and V) × layers × kv_heads × head_dim × context × batch × 2 bytes`, the last factor being fp16 cache. **Activation buffer** is a flat 10% of the first two, covering the transient tensors an inference runtime allocates per forward pass. **Units:** every figure is computed and displayed in binary gigabytes (GiB, 1024³ bytes) but labelled "GB", matching how GPU vendors and `nvidia-smi` label VRAM. There is no conversion between the two anywhere in the tool. When you pick an indexed model the calculator uses that model\'s own measured bits-per-weight rather than the generic per-level table, because the two can differ sharply — GPT-OSS ships mostly-MXFP4 weights, so its Q8_0 is 5.10 bpw, not 8.5.',
+        zh: '三项相加。**模型权重** = `参数量 × bpw ÷ 8`，再加 2%，用于覆盖多数量化器保持较高精度的 embedding 与 norm 张量。**KV 缓存** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 2 字节`，最后一项是 fp16 缓存。**激活缓冲**取前两项之和的 10%，对应推理运行时每次前向分配的临时张量。**单位：**所有数字都以二进制 GB（GiB，1024³ 字节）计算并显示，但标注为 "GB" —— 与显卡厂商和 `nvidia-smi` 标注显存的方式一致。工具内部不存在两种单位之间的换算。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
       },
     },
     {
@@ -147,8 +147,8 @@ export const cliGenContent: ToolContent = {
     {
       q: { en: 'Can I run these commands on AMD or Apple silicon?', zh: '这些命令能在 AMD 或苹果芯片上跑吗？' },
       a: {
-        en: 'The llama.cpp and Ollama paths, yes — pick the matching environment and the build flags change to Metal or ROCm. vLLM and ExLlamaV2 are CUDA-only; the generator labels them as such rather than offering a command that cannot run.',
-        zh: 'llama.cpp 和 Ollama 可以 —— 选择对应环境后编译参数会切换为 Metal 或 ROCm。vLLM 与 ExLlamaV2 仅支持 CUDA；生成器会明确标注，而不是给出一条跑不起来的命令。',
+        en: 'The llama.cpp and Ollama paths, yes — pick the matching environment and the build flags change to Metal or ROCm. **ExLlamaV2 is CUDA-only.** vLLM is not: it ships official ROCm builds, so it runs on supported Radeon and Instinct cards, though kernel coverage for AWQ and GPTQ there is narrower than on CUDA and moves between releases — check the vLLM installation docs for your card before committing to it. Neither runs on Apple silicon.',
+        zh: 'llama.cpp 和 Ollama 可以 —— 选择对应环境后编译参数会切换为 Metal 或 ROCm。**ExLlamaV2 仅支持 CUDA。** vLLM 并非如此：它提供官方 ROCm 构建，可在受支持的 Radeon 与 Instinct 卡上运行，只是 AWQ/GPTQ 算子在该平台的覆盖比 CUDA 窄且随版本变动 —— 选定前请查阅 vLLM 安装文档确认你的卡。两者都不支持苹果芯片。',
       },
     },
   ],
@@ -223,8 +223,8 @@ export const compareContent: ToolContent = {
     {
       heading: { en: 'What the columns mean', zh: '各列的含义' },
       body: {
-        en: 'VRAM is computed at the context length you set, not at a fixed default — which matters, because two models can swap places as context grows if their KV cache shapes differ. Speed is tokens per second on an RTX 4090 at batch 1. Quality loss is perplexity increase against the unquantized weights, so lower is better and the absolute value is only comparable within a model family.',
-        zh: '显存按你设定的上下文长度计算，而非固定默认值 —— 这一点很重要：如果两个模型的 KV 缓存形状不同，随着上下文增长，它们的排序可能对调。速度是 RTX 4090、batch=1 下的每秒 token 数。质量损失是相对未量化权重的困惑度上升，因此越低越好，且绝对值只在同一模型家族内可比。',
+        en: 'Every row is labelled with how its number was arrived at. **Estimated** rows are recomputed by the same function the calculator uses, at the context length you set — two models can swap places as context grows if their KV cache shapes differ. **Published** rows are fixed figures from the release and do not move with the controls. **Spec** rows are properties of the model. Speed is tokens per second on an RTX 4090 at batch 1. Quality loss is perplexity increase against the unquantized weights, so lower is better, and the absolute value is only comparable within one model.',
+        zh: '每一行都标注了数字的来源。**预估**行由计算器所用的同一个函数、按你设定的上下文重新计算 —— 如果两个模型的 KV 缓存形状不同，随着上下文增长它们的排序可能对调。**已发布**行是发布方给出的固定数字，不随控件变化。**规格**行是模型自身属性。速度是 RTX 4090、batch=1 下的每秒 token 数。质量损失是相对未量化权重的困惑度上升，越低越好，且绝对值只在同一模型内部可比。',
       },
     },
     {

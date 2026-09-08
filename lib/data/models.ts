@@ -224,12 +224,18 @@ const baseModels: QuantModel[] = [
 
 export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8];
 
-/** Editor's Picks — refresh with each data cadence */
+/**
+ * Editor's Picks — refresh with each data cadence.
+ *
+ * `detail` is reader-facing prose, so it is `{ en, zh }` like every other such
+ * field. It used to be a bare string, which put "vision on 12GB" in the middle
+ * of the Chinese homepage.
+ */
 export const todayFeed = [
-  { id: 1, type: 'new' as const, modelId: 'qwen3-vl-8b', format: 'GGUF', detail: 'Q4_K_M · 5.9 GB · vision on 12GB', quantizer: 'bartowski', hardware: 'RTX 3060 12G' },
-  { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: 'Q4_K_M · 14.3 GB · [THINK] reasoning', quantizer: 'unsloth', hardware: 'RTX 4070 Ti 16G' },
-  { id: 3, type: 'new' as const, modelId: 'seed-oss-36b', format: 'GGUF', detail: 'Q4_K_M · 21.8 GB · 512K ctx', quantizer: 'unsloth', hardware: '2× RTX 3090' },
-  { id: 4, type: 'new' as const, modelId: 'qwen3-vl-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · 3B active vision', quantizer: 'bartowski', hardware: 'M3 Max / RTX 4090' },
-  { id: 5, type: 'hot' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: 'MXFP4 · 12.8 GB · native 4-bit', quantizer: 'openai', hardware: 'RTX 4070 Ti 16G' },
-  { id: 6, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: 'Q4_K_M · 19 GB · agentic coder', quantizer: 'bartowski', hardware: 'RTX 4090' },
+  { id: 1, type: 'new' as const, modelId: 'qwen3-vl-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.9 GB · vision on a 12GB card', zh: 'Q4_K_M · 5.9 GB · 12GB 显卡上的多模态' }, quantizer: 'bartowski', hardware: 'RTX 3060 12G' },
+  { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: { en: 'Q4_K_M · 14.3 GB · [THINK] reasoning', zh: 'Q4_K_M · 14.3 GB · [THINK] 推理模式' }, quantizer: 'unsloth', hardware: 'RTX 4070 Ti 16G' },
+  { id: 3, type: 'new' as const, modelId: 'seed-oss-36b', format: 'GGUF', detail: { en: 'Q4_K_M · 21.8 GB · 512K context', zh: 'Q4_K_M · 21.8 GB · 512K 上下文' }, quantizer: 'unsloth', hardware: '2× RTX 3090' },
+  { id: 4, type: 'new' as const, modelId: 'qwen3-vl-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · 3B active, vision', zh: 'Q4_K_M · 19 GB · 激活 3B，多模态' }, quantizer: 'bartowski', hardware: 'M3 Max / RTX 4090' },
+  { id: 5, type: 'hot' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: { en: 'MXFP4 · 12.8 GB · native 4-bit', zh: 'MXFP4 · 12.8 GB · 原生 4-bit' }, quantizer: 'openai', hardware: 'RTX 4070 Ti 16G' },
+  { id: 6, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · agentic coder', zh: 'Q4_K_M · 19 GB · agent 编码模型' }, quantizer: 'bartowski', hardware: 'RTX 4090' },
 ];

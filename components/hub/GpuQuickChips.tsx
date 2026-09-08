@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
-import { getRecommendations } from '@/lib/utils/recommend';
+import { countModelsFitting } from '@/lib/utils/gpu-page';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { cn } from '@/lib/utils/cn';
 
@@ -18,11 +18,16 @@ const FEATURED_GPU_IDS = [
   'm3-16',
 ] as const;
 
+/**
+ * Counts models that load at all — green *or* amber. The hardware pages count
+ * only comfortable fits, which is why the two numbers differ (60 vs 51 on a
+ * 4060 Ti 16G). Both come from `countModelsFitting` now, and each surface says
+ * which rule it used rather than presenting a bare number.
+ */
 function countModelsForGpu(gpuId: string): number {
   const gpu = gpuDatabase.find(g => g.id === gpuId);
   if (!gpu) return 0;
-  const recs = getRecommendations(gpu.vram, 4096, 1, 'quality', true);
-  return new Set(recs.map(r => r.model.id)).size;
+  return countModelsFitting(gpu, 'tight');
 }
 
 interface Props {
@@ -51,7 +56,9 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
 
   return (
     <div className="mb-4">
-      <p className="text-xs text-slate-600 mb-2">{q.label}</p>
+      <p className="text-xs text-slate-600 mb-2">
+        {q.label} <span className="text-slate-700">· {q.fitLabel}</span>
+      </p>
       <div className="flex flex-wrap gap-2">
         {chipIds.map(id => {
           const gpu = gpuDatabase.find(g => g.id === id);
@@ -94,6 +101,7 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
           {q.activeHint
             .replace('{count}', String(counts[selectedGpuId] ?? 0))
             .replace('{total}', String(models.length))}
+          <span className="block text-slate-600 mt-1">{q.fitExplain}</span>
         </p>
       )}
     </div>

@@ -30,11 +30,21 @@ interface Props {
 export default function ModelCard({ model, lang }: Props) {
   const { t } = useLanguage();
   const uniqueFormats = Array.from(new Set(model.quants.map(q => q.format)));
-  const minVram = Math.min(...model.quants.map(q => q.vramGB));
-  const maxSpeed = Math.max(...model.quants.filter(q => q.speedRTX4090).map(q => q.speedRTX4090 ?? 0));
-  const bestQuant = model.quants.reduce((best, q) =>
-    !best || (q.pplLossPercent ?? Infinity) < (best.pplLossPercent ?? Infinity) ? q : best,
-  );
+
+  /**
+   * One configuration, named on the card.
+   *
+   * The stats used to be `min(vramGB)` beside `max(speed)` beside the
+   * lowest-perplexity level — three different quantizations presented as if a
+   * reader could have all three at once (3.2 GB *and* 235 tok/s *and* Q8_0
+   * quality). They now all come from a single variant, and the card says which.
+   * Q4_K_M where it exists: every indexed model ships it, and it is the level
+   * most readers actually run.
+   */
+  const refQuant =
+    model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ??
+    model.quants.reduce((best, q) => (q.pplLossPercent < best.pplLossPercent ? q : best), model.quants[0]);
+  const bestQuant = refQuant;
 
   return (
     <Link
@@ -71,11 +81,15 @@ export default function ModelCard({ model, lang }: Props) {
         </p>
       </div>
 
-      {/* Stats row */}
+      {/* Stats row — one configuration, named directly above it. */}
+      <p className="text-[10px] text-slate-600 font-mono -mb-2">
+        {t.hub.model.refConfig
+          .replace('{level}', refQuant.format === 'GGUF' ? refQuant.level : `${refQuant.format} ${refQuant.level}`)}
+      </p>
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-          <p className="text-xs font-bold text-violet-300">{minVram.toFixed(1)} GB</p>
-          <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.minVram}</p>
+          <p className="text-xs font-bold text-violet-300">{refQuant.vramGB.toFixed(1)} GB</p>
+          <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.vramAtRef}</p>
         </div>
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">
           <p className="text-xs font-bold text-cyan-300">
@@ -84,9 +98,9 @@ export default function ModelCard({ model, lang }: Props) {
           <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.context}</p>
         </div>
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-          {maxSpeed > 0 ? (
+          {refQuant.speedRTX4090 ? (
             <>
-              <p className="text-xs font-bold text-orange-300">{maxSpeed}</p>
+              <p className="text-xs font-bold text-orange-300">{refQuant.speedRTX4090}</p>
               <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.speed}</p>
             </>
           ) : (

@@ -45,7 +45,7 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
       reasons.push({ en: 'ExLlamaV2 is CUDA-only — EXL2 will not run on ROCm at all', zh: 'ExLlamaV2 仅支持 CUDA —— EXL2 在 ROCm 上完全无法运行' });
     } else {
       score -= 35;
-      reasons.push({ en: 'AWQ/GPTQ/HQQ kernels are CUDA-first; ROCm support is partial and version-sensitive', zh: 'AWQ/GPTQ/HQQ 的算子以 CUDA 为先，ROCm 支持不完整且对版本敏感' });
+      reasons.push({ en: 'vLLM does support ROCm, but AWQ/GPTQ kernel coverage on Radeon is partial and version-sensitive — GGUF is the safer default here', zh: 'vLLM 确实支持 ROCm，但 AWQ/GPTQ 算子在 Radeon 上的覆盖不完整且对版本敏感 —— 此处 GGUF 是更稳妥的默认选择' });
     }
   }
 
@@ -83,8 +83,11 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
  */
 function recommendFramework(format: string, input: WizardInput): string {
   if (format === 'EXL2') return 'ExLlamaV2 (CUDA only)';
-  if (format === 'AWQ') return input.useCase === 'api' ? 'vLLM' : 'vLLM (CUDA only)';
-  if (format === 'GPTQ') return 'vLLM / AutoGPTQ (CUDA only)';
+  // vLLM ships official ROCm support, so "CUDA only" was simply wrong.
+  // The scoring below still prefers GGUF on Radeon because AWQ kernel coverage
+  // there is partial and version-sensitive — a different claim from "impossible".
+  if (format === 'AWQ') return 'vLLM (CUDA · ROCm)';
+  if (format === 'GPTQ') return 'vLLM / AutoGPTQ (CUDA · partial ROCm)';
   if (format === 'HQQ') return 'transformers + HQQ (CUDA only)';
 
   // GGUF — the one format that runs everywhere.

@@ -142,6 +142,21 @@ repos are per-model), emit a visible `<placeholder>`: an obvious placeholder bea
 wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`; CMake
 ignores the old names and silently produces a CPU-only build.
 
+**A displayed number must state its basis, and one row must not mix two.** The compare tool had a
+VRAM row fed by a fixed published figure sitting under copy that promised it tracked the context
+control — so the control appeared broken. Rows now carry `basis: 'estimated' | 'published' | 'spec'`
+(`lib/utils/compare.ts`). Same rule for cards: `min(vramGB)` beside `max(speed)` describes two
+different quantizations and is not a configuration anyone can run.
+
+**Never aggregate incomparable rows into a verdict.** The compare page counted row wins and declared
+"8B wins 6:1" — memory counted twice, this site's own indexing counted twice, fewer parameters
+treated as an advantage. If the site cannot run task benchmarks, it cannot say which model is
+better; it can only show each axis with its conditions.
+
+**Two counts of "what fits" are allowed; two unexplained counts are not.** `countModelsFitting(gpu,
+level)` in `gpu-page.ts` is the single implementation — `'comfortable'` (≤88%, the green verdict)
+and `'tight'` (≤105%). Every surface must name the level it is showing.
+
 **A derived number must name its basis.** The homepage stat bar sits beside three inventory counts,
 so anything computed has to say what it is computed over. `98.4% avg accuracy` averaged
 `100 - min(pplLoss)` across models — silently mixing Q4_K_M for 31 models, Q8_0 for 18, Q5_K_M for
@@ -302,6 +317,8 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
+| 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
 | 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |
 | 2026-09-01 | **Calculator answers, not lists** — 43 verdict bars → one sentence + your card + collapsed detail; model dropdowns grouped by size (`<optgroup>`, not a custom combobox) |
 | 2026-09-01 | **GPU landing pages** — 43 cards × 2 languages (`/gpu/rtx-4060-ti-16g/`), derived from `gpuDatabase` + the model index, no new data; 232 → 322 pages |

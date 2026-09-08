@@ -23,6 +23,38 @@ export function gpuBySlug(slug: string): GPU | undefined {
 /** Context length the landing pages size against — the calculator's own default. */
 export const GPU_PAGE_CONTEXT = 4096;
 
+/**
+ * The two questions a "how many models fit" number can answer. They give
+ * different counts (51 vs 60 on a 4060 Ti 16G) and both are defensible — what
+ * is not defensible is showing one number on one page and the other elsewhere
+ * without either saying which rule it used.
+ *
+ * `comfortable` = the calculator's green verdict, at most 88% of the card.
+ * `tight`       = green or amber, up to 105% — loads on a good day, no headroom.
+ */
+export type FitLevel = 'comfortable' | 'tight';
+
+export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GPU_PAGE_CONTEXT): number {
+  const allowed = level === 'comfortable' ? ['green'] : ['green', 'yellow'];
+  let n = 0;
+  for (const model of models) {
+    const fits = model.quants.some(quant => {
+      const { totalGB } = calcVRAM({
+        paramsB: model.params,
+        layers: model.arch.layers,
+        kvHeads: model.arch.kvHeads,
+        headDim: model.arch.headDim,
+        bpw: quant.bpw,
+        contextLength,
+        batchSize: 1,
+      });
+      return allowed.includes(getVerdict(totalGB, gpu.vram));
+    });
+    if (fits) n += 1;
+  }
+  return n;
+}
+
 export interface GpuFit {
   model: QuantModel;
   quant: QuantVariant;

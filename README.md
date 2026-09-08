@@ -419,6 +419,60 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-08 — Second external task book: P0 (correctness and traceability)
+
+Each item was reproduced against the repo before any change; two turned out to be defects this
+project introduced in the previous round.
+
+**P0-01 — the compare tool's VRAM row ignored the context control.** `Q4_K_M VRAM` read
+`quant.vramGB`, a fixed published figure, while only the GPU-fit row called `calcVRAM(contextLen)`.
+Switching 4K → 16K moved the calculator link and nothing else — beside copy *this project wrote last
+round* claiming VRAM was computed at the chosen context. Rows now carry an explicit `basis`:
+**estimated** (recomputed by the calculator's own function, moves with the control), **published**
+(fixed, from the release), **spec** (a property of the model). Verified: 2K/4K/8K/16K give
+5.36 / 5.64 / 6.19 / 7.29 GB while the published row stays 5.7 GB.
+
+**P0-05 — the "6:1, 8B wins" scoreboard is gone.** It counted row wins where memory appeared twice
+(min VRAM *and* Q4_K_M VRAM), this site's own indexing appeared twice (format count, variant count),
+and **fewer parameters counted as a win** — so an 8B "beat" a 70B on arithmetic that measured our
+data file. Rows now only carry a winner where one side being higher or lower is an advantage on that
+axis; there is no aggregate. Choosing between two models needs task benchmarks this site does not
+run, and the page says so.
+
+**P0-04 — model cards combined three configurations.** `min(vramGB)` beside `max(speed)` beside the
+lowest-perplexity level, presented as one card: 3.2 GB *and* 235 tok/s *and* Q8_0, none of which are
+simultaneously available. The stats row is now one named configuration, printed above it:
+**Q4_K_M · RTX 4090 · batch 1**.
+
+**P0-03 — the two "models that fit" counts disagreed (60 vs 51 on a 4060 Ti 16G).** Reproduced: the
+Hub chips counted green *and* amber, the hardware pages green only. Neither was wrong; neither said
+which rule it used. Both now call `countModelsFitting(gpu, level)` with a named level, the chips are
+labelled *incl. tight fits*, and the hardware page states the remainder explicitly — "a further 9
+models load but with no headroom to spare".
+
+**P0-06 — generated commands.** The local llama.cpp server bound `0.0.0.0`, publishing an
+unauthenticated inference endpoint on every interface for anyone who ran the copy-paste command;
+it now binds `127.0.0.1`, with a note on what to change to expose it deliberately. The download step
+installs the CLI it then calls. A health check and expected output were added. **The claim that vLLM
+is CUDA-only was simply wrong** — vLLM ships official ROCm builds; the wizard and the tool copy said
+otherwise (this project wrote that claim last round). Corrected to name the real constraint: AWQ and
+GPTQ kernel coverage on Radeon is narrower and moves between releases, which is why GGUF stays the
+recommended default there. ExLlamaV2 *is* CUDA-only and still says so.
+
+**P0-07 — bilingual consistency.** `todayFeed[].detail` was a bare string, so "vision on 12GB" sat
+in the middle of the Chinese homepage; it is now `{ en, zh }` like every other reader-facing field.
+The visible RSS link on `/zh/` pointed at the English feed while the page head advertised
+`/zh/feed.xml` — the link gate skips asset-looking paths, so it never caught it.
+
+**P0-02 — units.** The calculator computes in GiB (`1024³`) and labels "GB", matching how GPU
+vendors and `nvidia-smi` label VRAM. The tool copy said "converted to GiB" while the UI said GB,
+implying a conversion that does not exist. Now stated once, correctly, with no conversion claimed.
+
+**Not addressed in this round:** P1-01 … P1-05 (homepage task-first restructure, cross-page config
+state, tutorial verification, accessibility pass), P2, P3. The 8GB tutorial's 7.7 GB figure
+(P0-02's third example) still needs its measurement conditions recorded before it can be reconciled
+— it is a tutorial-authored number with no structured config behind it.
+
 ### 2026-09-01 (h) — External audit round 7: format comparisons, and the audit list is done
 
 **P2-2 — "X vs Y" pages.** Six comparisons at `/formats/<a>-vs-<b>/` plus an index, mirrored in

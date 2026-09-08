@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from '@/components/i18n/LocalLink';
-import { GitCompare, Copy, Check, Trophy } from 'lucide-react';
+import { GitCompare, Copy, Check } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { models } from '@/lib/data/models';
@@ -111,23 +111,18 @@ export default function ModelCompare() {
 
       {result ? (
         <div className="space-y-4">
-          <div className="glass rounded-2xl p-5 flex items-center justify-center gap-6">
-            <div className={cn('text-center', result.overallWinner === 'a' && 'text-violet-300')}>
-              <p className="text-sm font-semibold">{modelA!.name}</p>
-              <p className="text-2xl font-bold mt-1">{result.scoreA}</p>
-            </div>
-            <div className="text-slate-600 text-sm font-medium">vs</div>
-            <div className={cn('text-center', result.overallWinner === 'b' && 'text-violet-300')}>
-              <p className="text-sm font-semibold">{modelB!.name}</p>
-              <p className="text-2xl font-bold mt-1">{result.scoreB}</p>
-            </div>
-            {result.overallWinner !== 'tie' && (
-              <div className="flex items-center gap-1.5 text-sm text-yellow-400 ml-4">
-                <Trophy size={14} />
-                {result.overallWinner === 'a' ? modelA!.paramLabel : modelB!.paramLabel} {c.wins}
-              </div>
-            )}
+          {/* No scoreboard. It used to count row wins and declare an overall
+              winner, which made an 8B "beat" a 70B 6:1 — memory counted twice,
+              this site's own indexing counted twice, and fewer parameters
+              treated as an advantage. Which model is better needs task
+              benchmarks this site does not have; what it can show is each axis
+              separately, with the basis of every number stated. */}
+          <div className="glass rounded-2xl p-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <p className="text-sm font-semibold text-slate-200">{modelA!.name}</p>
+            <span className="text-slate-600 text-sm font-medium">vs</span>
+            <p className="text-sm font-semibold text-slate-200">{modelB!.name}</p>
           </div>
+          <p className="text-xs text-slate-500 leading-relaxed">{c.noVerdict}</p>
 
           <div className="glass rounded-2xl overflow-hidden">
             <table className="w-full text-sm">
@@ -143,7 +138,17 @@ export default function ModelCompare() {
                   const label = lang === 'zh' ? row.labelZh : row.labelEn;
                   return (
                     <tr key={row.key} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                      <td className="px-5 py-3 text-slate-400 text-xs">{label}</td>
+                      <td className="px-5 py-3 text-slate-400 text-xs">
+                        {label}
+                        <span className={cn(
+                          'ml-2 align-middle text-[10px] px-1.5 py-0.5 rounded font-medium',
+                          row.basis === 'estimated' && 'bg-cyan-500/10 text-cyan-400',
+                          row.basis === 'fixed' && 'bg-white/[0.05] text-slate-500',
+                          row.basis === 'spec' && 'bg-white/[0.03] text-slate-600',
+                        )}>
+                          {c.basis[row.basis]}
+                        </span>
+                      </td>
                       <td className={cn('px-3 py-3 text-right font-mono text-xs', row.winner === 'a' && 'text-emerald-400 font-semibold')}>
                         {row.valueA}
                       </td>

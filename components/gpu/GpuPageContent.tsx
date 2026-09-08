@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
-import { fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 /**
@@ -22,6 +22,10 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   const fits = fitsOnGpu(gpu);
   const groups = groupFitsByBucket(fits);
   const step = nextStepUp(gpu, fits.length);
+  // Both counts, side by side with their conditions. The Hub's GPU chips use
+  // the looser rule; showing only one number here left two pages disagreeing
+  // (51 vs 60) with nothing on either saying why.
+  const tightExtra = countModelsFitting(gpu, 'tight') - fits.length;
   const total = models.length;
 
   const fill = (s: string, vars: Record<string, string | number>) =>
@@ -98,6 +102,11 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
       <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
         <h2 className="text-lg font-bold text-slate-100 mb-3">{g.methodTitle}</h2>
         <p className="text-sm text-slate-400 leading-relaxed">{g.methodBody}</p>
+        {tightExtra > 0 && (
+          <p className="text-sm text-slate-500 leading-relaxed mt-3">
+            {fill(g.alsoTight, { extra: tightExtra })}
+          </p>
+        )}
         <div className="flex flex-wrap gap-4 mt-4">
           <Link
             href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
