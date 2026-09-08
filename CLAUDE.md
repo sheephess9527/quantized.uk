@@ -28,7 +28,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Models | **79** in index (`models-extra` … `models-extra-8`) |
 | Cookbook | **23** guides; key ones carry `verifiedAt` + `verifiedStack`, 7 carry `gpuPreset`/`relatedModelIds` |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
-| Home | Job paths, weekly updates block, data freshness line, honest format heat |
+| Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (43 GPUs incl. **AMD**), CLI, format wizard (NVIDIA/AMD/Mac/CPU), compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 232 pages, hreflang-paired, Chinese baked into static HTML |
@@ -179,6 +179,25 @@ row contradicts its own reason text (EXL2 recommended with a ROCm runtime).
 **Run the tools, don't read them.** Both wizard bugs survived review and were obvious the moment the
 function was called across every hardware × priority combination. Same for the CLI generator.
 
+**A recommendation that ignores its input is worse than no recommendation.** `homePicks` originally
+ranked by "most headroom left" and "highest tok/s" — both of which put the *smallest* model in the
+index first, so a 24 GB RTX 4090 and an 8 GB 4060 Ti got the same 0.5B answer. Any criterion that is
+monotonic in model size will do this. Rank against a **ceiling derived from the reader's VRAM**
+(largest that fits; largest inside 60% of the card) so the answer moves when the hardware moves, and
+sweep all 43 GPUs × every use case before believing it — the degenerate case was invisible in one
+spot-check and obvious in the sweep.
+
+**Two vocabularies for one quant level.** `lib/data/**` stores `{ format: 'AWQ', level: 'INT4' }`;
+`lib/utils/vram.ts` keys the same thing `'AWQ INT4'`. Any link or handoff carrying a quant level must
+go through **`quantLevelKey()`** (`lib/utils/recommend.ts`) — passing `quant.level` raw makes the
+calculator miss the model's own `bpw`, silently fall back to the generic `?? 4.85`, and contradict
+the page that sent the reader there.
+
+**A URL param is only real if the mode that reads it exists.** `?gpu=` on the VRAM calculator set
+local state that only *reverse* mode renders; forward mode judges against the navbar hardware
+profile, so a shared link carrying a card produced a size with no verdict. When adding a param,
+follow it to the component that actually reads it in the mode the link opens.
+
 **Adding models**
 
 1. Prefer `lib/data/models-extra-8.ts` (or new `models-extra-N.ts` + import in `models.ts`).
@@ -284,6 +303,8 @@ lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
 lib/utils/hub-url.ts        # shareable Hub filters incl. recency
 lib/i18n/translations.ts    # en + zh always
 app/feed.xml/route.ts       # RSS (force-static)
+components/home/HomeMatch.tsx     # homepage hardware × use-case picker
+lib/utils/home-picks.ts          # the three picks behind it
 components/home/WeeklyUpdates.tsx
 components/home/JobPaths.tsx
 ```
@@ -320,6 +341,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-08 | **Homepage answers first** — hero asks for your card and your task, then names the largest model that fits, one with room to grow, and the fastest. Pick criteria that were monotonic in model size gave a 4090 the same 0.5B answer as an 8G card; `?gpu=` did nothing in the calculator's forward mode; raw `quant.level` broke the calculator's bpw lookup |
 | 2026-09-01 | **Format comparison pages** — 6 pairs × 2 languages from `SHIPPED_FORMATS`; the measurable half is the models shipping both formats (GGUF/AWQ: 53). Pairs with none say so |
 | 2026-09-01 | **Calculator answers, not lists** — 43 verdict bars → one sentence + your card + collapsed detail; model dropdowns grouped by size (`<optgroup>`, not a custom combobox) |
 | 2026-09-01 | **GPU landing pages** — 43 cards × 2 languages (`/gpu/rtx-4060-ti-16g/`), derived from `gpuDatabase` + the model index, no new data; 232 → 322 pages |

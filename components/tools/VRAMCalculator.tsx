@@ -82,15 +82,21 @@ export default function VRAMCalculator() {
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
     else if (config.contextLen) setContextLen(config.contextLen);
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
+    // `gpu` has to reach the shared profile, not just local state: forward
+    // mode has no GPU dropdown of its own — it judges the answer against the
+    // card in the navbar profile — so a link carrying `?gpu=` used to land on
+    // a page that computed a size and then declined to say whether it fit.
     const gpuParam = searchParams.get('gpu');
-    if (gpuParam) setSelectedGpuId(gpuParam);
-    else if (profileGpuId) setSelectedGpuId(profileGpuId);
+    if (gpuParam) {
+      setSelectedGpuId(gpuParam);
+      if (gpuParam !== config.gpuId) updateConfig({ gpuId: gpuParam });
+    } else if (profileGpuId) setSelectedGpuId(profileGpuId);
     if (searchParams.get('sort') === 'speed' || searchParams.get('sort') === 'vram') {
       setSortBy(searchParams.get('sort') as SortBy);
     }
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     urlInitialized.current = true;
-  }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen]);
+  }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {

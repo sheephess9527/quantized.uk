@@ -4,6 +4,8 @@ import Link from '@/components/i18n/LocalLink';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { formatPairs, headToHead, modelsWithFormat } from '@/lib/utils/format-compare';
+import FormatHeatmap from '@/components/home/FormatHeatmap';
+import FormatRadar from '@/components/home/FormatRadarLazy';
 
 export default function FormatIndexView() {
   const { t } = useLanguage();
@@ -35,6 +37,22 @@ export default function FormatIndexView() {
           </li>
         ))}
       </ul>
+
+      {/*
+        Both of these used to sit on the homepage, where they answered a
+        question nobody arrives with. They are editorial context about the
+        formats themselves — an adoption estimate and a six-axis profile — so
+        they belong on the page about formats, next to the pairwise
+        comparisons that share their vocabulary.
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <div className="lg:col-span-1">
+          <FormatHeatmap />
+        </div>
+        <div className="lg:col-span-2">
+          <FormatRadar />
+        </div>
+      </div>
     </div>
   );
 }

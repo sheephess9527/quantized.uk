@@ -1,14 +1,16 @@
 import HeroSection from '@/components/home/HeroSection';
+import HomeMatch from '@/components/home/HomeMatch';
+import PopularStarts from '@/components/home/PopularStarts';
 import JobPaths from '@/components/home/JobPaths';
 import StatsBar from '@/components/home/StatsBar';
+import MeasuredCases from '@/components/home/MeasuredCases';
 import TodayBoard from '@/components/home/TodayBoard';
-import FormatHeatmap from '@/components/home/FormatHeatmap';
 import QuickAccess from '@/components/home/QuickAccess';
-import FormatRadar from '@/components/home/FormatRadarLazy';
 import ExploreStrip from '@/components/home/ExploreStrip';
 import DataChangelog from '@/components/home/DataChangelog';
 import DataFreshness from '@/components/home/DataFreshness';
 import WeeklyUpdates from '@/components/home/WeeklyUpdates';
+import MaintainerNote from '@/components/home/MaintainerNote';
 import type { Metadata } from 'next';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 
@@ -38,36 +40,49 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      {/*
+        Ordered as the reader's questions arrive, not as the site's inventory:
+
+          1. what is this, and what do I put in     — HeroSection
+          2. what fits my card                      — HomeMatch
+          3. I would rather just click something    — PopularStarts + JobPaths
+          4. why should I believe these numbers     — StatsBar + MeasuredCases
+          5. is this still maintained               — WeeklyUpdates + TodayBoard
+          6. something is wrong, who do I tell      — MaintainerNote
+
+        The format heat index and the six-axis radar used to sit at 4; they are
+        editorial context about formats rather than evidence, and now live on
+        /formats/ next to the pairwise comparisons. The full changelog stays on
+        this page — collapsed — because `#changelog` is linked from the hero,
+        the About page and off-site.
+      */}
       <HeroSection />
-      <JobPaths />
+      <HomeMatch />
       <StatsBar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 space-y-6 pb-16">
+        <PopularStarts />
+        <JobPaths />
+
+        <MeasuredCases />
+
         <div className="flex justify-end">
           <DataFreshness />
         </div>
-
         <WeeklyUpdates />
+        <TodayBoard />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <TodayBoard />
-          </div>
-          <div className="lg:col-span-1">
-            <FormatHeatmap />
-          </div>
-        </div>
+        <MaintainerNote />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
             <QuickAccess />
           </div>
           <div className="lg:col-span-2">
-            <FormatRadar />
+            <ExploreStrip />
           </div>
         </div>
 
-        <ExploreStrip />
         <DataChangelog />
       </div>
     </>

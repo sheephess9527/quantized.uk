@@ -40,11 +40,10 @@ export default function JobPaths() {
   const j = t.home.jobPaths;
 
   return (
-    // No negative top margin: the hero ends with an absolutely-positioned
-    // fade strip (bottom-0 h-16), and absolutely-positioned boxes paint above
-    // a later static sibling — so pulling this section up by even 8px put the
-    // "START HERE" label underneath an opaque gradient and sliced it in half.
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-6">
+    // No width or padding of its own: this now sits inside the homepage's
+    // `max-w-7xl … px-4` column, and repeating them here indented the cards
+    // relative to every neighbouring panel.
+    <section>
       <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 text-center sm:text-left">
         {j.title}
       </p>

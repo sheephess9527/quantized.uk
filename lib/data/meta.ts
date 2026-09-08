@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-08',
+    en: 'The homepage now starts with your hardware. Pick your card and what you want it for, and it answers with the largest model that fits, one that leaves room for longer context, and the fastest measured — each with the memory maths and a link into the calculator. Popular cards, a sample of the real-hardware benchmark rows, and a place to report a wrong number sit below it; the format heat index and radar moved to the formats page, and the full changelog is still here, collapsed',
+    zh: '首页现在从你的硬件开始。选好显卡和用途，它会给出装得下的最大模型、留有余量的一个，以及实测最快的一个 —— 每个都附显存算法和进入计算器的链接。下方是常见显卡、真机基准的样本行，以及反馈数字错误的入口；格式热度与雷达图移到了格式页，完整更新日志仍在本页，默认折叠',
+  },
+  {
+    date: '2026-09-08',
     en: 'The tools now remember what you picked. Choosing a model in the VRAM calculator and moving to the command generator no longer means entering it again — model, quant level and context length carry across, with a shared link always taking precedence over what you have stored. The calculator also links straight to the command for the configuration on screen, and when a model does not fit your card it says what to change and what that would cost',
     zh: '工具之间现在会记住你的选择。在显存计算器里选好模型再去命令生成器，不必重新输入一遍 —— 模型、量化档位与上下文长度会带过去，而分享链接始终优先于你本地保存的配置。计算器还能直接跳到当前配置对应的命令；当模型装不进你的显卡时，它会说明该改什么、以及改完是多少',
   },

@@ -26,7 +26,10 @@ export default function HeroSection() {
   const latest = changelog[0];
 
   return (
-    <section className="relative flex items-center justify-center overflow-hidden pt-20 pb-12 sm:pt-24 sm:pb-16 min-h-[min(70vh,640px)]">
+    // Deliberately not a 70vh hero any more: the panel directly below it is the
+    // page's actual entry point (pick a card → get models that fit), and a
+    // full-viewport hero pushed it off the first screen on every laptop.
+    <section className="relative flex items-center justify-center overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-12">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -69,11 +72,17 @@ export default function HeroSection() {
 
         {/* .hero-lift, not .hero-rise: this is the LCP element, so it animates
             transform only and is never rendered invisible. */}
-        <h1 className="hero-lift text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[0.95] mb-5">
-          <span className="text-slate-100">{t.home.hero.title1}&nbsp;</span>
+        <h1 className="hero-lift text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-4">
+          <span className="text-slate-100">{t.home.hero.title1}</span>
           <br />
           <span className="text-gradient">{t.home.hero.title2}</span>
         </h1>
+
+        {/* The old headline, kept as a tagline rather than deleted: it is the
+            site's name-adjacent line and still appears on the OG image. */}
+        <p className="hero-rise text-xs font-mono uppercase tracking-[0.2em] text-slate-600 mb-4">
+          {t.home.hero.tagline}
+        </p>
 
         <p
           className="hero-rise [animation-delay:0.1s] text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed"
@@ -98,13 +107,15 @@ export default function HeroSection() {
           </Link>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
           {formatBadges.map(fmt => (
             <span key={fmt.name} className={`badge text-xs font-mono font-semibold ${fmt.color}`}>
               {fmt.name}
             </span>
           ))}
-          <span className="text-xs text-slate-600 ml-1">{t.home.hero.andMore}</span>
+          <Link href="/formats/" className="text-xs text-slate-600 hover:text-slate-400 ml-1 transition-colors">
+            {t.home.hero.andMore}
+          </Link>
         </div>
       </div>
 

@@ -85,7 +85,7 @@ app/                        # Next.js App Router pages
 
 components/
   layout/                   # Navbar (lang + GPU profile + Tools), Footer
-  home/                     # Hero, JobPaths, WeeklyUpdates, StatsBar, TodayBoard, …
+  home/                     # Hero, HomeMatch, PopularStarts, MeasuredCases, WeeklyUpdates, …
   hub/                      # ModelCard, ModelDetail, ModelGuides, FilterBar (incl. recency)
   cookbook/                 # ArticleView, GuideNextSteps (guide → hub/calculator)
   tools/                    # VRAMCalculator, CLIGenerator, FormatWizard, ModelCompare
@@ -418,6 +418,59 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-09-08 (c) — Task book P1-01: the homepage starts with your hardware
+
+The homepage led with "Quantize Everything." and then showed the site's inventory. Nothing on the
+first screen asked the reader anything, and nothing answered the question they arrived with. It is
+now ordered as that question arrives:
+
+1. **Hero** — "Find the right local LLM for your hardware" / 「你的电脑，能跑什么大模型？」. The old
+   headline survives as a tagline; it is still the line on the OG image. The hero is no longer
+   `min-h-[70vh]`, because the panel below it is the actual entry point.
+2. **`HomeMatch`** — GPU picker (seeded from and written back to the shared config) × use-case
+   picker, and three picks. With nothing chosen it shows an **Example** card rather than going
+   blank, so the shape of the answer is visible before committing to an input.
+3. **`PopularStarts` + `JobPaths`** — eight cards weighted towards constrained and non-NVIDIA
+   setups, each with its `comfortable` fit count, plus four task-filtered hub views.
+4. **`StatsBar` + `MeasuredCases`** — six rows of the benchmark matrix spanning hardware classes,
+   with the methodology line and the source under them.
+5. **`WeeklyUpdates` + `TodayBoard`** — latest three changelog lines, recent models, RSS.
+6. **`MaintainerNote`** — what "estimated" means here and where to send a correction.
+
+**The obvious pick criteria were the wrong ones.** `homePicks` first ranked by "most headroom left"
+and "highest tok/s" — both of which rank the *smallest* model in the index first, so a 24 GB RTX 4090
+got the same 0.5B model as an 8 GB 4060 Ti. The picker looked like it was ignoring its own input
+because on two of three cards it was. Ranking by size against a VRAM-derived ceiling is what makes
+the answer move when the hardware moves: `capable` (largest that fits), `headroom` (largest inside
+60% of the card), `fastest` (highest measured tok/s — still a small model, and the card says so).
+Verified across all 43 GPUs × 3 use cases: 124/129 return three distinct picks, five return two,
+none exceeds the card's VRAM, 16 distinct trios.
+
+**Two defects the deep links exposed, both fixed at the source rather than in the link:**
+
+- `?gpu=` did nothing in the calculator's forward mode. Forward mode has no GPU dropdown of its own
+  — it judges against the card in the navbar profile — so `setSelectedGpuId` wrote to state nothing
+  in that mode reads. A shared link carrying a card landed on a page that computed a size and then
+  declined to say whether it fit. The URL param now writes through to the shared profile.
+- The index stores AWQ's level as bare `INT4`; `vram.ts` keys it `AWQ INT4`. Passing `quant.level`
+  straight into a link made the calculator miss the model's own bpw, fall back to the generic 4.85,
+  and call "fits comfortably" on the homepage "marginal" one click later. Links now go through
+  `quantLevelKey()`.
+
+Verified in a browser: the three deep links from a 4060 Ti 16G now report 2.8 / 7.7 / 15.4 GB spare
+against the homepage's 13.2 / 8.3 / 0.6 GB used of 16 — the same numbers — and all three say "fits
+comfortably", as the homepage claimed.
+
+**Moved, not deleted.** The format heat index and the six-axis radar are editorial context about
+formats, not evidence about hardware; they now sit on `/formats/` beside the pairwise comparisons.
+The full changelog stays on the homepage, collapsed to five entries with a disclosure — `#changelog`
+is linked from the hero pill, the About page and off-site, so moving it to its own route would have
+broken every one of those.
+
+No horizontal overflow at 390 / 768 / 1280 on `/`, `/zh/`, `/formats/`, `/zh/formats/`,
+`/tools/vram-calc/`, `/gpu/`, `/quant-hub/`.
+
 
 ### 2026-09-08 (b) — Task book P1-02 / P1-03: one configuration across the tools
 
