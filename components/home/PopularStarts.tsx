@@ -40,6 +40,10 @@ export default function PopularStarts() {
     { href: '/quant-hub/?cat=code', label: p.useCode },
     { href: '/quant-hub/?cat=multimodal', label: p.useMultimodal },
     { href: '/quant-hub/?size=%E2%89%A43B', label: p.useSmall },
+    // The hardware column sends people to a list of what fits; this sends them
+    // to a recommendation, which is the shape of the question most of them
+    // actually typed.
+    { href: '/best/', label: t.best.linkLabel },
   ];
 
   return (

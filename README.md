@@ -419,6 +419,51 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (l) — Audit P1: QTZ-020
+
+**The site had the data to answer "best local LLM for 16GB" and no page that did it.**
+`/gpu/{card}/` answered "what fits" with a list; `/quant-hub/` answered "what exists" with another.
+The query is a **recommendation**, and it was going to blogs with no measurements.
+
+**7 pages × 2 languages = 14**, 1,117–1,364 words each: `/best/` plus `8gb-vram`, `12gb-vram`,
+`16gb-vram`, `24gb-vram`, `32gb-vram` and `mac-apple-silicon`. Tiers are the capacities the index
+has several cards at — 10 GB and 20 GB have one card each and would be a page about one product.
+
+Each tier page carries: the answer in the first sentence, a picks table (use case, model, quant,
+VRAM, headroom, published loss, and a derived "why"), **Cards this applies to**, **What does not
+fit**, **Pushing context**, and 3–4 FAQs with `FAQPage` + `ItemList`.
+
+**One ranking implementation.** The picks come from `homePicks` — the same function behind the
+homepage hero — so a tier page and the homepage cannot recommend different models for the same card.
+Verified by perturbation: raising one model's `params` from 24 to 40 moved the 16GB general pick
+from Mistral Small 24B to Devstral Small 1.1 and dropped the fit count 52 → 51.
+
+**What "best" is allowed to mean.** This index runs no task benchmarks, so it cannot say which model
+is smarter and every page says so: best = the largest model in its category that clears the card
+with headroom, at the highest-quality quant that still fits.
+
+**Two bugs caught before shipping:**
+
+- **The Apple page computed its picks against 512 GB.** `tierCard()` returned `tier.cards[0]`, and
+  the first Apple entry is a Mac Studio — so the picks came back as a 675B model needing 429 GB
+  while the same page's context ladder used the declared 36 GB tier. One page, two capacities.
+  `tier.vram` now wins.
+- **Identical picks repeated as separate rows.** A model tagged both `general` and `code` is
+  honestly the answer to both, but printing it twice looked like a bug and wasted a third of the
+  table. A row now carries every use case it wins (`General · Coding`).
+
+**49 new inbound links to the GPU pages** per language (6+8+12+3+2+18 cards named across the tiers) —
+the thinnest internal linking on the site. Reachable from four places: the homepage task column,
+the `/gpu/` index, every GPU detail page's short-answer block, and the footer. The audit's
+suggestion to hand-write 18 "why" sentences was declined — a sentence a human types once and nobody
+recomputes is what `readTime` was, so the "why" is conditional on real facts instead (largest that
+fits, only one in its category, whether a perplexity figure exists, whether it survives 32K).
+
+Also caught: the single-format pages and `/best/` both needed adding to `sitemap.ts`; 372 → **392**
+URLs. Regression: 1,652 text nodes checked for contrast, **0 below AA**; **0/24** page×width
+combinations with horizontal overflow.
+
+
 ### 2026-09-11 (k) — Audit P1: QTZ-018
 
 **Reproduced first, and the audit's premise was half wrong.** It reported that the `SearchAction`

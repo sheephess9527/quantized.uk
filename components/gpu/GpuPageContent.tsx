@@ -9,6 +9,7 @@ import type { GPU } from '@/lib/data/gpus';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
+import { BEST_TIERS } from '@/lib/utils/best-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 /**
@@ -34,6 +35,10 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   // FAQPage schema, so the visible questions and the structured ones cannot
   // drift apart.
   const x = gpuExplainer(gpu);
+  // The tier page for this card, when one exists at its capacity.
+  const bestTier = BEST_TIERS.find(tr =>
+    tr.kind === 'apple' ? gpu.type === 'apple' : tr.cards.some(c => c.id === gpu.id),
+  );
   const total = models.length;
 
   const fill = (s: string, vars: Record<string, string | number>) =>
@@ -91,6 +96,20 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
             <dd className="text-sm text-slate-400 leading-relaxed">{x.ceiling[lang]}</dd>
           </div>
         </dl>
+        {/*
+          This page answers "what fits this card". `/best/` answers "what
+          should I actually run", which is the question people type — and it
+          is the only inbound link most GPU pages get from outside the index.
+        */}
+        {bestTier && (
+          <Link
+            href={`/best/${bestTier.slug}/`}
+            className="inline-flex items-center gap-1.5 min-h-[44px] mt-3 text-sm text-violet-400 hover:text-violet-300"
+          >
+            {t.best.tierTitle.replace('{label}', bestTier.kind === 'apple' ? t.best.appleLabel : `${bestTier.vram}GB`)}
+            <ArrowRight size={14} />
+          </Link>
+        )}
       </section>
 
       {fits.length === 0 ? (

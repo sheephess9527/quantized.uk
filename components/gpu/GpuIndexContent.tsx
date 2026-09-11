@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
@@ -26,6 +27,13 @@ export default function GpuIndexContent() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{g.indexTitle}</h1>
         <p className="text-slate-400 max-w-2xl">{g.indexSubtitle}</p>
+        {/* A card page answers "what fits"; /best/ answers "what should I run". */}
+        <Link
+          href="/best/"
+          className="inline-flex items-center gap-1.5 min-h-[44px] mt-2 text-sm text-violet-400 hover:text-violet-300"
+        >
+          {t.best.hubTitle} <ArrowRight size={14} />
+        </Link>
       </div>
 
       <div className="space-y-6">

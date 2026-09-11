@@ -19,6 +19,7 @@ export default function Footer() {
       title: 'Navigate',
       links: [
         { label: t.nav.quantHub,   href: '/quant-hub/' },
+        { label: t.best.linkLabel, href: '/best/' },
         { label: t.gpuPage.allGpus, href: '/gpu/' },
         { label: t.formatCompare.allComparisons, href: '/formats/' },
         { label: t.nav.benchmarks, href: '/benchmarks/' },

@@ -372,6 +372,17 @@ only when the URL carries a param the page reads — it must never be able to fi
 fetched, so its links are never followed, and `Disallow: /*?*` would also catch the calculator's
 share links.
 
+**`/best/` recommends; `/gpu/` lists. They must never disagree.** The tier picks come from
+`homePicks` — the same function behind the homepage hero — so there is one ranking implementation
+for the whole site. "Best" means the largest model in its category that clears the card with
+headroom, at the highest-quality quant that fits; this index runs no task benchmarks, and every page
+says so rather than implying a quality ranking. Verify a change by perturbation (move one model's
+`params`, watch the pick and the fit count move), not by reading.
+
+**A tier's capacity is `tier.vram`, never `cards[0].vram`.** The Apple page computed its picks
+against the first Apple entry — a 512 GB Mac Studio — and recommended a 675B model needing 429 GB
+while the same page's context ladder used the declared 36 GB. One page, two capacities.
+
 **The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
 every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
 perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers

@@ -6,6 +6,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
 import { FORMAT_PAGES } from '@/lib/utils/format-page';
+import { BEST_TIERS } from '@/lib/utils/best-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 
@@ -16,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/benchmarks/',
     '/cookbook/',
     '/faq/',
+    '/best/',
     // `/tools/` and `/changelog/` shipped as real pages (2026-09-11) and were
     // never added here, so two pages existed that the sitemap did not mention.
     // Adding a route means adding it in three places: the route, its `/zh`
@@ -65,6 +67,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Both kinds of page under /formats/: the pairwise comparisons and the
     // single-format explainers. They share one dynamic route, so it is easy to
     // add one and list only the other — which is exactly what happened.
+    ...BEST_TIERS.map(t => ({
+      path: `/best/${t.slug}/`,
+      lastModified: siteDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     ...FORMAT_PAGES.map(f => ({
       path: `/formats/${f.id}/`,
       lastModified: siteDate,
