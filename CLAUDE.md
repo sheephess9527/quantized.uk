@@ -329,6 +329,19 @@ of guesses, which is why the RTX 5050 and RX 9060 XT are still absent. Keep `gpu
 and expect the page to say "no benchmark runs recorded on this card" unless `matrixData` has a row
 whose hardware string resolves to it.
 
+**Page prose for a set of 80+ pages is generated, not written — and must vary with the data.**
+`modelExplainer()` (`lib/utils/model-explainer.ts`) builds each model page's sections and FAQ from
+that model's own row. Write the sentences as conditionals on real facts (smallest fitting card,
+format count, MoE, hybrid attention, whether a perplexity or speed figure exists), never as one
+template with a name substituted, and measure the result: the model pages sit at mean 0.500 5-gram
+Jaccard, worst pair 0.755. The visible FAQ and the `FAQPage` schema come from the **same call**, so
+they cannot diverge.
+
+**`updatedAt` and `verifiedAt` are different claims.** `verifiedAt` = commands re-run; `updatedAt` =
+content changed. `dateModified` prefers `updatedAt`. Removing an unearned `verifiedAt` used to strip
+the page's only modification date, which made a freshly corrected guide look staler than an
+untouched one — set `updatedAt` when you rewrite a guide.
+
 **Counts come from the data, never from a string.** `MODEL_COUNT` (`lib/seo.ts`) derives from
 `models.length`, and `app/llms.txt/route.ts` is generated like `feed.xml`. The number used to be
 typed into six files and `public/llms.txt`, so a model batch meant editing six strings and
@@ -457,6 +470,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-11 | **Model pages explain themselves (QTZ-011/016)** — 81 pages were 219-word tables; `modelExplainer()` derives 3 sections + 3 FAQs per model (median 1,143 words, `FAQPage` on 162/162). Guides declare `updatedAt` and their real model/hardware entities |
 | 2026-09-11 | **Current-generation hardware (QTZ-005)** — newest consumer card was the 2022 RTX 4090; +18 cards (43→61): Blackwell, RDNA 4, M4/M5 including 256/512GB Mac Studio. Capacities verified, RTX 5050 and RX 9060 XT left out as unconfirmed. `GPU_COUNT` now derived |
 | 2026-09-11 | **Findability (QTZ-003p/004/006/007/008/009/010)** — 36 of 43 GPU pages shared nine meta descriptions; `/tools/` and `/changelog/` were 404s; the nav linked 4 of ~340 pages; the homepage printed one changelog entry three times; counts were hardcoded in six files; methodology advertised runtimes two generations old |
 | 2026-09-11 | **2026 architectures** — the VRAM formula could not represent a hybrid-attention model at all (4× overstated KV on Qwen3.8); `ModelArch.attention` added and validated against measurements at three contexts, all 888 existing combinations unchanged. `pplLossPercent` optional so an unpublished figure is a dash, not a guess. +2 models (81) |

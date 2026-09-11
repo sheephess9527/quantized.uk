@@ -13,6 +13,8 @@ export const extraArticles2: Article[] = [
     difficulty: 'beginner',
     tags: ['8GB VRAM', 'RTX 3060', 'RTX 4060', 'GGUF', 'Ollama'],
     publishedAt: '2026-06-24',
+    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    updatedAt: '2026-09-08',
     // No `verifiedAt`: the guide previously carried one while its own VRAM
     // figures were ~2 GB above what this site's calculator returns for the
     // same models. The numbers are corrected and now derive from the index,
@@ -85,6 +87,8 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'm1-8gb-ollama-limits',
+    gpuPreset: { gpuId: 'm3-8', ctx: 4096 },
+    relatedModelIds: ['llama-3.2-3b', 'qwen2.5-3b', 'phi-3.5-mini'],
     title: 'M1 / M2 Mac 8GB: Realistic Ollama Limits',
     titleZh: 'M1 / M2 Mac 8GB：Ollama 真实能力边界',
     description: 'Unified memory is shared with macOS — here is what actually works on base MacBooks without swapping.',
@@ -133,6 +137,8 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['WSL2', 'Windows', 'Ollama', 'NVIDIA', 'CUDA'],
     publishedAt: '2026-06-24',
+    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    updatedAt: '2026-09-08',
     // Expanded 2026-09-08 with prerequisites, verification and the failure
     // modes readers actually hit. The new steps have not been re-run on a
     // Windows box since, so this carries a target stack but no verified date.
@@ -213,6 +219,7 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'docker-ollama-gpu',
+    relatedModelIds: ['llama-3.1-8b'],
     title: 'Docker: Ollama with NVIDIA GPU Passthrough',
     titleZh: 'Docker：Ollama NVIDIA GPU 透传',
     description: 'Containerised Ollama with GPU access — isolate models, pin versions, and run alongside other services.',
@@ -299,6 +306,8 @@ export const extraArticles2: Article[] = [
     difficulty: 'advanced',
     tags: ['AMD', 'ROCm', 'llama.cpp', 'HIP', 'Linux'],
     publishedAt: '2026-06-24',
+    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    updatedAt: '2026-09-08',
     // Expanded 2026-09-08. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
     // documented interfaces, not from a run. Saying otherwise would make the

@@ -25,6 +25,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'deepseek-r1-exl2-vs-gguf',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 4096 },
+    relatedModelIds: ['deepseek-r1-distill-qwen-14b'],
     title: 'DeepSeek-R1 Distill 14B: EXL2 vs GGUF',
     titleZh: 'DeepSeek-R1 Distill 14B：EXL2 vs GGUF 对比',
     description: 'Head-to-head on RTX 4090 — when to pick turboderp EXL2 over bartowski GGUF.',
@@ -45,6 +47,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'exllama-rtx4090-setup',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 8192 },
+    relatedModelIds: ['llama-3.1-8b'],
     title: 'ExLlamaV2 on RTX 4090: Full Setup Guide',
     titleZh: 'RTX 4090 上 ExLlamaV2 完整配置',
     description: 'Install ExLlamaV2, load an EXL2 quant, and serve an OpenAI-compatible API in under 10 minutes.',
@@ -75,6 +79,8 @@ export const extraArticles: Article[] = [
     difficulty: 'advanced',
     tags: ['70B', 'Multi-GPU', 'llama.cpp', 'RTX 3090', 'tensor-split'],
     publishedAt: '2025-07-02',
+    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    updatedAt: '2026-09-08',
     // No `verifiedAt`: expanded 2026-09-08 with figures taken from this
     // site's own calculator, but nothing here has been re-run on a two-card
     // machine since. `gpuPreset` names a single 3090 deliberately — the
@@ -141,6 +147,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'qwen-coder-32b-single-4090',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 4096 },
+    relatedModelIds: ['qwen2.5-coder-32b'],
     title: 'Qwen2.5-Coder 32B on a Single RTX 4090',
     titleZh: '单卡 RTX 4090 运行 Qwen2.5-Coder 32B',
     description: 'The best open coding model that fits in 24GB — quant selection and tuning tips.',
@@ -171,6 +179,8 @@ export const extraArticles: Article[] = [
     difficulty: 'beginner',
     tags: ['Mac', 'M3 Pro', 'Apple Silicon', 'Ollama', 'Metal'],
     publishedAt: '2025-07-08',
+    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    updatedAt: '2026-09-08',
     // No `verifiedAt`: rewritten 2026-09-08 because the previous version told
     // 18GB readers a 14B "needs 36GB+" when this site's own calculator puts it
     // at 11.0 GB — a wrong answer in the discouraging direction. The figures
@@ -256,6 +266,7 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'tabbyapi-exllama-server',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 8192 },
     title: 'TabbyAPI: ExLlamaV2 with a Web UI',
     titleZh: 'TabbyAPI：带 Web UI 的 ExLlamaV2 服务',
     description: 'Wrap ExLlamaV2 in TabbyAPI for a polished OpenAI-compatible server with streaming and model hot-swap.',
@@ -295,6 +306,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'vllm-awq-production',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 8192 },
+    relatedModelIds: ['qwen2.5-7b'],
     title: 'vLLM + AWQ in Production: Tuning Guide',
     titleZh: 'vLLM + AWQ 生产环境调优指南',
     description: 'gpu-memory-utilization, max-model-len, and batching knobs for stable API serving.',
@@ -314,6 +327,8 @@ export const extraArticles: Article[] = [
   },
   {
     id: 'cpu-inference-optimization',
+    gpuPreset: { gpuId: 'cpu-32', ctx: 4096 },
+    relatedModelIds: ['llama-3.1-8b'],
     title: 'CPU Inference: OpenBLAS Tuning for llama.cpp',
     titleZh: 'CPU 推理：llama.cpp OpenBLAS 调优',
     description: 'Maximize tokens/sec on a CPU-only VPS with thread count and BLAS backend tuning.',

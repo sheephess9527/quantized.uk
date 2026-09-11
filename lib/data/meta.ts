@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'Model pages now explain themselves. Each of the 81 was a table and little else — around 220 words, nothing a person could skim for "will this run on my card" and nothing an AI assistant could quote. Every page now carries three short sections and three questions answered from that model\'s own numbers: what it costs at 4K, what longer context adds, and which build to download. Nothing is written by hand, so nothing can drift from the data — and a hybrid-attention model gets visibly different text from a conventional one. Deployment guides also declare when they were last changed, and which models and hardware they are actually about',
+    zh: '模型页现在会自己讲清楚。此前 81 个页面几乎只有表格 —— 约 220 词，人扫一眼看不出「我的卡跑不跑得动」，AI 助手也无从引用。现在每页都有三段简短说明和三个由该模型自身数字回答的问题：4K 下要多少显存、上下文变长会多花多少、该下载哪个版本。这些文字全部由数据生成，因此不会与数据脱节 —— 混合注意力的模型得到的文案与常规模型明显不同。部署指南也开始声明最近一次修改时间，以及它们实际讲的是哪些模型和硬件',
+  },
+  {
+    date: '2026-09-11',
     en: 'The hardware database reaches the current generation. Blackwell (RTX 5090 down to 5060), RDNA 4 (RX 9070 XT and 9070) and the M4 and M5 Macs — including the 256GB and 512GB Mac Studio configurations — now have pages, 18 cards in all. Until today the newest NVIDIA consumer card here was the RTX 4090 from 2022, so "what can an RTX 5090 run" had no answer on a site whose whole premise is that question. None of these cards has been benchmarked here, and each page says so rather than implying its estimates were measured',
     zh: '硬件数据库更新到当代。Blackwell（RTX 5090 到 5060）、RDNA 4（RX 9070 XT 与 9070），以及 M4、M5 系列 Mac（含 256GB 与 512GB 的 Mac Studio 配置）现在都有了独立页面，共 18 张卡。在今天之前，站内最新的 NVIDIA 消费级显卡还是 2022 年的 RTX 4090 —— 而「RTX 5090 能跑什么」恰恰是本站存在的理由。这些卡都没有在本站实测过，每个页面都会如实说明，而不是让估算值看起来像实测值',
   },

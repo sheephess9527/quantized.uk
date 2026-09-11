@@ -13,6 +13,18 @@ export interface Article {
   publishedAt: string;
   /** Last day commands/stack were re-checked (YYYY-MM-DD) */
   verifiedAt?: string;
+  /**
+   * Last day the *content* changed, which is not the same claim as
+   * `verifiedAt` and must not be conflated with it: a guide can be rewritten
+   * without anyone re-running its commands, which is exactly what happened to
+   * five of these on 2026-09-08.
+   *
+   * `dateModified` in the Article schema comes from this first and falls back
+   * to `verifiedAt`. Before this existed, removing an unearned `verifiedAt`
+   * also removed the page's only `dateModified` — so a guide that had just
+   * been corrected looked, to a crawler, older than one nobody had touched.
+   */
+  updatedAt?: string;
   /** Short stack string shown on article header */
   verifiedStack?: { en: string; zh: string };
   /**
@@ -37,6 +49,8 @@ interface Section {
 const baseArticles: Article[] = [
   {
     id: 'llama-vps-llamacpp',
+    gpuPreset: { gpuId: 'cpu-16', ctx: 4096 },
+    relatedModelIds: ['llama-3.1-8b'],
     title: 'Run Llama 3.1 8B on a €20/month VPS',
     titleZh: '在 €20/月 VPS 上运行 Llama 3.1 8B',
     description: 'A complete guide to running a private LLM API on a budget Linux VPS using llama.cpp server mode.',
@@ -83,6 +97,8 @@ const baseArticles: Article[] = [
   },
   {
     id: 'mac-ollama-setup',
+    gpuPreset: { gpuId: 'm3-max-48', ctx: 8192 },
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'qwen2.5-7b'],
     title: 'Mac M3 Max: The Ultimate Local LLM Setup',
     titleZh: 'Mac M3 Max：本地大模型终极配置',
     description: 'Maximise your Apple Silicon with Ollama. Run multiple models, set up an OpenAI-compatible API, and tune Metal GPU layers.',
@@ -122,6 +138,8 @@ const baseArticles: Article[] = [
   },
   {
     id: 'rtx4090-vllm-api',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 8192 },
+    relatedModelIds: ['qwen2.5-7b'],
     title: 'Multi-Model API Server on RTX 4090 with vLLM',
     titleZh: '用 vLLM 在 RTX 4090 上搭建多模型 API 服务',
     description: 'Serve multiple AWQ-quantized models with vLLM\'s continuous batching for production-grade throughput.',
@@ -161,6 +179,7 @@ const baseArticles: Article[] = [
   },
   {
     id: 'docker-llm-compose',
+    relatedModelIds: ['llama-3.1-8b'],
     title: 'Docker Compose LLM Stack: Ollama + Open WebUI',
     titleZh: 'Docker Compose LLM 全家桶：Ollama + Open WebUI',
     description: 'A production-ready Docker Compose stack that gives you a local ChatGPT experience with one command.',

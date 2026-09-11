@@ -419,6 +419,50 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (e) — Audit P1: QTZ-011 and QTZ-016
+
+**QTZ-011 — 81 model pages were a table and almost nothing else.** Median body **219 words**, 27
+pages under 210. Two consequences, and the second is the one that matters: a row reading
+`GGUF Q4_K_M 4.85 5.8 GB 2.8% 142 tok/s` cannot answer "will Qwen3 8B run on a 12GB card", so
+neither a skimming reader nor an AI assistant gets anything out of the page.
+
+`modelExplainer()` generates three sections and three questions **from that model's own row** — the
+same principle as `tool-content.ts`, except 81 pages cannot be hand-written so every sentence is
+derived: what it costs at 4K broken into weights / KV / activations, the smallest card in the index
+that clears it and how many do, what 32K adds and what the native window would cost, which formats
+and levels exist, and which build to fetch.
+
+**Derived, therefore varied.** The sentences are conditional on facts that differ per model — the
+smallest fitting card, how many fit, how many formats it ships, MoE or dense, hybrid attention or
+not, whether a perplexity figure or a measured speed exists at all. Measured afterwards on a 30-page
+sample: mean 5-gram Jaccard **0.500**, worst pair **0.755** (`deepseek-coder-v2-lite` vs
+`deepseek-v2-lite` — the same architecture at the same size). For comparison the GPU pages' worst
+pair is 0.956. Median body **219 → 1,143 words**; 0 pages under 210.
+
+`FAQPage` schema on **162 of 162** model pages (was 0), built from the same `modelExplainer()` call
+that renders the visible FAQ, so the questions a crawler sees are the ones a reader sees. Structured
+data audited afterwards across the whole export: **0 problems**.
+
+**QTZ-016 — guides were not declaring when they changed.** `dateModified` was emitted only from
+`verifiedAt`, and removing five unearned `verifiedAt` values earlier today had therefore removed
+those pages' only modification date — a guide that had just been corrected looked, to a crawler,
+older than one nobody had touched. That was my regression. `Article.updatedAt` is a separate claim
+(content changed) from `verifiedAt` (commands re-run); `dateModified` prefers the first. **22 of 23
+guides** now carry one.
+
+`about` and `mentions` come from `gpuPreset` and `relatedModelIds` — fields the guides already use
+for their own links, so the entities cannot describe something the page never names. Only 7 guides
+had those fields, so 12 more were wired from **what each guide's body actually mentions**; the four
+that name no model or card (nginx proxy, generic Windows and quantize guides) still get nothing.
+Entity markup 7 → **17 `about` / 18 `mentions`**, and all **81 models now have related guides**,
+because `guideLinksForModel()` reverses the same wiring.
+
+`author` stays an Organization. The audit asks for a Person for E-E-A-T, but no maintainer name is
+published anywhere on this site, and inventing one is inventing an author.
+
+No regression: 1,559 text nodes 0 below WCAG AA, 0 horizontal overflows across 24 combinations.
+
+
 ### 2026-09-11 (d) — Audit QTZ-005: the hardware database reaches the current generation
 
 Until today the newest NVIDIA consumer card in `gpus.ts` was the **RTX 4090, from 2022**. The site's

@@ -2,6 +2,7 @@ import { articles } from '@/lib/data/cookbook';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots, languageAlternates, ogLocale } from '@/lib/seo';
+import { articleEntities } from '@/lib/utils/article-entities';
 import type { Metadata } from 'next';
 
 export function generateStaticParams() {
@@ -63,9 +64,24 @@ export default function CookbookArticlePage({
           url,
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
           datePublished: article.publishedAt,
-          // verifiedAt means "commands re-checked on this date" — the closest
-          // honest mapping to dateModified. Omitted when the guide has none.
-          ...(article.verifiedAt ? { dateModified: article.verifiedAt } : {}),
+          // `updatedAt` is when the content changed; `verifiedAt` is when the
+          // commands were last re-run. Either is a real modification date, and
+          // the first is the more accurate one when both exist. Omitted
+          // entirely when neither does — an invented date would be worse than
+          // none, since this is the signal an AI engine weighs most heavily on
+          // content that goes stale.
+          ...(article.updatedAt || article.verifiedAt
+            ? { dateModified: article.updatedAt ?? article.verifiedAt }
+            : {}),
+          // The models and hardware this guide is actually about, as entities
+          // rather than prose a crawler has to infer them from. Both come from
+          // fields the guide already carries for its own links, so they cannot
+          // describe something the page does not mention.
+          ...articleEntities(article, lang),
+          // Deliberately an Organization. The About page says this is one
+          // developer's side project, but no name is published anywhere on the
+          // site, and inventing a Person for E-E-A-T would be inventing an
+          // author.
           author: { '@type': 'Organization', name: 'quantized.uk' },
           publisher: { '@type': 'Organization', name: 'quantized.uk' },
         }}

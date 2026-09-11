@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import ModelDetail from '@/components/hub/ModelDetail';
+import ModelExplainer from '@/components/hub/ModelExplainer';
+import { modelExplainer } from '@/lib/utils/model-explainer';
 import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -73,7 +75,25 @@ export default function ModelDetailPage({
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         }}
       />
+      {/*
+        The FAQ a crawler is shown is the one the reader is shown — same
+        `modelExplainer(model)` call on both sides, so the schema cannot
+        describe questions the page does not answer.
+      */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+          mainEntity: modelExplainer(model).faqs.map(f => ({
+            '@type': 'Question',
+            name: f.q[lang],
+            acceptedAnswer: { '@type': 'Answer', text: f.a[lang] },
+          })),
+        }}
+      />
       <ModelDetail model={model} />
+      <ModelExplainer model={model} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16">
         <ModelGuides guides={guideLinksForModel(model)} />
       </div>
