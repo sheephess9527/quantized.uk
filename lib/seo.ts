@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { toEnPath, toZhPath } from '@/lib/i18n/routing';
 
 import { models } from '@/lib/data/models';
+import { gpuDatabase } from '@/lib/data/gpus';
 
 /**
  * The model count, from the index itself.
@@ -13,6 +14,9 @@ import { models } from '@/lib/data/models';
  * models reads this.
  */
 export const MODEL_COUNT = models.length;
+
+/** Same rule as `MODEL_COUNT`: the GPU count was typed into five more strings. */
+export const GPU_COUNT = gpuDatabase.length;
 
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';

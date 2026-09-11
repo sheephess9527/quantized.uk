@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'The hardware database reaches the current generation. Blackwell (RTX 5090 down to 5060), RDNA 4 (RX 9070 XT and 9070) and the M4 and M5 Macs — including the 256GB and 512GB Mac Studio configurations — now have pages, 18 cards in all. Until today the newest NVIDIA consumer card here was the RTX 4090 from 2022, so "what can an RTX 5090 run" had no answer on a site whose whole premise is that question. None of these cards has been benchmarked here, and each page says so rather than implying its estimates were measured',
+    zh: '硬件数据库更新到当代。Blackwell（RTX 5090 到 5060）、RDNA 4（RX 9070 XT 与 9070），以及 M4、M5 系列 Mac（含 256GB 与 512GB 的 Mac Studio 配置）现在都有了独立页面，共 18 张卡。在今天之前，站内最新的 NVIDIA 消费级显卡还是 2022 年的 RTX 4090 —— 而「RTX 5090 能跑什么」恰恰是本站存在的理由。这些卡都没有在本站实测过，每个页面都会如实说明，而不是让估算值看起来像实测值',
+  },
+  {
+    date: '2026-09-11',
     en: 'Findability and honest labels. Every hardware page now has a description that names the card and the largest model it runs — 36 of the 43 previously shared just nine descriptions between them, because the template only knew the memory size. The tools index and the data changelog are real pages instead of 404s, the navigation finally links the 43 hardware pages and the format comparisons, and the homepage stopped printing the same update three times. Model counts are computed from the index rather than typed in six places, and the date beside a NEW badge now says "added" — it is when this index picked the model up, not when the model was released',
     zh: '可发现性与标签诚实度。每个硬件页面的描述现在会写明具体显卡和它能跑的最大模型 —— 此前 43 个页面中有 36 个只共用九条描述，因为模板里只有显存大小这一个变量。工具索引与数据更新日志从 404 变成了真实页面，导航里终于有了 43 个硬件页和格式对比的入口，首页也不再把同一条更新印三遍。模型数量改为从索引实时计算，而不是在六个地方手写；NEW 徽章旁的日期现在标注为「收录」—— 那是本索引收录它的时间，不是模型的发布时间',
   },

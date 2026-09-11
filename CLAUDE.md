@@ -30,7 +30,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (43 GPUs incl. **AMD**), CLI, format wizard (NVIDIA/AMD/Mac/CPU), compare |
+| Tools | VRAM (**61** GPUs incl. AMD RDNA 4, Blackwell, M4/M5), CLI, format wizard, compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 232 pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
@@ -322,6 +322,13 @@ architecture, read `huggingface/transformers`'s `src/transformers/models/<family
 against published GGUF file sizes: a Q8_0 landing on ~8.5 bpw or a BF16 on ~16.0 confirms the whole
 chain, and a figure that will not reconcile is a figure not to ship.
 
+**Adding a GPU costs one line and needs only its VRAM.** `GPU` carries `{ id, name, vram, type }`
+and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —
+no architecture, no benchmarks. Do confirm it: a card whose VRAM is a guess generates a whole page
+of guesses, which is why the RTX 5050 and RX 9060 XT are still absent. Keep `gpuSlug()` dot-free,
+and expect the page to say "no benchmark runs recorded on this card" unless `matrixData` has a row
+whose hardware string resolves to it.
+
 **Counts come from the data, never from a string.** `MODEL_COUNT` (`lib/seo.ts`) derives from
 `models.length`, and `app/llms.txt/route.ts` is generated like `feed.xml`. The number used to be
 typed into six files and `public/llms.txt`, so a model batch meant editing six strings and
@@ -394,7 +401,7 @@ Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=re
 `/feed.xml` are the three surfaces that should reflect every cadence ship.
 
 **GPU landing pages are derived, not authored** — `lib/utils/gpu-page.ts` turns `gpuDatabase` +
-`models` into 43 pages per language. `fitsOnGpu()` reuses `calcVRAM`/`getVerdict`, so a page and the
+`models` into 61 pages per language. `fitsOnGpu()` reuses `calcVRAM`/`getVerdict`, so a page and the
 calculator's reverse mode return the same set (verified: 51 = 51 for a 4060 Ti 16G). Adding a GPU to
 `gpus.ts` adds two pages automatically; nothing else to write. Slugs come from `gpuSlug()` and are
 deliberately **dot-free** — `next/link` strips the trailing slash from any path whose last segment
@@ -450,6 +457,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-11 | **Current-generation hardware (QTZ-005)** — newest consumer card was the 2022 RTX 4090; +18 cards (43→61): Blackwell, RDNA 4, M4/M5 including 256/512GB Mac Studio. Capacities verified, RTX 5050 and RX 9060 XT left out as unconfirmed. `GPU_COUNT` now derived |
 | 2026-09-11 | **Findability (QTZ-003p/004/006/007/008/009/010)** — 36 of 43 GPU pages shared nine meta descriptions; `/tools/` and `/changelog/` were 404s; the nav linked 4 of ~340 pages; the homepage printed one changelog entry three times; counts were hardcoded in six files; methodology advertised runtimes two generations old |
 | 2026-09-11 | **2026 architectures** — the VRAM formula could not represent a hybrid-attention model at all (4× overstated KV on Qwen3.8); `ModelArch.attention` added and validated against measurements at three contexts, all 888 existing combinations unchanged. `pplLossPercent` optional so an unpublished figure is a dash, not a guess. +2 models (81) |
 | 2026-09-11 | **Two crawling faults (QTZ-001/002)** — `next/link` stripped the trailing slash from every dotted model id (2,101 redirecting links, 27 pages with no canonical inbound link); the language switcher was a `<button>`, leaving 164 Chinese pages with no crawlable entry. Both now gated in postbuild |

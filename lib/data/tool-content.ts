@@ -29,8 +29,8 @@ export interface ToolContent {
 
 export const vramCalcContent: ToolContent = {
   summary: {
-    en: 'Estimate VRAM for any quantized LLM: model weights, KV cache and activation buffer, with a per-GPU verdict across 43 cards.',
-    zh: '估算任意量化 LLM 的显存占用：模型权重、KV 缓存与激活缓冲，并对 43 张显卡逐一给出裁决。',
+    en: 'Estimate VRAM for any quantized LLM: model weights, KV cache and activation buffer, with a per-GPU verdict across every card in the database.',
+    zh: '估算任意量化 LLM 的显存占用：模型权重、KV 缓存与激活缓冲，并对数据库中每一张显卡逐一给出裁决。',
   },
   sections: [
     {

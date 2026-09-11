@@ -419,6 +419,46 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (d) — Audit QTZ-005: the hardware database reaches the current generation
+
+Until today the newest NVIDIA consumer card in `gpus.ts` was the **RTX 4090, from 2022**. The site's
+entire premise is "what fits your card", and it could not answer that for anything two generations
+newer — "what can an RTX 5090 run", "how much does an M5 Max hold" returned nothing.
+
+Unlike the model index, this needed no architecture data: `GPU` carries `{ id, name, vram, type }`
+and **only `vram` feeds the sizing math**. Capacities verified 2026-09-11 against vendor and press
+specifications; nothing else is claimed, because nothing else was checked and nothing else changes
+what fits.
+
+**18 cards added, 43 → 61:**
+
+| Family | Added |
+|---|---|
+| NVIDIA Blackwell | RTX 5090 (32GB), 5080 (16), 5070 Ti (16), 5070 (12), 5060 Ti 16G, 5060 Ti 8G, 5060 (8) |
+| AMD RDNA 4 | RX 9070 XT (16), RX 9070 (16) |
+| Apple M5 | M5 Ultra 512G / 256G, M5 Max 128G, M5 Pro 64G, M5 32G |
+| Apple M4 | M4 Max 128G / 36G, M4 Pro 48G / 24G |
+
+Deliberately left out: the **RTX 5050**, whose capacity the sources called "expected" rather than
+confirmed, and the **RX 9060 XT**, which none of the results I could reach specified. A card whose
+VRAM is a guess produces a page of guesses.
+
+Two capacities are genuinely new to the database — **256GB and 512GB** (Mac Studio M5 Ultra) — and
+they change what the site can express: the 512GB entry is the first that fits all 81 models,
+including the 675B Mistral Large 3.
+
+Every one of these pages says **"No benchmark runs in this index were recorded on a \<card\>"**,
+because none were. The `measuredRowsFor()` work from earlier today is what makes that automatic
+rather than something to remember.
+
+`GPU_COUNT` joins `MODEL_COUNT` in `lib/seo.ts` — the GPU count had been typed into five more
+strings, the same drift the model count had. The homepage's popular-cards row now mixes
+generations; it was entirely pre-2025.
+
+373 pages, up from 337. GPU meta descriptions stay **62 distinct out of 62** per language.
+No regression: 3,672 text nodes 0 below WCAG AA, 0 horizontal overflows across 24 combinations.
+
+
 ### 2026-09-11 (c) — Audit QTZ-003(part) / 004 / 006 / 007 / 008 / 009 / 010
 
 The data-independent half of the audit — everything that did not need model

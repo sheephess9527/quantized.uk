@@ -10,13 +10,21 @@ import { countModelsFitting, gpuSlug } from '@/lib/utils/gpu-page';
  * The two ways a reader who does not want to touch a dropdown still gets to an
  * answer: their card, or their task.
  *
+ * Mixed generations on purpose: someone shopping is on Blackwell or RDNA 4,
+ * someone who already owns a card is more likely on Ada or Ampere, and the list
+ * was entirely pre-2025 until the current generations were added to the
+ * database at all.
+ *
  * The hardware row is weighted towards constrained and non-NVIDIA setups —
  * that is who the traffic snapshot actually showed up as (see CLAUDE.md
  * § Content cadence), not the 24 GB flagship crowd. Counts are the
  * `comfortable` rule, the same one the GPU landing pages print, so the number
  * here and the number there cannot disagree.
  */
-const POPULAR_GPU_IDS = ['rtx4060ti', 'rtx4060ti16', 'rtx4070', 'rtx3090', 'rtx4090', 'rx7900xtx', 'm3-pro-18', 'cpu-32'];
+const POPULAR_GPU_IDS = [
+  'rtx5060ti16', 'rtx4060ti', 'rtx4060ti16', 'rtx5070',
+  'rtx3090', 'rtx4090', 'rtx5090', 'rx9070xt', 'm4-pro-24', 'cpu-32',
+];
 
 const popular = POPULAR_GPU_IDS.map(id => {
   const gpu = gpuDatabase.find(g => g.id === id)!;
