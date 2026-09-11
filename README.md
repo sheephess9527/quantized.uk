@@ -419,6 +419,49 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (k) — Audit P1: QTZ-018
+
+**Reproduced first, and the audit's premise was half wrong.** It reported that the `SearchAction`
+every page emits promises `/quant-hub/?q={term}` and that "the interface probably does not work".
+Measured in a browser: `?q=qwen` returns **24 of 81** cards, `?recency=recent` returns 10,
+`?size=70B%2B` returns 15, and the canonical on every one already points at `/quant-hub/`. The
+deep-link interface works; it is honoured after hydration by `useUrlQuery()`.
+
+**What was actually missing** was the markup. The control was a bare
+`<input type="search" id="hub-search">` with **no `name`** and **no `<form>`** — so nothing could
+submit it without JavaScript, and nothing reading the HTML could discover the interface the schema
+advertises. It is now `<form role="search" action="/quant-hub/" method="get">` with `name="q"`, a
+real `<label>`, and hidden inputs carrying the other active filters so submitting a search does not
+silently clear the size or format chip. The action is language-aware (`/zh/quant-hub/` in the
+Chinese tree). Verified with JavaScript disabled: the form is present and submits.
+
+**One acceptance criterion cannot be met and is not claimed.** "`?q=qwen` returns pre-filtered HTML
+with JS disabled" requires a server to render per query; this is `output: 'export'` and one document
+serves every query string. The static answer is the form — a working, shareable, crawlable URL that
+the page then filters on mount.
+
+**Search matched three fields.** Name, family and id only, so "coding", "vision", "gguf", "7b" and
+"awq" each returned zero of 81 — reasonable things to type into a box on a quantization index. It
+now searches size, categories, hardware tags, formats and quant levels too, strips punctuation
+(`qwen3.8` → 2 models), and carries a small alias map because **the words people type are not the
+values the data uses**: `coding` → `code` (0 → **36 models**), `vision` → `multimodal`,
+`apple` → `mac`.
+
+**Empty results used to be a sentence and a "clear filters" button** — telling the reader they were
+wrong and offering them the start again. Now four suggestions drawn from the index, so every one
+returns something (verified: clicking one goes 0 → 9 models, in both languages).
+
+**Filtered URLs: `noindex, follow`.** All filters are URL params, which is what makes a result set
+shareable and also what could generate a combinatorial supply of near-duplicates. `QueryNoindex`
+rewrites the existing robots tag when — and only when — the URL carries a param the page reads.
+Verified: `/quant-hub/` keeps `index, follow` and every filtered URL reports exactly one
+`noindex, follow`. Deliberately **not** `Disallow: /*?*` in robots.txt: a disallowed URL is never
+fetched, so its links are never followed, and it would catch the calculator's share links too.
+
+Regression: 3,889 text nodes checked for contrast, **0 below AA**; **0/12** page×width combinations
+with horizontal overflow; at 390px the focused search box sits 683px below a navbar ending at 56px.
+
+
 ### 2026-09-11 (j) — Audit P1: QTZ-019
 
 **`/faq/` was a 404**, and only the four tool pages carried `FAQPage`. This was the largest single

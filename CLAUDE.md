@@ -353,6 +353,25 @@ conversion — backfilling ~300 quant rows from it would invent attribution. It 
 repo source; `huggingface.co` is blocked by the egress proxy. Leave the field out rather than
 half-populate it.
 
+**A search box that a schema advertises must be a `<form>` with a `name`.** Every page emits a
+`SearchAction` for `/quant-hub/?q=`; the control was a bare input with neither, so nothing could
+submit it without JS and nothing reading the markup could find the interface. Hidden inputs carry
+the other active filters, and `action` goes through `localizeHref` or the Chinese tree submits into
+the English one. A static export cannot return pre-filtered HTML per query — one document serves
+every query string — so the form plus `useUrlQuery()` is the whole mechanism; do not accept a task
+asking for server-rendered filtered markup here.
+
+**The words readers type are not the values the data uses.** Hub search matched name/family/id only,
+so "coding", "vision", "gguf" and "7b" each returned zero of 81. It now searches size, categories,
+hardware tags, formats and levels, strips punctuation, and keeps a small alias map
+(`coding`→`code` alone went 0 → 36 models). Extend the aliases, not the data vocabulary.
+
+**Filtered Hub URLs are `noindex, follow`, never `Disallow`.** `QueryNoindex` rewrites the robots tag
+only when the URL carries a param the page reads — it must never be able to fire on the bare
+`/quant-hub/`, which would deindex the Hub. robots.txt stays open: a disallowed URL is never
+fetched, so its links are never followed, and `Disallow: /*?*` would also catch the calculator's
+share links.
+
 **The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
 every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
 perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers

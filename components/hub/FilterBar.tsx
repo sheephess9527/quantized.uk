@@ -4,6 +4,8 @@ import { Search, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
 import { SHIPPED_FORMATS } from '@/lib/utils/hub-url';
+import { localizeHref } from '@/lib/i18n/routing';
+import { models } from '@/lib/data/models';
 
 export interface HubFilters {
   search: string;
@@ -23,7 +25,7 @@ interface Props {
 }
 
 export default function FilterBar({ filters, onChange, count, total, profileFilterActive }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const set = (key: keyof HubFilters) => (val: string) =>
     onChange({ ...filters, [key]: val });
@@ -68,21 +70,43 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
 
   return (
     <div className="glass rounded-2xl p-5 space-y-4">
-      {/* Search */}
-      <div className="relative">
-        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
+      {/*
+        A real GET form, not a bare input.
+
+        Every page on this site advertises a `SearchAction` pointing at
+        `/quant-hub/?q={term}`, and that URL does work — but the control that
+        produces it was an input with no `name` and no form around it, so
+        nothing could submit it without JavaScript and no browser or crawler
+        could discover the interface from the markup. With the form, pressing
+        Enter navigates to the advertised URL and the page filters on
+        hydration; the hidden inputs carry the other active filters across so
+        submitting a search does not silently clear the size or format chip.
+
+        This is as far as a static export goes: there is no server to render a
+        pre-filtered document per query, so `?q=` is honoured after mount by
+        `useUrlQuery()`. The URL is real, shareable and crawlable either way.
+      */}
+      <form role="search" action={localizeHref('/quant-hub/', lang)} method="get" className="relative">
+        <label htmlFor="hub-search" className="sr-only">{t.hub.search}</label>
+        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" aria-hidden="true" />
         <input
           type="search"
           id="hub-search"
+          name="q"
           // A placeholder is not an accessible name: it disappears on focus and
           // several screen readers ignore it entirely.
           aria-label={t.hub.search}
-          placeholder={t.hub.search}
+          placeholder={t.hub.searchPlaceholder.replace('{n}', String(models.length))}
           value={filters.search}
           onChange={e => set('search')(e.target.value)}
           className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
         />
-      </div>
+        {filters.paramRange && <input type="hidden" name="size" value={filters.paramRange} />}
+        {filters.category && <input type="hidden" name="cat" value={filters.category} />}
+        {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}
+        {filters.format && <input type="hidden" name="fmt" value={filters.format} />}
+        {filters.recency && <input type="hidden" name="recency" value={filters.recency} />}
+      </form>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {renderGroup(t.hub.filters.params, 'paramRange', [

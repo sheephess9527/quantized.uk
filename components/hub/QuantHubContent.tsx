@@ -7,6 +7,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
+import QueryNoindex from '@/components/seo/QueryNoindex';
 import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
 import GpuQuickChips from '@/components/hub/GpuQuickChips';
@@ -89,12 +90,46 @@ export default function QuantHubContent() {
     return models.filter(m => {
       if (gpuFilterModelIds && !gpuFilterModelIds.has(m.id)) return false;
       if (filters.search) {
-        const q = filters.search.toLowerCase();
-        if (
-          !m.name.toLowerCase().includes(q) &&
-          !m.family.toLowerCase().includes(q) &&
-          !m.id.toLowerCase().includes(q)
-        ) return false;
+        // Name, family and id only meant "gguf", "awq", "7b" and "coding" all
+        // returned nothing — reasonable things to type into a box that offers
+        // to search a quantization index. Punctuation is stripped so "qwen3.8"
+        // and "qwen 3 8" both reach `qwen3-8`.
+        const q = filters.search.toLowerCase().trim();
+        const loose = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const qLoose = loose(q);
+        const haystack = [
+          m.name,
+          m.family,
+          m.id,
+          m.paramLabel,
+          ...m.categories,
+          ...m.hardwareTags,
+          ...m.quants.map(v => v.format),
+          ...m.quants.map(v => v.level),
+        ];
+        // The words people type are not the values the data uses: a reader
+        // searching a quantization index types "coding" and "vision", while
+        // `categories` holds `code` and `multimodal`. Without this, "coding"
+        // returned zero of the 81 models — the box looked broken on a query
+        // the placeholder invites.
+        const ALIASES: Record<string, string[]> = {
+          coding: ['code'],
+          coder: ['code'],
+          programming: ['code'],
+          vision: ['multimodal'],
+          image: ['multimodal'],
+          chat: ['general', 'instruct'],
+          apple: ['mac'],
+          nvidia: ['consumer-gpu'],
+          cpu: ['cpu-vps'],
+        };
+        const expanded = [q, ...(ALIASES[q] ?? [])];
+        const hit = expanded.some(
+          term =>
+            haystack.some(h => h.toLowerCase().includes(term)) ||
+            (loose(term).length >= 3 && haystack.some(h => loose(h).includes(loose(term)))),
+        );
+        if (!hit) return false;
       }
       if (filters.paramRange && !matchesParamRange(m.params, filters.paramRange as ParamRange)) return false;
       if (filters.recency === 'recent' && !isRecentModel(m)) return false;
@@ -144,6 +179,28 @@ export default function QuantHubContent() {
     } catch { /* denied */ }
   };
 
+  /**
+   * Escape hatches for an empty result, built from the index so each one is
+   * guaranteed to return something. Picked to cover the ways a search misses:
+   * a family name, a size, a task and a format.
+   */
+  const suggestions = useMemo(() => {
+    const biggestFamily = Array.from(
+      models.reduce((acc, m) => acc.set(m.family, (acc.get(m.family) ?? 0) + 1), new Map<string, number>()),
+    ).sort((a, b) => b[1] - a[1])[0]?.[0];
+    const out: { label: string; filters: Partial<HubFilters> }[] = [];
+    if (biggestFamily) out.push({ label: biggestFamily, filters: { search: biggestFamily } });
+    out.push({ label: t.hub.filters.params + ' 7B', filters: { paramRange: '7B' } });
+    if (models.some(m => m.categories.includes('code'))) {
+      out.push({ label: t.hub.categories.code, filters: { category: 'code' } });
+    }
+    if (models.some(m => m.categories.includes('multimodal'))) {
+      out.push({ label: t.hub.categories.multimodal, filters: { category: 'multimodal' } });
+    }
+    out.push({ label: 'GGUF', filters: { format: 'GGUF' } });
+    return out;
+  }, [t]);
+
   const clearAll = () => {
     setFilters(EMPTY_HUB_FILTERS);
     setGpuFilterId(null);
@@ -152,6 +209,7 @@ export default function QuantHubContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <QueryNoindex />
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
@@ -270,13 +328,35 @@ export default function QuantHubContent() {
       </p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-slate-600">
-          <p className="text-lg mb-2">{t.hub.noResults}</p>
+        <div className="text-center py-16">
+          {/*
+            An empty result used to be a sentence and a "clear" button, which
+            tells the reader they were wrong and offers them the start again.
+            The suggestions are drawn from the index, so every one of them
+            returns results.
+          */}
+          <p className="text-lg text-slate-400 mb-1">
+            {filters.search
+              ? t.hub.noResultsFor.replace('{q}', filters.search)
+              : t.hub.noResults}
+          </p>
+          <p className="text-sm text-slate-500 mb-4">{t.hub.noResultsTry}</p>
+          <div className="flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
+            {suggestions.map(sug => (
+              <button
+                key={sug.label}
+                onClick={() => handleFiltersChange({ ...EMPTY_HUB_FILTERS, ...sug.filters })}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-violet-300 bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20 transition-colors min-h-[44px]"
+              >
+                {sug.label}
+              </button>
+            ))}
+          </div>
           <button
             onClick={clearAll}
-            className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+            className="block mx-auto mt-4 text-sm text-slate-500 hover:text-slate-300 transition-colors min-h-[44px]"
           >
-            {t.hub.clearFilters}
+            {t.hub.browseAll.replace('{n}', String(total))}
           </button>
         </div>
       ) : (
