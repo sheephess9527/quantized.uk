@@ -419,6 +419,53 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (g) — Audit P1: QTZ-012
+
+**61 GPU pages, one page.** The fit list is a function of VRAM and nothing else, so every 16 GB
+card returned byte-identical rows. Naming the siblings (2026-09-08) was honest but did not touch
+the cause: **the page said nothing about the card**.
+
+**What was missing was a spec.** `GPU` now carries `bandwidth` (GB/s) and `memType`, filled for all
+57 discrete cards from vendor specifications and launch reviews — RTX 50 / 40 / 30, Radeon RDNA 4 /
+3 / 2, Instinct and Radeon PRO, the A100 / H100 / L40S / A40, and every M2–M5 Mac tier. The four
+CPU entries are deliberately left without one: system bandwidth is a property of the reader's DIMMs
+and channel count, not of "64 GB of RAM".
+
+`gpuExplainer()` (`lib/utils/gpu-explainer.ts`) builds a decision block and four questions per page:
+
+- **Biggest that fits** / **Room to grow** — from `fitsOnGpu`, so they cannot disagree with the list below.
+- **Speed ceiling** — `bandwidth / weightsGB`. Token generation reads the whole weight set once per
+  token, so this is a hard roofline: an 8B at Q4_K_M is 4.6 GB of weights, giving **62 tok/s on a
+  288 GB/s RTX 4060 Ti 16G and 159 on a 736 GB/s RTX 4080 Super** — same capacity, same models, a
+  2.6× difference the old pages could not express. Labelled as arithmetic on two published numbers,
+  never as a measurement.
+- **The wall you will hit** — branches on hardware class: bandwidth (a same-capacity card is ≥1.5×
+  faster), the GPU's share of unified memory on Apple, ROCm backend coverage on AMD, what the index
+  has 4-bit builds for at the top end, capacity otherwise. 38 distinct openings across 61 cards.
+
+**The roofline found a fault in our own data.** Three `matrixData` rows attributed to an RTX 4060 Ti
+16G claim speeds that card cannot reach: 78 tok/s on a 4.87 GB Q4_K_M Llama 3.1 8B requires
+380 GB/s, the EXL2 row's 98 tok/s requires 458, the Qwen2.5 7B row's 82 requires 379 — against a
+**288 GB/s** specification, and no real run reaches even 100% of peak. They were also the only
+hardware in the table `dataSources.benchmarks` never listed. **Removed, not corrected** — nobody
+here ran a 4060 Ti, and a number invented to look plausible is the thing that file exists to avoid.
+Every remaining row sits under its own card's roofline (the 4090's fastest dense row is 71% of peak).
+
+**MoE is excluded from the roofline.** The index's own Qwen3 30B-A3B run measures 95 tok/s where the
+dense arithmetic says 57 — correct for a model that reads one router's worth of experts per token,
+and a broken-looking ceiling if quoted. `rooflineTokS()` declines rather than guessing at an active
+parameter count the data model does not carry.
+
+Also: `article()` resolves "a" vs "an" for all 61 names (an RTX, a Radeon, an Instinct, a Mac), which
+is why the page title had been dodging the article since these pages shipped.
+
+**Result:** median GPU page body **674 → 1,958 words**; `FAQPage` on **122 / 122** pages with all 478
+questions present in the visible text; mean 5-gram Jaccard **0.462**, worst pair 0.952 (RX 9070 vs
+9070 XT — identical capacity *and* identical bandwidth, so for this site's purposes they are the same
+card). Regression: 4,927 text nodes checked for contrast, **0 below AA**; **0/30** page×width
+combinations with horizontal overflow.
+
+
 ### 2026-09-11 (f) — Audit P1: QTZ-013
 
 **`/formats/` was 65 words** — the thinnest page on the site, on the site's own subject, and the

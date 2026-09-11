@@ -45,7 +45,6 @@ export const speedBenchmarks: SpeedResult[] = [
   { model: 'Phi-4 14B', hardware: 'RTX 4090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 88, color: '#7c3aed' },
   { model: 'Llama 3.1 8B', hardware: 'RTX 3090', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', tokensPerSec: 175, color: '#f97316' },
   { model: 'Llama 3.1 8B', hardware: 'RTX 3090', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 112, color: '#7c3aed' },
-  { model: 'Llama 3.1 8B', hardware: 'RTX 4060 Ti 16G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', tokensPerSec: 78, color: '#7c3aed' },
   { model: 'Llama 3.1 8B', hardware: 'M3 Max 48G', framework: 'Ollama', quant: 'GGUF Q4_K_M', tokensPerSec: 68, color: '#22c55e' },
   { model: 'Llama 3.1 8B', hardware: 'M2 Ultra 192G', framework: 'Ollama', quant: 'GGUF Q4_K_M', tokensPerSec: 90, color: '#22c55e' },
 ];
@@ -61,6 +60,22 @@ export const pplBenchmarks: PPLResult[] = [
   { quant: 'Q2_K', ppl: 9.12, pplLossPercent: 48.5 },
 ];
 
+  /*
+   * Three RTX 4060 Ti 16G rows were removed on 2026-09-11 because they are not
+   * physically reachable on that card. Token generation reads the whole weight
+   * set once per token, so a rate implies a bandwidth: 78 tok/s on a 4.87 GB
+   * Q4_K_M Llama 3.1 8B needs 380 GB/s, the EXL2 row's 98 tok/s needs 458, and
+   * the Qwen2.5 7B row's 82 tok/s needs 379. The card's specification is
+   * **288 GB/s**, and no real run reaches even 100% of peak.
+   *
+   * They were also the only hardware in this table that `dataSources.benchmarks`
+   * never listed — it says RTX 4090 / 3090 / M3 Max. Every remaining row sits
+   * under its own card's roofline (the 4090's fastest dense row is 71% of peak),
+   * so the arithmetic is not accusing the whole table, only these three.
+   *
+   * Not "corrected" to a plausible number: nobody here ran a 4060 Ti, and a
+   * number invented to look right is the thing this file exists to avoid.
+   */
 export const matrixData: MatrixRow[] = [
   { model: 'Llama 3.1 8B', hardware: 'RTX 4090 24G', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', speedTokSec: 235, vramUsedGB: 5.4, notes: { en: 'Peak consumer performance', zh: '消费级最快' } },
   { model: 'Llama 3.1 8B', hardware: 'RTX 4090 24G', framework: 'vLLM', quant: 'AWQ INT4', speedTokSec: 218, vramUsedGB: 4.9, notes: { en: 'Best for batch API', zh: '批量 API 服务最佳' } },
@@ -68,9 +83,6 @@ export const matrixData: MatrixRow[] = [
   { model: 'Qwen2.5 7B', hardware: 'RTX 4090 24G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 155, vramUsedGB: 5.4, notes: { en: 'Strong coding; similar VRAM to 8B', zh: '代码能力强；显存占用接近 8B' } },
   { model: 'DeepSeek-R1 14B', hardware: 'RTX 4090 24G', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', speedTokSec: 128, vramUsedGB: 9.8, notes: { en: 'Reasoning distill; hot in 2026', zh: '推理蒸馏版；2026 年热门' } },
   { model: 'Qwen2.5 32B', hardware: 'RTX 4090 24G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 44, vramUsedGB: 22.0, notes: { en: 'Tight fit at 4K ctx; use Q3 for headroom', zh: '4K 上下文下勉强装下；想留余量用 Q3' } },
-  { model: 'Llama 3.1 8B', hardware: 'RTX 4060 Ti 16G', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', speedTokSec: 98, vramUsedGB: 5.4, notes: { en: 'Great budget option', zh: '高性价比之选' } },
-  { model: 'Llama 3.1 8B', hardware: 'RTX 4060 Ti 16G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 78, vramUsedGB: 5.7, notes: { en: 'Budget-friendly', zh: '预算友好' } },
-  { model: 'Qwen2.5 7B', hardware: 'RTX 4060 Ti 16G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 82, vramUsedGB: 5.4, notes: { en: 'Sweet spot on 16GB cards', zh: '16GB 显卡的甜点位' } },
   { model: 'Qwen3 8B', hardware: 'RTX 4090 24G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 142, vramUsedGB: 5.8, notes: { en: 'Qwen3 thinking mode; ~2026 flagship 8B', zh: 'Qwen3 思考模式；2026 年 8B 旗舰' } },
   { model: 'Qwen3 14B', hardware: 'RTX 4090 24G', framework: 'ExLlamaV2', quant: 'EXL2 4.65bpw', speedTokSec: 118, vramUsedGB: 10.0, notes: { en: 'Strong reasoning; 16GB+ sweet spot', zh: '推理能力强；16GB 以上的甜点位' } },
   { model: 'Qwen3 32B', hardware: 'RTX 4090 24G', framework: 'llama.cpp', quant: 'GGUF Q4_K_M', speedTokSec: 42, vramUsedGB: 22.5, notes: { en: 'Dense 32B successor to Qwen2.5-32B', zh: 'Qwen2.5-32B 的稠密 32B 后继' } },

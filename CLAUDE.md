@@ -328,7 +328,17 @@ architecture, read `huggingface/transformers`'s `src/transformers/models/<family
 against published GGUF file sizes: a Q8_0 landing on ~8.5 bpw or a BF16 on ~16.0 confirms the whole
 chain, and a figure that will not reconcile is a figure not to ship.
 
-**Adding a GPU costs one line and needs only its VRAM.** `GPU` carries `{ id, name, vram, type }`
+**A published rate implies a bandwidth — check it before believing a benchmark row.** Token
+generation reads the whole weight set once per token, so `bandwidth / weightsGB` is a hard ceiling
+on tok/s, and `rooflineTokS()` (`lib/utils/gpu-explainer.ts`) is what the GPU pages quote. Running
+it over `matrixData` found three rows claiming 78–98 tok/s on a **288 GB/s** RTX 4060 Ti, which
+needs 380–458 GB/s. They were removed, not adjusted — an invented plausible number is worse than a
+missing one. Two exemptions the check must respect: **MoE** models read only their active experts
+(Qwen3 30B-A3B measures 95 against a dense roofline of 57 — correct, not a fault), and a row within
+a few percent of the ceiling is inside the error of `params × bpw` versus the real file size.
+
+**Adding a GPU costs one line and needs only its VRAM** — but a verified `bandwidth` is what makes
+its page differ from its same-capacity siblings. `GPU` carries `{ id, name, vram, type, bandwidth?, memType? }`
 and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —
 no architecture, no benchmarks. Do confirm it: a card whose VRAM is a guess generates a whole page
 of guesses, which is why the RTX 5050 and RX 9060 XT are still absent. Keep `gpuSlug()` dot-free,

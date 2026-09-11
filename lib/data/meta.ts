@@ -12,8 +12,8 @@ export const dataSources = {
     zh: 'Hugging Face 模型卡、社区量化发布（bartowski、turboderp、unsloth、city96）、WikiText-2 PPL 基准',
   },
   benchmarks: {
-    en: 'Local inference runs on RTX 4090 / 3090 / M3 Max; llama.cpp b4000+, ExLlamaV2 0.2.x, vLLM 0.6.x, Ollama 0.3.x',
-    zh: 'RTX 4090 / 3090 / M3 Max 本地实测；llama.cpp b4000+、ExLlamaV2 0.2.x、vLLM 0.6.x、Ollama 0.3.x',
+    en: 'Local inference runs on RTX 4090 / 3090 / M3 Max / M2 Ultra; llama.cpp b4000+, ExLlamaV2 0.2.x, vLLM 0.6.x, Ollama 0.3.x',
+    zh: 'RTX 4090 / 3090 / M3 Max / M2 Ultra 本地实测；llama.cpp b4000+、ExLlamaV2 0.2.x、vLLM 0.6.x、Ollama 0.3.x',
   },
   formatHeat: {
     en: 'Editorial estimate from HF GGUF share and community discussion volume — not live analytics',
@@ -67,6 +67,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-11',
+    en: 'Hardware pages now say something about the hardware. All 61 were the same page with a different name on it, because what fits is decided by memory alone — every 16 GB card returned an identical list. Each page now opens with the card\'s memory bandwidth, the biggest model it holds, one that leaves room to grow, and a speed ceiling computed from the specification: generating a token means reading every weight once, so an 8B at Q4_K_M tops out near 62 tok/s on a 288 GB/s RTX 4060 Ti and near 159 on a 736 GB/s RTX 4080 Super — the same 16 GB, the same models, very different machines. That ceiling is arithmetic on published numbers, never a benchmark, and the pages say so. Doing the arithmetic also caught three of our own benchmark rows claiming speeds the card they name cannot physically reach; they have been removed rather than adjusted',
+    zh: '硬件页现在真的在讲硬件。此前 61 个页面只是换了名字的同一个页面 —— 因为能装下什么完全由显存决定，每张 16 GB 的卡返回的清单一模一样。现在每页开头都会给出该卡的显存带宽、能装下的最大模型、一个留有余量的选择，以及一个由规格推算出的速度上限：生成一个 token 就要把每个权重读一遍，所以 8B 的 Q4_K_M 在 288 GB/s 的 RTX 4060 Ti 上约 62 tok/s 封顶，在 736 GB/s 的 RTX 4080 Super 上约 159 —— 同样 16 GB、同样的模型，却是两台很不一样的机器。这个上限是公开数字的算术结果，不是跑分，页面上也如实说明。做这个算术的同时还发现本站自己有三条基准数据，其速度是所标显卡在物理上达不到的；这些行已被删除，而不是调整数值',
+  },
   {
     date: '2026-09-11',
     en: 'The formats page now says something. It was 65 words — the thinnest page on a site named after quantization, and the only way in to the six format comparisons. It now opens with a table counted from the index: how many of the 81 models ship each format, the median published perplexity loss at 4-bit and how many measurements that median is drawn from, and the quant levels this index actually carries. HQQ appears in it as 0 of 81, with a line saying so — it is documented here as reference, and you will not find it in the Hub. Formats where nobody published a perplexity figure show a dash rather than an estimate',

@@ -8,6 +8,7 @@ import { models } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
+import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 /**
@@ -29,6 +30,10 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   // the looser rule; showing only one number here left two pages disagreeing
   // (51 vs 60) with nothing on either saying why.
   const tightExtra = countModelsFitting(gpu, 'tight') - fits.length;
+  // The decision summary and the FAQ. Same call the page route uses for the
+  // FAQPage schema, so the visible questions and the structured ones cannot
+  // drift apart.
+  const x = gpuExplainer(gpu);
   const total = models.length;
 
   const fill = (s: string, vars: Record<string, string | number>) =>
@@ -53,6 +58,40 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
           {fill(g.subtitle, { count: fits.length, total, vram: gpu.vram })}
         </p>
       </div>
+
+      {/*
+        Until this block existed these 61 pages were the same page with a name
+        swapped in — the fit list is a function of VRAM alone, so every 16 GB
+        card returned identical rows. What separates them is how fast the card
+        can read the weights, which is now a vendor spec in `gpuDatabase`.
+      */}
+      <section className="glass rounded-2xl p-5 sm:p-6 mb-6">
+        <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpu.name })}</h2>
+        <p className="text-sm text-slate-400 leading-relaxed mb-4">{x.specLine[lang]}</p>
+
+        <dl className="space-y-3">
+          {x.rows.map(row => (
+            <div key={row.kind} className="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-1 sm:gap-4">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-cyan-400/90 pt-0.5">
+                {row.kind === 'biggest' ? g.rowBiggest : row.kind === 'headroom' ? g.rowHeadroom : g.rowSpeed}
+              </dt>
+              <dd className="text-sm text-slate-300 leading-relaxed">
+                {row.fit && (
+                  <Link href={`/quant-hub/${row.fit.model.id}/`} className="font-medium text-slate-200 hover:text-violet-300">
+                    {row.fit.model.name}
+                  </Link>
+                )}
+                {row.fit ? ' — ' : ''}
+                <span className="text-slate-400">{row.detail[lang]}</span>
+              </dd>
+            </div>
+          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-1 sm:gap-4 border-t border-white/[0.05] pt-3">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-amber-400/90 pt-0.5">{g.wallTitle}</dt>
+            <dd className="text-sm text-slate-400 leading-relaxed">{x.ceiling[lang]}</dd>
+          </div>
+        </dl>
+      </section>
 
       {fits.length === 0 ? (
         <p className="glass rounded-2xl p-6 text-sm text-slate-400">{fill(g.noFits, { vram: gpu.vram })}</p>
@@ -203,6 +242,20 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
               {step.gpu.name} →
             </Link>
           </p>
+        </section>
+      )}
+
+      {x.faqs.length > 0 && (
+        <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
+          <h2 className="text-lg font-bold text-slate-100 mb-4">{g.faqTitle}</h2>
+          <div className="space-y-4">
+            {x.faqs.map((f, i) => (
+              <div key={i}>
+                <h3 className="text-sm font-semibold text-slate-200 mb-1">{f.q[lang]}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{f.a[lang]}</p>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 

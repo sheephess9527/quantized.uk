@@ -5,6 +5,7 @@ import GpuPageContent from '@/components/gpu/GpuPageContent';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 import { fitsOnGpu, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
+import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 
 export function generateStaticParams() {
   return gpuDatabase.map(g => ({ gpuId: gpuSlug(g) }));
@@ -39,6 +40,9 @@ export default function GpuPage({ params, lang = 'en' }: { params: { gpuId: stri
   }
   const path = lang === 'zh' ? `/zh/gpu/${params.gpuId}` : `/gpu/${params.gpuId}`;
   const fits = fitsOnGpu(gpu);
+  // Same call `GpuPageContent` renders, so every question in this schema is
+  // visible on the page — which is the condition for emitting FAQPage at all.
+  const { faqs } = gpuExplainer(gpu);
 
   return (
     <>
@@ -65,6 +69,20 @@ export default function GpuPage({ params, lang = 'en' }: { params: { gpuId: stri
           })),
         }}
       />
+      {faqs.length > 0 && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+            mainEntity: faqs.map(f => ({
+              '@type': 'Question',
+              name: f.q[lang],
+              acceptedAnswer: { '@type': 'Answer', text: f.a[lang] },
+            })),
+          }}
+        />
+      )}
       <GpuPageContent gpu={gpu} />
     </>
   );
