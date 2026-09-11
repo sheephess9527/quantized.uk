@@ -211,6 +211,12 @@ from it. Hand-typed lists drift, and they drift *separately* — fixing only the
 badging `HQQ` and counting 5 formats while the Hub offered 4. `formats.ts` documents one more format
 than the index ships; that is editorial reference content (the Heat Index is an adoption estimate),
 **not** an inventory count. Never conflate the two.
+The `/formats/` hub table is counted by `lib/utils/format-overview.ts` for the same reason — it prints
+HQQ as **0 / 81** with a line saying it is reference material, rather than omitting the row or
+implying availability. Do not add a row for a format the index does not carry (the audit proposed
+NVFP4 and "Official QAT"); a zero count for something the site does not track is the HQQ mistake
+with a new name. A format with no published perplexity anywhere shows a dash — a median over an
+empty set is not 0%.
 
 **Per-format vocabularies don't share a fallback** — quant levels belong to one format only. The
 wizard's `recommendQuant` fell through to `Q4_K_M` for every format, telling readers to fetch

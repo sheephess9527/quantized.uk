@@ -419,6 +419,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (f) — Audit P1: QTZ-013
+
+**`/formats/` was 65 words** — the thinnest page on the site, on the site's own subject, and the
+only internal route to the six `/formats/<a>-vs-<b>/` comparisons. It rendered a heading, one
+sentence, and six link cards.
+
+`lib/utils/format-overview.ts` counts the page instead of writing it. Per format: how many of the
+81 models ship it (`modelsWithFormat`), the **median published perplexity loss** over that format's
+4-bit-class quants (`bpw <= 5`, `pplLossPercent !== undefined`) with the sample size printed beside
+it, and the quant levels this index actually carries, most common first.
+
+| Format | Models | Median loss | Sample |
+|--------|--------|-------------|--------|
+| GGUF | 81 / 81 | 3.0% | n=99 |
+| AWQ | 53 / 81 | 4.0% | — |
+| EXL2 | 21 / 81 | 2.3% | — |
+| GPTQ | 4 / 81 | 4.8% | — |
+| HQQ | **0 / 81** | none published | — |
+
+**The HQQ row is the point of doing this from data.** `formats.ts` documents HQQ as editorial
+reference; no model in the index ships it. The table prints `0 / 81` and a note saying it is
+reference material, not something the Hub will return — which is the inverse of the mistake the
+homepage made when it badged HQQ as a tracked format (§9, 2026-08-23).
+
+The audit's proposed table also carried **NVFP4** and **Official QAT** rows with `{n} of {N}` counts.
+Neither exists in this index, so neither was added: a count of zero for a format the site does not
+track is not information, it is the HQQ mistake with a new name.
+
+Formats with no published perplexity anywhere show a dash. A median over an empty set is not 0%.
+
+**Result:** 65 → **917 words EN / 571 Chinese characters**, a decision section that names the four
+shipped formats with their counts, and the six comparison cards kept under their own heading.
+Regression after the change: 1,682 text nodes checked for contrast, 0 below AA; 0/24 page×width
+combinations with horizontal overflow.
+
+
 ### 2026-09-11 (e) — Audit P1: QTZ-011 and QTZ-016
 
 **QTZ-011 — 81 model pages were a table and almost nothing else.** Median body **219 words**, 27

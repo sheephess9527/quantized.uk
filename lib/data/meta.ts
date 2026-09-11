@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'The formats page now says something. It was 65 words — the thinnest page on a site named after quantization, and the only way in to the six format comparisons. It now opens with a table counted from the index: how many of the 81 models ship each format, the median published perplexity loss at 4-bit and how many measurements that median is drawn from, and the quant levels this index actually carries. HQQ appears in it as 0 of 81, with a line saying so — it is documented here as reference, and you will not find it in the Hub. Formats where nobody published a perplexity figure show a dash rather than an estimate',
+    zh: '格式页终于有内容了。此前它只有 65 词 —— 一个以量化命名的站点上最单薄的页面，却是六个格式对比页唯一的入口。现在页面开头是一张由索引统计出来的表：81 个模型中有多少个提供该格式、4-bit 档位已公布困惑度损失的中位数及其样本量，以及本索引实际收录的量化档位。HQQ 在表中显示为 0 / 81，并附有说明 —— 它作为参考资料收录，Hub 里找不到它。没有公开困惑度数据的格式显示为短横线，而不是估算值',
+  },
+  {
+    date: '2026-09-11',
     en: 'Model pages now explain themselves. Each of the 81 was a table and little else — around 220 words, nothing a person could skim for "will this run on my card" and nothing an AI assistant could quote. Every page now carries three short sections and three questions answered from that model\'s own numbers: what it costs at 4K, what longer context adds, and which build to download. Nothing is written by hand, so nothing can drift from the data — and a hybrid-attention model gets visibly different text from a conventional one. Deployment guides also declare when they were last changed, and which models and hardware they are actually about',
     zh: '模型页现在会自己讲清楚。此前 81 个页面几乎只有表格 —— 约 220 词，人扫一眼看不出「我的卡跑不跑得动」，AI 助手也无从引用。现在每页都有三段简短说明和三个由该模型自身数字回答的问题：4K 下要多少显存、上下文变长会多花多少、该下载哪个版本。这些文字全部由数据生成，因此不会与数据脱节 —— 混合注意力的模型得到的文案与常规模型明显不同。部署指南也开始声明最近一次修改时间，以及它们实际讲的是哪些模型和硬件',
   },
