@@ -79,6 +79,42 @@ export function sameBudgetCards(gpu: GPU): GPU[] {
   return gpuDatabase.filter(g => g.id !== gpu.id && g.vram === gpu.vram && g.type === gpu.type);
 }
 
+/**
+ * Meta description for a GPU landing page.
+ *
+ * The old template interpolated only `gpu.vram`, so all nine 16GB cards shipped
+ * a byte-identical description — 36 of the 43 pages shared just 9 strings
+ * between them. A description that cannot tell two pages apart is a description
+ * a search engine has no reason to show.
+ *
+ * Everything here varies per card: the name, the fit count, and the largest
+ * model that actually fits it (`fitsOnGpu` sorts by parameter count, so the
+ * first entry is the biggest). The last of those is also the single most useful
+ * thing a reader scanning results wants to know.
+ */
+export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
+  const fits = fitsOnGpu(gpu);
+  const total = models.length;
+  const top = fits[0];
+
+  if (!top) {
+    return lang === 'zh'
+      ? `在 4K 上下文下，索引中的 ${total} 个量化模型没有一个能从容装进 ${gpu.name} 的 ${gpu.vram}GB。本页说明还差多少，以及换哪张卡能跑。`
+      : `None of the ${total} quantized models in this index fit comfortably in the ${gpu.name}'s ${gpu.vram}GB at 4K context. This page shows by how much, and which card clears it.`;
+  }
+
+  const size = top.totalGB.toFixed(1);
+  // Several card names already carry their capacity — "RTX 4060 Ti 16G",
+  // "Mac M3 Max 48G", "16 GB RAM (CPU)" — so the parenthetical is only added
+  // where it is not already in the name.
+  const statesSize = new RegExp(`\\b${gpu.vram}\\s?(GB|G)\\b`, 'i').test(gpu.name);
+  const enCap = statesSize ? '' : ` (${gpu.vram}GB)`;
+  const zhCap = statesSize ? '' : `（${gpu.vram}GB）`;
+  return lang === 'zh'
+    ? `${gpu.name}${zhCap}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${top.quant.level}，约 ${size}GB）。附每个模型的量化档位、预估显存与剩余余量。`
+    : `${gpu.name}${enCap} runs ${fits.length} of ${total} quantized models comfortably at 4K context — the largest is ${top.model.name} at ${top.quant.level}, about ${size}GB. Per-model quant level, estimated VRAM and headroom.`;
+}
+
 export interface GpuFit {
   model: QuantModel;
   quant: QuantVariant;

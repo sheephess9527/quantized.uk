@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import GpuPage from '../../../gpu/[gpuId]/page';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
-import { fitsOnGpu, gpuBySlug } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, gpuBySlug, gpuPageDescription } from '@/lib/utils/gpu-page';
 
 export { generateStaticParams } from '../../../gpu/[gpuId]/page';
 
@@ -17,7 +17,7 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   const url = canonical(path);
   const count = fitsOnGpu(gpu).length;
   const title = `${gpu.name} 能跑哪些大模型？| quantized.uk`;
-  const description = `在 ${gpu.vram}GB、4K 上下文下，${models.length} 个量化模型中有 ${count} 个可从容运行，附各自最佳量化档位、预估显存与余量。`;
+  const description = gpuPageDescription(gpu, 'zh');
   return {
     title,
     description,

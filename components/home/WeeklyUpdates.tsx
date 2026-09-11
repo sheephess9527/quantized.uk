@@ -4,14 +4,13 @@ import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Rss, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
-import { changelog, dataLastUpdated } from '@/lib/data/meta';
+import { dataLastUpdated } from '@/lib/data/meta';
 import { isRecentModel } from '@/lib/utils/model-meta';
 
 export default function WeeklyUpdates() {
   const { t, lang } = useLanguage();
   const w = t.home.weekly;
   const recent = models.filter(m => isRecentModel(m)).slice(0, 6);
-  const latestNotes = changelog.slice(0, 3);
 
   return (
     <section className="glass rounded-2xl p-5 sm:p-6">
@@ -59,7 +58,11 @@ export default function WeeklyUpdates() {
                 </span>
                 <span className="text-sm text-slate-200 font-medium">{m.name}</span>
                 <span className="block text-xs text-slate-600 font-mono mt-0.5">
-                  {m.paramLabel} · {m.addedAt}
+                  {/* "added", not a bare date. `addedAt` is when this index
+                      picked the model up, but printed next to a NEW badge a
+                      bare date reads as the model's release date — and several
+                      of these were released a year before we indexed them. */}
+                  {m.paramLabel} · {t.hub.model.addedOn.replace('{date}', m.addedAt ?? '')}
                 </span>
               </Link>
             </li>
@@ -67,17 +70,19 @@ export default function WeeklyUpdates() {
         </ul>
       )}
 
-      <ul className="space-y-2 border-t border-white/[0.05] pt-3">
-        {latestNotes.map((entry, i) => (
-          <li key={i} className="text-xs text-slate-500 leading-relaxed">
-            <span className="font-mono text-slate-600 mr-2">{entry.date}</span>
-            {entry[lang]}
-          </li>
-        ))}
-      </ul>
-      <a href="#changelog" className="inline-flex items-center min-h-[44px] mt-1 text-xs text-slate-600 hover:text-slate-400">
+      {/*
+        No changelog prose here any more. This block listed the latest three
+        entries while the hero pill showed the newest one and the changelog
+        section below showed it again — the same paragraph three times on one
+        page. This section's own job is the models that arrived; what changed
+        belongs to `/changelog/`, one link away.
+      */}
+      <Link
+        href="/changelog/"
+        className="inline-flex items-center min-h-[44px] mt-1 text-xs text-slate-500 hover:text-slate-300 border-t border-white/[0.05] pt-3 w-full"
+      >
         {w.viewChangelog} →
-      </a>
+      </Link>
     </section>
   );
 }

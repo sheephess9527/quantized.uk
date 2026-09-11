@@ -4,7 +4,7 @@ import { models } from '@/lib/data/models';
 import GpuPageContent from '@/components/gpu/GpuPageContent';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
-import { fitsOnGpu, gpuBySlug, gpuSlug } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
 
 export function generateStaticParams() {
   return gpuDatabase.map(g => ({ gpuId: gpuSlug(g) }));
@@ -17,7 +17,7 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   const url = canonical(path);
   const count = fitsOnGpu(gpu).length;
   const title = `${gpu.name} — what LLMs can it run? | quantized.uk`;
-  const description = `${count} of ${models.length} quantized models fit comfortably in ${gpu.vram}GB at 4K context, each with its best quant level, estimated VRAM and headroom.`;
+  const description = gpuPageDescription(gpu, 'en');
   return {
     title,
     description,

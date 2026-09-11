@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Plausible from '@/components/analytics/Plausible';
 import { SiteJsonLd } from '@/components/seo/JsonLd';
-import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
+import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE, MODEL_COUNT } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'quantized.uk — AI Quantization Intelligence',
-    description: 'VRAM calculator, 81+ quantized models, CLI generator, format wizard.',
+    description: `VRAM calculator, ${MODEL_COUNT} quantized models, CLI generator, format wizard.`,
     images: [OG_IMAGE.url],
   },
 };

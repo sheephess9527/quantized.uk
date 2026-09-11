@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { pageMetadata } from '@/lib/seo';
+import { pageMetadata, MODEL_COUNT } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Quant Hub — 81+ Quantized LLM Models | quantized.uk',
+  title: `Quant Hub — ${MODEL_COUNT} quantized LLM models | quantized.uk`,
   description:
-    'Browse 81+ open-source LLMs including Qwen3.8, Ministral 3, GPT-OSS, Qwen3-VL, Qwen3 MoE, DeepSeek-V3/R1, GLM-4.5-Air, Gemma 3, and Llama 4. Per-quant VRAM, speed, and quality data.',
+    `Browse ${MODEL_COUNT} open-source LLMs including Qwen3.8, Ministral 3, GPT-OSS, Qwen3-VL, DeepSeek-V3/R1, GLM-4.5-Air and Llama 4 — per-quant VRAM, speed and quality loss, sized for 43 GPUs.`,
   path: '/quant-hub',
 });
 

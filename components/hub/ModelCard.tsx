@@ -62,7 +62,7 @@ export default function ModelCard({ model, lang }: Props) {
         </div>
         <div className="flex flex-wrap gap-1 mb-1.5">
           {isRecentModel(model) && (
-            <span className="badge text-[10px] bg-cyan-500/15 text-cyan-300 border-cyan-500/25">{t.hub.model.newBadge}</span>
+            <span title={t.hub.model.newBadgeHint} className="badge text-[10px] bg-cyan-500/15 text-cyan-300 border-cyan-500/25">{t.hub.model.newBadge}</span>
           )}
           {isSuperseded(model) && (
             <span className="badge text-[10px] bg-amber-500/10 text-amber-400/90 border-amber-500/20">{t.hub.model.superseded}</span>

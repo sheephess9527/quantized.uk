@@ -258,7 +258,7 @@ follow it to the component that actually reads it in the mode the link opens.
 3. Wire `hfRepoMap` in **`lib/data/hf-repos.mjs` only** (single source; `hf-repos.ts` re-exports).
 4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks.
 5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
-6. Refresh SEO copy that hardcodes model counts (`lib/seo.ts`, layouts, `public/llms.txt`).
+6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`.
 
 **Superseding models** — set `status: 'superseded'` + `supersededBy`; do **not** delete (keeps
 links/SEO). Card + detail show amber “Prefer {name}”.
@@ -321,6 +321,27 @@ architecture, read `huggingface/transformers`'s `src/transformers/models/<family
 `docs/source/en/_toctree.yml` lists every family transformers knows. Cross-check parameter counts
 against published GGUF file sizes: a Q8_0 landing on ~8.5 bpw or a BF16 on ~16.0 confirms the whole
 chain, and a figure that will not reconcile is a figure not to ship.
+
+**Counts come from the data, never from a string.** `MODEL_COUNT` (`lib/seo.ts`) derives from
+`models.length`, and `app/llms.txt/route.ts` is generated like `feed.xml`. The number used to be
+typed into six files and `public/llms.txt`, so a model batch meant editing six strings and
+forgetting one left the site advertising a count it no longer had. Step 6 of "Adding models" is
+therefore gone — there is nothing left to refresh by hand.
+
+**A derived page's meta description must vary as much as the page does.** The GPU template
+interpolated only `gpu.vram`, so 36 of 43 pages shared nine descriptions. `gpuPageDescription()`
+names the card and its largest fitting model. After any template change, walk `out/**` and count
+distinct descriptions against page count — they should match.
+
+**`addedAt` is when *this index* picked a model up, not when the model shipped.** Printed bare
+beside a NEW badge it reads as a release date, and several entries were released a year before
+indexing. Always render it through `t.hub.model.addedOn` ("added {date}").
+
+**The methodology block records history, not the present.** `benchmarkMethodology.frameworks` is the
+stack those numbers were measured on — editing it to look current would claim runs on releases that
+did not exist at the time. `runtimeVersions` in `meta.ts` carries what the projects are at today,
+shown beside it, with its own `checkedAt`; bump that only when you actually re-check the projects'
+release pages.
 
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
@@ -429,6 +450,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-11 | **Findability (QTZ-003p/004/006/007/008/009/010)** — 36 of 43 GPU pages shared nine meta descriptions; `/tools/` and `/changelog/` were 404s; the nav linked 4 of ~340 pages; the homepage printed one changelog entry three times; counts were hardcoded in six files; methodology advertised runtimes two generations old |
 | 2026-09-11 | **2026 architectures** — the VRAM formula could not represent a hybrid-attention model at all (4× overstated KV on Qwen3.8); `ModelArch.attention` added and validated against measurements at three contexts, all 888 existing combinations unchanged. `pplLossPercent` optional so an unpublished figure is a dash, not a guess. +2 models (81) |
 | 2026-09-11 | **Two crawling faults (QTZ-001/002)** — `next/link` stripped the trailing slash from every dotted model id (2,101 redirecting links, 27 pages with no canonical inbound link); the language switcher was a `<button>`, leaving 164 Chinese pages with no crawlable entry. Both now gated in postbuild |
 | 2026-09-08 | **Search + feedback (P2)** — GPU pages name their measured runs and same-budget siblings (43 pages were 0.97 similar); `ItemList` claimed 73 items while emitting 30; "did it actually run?" replaces treating a copy as success; lab perf baseline recorded, no field data available |

@@ -56,17 +56,22 @@ export default function HeroSection() {
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
             {t.home.hero.badge}
           </div>
+          {/*
+            The date and a link, not the entry itself. This pill used to render
+            the full latest changelog line — the same prose that "This week's
+            updates" and the changelog block further down both also rendered, so
+            one page carried the same paragraph three times, with a truncated
+            copy of it occupying the first screen above the picker.
+          */}
           {latest && (
-            <a
-              href="#changelog"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors max-w-full sm:max-w-md"
+            <Link
+              href="/changelog/"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors"
             >
               <Sparkles size={12} className="shrink-0" />
-              <span className="truncate">
-                <span className="text-cyan-500/70 font-mono mr-1.5">{latest.date}</span>
-                {latest[lang]}
-              </span>
-            </a>
+              <span className="text-cyan-500/70 font-mono">{latest.date}</span>
+              {t.home.hero.changelogLink}
+            </Link>
           )}
         </div>
 

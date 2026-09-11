@@ -10,18 +10,24 @@ import { mirrorPath, toEnPath } from '@/lib/i18n/routing';
 import { cn } from '@/lib/utils/cn';
 import HardwareProfileSelector from '@/components/layout/HardwareProfileSelector';
 
+// `/gpu/` and `/formats/` are 43 and 7 pages respectively — between them most
+// of the site — and neither had a link in the main nav. A reader could only
+// reach a GPU page from a homepage card, and a format page from nowhere at all.
 const navLinks = (t: ReturnType<typeof useLanguage>['t']) => [
   { href: '/',             label: t.nav.home },
   { href: '/quant-hub/',    label: t.nav.quantHub },
+  { href: '/gpu/',          label: t.nav.gpus },
   { href: '/benchmarks/',   label: t.nav.benchmarks },
   { href: '/cookbook/',     label: t.nav.cookbook },
 ];
 
 const toolLinks = (t: ReturnType<typeof useLanguage>['t']) => [
+  { href: '/tools/',               label: t.nav.allTools },
   { href: '/tools/vram-calc/',     label: t.nav.vramCalc },
   { href: '/tools/cli-gen/',       label: t.nav.cliGen },
   { href: '/tools/format-wizard/', label: t.nav.formatWizard },
   { href: '/tools/compare/',    label: t.nav.modelCompare },
+  { href: '/formats/',             label: t.nav.formats },
 ];
 
 export default function Navbar() {

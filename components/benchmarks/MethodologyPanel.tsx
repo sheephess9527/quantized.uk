@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, Info } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { benchmarkMethodology, dataSources } from '@/lib/data/meta';
+import { benchmarkMethodology, dataSources, runtimeVersions } from '@/lib/data/meta';
 import { cn } from '@/lib/utils/cn';
 
 export default function MethodologyPanel() {
@@ -47,6 +47,25 @@ export default function MethodologyPanel() {
                 </span>
               ))}
             </div>
+          </div>
+          {/*
+            The measured stack and the current one, side by side. Showing only
+            the first made the page read as abandoned; silently replacing it
+            with the second would have claimed these runs happened on releases
+            that did not exist when they were made.
+          */}
+          <div>
+            <p className="text-xs text-slate-600 mb-2">
+              {t.bench.methodology.currentVersions.replace('{date}', runtimeVersions.checkedAt)}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(runtimeVersions.current).map(([k, v]) => (
+                <span key={k} className="badge bg-emerald-500/[0.08] text-emerald-300/90 border-emerald-500/20 text-xs font-mono">
+                  {k}: {v}
+                </span>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 leading-relaxed mt-2">{runtimeVersions.note[lang]}</p>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed">{m.notes[lang]}</p>
           <p className="text-xs text-slate-600">

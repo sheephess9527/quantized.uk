@@ -419,6 +419,67 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (c) — Audit QTZ-003(part) / 004 / 006 / 007 / 008 / 009 / 010
+
+The data-independent half of the audit — everything that did not need model
+specifications I cannot source.
+
+**QTZ-010 — 36 of 43 GPU pages shared nine descriptions.** The template
+interpolated only `gpu.vram`, so every 16GB card shipped a byte-identical meta
+description. `gpuPageDescription()` now names the card and the largest model it
+actually runs, both of which vary per page. Measured after: **44 pages, 44
+distinct descriptions, 0 duplicate groups**, in both languages. It also
+suppresses the capacity parenthetical when the name already carries it — "16 GB
+RAM (CPU) (16GB)" was the first draft.
+
+**QTZ-009 — `/tools/` was a 404** while four tool pages lived under it, and the
+nav linked four destinations out of a site with 43 GPU pages and 6 format
+comparisons. `/tools/` and `/zh/tools/` now exist, built from the same
+`tool-content.ts` the tool pages render so the index cannot describe a tool that
+has changed; `/gpu/` joins the main nav and `/formats/` the tools menu.
+
+**QTZ-007 — the homepage printed the same changelog entry three times**: the
+hero pill, "This week's updates", and the changelog block. Partly my own doing
+from the P1-01 restructure. `/changelog/` is now a real page (another of the
+audit's 404s), the hero pill carries a date and a link instead of truncated
+prose, "This week's updates" keeps the models and drops the notes, and the
+homepage block is a pointer. **Three renderings → one**, with `id="changelog"`
+still on the homepage because `/feed.xml`, the About page and external links all
+target it.
+
+**QTZ-008 — the homepage title was `quantized.uk — AI Quantization
+Intelligence`**: brand first, and a phrase nobody searches. Now
+"What LLM can my GPU run? — VRAM calculator and 81-model index", matching the
+`<h1>` that has asked that question since P1-01.
+
+**QTZ-003 (the half that needed no new data) — counts are computed now.**
+`MODEL_COUNT` in `lib/seo.ts` derives from `models.length`; the six places that
+hardcoded the number no longer do. `public/llms.txt` became
+`app/llms.txt/route.ts`, generated like `feed.xml` — it was advertising "79+"
+while the index held 81, on the one file whose whole audience is machines
+reading the site's claims about itself. It now also states how the numbers are
+produced.
+
+**QTZ-004 — the date beside a NEW badge read as a release date.** It is
+`addedAt`, when this index picked the model up, and several of those models
+shipped a year earlier. It reads "added 2026-08-07" now, and the badge carries a
+title explaining what it means.
+
+**QTZ-006 — the methodology block advertised `llama.cpp b4000+, vLLM 0.6.x,
+Ollama 0.3.x`**, two major generations behind. **Not fixed by bumping the
+numbers:** that block records the stack the benchmarks were actually run on, and
+editing it to look current would claim runs on releases that did not exist when
+they were made. Both are shown instead — the measured stack, and
+`runtimeVersions` with what the projects are at today (llama.cpp b10760,
+vLLM v0.29.0, Ollama v0.33.2, checked 2026-09-11) plus a note that speed figures
+move with the runtime. `checkedAt` is only to be updated when actually
+re-checked.
+
+No regression: 3,191 text nodes across 10 pages, 0 below WCAG AA; 0 horizontal
+overflows across 30 page × width combinations; all three build gates green.
+337 pages, up from 333.
+
+
 ### 2026-09-11 (b) — 2026 architectures: the calculator was wrong before any model was added
 
 The audit's third P0 was "the model index is 10–12 months stale". Adding models turned out to be

@@ -1,6 +1,19 @@
 import type { Metadata } from 'next';
 import { toEnPath, toZhPath } from '@/lib/i18n/routing';
 
+import { models } from '@/lib/data/models';
+
+/**
+ * The model count, from the index itself.
+ *
+ * It used to be typed as `79` into six separate files — `lib/seo.ts`, two hub
+ * layouts, two homepage metadata blocks and `public/llms.txt` — so a model
+ * batch meant editing six strings by hand, and forgetting one left the site
+ * advertising a number it no longer had. Anything reader-facing that counts
+ * models reads this.
+ */
+export const MODEL_COUNT = models.length;
+
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';
 
@@ -9,7 +22,7 @@ export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dx
 export const BING_SITE_VERIFICATION = '877CF3677E0C08A6443342CE11C95E22';
 
 const DEFAULT_DESCRIPTION =
-  'LLM quantization intelligence — VRAM calculator, 81+ model index, benchmarks, and deployment guides for running AI on consumer hardware.';
+  `LLM quantization intelligence — VRAM calculator, ${MODEL_COUNT}-model index, benchmarks, and deployment guides for running AI on consumer hardware.`;
 
 /** Prefer PNG for social previews (X/LinkedIn often skip SVG). */
 export const OG_IMAGE = {

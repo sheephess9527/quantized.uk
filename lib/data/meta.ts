@@ -39,7 +39,39 @@ export const benchmarkMethodology = {
   },
 } as const;
 
+/**
+ * What the runtimes are at today, separate from what the benchmarks were run on.
+ *
+ * The methodology block above records the versions those figures were actually
+ * measured with — that is a fact about the measurement and must not be edited
+ * to look current. But leaving only that on the page made the site look
+ * abandoned to exactly the reader it is written for: `llama.cpp b4000+,
+ * vLLM 0.6.x, Ollama 0.3.x` is two major generations behind, and a geek
+ * checking whether a reference site is still alive checks precisely this.
+ *
+ * So both are shown, and the gap between them is stated rather than hidden.
+ * `checkedAt` is when the right-hand column was last verified against the
+ * projects' own release pages — update it only when actually re-checked.
+ */
+export const runtimeVersions = {
+  checkedAt: '2026-09-11',
+  current: {
+    llamacpp: 'b10760',
+    vllm: 'v0.29.0',
+    ollama: 'v0.33.2',
+  },
+  note: {
+    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today.',
+    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。',
+  },
+} as const;
+
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-11',
+    en: 'Findability and honest labels. Every hardware page now has a description that names the card and the largest model it runs — 36 of the 43 previously shared just nine descriptions between them, because the template only knew the memory size. The tools index and the data changelog are real pages instead of 404s, the navigation finally links the 43 hardware pages and the format comparisons, and the homepage stopped printing the same update three times. Model counts are computed from the index rather than typed in six places, and the date beside a NEW badge now says "added" — it is when this index picked the model up, not when the model was released',
+    zh: '可发现性与标签诚实度。每个硬件页面的描述现在会写明具体显卡和它能跑的最大模型 —— 此前 43 个页面中有 36 个只共用九条描述，因为模板里只有显存大小这一个变量。工具索引与数据更新日志从 404 变成了真实页面，导航里终于有了 43 个硬件页和格式对比的入口，首页也不再把同一条更新印三遍。模型数量改为从索引实时计算，而不是在六个地方手写；NEW 徽章旁的日期现在标注为「收录」—— 那是本索引收录它的时间，不是模型的发布时间',
+  },
   {
     date: '2026-09-11',
     en: 'The calculator learned that 2026 models do not all cache attention the same way, and the first two are in. Qwen3.8 27B runs only 16 of its 64 layers on full attention — the rest keep a fixed recurrent state — so the old arithmetic overstated its KV cache fourfold, claiming 8GB at 32K context where the measured figure is 2GB. Sizing now follows the model\'s actual attention shape and reproduces published measurements at 8K, 32K and 262K. Ministral 3 8B joins it, sized from Mistral\'s own GGUF releases. Where nobody has published a per-level quality loss, the column now shows a dash instead of a number',
