@@ -353,6 +353,26 @@ conversion — backfilling ~300 quant rows from it would invent attribution. It 
 repo source; `huggingface.co` is blocked by the egress proxy. Leave the field out rather than
 half-populate it.
 
+**The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
+every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
+perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers
+deliberately state a limit instead of a number; keep them that way unless the data arrives.
+`FAQPage` lives on `/faq/` **only** — the homepage block is visible content with no schema, because
+the same question as structured data at two URLs is a duplicate entity, not extra coverage.
+
+**Two medians are not a comparison unless they cover the same models.** The Q5-vs-Q4 answer
+subtracted a median over the 79 models reporting Q4_K_M from one over the 16 reporting Q5_K_M —
+different populations, so the difference described the groups, not the levels. Pair first, then take
+the median of the per-model deltas. This is the homepage "average accuracy" fault in a new place;
+expect it wherever two optional fields are aggregated side by side.
+
+**"Consumer GPU" is not `type`.** `type: 'amd'` also covers the Radeon PRO W7900 and Instinct MI100,
+so "the largest consumer card" returned a workstation card. Filter on the name (`/^Radeon RX/`)
+alongside `nvidia-consumer` when the question is "what should I buy".
+
+**Adding a route means touching three places** — the route, its `/zh` mirror, and `app/sitemap.ts`.
+`/tools/` and `/changelog/` shipped as pages and sat outside the sitemap until `/faq/` was added.
+
 **Redirects live in `public/_redirects`, never in `next.config.js`.** `redirects()` needs a Next
 server and is **silently inert** in a static export — it looks done and does nothing. Cloudflare
 Pages reads `_redirects` from the build root. The file is hand-written while the pages are derived,

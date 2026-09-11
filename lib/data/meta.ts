@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'There is now a FAQ, and every answer in it is computed rather than written. "How much VRAM do I need for a 7B" had a calculator on this site but no answer — 24 questions across sizing, quantization quality, formats, hardware and where the numbers come from now answer from the same index, each ending in a link to where you can check it. Because they are computed, they cannot drift from the calculator the way the guides once did: editing one model row moves the answers that depend on it. Three questions the index genuinely cannot settle — whether quantization hurts coding more than chat, whether an official QAT build beats a community one, and how much Q5 buys over Q4 for models that publish only one of the two — say so instead of guessing',
+    zh: '现在有了常见问题页，而且每个答案都是算出来的，不是写出来的。「7B 要多少显存」这个问题，本站一直有计算器，却没有答案 —— 现在围绕体积与显存、量化掉点、格式与运行时、硬件、数据来源五个主题的 24 个问题，全部由同一份索引作答，每条末尾都带一个可以自己核对的站内链接。因为是算出来的，它们不会像当初的指南那样与计算器脱节：改动一行模型数据，依赖它的答案就会跟着变。有三个索引确实回答不了的问题 —— 量化对写代码的影响是否更大、官方 QAT 是否优于社区量化、以及只公布了单一档位数据的模型上 Q5 比 Q4 值不值 —— 页面会直说，而不是猜一个',
+  },
+  {
+    date: '2026-09-11',
     en: 'Every format the index ships now has its own page. "What is AWQ" had nowhere to land on a site named after quantization — there were comparisons of one format against another, but nothing that simply explained one, and the 53 models shipping AWQ had no shared parent. GGUF, AWQ, EXL2 and GPTQ each now get what the format is, which runtimes read it, what one real model costs in it at 4K, the quant levels this index actually carries with their median published loss, and every indexed model that ships it — 159 new links from a format to its models. MXFP4 is explained on the GGUF page rather than made a fifth format, because that is what it is: GPT-OSS\'s native 4-bit weights are distributed as GGUF files, not as a different container',
     zh: '本索引收录的每种格式现在都有了自己的页面。「AWQ 是什么」此前在一个以量化命名的站点上无处可落 —— 有格式之间的两两对比，却没有一个页面单纯讲清楚一种格式，而提供 AWQ 的 53 个模型也没有共同的归属页。GGUF、AWQ、EXL2、GPTQ 现在各有：这个格式是什么、哪些运行时能读它、一个真实模型在 4K 下要多少显存、本索引实际收录了哪些量化档位及其公开损失中位数，以及提供该格式的全部模型 —— 从格式指向模型的新增内链共 159 条。MXFP4 放在 GGUF 页面里讲，而没有被单列为第五种格式，因为它本来就是这样：GPT-OSS 的原生 4-bit 权重是以 GGUF 文件分发的，不是另一种容器',
   },

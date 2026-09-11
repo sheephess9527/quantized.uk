@@ -15,6 +15,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/quant-hub/',
     '/benchmarks/',
     '/cookbook/',
+    '/faq/',
+    // `/tools/` and `/changelog/` shipped as real pages (2026-09-11) and were
+    // never added here, so two pages existed that the sitemap did not mention.
+    // Adding a route means adding it in three places: the route, its `/zh`
+    // mirror, and this list.
+    '/tools/',
+    '/changelog/',
     '/tools/vram-calc/',
     '/tools/cli-gen/',
     '/tools/format-wizard/',

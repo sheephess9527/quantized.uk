@@ -10,6 +10,7 @@ import ExploreStrip from '@/components/home/ExploreStrip';
 import DataChangelog from '@/components/home/DataChangelog';
 import DataFreshness from '@/components/home/DataFreshness';
 import WeeklyUpdates from '@/components/home/WeeklyUpdates';
+import HomeFaq from '@/components/home/HomeFaq';
 import MaintainerNote from '@/components/home/MaintainerNote';
 import type { Metadata } from 'next';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, MODEL_COUNT, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
@@ -52,6 +53,7 @@ export default function HomePage() {
           3. I would rather just click something    — PopularStarts + JobPaths
           4. why should I believe these numbers     — StatsBar + MeasuredCases
           5. is this still maintained               — WeeklyUpdates + TodayBoard
+          5b. the thing I actually came to ask     — HomeFaq
           6. something is wrong, who do I tell      — MaintainerNote
 
         The format heat index and the six-axis radar used to sit at 4; they are
@@ -75,6 +77,8 @@ export default function HomePage() {
         </div>
         <WeeklyUpdates />
         <TodayBoard />
+
+        <HomeFaq />
 
         <MaintainerNote />
 

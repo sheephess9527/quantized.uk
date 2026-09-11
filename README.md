@@ -419,6 +419,51 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (j) — Audit P1: QTZ-019
+
+**`/faq/` was a 404**, and only the four tool pages carried `FAQPage`. This was the largest single
+gap for AI engines: the site holds the data to answer "how much VRAM does a 7B need" precisely, and
+had it only as a calculator input — never as a question with a self-contained answer.
+
+`lib/utils/faq.ts` + `/faq/` + `/zh/faq/`: **24 questions in 5 groups**, 2,805 words EN / 3,302
+Chinese characters, `FAQPage` with all 24 (48 across both trees, every one present in the visible
+text). Each answer ends in an internal link — **39 per page**.
+
+**Computed, not written.** Every figure comes from the index, so the FAQ cannot drift from the
+calculator the way the cookbook guides did. Verified by perturbation: changing one model row's
+`bpw` from 4.85 to 6.50 moved the 7B sizing answer (5.1 → 6.7 GB) *and* the GGUF effective-rate
+range (4.1–4.9 → 4.1–6.5) in the same edit.
+
+**Where the index cannot answer, it says so.** Three questions are answered with a limit rather than
+a number: whether quantization hurts coding more than chat (every quality figure here is perplexity
+on WikiText-2, which is not a coding benchmark), whether an official QAT build beats a community one
+(true in mechanism, but this index records no publisher per quant — the QTZ-015 gap), and Q5 vs Q4
+where a model publishes only one of the two.
+
+**Faults found while writing it:**
+
+- **The Q5-vs-Q4 answer compared two medians drawn from different populations** — 79 models report
+  Q4_K_M, 16 report Q5_K_M, and they are not the same 16. Subtracting one median from the other
+  describes the two groups, not the two levels; it is the old homepage "average accuracy" fault in a
+  new place. Now **paired**: only the 16 models publishing both, median delta 1.5 points for ~17%
+  more file.
+- **"Best GPU" returned a Radeon PRO W7900.** Filtering on `type` alone treats workstation and
+  Instinct cards as consumer; "what should I buy" now excludes them by name and answers RTX 5090.
+- **The Mac answer counted models and called them formats** — "removes 74 of the format choices" was
+  53 AWQ + 21 EXL2 models. It now says three of the four tracked formats are unavailable.
+
+**Also caught:** `/tools/` and `/changelog/` shipped as real pages on 2026-09-11 and were never added
+to `sitemap.ts` — two pages the sitemap did not mention. Added with `/faq/`.
+
+The homepage gets four of the questions as a visible block and **deliberately no `FAQPage` of its
+own**: the same question as structured data at two URLs is a duplicate-entity problem, not double
+coverage. `/faq/` owns the schema.
+
+Regression: 1,520 text nodes checked for contrast, **0 below AA**; **0/15** page×width combinations
+with horizontal overflow. `<details>` rather than a JS accordion, so the answers are in the exported
+HTML with the bundle blocked.
+
+
 ### 2026-09-11 (i) — Audit P1: QTZ-015 (the half the data supports)
 
 **"What is AWQ" had no page.** `/formats/` compared formats against each other and six pair pages

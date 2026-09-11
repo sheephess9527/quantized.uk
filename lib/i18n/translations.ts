@@ -687,6 +687,12 @@ export const translations = {
         },
       ],
     },
+    faq: {
+      title: 'Local LLM FAQ',
+      intro: 'Every answer here is computed from the same index that powers the calculator and the model pages — {models} models and {gpus} GPUs — and links to where you can check it. Figures are labelled measured or estimated throughout, and where the index cannot answer a question it says so rather than guessing.',
+      homeTitle: 'Before you download a 20GB file',
+      homeAll: 'All {n} questions',
+    },
     formatSingle: {
       title: '{format} explained',
       subtitle: 'What {format} is, which runtimes read it, what it costs in VRAM, and all {count} of the {total} models in this index that ship in it.',
@@ -1502,6 +1508,12 @@ export const translations = {
           ],
         },
       ],
+    },
+    faq: {
+      title: '本地大模型常见问题',
+      intro: '这里每一个答案都由驱动计算器和模型页的同一份索引实算得出 —— {models} 个模型、{gpus} 张显卡 —— 并附上可以自己核对的链接。所有数字都标注了实测还是估算；索引回答不了的问题，本站会直说，而不是猜一个。',
+      homeTitle: '在下载那个 20GB 文件之前',
+      homeAll: '全部 {n} 个问题',
     },
     formatSingle: {
       title: '{format} 详解',
