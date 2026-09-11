@@ -419,6 +419,56 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 — Audit task book QTZ-001 / QTZ-002: two crawling faults
+
+An external audit of the live site (2026-09-11) reported both; both reproduced locally before any
+change was made.
+
+**QTZ-001 — 2,101 internal links were redirecting.** `trailingSlash: true` makes every canonical
+and every exported directory end in a slash, but `next/link` disagreed: its
+`normalizePathTrailingSlash` applies `/\.[^/]+\/?$/` and treats *any* last path segment containing
+a dot as a filename, stripping the slash back off. Every model id carrying a version number hit it —
+`llama-3.1-8b`, `qwen2.5-7b`, `phi-3.5-mini`. Measured in the export: **46 URLs, 2,101 link
+instances**, and all 46 had a dot in the last segment — a 100% correlation with the mechanism, not a
+scattering of typos. The audit's 27 named model pages each had **zero** direct internal links to
+their own canonical URL.
+
+This footgun was already documented here for GPU slugs — `gpuSlug()` is deliberately dot-free — and
+had simply never been applied to model ids, which are not ours to rename.
+
+Fixed with **`skipTrailingSlashRedirect: true`** in `next.config.js`, which is the public switch
+behind that normalisation (`define-env-plugin` maps it straight to
+`process.env.__NEXT_MANUAL_TRAILING_SLASH`). With `output: 'export'` there is no Next server, so
+"skip the redirect" costs nothing — Cloudflare still serves the 308 for anyone arriving without the
+slash. The trade is that Next no longer *adds* a missing slash either, which immediately exposed
+seven bare hrefs in the Navbar (`/quant-hub`, `/benchmarks`, `/cookbook`, all four `/tools/*`) that
+had been silently corrected until now. Those are explicit again.
+
+**QTZ-002 — the Chinese tree had no way in.** The language switcher was
+`<button onClick={toggleLang}>`: the English tree contained **zero** `<a href="/zh…">`, so 164
+Chinese pages were discoverable only through the sitemap and hreflang. A crawler does not click.
+It is now a real anchor using the existing `mirrorPath()`, marked `rel="alternate"` with an
+`hreflang` matching the head, plus a second one in the Footer — which is on all 164 pages of each
+tree, so that one element is 164 inbound links per direction.
+
+Deliberately a bare `next/link`, never `LocalLink`: localizing this particular href would rewrite it
+back into the tree the reader is already in.
+
+**Two new build gates**, because both faults were invisible in review and obvious in the export:
+
+- Every internal href must end in `/` — 330 pages checked, fails the build otherwise.
+- The existing leak gate now matches whole `<a>` tags rather than bare hrefs, so it can exempt the
+  one legitimate cross-language link (`rel="alternate"` + `hreflang`) while still catching a shared
+  component that forgot `LocalLink`. Without that it fired 328 false positives the moment the
+  switcher started working.
+
+Verified in a browser: 0 no-trailing-slash links on `/`, `/quant-hub/`, `/gpu/rtx-4090/`, `/zh/`,
+`/zh/quant-hub/`; 2 crawlable cross-language anchors per page in both directions with `hreflang`
+matching the head; and the switcher lands on the matching page — `/quant-hub/qwen3-8b/` →
+`/zh/quant-hub/qwen3-8b/` rendering `lang="zh-Hans"`, not the homepage. All 27 named model pages now
+have direct canonical inbound links (6–18 each).
+
+
 ### 2026-09-08 (f) — Task book P2: search, feedback, and a measured performance baseline
 
 **Audited before changing anything.** Canonical and hreflang are correct on all 328 indexable pages

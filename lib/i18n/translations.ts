@@ -11,6 +11,7 @@ export const translations = {
       formatWizard: 'Format Wizard',
       modelCompare: 'Compare',
       langToggle: '中文',
+      langFooter: '中文',
       tagline: 'AI Quantization Intelligence',
     },
     home: {
@@ -769,6 +770,7 @@ export const translations = {
       formatWizard: '格式向导',
       modelCompare: '模型对比',
       langToggle: 'EN',
+      langFooter: 'English',
       tagline: 'AI 量化技术情报站',
     },
     home: {

@@ -61,10 +61,21 @@ for (const file of files) {
 const ASSET = /\.[a-z0-9]{2,5}$/i;
 const leaks = [];
 
+// Anchors are matched whole, not by href alone, because one kind of
+// cross-language link is deliberate: the language switcher in the Navbar and
+// the Footer is the *only* way a crawler can walk between the two trees, and
+// it is marked `rel="alternate"` with an `hreflang` matching the head. Those
+// are exempt. Everything else pointing out of /zh is still a bug — a shared
+// component that forgot `LocalLink`.
+const ANCHOR = /<a\b[^>]*>/gi;
+
 for (const file of files) {
   const html = readFileSync(file, 'utf8');
-  for (const [, href] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
+  for (const [tag] of html.matchAll(ANCHOR)) {
+    const href = (tag.match(/\shref="(\/[^"#?]*)"/) ?? [])[1];
+    if (!href) continue;
     if (href === '/zh' || href.startsWith('/zh/') || href.startsWith('/_next') || ASSET.test(href)) continue;
+    if (/\srel="alternate"/i.test(tag) && /\shreflang="/i.test(tag)) continue;
     const target = join(OUT, href, 'index.html');
     if (existsSync(target)) leaks.push({ page: relative(OUT, file), href });
   }
@@ -81,6 +92,42 @@ function rendersUndefined(html) {
   return /(?:^|>)[^<]*\bundefined\b/.test(text);
 }
 const undefinedPages = files.filter(file => rendersUndefined(readFileSync(file, 'utf8')));
+
+// ------------------------------------------- 4. trailing-slash on internal links
+// `trailingSlash: true` makes every canonical and every exported directory end
+// in a slash, but `next/link` used to quietly disagree: its
+// `normalizePathTrailingSlash` treats any last path segment containing a dot as
+// a filename and strips the slash back off. Every model id with a version
+// number in it — `llama-3.1-8b`, `qwen2.5-7b`, `phi-3.5-mini` — hit that rule,
+// so 46 URLs shipped 2,101 internal links that all 308-redirected, and 27 model
+// pages had no direct link to their own canonical URL at all.
+//
+// `skipTrailingSlashRedirect: true` in next.config.js turns that normalisation
+// off. The trade is that Next no longer *adds* a missing slash either, so an
+// href written without one now stays wrong — which is exactly what this gate is
+// for. It runs over every exported page, both trees.
+const allFiles = htmlFiles(OUT);
+const slashMisses = new Map();
+for (const file of allFiles) {
+  const html = readFileSync(file, 'utf8');
+  for (const [, href] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
+    // Wider than ASSET: that one caps the extension at 5 characters, which is
+    // right for the leak check but treats `/site.webmanifest` as a page.
+    if (href === '/' || href.startsWith('/_next') || /\.[a-z0-9]{2,12}$/i.test(href)) continue;
+    if (href.endsWith('/')) continue;
+    if (!slashMisses.has(href)) slashMisses.set(href, relative(OUT, file));
+  }
+}
+if (slashMisses.size) {
+  console.error(`\nlocalize-export: ${slashMisses.size} internal link(s) missing a trailing slash:\n`);
+  for (const [href, page] of [...slashMisses].slice(0, 15)) console.error(`  ${href}   (e.g. ${page})`);
+  console.error(
+    '\nEvery internal href must end in "/" — the canonical and the exported\n' +
+      'directory both do, so one without it costs a 308 on every crawl.\n'
+  );
+  process.exit(1);
+}
+console.log(`localize-export: all internal links end in "/" (${allFiles.length} pages checked)`);
 
 console.log(`localize-export: lang="zh-Hans" on ${patched}/${files.length} Chinese pages`);
 

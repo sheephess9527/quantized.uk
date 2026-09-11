@@ -1,30 +1,31 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, Zap, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { toEnPath } from '@/lib/i18n/routing';
+import { mirrorPath, toEnPath } from '@/lib/i18n/routing';
 import { cn } from '@/lib/utils/cn';
 import HardwareProfileSelector from '@/components/layout/HardwareProfileSelector';
 
 const navLinks = (t: ReturnType<typeof useLanguage>['t']) => [
   { href: '/',             label: t.nav.home },
-  { href: '/quant-hub',    label: t.nav.quantHub },
-  { href: '/benchmarks',   label: t.nav.benchmarks },
-  { href: '/cookbook',     label: t.nav.cookbook },
+  { href: '/quant-hub/',    label: t.nav.quantHub },
+  { href: '/benchmarks/',   label: t.nav.benchmarks },
+  { href: '/cookbook/',     label: t.nav.cookbook },
 ];
 
 const toolLinks = (t: ReturnType<typeof useLanguage>['t']) => [
-  { href: '/tools/vram-calc',     label: t.nav.vramCalc },
-  { href: '/tools/cli-gen',       label: t.nav.cliGen },
-  { href: '/tools/format-wizard', label: t.nav.formatWizard },
-  { href: '/tools/compare',     label: t.nav.modelCompare },
+  { href: '/tools/vram-calc/',     label: t.nav.vramCalc },
+  { href: '/tools/cli-gen/',       label: t.nav.cliGen },
+  { href: '/tools/format-wizard/', label: t.nav.formatWizard },
+  { href: '/tools/compare/',    label: t.nav.modelCompare },
 ];
 
 export default function Navbar() {
-  const { t, toggleLang, lang } = useLanguage();
+  const { t, lang } = useLanguage();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -104,14 +105,28 @@ export default function Navbar() {
           <div className="hidden sm:block max-w-[7rem] lg:max-w-[9.5rem]">
             <HardwareProfileSelector compact />
           </div>
-          <button
-            onClick={toggleLang}
+          {/*
+            An anchor, not a button. This was `<button onClick={toggleLang}>`,
+            which meant the English tree contained **zero** `<a href="/zh…">`:
+            the 164 Chinese pages had no crawlable inbound link anywhere on the
+            site and were reachable only via sitemap and hreflang. A crawler
+            does not click.
+
+            Deliberately a bare `next/link`, never `LocalLink` — localizing this
+            href would rewrite it back into the tree the reader is already in,
+            which is the one place that behaviour is wrong.
+          */}
+          <NextLink
+            href={mirrorPath(pathname ?? '/')}
+            hrefLang={lang === 'en' ? 'zh-Hans' : 'en'}
+            lang={lang === 'en' ? 'zh-Hans' : 'en'}
+            rel="alternate"
             className="px-2.5 min-h-[44px] inline-flex items-center rounded-lg text-xs font-semibold whitespace-nowrap text-slate-400 hover:text-violet-300 hover:bg-violet-500/10 border border-white/[0.06] hover:border-violet-500/20 transition-all duration-150"
             title={lang === 'en' ? 'Switch to Chinese' : '切换为英文'}
-            aria-label={lang === 'en' ? 'Switch to Chinese' : 'Switch to English'}
+            aria-label={lang === 'en' ? '切换到中文版 / Switch to Chinese' : 'Switch to English'}
           >
             {t.nav.langToggle}
-          </button>
+          </NextLink>
 
           <button
             className="md:hidden p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 hover:text-slate-200"

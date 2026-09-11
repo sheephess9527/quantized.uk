@@ -1,6 +1,9 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import NextLink from 'next/link';
+import { usePathname } from 'next/navigation';
+import { mirrorPath } from '@/lib/i18n/routing';
 import { Zap, ExternalLink, Mail } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
@@ -8,7 +11,8 @@ import { trackEvent } from '@/lib/analytics';
 const FEEDBACK_EMAIL = 'hello@quantized.uk';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const pathname = usePathname();
 
   const sections = [
     {
@@ -109,6 +113,21 @@ export default function Footer() {
             <Link href="/about/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
               {t.about.linkLabel}
             </Link>
+            {/*
+              The second crawlable route between the two trees, after the
+              Navbar switcher. The Footer is on all 164 pages of each tree, so
+              this one element is 164 inbound links to the other language —
+              which had none at all while the switcher was a `<button>`.
+            */}
+            <NextLink
+              href={mirrorPath(pathname ?? '/')}
+              hrefLang={lang === 'en' ? 'zh-Hans' : 'en'}
+              lang={lang === 'en' ? 'zh-Hans' : 'en'}
+              rel="alternate"
+              className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            >
+              {t.nav.langFooter}
+            </NextLink>
           </div>
         </div>
       </div>

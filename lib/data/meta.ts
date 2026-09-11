@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-08';
+export const dataLastUpdated = '2026-09-11';
 
 export const dataSources = {
   models: {
@@ -40,6 +40,11 @@ export const benchmarkMethodology = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-11',
+    en: 'Two crawling faults fixed. Every internal link to a model whose name contains a version number — llama-3.1-8b, qwen2.5-7b, phi-3.5-mini — was losing its trailing slash and redirecting: 2,101 links across 46 URLs, and 27 model pages had no direct link to their own canonical address. And the language switcher was a button rather than a link, so the 164 Chinese pages had no crawlable route into them from anywhere on the site. Both are now checked by the build, so neither can come back quietly',
+    zh: '修掉两处抓取层面的缺陷。凡是名字里带版本号的模型 —— llama-3.1-8b、qwen2.5-7b、phi-3.5-mini —— 指向它们的站内链接都会丢掉尾部斜杠并触发跳转：涉及 46 个 URL、2,101 条链接，其中 27 个模型页在自己的规范地址上没有任何直接内链。另外语言切换器是按钮而不是链接，导致 164 个中文页面在全站没有任何可抓取的入口。两处现在都由构建检查把关，不会再悄悄回退',
+  },
   {
     date: '2026-09-08',
     en: 'Search and feedback groundwork. Hardware pages now say when a card has real measured runs behind it — four of the 43 do — and name the other cards that share its memory budget, because the model list is decided by VRAM and those pages were otherwise near-copies of each other. Structured data was claiming 73 models on pages that listed 30; it now matches what is on the page, on all 329 of them. And guides and the command generator ask whether the thing actually ran: copying a command is not the same as it working, and the correction email shows you its exact text before your mail app opens',

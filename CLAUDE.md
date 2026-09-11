@@ -105,6 +105,19 @@ flaky network. Never "fix" it by removing the postbuild hook.
   skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
 - **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
   platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes.
+- **Every internal href ends in `/` — and the build checks.** `trailingSlash: true` is not enough:
+  `next/link` treats any last path segment containing a dot as a filename and strips the slash
+  (`/\.[^/]+\/?$/` in `normalizePathTrailingSlash`), which silently hit every versioned model id —
+  `llama-3.1-8b`, `qwen2.5-7b` — for 2,101 redirecting links across 46 URLs. `next.config.js` now
+  sets **`skipTrailingSlashRedirect: true`**, the public switch for that normalisation. Consequence
+  to remember: Next no longer *adds* a missing slash either, so write it yourself. The postbuild gate
+  fails the build on any bare internal href.
+- **The language switcher must be an `<a href>`, and it is the one link that must not be
+  `LocalLink`.** It was a `<button onClick={toggleLang}>`, so the English tree had zero
+  `<a href="/zh…">` and 164 Chinese pages had no crawlable inbound link at all. Use `mirrorPath()`
+  with a bare `next/link`, `rel="alternate"` and an `hreflang` matching the head — localizing this
+  href would point it back into the tree the reader is already in. The leak gate matches whole
+  `<a>` tags so it can exempt exactly this link; keep both attributes or it will be flagged.
 - **Negative margins are a maintenance hazard here.** `-mt-*` on a section only stays correct while
   the section above it never changes. Two of them had silently gone wrong: `StatsBar`'s `-mt-8`
   (meant to straddle the hero) overlapped `JobPaths` once that was inserted between them. Also note
@@ -394,6 +407,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-11 | **Two crawling faults (QTZ-001/002)** — `next/link` stripped the trailing slash from every dotted model id (2,101 redirecting links, 27 pages with no canonical inbound link); the language switcher was a `<button>`, leaving 164 Chinese pages with no crawlable entry. Both now gated in postbuild |
 | 2026-09-08 | **Search + feedback (P2)** — GPU pages name their measured runs and same-budget siblings (43 pages were 0.97 similar); `ItemList` claimed 73 items while emitting 30; "did it actually run?" replaces treating a copy as success; lab perf baseline recorded, no field data available |
 | 2026-09-08 | **Guides vs the calculator** — 8GB guide ran ~2GB high and Mac guide told 18GB readers a 14B "needs 36GB+" (it needs 11.0); five guides rewritten from the index. `readTime` was fiction on 22/23, now derived. Contrast: `slate-600` was 2.5:1 — palette raised, 3,175 text nodes now pass AA |
 | 2026-09-08 | **Homepage answers first** — hero asks for your card and your task, then names the largest model that fits, one with room to grow, and the fastest. Pick criteria that were monotonic in model size gave a 4090 the same 0.5B answer as an 8G card; `?gpu=` did nothing in the calculator's forward mode; raw `quant.level` broke the calculator's bpw lookup |
