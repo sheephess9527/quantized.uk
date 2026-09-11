@@ -419,6 +419,43 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (h) — Audit P1: QTZ-014
+
+**Two pages with an intersection of zero.** `/formats/awq-vs-gptq/` and `/formats/exl2-vs-gptq/`
+each compared formats that **no model in the index ships together** — GPTQ is on 4 of 81, and not
+one of those 4 also has an AWQ or EXL2 build. With nothing in common there is no row to put side by
+side, so both pages spent ~650 words restating two editorial descriptions next to each other, with
+one inbound link apiece.
+
+**Derived, not deleted by hand.** `formatPairs` now filters on `overlapCount(pair) > 0`, and
+`mergedPairs` carries the excluded ones with a target chosen by data: the best-supported surviving
+page about the pair's **rarer** format, which resolves both to `/formats/gguf-vs-gptq/`. If a model
+ever ships both AWQ and GPTQ the pair becomes a page again with no code change. Six consumers
+(static params, sitemap, `/llms.txt` count, the index cards, the tools index) all read
+`formatPairs`, so 6 pairs → 4 propagated everywhere with no edit.
+
+**The redirect mechanism the audit proposed does not work here.** `next.config.js` `redirects()`
+requires a Next server; under `output: 'export'` it is silently inert — it would have looked done
+and done nothing. Cloudflare Pages reads `_redirects` from the build root, so that is where the four
+rules live (EN + ZH, 301).
+
+**`_redirects` is hand-written while the pages are derived, so the postbuild gates it.** Each rule is
+checked from both ends: the source must **not** be an exported page (otherwise the real file shadows
+the redirect and it can never fire) and the target **must** be one (otherwise it redirects into a
+404). Verified failing: adding `/formats/gguf-vs-awq/ → /formats/nope/` exits 1 and names both
+faults; the real table exits 0 with "4 redirects check out".
+
+**The question survives the page.** "AWQ or GPTQ" is a real query — the answer is just that nobody
+faces the choice for a given model. `/formats/gguf-vs-gptq/` now carries an `AWQ vs GPTQ, EXL2 vs
+GPTQ` section saying exactly that, with the counts, and a verdict (AWQ on both counts, on
+activation-aware quantization and first-class vLLM/TGI support; EXL2 for variable bit-width on a
+single NVIDIA GPU). 743 → **919 words EN / 717 Chinese characters**. The section renders only where
+`mergedPairs` points, so it cannot appear on a page that is not a redirect target.
+
+Export: 374 → **370 pages**. No residual link to either removed URL anywhere in `out/`, and neither
+appears in `sitemap.xml`.
+
+
 ### 2026-09-11 (g) — Audit P1: QTZ-012
 
 **61 GPU pages, one page.** The fit list is a function of VRAM and nothing else, so every 16 GB

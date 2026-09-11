@@ -1,0 +1,21 @@
+# Cloudflare Pages redirect table.
+#
+# NOTE: `next.config.js` `redirects()` does nothing here. This is a static
+# export (`output: 'export'`) — there is no Next server to run a redirect, so
+# the config option is silently inert and the platform's own table is the only
+# mechanism that works. Cloudflare Pages reads this file from the build output
+# root; `public/` is copied verbatim, so it lands there.
+#
+# `formatPairs` drops any pair with zero models in common (see
+# lib/utils/format-compare.ts) — there is nothing to compare when not one model
+# in the index ships both formats, which is the case for GPTQ against AWQ and
+# against EXL2. Those two URLs were real pages and are kept reachable rather
+# than 404'd; `/formats/gguf-vs-gptq/` answers the merged question directly.
+#
+# The postbuild gate checks both halves of every line: the source must NOT be an
+# exported page (or the redirect is shadowed and dead) and the target MUST be
+# one (or the redirect points at a 404).
+/formats/awq-vs-gptq/      /formats/gguf-vs-gptq/      301
+/formats/exl2-vs-gptq/     /formats/gguf-vs-gptq/      301
+/zh/formats/awq-vs-gptq/   /zh/formats/gguf-vs-gptq/   301
+/zh/formats/exl2-vs-gptq/  /zh/formats/gguf-vs-gptq/   301

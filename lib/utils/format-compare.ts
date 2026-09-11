@@ -25,13 +25,64 @@ export interface FormatPair {
   b: QuantFormat;
 }
 
-export const formatPairs: FormatPair[] = COMPARABLE.flatMap((a, i) =>
+const ALL_PAIRS: FormatPair[] = COMPARABLE.flatMap((a, i) =>
   COMPARABLE.slice(i + 1).map(b => ({
     slug: `${a.id}-vs-${b.id}`,
     a,
     b,
   })),
 );
+
+/** Models shipping both of a pair's formats — the pair's only real content. */
+function overlapCount(pair: FormatPair): number {
+  return models.filter(
+    m => m.quants.some(q => q.format === pair.a.name) && m.quants.some(q => q.format === pair.b.name),
+  ).length;
+}
+
+/**
+ * A pair with **no** model in common is not a comparison.
+ *
+ * `awq-vs-gptq` and `exl2-vs-gptq` each had an intersection of exactly zero:
+ * not one model in the index ships both formats, so the page could not put a
+ * single row of the same weights side by side. What it could do was restate the
+ * two formats' editorial descriptions next to each other, which is what it did,
+ * at ~650 words with one inbound link each.
+ *
+ * The reader's question is real — "AWQ or GPTQ?" gets typed — but the honest
+ * answer is that nobody ever faces that choice for one model. So the pair stops
+ * being a page and becomes a redirect into the page that *can* answer it, and
+ * that page carries a section addressing the merged question directly.
+ *
+ * Derived, not listed: this is a property of the data, so if a model ever ships
+ * both AWQ and GPTQ the pair becomes a page again with no code change.
+ */
+export const formatPairs: FormatPair[] = ALL_PAIRS.filter(p => overlapCount(p) > 0);
+
+export interface MergedPair {
+  pair: FormatPair;
+  /** The surviving page this pair's URL should point at. */
+  target: FormatPair;
+}
+
+/**
+ * Where a pair with nothing to compare sends its readers.
+ *
+ * The target is the best-supported surviving page about the pair's **rarer**
+ * format — GPTQ ships on 4 of 81 models and is the reason both merged pairs are
+ * empty, so `gguf-vs-gptq` (4 models in common) is where both go. Chosen by
+ * overlap rather than named, so it follows the data too.
+ */
+export const mergedPairs: MergedPair[] = ALL_PAIRS
+  .filter(p => overlapCount(p) === 0)
+  .flatMap(p => {
+    const rarer =
+      modelsWithFormat(p.a.name).length <= modelsWithFormat(p.b.name).length ? p.a : p.b;
+    const target = formatPairs
+      .filter(q => q.a.id === rarer.id || q.b.id === rarer.id)
+      .sort((x, y) => overlapCount(y) - overlapCount(x))[0];
+    return target ? [{ pair: p, target }] : [];
+  });
 
 export function pairBySlug(slug: string): FormatPair | undefined {
   return formatPairs.find(p => p.slug === slug);

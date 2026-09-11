@@ -5,7 +5,7 @@ import { ArrowRight, Check, Minus } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
-import { headToHead, modelsWithFormat, type FormatPair } from '@/lib/utils/format-compare';
+import { headToHead, mergedPairs, modelsWithFormat, type FormatPair } from '@/lib/utils/format-compare';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
@@ -14,6 +14,9 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
   const { a, b } = pair;
 
   const both = headToHead(pair);
+  // Pairs that were folded into this page because they had no model in common.
+  // Derived, so this section cannot appear on a page that is not a target.
+  const absorbed = mergedPairs.filter(m => m.target.slug === pair.slug);
   const countA = modelsWithFormat(a.name).length;
   const countB = modelsWithFormat(b.name).length;
   const fill = (s: string, v: Record<string, string | number>) =>
@@ -134,6 +137,33 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
           </>
         )}
       </section>
+
+      {absorbed.length > 0 && (
+        <section className="glass rounded-2xl p-5 sm:p-6 mb-6">
+          {/*
+            These URLs used to be their own pages. They were deleted not because
+            the question is unpopular — "AWQ or GPTQ" gets typed — but because
+            the intersection was exactly zero: no model in the index ships both,
+            so the page could not put one row of the same weights side by side.
+            The question is answered here instead, which is what the redirect
+            promises.
+          */}
+          <h2 className="text-lg font-bold text-slate-100 mb-3">
+            {absorbed.map(m => `${m.pair.a.name} vs ${m.pair.b.name}`).join(', ')}
+          </h2>
+          <p className="text-sm text-slate-400 leading-relaxed mb-3">
+            {fill(c.mergedIntro, {
+              total: models.length,
+              format: pair.b.name,
+              count: modelsWithFormat(pair.b.name).length,
+              others: absorbed
+                .map(m => (m.pair.a.name === pair.b.name ? m.pair.b.name : m.pair.a.name))
+                .join(c.mergedJoin),
+            })}
+          </p>
+          <p className="text-sm text-slate-400 leading-relaxed">{c.mergedBody}</p>
+        </section>
+      )}
 
       <section className="glass rounded-2xl p-5 sm:p-6">
         <h2 className="text-lg font-bold text-slate-100 mb-3">{c.chooseTitle}</h2>

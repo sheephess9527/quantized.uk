@@ -157,3 +157,42 @@ if (leaks.length) {
 }
 
 console.log('localize-export: no links escape the Chinese tree');
+
+/* ---------------------------------------------------------------------------
+ * Redirect table gate.
+ *
+ * `_redirects` is the only redirect mechanism that works in a static export —
+ * `next.config.js` `redirects()` needs a Next server and is silently inert
+ * here, which is exactly the kind of thing that looks done and does nothing.
+ *
+ * Because the file is hand-written while the pages it refers to are derived
+ * from the model index, both halves are checked: a source that still exports a
+ * page has a dead redirect shadowed by the real file, and a target that does
+ * not export one is a redirect into a 404. Either is worse than no redirect.
+ * ------------------------------------------------------------------------- */
+const redirectsFile = join(OUT, '_redirects');
+if (existsSync(redirectsFile)) {
+  const lines = readFileSync(redirectsFile, 'utf8')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+
+  const isPage = p => existsSync(join(OUT, p.replace(/^\/|\/$/g, ''), 'index.html'));
+  const problems = [];
+  for (const line of lines) {
+    const [from, to, code] = line.split(/\s+/);
+    if (!from || !to || !code) {
+      problems.push(`malformed rule: "${line}"`);
+      continue;
+    }
+    if (isPage(from)) problems.push(`${from} is still an exported page — the redirect can never fire`);
+    if (!isPage(to)) problems.push(`${from} → ${to}, but ${to} is not an exported page`);
+  }
+
+  if (problems.length) {
+    console.error('localize-export: redirect table is out of step with the export:');
+    for (const p of problems) console.error('  - ' + p);
+    process.exit(1);
+  }
+  console.log(`localize-export: ${lines.length} redirects check out`);
+}

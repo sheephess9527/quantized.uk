@@ -337,6 +337,19 @@ missing one. Two exemptions the check must respect: **MoE** models read only the
 (Qwen3 30B-A3B measures 95 against a dense roofline of 57 — correct, not a fault), and a row within
 a few percent of the ceiling is inside the error of `params × bpw` versus the real file size.
 
+**Redirects live in `public/_redirects`, never in `next.config.js`.** `redirects()` needs a Next
+server and is **silently inert** in a static export — it looks done and does nothing. Cloudflare
+Pages reads `_redirects` from the build root. The file is hand-written while the pages are derived,
+so the postbuild gates every rule from both ends: the source must not still be an exported page (a
+real file shadows the redirect) and the target must be one (or it redirects into a 404).
+
+**A comparison page needs something in common to compare.** `formatPairs` only generates a pair when
+at least one model ships both formats; `awq-vs-gptq` and `exl2-vs-gptq` had an intersection of
+exactly zero and were ~650 words of two descriptions side by side. `mergedPairs` keeps the dropped
+pair with a data-chosen redirect target, and the surviving page answers the merged question in its
+own section — the query is real even when the comparison is not. Both are derived, so a model
+shipping both formats brings the page back with no code change.
+
 **Adding a GPU costs one line and needs only its VRAM** — but a verified `bandwidth` is what makes
 its page differ from its same-capacity siblings. `GPU` carries `{ id, name, vram, type, bandwidth?, memType? }`
 and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —

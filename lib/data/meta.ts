@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'Two comparison pages that could not compare anything are gone. "AWQ vs GPTQ" and "EXL2 vs GPTQ" each had an intersection of exactly zero — not one of the 81 models here ships both formats — so neither page could put a single row of the same weights side by side, and both filled ~650 words restating two descriptions next to each other. A pair with no model in common is no longer generated at all; the question itself is answered on the GGUF vs GPTQ page, which now says plainly that nobody ever chooses between GPTQ and AWQ for one model, and what to use instead. The old URLs redirect there permanently rather than 404',
+    zh: '两个无从比起的对比页已经下线。「AWQ vs GPTQ」与「EXL2 vs GPTQ」的交集恰好为零 —— 本站 81 个模型中没有任何一个同时提供这两种格式 —— 所以这两个页面连一行「同一份权重的两种格式」都摆不出来，只能用约 650 词把两段说明并排放着。现在，没有共同模型的格式组合根本不会生成页面；这个问题改由 GGUF vs GPTQ 页面回答，它直白地说明了没有人会为同一个模型在 GPTQ 与 AWQ 之间做选择，以及该用什么替代。旧网址会永久重定向到那里，而不是变成 404',
+  },
+  {
+    date: '2026-09-11',
     en: 'Hardware pages now say something about the hardware. All 61 were the same page with a different name on it, because what fits is decided by memory alone — every 16 GB card returned an identical list. Each page now opens with the card\'s memory bandwidth, the biggest model it holds, one that leaves room to grow, and a speed ceiling computed from the specification: generating a token means reading every weight once, so an 8B at Q4_K_M tops out near 62 tok/s on a 288 GB/s RTX 4060 Ti and near 159 on a 736 GB/s RTX 4080 Super — the same 16 GB, the same models, very different machines. That ceiling is arithmetic on published numbers, never a benchmark, and the pages say so. Doing the arithmetic also caught three of our own benchmark rows claiming speeds the card they name cannot physically reach; they have been removed rather than adjusted',
     zh: '硬件页现在真的在讲硬件。此前 61 个页面只是换了名字的同一个页面 —— 因为能装下什么完全由显存决定，每张 16 GB 的卡返回的清单一模一样。现在每页开头都会给出该卡的显存带宽、能装下的最大模型、一个留有余量的选择，以及一个由规格推算出的速度上限：生成一个 token 就要把每个权重读一遍，所以 8B 的 Q4_K_M 在 288 GB/s 的 RTX 4060 Ti 上约 62 tok/s 封顶，在 736 GB/s 的 RTX 4080 Super 上约 159 —— 同样 16 GB、同样的模型，却是两台很不一样的机器。这个上限是公开数字的算术结果，不是跑分，页面上也如实说明。做这个算术的同时还发现本站自己有三条基准数据，其速度是所标显卡在物理上达不到的；这些行已被删除，而不是调整数值',
   },
