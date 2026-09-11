@@ -1,6 +1,7 @@
 import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { fitsOnGpu, type GpuFit } from '@/lib/utils/gpu-page';
+import { qualityRank } from '@/lib/utils/quality';
 
 /**
  * Use cases are matched against `model.categories`, which the index already
@@ -75,7 +76,7 @@ export function homePicks(gpu: GPU, useCase: HomeUseCase): HomePick[] {
   // Largest first, ties broken by quality — `fitsOnGpu` already sorts by
   // params descending and already chose each model's best-quality quant.
   const bySize = [...fits].sort(
-    (a, b) => b.model.params - a.model.params || a.quant.pplLossPercent - b.quant.pplLossPercent,
+    (a, b) => b.model.params - a.model.params || qualityRank(a.quant) - qualityRank(b.quant),
   );
 
   take('capable', bySize);

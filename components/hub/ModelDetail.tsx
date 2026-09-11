@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
+import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
@@ -39,9 +40,7 @@ export default function ModelDetail({ model }: Props) {
   const hf = getHFStats(model.id);
   const hfRepo = hf?.repo ?? hfRepoMap[model.id];
 
-  const bestQuant = model.quants.reduce((best, q) =>
-    q.pplLossPercent < best.pplLossPercent ? q : best,
-  model.quants[0]);
+  const bestQuant = pickBestQuant(model.quants);
 
   const defaultQuant = model.quants.find(q => q.level === 'Q4_K_M')
     ?? model.quants.find(q => q.format === 'GGUF')
@@ -118,7 +117,8 @@ export default function ModelDetail({ model }: Props) {
           { label: d.context, value: model.contextLength >= 1000 ? `${(model.contextLength / 1000).toFixed(0)}K` : String(model.contextLength) },
           { label: d.variants, value: String(model.quants.length) },
           { label: d.bestQuality, value: `${bestQuant.format} ${bestQuant.level}` },
-          { label: d.bestAccuracy, value: `${(100 - bestQuant.pplLossPercent).toFixed(1)}%` },
+          // Accuracy is only a number when someone published a perplexity loss.
+          { label: d.bestAccuracy, value: bestQuant.pplLossPercent === undefined ? '—' : `${(100 - bestQuant.pplLossPercent).toFixed(1)}%` },
         ].map(({ label, value }) => (
           <div key={label} className="glass rounded-xl p-4 text-center">
             <p className="text-lg font-bold text-gradient">{value}</p>
@@ -180,7 +180,7 @@ export default function ModelDetail({ model }: Props) {
             <tbody>
               {model.quants.map((quant, i) => {
                 const level = quantLevelKey(quant);
-                const isBest = quant.pplLossPercent === bestQuant.pplLossPercent;
+                const isBest = quant === bestQuant;
                 const conf = quantConfidence(model.id, quant);
                 return (
                   <tr
@@ -200,7 +200,7 @@ export default function ModelDetail({ model }: Props) {
                     </td>
                     <td className="px-3 py-3 text-right font-mono text-slate-400">{quant.bpw}</td>
                     <td className="px-3 py-3 text-right font-mono text-violet-300">{quant.vramGB.toFixed(1)} GB</td>
-                    <td className="px-3 py-3 text-right font-mono text-slate-400">{quant.pplLossPercent.toFixed(1)}%</td>
+                    <td className="px-3 py-3 text-right font-mono text-slate-400">{formatLoss(quant)}</td>
                     <td className="px-3 py-3 text-right font-mono text-orange-300">
                       {quant.speedRTX4090 ? `${quant.speedRTX4090} tok/s` : '—'}
                     </td>

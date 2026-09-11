@@ -8,6 +8,7 @@ import { extraModels5 } from './models-extra-5';
 import { extraModels6 } from './models-extra-6';
 import { extraModels7 } from './models-extra-7';
 import { extraModels8 } from './models-extra-8';
+import { extraModels9 } from './models-extra-9';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -222,7 +223,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -232,6 +233,8 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * of the Chinese homepage.
  */
 export const todayFeed = [
+  { id: 0, type: 'new' as const, modelId: 'qwen3-8-27b', format: 'GGUF', detail: { en: 'Q4_K_M · 15.3 GB · 16 of 64 layers cache KV', zh: 'Q4_K_M · 15.3 GB · 64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth', hardware: 'RTX 4090 / RX 7900 XT' },
+  { id: 7, type: 'new' as const, modelId: 'ministral-3-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.2 GB · official Mistral GGUF', zh: 'Q4_K_M · 5.2 GB · Mistral 官方 GGUF' }, quantizer: 'mistralai', hardware: 'RTX 4060 Ti 8G' },
   { id: 1, type: 'new' as const, modelId: 'qwen3-vl-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.9 GB · vision on a 12GB card', zh: 'Q4_K_M · 5.9 GB · 12GB 显卡上的多模态' }, quantizer: 'bartowski', hardware: 'RTX 3060 12G' },
   { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: { en: 'Q4_K_M · 14.3 GB · [THINK] reasoning', zh: 'Q4_K_M · 14.3 GB · [THINK] 推理模式' }, quantizer: 'unsloth', hardware: 'RTX 4070 Ti 16G' },
   { id: 3, type: 'new' as const, modelId: 'seed-oss-36b', format: 'GGUF', detail: { en: 'Q4_K_M · 21.8 GB · 512K context', zh: 'Q4_K_M · 21.8 GB · 512K 上下文' }, quantizer: 'unsloth', hardware: '2× RTX 3090' },

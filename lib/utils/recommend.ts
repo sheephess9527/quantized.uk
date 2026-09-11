@@ -1,5 +1,6 @@
 import { models, QuantModel, QuantVariant } from '@/lib/data/models';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { qualityRank } from '@/lib/utils/quality';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
 
@@ -26,6 +27,7 @@ export function getRecommendations(
         layers: model.arch.layers,
         kvHeads: model.arch.kvHeads,
         headDim: model.arch.headDim,
+        attention: model.arch.attention,
         bpw: quant.bpw,
         contextLength: contextLen,
         batchSize,
@@ -38,7 +40,7 @@ export function getRecommendations(
   }
 
   return results.sort((a, b) => {
-    if (sortBy === 'quality') return a.quant.pplLossPercent - b.quant.pplLossPercent;
+    if (sortBy === 'quality') return qualityRank(a.quant) - qualityRank(b.quant);
     if (sortBy === 'speed') return (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0);
     return a.totalGB - b.totalGB;
   });

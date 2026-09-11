@@ -5,6 +5,7 @@ import { ExternalLink, Zap } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
+import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
 import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
@@ -43,7 +44,7 @@ export default function ModelCard({ model, lang }: Props) {
    */
   const refQuant =
     model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ??
-    model.quants.reduce((best, q) => (q.pplLossPercent < best.pplLossPercent ? q : best), model.quants[0]);
+    pickBestQuant(model.quants);
   const bestQuant = refQuant;
 
   return (

@@ -163,7 +163,11 @@ export default function HomeMatch() {
                       <dd className="text-slate-400 font-mono">{m.headroom.replace('{n}', round(pick.headroomGB))}</dd>
                     </div>
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-600">{m.pplLoss.replace('{n}', pick.quant.pplLossPercent.toFixed(1))}</dt>
+                      <dt className="text-slate-600">
+                        {pick.quant.pplLossPercent === undefined
+                          ? m.pplUnknown
+                          : m.pplLoss.replace('{n}', pick.quant.pplLossPercent.toFixed(1))}
+                      </dt>
                       {pick.quant.speedRTX4090 != null && (
                         <dd className="text-slate-400 font-mono">
                           {m.speedOn4090.replace('{n}', String(pick.quant.speedRTX4090))}

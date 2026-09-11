@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **79** in index (`models-extra` … `models-extra-8`) |
+| Models | **81** in index (`models-extra` … `models-extra-9`) |
 | Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -300,6 +300,28 @@ before adding one, check the level you are citing actually exists in that model'
 14–75 words). It is gone; `readingMinutes(article, lang)` computes it. Any field a human types once
 and nobody recomputes will drift — prefer a helper over a column.
 
+**2026 models do not all cache attention the same way.** `calcVRAM` assumed every layer keeps a
+growing KV cache. Qwen3.8-27B runs 16 of 64 layers on full attention (`full_attention_interval: 4`
+in `Qwen3NextConfig`), the rest on Gated DeltaNet with a fixed recurrent state — the old arithmetic
+overstated its cache 4× (8.0 GB vs a measured 2.0 GB at 32K). Set `ModelArch.attention`
+(`fullLayers` / `windowLayers` / `windowTokens`) for any hybrid or sliding-window model; omitting it
+keeps the classic all-layers behaviour, which is what every pre-2026 entry relies on. **Validate a
+new attention shape against a published KV measurement before trusting it** — that is how the 16 was
+confirmed, at three separate context lengths.
+
+**`pplLossPercent` is optional, and a missing one must stay missing.** Most 2026 releases ship
+weights and GGUF conversions with no per-level perplexity sweep. Sort with `qualityRank()` and
+display with `formatLoss()` (`lib/utils/quality.ts`) — never default to a number, because this
+column feeds `fitsOnGpu`, the homepage picks and the compare rows, and an invented value propagates
+into all of them. `lib/stats.ts` prints the sample size beside the median for exactly this reason.
+
+**huggingface.co is blocked by the egress proxy; `raw.githubusercontent.com` is not.** For
+architecture, read `huggingface/transformers`'s `src/transformers/models/<family>/configuration_*.py`
+— it carries each family's reference-checkpoint defaults and the real layer-type construction.
+`docs/source/en/_toctree.yml` lists every family transformers knows. Cross-check parameter counts
+against published GGUF file sizes: a Q8_0 landing on ~8.5 bpw or a BF16 on ~16.0 confirms the whole
+chain, and a figure that will not reconcile is a figure not to ship.
+
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
 (vs the usual 128) halves its KV footprint and a copy-pasted 128 would silently overstate it.
@@ -407,6 +429,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
+| 2026-09-11 | **2026 architectures** — the VRAM formula could not represent a hybrid-attention model at all (4× overstated KV on Qwen3.8); `ModelArch.attention` added and validated against measurements at three contexts, all 888 existing combinations unchanged. `pplLossPercent` optional so an unpublished figure is a dash, not a guess. +2 models (81) |
 | 2026-09-11 | **Two crawling faults (QTZ-001/002)** — `next/link` stripped the trailing slash from every dotted model id (2,101 redirecting links, 27 pages with no canonical inbound link); the language switcher was a `<button>`, leaving 164 Chinese pages with no crawlable entry. Both now gated in postbuild |
 | 2026-09-08 | **Search + feedback (P2)** — GPU pages name their measured runs and same-budget siblings (43 pages were 0.97 similar); `ItemList` claimed 73 items while emitting 30; "did it actually run?" replaces treating a copy as success; lab perf baseline recorded, no field data available |
 | 2026-09-08 | **Guides vs the calculator** — 8GB guide ran ~2GB high and Mac guide told 18GB readers a 14B "needs 36GB+" (it needs 11.0); five guides rewritten from the index. `readTime` was fiction on 22/23, now derived. Contrast: `slate-600` was 2.5:1 — palette raised, 3,175 text nodes now pass AA |

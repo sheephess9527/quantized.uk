@@ -1,4 +1,5 @@
 import { models } from '@/lib/data/models';
+import { qualityRank } from '@/lib/utils/quality';
 import { quantFormats, type QuantFormat } from '@/lib/data/formats';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
@@ -57,7 +58,7 @@ export function headToHead(pair: FormatPair): HeadToHead[] {
     const pick = (name: string) =>
       model.quants
         .filter(q => q.format === name)
-        .sort((x, y) => x.pplLossPercent - y.pplLossPercent)[0];
+        .sort((x, y) => qualityRank(x) - qualityRank(y))[0];
     const a = pick(pair.a.name);
     const b = pick(pair.b.name);
     if (a && b) out.push({ model, a, b });

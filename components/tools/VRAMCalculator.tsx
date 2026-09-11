@@ -10,6 +10,7 @@ import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
+import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
@@ -155,7 +156,7 @@ export default function VRAMCalculator() {
     // of the site quotes — then whatever the model's best-quality quant is.
     const next = levels.includes('Q4_K_M')
       ? 'Q4_K_M'
-      : quantLevelKey([...model.quants].sort((a, b) => a.pplLossPercent - b.pplLossPercent)[0]);
+      : quantLevelKey(pickBestQuant(model.quants));
     setSelectedQuant(next);
     setFormatGroup(findFormatGroup(next));
   }, [selectedQuant]);
@@ -182,6 +183,7 @@ export default function VRAMCalculator() {
         layers: selectedModel.arch.layers,
         kvHeads: selectedModel.arch.kvHeads,
         headDim: selectedModel.arch.headDim,
+        attention: selectedModel.arch.attention,
         bpw: own?.bpw ?? tableBpw,
         contextLength: contextLen,
         batchSize,
@@ -681,7 +683,7 @@ export default function VRAMCalculator() {
                           </div>
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
-                            <span>PPL −{quant.pplLossPercent.toFixed(1)}%</span>
+                            <span>PPL −{formatLoss(quant)}</span>
                             {quant.speedRTX4090 && <span>{quant.speedRTX4090} tok/s</span>}
                           </div>
                         </div>

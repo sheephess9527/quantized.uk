@@ -25,7 +25,11 @@ export function getSiteStats() {
   // exposed so the figure can be shown with its spread rather than alone.
   const q4Losses = models
     .flatMap(m => m.quants.filter(q => q.format === 'GGUF' && q.level === 'Q4_K_M'))
+    // Only models that actually published a figure. A model without one is not
+    // a 0% loss, and the sample size is printed beside the median so the reader
+    // can see how many of the 79 it is drawn from.
     .map(q => q.pplLossPercent)
+    .filter((n): n is number => n !== undefined)
     .sort((a, b) => a - b);
   const medianQ4Loss = q4Losses[Math.floor(q4Losses.length / 2)];
 
@@ -33,7 +37,7 @@ export function getSiteStats() {
     modelCount,
     formatCount,
     gpuCount,
-    q4Retention: `${(100 - medianQ4Loss).toFixed(1)}%`,
+    q4Retention: medianQ4Loss === undefined ? '—' : `${(100 - medianQ4Loss).toFixed(1)}%`,
     q4SampleSize: q4Losses.length,
     q4Range: [q4Losses[0], q4Losses[q4Losses.length - 1]] as const,
   };

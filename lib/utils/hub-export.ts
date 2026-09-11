@@ -1,6 +1,7 @@
 import type { QuantModel } from '@/lib/data/models';
 import type { HubFilters } from '@/components/hub/FilterBar';
 import { gpuDatabase } from '@/lib/data/gpus';
+import { qualityRank } from '@/lib/utils/quality';
 
 const SITE = 'https://quantized.uk';
 
@@ -25,7 +26,7 @@ interface ExportLabels {
 
 function bestQuant(model: QuantModel) {
   const q = model.quants.reduce((best, cur) =>
-    cur.pplLossPercent < best.pplLossPercent ? cur : best,
+    qualityRank(cur) < qualityRank(best) ? cur : best,
   model.quants[0]);
   return `${q.format} ${q.level}`;
 }

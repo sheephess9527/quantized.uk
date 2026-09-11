@@ -3,6 +3,7 @@
 import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, GitCompareArrows } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { bestQuant as pickBestQuant } from '@/lib/utils/quality';
 import { getSimilarModels } from '@/lib/utils/related';
 import { cn } from '@/lib/utils/cn';
 
@@ -41,7 +42,7 @@ export default function SimilarModels({ modelId }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {similar.map(model => {
           const minVram = Math.min(...model.quants.map(q => q.vramGB));
-          const bestLoss = Math.min(...model.quants.map(q => q.pplLossPercent));
+          const bestLoss = pickBestQuant(model.quants).pplLossPercent;
           return (
             <Link
               key={model.id}
@@ -69,7 +70,9 @@ export default function SimilarModels({ modelId }: Props) {
                 <span className="font-mono text-violet-300">{minVram.toFixed(1)} GB</span>
                 <span>{s.minVram}</span>
                 <span aria-hidden className="text-slate-700">·</span>
-                <span className="font-mono text-emerald-400">{(100 - bestLoss).toFixed(1)}%</span>
+                <span className="font-mono text-emerald-400">
+                  {bestLoss === undefined ? '—' : `${(100 - bestLoss).toFixed(1)}%`}
+                </span>
                 <span>{s.accuracy}</span>
               </div>
               <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">

@@ -42,6 +42,11 @@ export const benchmarkMethodology = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'The calculator learned that 2026 models do not all cache attention the same way, and the first two are in. Qwen3.8 27B runs only 16 of its 64 layers on full attention — the rest keep a fixed recurrent state — so the old arithmetic overstated its KV cache fourfold, claiming 8GB at 32K context where the measured figure is 2GB. Sizing now follows the model\'s actual attention shape and reproduces published measurements at 8K, 32K and 262K. Ministral 3 8B joins it, sized from Mistral\'s own GGUF releases. Where nobody has published a per-level quality loss, the column now shows a dash instead of a number',
+    zh: '计算器现在知道 2026 年的模型并非都用同一种方式缓存注意力，首批两个模型也已入库。Qwen3.8 27B 的 64 层里只有 16 层是全注意力、其余保留固定大小的循环状态，旧算法把它的 KV 缓存高估了四倍 —— 在 32K 上下文下算出 8GB，而实测是 2GB。现在按模型真实的注意力结构计算，并与 8K、32K、262K 三个公开实测值吻合。同批加入的还有 Ministral 3 8B，其体积来自 Mistral 官方发布的 GGUF。凡是没有人公布过逐档质量损失的，该列现在显示一个破折号，而不是一个数字',
+  },
+  {
+    date: '2026-09-11',
     en: 'Two crawling faults fixed. Every internal link to a model whose name contains a version number — llama-3.1-8b, qwen2.5-7b, phi-3.5-mini — was losing its trailing slash and redirecting: 2,101 links across 46 URLs, and 27 model pages had no direct link to their own canonical address. And the language switcher was a button rather than a link, so the 164 Chinese pages had no crawlable route into them from anywhere on the site. Both are now checked by the build, so neither can come back quietly',
     zh: '修掉两处抓取层面的缺陷。凡是名字里带版本号的模型 —— llama-3.1-8b、qwen2.5-7b、phi-3.5-mini —— 指向它们的站内链接都会丢掉尾部斜杠并触发跳转：涉及 46 个 URL、2,101 条链接，其中 27 个模型页在自己的规范地址上没有任何直接内链。另外语言切换器是按钮而不是链接，导致 164 个中文页面在全站没有任何可抓取的入口。两处现在都由构建检查把关，不会再悄悄回退',
   },

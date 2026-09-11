@@ -5,7 +5,7 @@
 ## What this site is
 
 - Static reference site (no model hosting, no accounts)
-- 79+ quantized LLM index with VRAM, speed, and quality metadata
+- 81+ quantized LLM index with VRAM, speed, and quality metadata
 - RSS updates feed: https://quantized.uk/feed.xml
 - Full Chinese edition at /zh/ (same content, hreflang-paired): https://quantized.uk/zh/
 - Tools: VRAM calculator, format wizard, CLI generator, model compare

@@ -419,6 +419,61 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (b) — 2026 architectures: the calculator was wrong before any model was added
+
+The audit's third P0 was "the model index is 10–12 months stale". Adding models turned out to be
+blocked by something underneath it: **the VRAM formula could not represent a 2026 model at all.**
+
+`calcVRAM` assumed every layer keeps a KV cache that grows with context. Qwen3.8-27B has 64 layers
+of which **16** run full attention — `Qwen3NextConfig.__post_init__` in `transformers` builds the
+list as `"linear_attention" if (i + 1) % full_attention_interval else "full_attention"`, and this
+model ships `full_attention_interval: 4`. The other 48 layers hold a fixed Gated DeltaNet recurrent
+state that does not scale with context. Sizing all 64 the old way overstates the cache **fourfold**:
+
+| context | old formula | counting the 16 | published measurement |
+|---|---|---|---|
+| 8K | 2.00 GB | 0.50 GB | 0.5 GB |
+| 32K | 8.00 GB | 2.00 GB | 2.0 GB |
+| 262K | 64.00 GB | 16.00 GB | 16.4 GB |
+
+`ModelArch.attention` now carries `fullLayers` / `windowLayers` / `windowTokens`, which also
+expresses Gemma 4's 5:1 sliding-window stack. Omitting it means "every layer, full cache", so all
+**888** existing model × quant × context combinations return byte-identical results — verified, not
+assumed.
+
+**`pplLossPercent` became optional.** It was required, and nobody publishes a per-level perplexity
+sweep for these releases. The choice was to invent numbers or to let the column be empty, and an
+invented figure would not have sat quietly in a table — it feeds `fitsOnGpu`, the homepage picks,
+the hub cards and the compare rows. `qualityRank()` (`lib/utils/quality.ts`) sorts by the published
+loss when there is one and falls back to bits-per-weight when there is not, so a real measurement
+never loses a tie to a fallback; `formatLoss()` prints an em dash. Verified behaviour-identical for
+all 79 existing models. The homepage stat still reads "median across 79 models" while the index
+holds 81 — the two new entries are honestly outside the sample.
+
+**Two models added, both sourced rather than recalled.** huggingface.co is blocked by this
+environment's egress proxy, so architecture came from `huggingface/transformers`'
+`configuration_*.py` on raw.githubusercontent.com (reachable, and authoritative — each carries its
+family's reference-checkpoint defaults), and every number was then checked against a published
+measurement:
+
+- **Ministral 3 8B Instruct** — `Ministral3Config` gives 34 layers, 32 heads, 8 KV heads, head_dim
+  128, `sliding_window: None`. Parameters computed from that config come to 8.49B; Mistral's own
+  GGUF sizes imply 16.02 bits per weight at BF16, which is 16 to within rounding. Three independent
+  routes agreeing is why this entry exists.
+- **Qwen3.8 27B** — architecture above, `bpw` derived from the published 15.33 GiB Q4_K_M.
+
+**What was deliberately not added**, and why, because the audit lists far more: Gemma 4 needs a
+per-group `head_dim` (512 on global layers, 256 on sliding) and I could not find a KV measurement to
+validate it against — the two figures I did find were quoted at different quantizations and
+contradict each other. Ministral 3 14B has clean file sizes (Q8_0 at 14.4 GB implies 13.55B
+parameters, landing on 8.50 bpw exactly) but no sourceable layer count. GLM-5.x, Kimi K3 and
+DeepSeek-V4 have neither. Entering any of them would mean inventing the `arch` fields that drive
+every VRAM figure on the site — the same failure class as the 8GB guide that ran 2GB high.
+
+The unblock is network access: with huggingface.co reachable, `config.json` for each model is one
+request and the rest of the batch is mechanical.
+
+
 ### 2026-09-11 — Audit task book QTZ-001 / QTZ-002: two crawling faults
 
 An external audit of the live site (2026-09-11) reported both; both reproduced locally before any

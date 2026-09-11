@@ -2,6 +2,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { matchesParamRange, type ParamRange } from '@/lib/utils/param-buckets';
+import { qualityRank } from '@/lib/utils/quality';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 
 /**
@@ -44,6 +45,7 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
         layers: model.arch.layers,
         kvHeads: model.arch.kvHeads,
         headDim: model.arch.headDim,
+        attention: model.arch.attention,
         bpw: quant.bpw,
         contextLength,
         batchSize: 1,
@@ -104,13 +106,14 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] 
         layers: model.arch.layers,
         kvHeads: model.arch.kvHeads,
         headDim: model.arch.headDim,
+        attention: model.arch.attention,
         bpw: quant.bpw,
         contextLength,
         batchSize: 1,
       });
       if (getVerdict(totalGB, gpu.vram) !== 'green') continue;
       // Lower perplexity loss wins; ties break toward the smaller footprint.
-      if (!best || quant.pplLossPercent < best.quant.pplLossPercent) {
+      if (!best || qualityRank(quant) < qualityRank(best.quant)) {
         best = { model, quant, totalGB, headroomGB: Math.round((gpu.vram - totalGB) * 10) / 10 };
       }
     }

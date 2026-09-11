@@ -6,6 +6,12 @@ export interface CalcInput {
   bpw: number;
   contextLength: number;
   batchSize: number;
+  /**
+   * Optional attention shape — see `ModelArch.attention`. Omitted means every
+   * layer keeps a growing KV cache, which is what `layers` alone implies and
+   * what every pre-2026 model in the index does.
+   */
+  attention?: { fullLayers?: number; windowLayers?: number; windowTokens?: number };
 }
 
 export interface CalcResult {
@@ -60,13 +66,28 @@ export const quantGroups: Record<string, string[]> = {
 };
 
 export function calcVRAM(input: CalcInput): CalcResult {
-  const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize } = input;
+  const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize, attention } = input;
 
   // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
   const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * 1.02;
 
-  // KV cache: 2 (K+V) × layers × kvHeads × headDim × contextLen × batchSize × 2 bytes (fp16)
-  const kvBytes = 2 * layers * kvHeads * headDim * contextLength * batchSize * 2;
+  // KV cache: 2 (K+V) × kvHeads × headDim × 2 bytes (fp16) per layer per token.
+  //
+  // Which layers, and over how many tokens, is the part that stopped being
+  // uniform in 2026. A layer either caches the whole context, caches only a
+  // sliding window of it, or — for linear-attention layers — keeps a constant
+  // recurrent state that does not scale with context and is not counted here.
+  //
+  // Validated against published measurements for Qwen3.8-27B (64 layers, 16 of
+  // them full attention, kvHeads 4, headDim 256): this returns 0.50 / 2.00 /
+  // 16.00 GB at 8K / 32K / 262K against community figures of 0.5 / 2.0 / 16.4.
+  // Sizing all 64 layers instead gives 2.00 / 8.00 / 64.00 — wrong by 4×.
+  const perLayerPerToken = 2 * kvHeads * headDim * batchSize * 2;
+  const fullLayers = attention?.fullLayers ?? layers;
+  const windowLayers = attention?.windowLayers ?? 0;
+  const windowSpan = Math.min(contextLength, attention?.windowTokens ?? contextLength);
+  const kvBytes =
+    perLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
   const kvCacheGB = kvBytes / (1024 ** 3);
 
   // Activation buffer: ~10% of (weights + kvcache)
