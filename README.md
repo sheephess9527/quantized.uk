@@ -419,6 +419,54 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (i) — Audit P1: QTZ-015 (the half the data supports)
+
+**"What is AWQ" had no page.** `/formats/` compared formats against each other and six pair pages
+compared two at a time; nothing explained *one*. The 53 models shipping AWQ had no shared parent,
+so no link ran from a format to the models that carry it.
+
+`lib/utils/format-page.ts` + `FormatSingleContent` generate one page per format in
+`SHIPPED_FORMATS` — **8 pages** (4 × EN/ZH), 979–1,821 words each, all derived:
+
+- *What it is* — `formats.ts` prose plus the index's own coverage and level list.
+- *What reads it* — framework, hardware, strengths and weaknesses from the format row.
+- *What it costs* — the index's 8B-class model for that format, priced at its **own** `bpw`,
+  broken into weights / KV / activations, with the smallest card that clears it.
+- *Levels in this index* — count, bpw range and median published loss **with sample size**, dash
+  where nobody published one.
+- *Models that ship it* — the full list, linked. **159 new format → model links** per language.
+- *FAQ* — 3–4 questions, `FAQPage` from the same call, all 28 present in the visible text.
+
+**What was deliberately not built.** The task asked for NVFP4 and FP8/W4A16 pages and for MXFP4 as a
+fifth tracked format:
+
+- **NVFP4 / FP8** — no model in this index ships either. A page about a format the Hub returns zero
+  results for is the HQQ mistake with a new name. They become pages the day a model ships one.
+- **MXFP4 is not a container format.** GPT-OSS's native 4-bit weights are distributed *as GGUF* and
+  are stored that way here (`format: 'GGUF', level: 'MXFP4'`, 2 models). Promoting it to a format
+  would misdescribe the data and make "4 formats tracked" wrong. It is surfaced instead as a section
+  on the GGUF page: released at 4 bits rather than converted down, no FP16 original to measure a
+  loss against, and re-quantizing it costs quality for no memory saving.
+- **`quantSource` / `quantPublisher` (official QAT vs community PTQ) is blocked, not skipped.** It is
+  the strongest differentiator in the audit and it needs per-**quant** repo attribution.
+  `hfRepoMap` holds one repo per *model* (46 bartowski, 20 Qwen, 4 mistralai …) and README §9
+  already records that 14 of those point at the original weights rather than a quant conversion.
+  Backfilling ~300 quant rows from it would be inventing attribution. It needs a real per-quant repo
+  source, which `huggingface.co` being blocked by the egress proxy currently prevents.
+
+**One route, two page kinds.** Next allows a single dynamic segment per level and `/formats/gguf/`
+sits beside `/formats/gguf-vs-awq/`, so `app/formats/[slug]/` (renamed from `[pair]`) dispatches:
+a slug is a pair if `pairBySlug` knows it, a format otherwise. Format ids contain no `-vs-`, so the
+two vocabularies cannot collide.
+
+**Caught in verification:** `app/sitemap.ts` mapped `formatPairs` only, so the 8 new pages were
+absent from the sitemap — the failure mode of two page kinds sharing one route. Now both are
+listed; 364 → **372** URLs.
+
+Regression: 2,384 text nodes checked for contrast, **0 below AA**; **0/30** page×width combinations
+with horizontal overflow.
+
+
 ### 2026-09-11 (h) — Audit P1: QTZ-014
 
 **Two pages with an intersection of zero.** `/formats/awq-vs-gptq/` and `/formats/exl2-vs-gptq/`

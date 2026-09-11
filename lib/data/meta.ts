@@ -69,6 +69,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-11',
+    en: 'Every format the index ships now has its own page. "What is AWQ" had nowhere to land on a site named after quantization — there were comparisons of one format against another, but nothing that simply explained one, and the 53 models shipping AWQ had no shared parent. GGUF, AWQ, EXL2 and GPTQ each now get what the format is, which runtimes read it, what one real model costs in it at 4K, the quant levels this index actually carries with their median published loss, and every indexed model that ships it — 159 new links from a format to its models. MXFP4 is explained on the GGUF page rather than made a fifth format, because that is what it is: GPT-OSS\'s native 4-bit weights are distributed as GGUF files, not as a different container',
+    zh: '本索引收录的每种格式现在都有了自己的页面。「AWQ 是什么」此前在一个以量化命名的站点上无处可落 —— 有格式之间的两两对比，却没有一个页面单纯讲清楚一种格式，而提供 AWQ 的 53 个模型也没有共同的归属页。GGUF、AWQ、EXL2、GPTQ 现在各有：这个格式是什么、哪些运行时能读它、一个真实模型在 4K 下要多少显存、本索引实际收录了哪些量化档位及其公开损失中位数，以及提供该格式的全部模型 —— 从格式指向模型的新增内链共 159 条。MXFP4 放在 GGUF 页面里讲，而没有被单列为第五种格式，因为它本来就是这样：GPT-OSS 的原生 4-bit 权重是以 GGUF 文件分发的，不是另一种容器',
+  },
+  {
+    date: '2026-09-11',
     en: 'Two comparison pages that could not compare anything are gone. "AWQ vs GPTQ" and "EXL2 vs GPTQ" each had an intersection of exactly zero — not one of the 81 models here ships both formats — so neither page could put a single row of the same weights side by side, and both filled ~650 words restating two descriptions next to each other. A pair with no model in common is no longer generated at all; the question itself is answered on the GGUF vs GPTQ page, which now says plainly that nobody ever chooses between GPTQ and AWQ for one model, and what to use instead. The old URLs redirect there permanently rather than 404',
     zh: '两个无从比起的对比页已经下线。「AWQ vs GPTQ」与「EXL2 vs GPTQ」的交集恰好为零 —— 本站 81 个模型中没有任何一个同时提供这两种格式 —— 所以这两个页面连一行「同一份权重的两种格式」都摆不出来，只能用约 650 词把两段说明并排放着。现在，没有共同模型的格式组合根本不会生成页面；这个问题改由 GGUF vs GPTQ 页面回答，它直白地说明了没有人会为同一个模型在 GPTQ 与 AWQ 之间做选择，以及该用什么替代。旧网址会永久重定向到那里，而不是变成 404',
   },

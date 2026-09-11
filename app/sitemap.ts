@@ -5,6 +5,7 @@ import { dataLastUpdated } from '@/lib/data/meta';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
+import { FORMAT_PAGES } from '@/lib/utils/format-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 
@@ -53,6 +54,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: siteDate,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+    })),
+    // Both kinds of page under /formats/: the pairwise comparisons and the
+    // single-format explainers. They share one dynamic route, so it is easy to
+    // add one and list only the other — which is exactly what happened.
+    ...FORMAT_PAGES.map(f => ({
+      path: `/formats/${f.id}/`,
+      lastModified: siteDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     })),
     ...formatPairs.map(p => ({
       path: `/formats/${p.slug}/`,

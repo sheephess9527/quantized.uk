@@ -337,6 +337,22 @@ missing one. Two exemptions the check must respect: **MoE** models read only the
 (Qwen3 30B-A3B measures 95 against a dense roofline of 57 — correct, not a fault), and a row within
 a few percent of the ceiling is inside the error of `params × bpw` versus the real file size.
 
+**`/formats/[slug]/` serves two page kinds.** A slug is a pair when `pairBySlug` knows it and a
+single format otherwise — Next allows one dynamic segment per level and `/formats/gguf/` sits beside
+`/formats/gguf-vs-awq/`. Adding one kind and forgetting the other is the failure mode: the single-
+format pages shipped absent from `sitemap.ts`, which mapped `formatPairs` alone. Touch both.
+
+**`MXFP4` is a GGUF level, not a format.** GPT-OSS's native 4-bit weights are distributed *as GGUF*
+and stored that way (`format: 'GGUF', level: 'MXFP4'`). Promoting it to a fifth tracked format would
+misdescribe the data and falsify the "formats tracked" count; it belongs on the GGUF page. The same
+reasoning keeps **NVFP4** and **FP8/W4A16** out entirely — zero models ship them here.
+
+**Per-quant publisher attribution (`official QAT` vs community PTQ) is not derivable today.**
+`hfRepoMap` holds one repo per *model* and 14 entries point at the original weights, not a quant
+conversion — backfilling ~300 quant rows from it would invent attribution. It needs a real per-quant
+repo source; `huggingface.co` is blocked by the egress proxy. Leave the field out rather than
+half-populate it.
+
 **Redirects live in `public/_redirects`, never in `next.config.js`.** `redirects()` needs a Next
 server and is **silently inert** in a static export — it looks done and does nothing. Cloudflare
 Pages reads `_redirects` from the build root. The file is hand-written while the pages are derived,

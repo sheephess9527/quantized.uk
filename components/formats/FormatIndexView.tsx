@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { formatPairs, headToHead, modelsWithFormat } from '@/lib/utils/format-compare';
 import { formatOverview } from '@/lib/utils/format-overview';
+import { FORMAT_PAGES } from '@/lib/utils/format-page';
 import { models } from '@/lib/data/models';
 import FormatHeatmap from '@/components/home/FormatHeatmap';
 import FormatRadar from '@/components/home/FormatRadarLazy';
@@ -48,7 +49,18 @@ export default function FormatIndexView() {
             <tbody>
               {rows.map(r => (
                 <tr key={r.format.id} className="border-b border-white/[0.04] align-top">
-                  <td className="py-3 pr-3 font-semibold" style={{ color: r.format.textColor }}>{r.format.name}</td>
+                  <td className="py-3 pr-3 font-semibold">
+                    {/* Links only where a page exists — a format the index does
+                        not ship (HQQ) stays plain text rather than pointing at
+                        a page that would have nothing to list. */}
+                    {FORMAT_PAGES.some(f => f.id === r.format.id) ? (
+                      <Link href={`/formats/${r.format.id}/`} className="hover:underline" style={{ color: r.format.textColor }}>
+                        {r.format.name}
+                      </Link>
+                    ) : (
+                      <span style={{ color: r.format.textColor }}>{r.format.name}</span>
+                    )}
+                  </td>
                   <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.framework}</td>
                   <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.hardwareReq}</td>
                   <td className="py-3 pr-3 text-right font-mono text-slate-300">
