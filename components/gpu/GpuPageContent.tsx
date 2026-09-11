@@ -5,7 +5,7 @@ import { Cpu, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
-import type { GPU } from '@/lib/data/gpus';
+import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
@@ -26,6 +26,8 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   const groups = groupFitsByBucket(fits);
   const step = nextStepUp(gpu, fits.length);
   const siblings = sameBudgetCards(gpu);
+  // The system-RAM entry at this same capacity, if one exists.
+  const ramTwin = gpu.isCPU ? undefined : gpuDatabase.find(o => o.isCPU && o.vram === gpu.vram);
   const measured = measuredRowsFor(gpu);
   // Both counts, side by side with their conditions. The Hub's GPU chips use
   // the looser rule; showing only one number here left two pages disagreeing
@@ -231,12 +233,29 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
         stops 43 pages from being 43 near-copies: measured before this change,
         `rtx-4070` and `rtx-4070-super` shared 97% of their 5-grams.
       */}
-      {siblings.length > 0 && (
+      {(siblings.length > 0 || ramTwin) && (
         <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
           <h2 className="text-lg font-bold text-slate-100 mb-2">{g.sameBudgetTitle}</h2>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            {fill(g.sameBudgetBody, { vram: gpu.vram })}
-          </p>
+          {siblings.length > 0 && (
+            <p className="text-sm text-slate-400 leading-relaxed">
+              {fill(g.sameBudgetBody, { vram: gpu.vram })}
+            </p>
+          )}
+          {/*
+            The same capacity in system memory is a genuinely different machine
+            — everything on this page "fits" there and runs at a speed set by
+            DIMMs rather than a graphics bus. It is also the only inbound link
+            the four CPU pages get from anywhere but the index: they were on
+            two each before this.
+          */}
+          {ramTwin && (
+            <p className="text-sm text-slate-500 leading-relaxed mt-2">
+              {fill(g.sameBudgetRam, { vram: gpu.vram })}{' '}
+              <Link href={`/gpu/${gpuSlug(ramTwin)}/`} className="text-violet-400 hover:text-violet-300">
+                {ramTwin.name}
+              </Link>
+            </p>
+          )}
           <ul className="flex flex-wrap gap-2 mt-3">
             {siblings.map(sib => (
               <li key={sib.id}>

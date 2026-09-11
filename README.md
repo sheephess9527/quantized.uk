@@ -419,6 +419,67 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-11 (m) — Audit P1: QTZ-022
+
+**Measured the graph first.** A crawl of the exported English tree (197 pages), excluding the 14
+URLs that appear on >90% of pages (the nav and footer):
+
+| | inbound min | median | pages < 3 | outbound (non-template) |
+|---|---|---|---|---|
+| model (81) | 5 | 63 | 0 | **7–9** |
+| gpu (61) | **1** | 4 | **8** | 37–82 |
+| format (8) | **1** | 3 | **4** | 4–84 |
+| cookbook (23) | 2 | 6 | 1 | **3–8** |
+
+The audit's own numbers predated the `/best/` and single-format ships, so they were re-derived
+rather than quoted. Two real faults survived: a model page emitted 7–9 links — to similar models and
+guides, never to a format page, a hardware page or a recommendation — and the format pages had one
+inbound link each, from `/formats/`.
+
+**`ModelPlacement` ("Where this model fits")** — 81 pages × 2 languages. The five cheapest cards
+that clear the model, the ones where it is tight, the two it *just* misses and by how much, the
+formats it ships in, the comparison pages covering those formats, any `/best/` tier it is a pick on,
+and the two tool deep-links. 11–25 outbound per page.
+
+**`GuideReferences` ("What this guide uses")** — the hardware, the models, the format, the matching
+`/best/` tier and what to read next, all from fields the guide already carries. Guides went from
+3–8 outbound to 5–16.
+
+**Result: no content page is reachable from fewer than three others.**
+
+| | inbound min | median | pages < 3 |
+|---|---|---|---|
+| model | 5 | 63 | 0 |
+| gpu | **3** | 11 | **0** |
+| format | **7** | **25** | **0** |
+| cookbook | **3** | 8 | **0** |
+| best | 6 | 15 | 0 |
+
+23,985 internal anchors, **0** using "here" / "this page" / "点击这里".
+
+**Three bugs, each found by re-measuring rather than by reading:**
+
+- **`modelPlacement` sized against `bestQuant`** — Q8_0 for most models, so the card list started at
+  12 GB while every other surface on the site sizes at Q4_K_M. The module would have contradicted
+  the GPU page it linked to. Now the same reference `modelExplainer` uses.
+- **The guide format row was derived from its models' formats**, and most models ship GGUF, AWQ and
+  EXL2 — so fifteen guides printed the same three formats regardless of subject. It now matches the
+  runtime the guide names (title, id, `verifiedStack`) against each format's `framework`, flattening
+  punctuation on both sides because the slug says `llamacpp` and the data says `llama.cpp`.
+  `exllama-rtx4090-setup` → EXL2, `vllm-awq-production` → AWQ/GPTQ, `mac-ollama-setup` → GGUF.
+- **`windows-ollama-native` stayed at two inbound through three attempted fixes.** The relatedness
+  score is asymmetric — a guide with `relatedModelIds` and a `gpuPreset` earns 4 and 3 points from
+  its peers, an infrastructure guide can only earn title-word points — so it named three neighbours
+  and was named by none. Orphans are now adopted by their **top two** neighbours, and adopted entries
+  are appended **after** the list cap: two orphans both chose `docker-llm-compose` as a host, the
+  first filled its fourth slot and the second was silently sliced away.
+
+Also: the GPU "same budget" section only rendered when a same-*type* sibling existed, so a Mac M5
+Pro 64G never showed its system-RAM counterpart — which was the only inbound link the CPU pages
+could get. Regression: 1,960 text nodes checked for contrast, **0 below AA**; **0/18** page×width
+combinations with horizontal overflow.
+
+
 ### 2026-09-11 (l) — Audit P1: QTZ-020
 
 **The site had the data to answer "best local LLM for 16GB" and no page that did it.**

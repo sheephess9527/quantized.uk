@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import ModelDetail from '@/components/hub/ModelDetail';
 import ModelExplainer from '@/components/hub/ModelExplainer';
+import ModelPlacement from '@/components/hub/ModelPlacement';
 import { modelExplainer } from '@/lib/utils/model-explainer';
 import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
@@ -94,7 +95,9 @@ export default function ModelDetailPage({
       />
       <ModelDetail model={model} />
       <ModelExplainer model={model} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16 space-y-6">
+        {/* The model page's links out to hardware, formats and the picks. */}
+        <ModelPlacement model={model} />
         <ModelGuides guides={guideLinksForModel(model)} />
       </div>
     </>

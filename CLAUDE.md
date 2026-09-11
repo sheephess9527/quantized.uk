@@ -383,6 +383,29 @@ says so rather than implying a quality ranking. Verify a change by perturbation 
 against the first Apple entry — a 512 GB Mac Studio — and recommended a 675B model needing 429 GB
 while the same page's context ladder used the declared 36 GB. One page, two capacities.
 
+**Internal links are computed from relationships, never listed.** `ModelPlacement`
+(`model-placement.ts`) and `GuideReferences` (`guide-references.ts`) join models ↔ hardware ↔
+formats ↔ `/best/` ↔ guides out of data the site already holds, so the graph cannot rot. Measure
+before and after by crawling `out/`, excluding hrefs present on >90% of pages (that is the nav and
+footer, and it hides everything): the target is **no content page under 3 inbound**, and anchor text
+is always the target's own name — never "here" or "this page".
+
+**A module that sizes a model must use the same quant the rest of the site does.** `modelPlacement`
+first used `bestQuant` (Q8_0 for most models) and listed a card set starting 4 GB above what the GPU
+page it links to shows. GGUF Q4_K_M when the model ships it, `bestQuant` otherwise — the same
+reference `modelExplainer` uses.
+
+**A guide's format comes from the runtime it names, not from its models' formats.** Most models ship
+GGUF, AWQ and EXL2, so deriving it from them printed the same three formats on fifteen guides. Match
+the guide's title/id/`verifiedStack` against each format's `framework`, flattening punctuation on
+both sides (`llamacpp` vs `llama.cpp`).
+
+**Relatedness scores are asymmetric, so orphans need adopting.** A guide carrying `relatedModelIds`
+and a `gpuPreset` outscores an infrastructure guide that can only match on title words, so
+`windows-ollama-native` named three neighbours and was named by none. Orphans are adopted by their
+top **two** neighbours, and adopted entries are appended **after** any list cap — the first fix
+adopted into one host, the second was silently truncated by `.slice(0, 4)`.
+
 **The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
 every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
 perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers
