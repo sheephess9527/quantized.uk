@@ -420,6 +420,17 @@ CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
 unified memory leaves no separate VRAM figure to watch.
 
+**A GPU database gap forces an honest substitution, stated in the text.** `gpuDatabase` has no
+M1 or M2 base-chip row (only M2 Max/Ultra), so `m1-8gb-ollama-limits` sizes against the Mac M3 8G
+entry for capacity and says so — 8GB is 8GB regardless of generation, but bandwidth is not (M3: 100
+GB/s; M1 base: ~68 GB/s; M2 base: ~100 GB/s). Never silently borrow a different card's row without
+naming the substitution and where it breaks.
+
+**A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** A guide called
+GGUF Q4_K_M "the sweet spot" for a 32B model on a 24GB card; run through the calculator it is 90% of
+the card — this site's own `tight`, not `comfortable`. Run the number before writing "fits" or
+"comfortable" into prose, the same rule as the VRAM-guide fault from 2026-09-08.
+
 **Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
 projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
 vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm --torch-backend=auto`;

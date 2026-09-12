@@ -419,6 +419,50 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-12 (c) — Audit P1: QTZ-023 complete (batch 3 of 3)
+
+**The final seven:** `qwen-coder-32b-single-4090`, `deepseek-r1-exl2-vs-gguf`, `quantize-own-model-gguf`,
+`cpu-inference-optimization`, `m1-8gb-ollama-limits`, `docker-ollama-gpu`, `llama-vps-llamacpp`.
+1,464–1,759 words EN / 1,269–1,645 Chinese characters, up from 218–364.
+
+**QTZ-023 is now fully closed.** All 23 cookbook guides: **1,464–1,824 words**, every one carrying
+the *what you need first · steps · check it actually ran on the GPU · what the numbers should look
+like · when it does not work* structure plus 3 FAQs (42 questions in this batch, 102 site-wide, all
+present in the visible text). No guide reports a fictional "1 min read" any longer; none carries an
+unearned `verifiedAt`.
+
+**Three real content faults, not just thinness:**
+
+- **`cpu-inference-optimization` was titled "OpenBLAS Tuning" and implied it speeds up chat.**
+  llama.cpp's own build docs state BLAS acceleration helps prompt processing above batch size 32 and
+  **does not affect generation speed at all**. The guide's own "~12 tok/s Hetzner / ~15 tok/s AWS"
+  figures were unsourced — no CPU row exists anywhere in `matrixData`. Both are corrected: the
+  guide now separates prefill from decode, states what BLAS actually buys, and gives a computable
+  method (system RAM bandwidth ÷ weight size) instead of a number nobody measured.
+- **`qwen-coder-32b-single-4090` called GGUF Q4_K_M "the sweet spot" on a 24GB card.** Run through
+  this site's own `calcVRAM`: 21.7 GB at 4K context is **90% of the card — tight, not comfortable**
+  by this site's own threshold. AWQ INT4 (18.1 GB, 75%) is the actually-comfortable pick, with the
+  trade named explicitly: headroom versus the simpler GGUF/Ollama path.
+- **`deepseek-r1-exl2-vs-gguf` claimed "~35% faster" with a GGUF figure ("~95 tok/s") nobody
+  measured.** The EXL2 figure (128 tok/s) matches this index's own `matrixData` row; the GGUF one
+  is now gone, replaced by the roofline the two nearly-identical file sizes actually imply (a few
+  percent, not 35%).
+
+**One honest gap stated rather than papered over.** `gpuDatabase` has no M1 or M2 base-chip
+row — only M2 Max/Ultra — so `m1-8gb-ollama-limits` used the Mac M3 8G entry as a capacity
+stand-in (capacity is generation-independent; 8GB is 8GB) and says so directly, including that the
+M3 entry's 100 GB/s overstates the original M1's ~68 GB/s while roughly matching the M2 base chip.
+
+**Verified from the projects' current docs, not memory:** `convert_hf_to_gguf.py` and
+`llama-quantize` (the audit's specific complaint about `convert.py` did not reproduce — the data
+already had the right names, so that guide was expanded rather than corrected); the imatrix
+workflow via `llama-imatrix`; `llama.cpp`'s BLAS scope; and Ollama's `OLLAMA_NUM_PARALLEL` /
+`OLLAMA_MAX_LOADED_MODELS` / `OLLAMA_KEEP_ALIVE` env vars from source.
+
+Regression: 1,346 text nodes checked for contrast, **0 below AA**; **0/18** page×width combinations
+with horizontal overflow.
+
+
 ### 2026-09-12 (b) — Audit P1: QTZ-023 (batch 2 of 3)
 
 **The five server-side guides:** `vllm-awq-production`, `rtx4090-vllm-api`, `exllama-rtx4090-setup`,
