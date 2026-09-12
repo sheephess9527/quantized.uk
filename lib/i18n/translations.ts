@@ -869,6 +869,12 @@ export const translations = {
     footer: {
       feedback: 'Feedback',
       brandExtra: 'Bridging research and real deployment.',
+      stayCurrent: 'Stay current',
+      stayCurrentBody: 'The index changes every few weeks. Two ways to know:',
+      rssLabel: 'RSS',
+      rssDesc: 'Plain feed. No email, no tracking.',
+      changelogDesc: 'Every change, dated, including corrections.',
+      foundWrong: 'Found a wrong number?',
     },
     common: {
       new: 'New',
@@ -1752,6 +1758,12 @@ export const translations = {
     footer: {
       feedback: '反馈',
       brandExtra: '连接研究与真实部署。',
+      stayCurrent: '保持关注',
+      stayCurrentBody: '本站索引每隔几周就会更新，两种方式可以跟上：',
+      rssLabel: 'RSS',
+      rssDesc: '纯净订阅源，不收邮箱、不追踪。',
+      changelogDesc: '每次变更都带日期，包括读者指出的修正。',
+      foundWrong: '发现数字不对？',
     },
     common: {
       new: '最新',

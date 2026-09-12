@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
-import { canonical, defaultRobots, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 import ModelDetailPage from '../../../quant-hub/[modelId]/page';
 
 export { generateStaticParams } from '../../../quant-hub/[modelId]/page';
@@ -18,7 +18,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   return {
     title: `${model.name} — 量化版本与显存占用 | quantized.uk`,
     description: model.description.zh,
-    alternates: { canonical: url, languages: languageAlternates(path) },
+    alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,

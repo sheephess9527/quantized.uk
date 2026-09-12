@@ -4,7 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import { mirrorPath } from '@/lib/i18n/routing';
-import { Zap, ExternalLink, Mail } from 'lucide-react';
+import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
 
@@ -49,10 +49,12 @@ export default function Footer() {
     },
   ];
 
+  const feedHref = lang === 'zh' ? '/zh/feed.xml' : '/feed.xml';
+
   return (
     <footer className="mt-24 border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center">
@@ -73,6 +75,44 @@ export default function Footer() {
               <Mail size={12} />
               {t.footer.feedback}: {FEEDBACK_EMAIL}
             </a>
+          </div>
+
+          {/*
+            QTZ-024: the site's only return-visit mechanism was a mailto in the
+            column above. `/feed.xml` and `/changelog/` already existed but
+            were surfaced nowhere but a small pill on the homepage — this
+            column is on all 164(+) pages via this shared Footer.
+          */}
+          <div>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">{t.footer.stayCurrent}</p>
+            <p className="text-xs text-slate-500 leading-relaxed mb-3">{t.footer.stayCurrentBody}</p>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href={feedHref}
+                  className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-violet-300 transition-colors"
+                >
+                  <Rss size={12} /> {t.footer.rssLabel}
+                </a>
+                <p className="text-xs text-slate-600 mt-0.5">{t.footer.rssDesc}</p>
+              </li>
+              <li>
+                <Link href="/changelog/" className="text-sm text-slate-300 hover:text-violet-300 transition-colors">
+                  {t.home.changelog.title}
+                </Link>
+                <p className="text-xs text-slate-600 mt-0.5">{t.footer.changelogDesc}</p>
+              </li>
+            </ul>
+            <p className="text-xs text-slate-600 mt-3">
+              {t.footer.foundWrong}{' '}
+              <a
+                href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20correction`}
+                onClick={() => trackEvent('Feedback Click')}
+                className="text-violet-400 hover:text-violet-300 transition-colors"
+              >
+                {FEEDBACK_EMAIL}
+              </a>
+            </p>
           </div>
 
           {sections.map(section => (

@@ -79,7 +79,11 @@ flaky network. Never "fix" it by removing the postbuild hook.
     Chinese tree).
   - hreflang comes free from `pageMetadata()`; hand-rolled `alternates` (the two dynamic English
     routes) must pass `languages: languageAlternates(path)` explicitly, and `openGraph` needs
-    `...ogLocale(path)`.
+    `...ogLocale(path)`. **Same rule for `feedAlternates(path)`** — the four hand-rolled files
+    (`app/quant-hub/[modelId]/page.tsx`, `app/cookbook/[slug]/page.tsx`, both `/zh` mirrors) had
+    `languages` but not this, so ~200 model/guide pages across both languages had a working
+    `/feed.xml` with no RSS autodiscovery `<link>` pointing at it — only pages that go through
+    `pageMetadata()` got it for free.
 - **`useSearchParams()` empties the page in a static export.** Next cannot know the query at build
   time, so the whole subtree renders as its Suspense fallback and ships **no content** — that is how
   `/quant-hub/` spent its life as a 30 KB document with zero headings and zero of the 79 model

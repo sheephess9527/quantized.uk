@@ -419,6 +419,40 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-12 (d) — Audit P1: QTZ-024 complete — retention surface, and the RSS gap it exposed
+
+**All 24 P1 audit items are now closed.** QTZ-024's problem statement: the site's only user action
+anywhere was a feedback `mailto:` — nothing told a returning reader that the index changes every
+few weeks, even though `/feed.xml` and `/changelog/` already existed and worked.
+
+**Shipped:**
+
+- **Footer "Stay current" column**, on all 164(+) pages via the shared `Footer` component: RSS
+  (`/feed.xml`, described as no email / no tracking) and Changelog (`/changelog/`), plus a
+  "found a wrong number?" line into the same feedback address.
+- **A one-line freshness note** (`components/layout/PageFreshnessNote.tsx`) on every model and GPU
+  page: "this page's figures change when the model or the runtime does," `dataLastUpdated`, and the
+  RSS link — the reason to come back sits next to the numbers that will have moved.
+- **No email newsletter** — deliberately. `/privacy/` and `/about/` both make "no tracking, no
+  account" a stated trust asset for this audience; a mailing list would contradict it, and RSS
+  already covers a geek-first readership without the GDPR surface.
+
+**Checking, not assuming, found the real bug.** The audit's own acceptance criterion — "confirm RSS
+autodiscovery is on every page, not just the homepage" — did not hold. Four templates build their
+own metadata by hand instead of going through `pageMetadata()`: `app/quant-hub/[modelId]/page.tsx`,
+`app/cookbook/[slug]/page.tsx`, and their `app/zh/**` mirrors. None of the four spread in
+`feedAlternates()`, so roughly 200 of the site's highest-traffic pages — every model detail page and
+every cookbook guide, in both languages — had a working feed with no `<link rel="alternate"
+type="application/rss+xml">` pointing at it. A reader (or feed reader / browser extension) landing
+on any of those pages had no way to discover the feed except typing the URL from memory. Fixed by
+spreading `feedAlternates(path)` into each file's hand-built `alternates` object, the same fix the
+existing CLAUDE.md convention already prescribes for `languages`.
+
+`/feed.xml` itself needed no change — it already emits real `pubDate` / `guid` / `link` /
+`description` on both changelog and recent-model entries (`lib/feed/build.ts`), and already outputs
+model entries alongside changelog ones, which the audit had flagged as a common failure mode
+elsewhere. Checked against the file, not assumed from the audit's description of a typical site.
+
 ### 2026-09-12 (c) — Audit P1: QTZ-023 complete (batch 3 of 3)
 
 **The final seven:** `qwen-coder-32b-single-4090`, `deepseek-r1-exl2-vs-gguf`, `quantize-own-model-gguf`,

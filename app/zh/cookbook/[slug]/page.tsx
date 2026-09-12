@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { articles } from '@/lib/data/cookbook';
-import { canonical, defaultRobots, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 import CookbookArticlePage from '../../../cookbook/[slug]/page';
 
 export { generateStaticParams } from '../../../cookbook/[slug]/page';
@@ -18,7 +18,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   return {
     title: `${article.titleZh} | quantized.uk Cookbook`,
     description: article.descriptionZh,
-    alternates: { canonical: url, languages: languageAlternates(path) },
+    alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: article.titleZh,

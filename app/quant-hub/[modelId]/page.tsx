@@ -6,8 +6,9 @@ import ModelPlacement from '@/components/hub/ModelPlacement';
 import { modelExplainer } from '@/lib/utils/model-explainer';
 import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
+import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, languageAlternates, ogLocale } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale } from '@/lib/seo';
 
 export function generateStaticParams() {
   return models.map(m => ({ modelId: m.id }));
@@ -20,7 +21,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   return {
     title: `${model.name} — Quant Variants & VRAM | quantized.uk`,
     description: model.description.en,
-    alternates: { canonical: url, languages: languageAlternates(`/quant-hub/${model.id}`) },
+    alternates: { canonical: url, languages: languageAlternates(`/quant-hub/${model.id}`), ...feedAlternates(`/quant-hub/${model.id}`) },
     robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,
@@ -99,6 +100,7 @@ export default function ModelDetailPage({
         {/* The model page's links out to hardware, formats and the picks. */}
         <ModelPlacement model={model} />
         <ModelGuides guides={guideLinksForModel(model)} />
+        <PageFreshnessNote lang={lang} />
       </div>
     </>
   );

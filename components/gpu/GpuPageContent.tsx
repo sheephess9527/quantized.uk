@@ -11,6 +11,7 @@ import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 
 /**
  * "What can my card run" — the question the GPU data could always answer but
@@ -300,6 +301,10 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
       <p className="sr-only" lang={lang === 'zh' ? 'zh-Hans' : 'en'}>
         {fill(g.subtitle, { count: fits.length, total, vram: gpu.vram })}
       </p>
+
+      <div className="mt-6">
+        <PageFreshnessNote lang={lang} />
+      </div>
     </div>
   );
 }
