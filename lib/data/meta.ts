@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-11';
+export const dataLastUpdated = '2026-09-12';
 
 export const dataSources = {
   models: {
@@ -67,6 +67,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-12',
+    en: 'Five thin guides rewritten, the first of three batches. Seventeen of the 23 guides were under 365 words of body while their titles promised a full tutorial — one called "llama.cpp on Windows with CUDA" was eighteen words long. The five with the widest beginner intent now follow the structure the six already-rewritten guides established: what you need first, the steps, a way to check the model really ran on the GPU rather than falling back to the CPU silently, what the numbers should look like on that hardware, and what to do when it does not work. Each carries three questions answered in the page and in its structured data. Every memory figure comes from the calculator on the model\'s own row, and the commands were checked against the projects\' current documentation — a documentation check, not a run, so the unearned "verified" date these seventeen had been carrying since July is removed rather than refreshed',
+    zh: '五篇单薄的指南已重写，这是三批中的第一批。23 篇指南里有 17 篇正文不足 365 词，标题却承诺了完整教程 —— 其中一篇叫《Windows 上用 CUDA 编译 llama.cpp》的正文只有 18 个词。入门意图最广的这五篇现在采用了此前六篇重写稿建立的结构：开始之前要准备什么、具体步骤、如何确认模型真的跑在 GPU 上而不是静默回落到 CPU、在该硬件上数字大概该是什么样，以及出问题时怎么办。每篇都带三个问题，页面上和结构化数据里都有。所有显存数字都取自计算器对该模型自身数据行的计算，命令则对照各项目当前的官方文档核对过 —— 这是文档核对，不是实机运行，所以这 17 篇从七月起一直挂着的、并未真正赚到的「已验证」日期是被移除，而不是被刷新',
+  },
   {
     date: '2026-09-11',
     en: 'The four sections of this site now link to each other. Measured first: the internal link graph ran almost entirely through the header and footer — fourteen hub addresses appeared on every page while the four format pages had one inbound link each, eight hardware pages had fewer than three, and a model page pointed at similar models and guides but never at a format, a card or a recommendation. Model pages now say where the model fits — the cheapest cards that clear it, the ones it just misses and by how much, the formats it ships in — and guides say what they use: the hardware, the models, the runtime\'s format and what to read next. Every relationship is computed from data the site already held, so none of it can rot. No content page is now reachable from fewer than three others, and the format pages went from one inbound link to a median of 25',

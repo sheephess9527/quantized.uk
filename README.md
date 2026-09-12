@@ -419,6 +419,51 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-12 — Audit P1: QTZ-023 (batch 1 of 3)
+
+**17 of 23 guides were under 365 words of body**, measured directly rather than taken from the
+audit: `quantize-own-model-gguf` had **14 words**, `vllm-awq-production` 16, `llamacpp-windows-cuda`
+18 — under titles promising a full setup guide. The six rewritten on 2026-09-08 sit at 448–655.
+
+**Batch 1 — the five with the widest beginner intent:** `rtx4060ti-what-to-run`, `mac-ollama-setup`,
+`docker-llm-compose`, `windows-ollama-native`, `llamacpp-windows-cuda`. Rendered body went from
+~780 words (mostly template chrome) to **1,587–1,753 words EN / 1,313–1,514 Chinese characters**,
+against the benchmark guide's 1,824. Reading time, derived, went from "1 min" to 3–5.
+
+Structure follows the six: **What you need first · the steps · Check it actually ran on the GPU ·
+What the numbers should look like · When it does not work**, plus three FAQs per guide emitted as
+`FAQPage` from the same array the page renders (30 questions, all present in the visible text).
+
+**What the rewrites are allowed to claim.** Every memory figure is read off `calcVRAM` on the
+model's own row before the prose was written — the 8GB guide once ran ~2GB high and the Mac guide
+told 18GB readers a 14B "needs 36GB+" when it needs 11.0, and *both carried a `verifiedAt`*.
+Commands were checked against the projects' current documentation (llama.cpp `docs/build.md`,
+Ollama `docs/api.md`), which is a **documentation check, not a run**: there is no GPU here, so the
+`verifiedAt: '2026-07-22'` all seventeen still carried is **removed**, not refreshed, and
+`updatedAt` records the rewrite. `verifiedStack` survives — it says what the guide is written
+against, which is still true.
+
+**Material that came out of checking rather than from memory:**
+
+- `GGML_CUDA=ON`, not `LLAMA_CUDA` — CMake ignores an unknown `-D` silently, so the old name yields
+  a clean, successful, **CPU-only** build whose only symptom is being slow.
+- The binaries are `llama-server.exe` / `llama-cli.exe`; `server.exe` and `main.exe` are gone.
+- `CMAKE_CUDA_ARCHITECTURES` (86 = Ampere, 89 = Ada, 120 = Blackwell) cuts Windows build time.
+- **System Memory Fallback**, on by default in the NVIDIA control panel on Windows, spills VRAM into
+  system RAM instead of failing — turning "does not fit" into "inexplicably slow". It appears in
+  three of the five guides because it explains three different symptoms.
+- `ollama ps` reports placement per loaded model in a `PROCESSOR` column, which is the only usable
+  GPU check on a Mac: unified memory means there is no separate VRAM figure to watch climb.
+
+`Article` gained `faqs?`, and `cookbook-rewrites.ts` merges rewritten content over the originals by
+id — keeping each batch reviewable on its own instead of as a diff buried in the data files.
+
+Regression: 1,224 text nodes checked for contrast, **0 below AA**; **0/18** page×width combinations
+with horizontal overflow, including the 30-line compose file at 390px.
+
+**Remaining: 12 guides in batches 2 and 3.**
+
+
 ### 2026-09-11 (m) — Audit P1: QTZ-022
 
 **Measured the graph first.** A crawl of the exported English tree (197 pages), excluding the 14

@@ -36,6 +36,12 @@ export interface Article {
   /** Model ids this guide is actually about — rendered as links into the hub */
   relatedModelIds?: string[];
   content: Section[];
+  /**
+   * Questions the guide answers, emitted as `FAQPage` from the article route
+   * and rendered visibly by `ArticleView` — the same call, so they cannot
+   * diverge. Optional: a guide without them simply emits no FAQ schema.
+   */
+  faqs?: { q: string; qZh: string; a: string; aZh: string }[];
 }
 
 interface Section {
@@ -45,6 +51,8 @@ interface Section {
   bodyZh: string;
   code?: { lang: string; content: string };
 }
+
+import { cookbookRewrites } from '@/lib/data/cookbook-rewrites';
 
 const baseArticles: Article[] = [
   {
@@ -247,4 +255,19 @@ volumes:
   },
 ];
 
-export const articles: Article[] = [...baseArticles, ...extraArticles, ...extraArticles2];
+/**
+ * Rewritten guides are merged over their originals by id.
+ *
+ * 17 of the 23 guides were under 365 words of prose while their titles promised
+ * a full tutorial ("ExLlamaV2 on RTX 4090: Full Setup Guide" was 22 words of
+ * body). They are being rewritten in batches against the structure the six
+ * already-rewritten guides established; keeping the rewrites in their own file
+ * makes each batch reviewable on its own rather than as a diff buried in four
+ * thousand lines of data.
+ */
+const merged: Article[] = [...baseArticles, ...extraArticles, ...extraArticles2].map(a => {
+  const rewrite = cookbookRewrites[a.id];
+  return rewrite ? { ...a, ...rewrite } : a;
+});
+
+export const articles: Article[] = merged;

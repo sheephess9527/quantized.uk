@@ -406,6 +406,20 @@ and a `gpuPreset` outscores an infrastructure guide that can only match on title
 top **two** neighbours, and adopted entries are appended **after** any list cap — the first fix
 adopted into one host, the second was silently truncated by `.slice(0, 4)`.
 
+**Rewritten guides live in `cookbook-rewrites.ts`, merged over the originals by id.** 17 of 23
+guides were under 365 words of body; they are being rewritten in batches against the structure the
+six 2026-09-08 rewrites set — *what you need first · steps · **check it actually ran on the GPU** ·
+what the numbers should look like · when it does not work* — plus three `faqs` rendered from the
+same array the route emits as `FAQPage`. A rewrite **removes** the unearned `verifiedAt` and sets
+`updatedAt`; checking commands against a project's current docs is a documentation check, not a run.
+
+Material worth reusing, verified from the projects' own docs rather than memory: the llama.cpp build
+switch is `GGML_CUDA=ON` (CMake ignores an unknown `-D`, so `LLAMA_CUDA` yields a successful
+CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `main`; Windows's
+**System Memory Fallback** silently spills VRAM into system RAM, turning an OOM into a mysteriously
+slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
+unified memory leaves no separate VRAM figure to watch.
+
 **The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
 every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
 perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers

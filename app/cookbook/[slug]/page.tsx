@@ -86,6 +86,20 @@ export default function CookbookArticlePage({
           publisher: { '@type': 'Organization', name: 'quantized.uk' },
         }}
       />
+      {article.faqs && article.faqs.length > 0 && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+            mainEntity: article.faqs.map(f => ({
+              '@type': 'Question',
+              name: lang === 'zh' ? f.qZh : f.q,
+              acceptedAnswer: { '@type': 'Answer', text: lang === 'zh' ? f.aZh : f.a },
+            })),
+          }}
+        />
+      )}
       <ArticleView article={article} />
     </>
   );

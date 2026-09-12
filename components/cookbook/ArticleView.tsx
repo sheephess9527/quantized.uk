@@ -120,6 +120,21 @@ export default function ArticleView({ article }: Props) {
           </section>
         ))}
 
+        {article.faqs && article.faqs.length > 0 && (
+          <section className="glass rounded-2xl p-5 sm:p-6">
+            {/* Same array the route emits as FAQPage, so the two cannot diverge. */}
+            <h2 className="section-title text-base mb-4">{t.cookbook.faqTitle}</h2>
+            <div className="space-y-4">
+              {article.faqs.map((f, i) => (
+                <div key={i}>
+                  <h3 className="text-sm font-semibold text-slate-200 mb-1">{lang === 'zh' ? f.qZh : f.q}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{lang === 'zh' ? f.aZh : f.a}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <GuideReferences article={article} />
         <GuideNextSteps article={article} />
 

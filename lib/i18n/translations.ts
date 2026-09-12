@@ -380,6 +380,7 @@ export const translations = {
         picks: 'Picks for it',
         next: 'Read next',
       },
+      faqTitle: 'Common questions',
       nextSteps: {
         title: 'Next steps',
         fitsMyCard: 'See everything that fits {gpu}',
@@ -1265,6 +1266,7 @@ export const translations = {
         picks: '对应推荐',
         next: '接着读',
       },
+      faqTitle: '常见问题',
       nextSteps: {
         title: '接下来',
         fitsMyCard: '看看 {gpu} 还能跑哪些模型',
