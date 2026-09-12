@@ -420,6 +420,21 @@ CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
 unified memory leaves no separate VRAM figure to watch.
 
+**Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
+projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
+vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm --torch-backend=auto`;
+it ships official **ROCm** wheels plus XPU/TPU backends. ExLlamaV2 now lives at
+**`turboderp-org/exllamav2`** and its example passes `-gs auto`. **TabbyAPI's own README says it is
+a hobby project "not meant to run on production servers"** — quote the maintainers rather than
+softening it. vLLM's real failure signature is a preemption warning naming
+`PreemptionMode.RECOMPUTE`, which is KV-cache pressure: shorten `--max-model-len` before raising
+`--gpu-memory-utilization`.
+
+**Quote only throughput this index measured.** `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
+which nobody here ran; its batch-1 figure happened to match the index's own 218 tok/s row. Cite
+`matrixData` or say the site has not measured it — batched throughput especially, since that is the
+number every vendor benchmark inflates.
+
 **The FAQ is computed, and a question it cannot answer must say so.** `lib/utils/faq.ts` renders
 every figure from the index, so `/faq/` cannot drift from the calculator — verify with a
 perturbation (change one `bpw`, watch the answers move) rather than by reading. Three answers

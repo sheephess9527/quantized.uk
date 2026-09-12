@@ -419,6 +419,50 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-12 (b) — Audit P1: QTZ-023 (batch 2 of 3)
+
+**The five server-side guides:** `vllm-awq-production`, `rtx4090-vllm-api`, `exllama-rtx4090-setup`,
+`tabbyapi-exllama-server`, `nginx-llm-api-proxy`. 1,483–1,633 words EN / 1,263–1,490 Chinese
+characters, up from 218–300.
+
+**The audit predicted vLLM had moved on, and it had — further than expected.** Checked against
+`vllm-project/vllm`'s current `docs/getting_started/quickstart.md`:
+
+- Both guides taught `python -m vllm.entrypoints.openai.api_server`. The documented entrypoint is
+  the **`vllm serve`** CLI. (The old form still appears on one page — inside an FAQ answer saying
+  it is obsolete.)
+- Install was `pip install vllm --extra-index-url .../cu121`; it is now
+  `uv pip install vllm --torch-backend=auto`, which resolves the torch build from the installed
+  driver.
+- The docs also confirm official **ROCm wheels** and Intel XPU / TPU backends — the "vLLM is
+  CUDA-only" claim this site corrected in September was wrong in the other direction too.
+- Real failure-mode material: the preemption warning naming `PreemptionMode.RECOMPUTE`, and the
+  start-up crash when `max_num_batched_tokens < max_model_len` with chunked prefill disabled.
+
+**Two more things the check found:**
+
+- **ExLlamaV2 moved to `turboderp-org/exllamav2`**, and the current example passes `-gs auto` rather
+  than hand-written per-GPU gigabyte figures.
+- **TabbyAPI's README states it is "a hobby project made for a small amount of users… not meant to
+  run on production servers."** That is now the first thing its guide says. The maintainers' own
+  assessment outranks anything this site could add, and a guide that omits it is selling something.
+
+**An invented number removed.** `rtx4090-vllm-api` claimed "~220 tok/s (batch=1), ~1400 tok/s
+(batch=8)". The batch-1 figure is consistent with this index's own measurement (218 tok/s for
+Llama 3.1 8B AWQ under vLLM on a 4090); **the batch-8 figure was measured by nobody here**. The
+guides now cite only the runs the index holds — including 235 tok/s for ExLlamaV2 at EXL2 4.65bpw
+on a 4090 and 175 on a 3090 — and state that batched throughput is not something this site has
+measured rather than quoting someone else's multiple.
+
+Every memory figure again comes from `calcVRAM`: Qwen2.5 7B at AWQ INT4 is 3.6 GB of weights and
+4.2 GB at 4K, 5.9 GB at 32K — which is what makes `--max-model-len` the first knob to turn.
+
+Regression: 1,179 text nodes checked for contrast, **0 below AA**; **0/18** page×width combinations
+with horizontal overflow, including the nginx config block at 390px.
+
+**Remaining: 7 guides in batch 3.**
+
+
 ### 2026-09-12 — Audit P1: QTZ-023 (batch 1 of 3)
 
 **17 of 23 guides were under 365 words of body**, measured directly rather than taken from the
