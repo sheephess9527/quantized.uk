@@ -9,7 +9,7 @@ import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale,
 export function generateMetadata(): Metadata {
   const path = '/faq';
   const url = canonical(path);
-  const title = 'Local LLM FAQ — VRAM, quantization and what fits | quantized.uk';
+  const title = 'Local LLM FAQ: VRAM and quantization | quantized.uk';
   const description = `Straight answers to the questions people ask before downloading a 20GB model file: how much VRAM you need, what Q4_K_M costs in quality, whether a 24B fits in 16GB, and which format your runtime can read. Answered from an index of ${models.length} models and ${gpuDatabase.length} GPUs.`;
   return {
     title,

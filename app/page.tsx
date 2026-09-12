@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   // "AI Quantization Intelligence" is a phrase nobody searches for. The `<h1>`
   // has asked "what fits your hardware" since the homepage was restructured;
   // the title now says the same thing.
-  title: `What LLM can my GPU run? — VRAM calculator and ${MODEL_COUNT}-model index | quantized.uk`,
+  title: `What LLM fits my GPU? — ${MODEL_COUNT}-model VRAM index | quantized.uk`,
   description: `Pick your graphics card and see which of ${MODEL_COUNT} quantized LLMs actually fit it — at which quant level, with how much VRAM to spare, and the command to run each one.`,
   alternates: { canonical: canonical('/'), languages: languageAlternates('/'), ...feedAlternates('/') },
   robots: defaultRobots,

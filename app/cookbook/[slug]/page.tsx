@@ -1,7 +1,7 @@
 import { articles } from '@/lib/data/cookbook';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale } from '@/lib/seo';
+import { articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale } from '@/lib/seo';
 import { articleEntities } from '@/lib/utils/article-entities';
 import type { Metadata } from 'next';
 
@@ -14,7 +14,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   if (!article) return { title: 'Article Not Found | quantized.uk' };
   const url = canonical(`/cookbook/${article.id}`);
   return {
-    title: `${article.title} | quantized.uk Cookbook`,
+    title: articlePageTitle(article),
     description: article.description,
     alternates: { canonical: url, languages: languageAlternates(`/cookbook/${article.id}`), ...feedAlternates(`/cookbook/${article.id}`) },
     robots: defaultRobots,

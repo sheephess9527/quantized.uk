@@ -5,6 +5,13 @@ export interface Article {
   id: string;
   title: string;
   titleZh: string;
+  /**
+   * Shorter `<title>` tag text for the one guide whose real title still runs
+   * past 60 characters even after the `| quantized.uk Cookbook` suffix is
+   * dropped. The H1 and breadcrumb keep using `title` — this only swaps what
+   * a search result shows, so nothing on the page itself changes.
+   */
+  seoTitle?: string;
   description: string;
   descriptionZh: string;
   category: 'edge' | 'server' | 'docker' | 'mac';

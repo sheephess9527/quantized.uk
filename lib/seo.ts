@@ -93,6 +93,30 @@ export function feedAlternates(path = '') {
   };
 }
 
+const TITLE_LIMIT = 60;
+
+/**
+ * The English model-page `<title>` template as two tiers, never a runtime
+ * ellipsis — a truncated SERP title reads as broken, and both tiers below
+ * cover every model in the index today (checked: the short tier alone is
+ * enough, no model needs a data-level `shortName`).
+ */
+export function modelPageTitle(name: string): string {
+  const full = `${name} VRAM & quant guide | quantized.uk`;
+  return full.length <= TITLE_LIMIT ? full : `${name} VRAM | quantized.uk`;
+}
+
+/**
+ * The English cookbook `<title>`. `Cookbook` in the old
+ * `{title} | quantized.uk Cookbook` suffix cost 22 characters for a word with
+ * no SERP value; dropping it clears every guide but one. `seoTitle` is the
+ * escape hatch for that one — a shorter title for the `<title>` tag only, so
+ * the visible H1 keeps saying what the guide actually promises.
+ */
+export function articlePageTitle(article: { title: string; seoTitle?: string }): string {
+  return `${article.seoTitle ?? article.title} | quantized.uk`;
+}
+
 export function pageMetadata({
   title,
   description = DEFAULT_DESCRIPTION,

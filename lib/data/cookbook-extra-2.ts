@@ -430,6 +430,7 @@ export const extraArticles2: Article[] = [
     gpuPreset: { gpuId: 'rtx4090', ctx: 32768 },
     relatedModelIds: ['gpt-oss-20b', 'gpt-oss-120b'],
     title: 'Run GPT-OSS 20B (and 120B) locally without re-quantizing',
+    seoTitle: 'Run GPT-OSS 20B/120B without re-quantizing',
     titleZh: '本地运行 GPT-OSS 20B（及 120B）——不要重新量化',
     description: 'GPT-OSS ships natively in MXFP4, so the usual "download the Q4_K_M" habit makes it bigger and worse. Sizing, the right flags, and how MoE expert-offload puts the 120B on a 24GB card.',
     descriptionZh: 'GPT-OSS 原生就是 MXFP4，习惯性去下 Q4_K_M 反而更大更差。本文讲清显存怎么算、该用哪些参数，以及如何用 MoE 专家卸载在 24GB 卡上跑 120B。',

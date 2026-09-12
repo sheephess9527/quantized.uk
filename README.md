@@ -419,6 +419,40 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-12 (e) — Audit P2: QTZ-025 complete — title lengths, and five templates the audit missed
+
+**The audit named two templates; a walk over `out/**` found seven.** QTZ-025 flagged 33 pages with
+`<title>` over 60 characters, concentrated in model pages and cookbook guides. Checking against the
+actual export (not the audit's estimate) found **63** at build time — the index has grown since the
+audit ran, and the same fault also showed up, unflagged, on the homepage, all six `/best/` tiers,
+`/formats/`, all four single-format pages, and `/tools/`, `/faq/`, `/changelog/`.
+
+**The two data-driven templates:**
+
+- **Model pages** (`{name} — Quant Variants & VRAM | quantized.uk`, up to 70 chars on 29 models) now
+  use `modelPageTitle()` (`lib/seo.ts`) — a two-tier fallback: the full title, or a shorter one when
+  that runs long. Checked against all 81 models: the short tier alone clears every one, so no model
+  needs a data-level `shortName` after all.
+- **Cookbook guides** (`{title} | quantized.uk Cookbook`, up to 80 chars) drop the `Cookbook` suffix
+  (22 characters, zero SERP value) via `articlePageTitle()`. One guide's real title still ran past 60
+  on its own (`gpt-oss-mxfp4-local`); it gets a new optional `Article.seoTitle` field — a shorter
+  `<title>` tag only, so the visible H1 keeps promising what the guide actually covers. **No runtime
+  ellipsis truncation anywhere** — every long title either fits a tier or gets an authored
+  `seoTitle`.
+
+**The five static templates** (homepage, `/best/[tier]`, `/formats/` index + single-format pages,
+`/tools/`, `/faq/`, `/changelog/`) were hand-shortened, keeping the load-bearing keywords (format
+names, VRAM, model counts) and dropping filler (`in 2026`, `what it is, what reads it, what it
+costs` → `runtime, cost, VRAM`).
+
+**`/about/` was 20 characters and said nothing** (`About | quantized.uk`) — now `About quantized.uk
+— who maintains it | quantized.uk`, matching the audit's own suggested pattern.
+
+Site-wide after the fix, across all 393 exported pages: **0 titles over 60 characters, 0 titles
+under 20** (one deliberate exception: `/zh/privacy/` at 19 — Chinese conveys the same meaning in far
+fewer characters, and the audit's floor is a Latin-script SERP-truncation concern, not a per-language
+rule), **0 duplicate titles**.
+
 ### 2026-09-12 (d) — Audit P1: QTZ-024 complete — retention surface, and the RSS gap it exposed
 
 **All 24 P1 audit items are now closed.** QTZ-024's problem statement: the site's only user action

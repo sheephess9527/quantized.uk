@@ -16,7 +16,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const path = `/zh/cookbook/${article.id}`;
   const url = canonical(path);
   return {
-    title: `${article.titleZh} | quantized.uk Cookbook`,
+    title: `${article.titleZh} | quantized.uk`,
     description: article.descriptionZh,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,

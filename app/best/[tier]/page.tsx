@@ -18,7 +18,7 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const path = `/best/${params.tier}`;
   const url = canonical(path);
   const chat = picks.find(p => p.useCases.includes('chat'));
-  const title = `Best local LLM for ${label} in 2026 — ${fitCount} models that fit | quantized.uk`;
+  const title = `Best local LLM for ${label} — ${fitCount} models | quantized.uk`;
   const description = chat
     ? `${chat.model.name} at ${quantLevelKey(chat.quant)} needs ${chat.totalGB.toFixed(1)} GB of ${tier.vram} GB. ${fitCount} of ${models.length} quantized models fit at 4K context — the picks for general use, coding and images, with what each needs and what breaks when you push context.`
     : `${fitCount} of ${models.length} quantized models fit ${label} at 4K context.`;

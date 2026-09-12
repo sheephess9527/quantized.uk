@@ -435,6 +435,15 @@ GGUF Q4_K_M "the sweet spot" for a 32B model on a 24GB card; run through the cal
 the card — this site's own `tight`, not `comfortable`. Run the number before writing "fits" or
 "comfortable" into prose, the same rule as the VRAM-guide fault from 2026-09-08.
 
+**A `<title>` template needs a length check, not a one-time count.** The audit that flagged 33 pages
+over 60 characters was already stale by the time it was fixed — the index had grown, and the actual
+export had 63, across five templates the audit never named (homepage, `/best/`, `/formats/`,
+`/tools/`, `/faq/`, `/changelog/`). Audit by walking `out/**` and measuring, not by trusting a
+count written down earlier. Model titles go through `modelPageTitle()` and cookbook titles through
+`articlePageTitle()` (`lib/seo.ts`) — a short-tier fallback, never a runtime ellipsis. `Article`
+carries an optional `seoTitle` for the rare guide whose real title is long on its own; it changes
+only the `<title>` tag, never the visible H1.
+
 **Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
 projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
 vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm --torch-backend=auto`;

@@ -23,7 +23,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     const path = `/formats/${params.slug}`;
     const url = canonical(path);
     const owning = modelsWithFormat(single.name).length;
-    const title = `${single.name} explained — what it is, what reads it, what it costs | quantized.uk`;
+    const title = `${single.name} format explained — runtime, cost, VRAM | quantized.uk`;
     const description = `${single.name} runs on ${single.hardwareReq.toLowerCase()} via ${single.framework}. What the format is, which quant levels this index carries, what it costs in VRAM, and all ${owning} of the ${models.length} indexed models that ship in it.`;
     return {
       title,
