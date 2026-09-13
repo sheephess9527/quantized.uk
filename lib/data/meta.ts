@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-12';
+export const dataLastUpdated = '2026-09-13';
 
 export const dataSources = {
   models: {
@@ -67,6 +67,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-13',
+    en: 'The sitemap and robots.txt both got a real policy instead of a uniform default. Every sitemap URL used to carry the same `lastmod` — the date the site last rebuilt, not the date that page\'s own content changed — which is the kind of signal crawlers learn to discount. Model pages now use their own `addedAt`, guides their `verifiedAt`/`publishedAt`, and `/legal/`/`/privacy/` their real last-edited date (2026-08-18) rather than today\'s. `priority`/`changefreq` also stopped being three flat values and now follow a stated tier from the homepage (1.0, weekly) down to the legal pages (0.2, yearly). Checked the audit\'s specific "328 vs 329" discrepancy claim — no hardcoded page count exists anywhere in the codebase to reconcile, so that one did not reproduce. robots.txt dropped the non-standard `Host:` directive (only Yandex reads it) and now explicitly welcomes the crawlers this site\'s whole GEO approach depends on: OpenAI, Anthropic, Perplexity, Google and Apple\'s search/training bots, verified against each vendor\'s own current documentation rather than a remembered list, plus a comment pointing at `/llms.txt`. No `Disallow: /*?*` — that would also block the calculator\'s and Hub\'s shareable filter links',
+    zh: '站点地图和 robots.txt 都从「统一默认值」换成了真正的策略。以前 sitemap 里每个 URL 的 lastmod 都是同一个日期——是网站上次构建的日期，不是那个页面内容真正变化的日期——这正是爬虫会学着不再信任的那种信号。现在模型页用自己的 addedAt，指南用 verifiedAt/publishedAt，/legal/、/privacy/ 用它们真实的最后编辑日期（2026-08-18）而不是今天。priority/changefreq 也不再是三个固定值，而是从首页（1.0，weekly）到法律页面（0.2，yearly）的一套明确分级。核对了审计报告里提到的「328 与 329 计数不一致」——翻遍代码库也没找到任何硬编码的页面数量需要对账，这一条没有复现。robots.txt 去掉了非标准的 Host 指令（只有 Yandex 会读），并明确欢迎本站整个 GEO 策略所依赖的那些抓取器——OpenAI、Anthropic、Perplexity、Google 和 Apple 的检索/训练类爬虫，名单对照各家官方文档核实过，而不是凭记忆列的，另外加了一行指向 /llms.txt 的注释。没有加 Disallow: /*?*——那会连计算器和模型库的可分享筛选链接也一起挡掉',
+  },
   {
     date: '2026-09-12',
     en: 'A walk over every exported page found 63 `<title>` tags past 60 characters — the audit had flagged 33, but the index has grown since, and the same fault turned up in five more templates it hadn\'t named: the homepage, all six /best/ tiers, /formats/, the four single-format pages and /tools/, /faq/, /changelog/. The two data-driven templates were the worst offenders — 29 model pages named "— Quant Variants & VRAM" and 16 guides carried a redundant " | quantized.uk Cookbook" suffix, 22 characters for a word with no SERP value. Fixed with a two-tier fallback for model titles (full, then a shorter one — checked against every model in the index, none needed a third tier) and a `seoTitle` escape hatch for the one guide whose real title runs long on its own; nothing was truncated with a runtime ellipsis. The static templates were hand-shortened. Also fixed: /about/ was a 20-character title that said nothing about the page; it now names what the page is for. Site-wide count after the fix: 0 titles over 60, 0 duplicates',

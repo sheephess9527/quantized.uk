@@ -419,6 +419,52 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-13 — Audit P2: QTZ-027 + QTZ-028 complete — sitemap `lastmod`/priority, robots.txt AI policy
+
+**QTZ-027 (sitemap).** Every URL in `app/sitemap.ts` used to carry `dataLastUpdated` regardless of
+whether that page's own content had changed — a sitemap-wide uniform `lastmod` is a signal crawlers
+learn to discount, the same fault class as a uniform meta description. Now:
+
+- Model pages use their own `addedAt`; guides use `verifiedAt` (falling back to `publishedAt`) —
+  unchanged from before, but now sitting alongside pages that previously shared their date for no
+  reason.
+- **`/legal/` and `/privacy/` get their real last-edited date (2026-08-18, from `git log`)**, not
+  `dataLastUpdated` — these are hand-written pages that do not move with a data ship, and claiming
+  otherwise makes every rebuild look like a content change that never happened.
+- **`priority`/`changefreq` follow a stated tier** instead of three flat values shared across
+  unrelated page types: `/` at 1.0/weekly, the three hub indexes (`/quant-hub/`, `/gpu/`, `/best/`)
+  at 0.9/weekly, model and GPU pages and `/best/{tier}/` at 0.8/monthly-or-weekly, content indexes
+  and format pages at 0.7/monthly, guides at 0.6/monthly, `/changelog/` at 0.5/weekly, `/about/` at
+  0.4/monthly, `/legal/` and `/privacy/` at 0.2/yearly.
+- Checked the audit's specific "328 vs 329 URL count" discrepancy claim against the actual codebase:
+  no hardcoded page count exists anywhere to reconcile against the sitemap's real count, so that
+  particular claim did not reproduce — noted rather than "fixed."
+- 392 URLs total (well under the 500-URL threshold the audit sets for splitting into a sitemap
+  index), 18 distinct `lastmod` values, valid XML.
+
+**QTZ-028 (robots.txt).** `app/robots.ts` (the typed Next.js metadata-route convention) could not
+express the comment lines the audit's acceptance criteria require, so it is now a static
+`public/robots.txt` instead — content is fully static, so a build-time route added nothing. Changes:
+
+- Dropped the non-standard `Host:` directive (Yandex-only; canonical tags already handle the
+  www/non-www question for engines that matter here).
+- Added an explicit comment pointing at `/llms.txt` (the audit's suggested second line, pointing at
+  a `/llms-full.txt`, was dropped — that file does not exist on this site, and a robots.txt comment
+  linking to a 404 is a broken reference, not a nicety).
+- **Explicitly welcomes the crawlers this site's GEO approach depends on** — a decision made by the
+  site owner (allow, not block, both training and retrieval crawlers) rather than defaulted to
+  silently. Names checked against each vendor's current documentation rather than a remembered
+  list: OpenAI's `GPTBot` (training) / `OAI-SearchBot` (search) / `ChatGPT-User` (user-triggered);
+  Anthropic's `ClaudeBot` (training) / `Claude-User` (user-triggered) / `Claude-SearchBot` (search);
+  `PerplexityBot` (Perplexity's own docs: retrieval only, not training) / `Perplexity-User`;
+  `Google-Extended` and `Applebot-Extended` (both are robots.txt control tokens, not separate
+  crawlers with their own request signature); plus `CCBot` and `Bingbot`, already covered by
+  `User-agent: *` but listed for the same reason the audit gave — an explicit welcome rather than a
+  silent default.
+- **No `Disallow: /*?*`** — that would also block the VRAM calculator's and Hub's shareable
+  filter/query links, which `noindex, follow` (via `QueryNoindex`) already handles correctly.
+- `/robots.txt` still serves as `text/plain` (a static `.txt` file under Cloudflare Pages).
+
 ### 2026-09-12 (e) — Audit P2: QTZ-025 complete — title lengths, and five templates the audit missed
 
 **The audit named two templates; a walk over `out/**` found seven.** QTZ-025 flagged 33 pages with

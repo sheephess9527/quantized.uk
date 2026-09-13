@@ -10,51 +10,60 @@ import { BEST_TIERS } from '@/lib/utils/best-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 
+// `/tools/`, `/changelog/`, `/faq/` shipped as real pages and were never added
+// here, so pages existed that the sitemap did not mention. Adding a route
+// means adding it in three places: the route, its `/zh` mirror, and the
+// entries below.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = [
-    '',
-    '/quant-hub/',
-    '/benchmarks/',
-    '/cookbook/',
-    '/faq/',
-    '/best/',
-    // `/tools/` and `/changelog/` shipped as real pages (2026-09-11) and were
-    // never added here, so two pages existed that the sitemap did not mention.
-    // Adding a route means adding it in three places: the route, its `/zh`
-    // mirror, and this list.
-    '/tools/',
-    '/changelog/',
-    '/tools/vram-calc/',
-    '/tools/cli-gen/',
-    '/tools/format-wizard/',
-    '/tools/compare/',
-    '/legal/',
-    '/privacy/',
-    '/about/',
-    '/gpu/',
-    '/formats/',
-  ];
-
   // A sitemap where every URL claims the same lastmod carries no information —
   // crawlers discount it. Each entry reports the date that page's own content
   // actually changed: addedAt for models, verifiedAt (else publishedAt) for
   // guides, and the site-wide data date only for pages driven by it.
   const siteDate = new Date(dataLastUpdated);
 
-  type Entry = { path: string; lastModified: Date; changeFrequency: 'weekly' | 'monthly'; priority: number };
+  // `/legal/` and `/privacy/` are hand-written pages that do not move with a
+  // data ship — they should not claim `siteDate` just because the site
+  // rebuilt. Real last-touched dates (from `git log -1` on each source file);
+  // bump the date here, not `siteDate`, when the page's own text changes.
+  const LEGAL_LASTMOD = new Date('2026-08-18');
+  const PRIVACY_LASTMOD = new Date('2026-08-18');
+
+  type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
+
+  // QTZ-027: priority/changefreq tiers, checked against the page's own weight
+  // in the site rather than left uniform. Google treats both as a weak signal
+  // at best, but a sitemap where every URL claims the same values is the same
+  // "carries no information" problem as a uniform lastmod.
+  const HUB_INDEX: Entry[] = [
+    { path: '/quant-hub/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/gpu/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/best/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
+  ];
+  const CONTENT_INDEX: Entry[] = [
+    { path: '/benchmarks/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/cookbook/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/faq/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/formats/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/vram-calc/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/cli-gen/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/format-wizard/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/compare/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+  ];
 
   const entries: Entry[] = [
-    ...staticPages.map(path => ({
-      path,
-      lastModified: siteDate,
-      changeFrequency: 'monthly' as const,
-      priority: path === '' ? 1 : path.startsWith('/tools/') ? 0.9 : 0.7,
-    })),
+    { path: '', lastModified: siteDate, changeFrequency: 'weekly', priority: 1 },
+    ...HUB_INDEX,
+    ...CONTENT_INDEX,
+    { path: '/changelog/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.5 },
+    { path: '/about/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.4 },
+    { path: '/legal/', lastModified: LEGAL_LASTMOD, changeFrequency: 'yearly', priority: 0.2 },
+    { path: '/privacy/', lastModified: PRIVACY_LASTMOD, changeFrequency: 'yearly', priority: 0.2 },
     ...models.map(m => ({
       path: `/quant-hub/${m.id}/`,
       lastModified: m.addedAt ? new Date(m.addedAt) : siteDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
     // GPU landing pages: derived entirely from data that already existed, so
     // they carry the site date rather than a date of their own.
@@ -62,7 +71,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       path: `/gpu/${gpuSlug(g)}/`,
       lastModified: siteDate,
       changeFrequency: 'monthly' as const,
-      priority: 0.6,
+      priority: 0.8,
     })),
     // Both kinds of page under /formats/: the pairwise comparisons and the
     // single-format explainers. They share one dynamic route, so it is easy to
@@ -89,7 +98,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       path: `/cookbook/${a.id}/`,
       lastModified: new Date(a.verifiedAt ?? a.publishedAt),
       changeFrequency: 'monthly' as const,
-      priority: 0.8,
+      priority: 0.6,
     })),
   ];
 

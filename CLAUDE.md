@@ -479,6 +479,18 @@ alongside `nvidia-consumer` when the question is "what should I buy".
 **Adding a route means touching three places** — the route, its `/zh` mirror, and `app/sitemap.ts`.
 `/tools/` and `/changelog/` shipped as pages and sat outside the sitemap until `/faq/` was added.
 
+**`robots.txt` is `public/robots.txt`, a static file — there is no `app/robots.ts`.** The typed
+`MetadataRoute.Robots` convention file cannot emit comment lines, and the acceptance bar here
+requires one (a pointer to `/llms.txt`) — so a build-time route added nothing over a static file for
+content that never varies per-request. Edit the file directly; there is no data it derives from.
+
+**A sitemap `lastmod` must be the date that page's own content changed, not the day the site
+rebuilt.** Every URL sharing `dataLastUpdated` is the same "carries no information" fault as a
+uniform meta description — model pages use `addedAt`, guides use `verifiedAt`/`publishedAt`,
+`/legal/`/`/privacy/` use their real last-edited date (hardcoded from `git log`, since they are
+hand-written and do not move with a data ship). Only pages actually driven by the data ship — GPU
+pages, format pages, index pages — get `dataLastUpdated` itself.
+
 **Redirects live in `public/_redirects`, never in `next.config.js`.** `redirects()` needs a Next
 server and is **silently inert** in a static export — it looks done and does nothing. Cloudflare
 Pages reads `_redirects` from the build root. The file is hand-written while the pages are derived,
