@@ -7,8 +7,7 @@ import { mirrorPath } from '@/lib/i18n/routing';
 import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
-
-const FEEDBACK_EMAIL = 'hello@quantized.uk';
+import { FEEDBACK_EMAIL } from '@/lib/seo';
 
 export default function Footer() {
   const { t, lang } = useLanguage();

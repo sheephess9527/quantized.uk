@@ -419,6 +419,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-13 (c) — Audit P2: QTZ-030 complete — a 404 page that guesses intent, verified not assumed
+
+**QTZ-030.** The 404 page was ~20 words and four static links (`Home`, `Quant Hub`, `Cookbook`,
+`VRAM Calculator`) on a site with 393 pages whose URL structure is highly guessable
+(`/quant-hub/{slug}/`, `/gpu/{slug}/`). Rewritten (`components/layout/NotFoundContent.tsx`):
+
+- **Shows the path that actually 404'd** — read from `window.location.pathname` on mount (a static
+  export's `not-found.tsx` has no server request context; the pre-hydration render leaves this
+  blank so it doesn't cause a hydration mismatch).
+- **Fuzzy match against every real slug.** `notFoundSuggestions()` (`lib/utils/not-found.ts`) runs
+  edit distance between the URL's last segment and every model/GPU/guide slug in the index —
+  `/quant-hub/qwen3-8/` correctly surfaces "Qwen3 8B Instruct." Language only changes the label
+  shown (guide titles); slugs themselves aren't translated, so the match itself is language-blind.
+- **A real search form** into `/quant-hub/?q=`, same accessible-form pattern as the Hub's own box.
+- **Six section entry points with live counts** (`Models ({models.length})`, `GPUs
+  ({gpuDatabase.length})`, `Best by VRAM`, `Tools`, `Guides ({articles.length})`, `FAQ`) instead of
+  four hardcoded links — nothing here needs updating when the index grows.
+- A footer line to the one email address on the site (now `FEEDBACK_EMAIL` in `lib/seo.ts`, shared
+  with `Footer.tsx` instead of a second hardcoded copy) for the one case that actually is a bug: an
+  internal link that itself points at a 404.
+
+**Verified, not assumed, the one thing that actually matters for a 404 page.** A static export's
+`not-found.tsx` has no server to guarantee an HTTP 404 status — Cloudflare Pages (like any static
+host) only returns one if it falls back to `404.html` with that status code rather than rewriting to
+a 200 SPA shell. Simulated that exact fallback behavior locally (serve the real file when one
+exists, otherwise `out/404.html` with a genuine 404 status) and confirmed with a headless browser:
+the status code really is 404 for both `/unknown/` and `/zh/unknown/`, and the Chinese path renders
+the Chinese page — `<html lang>` becomes `zh-Hans`, the H1 becomes "页面未找到" — because
+`usePathname()` reads the real browser address bar on hydration, independent of which single static
+`404.html` file the host happened to serve. `robots: { index: false, follow: true }` was already in
+place from an earlier ship; this change only replaces what sits under it.
+
+Regression: `npx tsc --noEmit` clean, `npm run lint` clean, 0/6 page×width overflow combinations at
+390px on both language 404 pages, the one contrast finding on the "404" numeral is the pre-existing
+`.text-gradient` false positive documented elsewhere in this changelog.
+
 ### 2026-09-13 (b) — Audit P2: QTZ-029 complete — legacy model banners, and a real recommendation bug
 
 **QTZ-029.** 12 models the audit judged legacy (superseded by a same-generation successor, dropped

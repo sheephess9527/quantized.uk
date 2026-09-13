@@ -529,6 +529,17 @@ of guesses, which is why the RTX 5050 and RX 9060 XT are still absent. Keep `gpu
 and expect the page to say "no benchmark runs recorded on this card" unless `matrixData` has a row
 whose hardware string resolves to it.
 
+**A 404 page's real HTTP status is the one thing to verify, never assume, in a static export.**
+`not-found.tsx` has no server request context — Cloudflare Pages only returns a genuine 404 if it
+falls back to `404.html` with that status code rather than rewriting to a 200 SPA shell, and nothing
+in this repo proves that on its own. Simulate the host's actual fallback locally (serve the real file
+when one exists, else `out/404.html` with a 404 status) and check with a headless browser, not by
+reading the config. The same test answers the other assumption worth checking: a single global
+`not-found.tsx` renders both languages correctly because `usePathname()` reads the real browser
+address bar on hydration, independent of which static `404.html` the host served — confirmed by
+loading a `/zh/**` 404 and checking `<html lang>` and the visible text, not inferred from the i18n
+architecture in the abstract.
+
 **Page prose for a set of 80+ pages is generated, not written — and must vary with the data.**
 `modelExplainer()` (`lib/utils/model-explainer.ts`) builds each model page's sections and FAQ from
 that model's own row. Write the sentences as conditionals on real facts (smallest fitting card,

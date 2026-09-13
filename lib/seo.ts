@@ -20,6 +20,8 @@ export const GPU_COUNT = gpuDatabase.length;
 
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';
+/** The one contact address on the site — Footer and the 404 page both use it. */
+export const FEEDBACK_EMAIL = 'hello@quantized.uk';
 
 /** Search engine HTML-tag verification codes (public in page source). */
 export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dxbkmE';
