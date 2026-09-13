@@ -13,7 +13,7 @@ import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
 import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
-import { isSuperseded, quantConfidence } from '@/lib/utils/model-meta';
+import { isSuperseded, quantConfidence, supersededDiffNote } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -72,22 +72,38 @@ export default function ModelDetail({ model }: Props) {
           </span>
         </div>
         <p className="text-slate-500 mb-2">{model.family}</p>
-        {isSuperseded(model) && (
-          <div className="mb-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/90 max-w-3xl">
-            <span className="font-semibold">{t.hub.model.superseded}</span>
-            {model.supersededBy && (
-              <>
-                {' · '}
-                <Link href={`/quant-hub/${model.supersededBy}/`} className="underline text-amber-100 hover:text-white">
-                  {t.hub.model.prefer.replace(
-                    '{name}',
-                    models.find(m => m.id === model.supersededBy)?.name ?? model.supersededBy,
-                  )}
-                </Link>
-              </>
-            )}
-          </div>
-        )}
+        {isSuperseded(model) && (() => {
+          const successor = model.supersededBy ? models.find(m => m.id === model.supersededBy) : undefined;
+          return (
+            <div className="mb-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/90 max-w-3xl">
+              <p>
+                <span className="font-semibold">⚠ {t.hub.model.superseded}</span>
+                {successor && (
+                  <>
+                    {' · '}
+                    <Link href={`/quant-hub/${successor.id}/`} className="underline text-amber-100 hover:text-white">
+                      {t.hub.model.prefer.replace('{name}', successor.name)}
+                    </Link>
+                  </>
+                )}
+              </p>
+              {successor && (
+                <p className="mt-1.5 text-amber-200/70">
+                  {t.hub.model.supersededBody
+                    .replace('{name}', successor.name)
+                    .replace('{reason}', supersededDiffNote(model, successor, lang))}
+                  {' '}
+                  <Link
+                    href={`/tools/compare/?a=${model.id}&b=${successor.id}`}
+                    className="underline text-amber-100 hover:text-white whitespace-nowrap"
+                  >
+                    {t.hub.model.compareLink} →
+                  </Link>
+                </p>
+              )}
+            </div>
+          );
+        })()}
         <p className="text-slate-400 max-w-3xl leading-relaxed">{model.description[lang]}</p>
 
         {hf && hf.downloads > 0 && (

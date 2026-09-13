@@ -16,6 +16,7 @@ export const EMPTY_HUB_FILTERS: HubFilters = {
   hardware: '',
   format: '',
   recency: '',
+  showLegacy: '',
 };
 
 const PARAM_RANGES = new Set(['≤3B', '7B', '14B', '32B', '70B+']);
@@ -33,6 +34,7 @@ export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
   const fmt = params.get('fmt') ?? '';
 
   const recency = params.get('recency') ?? '';
+  const legacy = params.get('legacy') ?? '';
 
   return {
     gpuFilterId,
@@ -43,6 +45,7 @@ export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
       hardware: HARDWARE.has(hw) ? hw : '',
       format: FORMATS.has(fmt) ? fmt : '',
       recency: recency === 'recent' ? 'recent' : '',
+      showLegacy: legacy === 'show' ? 'show' : '',
     },
   };
 }
@@ -59,6 +62,7 @@ export function buildHubSearchParams(
   if (filters.hardware) p.set('hw', filters.hardware);
   if (filters.format) p.set('fmt', filters.format);
   if (filters.recency) p.set('recency', filters.recency);
+  if (filters.showLegacy) p.set('legacy', filters.showLegacy);
   return p;
 }
 
@@ -84,6 +88,7 @@ export function hasActiveHubFilters(
     filters.category ||
     filters.hardware ||
     filters.format ||
-    filters.recency
+    filters.recency ||
+    filters.showLegacy
   );
 }

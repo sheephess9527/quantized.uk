@@ -8,7 +8,8 @@ import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageTitle, ogLocale } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, modelPageTitle, ogLocale } from '@/lib/seo';
+import { isSuperseded } from '@/lib/utils/model-meta';
 
 export function generateStaticParams() {
   return models.map(m => ({ modelId: m.id }));
@@ -18,14 +19,15 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   const model = models.find(m => m.id === params.modelId);
   if (!model) return { title: 'Model Not Found | quantized.uk' };
   const url = canonical(`/quant-hub/${model.id}`);
+  const description = modelPageDescription(model.description.en, isSuperseded(model), 'en');
   return {
     title: modelPageTitle(model.name),
-    description: model.description.en,
+    description,
     alternates: { canonical: url, languages: languageAlternates(`/quant-hub/${model.id}`), ...feedAlternates(`/quant-hub/${model.id}`) },
     robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,
-      description: model.description.en,
+      description,
       url,
       images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
       ...ogLocale(`/quant-hub/${model.id}`),

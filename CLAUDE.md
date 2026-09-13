@@ -271,7 +271,24 @@ follow it to the component that actually reads it in the mode the link opens.
 6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`.
 
 **Superseding models** — set `status: 'superseded'` + `supersededBy`; do **not** delete (keeps
-links/SEO). Card + detail show amber “Prefer {name}”.
+links/SEO). Card + detail show amber "Prefer {name}", with a reason from `supersededDiffNote()`
+(`lib/utils/model-meta.ts`) — **checked against the successor's real fields, never a template
+phrase**. It tries context length, falls back to quant-level count, and only reaches a generic
+"still gets new builds" line when neither number favours the newer model. Pick the `supersededBy`
+target itself with the same care: the first pick for Command R 35B (context 131K) was a model with
+*less* context (41K) — checking the actual numbers before writing the reason caught it, and the
+target was swapped for one genuinely longer (262K). `/quant-hub/` hides superseded models by default
+(`?legacy=show` brings them back) — **never `noindex`** them, they keep their SEO value and their
+pages still 200.
+
+**A ranking function must exclude superseded models, or the "prefer something else" banner
+contradicts the site's own front page.** `homePicks` — behind the homepage hero and every `/best/`
+tier — had never been told a model could be off the table, so Qwen2-VL-7B (superseded since
+2026-08-08) held the `multimodal` recommendation on 34 of 61 GPU pages, and marking DBRX
+Instruct/StarCoder2 15B legacy immediately made them start winning the `code` slot too. Filter
+`isSuperseded()` out of the candidate pool in any function that recommends rather than lists —
+`fitsOnGpu` itself stays untouched, since "does this fit" and "what should you run" are different
+questions and a legacy model's own GPU page should still say honestly that it fits.
 
 **Measured confidence** — models in the site-side benchmark set (see `MEASURED_MODEL_IDS` in
 `model-meta.ts`) with `speedRTX4090` default to **measured**; otherwise **estimated** unless

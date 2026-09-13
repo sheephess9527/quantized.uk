@@ -24,7 +24,7 @@ import {
 } from '@/lib/utils/hub-url';
 import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
-import { isRecentModel } from '@/lib/utils/model-meta';
+import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 import { cn } from '@/lib/utils/cn';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { trackEvent } from '@/lib/analytics';
@@ -33,7 +33,8 @@ import DataFreshness from '@/components/home/DataFreshness';
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
   const formats = new Set(models.flatMap(m => m.quants.map(q => q.format))).size;
-  return { families, formats, buckets: paramBucketCounts(models) };
+  const legacyCount = models.filter(isSuperseded).length;
+  return { families, formats, buckets: paramBucketCounts(models), legacyCount };
 })();
 
 export default function QuantHubContent() {
@@ -88,6 +89,7 @@ export default function QuantHubContent() {
 
   const filtered = useMemo(() => {
     return models.filter(m => {
+      if (filters.showLegacy !== 'show' && isSuperseded(m)) return false;
       if (gpuFilterModelIds && !gpuFilterModelIds.has(m.id)) return false;
       if (filters.search) {
         // Name, family and id only meant "gguf", "awq", "7b" and "coding" all
@@ -142,6 +144,7 @@ export default function QuantHubContent() {
 
   const hiddenByGpu = gpuFilterModelIds ? total - compatibleCount : 0;
   const filtersActive = hasActiveHubFilters(gpuFilterId, filters);
+  const effectiveTotal = filters.showLegacy === 'show' ? total : total - HUB_STATS.legacyCount;
 
   const copyShareLink = async () => {
     try {
@@ -313,18 +316,27 @@ export default function QuantHubContent() {
           count={filtered.length}
           total={total}
           profileFilterActive={!!gpuFilterModelIds}
+          legacyCount={HUB_STATS.legacyCount}
         />
       </div>
 
+      {/*
+        Hiding legacy models by default (QTZ-029) should not read as an
+        unexplained filter on first visit — "69 of 81" with nothing else
+        selected looks like the page is broken. `effectiveTotal` is the count
+        for the current legacy visibility, so an untouched page reads as
+        "all 69 models" and the "Show 12 legacy models" toggle is what
+        explains the other 12.
+      */}
       <p className={cn(
         'text-sm mb-6',
-        filtered.length === total ? 'text-violet-400/80' : 'text-slate-500',
+        filtered.length === effectiveTotal ? 'text-violet-400/80' : 'text-slate-500',
       )}>
-        {filtered.length === total
-          ? t.hub.resultsAll.replace('{total}', String(total))
+        {filtered.length === effectiveTotal
+          ? t.hub.resultsAll.replace('{total}', String(effectiveTotal))
           : t.hub.resultsFiltered
               .replace('{visible}', String(filtered.length))
-              .replace('{total}', String(total))}
+              .replace('{total}', String(effectiveTotal))}
       </p>
 
       {filtered.length === 0 ? (

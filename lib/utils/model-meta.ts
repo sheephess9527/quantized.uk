@@ -1,5 +1,6 @@
 import { models } from '@/lib/data/models';
 import type { QuantConfidence, QuantModel, QuantVariant } from '@/lib/data/types';
+import type { Lang } from '@/lib/i18n/translations';
 
 /**
  * Quant formats at least one indexed model actually ships — derived, never
@@ -48,4 +49,31 @@ export function isRecentModel(m: QuantModel, now = Date.now()): boolean {
 export function getModelById(models: QuantModel[], id: string | undefined): QuantModel | undefined {
   if (!id) return undefined;
   return models.find(m => m.id === id);
+}
+
+/**
+ * A real, checked reason to prefer the successor — never a template phrase
+ * substituted with a name. Tries context length first (the biggest practical
+ * difference for most of these pairs), falls back to quant-level count, and
+ * only reaches the generic "still gets new builds" line when neither number
+ * actually favours the successor (jamba-1.5-mini → ministral-3-8b: same
+ * context, fewer formats today, but the legacy side has no active community
+ * quantization to speak of — which is the real reason it is marked legacy).
+ */
+export function supersededDiffNote(legacy: QuantModel, successor: QuantModel, lang: Lang): string {
+  if (successor.contextLength > legacy.contextLength) {
+    const legacyK = Math.round(legacy.contextLength / 1024);
+    const successorK = Math.round(successor.contextLength / 1024);
+    return lang === 'zh'
+      ? `上下文更长（${legacyK}K → ${successorK}K）`
+      : `longer context (${legacyK}K → ${successorK}K tokens)`;
+  }
+  if (successor.quants.length > legacy.quants.length) {
+    return lang === 'zh'
+      ? `可选的量化档位更多（${legacy.quants.length} → ${successor.quants.length}）`
+      : `more quant levels to choose from (${legacy.quants.length} → ${successor.quants.length})`;
+  }
+  return lang === 'zh'
+    ? '仍在持续获得新的社区量化构建，而这个型号已经没有了'
+    : 'still gets new community quant builds, which this one no longer does';
 }

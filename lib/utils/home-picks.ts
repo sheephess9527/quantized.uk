@@ -2,6 +2,7 @@ import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { fitsOnGpu, type GpuFit } from '@/lib/utils/gpu-page';
 import { qualityRank } from '@/lib/utils/quality';
+import { isSuperseded } from '@/lib/utils/model-meta';
 
 /**
  * Use cases are matched against `model.categories`, which the index already
@@ -57,8 +58,13 @@ export const HEADROOM_BUDGET = 0.6;
 
 export function homePicks(gpu: GPU, useCase: HomeUseCase): HomePick[] {
   const wanted = CATEGORY_FOR[useCase];
+  // A recommendation is the one place a legacy model must never land — the
+  // whole point of `status: 'superseded'` is "this index would not suggest
+  // this today", and homePicks is exactly what suggests things. `fitsOnGpu`
+  // still lists these models on their own GPU page (they do, technically,
+  // fit), which is a different question from what gets recommended.
   const fits: GpuFit[] = fitsOnGpu(gpu).filter(f =>
-    f.model.categories.some(c => wanted.includes(c)),
+    !isSuperseded(f.model) && f.model.categories.some(c => wanted.includes(c)),
   );
   if (fits.length === 0) return [];
 

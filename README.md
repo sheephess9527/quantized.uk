@@ -419,6 +419,55 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-13 (b) — Audit P2: QTZ-029 complete — legacy model banners, and a real recommendation bug
+
+**QTZ-029.** 12 models the audit judged legacy (superseded by a same-generation successor, dropped
+by their vendor, or with no active community quantization) now carry the same "prefer something
+else today" treatment 5 of them already had, reusing the existing `status: 'superseded'` +
+`supersededBy` mechanism rather than inventing a third state — the two-value system already meant
+exactly this:
+
+| Legacy | Points to | Real reason (checked, not templated) |
+|---|---|---|
+| Zephyr 7B Beta, WizardLM-2 7B, OpenChat 3.6 8B, Aya 23 8B, InternLM2 7B | `qwen3-8b` | longer context / more quant levels |
+| SOLAR 10.7B, Yi 1.5 34B | `qwen3-14b` / `qwen3-32b` | longer context |
+| InternLM2 20B | `gpt-oss-20b` | 4× longer context |
+| DBRX Instruct | `glm-4.5-air` | longer context, more quant levels |
+| Jamba 1.5 Mini | `ministral-3-8b` | same context, more quant levels (2 → 3) |
+| StarCoder2 15B | `qwen2.5-coder-7b` | 8× longer context, more formats |
+| Command R 35B | `qwen3-8-27b` | 2× longer context |
+
+Every `supersededBy` target was picked from models actually in the index today, by size class and
+category, then **checked against real fields** before writing a reason — the first pass would have
+called Command R 35B's replacement an upgrade on "longer context" when its actual context is
+*shorter* (131K → 41K on the first candidate); the successor was changed to one that is genuinely
+longer (262K) rather than shipping a false claim. `supersededDiffNote()` (`lib/utils/model-meta.ts`)
+tries context length, falls back to quant-level count, and only reaches a generic "still gets new
+builds" line when neither number favours the newer model — which turned out not to be needed for
+any of the 12 once the successors were checked.
+
+**On the page:** the amber banner now states the real reason and links straight into
+`/tools/compare/?a={legacy}&b={successor}` with both models pre-filled (`ModelDetail.tsx`). Meta
+description gets a `Legacy model. ` / `过时型号。` prefix (`modelPageDescription()`). The Hub
+(`/quant-hub/`) now hides all 13 superseded models (the 12 plus the pre-existing Qwen2-VL-7B) by
+default — an untouched page reads "all 68 models," not "68 of 81" with nothing explaining the gap —
+behind a `Show 13 legacy models` toggle that's a real URL param (`?legacy=show`, wired through
+`hub-url.ts` the same way every other Hub filter is). **No `noindex`** anywhere: legacy pages still
+return 200 and stay in the sitemap; hiding is a Hub-listing decision, not a deindexing one.
+
+**Running `homePicks` across all 61 GPUs × 4 use cases (not just reading it) found a real bug this
+ship also fixes, not just the one the audit named.** `homePicks` — the function behind the homepage
+hero *and* every `/best/` tier, per the existing "one ranking implementation" rule — had never been
+told a model could be off the table. Qwen2-VL-7B (superseded since the 2026-08-08 batch) held the
+`multimodal` recommendation on **34 of 61 cards**, and the moment this batch marked DBRX Instruct and
+StarCoder2 15B legacy, they immediately started winning the `code` slot on several high-VRAM cards
+too. `homePicks()` now filters `isSuperseded()` out of its candidate pool before ranking. `fitsOnGpu`
+itself is untouched — a legacy model still correctly appears on its own GPU page's "what fits" list,
+which is a different, honest question from "what should you run."
+
+Regression: `npx tsc --noEmit` clean, `npm run lint` clean, full build + postbuild gates pass,
+0/18 page×width overflow combinations on `/quant-hub/`, a legacy model page, and `/best/24gb-vram/`.
+
 ### 2026-09-13 — Audit P2: QTZ-027 + QTZ-028 complete — sitemap `lastmod`/priority, robots.txt AI policy
 
 **QTZ-027 (sitemap).** Every URL in `app/sitemap.ts` used to carry `dataLastUpdated` regardless of

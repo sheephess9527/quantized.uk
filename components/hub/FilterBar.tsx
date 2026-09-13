@@ -14,6 +14,7 @@ export interface HubFilters {
   hardware: string;
   format: string;
   recency: string;
+  showLegacy: string;
 }
 
 interface Props {
@@ -22,9 +23,10 @@ interface Props {
   count: number;
   total: number;
   profileFilterActive?: boolean;
+  legacyCount: number;
 }
 
-export default function FilterBar({ filters, onChange, count, total, profileFilterActive }: Props) {
+export default function FilterBar({ filters, onChange, count, total, profileFilterActive, legacyCount }: Props) {
   const { t, lang } = useLanguage();
 
   const set = (key: keyof HubFilters) => (val: string) =>
@@ -32,10 +34,10 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
 
   const hasActiveFilters =
     filters.search || filters.paramRange || filters.category ||
-    filters.hardware || filters.format || filters.recency;
+    filters.hardware || filters.format || filters.recency || filters.showLegacy;
 
   const clearAll = () => onChange({
-    search: '', paramRange: '', category: '', hardware: '', format: '', recency: '',
+    search: '', paramRange: '', category: '', hardware: '', format: '', recency: '', showLegacy: '',
   });
 
   const renderGroup = (
@@ -106,6 +108,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}
         {filters.format && <input type="hidden" name="fmt" value={filters.format} />}
         {filters.recency && <input type="hidden" name="recency" value={filters.recency} />}
+        {filters.showLegacy && <input type="hidden" name="legacy" value={filters.showLegacy} />}
       </form>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -142,15 +145,38 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         ])}
       </div>
 
-      <div className="flex items-center justify-between pt-1">
-        <p className={cn(
-          'text-xs font-medium',
-          count < total
-            ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400/70'
-            : 'text-slate-600',
-        )}>
-          {t.hub.modelCount.replace('{count}', String(count)).replace('{total}', String(total))}
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <p className={cn(
+            'text-xs font-medium',
+            count < total
+              ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400/70'
+              : 'text-slate-600',
+          )}>
+            {t.hub.modelCount.replace('{count}', String(count)).replace('{total}', String(total))}
+          </p>
+          {/*
+            QTZ-029: legacy models used to sit in the same list as everything
+            current, with only a small amber badge saying otherwise. Hidden by
+            default now — a reader browsing "what should I run" should not
+            have to notice the badge on their own — but never gone: the toggle
+            keeps them one click away, and their pages are still indexed.
+          */}
+          {legacyCount > 0 && (
+            <button
+              aria-pressed={filters.showLegacy === 'show'}
+              onClick={() => set('showLegacy')(filters.showLegacy === 'show' ? '' : 'show')}
+              className={cn(
+                'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 border',
+                filters.showLegacy === 'show'
+                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
+                  : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
+              )}
+            >
+              {t.hub.showLegacy.replace('{n}', String(legacyCount))}
+            </button>
+          )}
+        </div>
         {hasActiveFilters && (
           <button
             onClick={clearAll}

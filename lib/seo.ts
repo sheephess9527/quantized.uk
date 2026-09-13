@@ -107,6 +107,16 @@ export function modelPageTitle(name: string): string {
 }
 
 /**
+ * QTZ-029: a legacy model page must say so in its meta description too, not
+ * just in the on-page banner — a reader (or an AI answer engine) that only
+ * sees the SERP snippet should not be told this is a current pick.
+ */
+export function modelPageDescription(description: string, isLegacy: boolean, lang: 'en' | 'zh' = 'en'): string {
+  if (!isLegacy) return description;
+  return lang === 'zh' ? `过时型号。${description}` : `Legacy model. ${description}`;
+}
+
+/**
  * The English cookbook `<title>`. `Cookbook` in the old
  * `{title} | quantized.uk Cookbook` suffix cost 22 characters for a word with
  * no SERP value; dropping it clears every guide but one. `seoTitle` is the

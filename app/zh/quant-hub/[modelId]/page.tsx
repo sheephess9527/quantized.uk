@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { isSuperseded } from '@/lib/utils/model-meta';
 import ModelDetailPage from '../../../quant-hub/[modelId]/page';
 
 export { generateStaticParams } from '../../../quant-hub/[modelId]/page';
@@ -15,14 +16,15 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   if (!model) return { title: '未找到该模型 | quantized.uk' };
   const path = `/zh/quant-hub/${model.id}`;
   const url = canonical(path);
+  const description = modelPageDescription(model.description.zh, isSuperseded(model), 'zh');
   return {
     title: `${model.name} — 量化版本与显存占用 | quantized.uk`,
-    description: model.description.zh,
+    description,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: `${model.name} | quantized.uk`,
-      description: model.description.zh,
+      description,
       url,
       siteName: SITE_NAME,
       images: [OG_IMAGE],
