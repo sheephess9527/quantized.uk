@@ -152,6 +152,14 @@ flaky network. Never "fix" it by removing the postbuild hook.
   counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear
   in the visible text. There is deliberately no `AggregateRating` or `Review` anywhere — the site has
   no ratings to report, and inventing a reviewer identity is not on the table.
+- **A schema entity is not more credible for citing an identity that does not exist.** The
+  site-wide `Organization` block (`components/seo/JsonLd.tsx`) deliberately omits `founder` (no
+  real `Person` is named — `/about/` describes an intentionally unnamed maintainer) and `sameAs`
+  (no real GitHub/HF/social account — the site's stated posture is no public source repo). Filling
+  either with a plausible-looking placeholder would be the same fault as an invented reviewer
+  identity or a fabricated author byline. Fields present (`description`, `knowsAbout`,
+  `contactPoint`, `foundingDate`) are all independently verifiable from data the site already has;
+  `foundingDate` is derived from the earliest `changelog` entry, never typed in.
 - **Derived pages are similar by nature; say so rather than hiding it.** The GPU fit list is a
   function of VRAM, so same-tier cards return the same list (`rtx-4070` vs `rtx-4070-super` were
   0.971 by 5-gram Jaccard). `sameBudgetCards()` names the siblings on the page and links them; that

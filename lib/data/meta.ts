@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-13';
+export const dataLastUpdated = '2026-09-14';
 
 export const dataSources = {
   models: {
@@ -67,6 +67,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-14',
+    en: 'The site-wide `Organization` schema was four fields: name, url, and a logo — nothing that lets a search or AI engine confirm who is actually behind this. Added `description`, `knowsAbout` (the real subject areas — GGUF, AWQ, EXL2, GPTQ, the runtimes, not a keyword list), a `contactPoint` (the one real inbox this site has), and `foundingDate` derived from the earliest changelog entry on record, to month precision, so it never needs a manual bump. Deliberately left out: `founder` and `sameAs`. `/about/` describes an intentionally unnamed indie maintainer, so there is no real Person to cite; this site\'s own stated privacy posture is no public source repo, so there is no real GitHub/HF/X account to point `sameAs` at either. A schema entity is not more trustworthy for citing an identity that does not exist — omitting an unverifiable field is the same discipline this site applies to a model\'s missing perplexity figure or a GPU with no confirmed bandwidth, applied to itself',
+    zh: '全站的 Organization schema 之前只有四个字段：name、url 和一个 logo——不足以让搜索引擎或 AI 引擎确认这个站到底是谁在做。新增了 description、knowsAbout（真实涉及的主题领域——GGUF、AWQ、EXL2、GPTQ 和各个运行时，不是随便凑的关键词表）、contactPoint（本站唯一真实存在的联系邮箱），以及从有记录的最早一条 changelog 推导出的 foundingDate（精确到月，这样以后永远不用手动改）。故意没加的是 founder 和 sameAs：/about/ 页面描述的是一位刻意不具名的独立维护者，所以没有真实姓名可以填；本站自己声明的隐私立场就是不放公开源码仓库链接，所以也没有真实的 GitHub / HF / X 账号可以填进 sameAs。给一个不存在的身份背书并不会让 schema 更可信——省略一个无法核实的字段，跟本站对待"某个模型缺失的困惑度数据"或"某张显卡未经确认的带宽"是同一套纪律，这次用在了自己身上',
+  },
   {
     date: '2026-09-13',
     en: 'The 404 page was ~20 words and four static links, on a site with 393 pages whose URLs follow a guessable pattern — real visits landed on `/tools/`, `/faq/` and other reasonable guesses months before those pages existed. It now shows the path that actually 404\'d, a fuzzy match (edit distance) against every real model/GPU/guide slug — `/quant-hub/qwen3-8/` correctly suggests Qwen3 8B Instruct — a real search form into the Hub, and all six sections with live counts instead of four hardcoded links. Verified rather than assumed the one thing that actually matters for a 404 page: simulated the static host\'s real fallback behavior (serve `404.html` with an HTTP 404 status when no file matches, not a 200 SPA rewrite) and confirmed both that the status code is genuinely 404 and that a Chinese path (`/zh/whatever/`) renders the Chinese page — the same single `not-found.tsx` handles both languages because `usePathname()` reads the real browser URL on hydration regardless of which static file was served for it, not something to take on faith. `noindex` was already in place from an earlier ship; this only replaces what sits under it',

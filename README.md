@@ -419,6 +419,41 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-14 — Audit P2: QTZ-034 complete — Organization schema, honestly incomplete where it must be
+
+**QTZ-034.** The site-wide `Organization` block (`components/seo/JsonLd.tsx`) carried only `name`,
+`url` and a `logo`. Added:
+
+- `description` — one sentence on what the site actually is.
+- `knowsAbout` — the real subject areas (GGUF, AWQ, EXL2, GPTQ, llama.cpp, vLLM, Ollama,
+  ExLlamaV2, local inference, VRAM, Apple Silicon). The audit's own example list included NVFP4;
+  left out here since `CLAUDE.md` already establishes zero models in this index ship it, and
+  `knowsAbout` sitting next to `formats tracked` invites exactly the conflation that rule exists
+  to prevent.
+- `contactPoint` — the one real inbox (`FEEDBACK_EMAIL`, `lib/seo.ts`), `contactType: "editorial
+  corrections"` (accurate — this is how the site's own corrections actually arrive),
+  `availableLanguage: ["en", "zh-Hans"]`.
+- `foundingDate` — derived from the earliest date in `changelog`, to month precision, not typed in.
+  Grows correctly if an older entry is ever backfilled.
+
+**Deliberately absent: `founder` and `sameAs`.** The audit's own template names both, but:
+
+- `/about/` describes an intentionally unnamed indie maintainer ("built by someone who actually
+  does it," no name given) — there is no real `Person` to cite, and inventing one to fill a schema
+  field is the same fault this codebase already refuses elsewhere (no fabricated reviewer identity,
+  no invented author byline).
+- This site's own stated privacy posture is **no public source repo** — there is no real GitHub,
+  Hugging Face or social account to point `sameAs` at. The audit's own implementation notes say the
+  same thing: "if no such account exists, leave the field empty or omit it — do not fill in URLs
+  that don't exist." Followed literally rather than working around it.
+
+A schema entity is not more credible for citing an identity that does not exist. This is the same
+discipline the site already applies to a model's missing `pplLossPercent` or an unconfirmed GPU
+bandwidth, turned on the site's own metadata.
+
+Validated: `out/index.html`'s `Organization` block parses as valid JSON with every field a real
+schema.org `Organization` property (no typos, no `@type` mismatches).
+
 ### 2026-09-13 (c) — Audit P2: QTZ-030 complete — a 404 page that guesses intent, verified not assumed
 
 **QTZ-030.** The 404 page was ~20 words and four static links (`Home`, `Quant Hub`, `Cookbook`,
