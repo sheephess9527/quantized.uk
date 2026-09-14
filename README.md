@@ -419,6 +419,37 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-14 (c) — Audit P2: QTZ-032 investigated — not reproducible in this environment, one step left
+
+**QTZ-032** is explicitly a "reproduce first, decide whether to fix" item: the audit observed, in its
+own preview panel, a mobile homepage where a programmatic `scrollTo` left `scrollTop` stuck near 800
+regardless of the target, and flagged three possible causes without prescribing a fix. Investigated
+each **before writing any code**, per the item's own instruction:
+
+1. **Mobile-menu scroll lock left uncleaned** — does not apply. `Navbar.tsx`'s mobile menu is a
+   plain conditionally-rendered `absolute` panel; there is no `overflow: hidden` or `position: fixed`
+   ever applied to `<body>` for it to leave behind.
+2. **`#changelog` anchor covered by the fixed nav** — already handled. `DataChangelog.tsx` carries
+   `scroll-mt-28` (7rem, well past the 56px nav height); `ArticleView.tsx`'s section anchors carry
+   the same class.
+3. **Custom `scrollRestoration` conflicting with something** — no such code exists anywhere in the
+   repo; the site relies on Next's default.
+
+With none of the three present, reproduced the audit's actual scenario in a fresh headless
+environment instead of trusting the source read: a real mobile viewport (390×844, touch-enabled,
+iOS Safari UA), a genuine wheel-scroll gesture (not just `scrollTo`), and then a plain
+`scrollTo(0, document.documentElement.scrollHeight)`. Both reached the footer correctly — the
+`scrollTo` landed exactly at the bottom, the opposite of what the audit's panel showed. This matches
+the audit's own leading theory (a preview-tool artifact, not a site defect) rather than either of
+the other two. The homepage's two `<select>` elements were also confirmed present and populated
+(62 and 83 real options) in that same run — not proof of iOS Safari usability specifically, but
+evidence there is no rendering fault to explain one.
+
+**What this cannot close on its own:** the audit's acceptance bar requires confirmation "on iOS
+Safari and Android Chrome, real device" — hardware this agent environment does not have. That one
+check is the site owner's to do; a one-minute scroll-to-footer on an actual phone, matching what
+the automated run already shows, is what finishes this item.
+
 ### 2026-09-14 (b) — Audit P2: QTZ-031 complete — benchmarks page states its own coverage
 
 **QTZ-031.** `/benchmarks/` was 251 words carrying the site's most distinctive asset (real
