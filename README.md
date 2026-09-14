@@ -419,6 +419,64 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-14 (d) — Audit P2: QTZ-026 complete — per-page share-card images, and two site-wide Twitter-card bugs found along the way
+
+**QTZ-026.** GPU, model (`/quant-hub/[modelId]`), guide (`/cookbook/[slug]`), `/best/[tier]` and
+format (`/formats/[slug]`) pages now render their own social share-card image at build time — 5 page
+types × 2 languages — instead of every page on the site sharing one generic `/og.png`. Mechanism:
+
+- `lib/og/render.tsx` — one `renderOgImage({eyebrow, title, stats, footer})` shared by all 10
+  `opengraph-image.tsx` files (Next's file-convention route), using `ImageResponse` from `next/og`
+  with no custom font (its default renders Chinese correctly with zero extra config, and avoids a
+  build-time font fetch). Long titles get a 3-tier responsive font size plus an explicit
+  `width: '100%'` on the title container — Satori's flex layout collapses to a text node's *natural*
+  width with no explicit width, and the longest guide title (56 chars) would overflow the 1200px
+  canvas without it.
+- Each generator reuses the site's own data functions (`countModelsFitting`, `homePicks`,
+  `bestQuant`, `sizeAt`, `cardsFitting`, `readingMinutes`, `bestPage`, `headToHead`,
+  `modelsWithFormat`) — never a second, hand-rolled computation — so a share card cannot state a
+  number the page itself disagrees with. GPU pages use `homePicks(gpu,'chat')[0]` for "top pick",
+  not `fitsOnGpu`, specifically to exclude superseded models (QTZ-029) from the card too.
+- `pageOgImage(path, alt)` (`lib/seo.ts`) builds `{url, width, height, alt, type}` manually rather
+  than relying on Next's auto-injection, because auto-injection only fires when no ancestor metadata
+  already sets `openGraph.images` — and nearly every page here hand-writes that field already, for a
+  real, per-instance `alt` string the file-level static `alt` export cannot express.
+
+**Two bugs found building this, both worse than the feature itself, both invisible from reading
+`generateMetadata` — only visible in the rendered HTML:**
+
+1. **`export const runtime = 'edge'` on an `opengraph-image.tsx` is silently incompatible with
+   `output: 'export'`.** It makes Next treat the route as Dynamic; a Dynamic route in a static
+   export is dropped — the build exits 0, the file is simply never written, nothing in the build log
+   says so. Confirmed by a controlled test (added the line, rebuilt, watched the file disappear;
+   removed it, rebuilt, watched a valid PNG appear). None of the 10 files here set it.
+2. **Every page's `twitter:title`/`twitter:description` showed the same generic site tagline,
+   including the homepage's own.** `og:title`/`og:description` were already correctly per-page
+   everywhere — but `app/layout.tsx`'s root `metadata.twitter` and a second copy inside
+   `pageMetadata()` (`lib/seo.ts`, used by `/quant-hub/layout.tsx`, `/cookbook/layout.tsx` and ~25
+   other pages) both hardcoded a `title`/`description` that outranks a page's own `openGraph` values
+   whenever the page itself never sets a `twitter` object — which is every page on this site. Fixed
+   by deleting the hardcoded `title`/`description`/`images` in both places: an unset `twitter` field
+   falls back to that same metadata level's `openGraph` equivalent, which is what makes the two-level
+   layout chain (root → `/quant-hub/layout.tsx` → leaf page) resolve to the leaf's own text instead
+   of stopping at the nearer ancestor. Verified by walking `out/**`: `og:title`/`twitter:title` and
+   `og:description`/`twitter:description` now match on the homepage, a model page, a guide, a
+   `/best/` tier, a format pair, a GPU page, and a plain page with no custom OG image (`/about/`,
+   correctly still on `/og.png` for both).
+- `public/_headers` added: the generated file is named `opengraph-image` with **no extension**, so
+  a static host (Cloudflare Pages included) has nothing to infer a MIME type from and would serve it
+  as `application/octet-stream` without an explicit rule — a type several social-card validators
+  will not sniff past. One `Content-Type: image/png` line per route (`*` here matches one path
+  segment, never across `/`, so each depth needs its own line).
+- `og:image:type` was also missing from every manually-built `pageOgImage()` (Next's auto-injection
+  adds it; a hand-built object does not unless told to) — added `type: 'image/png'` to the helper.
+
+Verified: `npx tsc --noEmit` and `npm run lint` clean; full `npm run build` + postbuild gate pass
+(394 pages, all internal links end in `/`, no Chinese-tree leaks); `file` on 6 sampled generated
+images confirms real 1200×630 PNGs; a manual crawl of 8 pages across every affected type plus one
+unaffected type confirms `og:`/`twitter:` title, description and image now agree everywhere, in
+both languages.
+
 ### 2026-09-14 (c) — Audit P2: QTZ-032 investigated — not reproducible in this environment, one step left
 
 **QTZ-032** is explicitly a "reproduce first, decide whether to fix" item: the audit observed, in its

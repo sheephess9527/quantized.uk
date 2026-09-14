@@ -1,0 +1,45 @@
+# Cloudflare Pages header table.
+#
+# `opengraph-image.tsx` (Next's file convention) exports a static PNG at
+# build time, but the exported file is named `opengraph-image` with NO
+# extension — Next only sets a Content-Type header for it when a server is
+# handling the request; a static export has no server, so the host is left to
+# guess the MIME type from the filename alone. An extensionless file is not a
+# guessable one: left unset, Cloudflare Pages serves it as
+# application/octet-stream, which several social-platform image validators
+# (Twitter/X's card validator in particular) trust over content sniffing and
+# will refuse to render.
+#
+# One line per route that has an `opengraph-image.tsx` — `*` here matches a
+# single path segment (the dynamic id), never across a `/`, so each depth
+# needs its own line; a trailing `/*` splat would be needed to cross segments
+# and isn't used here since every one of these routes is a fixed depth.
+/gpu/*/opengraph-image
+  Content-Type: image/png
+
+/zh/gpu/*/opengraph-image
+  Content-Type: image/png
+
+/quant-hub/*/opengraph-image
+  Content-Type: image/png
+
+/zh/quant-hub/*/opengraph-image
+  Content-Type: image/png
+
+/cookbook/*/opengraph-image
+  Content-Type: image/png
+
+/zh/cookbook/*/opengraph-image
+  Content-Type: image/png
+
+/best/*/opengraph-image
+  Content-Type: image/png
+
+/zh/best/*/opengraph-image
+  Content-Type: image/png
+
+/formats/*/opengraph-image
+  Content-Type: image/png
+
+/zh/formats/*/opengraph-image
+  Content-Type: image/png

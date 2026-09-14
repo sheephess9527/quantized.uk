@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Plausible from '@/components/analytics/Plausible';
 import { SiteJsonLd } from '@/components/seo/JsonLd';
-import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE, MODEL_COUNT } from '@/lib/seo';
+import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -56,11 +56,15 @@ export const metadata: Metadata = {
     locale: 'en_GB',
     images: [OG_IMAGE],
   },
+  // QTZ-026: no `images`, `title` or `description` here — an unset Twitter
+  // field falls back to this same metadata level's `openGraph` equivalent.
+  // A hardcoded value here doesn't just miss the five page types with their
+  // own `opengraph-image.tsx`: every page's `og:title`/`og:description` was
+  // already per-page, but `twitter:title`/`twitter:description` pinned to
+  // this site-wide default regardless — even the homepage's own Twitter card
+  // didn't match its own OpenGraph card.
   twitter: {
     card: 'summary_large_image',
-    title: 'quantized.uk — AI Quantization Intelligence',
-    description: `VRAM calculator, ${MODEL_COUNT} quantized models, CLI generator, format wizard.`,
-    images: [OG_IMAGE.url],
   },
 };
 

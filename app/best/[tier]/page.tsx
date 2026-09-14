@@ -4,7 +4,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { models } from '@/lib/data/models';
 import { BEST_TIERS, bestPage, bestTierBySlug } from '@/lib/utils/best-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 
 export function generateStaticParams() {
   return BEST_TIERS.map(t => ({ tier: t.slug }));
@@ -22,12 +22,13 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const description = chat
     ? `${chat.model.name} at ${quantLevelKey(chat.quant)} needs ${chat.totalGB.toFixed(1)} GB of ${tier.vram} GB. ${fitCount} of ${models.length} quantized models fit at 4K context — the picks for general use, coding and images, with what each needs and what breaks when you push context.`
     : `${fitCount} of ${models.length} quantized models fit ${label} at 4K context.`;
+  const ogAlt = `Best local LLM for ${label}: ${fitCount} models fit${chat ? `, top pick ${chat.model.name}` : ''} | quantized.uk`;
   return {
     title,
     description,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
-    openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [OG_IMAGE], ...ogLocale(path) },
+    openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [pageOgImage(path, ogAlt)], ...ogLocale(path) },
   };
 }
 

@@ -24,7 +24,7 @@ import { contextLabel } from '@/lib/utils/context-label';
  * three formats.
  */
 
-const REF_CONTEXT = 4096;
+export const REF_CONTEXT = 4096;
 const LONG_CONTEXT = 32768;
 
 export interface ExplainerSection {
@@ -37,7 +37,7 @@ export interface ExplainerFaq {
   a: { en: string; zh: string };
 }
 
-function sizeAt(model: QuantModel, bpw: number, ctx: number) {
+export function sizeAt(model: QuantModel, bpw: number, ctx: number) {
   return calcVRAM({
     paramsB: model.params,
     layers: model.arch.layers,
@@ -51,7 +51,7 @@ function sizeAt(model: QuantModel, bpw: number, ctx: number) {
 }
 
 /** Cards that clear this size comfortably, smallest first. */
-function cardsFitting(totalGB: number) {
+export function cardsFitting(totalGB: number) {
   return gpuDatabase
     .filter(g => getVerdict(totalGB, g.vram) === 'green')
     .sort((a, b) => a.vram - b.vram);

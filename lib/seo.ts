@@ -38,6 +38,18 @@ export const OG_IMAGE = {
   alt: 'quantized.uk — Run LLMs on consumer hardware',
 };
 
+/**
+ * QTZ-026: the five page types that generate their own `opengraph-image.tsx`
+ * (GPU, model, guide, `/best/`, format pages) build this by hand instead of
+ * letting Next's own image-metadata inference fill it in — inference can only
+ * carry the file's one static `alt` export, and "og:image:alt must match what
+ * the image shows, not generic copy" is an explicit acceptance criterion here.
+ * `path` is the page's own path (e.g. `/gpu/rtx-5090`), no trailing slash.
+ */
+export function pageOgImage(path: string, alt: string) {
+  return { url: `${SITE_URL}${path}/opengraph-image`, width: 1200, height: 630, alt, type: 'image/png' };
+}
+
 /** Trailing-slash canonical URL (matches next.config trailingSlash: true). */
 export function canonical(path = ''): string {
   if (!path || path === '/') return `${SITE_URL}/`;
@@ -152,11 +164,14 @@ export function pageMetadata({
       images: [OG_IMAGE],
       ...ogLocale(path),
     },
+    // No `title`/`description`/`images` under `twitter`: each falls back to
+    // this same metadata level's `openGraph` equivalent when omitted. A leaf
+    // page under a layout that calls this (quant-hub, cookbook) sets its own
+    // `openGraph` but never its own `twitter`, so hardcoding values here would
+    // win over the layout chain and show this generic section's title/image
+    // instead of the page's own — the same fault the root layout had.
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
-      images: [OG_IMAGE.url],
     },
     robots: defaultRobots,
   };

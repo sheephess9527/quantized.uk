@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import FormatCompareContent from '@/components/formats/FormatCompareContent';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { formatPairs, headToHead, modelsWithFormat, pairBySlug } from '@/lib/utils/format-compare';
 import FormatSingleContent from '@/components/formats/FormatSingleContent';
 import { FORMAT_PAGES, formatById, formatPage } from '@/lib/utils/format-page';
@@ -25,12 +25,13 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     const owning = modelsWithFormat(single.name).length;
     const title = `${single.name} format explained — runtime, cost, VRAM | quantized.uk`;
     const description = `${single.name} runs on ${single.hardwareReq.toLowerCase()} via ${single.framework}. What the format is, which quant levels this index carries, what it costs in VRAM, and all ${owning} of the ${models.length} indexed models that ship in it.`;
+    const ogAlt = `${single.name}: ${single.framework}, ${owning} models ship in it | quantized.uk`;
     return {
       title,
       description,
       alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
       robots: defaultRobots,
-      openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [OG_IMAGE], ...ogLocale(path) },
+      openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [pageOgImage(path, ogAlt)], ...ogLocale(path) },
     };
   }
   const pair = pairBySlug(params.slug);
@@ -39,12 +40,13 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const url = canonical(path);
   const title = `${pair.a.name} vs ${pair.b.name} — which quantization format? | quantized.uk`;
   const description = `${pair.a.name} runs on ${pair.a.hardwareReq.toLowerCase()}; ${pair.b.name} on ${pair.b.hardwareReq.toLowerCase()}. Compared on runtime, quality and the ${models.length}-model index, with the models that ship both.`;
+  const ogAlt = `${pair.a.name} vs ${pair.b.name} — quantization format comparison | quantized.uk`;
   return {
     title,
     description,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
-    openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [OG_IMAGE], ...ogLocale(path) },
+    openGraph: { title, description, url, siteName: SITE_NAME, type: 'article', images: [pageOgImage(path, ogAlt)], ...ogLocale(path) },
   };
 }
 

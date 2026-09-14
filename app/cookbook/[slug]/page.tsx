@@ -1,9 +1,16 @@
 import { articles } from '@/lib/data/cookbook';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale } from '@/lib/seo';
+import { articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage } from '@/lib/seo';
 import { articleEntities } from '@/lib/utils/article-entities';
+import { readingMinutes } from '@/lib/utils/reading-time';
 import type { Metadata } from 'next';
+
+const DIFFICULTY_LABEL: Record<string, string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};
 
 export function generateStaticParams() {
   return articles.map(a => ({ slug: a.id }));
@@ -12,19 +19,21 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const article = articles.find(a => a.id === params.slug);
   if (!article) return { title: 'Article Not Found | quantized.uk' };
-  const url = canonical(`/cookbook/${article.id}`);
+  const path = `/cookbook/${article.id}`;
+  const url = canonical(path);
+  const ogAlt = `${article.title}: ${DIFFICULTY_LABEL[article.difficulty]}, ${readingMinutes(article, 'en')} min read | quantized.uk`;
   return {
     title: articlePageTitle(article),
     description: article.description,
-    alternates: { canonical: url, languages: languageAlternates(`/cookbook/${article.id}`), ...feedAlternates(`/cookbook/${article.id}`) },
+    alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: article.title,
       description: article.description,
       url,
       type: 'article',
-      images: [{ url: '/og.png', width: 1200, height: 630, alt: 'quantized.uk' }],
-      ...ogLocale(`/cookbook/${article.id}`),
+      images: [pageOgImage(path, ogAlt)],
+      ...ogLocale(path),
     },
   };
 }

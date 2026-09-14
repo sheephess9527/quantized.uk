@@ -108,7 +108,31 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **Recharts must be lazy** — import chart components via `next/dynamic` (`ssr: false` + a
   skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
 - **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
-  platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes.
+  platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes. GPU, model,
+  cookbook, `/best/` and format pages override this with their own build-time-generated
+  `opengraph-image.tsx` (`lib/og/render.tsx` is the shared renderer) — never add `runtime = 'edge'`
+  to one of these files: it silently makes the route Dynamic, and a static export drops Dynamic
+  routes with no error, so the build succeeds while the image is simply never written. Pass a real
+  `alt` via `pageOgImage(path, alt)` (`lib/seo.ts`) rather than the file's static `alt` export,
+  which cannot vary per `params`.
+- **An unset `twitter` metadata field must stay unset, never a copy of the site default.** Twitter's
+  own fallback reads the matching `openGraph` field at that same metadata level when `twitter.title`/
+  `description`/`images` are omitted — that's what let a per-page `opengraph-image.tsx` and a
+  per-page `og:title` actually reach the Twitter/X card instead of a hardcoded value in
+  `app/layout.tsx` or `pageMetadata()` (`lib/seo.ts`) always winning. Both used to hardcode all
+  three, which meant literally every page's Twitter card — the homepage included — showed the
+  generic site tagline and `/og.png` regardless of what `og:title`/`og:description`/`og:image`
+  correctly showed for that page. `pageMetadata()` is inherited by any layout that calls it
+  (`/quant-hub/layout.tsx`, `/cookbook/layout.tsx`, ~25 others) and wins over a leaf page's own
+  `openGraph` unless its own `twitter` fields are absent too — check this by reading the rendered
+  `<meta name="twitter:...">` tags in `out/**`, not the `generateMetadata` source, the same rule as
+  every other static-export claim in this file.
+- **A file the export writes with no extension needs a `public/_headers` MIME rule.** Cloudflare
+  Pages guesses `Content-Type` from the filename; `opengraph-image.tsx` exports as literally
+  `opengraph-image`, no `.png`, so without an explicit rule it serves as
+  `application/octet-stream` — a type social-card validators do not sniff past. One line per route
+  in `public/_headers` (`*` matches one path segment, never across `/`, so each route depth needs
+  its own line — see the file for all 10).
 - **Every internal href ends in `/` — and the build checks.** `trailingSlash: true` is not enough:
   `next/link` treats any last path segment containing a dot as a filename and strips the slash
   (`/\.[^/]+\/?$/` in `normalizePathTrailingSlash`), which silently hit every versioned model id —
@@ -694,6 +718,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-14 | **Per-page share-card images + two site-wide Twitter-card bugs (QTZ-026)** — GPU/model/guide/best/format pages get a real generated `opengraph-image.tsx` instead of one shared `/og.png`; found along the way that `runtime='edge'` silently drops the route from a static export, and that every page's `twitter:title`/`description`/`images` — homepage included — showed the generic site default because `app/layout.tsx` and `pageMetadata()` hardcoded them instead of letting Twitter fall back to `openGraph` |
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |
 | 2026-09-08 | **Command safety + a wrong claim** — local server binds `127.0.0.1` not `0.0.0.0`; download installs its own CLI; **vLLM is not CUDA-only** (official ROCm builds) — that claim was ours and was wrong |
