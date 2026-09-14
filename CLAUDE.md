@@ -30,8 +30,8 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**61** GPUs incl. AMD RDNA 4, Blackwell, M4/M5), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 232 pages, hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**63** GPUs incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 397 pages (199 EN + 198 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -718,6 +718,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-14 | **`/zh` audited against the audit's own query list (QTZ-033)** — mostly already redrafted for Chinese search intent from earlier ships (not machine-translated); real gap found: no FAQ answer for "32G 内存纯 CPU 现实吗" despite an existing `32 GB RAM (CPU)` row, added; +2 verified used cards (Tesla P40 24G, P100 16G); the audit's suggested "modded 2080 Ti 22G" deliberately skipped — not a vendor spec |
 | 2026-09-14 | **Per-page share-card images + two site-wide Twitter-card bugs (QTZ-026)** — GPU/model/guide/best/format pages get a real generated `opengraph-image.tsx` instead of one shared `/og.png`; found along the way that `runtime='edge'` silently drops the route from a static export, and that every page's `twitter:title`/`description`/`images` — homepage included — showed the generic site default because `app/layout.tsx` and `pageMetadata()` hardcoded them instead of letting Twitter fall back to `openGraph` |
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |
 | 2026-09-08 | **Every number states its basis** — compare rows labelled estimated/published/spec (the VRAM row ignored the context control); "6:1 wins" scoreboard removed; cards show one named config; fit counts share `countModelsFitting` and name their rule |

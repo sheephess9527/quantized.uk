@@ -114,6 +114,9 @@ export function faqGroups(): FaqGroup[] {
 
   const mxfp4 = models.filter(m => m.quants.some(q => q.level === 'MXFP4'));
 
+  const cpu32 = gpuDatabase.find(g => g.id === 'cpu-32')!;
+  const cpu32Fits = countModelsFitting(cpu32, 'comfortable');
+
   return [
     {
       id: 'sizing',
@@ -375,6 +378,15 @@ export function faqGroups(): FaqGroup[] {
             zh: `跑单个模型的话，选一张 32 GB。把模型拆到两张卡上意味着每个 token 都要跨卡传输，第二张卡上的层要等第一张算完 —— 容量拿到了，吞吐没拿到，而且配置明显更麻烦。两张卡真正有价值的场景是你要同时跑两个东西，或者 32 GB 的卡超出预算。一张 32 GB 的卡能从容运行本站 ${total} 个模型中的 ${fits32} 个，单张 16 GB 是 ${fits16} 个。`,
           },
           link: { href: '/cookbook/dual-gpu-70b-llamacpp/', label: { en: 'When two cards do make sense', zh: '什么时候双卡才划算' } },
+        },
+        {
+          id: 'cpu-only-32gb',
+          q: { en: 'Is CPU-only inference with 32GB of RAM realistic?', zh: '32G 内存纯 CPU 跑大模型现实吗？' },
+          a: {
+            en: `For capacity, yes: ${cpu32Fits} of the ${total} models here fit comfortably in 32 GB the same way they would on a 32 GB card, since the sizing math only cares about the byte count. What it will not give you is a speed figure — token generation on CPU depends on your own DIMM count and channel configuration, not on "32 GB", so this index does not publish a system-RAM bandwidth the way it does for a GPU. Expect noticeably slower generation than the same model on a discrete card, and budget the difference before committing to a CPU-only setup.`,
+            zh: `论容量可以 —— 本站 ${total} 个模型里有 ${cpu32Fits} 个能从容装进 32 GB，跟装进一张 32 GB 显卡的算法完全一样，毕竟显存计算只看字节数。给不了的是速度数字：CPU 推理的快慢取决于你自己的内存条数量和通道配置，而不是「32 GB」这个数字本身，所以本站不像给显卡那样给系统内存标一个带宽。预期生成速度会明显慢于同一个模型跑在独显上，决定纯 CPU 方案之前先算清楚这个落差。`,
+          },
+          link: { href: `/cookbook/cpu-inference-optimization/`, label: { en: 'CPU inference tuning', zh: 'CPU 推理调优' } },
         },
         {
           id: 'can-i-run-70b',

@@ -419,6 +419,43 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-14 (e) — Audit P2: QTZ-033 audited — mostly already done, one real FAQ gap closed, +2 verified GPUs
+
+**QTZ-033** asks whether the Chinese edition actually serves Chinese search intent, now that QTZ-002
+gives it a crawlable entry point. Checked the audit's own list of example queries against the current
+`/zh` implementation rather than assuming stale earlier-session claims still held:
+
+- **Metadata templates, FAQ questions and hardware phrasing were already re-drafted for Chinese
+  search intent**, not machine-translated, from earlier ships this changelog already records —
+  `/zh/gpu/{card}/`'s title is already `{显卡} 能跑哪些大模型？`, `/zh/best/{tier}/`'s is already
+  `{显存}能跑的最好的本地大模型（2026）`, and `lib/utils/faq.ts`'s Chinese half is a genuine
+  re-draft (own file comment: "re-drafted, not translated") covering 7 of the audit's 8 suggested
+  questions almost verbatim (`4060Ti 16G 能跑什么` → the 16GB-card question; `Q4 掉点严重吗` →
+  `quality-4bit`; `GGUF 和 AWQ 有什么区别` → `gguf-or-awq`; etc).
+- **One real gap**: no FAQ entry answered "32G 内存纯 CPU 跑大模型现实吗" despite the index already
+  carrying a `32 GB RAM (CPU)` GPU-database row and a `cpu-inference-optimization` guide preset to
+  it. Added, computed from that same row via `countModelsFitting` — states the model count that fits
+  by capacity, and is explicit that speed is *not* stated, because system-RAM bandwidth depends on
+  the reader's own DIMM/channel configuration and this index does not publish a guessed number the
+  way it does a GPU's vendor spec.
+- **+2 verified GPUs**: Tesla P40 24G (346 GB/s, GDDR5) and Tesla P100 16G (732 GB/s, HBM2) — real,
+  budget used-hardware cards the audit flagged as popular in the Chinese local-LLM resale market.
+  Both are NVIDIA's own published specs, unchanged since release, so they clear this repo's "confirm
+  before adding" bar. Filed under the existing shared `nvidia-pro` group (61→63 GPUs) rather than
+  building Chinese-only pages — English-speaking home-lab builders buy these same cards, and the
+  codebase has no locale-scoped-page mechanism to build safely in one pass.
+- **Deliberately not added**: the audit's suggested "modified RTX 2080 Ti 22G". It is not a vendor
+  product — the 22GB comes from third-party VRAM-chip swaps of inconsistent quality, and its
+  bandwidth would be inferred from the unmodified die rather than a spec sheet number. This repo's
+  own rule against a card whose VRAM is a guess applies even though the underlying GPU die is real;
+  a wrong number here generates a whole GPU landing page of wrong numbers.
+
+Verified: `npx tsc --noEmit` and `npm run lint` clean; full build + postbuild gate pass (398 pages,
+up 4 from the two new GPUs × two languages); both new GPU pages return correct localized titles;
+`GPU_COUNT` (63) and every dependent count updated with no manual edits, confirming it is genuinely
+derived; the new FAQ question renders on both `/faq/` and `/zh/faq/`; new cards appear in the VRAM
+calculator dropdown and format wizard with no crashes.
+
 ### 2026-09-14 (d) — Audit P2: QTZ-026 complete — per-page share-card images, and two site-wide Twitter-card bugs found along the way
 
 **QTZ-026.** GPU, model (`/quant-hub/[modelId]`), guide (`/cookbook/[slug]`), `/best/[tier]` and

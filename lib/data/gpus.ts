@@ -63,6 +63,15 @@ export const gpuDatabase: GPU[] = [
   { id: 'l40s',        name: 'L40S 48G',              vram: 48,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 864, memType: 'GDDR6', },
   { id: 'a40',         name: 'A40 48G',               vram: 48,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 696, memType: 'GDDR6', },
   { id: 'h100-80',     name: 'H100 80G',              vram: 80,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 2000, memType: 'HBM2e', bandwidthNote: { en: 'PCIe figure. The SXM5 module carries HBM3 at 3,350 GB/s.', zh: 'PCIe 版数据。SXM5 模组为 HBM3，3,350 GB/s。' }, },
+  /*
+   * Pascal-generation datacentre cards (2016), still traded second-hand for
+   * their VRAM-per-dollar — a common budget home-lab pick, especially in the
+   * used-hardware market this site's Chinese readers shop in. Capacities and
+   * bandwidths are NVIDIA's own published specs for the cards, unchanged
+   * since release; no local benchmark runs recorded on either yet.
+   */
+  { id: 'p100-16',     name: 'Tesla P100 16G',        vram: 16,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 732, memType: 'HBM2', },
+  { id: 'p40-24',      name: 'Tesla P40 24G',         vram: 24,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 346, memType: 'GDDR5', },
   { id: 'm5-ultra-512', name: 'Mac M5 Ultra 512G',    vram: 512, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 1200, memType: 'Unified LPDDR5X', },
   { id: 'm5-ultra-256', name: 'Mac M5 Ultra 256G',    vram: 256, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 1200, memType: 'Unified LPDDR5X', },
   { id: 'm5-max-128',  name: 'Mac M5 Max 128G',       vram: 128, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 614, memType: 'Unified LPDDR5X', },
