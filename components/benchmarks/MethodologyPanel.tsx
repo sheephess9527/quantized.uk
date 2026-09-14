@@ -8,8 +8,14 @@ import { cn } from '@/lib/utils/cn';
 
 export default function MethodologyPanel() {
   const { t, lang } = useLanguage();
-  const [open, setOpen] = useState(false);
+  // QTZ-031: this panel carries most of the page's new coverage/method
+  // content. Collapsed by default, `{open && ...}` never rendered any of it
+  // into the exported HTML — invisible to a crawler and to the word count
+  // the audit's acceptance bar is checking. Open by default; the toggle
+  // still lets a returning reader collapse it.
+  const [open, setOpen] = useState(true);
   const m = benchmarkMethodology;
+  const tm = t.bench.methodology;
 
   return (
     <div className="glass rounded-2xl overflow-hidden">
@@ -68,12 +74,69 @@ export default function MethodologyPanel() {
             <p className="text-xs text-slate-500 leading-relaxed mt-2">{runtimeVersions.note[lang]}</p>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed">{m.notes[lang]}</p>
+
+          {/*
+            QTZ-031: the audit's full structure (Throughput / Perplexity /
+            VRAM / Hardware / Runs recorded), with every field this index
+            never recorded shown as that rather than invented. A geek
+            deciding whether to trust this page checks exactly this kind of
+            gap — "not recorded" is a more credible answer than a plausible
+            guess.
+          */}
+          <div className="grid sm:grid-cols-3 gap-4 pt-2 border-t border-white/[0.06]">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 mb-1.5">{tm.throughputTitle}</p>
+              <dl className="space-y-1 text-xs">
+                <Row label={tm.promptLen} value={`${m.promptLen} tokens`} />
+                <Row label={tm.genLen} value={`${m.genLen} tokens`} />
+                <Row label={tm.measurement} value={tm.notRecorded} muted />
+                <Row label={tm.throughputReported} value={tm.throughputReportedValue} />
+              </dl>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-400 mb-1.5">{tm.perplexityTitle}</p>
+              <dl className="space-y-1 text-xs">
+                <Row label={tm.baseline} value={String(m.baselinePpl)} />
+                <Row label={tm.perplexityReported} value={tm.perplexityReportedValue} />
+              </dl>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-400 mb-1.5">{tm.vramTitle}</p>
+              <dl className="space-y-1 text-xs">
+                <Row label={tm.vramMeasuredWith} value={tm.notRecorded} muted />
+                <Row label={tm.vramReported} value={tm.vramReportedValue} />
+              </dl>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+            <p className="text-xs font-semibold text-slate-400">{tm.hardwareTitle}</p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              {tm.hardwareDrivers.replace('{drivers}', m.drivers)}
+            </p>
+            <Row label={tm.hardwareCpuRam} value={tm.notRecorded} muted />
+          </div>
+
+          <div className="pt-2 border-t border-white/[0.06] flex flex-wrap gap-x-6 gap-y-1">
+            <Row label={tm.runsRecorded} value={tm.notRecorded} muted />
+            <Row label={tm.lastRerun} value={tm.notRecorded} muted />
+          </div>
+
           <p className="text-xs text-slate-600">
             <span className="text-slate-500">{t.bench.methodology.source}: </span>
             {dataSources.benchmarks[lang]}
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="text-slate-600 shrink-0">{label}</dt>
+      <dd className={cn('font-mono text-right', muted ? 'text-slate-600 italic' : 'text-slate-300')}>{value}</dd>
     </div>
   );
 }

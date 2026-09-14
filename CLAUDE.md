@@ -147,6 +147,14 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `FormatRadarLazy` are `ssr: false`; a table placed inside one exists only after hydration, for
   readers already running Recharts. `BenchDataTables` renders from the page instead, so the figures
   are in the exported HTML.
+- **A collapsed-by-default disclosure renders nothing into a static export.** `MethodologyPanel`'s
+  `{open && <div>...</div>}` starting from `useState(false)` meant its entire content — most of the
+  benchmarks page's word count after the QTZ-031 rewrite — never reached `out/**` at all, invisible
+  to every crawler and to any word-count check, exactly the `BenchCharts`/lazy-chart fault above in
+  a different shape. If content is meant to be indexed or counted as real page content, its section
+  must default to **open**; a toggle to collapse it for a returning reader is fine, defaulting to
+  collapsed is not. Check any new disclosure the same way as a lazy chart: read `out/**`, not the
+  component source, and confirm the text is actually there before hydration.
 - **Structured data must describe the page that exists.** `ItemList` on the GPU pages claimed
   `numberOfItems: 73` while emitting 30. Audit with a walk over `out/**` after any schema change:
   counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear

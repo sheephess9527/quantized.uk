@@ -26,6 +26,11 @@ export const benchmarkMethodology = {
   dataset: 'WikiText-2',
   context: 4096,
   batch: 1,
+  /** Structured out of the free-text `notes` below rather than duplicated by hand. */
+  promptLen: 128,
+  genLen: 128,
+  /** WikiText-2 PPL on the reference model's FP16 weights — the number `pplSubtitle` already cites. */
+  baselinePpl: 6.14,
   drivers: 'NVIDIA 550.x / CUDA 12.4',
   frameworks: {
     llamacpp: 'b4217 (CUDA backend)',
@@ -67,6 +72,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-14',
+    en: '/benchmarks/ was 251 words carrying the site\'s most distinctive asset — real measurements — with no statement of how much of the index those measurements actually cover. A reader had no way to tell a measured row here from an estimate everywhere else on the site. It now opens by naming the coverage directly (16 runs across 4 of 61 cards) and a new "What is and is not covered" section lists exactly which cards, how many runs each, what the other 57 use instead (the calculator\'s own formula, not a second hidden measurement), and four things this index has simply never tested (multi-GPU throughput beyond the dual-3090 guide, batch above 1, prefill speed, anything but perplexity). The methodology panel — previously one collapsed line most readers and every crawler never saw, since a collapsed disclosure renders nothing into the static HTML — is now open by default and structured into throughput/perplexity/VRAM/hardware, with every field this index never recorded (measurement technique, VRAM tool, per-machine CPU/RAM/OS, run dates) shown as "not recorded" rather than a plausible guess. A `Dataset` schema names exactly the three variables the matrix table renders. Old meta description named the RTX 4060 Ti as measured — its rows were removed in an earlier audit pass once a bandwidth check showed they were impossible, and the description was never updated to match; fixed to name only the four cards this page actually has runs for. Not done, and said plainly rather than faked: adding measured rows for 2026-era models, which needs a GPU this environment does not have',
+    zh: '/benchmarks/ 正文只有 251 词，扛着本站最独特的资产——真实实测数据——却完全没说清楚这些实测覆盖了索引的多大比例。读者根本没法分辨这里的一行是实测的，还是本站别处那种预估值。现在页面开头就直接点明覆盖率（61 张卡里的 4 张，共 16 次运行），新增的「哪些有实测，哪些没有」板块列出了具体是哪几张卡、各自测了几次、剩下 57 张卡用的是什么（计算器自己的那套公式，不是另一套藏起来的实测数据），以及四件这个索引从来没测过的事（双 3090 指南之外的多卡吞吐、大于 1 的 batch、prefill 速度、困惑度之外的任何质量指标）。方法论面板——之前是折叠起来的一行字，绝大多数读者和所有爬虫其实根本看不到，因为折叠的内容根本不会渲染进静态 HTML——现在默认展开，并拆成吞吐量/困惑度/显存/硬件几块，凡是这个索引从没记录过的项（测量工具、显存测量方式、每台机器的 CPU/内存/系统、测试日期）都老实标成「未记录」，而不是编一个看似合理的数字。新增了 Dataset schema，只声明矩阵表里真正渲染的那三个变量。旧的 meta description 里还写着 RTX 4060 Ti 有实测——它的数据行在更早一轮审计里就因为带宽校验不可能达标而被删掉了，description 却一直没跟着改；现在只写这页真正有数据的四张卡。有一件事没做，也老实说清楚而不是糊弄过去：给 2026 年的新模型补实测行，这需要一台这个环境没有的 GPU',
+  },
   {
     date: '2026-09-14',
     en: 'The site-wide `Organization` schema was four fields: name, url, and a logo — nothing that lets a search or AI engine confirm who is actually behind this. Added `description`, `knowsAbout` (the real subject areas — GGUF, AWQ, EXL2, GPTQ, the runtimes, not a keyword list), a `contactPoint` (the one real inbox this site has), and `foundingDate` derived from the earliest changelog entry on record, to month precision, so it never needs a manual bump. Deliberately left out: `founder` and `sameAs`. `/about/` describes an intentionally unnamed indie maintainer, so there is no real Person to cite; this site\'s own stated privacy posture is no public source repo, so there is no real GitHub/HF/X account to point `sameAs` at either. A schema entity is not more trustworthy for citing an identity that does not exist — omitting an unverifiable field is the same discipline this site applies to a model\'s missing perplexity figure or a GPU with no confirmed bandwidth, applied to itself',

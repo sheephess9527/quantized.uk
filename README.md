@@ -419,6 +419,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-14 (b) — Audit P2: QTZ-031 complete — benchmarks page states its own coverage
+
+**QTZ-031.** `/benchmarks/` was 251 words carrying the site's most distinctive asset (real
+measurements) with no statement of how much of the index that actually covers. Three real problems,
+fixed:
+
+- **Coverage was unstated.** The page now opens by naming it: `{r} runs across {c} cards, out of
+  {m} in the GPU index` — 16 runs / 4 cards / 61 total, all three derived (`lib/utils/bench-coverage.ts`)
+  from `measuredRowsFor()`, the same function `/gpu/{card}/` pages already use to say "no benchmark
+  runs recorded here." One source, so the two counts cannot drift apart.
+- **New "What is and is not covered" section** (`CoverageSection.tsx`): which cards, how many runs
+  each (RTX 4090 ×13, RTX 3090/M3 Max/M2 Ultra ×1 each), what the other 57 cards use instead (the
+  calculator's own formula — not a second, hidden measurement), and four things never tested here
+  at all (multi-GPU beyond the dual-3090 guide, batch > 1, prefill speed, quality beyond perplexity).
+- **The methodology panel was collapsed by default**, which in a static export means `{open && ...}`
+  never rendered any of it into the exported HTML — invisible to every crawler and to the word count
+  this very acceptance bar checks. Opened by default (still collapsible for a returning reader) and
+  expanded into throughput / perplexity / VRAM / hardware sections. Every field this index genuinely
+  never recorded — measurement technique (samples, mean vs. median, warm-up), the VRAM measurement
+  tool, per-machine CPU/RAM/OS, run dates — reads **"not recorded,"** not a plausible invented value.
+  `promptLen`/`genLen`/`baselinePpl` were pulled out of free-text `notes` into real fields on
+  `benchmarkMethodology` (`lib/data/meta.ts`) rather than typed twice.
+- **A `Dataset` schema** names exactly the three variables the matrix table renders (`tokens per
+  second`, `VRAM usage (GB)`, `perplexity retained (%)`) — nothing claimed that isn't in the table.
+- **The meta description was actively wrong**: it named the RTX 4060 Ti as measured. That card's
+  rows were removed in an earlier audit pass (a roofline check showed they exceeded its real
+  bandwidth — see the `CLAUDE.md` roofline rule) and the description was never updated to match.
+  Fixed to name only the four cards this page has real runs for.
+
+**Not done, stated rather than faked:** the audit also asks for measured rows on 3 new 2026-era
+models. That needs a GPU this agent environment does not have — adding a row without one would be
+exactly the invented-measurement fault this ship spent its effort removing.
+
+Regression: `npx tsc --noEmit` clean, `npm run lint` clean, 0/6 overflow combinations, 0 contrast
+failures on both language pages, `Dataset` JSON-LD parses and matches the rendered table.
+
 ### 2026-09-14 — Audit P2: QTZ-034 complete — Organization schema, honestly incomplete where it must be
 
 **QTZ-034.** The site-wide `Organization` block (`components/seo/JsonLd.tsx`) carried only `name`,

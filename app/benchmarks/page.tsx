@@ -5,7 +5,12 @@ import { useLanguage } from '@/lib/i18n/context';
 import { matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
 import BenchDataTables from '@/components/benchmarks/BenchDataTables';
+import CoverageSection from '@/components/benchmarks/CoverageSection';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import { gpuDatabase } from '@/lib/data/gpus';
+import { measuredCards, TOTAL_RUNS } from '@/lib/utils/bench-coverage';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/seo';
 
 // Recharts is the heaviest chunk on this page; defer it so the header,
 // matrix table and methodology render immediately. Skeletons mirror the
@@ -41,8 +46,30 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 export default function BenchmarksPage() {
   const { t, lang } = useLanguage();
 
+  const path = lang === 'zh' ? '/zh/benchmarks' : '/benchmarks';
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      {/*
+        QTZ-031: a Dataset entity for the one page on the site that reports
+        primary measurements rather than a derived figure. `variableMeasured`
+        names exactly the three columns the matrix table renders — no metric
+        claimed here that the table does not show.
+      */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Dataset',
+          name: 'quantized.uk hardware benchmark matrix',
+          description: lang === 'zh'
+            ? `在 ${gpuDatabase.length} 张显卡中的 ${measuredCards().length} 张上实测，共 ${TOTAL_RUNS} 次运行：吞吐量（tok/s）、显存占用与困惑度保留率。`
+            : `${TOTAL_RUNS} measurement runs across ${measuredCards().length} of the ${gpuDatabase.length} cards in the GPU index: throughput (tok/s), VRAM usage and perplexity retained.`,
+          url: `${SITE_URL}${path}/`,
+          inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+          creator: { '@type': 'Organization', name: 'quantized.uk', url: SITE_URL },
+          variableMeasured: ['tokens per second', 'VRAM usage (GB)', 'perplexity retained (%)'],
+        }}
+      />
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
@@ -51,12 +78,25 @@ export default function BenchmarksPage() {
       />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.bench.title}</h1>
-        <p className="text-slate-400">{t.bench.subtitle}</p>
+        <p className="text-slate-400 mb-3">{t.bench.subtitle}</p>
+        {/*
+          QTZ-031: the page used to say "measured on real hardware" without
+          saying how much of it — a reader had no way to tell a measured row
+          from an estimated one elsewhere on the site. Named counts, derived
+          from the same data CoverageSection below lists in full.
+        */}
+        <p className="text-sm text-slate-500 leading-relaxed max-w-3xl">
+          {t.bench.coverageIntro
+            .replace('{r}', String(TOTAL_RUNS))
+            .replace('{c}', String(measuredCards().length))
+            .replace('{m}', String(gpuDatabase.length))}
+        </p>
       </div>
 
       <div className="space-y-10">
         <BenchCharts />
         <BenchDataTables />
+        <CoverageSection />
 
         {/* Matrix table */}
         <section>
