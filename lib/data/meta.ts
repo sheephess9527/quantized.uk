@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-14';
+export const dataLastUpdated = '2026-09-15';
 
 export const dataSources = {
   models: {
@@ -59,19 +59,29 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-09-11',
+  checkedAt: '2026-09-15',
   current: {
-    llamacpp: 'b10760',
+    llamacpp: 'b10978',
     vllm: 'v0.29.0',
-    ollama: 'v0.33.2',
+    ollama: 'v0.34.1',
+    // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
+    // where the project's actual activity moved to. Keeping this key as
+    // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
+    // the two line up when read side by side.
+    exllama: 'v0.3.2 (stalled)',
   },
   note: {
-    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today.',
-    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。',
+    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.5.0 and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
+    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（已到 v1.5.0，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
   },
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-15',
+    en: 'A live re-check (not a build check — a build proves the export is internally consistent, never what the deployed site actually shows) found the homepage hero had never actually shipped its own QTZ-008 rewrite: the live H1 still read the pre-audit "Find the right local LLM for your hardware," the primary CTA still said "Explore Models" pointing at the unfiltered 81-model `/quant-hub/` list, and the root layout still emitted a `<meta name="keywords">` tag search engines have ignored for a decade. Fixed: H1 is now "Will it fit on your card?" (Chinese re-drafted, not translated: "这张显卡，到底能跑多大模型？"), the primary CTA now reads "Find models for my GPU" and points at `/gpu/` — the page grouped by hardware that actually answers the question the H1 just asked — with `/quant-hub/` staying one click away via the trust bar and nav, and a new tertiary link points a first-time reader at the 8GB starter guide. `keywords` removed from the root layout. Also re-verified (real fetches to the projects\' own release pages, not memory) that `runtimeVersions.current` had drifted in four days: llama.cpp b10760→b10978, Ollama v0.33.2→v0.34.1; vLLM was still accurate at v0.29.0. Found along the way and worth flagging on its own: ExLlamaV2 has had no release since 2025-07-13 — the maintainer\'s active project moved to a separate repository, ExLlamaV3 (v1.5.0), whose own README describes a genuinely new quantization format, EXL3, not an EXL2 version bump. Recorded as a fact in the benchmarks methodology note; not added as a tracked format, since zero models here ship it and a zero-inventory format row is the HQQ mistake with a new name — whether to start indexing EXL3 builds is a real, separate content decision. One claim in the request that triggered this pass did not hold up: a reported "79 vs 81" homepage/hub count mismatch is not a regression — 81 is `MODEL_COUNT` (total models), 79 is `q4SampleSize` (how many of them have published a Q4_K_M perplexity figure), a different, correctly-computed, dynamically-rendered number that happens to be close to the total. Two other referenced items — a `scripts/audit-site.mjs` and a `data/incoming-architecture.json` — do not exist anywhere in this repository or in the task book on file; nothing was fabricated to stand in for them',
+    zh: '一次线上实测复核（不是构建检查——构建只能证明导出内部自洽，证不了线上到底展示了什么）发现首页 Hero 其实从没真正上线过自己的 QTZ-008 重写：线上 H1 还是审计之前的原文"Find the right local LLM for your hardware."，主 CTA 还是"Explore Models"，指向未筛选的 81 模型 `/quant-hub/` 列表，根布局也还在发送一个搜索引擎十年前就不用了的 `<meta name="keywords">`。已修复：H1 改为"Will it fit on your card?"（中文是重新拟的，不是翻译："这张显卡，到底能跑多大模型？"），主 CTA 改为"看我的显卡能跑什么"，指向按硬件分组、真正回答 H1 那个问题的 `/gpu/`——`/quant-hub/` 仍然可以从信任条和导航一键到达——并新增一条给首次访问者的次级链接，指向 8G 显卡入门指南。根布局的 keywords 已删除。另外重新核实（真的去查了各项目自己的发布页，不是凭记忆）发现 `runtimeVersions.current` 四天就已经落后：llama.cpp b10760→b10978，Ollama v0.33.2→v0.34.1；vLLM 的 v0.29.0 仍然准确。顺带查到一件值得单独说明的事：ExLlamaV2 自 2025-07-13 起再没发布过新版本——维护者的主要精力已转到另一个仓库 ExLlamaV3（v1.5.0），其 README 明确说这是一个全新的量化格式 EXL3，不是 EXL2 的版本升级。已作为事实记录进基准方法论的说明文字；没有把它加成一个被跟踪的格式，因为本索引目前没有任何模型提供该格式，一个零库存的格式行就是换了个名字的 HQQ 式错误——是否要开始收录 EXL3 构建，是一个真实但独立的内容决策。触发这次复核的消息里有一条没能成立：所谓首页与 Hub "79 对 81" 的计数不一致并不是回归——81 是 `MODEL_COUNT`（模型总数），79 是 `q4SampleSize`（其中发布了 Q4_K_M 困惑度数据的模型数），是另一个正确计算、动态渲染的数字，只是恰好接近总数。另外两处引用——`scripts/audit-site.mjs` 和 `data/incoming-architecture.json`——在这个仓库和手头的任务书里都不存在，没有编造内容去顶替它们',
+  },
   {
     date: '2026-09-14',
     en: 'Audited the Chinese edition against the audit\'s own list of high-intent queries ("4060Ti 16G 能跑什么", "Q4 掉点严重吗", "32G 内存纯 CPU 现实吗") rather than assuming the earlier `/zh` work already covered them — it mostly did: metadata templates, FAQ questions and hardware phrasing were already redrafted for Chinese search intent in earlier ships, not machine-translated. One real gap found and closed: no FAQ entry answered whether CPU-only inference with 32GB of system RAM is realistic, despite the index already carrying a `32 GB RAM (CPU)` row and a CPU-tuning guide for it — added, computed from that same row (`countModelsFitting`), honestly stating that capacity is known but speed is not, since system RAM bandwidth depends on the reader\'s own DIMM configuration and this index does not publish a guessed figure the way it does a GPU\'s vendor spec. Also added two real, verifiable used-hardware cards the Chinese local-LLM community shops for and the index had zero of: Tesla P40 24G (346 GB/s, GDDR5) and Tesla P100 16G (732 GB/s, HBM2) — both NVIDIA\'s own published specs for cards whose specification has not changed since release, filed under the existing `nvidia-pro` group alongside A100/H100 rather than inventing Chinese-only pages, since these are genuinely used by English-speaking home-lab builders too and the codebase has no locale-scoped-page mechanism to build safely in one pass. Deliberately not added: the audit\'s suggested "modified RTX 2080 Ti 22G" — it is not a vendor product, its 22GB comes from third-party VRAM-chip swaps of varying quality, and its bandwidth is inferred rather than a spec sheet number; the site\'s own rule against a card whose VRAM is a guess applies here even though the underlying die is real',

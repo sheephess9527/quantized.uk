@@ -419,6 +419,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-15 — Live re-check: QTZ-008 was never actually deployed, runtime versions re-verified
+
+A prior "complete" report for QTZ-008 (homepage hero rewrite) did not survive contact with the live
+site. **The lesson generalizes: a build gate proves the export is internally consistent — it says
+nothing about whether a given piece of work actually reached `out/`, because that depends on whether
+the source file was ever edited, not on whether the build succeeds.** Verified this time by reading
+the rendered `out/index.html` directly rather than trusting an earlier status:
+
+- **QTZ-008 was not deployed.** Live H1 was still the pre-audit "Find the right local LLM for your
+  hardware.", the primary CTA still said "Explore Models" pointing at the unfiltered 81-model
+  `/quant-hub/` list (not the hardware-grouped `/gpu/` the H1's question actually answers), and
+  `app/layout.tsx` still emitted `<meta name="keywords">`. All three fixed: new H1 "Will it fit on
+  your card?" (Chinese re-drafted as "这张显卡，到底能跑多大模型？", not translated), CTA now "Find
+  models for my GPU" → `/gpu/`, a new tertiary link to the 8GB starter guide for first-time readers,
+  `keywords` removed. Verified at 390px in both languages: no horizontal overflow, CTA renders.
+- **`runtimeVersions.current` re-verified against the projects' own GitHub release pages** (real
+  fetches, not memory): llama.cpp b10760 → **b10978**, Ollama v0.33.2 → **v0.34.1**; vLLM's recorded
+  v0.29.0 was still accurate. **Found in the process**: ExLlamaV2 has had no release since
+  2025-07-13 — the maintainer's active project moved to a separate repository, ExLlamaV3 (v1.5.0),
+  whose own README describes a genuinely new quantization format, EXL3 (a QTIP variant), not an EXL2
+  version bump. Recorded as a fact in the benchmarks methodology note. **Not** added as a tracked
+  format — zero indexed models ship EXL3, and a zero-inventory format row is the HQQ mistake with a
+  new name (see the Format vocabularies rule in `CLAUDE.md`). Whether to eventually index EXL3
+  builds is a real, separate content decision, flagged rather than acted on.
+- **One claim did not hold up on inspection**: a reported "homepage shows 79, Hub/GPU pages show 81"
+  count mismatch is not a regression. `81` is `MODEL_COUNT` (total models); `79` is
+  `getSiteStats().q4SampleSize` (how many of those 81 have published a Q4_K_M perplexity figure) —
+  a different, correctly-computed, dynamically-rendered number that happens to sit close to the
+  total. Confirmed via `Object.entries`/template substitution in the source, not by re-reading intent.
+- **Two referenced artifacts do not exist**: `scripts/audit-site.mjs` and
+  `data/incoming-architecture.json` were not found anywhere in this repository, nor in the task book
+  on file. Nothing was fabricated to stand in for either — a request to add ~10 new 2026 model
+  families "using architecture data already collected in [a file that isn't there]" was not acted on;
+  see `lib/data/meta.ts`'s changelog entry for the full breakdown of what was verified true, false, or
+  unconfirmable in the request that prompted this pass.
+
 ### 2026-09-14 (e) — Audit P2: QTZ-033 audited — mostly already done, one real FAQ gap closed, +2 verified GPUs
 
 **QTZ-033** asks whether the Chinese edition actually serves Chinese search intent, now that QTZ-002

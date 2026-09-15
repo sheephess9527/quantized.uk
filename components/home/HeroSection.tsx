@@ -96,8 +96,16 @@ export default function HeroSection() {
         </p>
 
         <div className="hero-rise [animation-delay:0.15s] flex flex-wrap items-center justify-center gap-3">
+          {/*
+            The H1 promises a hardware-matched answer, so the primary CTA now
+            delivers that — /gpu/ groups by card with an H2 per hardware class.
+            It used to point at /quant-hub/, a 79-model unpaginated list with no
+            hardware framing at all: the button did not answer the question the
+            headline had just asked. /quant-hub/ is still one click away, from
+            the trust bar and the nav.
+          */}
           <Link
-            href="/quant-hub/"
+            href="/gpu/"
             className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
           >
             {t.home.hero.ctaPrimary}
@@ -111,6 +119,14 @@ export default function HeroSection() {
             {t.home.hero.ctaSecondary}
           </Link>
         </div>
+
+        <Link
+          href="/cookbook/8gb-gpu-starter-guide/"
+          className="hero-rise [animation-delay:0.18s] inline-flex items-center gap-1 mt-4 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          {t.home.hero.ctaTertiary}
+          <ArrowRight size={11} />
+        </Link>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
           {formatBadges.map(fmt => (

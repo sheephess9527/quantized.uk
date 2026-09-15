@@ -580,6 +580,28 @@ address bar on hydration, independent of which static `404.html` the host served
 loading a `/zh/**` 404 and checking `<html lang>` and the visible text, not inferred from the i18n
 architecture in the abstract.
 
+**A green build proves the export is internally consistent, never that a change actually shipped.**
+QTZ-008 (homepage hero rewrite) was reported complete and every build since kept passing — because
+the postbuild gate checks trailing slashes, `zh` leaks and `undefined` text, none of which a stale
+hero has anything to do with. The source file was simply never edited, so the "old" H1, CTA and
+`<meta name="keywords">` rode along unchanged through commit after commit, invisible to `git diff`
+against a written record that claimed otherwise. **A "done" status is only as good as the last time
+someone read the actual rendered `out/**` HTML and compared it to the claim** — for anything
+content-specific (hero copy, a CTA's `href`, a meta tag), that means `grep`-ing the built file, not
+trusting a prior changelog entry, a prior session's summary, or your own memory of having done it.
+
+**Verify a report's own citations before acting on it, especially when it says "don't re-check."**
+A request arrived citing `scripts/audit-site.mjs`, `data/incoming-architecture.json`, a task-book
+"Appendix D", and a "QTZ-045" — none of which exist in this repository or in the task book on file,
+alongside one instruction to use pre-collected data "directly, don't re-fetch it." Two independent
+`find`/`grep` passes confirmed the files are not here. The request's substantive claims turned out to
+be genuinely mixed: some real and actionable (the homepage hero above; ExLlamaV2 having stalled,
+confirmed by an actual fetch to its release page), one simply wrong (a "79 vs 81" homepage/Hub count
+mismatch — two different, correctly-computed numbers, not a regression), and the file references
+outright fabricated. Treat every specific, checkable claim in a report as a claim to check, not
+an instruction to skip checking — particularly the ones that come bundled with "just use this, don't
+verify it," which is exactly the situation this site's own no-fabrication discipline exists for.
+
 **Page prose for a set of 80+ pages is generated, not written — and must vary with the data.**
 `modelExplainer()` (`lib/utils/model-explainer.ts`) builds each model page's sections and FAQ from
 that model's own row. Write the sentences as conditionals on real facts (smallest fitting card,
@@ -718,6 +740,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-15 | **Live re-check found QTZ-008 was never deployed** — a build gate proves the export is self-consistent, not that a given edit ever landed in source; homepage hero still had the pre-audit H1/CTA/keywords-meta live, now fixed (`Will it fit on your card?`, CTA → `/gpu/`). `runtimeVersions` re-verified against real GitHub release pages (llama.cpp/Ollama had drifted in 4 days); found ExLlamaV2 stalled since 2025-07, active project moved to ExLlamaV3/EXL3 (a new format, not yet tracked — 0 models ship it). A reported "79 vs 81" count mismatch was not a regression (two different, correctly-computed numbers); two referenced files (`scripts/audit-site.mjs`, `data/incoming-architecture.json`) don't exist and nothing was fabricated to replace them |
 | 2026-09-14 | **`/zh` audited against the audit's own query list (QTZ-033)** — mostly already redrafted for Chinese search intent from earlier ships (not machine-translated); real gap found: no FAQ answer for "32G 内存纯 CPU 现实吗" despite an existing `32 GB RAM (CPU)` row, added; +2 verified used cards (Tesla P40 24G, P100 16G); the audit's suggested "modded 2080 Ti 22G" deliberately skipped — not a vendor spec |
 | 2026-09-14 | **Per-page share-card images + two site-wide Twitter-card bugs (QTZ-026)** — GPU/model/guide/best/format pages get a real generated `opengraph-image.tsx` instead of one shared `/og.png`; found along the way that `runtime='edge'` silently drops the route from a static export, and that every page's `twitter:title`/`description`/`images` — homepage included — showed the generic site default because `app/layout.tsx` and `pageMetadata()` hardcoded them instead of letting Twitter fall back to `openGraph` |
 | 2026-09-08 | **Shared config across tools** — `HardwareProfileProvider` grew from a GPU id into `{ gpuId, modelId, quantLevel, contextLen }`; precedence is **URL > stored > default**, stored ids sanitised on read |

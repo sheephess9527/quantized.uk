@@ -25,7 +25,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'quantized.uk — AI Quantization Intelligence',
   description: 'Bridge the gap between research papers and real-world LLM deployment. VRAM calculator, CLI script generator, quantized model hub, and benchmarks.',
-  keywords: ['LLM quantization', 'GGUF', 'AWQ', 'EXL2', 'llama.cpp', 'VRAM calculator', 'AI deployment'],
+  // No `keywords` here: search engines have not used the tag in over a decade,
+  // and it exposed exactly the search intent a site would rather rank for
+  // organically. It was still shipping into every page's <head> via this root
+  // layout, unnoticed because reading generateMetadata never surfaces what a
+  // page inherits from its ancestors — only the rendered HTML does.
   metadataBase: new URL('https://quantized.uk'),
   alternates: { canonical: canonical('/'), ...feedAlternates('/') },
   robots: defaultRobots,
