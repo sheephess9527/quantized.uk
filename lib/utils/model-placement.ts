@@ -2,7 +2,7 @@ import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { bestQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { gpuSlug, GPU_PAGE_CONTEXT, formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { BEST_TIERS, bestPage } from '@/lib/utils/best-page';
 import { formatById } from '@/lib/utils/format-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -49,9 +49,13 @@ export interface ModelPlacement {
   cliHref: string;
 }
 
-/** Cards worth naming: consumer and Apple, cheapest capacity first. */
-function candidateCards(): GPU[] {
-  return gpuDatabase.filter(g => !g.isCPU).sort((a, b) => a.vram - b.vram);
+/**
+ * Cards worth naming: consumer and Apple, cheapest capacity first, and able
+ * to actually load `format` — a Mac page has no business listing a card for
+ * an AWQ/EXL2/GPTQ quant it cannot run.
+ */
+function candidateCards(format: QuantVariant['format']): GPU[] {
+  return gpuDatabase.filter(g => !g.isCPU && formatAllowed(g, format)).sort((a, b) => a.vram - b.vram);
 }
 
 export function modelPlacement(model: QuantModel): ModelPlacement {
@@ -64,7 +68,7 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
     model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? bestQuant(model.quants);
   const key = quantLevelKey(quant);
 
-  const sized = candidateCards().map(gpu => {
+  const sized = candidateCards(quant.format).map(gpu => {
     const { totalGB } = calcVRAM({
       paramsB: model.params,
       layers: model.arch.layers,
@@ -75,11 +79,12 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
       contextLength: GPU_PAGE_CONTEXT,
       batchSize: 1,
     });
+    const capacity = usableCapacityGB(gpu);
     return {
       gpu,
       totalGB,
-      headroomGB: Math.round((gpu.vram - totalGB) * 10) / 10,
-      verdict: getVerdict(totalGB, gpu.vram),
+      headroomGB: Math.round((capacity - totalGB) * 10) / 10,
+      verdict: getVerdict(totalGB, capacity),
     };
   });
 
@@ -90,7 +95,7 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
   const misses = sized
     .filter(s => s.verdict === 'red')
     .slice(-2)
-    .map(s => ({ ...s, overBy: Math.round((s.totalGB - s.gpu.vram) * 10) / 10 }));
+    .map(s => ({ ...s, overBy: Math.round((s.totalGB - usableCapacityGB(s.gpu)) * 10) / 10 }));
 
   const formatNames: string[] = Array.from(new Set(model.quants.map(q => q.format as string)));
   const formats = formatNames

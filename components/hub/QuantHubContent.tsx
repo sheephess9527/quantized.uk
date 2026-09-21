@@ -80,7 +80,7 @@ export default function QuantHubContent() {
 
   const gpuFilterModelIds = useMemo(() => {
     if (!filterGpu) return null;
-    const recs = getRecommendations(filterGpu.vram, 4096, 1, 'quality', true);
+    const recs = getRecommendations(filterGpu, 4096, 1, 'quality', true);
     return new Set(recs.map(r => r.model.id));
   }, [filterGpu]);
 
@@ -385,6 +385,6 @@ export default function QuantHubContent() {
 function countModelsForGpu(gpuId: string): number {
   const gpu = gpuDatabase.find(g => g.id === gpuId);
   if (!gpu) return 0;
-  const recs = getRecommendations(gpu.vram, 4096, 1, 'quality', true);
+  const recs = getRecommendations(gpu, 4096, 1, 'quality', true);
   return new Set(recs.map(r => r.model.id)).size;
 }

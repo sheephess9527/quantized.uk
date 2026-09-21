@@ -1,6 +1,6 @@
 import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
-import { fitsOnGpu, type GpuFit } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, usableCapacityGB, type GpuFit } from '@/lib/utils/gpu-page';
 import { qualityRank } from '@/lib/utils/quality';
 import { isSuperseded } from '@/lib/utils/model-meta';
 
@@ -86,7 +86,7 @@ export function homePicks(gpu: GPU, useCase: HomeUseCase): HomePick[] {
   );
 
   take('capable', bySize);
-  take('headroom', bySize.filter(f => f.totalGB <= gpu.vram * HEADROOM_BUDGET));
+  take('headroom', bySize.filter(f => f.totalGB <= usableCapacityGB(gpu) * HEADROOM_BUDGET));
   take('fastest', [...fits]
     .filter(f => f.quant.speedRTX4090 != null)
     .sort((a, b) => (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0)));

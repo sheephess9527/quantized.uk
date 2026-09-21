@@ -1,6 +1,7 @@
-import type { QuantModel } from '@/lib/data/types';
+import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { bestQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { contextLabel } from '@/lib/utils/context-label';
@@ -50,10 +51,16 @@ export function sizeAt(model: QuantModel, bpw: number, ctx: number) {
   });
 }
 
-/** Cards that clear this size comfortably, smallest first. */
-export function cardsFitting(totalGB: number) {
+/**
+ * Cards that clear this size comfortably, smallest first — restricted to
+ * cards whose backend can actually load `format` (a Mac or CPU entry never
+ * qualifies for an AWQ/EXL2/GPTQ quant, whatever its capacity), and sized
+ * against each card's usable capacity, not its nameplate figure (macOS
+ * reserves part of unified memory for itself — see `usableCapacityGB`).
+ */
+export function cardsFitting(totalGB: number, format: QuantVariant['format']) {
   return gpuDatabase
-    .filter(g => getVerdict(totalGB, g.vram) === 'green')
+    .filter(g => formatAllowed(g, format) && getVerdict(totalGB, usableCapacityGB(g)) === 'green')
     .sort((a, b) => a.vram - b.vram);
 }
 
@@ -62,7 +69,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
   const refKey = quantLevelKey(ref);
   const at4k = sizeAt(model, ref.bpw, REF_CONTEXT);
   const atLong = sizeAt(model, ref.bpw, LONG_CONTEXT);
-  const fits = cardsFitting(at4k.totalGB);
+  const fits = cardsFitting(at4k.totalGB, ref.format);
   const smallest = fits[0];
   const formats = Array.from(new Set(model.quants.map(q => q.format)));
   const levels = model.quants.map(quantLevelKey);

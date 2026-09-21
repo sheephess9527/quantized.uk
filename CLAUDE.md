@@ -285,6 +285,31 @@ row contradicts its own reason text (EXL2 recommended with a ROCm runtime).
 **Run the tools, don't read them.** Both wizard bugs survived review and were obvious the moment the
 function was called across every hardware × priority combination. Same for the CLI generator.
 
+**A recommendation function must check whether the hardware can run the format, not just whether it
+has room for the bytes.** `fitsOnGpu` ranked every quant a model shipped by quality loss alone and
+handed back whichever fit in VRAM — no idea whether the target's backend (CUDA/ROCm/Metal/CPU) could
+load that *format* at all, so a Mac, CPU or AMD GPU page could recommend AWQ/GPTQ/EXL2, none of which
+those backends run (AMD is a partial exception — see the AMD-format FAQ answer, which this fix reused
+rather than re-deriving: vLLM's official ROCm wheels keep AWQ on the table there, only EXL2/GPTQ are
+excluded). `backendFor(gpu)` + `formatAllowed(gpu, format)` (`lib/utils/gpu-page.ts`, derived from the
+existing `type` field, not a new one to keep in sync across 63 rows) is the one place this is decided
+now. **A fix at the source function does not fix a caller that duplicated the computation instead of
+calling it** — the VRAM calculator's `getRecommendations` took a bare vram *number*, never a `GPU`,
+so it silently carried both this bug and the Mac-capacity one below through an entire separate code
+path with no shared function to fix. Grep for every place doing the same math before considering a
+fix like this done, not just the function you already knew about.
+
+**A Mac's unified memory is not fully usable, and the fraction needs a real source before it ships.**
+`gpus.ts` marks Apple entries `isUnified: true`; for a long time nothing read it, so a Mac page's own
+copy ("the GPU's share of unified memory, not the number on the box") disagreed with its own fit math,
+which used the full nameplate figure. An audit's first proposed fix (a 67%/75% size-tiered split) had
+no independent support when checked — real measurements of macOS's default `iogpu.wired_limit_mb` cap
+cluster around a flat **75%** fairly consistently across machine sizes. `usableCapacityGB(gpu)`
+(`gpu-page.ts`) is the one place this is applied; `gpu.vram` stays what's *displayed* as the machine's
+real spec everywhere else — this is a usable-capacity ceiling for fit/headroom math, not a different
+hardware fact, and a UI that shows both numbers side by side (the calculator's "your card" panel) has
+to compute the verdict, the bar, and the quoted number all from the same one or they will disagree.
+
 **A recommendation that ignores its input is worse than no recommendation.** `homePicks` originally
 ranked by "most headroom left" and "highest tok/s" — both of which put the *smallest* model in the
 index first, so a 24 GB RTX 4090 and an 8 GB 4060 Ti got the same 0.5B answer. Any criterion that is
@@ -755,6 +780,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-21 | **QTZ-100 + QTZ-106 fixed: format-vs-backend, Mac unified memory** — `fitsOnGpu()` and 7 other functions now check `formatAllowed(gpu, quant.format)` before recommending a quant (AWQ stays allowed on AMD per this site's own FAQ, only EXL2/GPTQ excluded there); Mac unified memory sized at a verified ~75% usable fraction, not full nameplate. The VRAM calculator's `getRecommendations` took a bare vram number, not a GPU, so it had shared neither the bug nor any earlier fix — now takes the `GPU` object and shows an explicit "doesn't run on this backend" message. Mac M3 16G: 52→44 comfortable fits, measured in the built HTML |
 | 2026-09-21 | **Second independent audit, batch 1 (zero-risk fixes)** — spot-checked the new audit's P0 claims against the actual code before acting; most held up, including two foundational ones not yet fixed: `fitsOnGpu()` picks a quant's format with zero awareness of whether the GPU's backend (CUDA/ROCm/Metal/CPU) can run it, and Mac unified memory is never reduced for macOS overhead despite the page's own copy claiming it is. Shipped: a hand-typed nonexistent GPU name ("RTX 4070 Ti 16G"), a hardcoded stale "79+" model count, two Footer links to renamed GitHub orgs, and a best-effort `<!--email_off-->` mitigation for a Cloudflare Scrape-Shield-shaped hydration error |
 | 2026-09-15 | **Live re-check found QTZ-008 was never deployed** — a build gate proves the export is self-consistent, not that a given edit ever landed in source; homepage hero still had the pre-audit H1/CTA/keywords-meta live, now fixed (`Will it fit on your card?`, CTA → `/gpu/`). `runtimeVersions` re-verified against real GitHub release pages (llama.cpp/Ollama had drifted in 4 days); found ExLlamaV2 stalled since 2025-07, active project moved to ExLlamaV3/EXL3 (a new format, not yet tracked — 0 models ship it). A reported "79 vs 81" count mismatch was not a regression (two different, correctly-computed numbers); two referenced files (`scripts/audit-site.mjs`, `data/incoming-architecture.json`) don't exist and nothing was fabricated to replace them |
 | 2026-09-14 | **`/zh` audited against the audit's own query list (QTZ-033)** — mostly already redrafted for Chinese search intent from earlier ships (not machine-translated); real gap found: no FAQ answer for "32G 内存纯 CPU 现实吗" despite an existing `32 GB RAM (CPU)` row, added; +2 verified used cards (Tesla P40 24G, P100 16G); the audit's suggested "modded 2080 Ti 22G" deliberately skipped — not a vendor spec |

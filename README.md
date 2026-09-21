@@ -419,7 +419,73 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-09-21 — Second audit (2026-09-21 doc), batch 1: zero-risk fixes
+### 2026-09-21 (b) — QTZ-100 + QTZ-106: format-vs-backend and Mac unified memory, fixed everywhere
+
+The two foundational bugs flagged (but deliberately not fixed) in batch 1 earlier today. Both lived
+in `fitsOnGpu()` (`lib/utils/gpu-page.ts`) — the single function nearly every recommendation on the
+site runs through — **and separately** in the interactive VRAM calculator, which called its own
+`getRecommendations()` (`lib/utils/recommend.ts`) with a bare vram number, never a GPU, so it shared
+neither bug's symptom on `/gpu/*` pages nor, until this pass, either fix.
+
+**QTZ-100 — format-vs-backend.** `fitsOnGpu` picked whichever quant a model shipped with the lowest
+quality loss, from any of GGUF/AWQ/EXL2/GPTQ/HQQ, with zero awareness of whether the target GPU's
+backend (CUDA/ROCm/Metal/CPU) can load that format at all. A Mac, CPU, or AMD GPU page could end up
+recommending AWQ, GPTQ, or EXL2 — formats none of those backends can run, full stop, for anything
+but AWQ-on-AMD.
+
+- New `Backend` type + `backendFor(gpu)` (derived from the existing `type` field — no new data to
+  keep in sync across 63 rows) and `ALLOWED_FORMATS: Record<Backend, format[]>` in `gpu-page.ts`.
+- **The allowlist is not a flat "GGUF only outside CUDA" table** — it matches this site's own
+  already-published answer to "which format runs on an AMD card?" (`lib/utils/faq.ts`,
+  `amd-format`): vLLM ships official ROCm wheels, so AWQ is not excluded on AMD, only EXL2 and GPTQ
+  (confirmed CUDA-only). Getting this from the FAQ rather than re-deriving it from scratch is the
+  reason the two didn't end up contradicting each other.
+- Threaded through every function that decides what to recommend or list as fitting:
+  `fitsOnGpu`, `countModelsFitting` (`gpu-page.ts`), `cardsFitting` (`model-explainer.ts`, now takes
+  a `format` argument), `modelPlacement`'s `candidateCards` (`model-placement.ts`), `bestPage`'s
+  near-miss and context-ladder loops (`best-page.ts`), the GPU-page FAQ generator's "can this card
+  run the next model up" question (`gpu-explainer.ts` — now states plainly when format, not size, is
+  the blocker), `/faq/`'s 70B question (`faq.ts`), and a format page's "smallest card that ships
+  this" line (`format-page.ts`).
+- **The VRAM calculator itself never went through any of this** — `getRecommendations` took
+  `gpuVram: number`, not a `GPU`, so it had no way to know a target lacked CUDA. Changed its
+  signature to take the `GPU` object; all 3 callers (`VRAMCalculator.tsx`'s reverse mode,
+  `QuantHubContent.tsx`'s GPU filter ×2) updated. Forward mode gained a check it never had at all:
+  selecting an AWQ/EXL2/GPTQ quant against a Mac/CPU/AMD-incompatible hardware profile now shows an
+  explicit "doesn't run on this backend" message instead of a size-based green/yellow/red verdict
+  that had nothing to do with why it would actually fail.
+
+**QTZ-106 — Mac unified memory sized at full nameplate.** `gpus.ts` marks Apple entries
+`isUnified: true`; nothing downstream ever used it. A Mac page's own copy already said "the GPU's
+share of unified memory, not the number on the box" while the fit/verdict math used the full number
+regardless.
+
+- Checked the specific fraction before shipping it, rather than taking the audit's proposed
+  size-tiered 67%/75% split on faith: community measurements of macOS's *default* `iogpu.wired_limit_mb`
+  cap (before anyone raises it) cluster around **75%** fairly consistently across machine sizes (~75%
+  measured on a 128 GB Studio, ~78% on a 32 GB M2 Max) — one flat fraction, not a tier break the
+  audit's own number had no independent support for.
+- `MAC_UNIFIED_USABLE_FRACTION = 0.75` and `usableCapacityGB(gpu)` in `gpu-page.ts`; every sizing
+  call site above uses it in place of raw `gpu.vram` (which stays what's *displayed* as the card's
+  real spec — this is a usable-capacity ceiling for the fit math, not a different hardware fact).
+  `best-page.ts`'s synthetic `tierCard()` already carried `isUnified` through from a real Apple
+  entry, so its Apple-ladder loop needed no separate change once `fitsOnGpu` was fixed.
+- The calculator's "your card" panel now shows the usable figure consistently everywhere it draws a
+  bar or states a spare/needed number (never nameplate next to a usable-capacity verdict — that's
+  the identical "two numbers, pick one" fault this file already argues against elsewhere), with a
+  small explicit "X G usable of Y G unified" note when the profile is a Mac.
+
+**Measured, not asserted**: a Mac M3 16G now shows 44 of 81 models fitting comfortably, down from
+parity with a real 16GB CUDA card (52) — verified by grepping the actual `out/**` build output, the
+same standard as every other claim in this file, not by reading the source and assuming it works.
+
+Verified: `npx tsc --noEmit` and `npm run lint` clean; full build + postbuild gate pass (398 pages);
+confirmed in the built HTML that Mac/CPU pages show zero AWQ/EXL2/GPTQ recommendations (only the
+site-wide `knowsAbout` schema keyword list mentions the names) and that AMD pages still correctly
+recommend AWQ; confirmed the GPU-page FAQ now states "Not in AWQ INT4 — that format doesn't run on
+this card's backend" instead of silently comparing sizes on Mac and CPU pages.
+
+### 2026-09-21 (a) — Second audit (2026-09-21 doc), batch 1: zero-risk fixes
 
 A new, independently-conducted live audit (real browser, `fetch` + `DOMParser` against the served
 HTML, cross-checked against HF/GitHub/vendor pages) turned up 24 findings. Spot-checked the highest-

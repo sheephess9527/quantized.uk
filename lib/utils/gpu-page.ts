@@ -25,6 +25,71 @@ export function gpuBySlug(slug: string): GPU | undefined {
 export const GPU_PAGE_CONTEXT = 4096;
 
 /**
+ * The runtime a GPU's own drivers give it access to. Derived from `type`
+ * rather than stored — one more field on 63 rows to keep in sync with
+ * something `type` already encodes.
+ */
+export type Backend = 'cuda' | 'rocm' | 'metal' | 'cpu';
+
+export function backendFor(gpu: GPU): Backend {
+  if (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro') return 'cuda';
+  if (gpu.type === 'apple') return 'metal';
+  if (gpu.type === 'amd') return 'rocm';
+  return 'cpu';
+}
+
+/**
+ * Which quant formats a backend can actually load — not which formats
+ * exist. `fitsOnGpu` used to rank every format a model ships by quality
+ * loss alone and hand back whichever fit in VRAM, so a Mac or CPU page
+ * could recommend AWQ or EXL2, neither of which runs there at all.
+ *
+ * Sourced from this site's own already-published answer to "which format
+ * runs on an AMD card?" (`lib/utils/faq.ts`, `amd-format`), not the more
+ * conservative "GGUF only" a first pass at this table assumed: vLLM ships
+ * official ROCm wheels, so AWQ is not off the table on AMD the way it is
+ * on a Mac — but EXL2 and GPTQ are CUDA-only regardless of backend. Keep
+ * this table and that FAQ answer in agreement if either changes.
+ */
+export const ALLOWED_FORMATS: Record<Backend, ReadonlyArray<QuantVariant['format']>> = {
+  cuda: ['GGUF', 'AWQ', 'GPTQ', 'EXL2', 'HQQ'],
+  rocm: ['GGUF', 'AWQ'],
+  metal: ['GGUF'],
+  cpu: ['GGUF'],
+};
+
+/**
+ * `format` is typed as `string` rather than `QuantVariant['format']` so this
+ * also accepts `QuantFormat.name` (`lib/data/formats.ts`'s editorial format
+ * metadata, used on `/formats/[slug]/`) without a cast at every call site —
+ * both are drawn from the same five real values at runtime.
+ */
+export function formatAllowed(gpu: GPU, format: string): boolean {
+  return (ALLOWED_FORMATS[backendFor(gpu)] as readonly string[]).includes(format);
+}
+
+/**
+ * macOS reserves part of unified memory for the system and caps what a
+ * single process may wire down (`iogpu.wired_limit_mb`) — the pages already
+ * say this, but nothing in the sizing math acted on it, so a Mac page ran
+ * the identical fit list as a discrete GPU with the same nameplate figure.
+ * Community measurements of the *default* cap (before anyone raises it)
+ * cluster around 75% of total unified memory across machine sizes (~75%
+ * on a 128 GB Studio, ~78% measured on a 32 GB M2 Max) — one flat fraction
+ * rather than a size-tiered guess, since the tiering itself isn't
+ * independently confirmed.
+ *
+ * Used only for the fit/headroom math below. `gpu.vram` stays the number
+ * shown as the machine's real spec — this is a usable-capacity ceiling,
+ * not a different hardware fact.
+ */
+export const MAC_UNIFIED_USABLE_FRACTION = 0.75;
+
+export function usableCapacityGB(gpu: GPU): number {
+  return gpu.isUnified ? gpu.vram * MAC_UNIFIED_USABLE_FRACTION : gpu.vram;
+}
+
+/**
  * The two questions a "how many models fit" number can answer. They give
  * different counts (51 vs 60 on a 4060 Ti 16G) and both are defensible — what
  * is not defensible is showing one number on one page and the other elsewhere
@@ -37,9 +102,11 @@ export type FitLevel = 'comfortable' | 'tight';
 
 export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GPU_PAGE_CONTEXT): number {
   const allowed = level === 'comfortable' ? ['green'] : ['green', 'yellow'];
+  const capacity = usableCapacityGB(gpu);
   let n = 0;
   for (const model of models) {
     const fits = model.quants.some(quant => {
+      if (!formatAllowed(gpu, quant.format)) return false;
       const { totalGB } = calcVRAM({
         paramsB: model.params,
         layers: model.arch.layers,
@@ -50,7 +117,7 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
         contextLength,
         batchSize: 1,
       });
-      return allowed.includes(getVerdict(totalGB, gpu.vram));
+      return allowed.includes(getVerdict(totalGB, capacity));
     });
     if (fits) n += 1;
   }
@@ -133,10 +200,12 @@ export interface GpuFit {
  */
 export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] {
   const out: GpuFit[] = [];
+  const capacity = usableCapacityGB(gpu);
 
   for (const model of models) {
     let best: GpuFit | undefined;
     for (const quant of model.quants) {
+      if (!formatAllowed(gpu, quant.format)) continue;
       const { totalGB } = calcVRAM({
         paramsB: model.params,
         layers: model.arch.layers,
@@ -147,10 +216,10 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] 
         contextLength,
         batchSize: 1,
       });
-      if (getVerdict(totalGB, gpu.vram) !== 'green') continue;
+      if (getVerdict(totalGB, capacity) !== 'green') continue;
       // Lower perplexity loss wins; ties break toward the smaller footprint.
       if (!best || qualityRank(quant) < qualityRank(best.quant)) {
-        best = { model, quant, totalGB, headroomGB: Math.round((gpu.vram - totalGB) * 10) / 10 };
+        best = { model, quant, totalGB, headroomGB: Math.round((capacity - totalGB) * 10) / 10 };
       }
     }
     if (best) out.push(best);

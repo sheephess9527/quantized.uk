@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { countModelsFitting } from '@/lib/utils/gpu-page';
+import { countModelsFitting, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { modelsWithFormat } from '@/lib/utils/format-compare';
 import { getSiteStats } from '@/lib/stats';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -88,7 +88,7 @@ export function faqGroups(): FaqGroup[] {
   const s70 = size(b70.model, b70.quant.bpw, CTX);
   const small70 = [...b70.model.quants].sort((a, b) => a.bpw - b.bpw)[0];
   const s70small = size(b70.model, small70.bpw, CTX);
-  const cards70 = gpuDatabase.filter(g => getVerdict(s70.totalGB, g.vram) === 'green');
+  const cards70 = gpuDatabase.filter(g => getVerdict(s70.totalGB, usableCapacityGB(g)) === 'green');
   const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || /^Radeon RX/.test(g.name));
 
   const card8 = gpuDatabase.find(g => g.id === 'rtx4060')!;

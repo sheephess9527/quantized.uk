@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { fitsOnGpu, gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, formatAllowed, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { homePicks, type HomeUseCase } from '@/lib/utils/home-picks';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { formatLoss } from '@/lib/utils/quality';
@@ -194,6 +194,11 @@ export interface BestPageData {
 
 export function bestPage(tier: BestTier): BestPageData {
   const card = tierCard(tier);
+  // `tier.vram` is the nameplate figure; anywhere this page sizes against the
+  // tier's *capacity* (not just displays the number) has to use what the card
+  // can actually use — `tierCard` already carries `isUnified` through from a
+  // real Apple entry, so this line is the one place that fact needs restating.
+  const capacity = usableCapacityGB(card);
   const allFits = fitsOnGpu(card);
   const fitCount = allFits.length;
   const largestOverall = allFits[0];
@@ -208,7 +213,7 @@ export function bestPage(tier: BestTier): BestPageData {
       ),
     ).length;
     const holdsAt = LONG_CONTEXTS.filter(
-      ctx => getVerdict(sizeAt(top.model, top.quant.bpw, ctx).totalGB, tier.vram) === 'green',
+      ctx => getVerdict(sizeAt(top.model, top.quant.bpw, ctx).totalGB, capacity) === 'green',
     );
     const already = picks.find(p => p.model.id === top.model.id);
     if (already) {
@@ -238,11 +243,12 @@ export function bestPage(tier: BestTier): BestPageData {
   const fittingIds = new Set(allFits.map(f => f.model.id));
   for (const model of models) {
     if (fittingIds.has(model.id)) continue;
-    const cheapest = [...model.quants]
+    const cheapest = model.quants
+      .filter(q => formatAllowed(card, q.format))
       .map(q => ({ q, gb: sizeAt(model, q.bpw, GPU_PAGE_CONTEXT).totalGB }))
       .sort((a, b) => a.gb - b.gb)[0];
     if (!cheapest) continue;
-    const overBy = cheapest.gb - tier.vram;
+    const overBy = cheapest.gb - capacity;
     if (overBy <= 0) continue;
     if (!nearMiss || overBy < nearMiss.overBy) {
       nearMiss = { model, quant: cheapest.q, totalGB: cheapest.gb, overBy };
@@ -252,7 +258,7 @@ export function bestPage(tier: BestTier): BestPageData {
   const ladder = [GPU_PAGE_CONTEXT, ...LONG_CONTEXTS].map(context => ({
     context,
     count: models.filter(m =>
-      m.quants.some(q => getVerdict(sizeAt(m, q.bpw, context).totalGB, tier.vram) === 'green'),
+      m.quants.some(q => formatAllowed(card, q.format) && getVerdict(sizeAt(m, q.bpw, context).totalGB, capacity) === 'green'),
     ).length,
   }));
 

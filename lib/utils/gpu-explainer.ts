@@ -2,7 +2,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, type GpuFit } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, type GpuFit } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 
@@ -194,7 +194,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
   const total = models.length;
   const tight = countModelsFitting(gpu, 'tight');
   const biggest = fits[0];
-  const grow = fits.find(f => f.totalGB <= gpu.vram * GROW_FRACTION);
+  const grow = fits.find(f => f.totalGB <= usableCapacityGB(gpu) * GROW_FRACTION);
   const ref = rooflineReference();
   const roof = ref ? rooflineTokS(gpu, ref.model, ref.quant) : undefined;
   const measured = measuredRowsFor(gpu);
@@ -272,23 +272,28 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
       const best = nextUp.quants
         .map(q => ({ q, gb: calcVRAM({ paramsB: nextUp.params, layers: nextUp.arch.layers, kvHeads: nextUp.arch.kvHeads, headDim: nextUp.arch.headDim, attention: nextUp.arch.attention, bpw: q.bpw, contextLength: GPU_PAGE_CONTEXT, batchSize: 1 }).totalGB }))
         .sort((a, b) => a.gb - b.gb)[0];
-      const verdict = getVerdict(best.gb, gpu.vram);
+      const capacity = usableCapacityGB(gpu);
+      const verdict = formatAllowed(gpu, best.q.format) ? getVerdict(best.gb, capacity) : 'red';
       faqs.push({
         q: {
           en: `Can ${article(gpu.name)} ${gpu.name} run ${nextUp.name}?`,
           zh: `${gpu.name} 能跑 ${nextUp.name} 吗？`,
         },
         a: {
-          en: verdict === 'green'
-            ? `Yes — at ${quantLevelKey(best.q)} it needs about ${best.gb.toFixed(1)} GB against ${gpu.vram} GB.`
-            : verdict === 'yellow'
-              ? `Only just. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB against ${gpu.vram} GB — that loads on a card with nothing else on it, with no margin for a longer context window. It is not on the list above, which requires a model to stay inside 88% of the card.`
-              : `No. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB and the card has ${gpu.vram} GB — short by ${(best.gb - gpu.vram).toFixed(1)} GB before any context beyond 4K. The largest model this card does clear is ${biggest.model.name}.`,
-          zh: verdict === 'green'
-            ? `可以 —— 在 ${quantLevelKey(best.q)} 下约需 ${best.gb.toFixed(1)} GB，而这张卡有 ${gpu.vram} GB。`
-            : verdict === 'yellow'
-              ? `勉强。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而显存为 ${gpu.vram} GB —— 在显卡完全空闲时能加载，但没有任何余量留给更长的上下文。上面的清单里没有它，因为那份清单要求模型占用不超过显存的 88%。`
-              : `不能。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而这张卡只有 ${gpu.vram} GB —— 在 4K 之外的上下文还没算上之前就已经差了 ${(best.gb - gpu.vram).toFixed(1)} GB。这张卡能从容运行的最大模型是 ${biggest.model.name}。`,
+          en: !formatAllowed(gpu, best.q.format)
+            ? `Not in ${quantLevelKey(best.q)} — that format doesn't run on this card's backend, regardless of size. Check whether ${nextUp.name} ships GGUF instead.`
+            : verdict === 'green'
+              ? `Yes — at ${quantLevelKey(best.q)} it needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable.`
+              : verdict === 'yellow'
+                ? `Only just. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable — that loads with nothing else running, with no margin for a longer context window. It is not on the list above, which requires a model to stay inside 88% of usable capacity.`
+                : `No. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB and this card has ${capacity.toFixed(1)} GB usable — short by ${(best.gb - capacity).toFixed(1)} GB before any context beyond 4K. The largest model this card does clear is ${biggest.model.name}.`,
+          zh: !formatAllowed(gpu, best.q.format)
+            ? `跑不了 ${quantLevelKey(best.q)} —— 这个格式在这张卡的后端上不能运行，跟体积大小无关。可以看看 ${nextUp.name} 有没有 GGUF 版本。`
+            : verdict === 'green'
+              ? `可以 —— 在 ${quantLevelKey(best.q)} 下约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB。`
+              : verdict === 'yellow'
+                ? `勉强。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB —— 在没有其他程序占用时能加载，但没有任何余量留给更长的上下文。上面的清单里没有它，因为那份清单要求模型占用不超过可用显存的 88%。`
+                : `不能。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB —— 在 4K 之外的上下文还没算上之前就已经差了 ${(best.gb - capacity).toFixed(1)} GB。这张卡能从容运行的最大模型是 ${biggest.model.name}。`,
         },
       });
     }

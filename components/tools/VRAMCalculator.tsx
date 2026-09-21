@@ -8,6 +8,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
+import { usableCapacityGB, formatAllowed } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
@@ -167,6 +168,10 @@ export default function VRAMCalculator() {
     selectedModel !== undefined &&
     !selectedModel.quants.some(q => quantLevelKey(q) === selectedQuant);
   const selectedGpu = gpuDatabase.find(g => g.id === selectedGpuId);
+  /** The real quant row for the selected level, when the model ships one — its
+      `format` is what decides whether a given GPU can run it at all, a
+      question size alone can't answer. */
+  const selectedQuantObj = selectedModel?.quants.find(q => quantLevelKey(q) === selectedQuant);
 
   const calcInput = useMemo(() => {
     const tableBpw = quantBPW[selectedQuant] ?? 4.85;
@@ -204,16 +209,21 @@ export default function VRAMCalculator() {
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
   // Cards that clear the estimate comfortably, smallest first — "the cheapest
-  // card that runs this" is the question behind the 43-bar list.
+  // card that runs this" is the question behind the 43-bar list. Restricted to
+  // backends that can load the selected format at all (custom models have no
+  // format to check, so nothing is excluded on that basis), and sized against
+  // each card's usable capacity rather than its nameplate figure.
   const greenGpus = useMemo(
-    () => gpuDatabase.filter(g => getVerdict(result.totalGB, g.vram) === 'green').sort((a, b) => a.vram - b.vram),
-    [result.totalGB],
+    () => gpuDatabase
+      .filter(g => (!selectedQuantObj || formatAllowed(g, selectedQuantObj.format)) && getVerdict(result.totalGB, usableCapacityGB(g)) === 'green')
+      .sort((a, b) => a.vram - b.vram),
+    [result.totalGB, selectedQuantObj],
   );
   const smallestGreen = greenGpus[0];
 
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu.vram, contextLen, batchSize, sortBy, includeYellow);
+    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow);
   }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow]);
 
   const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
@@ -559,8 +569,12 @@ export default function VRAMCalculator() {
                 )}
 
                 {/* Actionable when the answer is "no": the reader is told what
-                    to change and what it would cost, not just that it fails. */}
-                {profileGpu && getVerdict(result.totalGB, profileGpu.vram) !== 'green' && contextLen > 512 && (
+                    to change and what it would cost, not just that it fails.
+                    Format mismatches get their own message below instead —
+                    halving the context does not fix a card that cannot load
+                    the format at any size. */}
+                {profileGpu && (!selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format)) &&
+                  getVerdict(result.totalGB, usableCapacityGB(profileGpu)) !== 'green' && contextLen > 512 && (
                   <div className="mt-4 pt-3 border-t border-white/[0.06]">
                     <p className="text-xs font-semibold text-slate-400 mb-1.5">{t.calc.adviceTitle}</p>
                     <p className="text-xs text-slate-500 leading-relaxed">
@@ -591,32 +605,46 @@ export default function VRAMCalculator() {
                         .replace('{vram}', String(smallestGreen!.vram))}
                 </p>
 
-                {profileGpu && (
-                  <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
-                      <span className="text-xs text-slate-300 font-medium">{profileGpu.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
-                        <div
-                          className={cn('h-full rounded-full', verdictConfig[getVerdict(result.totalGB, profileGpu.vram)].bar)}
-                          style={{ width: `${Math.min(100, (result.totalGB / profileGpu.vram) * 100)}%` }}
-                        />
+                {profileGpu && (() => {
+                  const capacity = usableCapacityGB(profileGpu);
+                  const formatOk = !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
+                  const v = getVerdict(result.totalGB, capacity);
+                  return (
+                    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
+                        <span className="text-xs text-slate-300 font-medium">{profileGpu.name}</span>
                       </div>
-                      <span className="font-mono text-xs text-slate-500 shrink-0">
-                        {result.totalGB.toFixed(1)} / {profileGpu.vram}G
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                          <div
+                            className={cn('h-full rounded-full', formatOk ? verdictConfig[v].bar : verdictConfig.red.bar)}
+                            style={{ width: formatOk ? `${Math.min(100, (result.totalGB / capacity) * 100)}%` : '100%' }}
+                          />
+                        </div>
+                        <span className="font-mono text-xs text-slate-500 shrink-0">
+                          {result.totalGB.toFixed(1)} / {capacity.toFixed(1)}G
+                        </span>
+                      </div>
+                      {profileGpu.isUnified && (
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          {t.calc.hwUsableOf
+                            .replace('{usable}', capacity.toFixed(1))
+                            .replace('{nameplate}', String(profileGpu.vram))}
+                        </p>
+                      )}
+                      <p className={cn('text-xs mt-2', formatOk ? verdictConfig[v].label : verdictConfig.red.label)}>
+                        {!formatOk
+                          ? t.calc.hwFormatMismatch.replace('{format}', selectedQuantObj!.format)
+                          : v === 'green'
+                            ? t.calc.hwAdviceGreen.replace('{spare}', (capacity - result.totalGB).toFixed(1))
+                            : v === 'yellow'
+                              ? t.calc.hwAdviceYellow
+                              : t.calc.hwAdviceRed}
+                      </p>
                     </div>
-                    <p className={cn('text-xs mt-2', verdictConfig[getVerdict(result.totalGB, profileGpu.vram)].label)}>
-                      {getVerdict(result.totalGB, profileGpu.vram) === 'green'
-                        ? t.calc.hwAdviceGreen.replace('{spare}', (profileGpu.vram - result.totalGB).toFixed(1))
-                        : getVerdict(result.totalGB, profileGpu.vram) === 'yellow'
-                          ? t.calc.hwAdviceYellow
-                          : t.calc.hwAdviceRed}
-                    </p>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <details className="group">
                   <summary className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer min-h-[44px] flex items-center">
@@ -624,11 +652,12 @@ export default function VRAMCalculator() {
                   </summary>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
                   {gpuDatabase.map(gpu => {
-                    const v = getVerdict(result.totalGB, gpu.vram);
+                    const formatOk = !selectedQuantObj || formatAllowed(gpu, selectedQuantObj.format);
+                    const v = formatOk ? getVerdict(result.totalGB, usableCapacityGB(gpu)) : 'red';
                     const cfg = verdictConfig[v];
-                    const pct = Math.min(100, (result.totalGB / gpu.vram) * 100);
+                    const pct = formatOk ? Math.min(100, (result.totalGB / usableCapacityGB(gpu)) * 100) : 100;
                     return (
-                      <div key={gpu.id} className="flex items-center gap-2 group">
+                      <div key={gpu.id} className="flex items-center gap-2 group" title={formatOk ? undefined : t.calc.hwFormatMismatch.replace('{format}', selectedQuantObj!.format)}>
                         <span className="text-sm w-4 shrink-0">{gpu.icon}</span>
                         <span className="text-xs text-slate-400 truncate w-36 shrink-0 group-hover:text-slate-200 transition-colors">
                           {gpu.name}

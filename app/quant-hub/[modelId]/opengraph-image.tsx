@@ -19,7 +19,7 @@ export default function Image({ params }: { params: { modelId: string } }) {
   }
   const quant = bestQuant(model.quants);
   const { totalGB } = sizeAt(model, quant.bpw, REF_CONTEXT);
-  const smallest = cardsFitting(totalGB)[0];
+  const smallest = cardsFitting(totalGB, quant.format)[0];
   return renderOgImage({
     eyebrow: 'Model',
     title: model.name,

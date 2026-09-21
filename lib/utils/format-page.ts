@@ -6,6 +6,7 @@ import { calcVRAM } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { getVerdict } from '@/lib/utils/vram';
+import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { article } from '@/lib/utils/gpu-explainer';
 import type { QuantModel } from '@/lib/data/types';
 
@@ -124,7 +125,7 @@ export function formatPage(format: QuantFormat): {
   const example = ref && refQuant ? sizeOf(ref, refQuant.bpw) : undefined;
   const smallestCard = example
     ? gpuDatabase
-        .filter(g => getVerdict(example.totalGB, g.vram) === 'green')
+        .filter(g => formatAllowed(g, format.name) && getVerdict(example.totalGB, usableCapacityGB(g)) === 'green')
         .sort((a, b) => a.vram - b.vram)[0]
     : undefined;
 
