@@ -236,9 +236,9 @@ export const todayFeed = [
   { id: 0, type: 'new' as const, modelId: 'qwen3-8-27b', format: 'GGUF', detail: { en: 'Q4_K_M · 15.3 GB · 16 of 64 layers cache KV', zh: 'Q4_K_M · 15.3 GB · 64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth', hardware: 'RTX 4090 / RX 7900 XT' },
   { id: 7, type: 'new' as const, modelId: 'ministral-3-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.2 GB · official Mistral GGUF', zh: 'Q4_K_M · 5.2 GB · Mistral 官方 GGUF' }, quantizer: 'mistralai', hardware: 'RTX 4060 Ti 8G' },
   { id: 1, type: 'new' as const, modelId: 'qwen3-vl-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.9 GB · vision on a 12GB card', zh: 'Q4_K_M · 5.9 GB · 12GB 显卡上的多模态' }, quantizer: 'bartowski', hardware: 'RTX 3060 12G' },
-  { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: { en: 'Q4_K_M · 14.3 GB · [THINK] reasoning', zh: 'Q4_K_M · 14.3 GB · [THINK] 推理模式' }, quantizer: 'unsloth', hardware: 'RTX 4070 Ti 16G' },
+  { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: { en: 'Q4_K_M · 14.3 GB · [THINK] reasoning', zh: 'Q4_K_M · 14.3 GB · [THINK] 推理模式' }, quantizer: 'unsloth', hardware: 'RTX 4070 Ti Super' },
   { id: 3, type: 'new' as const, modelId: 'seed-oss-36b', format: 'GGUF', detail: { en: 'Q4_K_M · 21.8 GB · 512K context', zh: 'Q4_K_M · 21.8 GB · 512K 上下文' }, quantizer: 'unsloth', hardware: '2× RTX 3090' },
   { id: 4, type: 'new' as const, modelId: 'qwen3-vl-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · 3B active, vision', zh: 'Q4_K_M · 19 GB · 激活 3B，多模态' }, quantizer: 'bartowski', hardware: 'M3 Max / RTX 4090' },
-  { id: 5, type: 'hot' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: { en: 'MXFP4 · 12.8 GB · native 4-bit', zh: 'MXFP4 · 12.8 GB · 原生 4-bit' }, quantizer: 'openai', hardware: 'RTX 4070 Ti 16G' },
+  { id: 5, type: 'hot' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: { en: 'MXFP4 · 12.8 GB · native 4-bit', zh: 'MXFP4 · 12.8 GB · 原生 4-bit' }, quantizer: 'openai', hardware: 'RTX 4070 Ti Super' },
   { id: 6, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · agentic coder', zh: 'Q4_K_M · 19 GB · agent 编码模型' }, quantizer: 'bartowski', hardware: 'RTX 4090' },
 ];

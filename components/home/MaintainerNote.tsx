@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Link from '@/components/i18n/LocalLink';
 import { Mail, MessageSquareWarning } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 
-/** Same address as the Footer — the site's one contact point, kept in sync by hand. */
-const CONTACT = 'hello@quantized.uk';
+const CONTACT = FEEDBACK_EMAIL;
 
 export default function MaintainerNote() {
   const { t } = useLanguage();
@@ -59,7 +60,7 @@ export default function MaintainerNote() {
           >
             <Mail size={12} /> {f.openMail}
           </a>
-          <p className="text-xs text-slate-500 mt-1">{f.mailNote}</p>
+          <p className="text-xs text-slate-500 mt-1">{textWithGuardedEmail(f.mailNote, CONTACT)}</p>
         </div>
       )}
     </section>

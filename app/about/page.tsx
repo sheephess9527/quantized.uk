@@ -4,6 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import { Heart } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { dataLastUpdated } from '@/lib/data/meta';
+import { MODEL_COUNT } from '@/lib/seo';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function AboutPage() {
@@ -43,7 +44,9 @@ export default function AboutPage() {
             <div className="space-y-3">
               {section.paragraphs.map((para, j) => (
                 <p key={j} className="text-sm text-slate-400 leading-relaxed">
-                  {para}
+                  {/* {n} is the only placeholder any About paragraph carries today (the model
+                      count) — a no-op .replace on paragraphs that don't contain it. */}
+                  {para.replace('{n}', String(MODEL_COUNT))}
                 </p>
               ))}
             </div>

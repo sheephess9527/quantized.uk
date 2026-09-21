@@ -6,8 +6,10 @@ import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils/cn';
+import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 
-const CONTACT = 'hello@quantized.uk';
+const CONTACT = FEEDBACK_EMAIL;
 
 /**
  * "Did this actually run?" — the only outcome signal on the site that is not a
@@ -104,7 +106,7 @@ export default function RunFeedback({ subject, context }: { subject: string; con
           >
             <Mail size={12} /> {f.openMail}
           </a>
-          <p className="text-xs text-slate-500 mt-1">{f.mailNote}</p>
+          <p className="text-xs text-slate-500 mt-1">{textWithGuardedEmail(f.mailNote, CONTACT)}</p>
         </div>
       )}
     </section>

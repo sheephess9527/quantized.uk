@@ -441,7 +441,7 @@ export const translations = {
       thanks: 'Noted — thank you. That one click is the whole signal.',
       willSend: 'This opens your own mail app with the text below. Nothing is sent until you send it, and nothing beyond this is included:',
       openMail: 'Open it in my mail app',
-      mailNote: 'Goes to hello@quantized.uk. No account, no list, no follow-up unless you ask for one.',
+      mailNote: 'Goes to {email}. No account, no list, no follow-up unless you ask for one.',
       bodyPage: 'Page',
       bodyContext: 'Guide',
       bodySetup: 'My setup, as shown on the page',
@@ -658,7 +658,7 @@ export const translations = {
         {
           title: 'What we publish',
           paragraphs: [
-            'A searchable index of 79+ models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
+            'A searchable index of {n} models with per-quant VRAM, speed, and quality estimates; interactive tools (VRAM calculator, format wizard, CLI generator); real-hardware benchmarks; and step-by-step deployment cookbooks.',
             'We index metadata and link to Hugging Face — we do not host, distribute, or sell model weights. Each model remains subject to its own license.',
           ],
         },
@@ -1386,7 +1386,7 @@ export const translations = {
       thanks: '已记录，谢谢。这一次点击就是全部信号。',
       willSend: '这会用你自己的邮件应用打开下面这段文字。在你点击发送之前不会发出任何内容，也不会附带下面之外的任何信息：',
       openMail: '在我的邮件应用中打开',
-      mailNote: '发往 hello@quantized.uk。没有账号、没有订阅列表，除非你要求，否则不会有后续联系。',
+      mailNote: '发往 {email}。没有账号、没有订阅列表，除非你要求，否则不会有后续联系。',
       bodyPage: '页面',
       bodyContext: '指南',
       bodySetup: '我的配置（页面上显示的）',
@@ -1603,7 +1603,7 @@ export const translations = {
         {
           title: '我们提供什么',
           paragraphs: [
-            '79+ 模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
+            '{n} 个模型的可搜索索引（每种量化的显存、速度、质量估算）；交互工具（显存计算器、格式向导、CLI 生成器）；真机基准测试；以及分步骤的部署 Cookbook。',
             '我们只索引元数据并链接到 Hugging Face — 不托管、不分发、不出售模型权重。每个模型仍受其自身许可协议约束。',
           ],
         },

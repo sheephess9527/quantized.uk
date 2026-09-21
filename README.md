@@ -419,6 +419,66 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-21 — Second audit (2026-09-21 doc), batch 1: zero-risk fixes
+
+A new, independently-conducted live audit (real browser, `fetch` + `DOMParser` against the served
+HTML, cross-checked against HF/GitHub/vendor pages) turned up 24 findings. Spot-checked the highest-
+impact P0 claims directly against this codebase rather than trusting the document, and the check
+rate was high — most held up. Two are genuinely foundational (tracked as follow-ups, not yet fixed):
+
+- **The recommendation engine never checks whether a quant's format can run on the target GPU's
+  backend.** `fitsOnGpu()` (`lib/utils/gpu-page.ts`) picks whichever quant has the lowest quality
+  loss among everything that fits in VRAM, from *any* format the model ships — GGUF, AWQ, EXL2,
+  GPTQ, with zero awareness that AWQ/EXL2/GPTQ need CUDA. `homePicks`, `/best/`, and every GPU page
+  call this function, so a Mac, CPU, or AMD page can end up recommending a format that will not run
+  there at all. Confirmed by reading the function; not yet fixed — this needs a `backend` field on
+  `GPU` and a format allowlist per backend, a real change to the core recommendation path, not a
+  one-line fix.
+- **Mac unified memory is never reduced for macOS's own overhead.** `gpus.ts` marks Apple entries
+  `isUnified: true` but nothing in `vram.ts` or `gpu-page.ts` ever multiplies by a usable fraction —
+  the page's own copy says "the GPU's share of unified memory, not the number on the box" while the
+  calculation uses the full number. Confirmed by reading the code; not yet fixed.
+- **A batch of old models were never tagged `status: 'superseded'`** (Mixtral 8x7B, Stable LM 2 12B,
+  DeepSeek-V2-Lite Chat, Falcon 3 10B confirmed missing the field), so `homePicks`'s "largest that
+  fits" ranking can still land on a 2023/2024 model purely because nobody flagged it. The exclusion
+  mechanism itself works; the data just isn't tagged. Not yet fixed.
+
+**What this pass actually shipped** — four low-risk, independently-verified fixes:
+
+- **A GPU that doesn't exist.** Two homepage Editor's Picks entries (`lib/data/models.ts`) hand-typed
+  `hardware: 'RTX 4070 Ti 16G'` — there is no such card. The 16GB variant is the RTX 4070 Ti *Super*;
+  the 4070 Ti itself is 12GB. Both fixed to the real name.
+- **A stale hardcoded count.** `/about/` (`lib/i18n/translations.ts`) still read "A searchable index
+  of 79+ models" as literal text, unrelated to `MODEL_COUNT` used everywhere else. Changed to a
+  `{n}` placeholder substituted from `MODEL_COUNT` at render time (`app/about/page.tsx`), the same
+  pattern already used for `{date}` on the same page.
+- **Two Footer links pointing at old GitHub orgs.** `llama.cpp` still linked `ggerganov/llama.cpp`
+  (now `ggml-org/llama.cpp`) and `ExLlamaV2` still linked `turboderp/exllamav2` (now
+  `turboderp-org/exllamav2`) — both orgs already correctly named elsewhere in this repo's own
+  changelog, just never carried into the Footer's link list.
+- **A plausible cause of a real console error.** The audit's browser caught React hydration errors
+  (#418/#425 — text content mismatch) on every page load. The likely cause: the site's contact
+  address rendered as bare visible text in the Footer (on every page) and in two feedback panels —
+  exactly the pattern Cloudflare's Email Address Obfuscation rewrites at the edge, which would make
+  the HTML the browser actually receives differ from what the statically-exported React bundle
+  expects to hydrate against. New `components/ui/EmailOffGuard.tsx` wraps every text rendering of
+  the address in Cloudflare's own documented `<!--email_off-->` escape comment, emitted via
+  `dangerouslySetInnerHTML` on inert siblings (not a wrapping element — the actual anchors keep
+  their `onClick` analytics handler unchanged). **This is a best-effort mitigation, not a confirmed
+  fix**: this environment cannot load the live, Cloudflare-fronted site to check whether it actually
+  clears the console error. Disabling Scrape Shield → Email Address Obfuscation in the Cloudflare
+  dashboard remains the more certain fix and needs the site owner to do it.
+
+Also fixed as a drive-by (same class of bug as the two Footer links, already known-correct from
+earlier work): nothing else — deliberately did not touch the `Navigate`/`Ecosystem` footer section
+titles left untranslated on `/zh/` (a real, separate finding from the same audit), to keep this pass
+to exactly the zero-risk batch that was asked for.
+
+Verified: `npx tsc --noEmit` and `npm run lint` clean; full build + postbuild gate pass (398 pages);
+grepped `out/**` directly (not the source) for every fixed string to confirm it actually left the
+export — this is the same discipline this file already argues for: a green build proves the export
+is self-consistent, never that a specific claim in a report was true or that a specific edit landed.
+
 ### 2026-09-15 — Live re-check: QTZ-008 was never actually deployed, runtime versions re-verified
 
 A prior "complete" report for QTZ-008 (homepage hero rewrite) did not survive contact with the live

@@ -8,6 +8,7 @@ import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
 import { FEEDBACK_EMAIL } from '@/lib/seo';
+import EmailOffGuard from '@/components/ui/EmailOffGuard';
 
 export default function Footer() {
   const { t, lang } = useLanguage();
@@ -40,10 +41,10 @@ export default function Footer() {
       title: 'Ecosystem',
       links: [
         { label: 'Hugging Face', href: 'https://huggingface.co', external: true },
-        { label: 'llama.cpp',    href: 'https://github.com/ggerganov/llama.cpp', external: true },
+        { label: 'llama.cpp',    href: 'https://github.com/ggml-org/llama.cpp', external: true },
         { label: 'Ollama',       href: 'https://ollama.com', external: true },
         { label: 'vLLM',         href: 'https://github.com/vllm-project/vllm', external: true },
-        { label: 'ExLlamaV2',    href: 'https://github.com/turboderp/exllamav2', external: true },
+        { label: 'ExLlamaV2',    href: 'https://github.com/turboderp-org/exllamav2', external: true },
       ],
     },
   ];
@@ -66,14 +67,16 @@ export default function Footer() {
             <p className="text-xs text-slate-500 leading-relaxed max-w-48 mb-3">
               {t.nav.tagline}. {t.footer.brandExtra}
             </p>
-            <a
-              href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20feedback`}
-              onClick={() => trackEvent('Feedback Click')}
-              className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors"
-            >
-              <Mail size={12} />
-              {t.footer.feedback}: {FEEDBACK_EMAIL}
-            </a>
+            <EmailOffGuard>
+              <a
+                href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20feedback`}
+                onClick={() => trackEvent('Feedback Click')}
+                className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors"
+              >
+                <Mail size={12} />
+                {t.footer.feedback}: {FEEDBACK_EMAIL}
+              </a>
+            </EmailOffGuard>
           </div>
 
           {/*
@@ -104,13 +107,15 @@ export default function Footer() {
             </ul>
             <p className="text-xs text-slate-600 mt-3">
               {t.footer.foundWrong}{' '}
-              <a
-                href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20correction`}
-                onClick={() => trackEvent('Feedback Click')}
-                className="text-violet-400 hover:text-violet-300 transition-colors"
-              >
-                {FEEDBACK_EMAIL}
-              </a>
+              <EmailOffGuard>
+                <a
+                  href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20correction`}
+                  onClick={() => trackEvent('Feedback Click')}
+                  className="text-violet-400 hover:text-violet-300 transition-colors"
+                >
+                  {FEEDBACK_EMAIL}
+                </a>
+              </EmailOffGuard>
             </p>
           </div>
 

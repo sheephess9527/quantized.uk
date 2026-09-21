@@ -133,6 +133,21 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `application/octet-stream` — a type social-card validators do not sniff past. One line per route
   in `public/_headers` (`*` matches one path segment, never across `/`, so each route depth needs
   its own line — see the file for all 10).
+- **A bare email address rendered as text is a Cloudflare hydration risk.** Scrape Shield → Email
+  Address Obfuscation rewrites any bare address or `mailto:` link in the HTML leaving Cloudflare's
+  edge; since this is a static export, the React bundle hydrates against the *unmutated* text it was
+  built from, and a Cloudflare-mutated DOM disagreeing with it is a plausible cause of hydration
+  errors (#418/#425 — text content mismatch). `FEEDBACK_EMAIL` (`lib/seo.ts`) rendered as visible
+  text — Footer (every page), `MaintainerNote`, `RunFeedback` — now goes through
+  `EmailOffGuard`/`textWithGuardedEmail` (`components/ui/EmailOffGuard.tsx`), which wraps the address
+  in Cloudflare's own documented `<!--email_off--><!--/email_off-->` escape comment via
+  `dangerouslySetInnerHTML` on inert siblings (never a wrapping element — Cloudflare's rewriter reads
+  the token stream in document order, and nesting the comment inside an element risks it reading as
+  scoped to that element). Use it any time `FEEDBACK_EMAIL` is rendered as text rather than only
+  living inside a `mailto:` href attribute. **Unconfirmed against the live site** — this environment
+  has no way to load the Cloudflare-fronted domain and check the actual console; treat it as a
+  best-effort mitigation until someone checks devtools on the real URL. Disabling Email Address
+  Obfuscation in the Cloudflare dashboard is the more certain fix and is the site owner's to make.
 - **Every internal href ends in `/` — and the build checks.** `trailingSlash: true` is not enough:
   `next/link` treats any last path segment containing a dot as a filename and strips the slash
   (`/\.[^/]+\/?$/` in `normalizePathTrailingSlash`), which silently hit every versioned model id —
@@ -740,6 +755,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-21 | **Second independent audit, batch 1 (zero-risk fixes)** — spot-checked the new audit's P0 claims against the actual code before acting; most held up, including two foundational ones not yet fixed: `fitsOnGpu()` picks a quant's format with zero awareness of whether the GPU's backend (CUDA/ROCm/Metal/CPU) can run it, and Mac unified memory is never reduced for macOS overhead despite the page's own copy claiming it is. Shipped: a hand-typed nonexistent GPU name ("RTX 4070 Ti 16G"), a hardcoded stale "79+" model count, two Footer links to renamed GitHub orgs, and a best-effort `<!--email_off-->` mitigation for a Cloudflare Scrape-Shield-shaped hydration error |
 | 2026-09-15 | **Live re-check found QTZ-008 was never deployed** — a build gate proves the export is self-consistent, not that a given edit ever landed in source; homepage hero still had the pre-audit H1/CTA/keywords-meta live, now fixed (`Will it fit on your card?`, CTA → `/gpu/`). `runtimeVersions` re-verified against real GitHub release pages (llama.cpp/Ollama had drifted in 4 days); found ExLlamaV2 stalled since 2025-07, active project moved to ExLlamaV3/EXL3 (a new format, not yet tracked — 0 models ship it). A reported "79 vs 81" count mismatch was not a regression (two different, correctly-computed numbers); two referenced files (`scripts/audit-site.mjs`, `data/incoming-architecture.json`) don't exist and nothing was fabricated to replace them |
 | 2026-09-14 | **`/zh` audited against the audit's own query list (QTZ-033)** — mostly already redrafted for Chinese search intent from earlier ships (not machine-translated); real gap found: no FAQ answer for "32G 内存纯 CPU 现实吗" despite an existing `32 GB RAM (CPU)` row, added; +2 verified used cards (Tesla P40 24G, P100 16G); the audit's suggested "modded 2080 Ti 22G" deliberately skipped — not a vendor spec |
 | 2026-09-14 | **Per-page share-card images + two site-wide Twitter-card bugs (QTZ-026)** — GPU/model/guide/best/format pages get a real generated `opengraph-image.tsx` instead of one shared `/og.png`; found along the way that `runtime='edge'` silently drops the route from a static export, and that every page's `twitter:title`/`description`/`images` — homepage included — showed the generic site default because `app/layout.tsx` and `pageMetadata()` hardcoded them instead of letting Twitter fall back to `openGraph` |
