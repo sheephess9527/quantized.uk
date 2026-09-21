@@ -349,6 +349,8 @@ export const extraModels2: QuantModel[] = [
     name: 'Stable LM 2 12B Chat',
     family: 'Stability AI',
     params: 12.1,
+    status: 'superseded',
+    supersededBy: 'falcon-3-10b',
     paramLabel: '12B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],

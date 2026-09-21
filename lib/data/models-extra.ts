@@ -207,6 +207,8 @@ export const extraModels: QuantModel[] = [
     name: 'Mixtral 8x7B Instruct',
     family: 'Mistral AI',
     params: 46.7,
+    status: 'superseded',
+    supersededBy: 'qwen3-30b-a3b',
     paramLabel: '47B MoE',
     categories: ['general', 'instruct'],
     hardwareTags: ['pro-gpu'],

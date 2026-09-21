@@ -419,6 +419,26 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-21 (c) — QTZ-101 (small half): two more legacy models tagged `superseded`
+
+Mixtral 8x7B Instruct → `qwen3-30b-a3b` (context 32K→40K, Q4 28.5GB→19GB, faster, lower measured
+quality loss) and Stable LM 2 12B Chat → `falcon-3-10b` (context 4K→32K, smaller, faster). Both
+reasons come from `supersededDiffNote()`'s real field comparison, not a template phrase; both pages
+stay `index, follow` and keep their numbers — only `homePicks`/`/best/` stop naming them first pick.
+
+QTZ-101's other proposal — a cross-model `qualityScore` fed by an external public leaderboard —
+is **not** part of this; it needs the site owner to pick a trusted source and is a separate,
+bigger task.
+
+Two other audit candidates were checked and deliberately left untagged: DeepSeek-V2-Lite Chat
+still carries a 163,840-token context and an 11GB Q4 footprint nothing else in its class beats,
+and its only same-family relative in the index (`deepseek-coder-v2-lite`) is a code-specialised
+sibling, not a generational upgrade — tagging it "superseded" by a shorter-context model would
+repeat the exact mistake the Command R 35B pick made in an earlier batch (see 2026-06-26 entry
+below / CLAUDE.md's "Superseding models" section). Falcon 3 10B Instruct was the only genuine
+successor candidate found, which is why it was used for Stable LM instead of also being tagged
+itself.
+
 ### 2026-09-21 (b) — QTZ-100 + QTZ-106: format-vs-backend and Mac unified memory, fixed everywhere
 
 The two foundational bugs flagged (but deliberately not fixed) in batch 1 earlier today. Both lived
