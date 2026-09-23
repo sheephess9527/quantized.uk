@@ -1,6 +1,7 @@
 import { models } from '@/lib/data/models';
 import type { QuantConfidence, QuantModel, QuantVariant } from '@/lib/data/types';
 import type { Lang } from '@/lib/i18n/translations';
+import { dataLastUpdated } from '@/lib/data/meta';
 
 /**
  * Quant formats at least one indexed model actually ships — derived, never
@@ -39,11 +40,28 @@ export function isSuperseded(m: QuantModel): boolean {
   return m.status === 'superseded';
 }
 
-export function isRecentModel(m: QuantModel, now = Date.now()): boolean {
+/**
+ * "Recent" is measured from the latest data ship, never the wall clock. The
+ * server render happens at build time and hydration happens whenever someone
+ * visits; with `Date.now()` the two disagree as soon as a model ages out of the
+ * window between deploy and visit — a text mismatch (React #418/#425) on every
+ * page carrying a NEW badge.
+ */
+export const RECENCY_ANCHOR = Date.parse(dataLastUpdated);
+
+export function isRecentModel(m: QuantModel, now = RECENCY_ANCHOR): boolean {
   if (!m.addedAt) return false;
   const t = Date.parse(m.addedAt);
   if (Number.isNaN(t)) return false;
   return now - t <= RECENT_DAYS * 24 * 60 * 60 * 1000;
+}
+
+/** Newest additions first, by `addedAt`; models without one are excluded. */
+export function latestAdditions(list: QuantModel[], n: number): QuantModel[] {
+  return list
+    .filter(m => m.addedAt && !Number.isNaN(Date.parse(m.addedAt)))
+    .sort((a, b) => Date.parse(b.addedAt!) - Date.parse(a.addedAt!))
+    .slice(0, n);
 }
 
 export function getModelById(models: QuantModel[], id: string | undefined): QuantModel | undefined {

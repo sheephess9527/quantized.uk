@@ -148,6 +148,12 @@ flaky network. Never "fix" it by removing the postbuild hook.
   has no way to load the Cloudflare-fronted domain and check the actual console; treat it as a
   best-effort mitigation until someone checks devtools on the real URL. Disabling Email Address
   Obfuscation in the Cloudflare dashboard is the more certain fix and is the site owner's to make.
+- **Never read the clock in anything that renders.** A static export renders once at build and
+  hydrates at visit time; any output depending on `Date.now()` / `new Date()` differs between the two
+  as soon as time passes, which is a React #418/#425 text mismatch. `isRecentModel` did exactly this
+  (NEW badges, homepage block, Hub recency filter). Time-relative logic measures from
+  `RECENCY_ANCHOR` (= `dataLastUpdated`, `lib/utils/model-meta.ts`) — the same value in the HTML and
+  the bundle. Grep `Date.now()\|new Date()` in `components/` and `app/` before adding a date feature.
 - **Every internal href ends in `/` — and the build checks.** `trailingSlash: true` is not enough:
   `next/link` treats any last path segment containing a dot as a filename and strips the slash
   (`/\.[^/]+\/?$/` in `normalizePathTrailingSlash`), which silently hit every versioned model id —
@@ -780,6 +786,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-23 | **"Latest additions" + a real hydration-mismatch source (QTZ-112)** — the "This week's updates" block was 2 models in file order and would have emptied; now the 6 newest by `addedAt`. `isRecentModel` measured from `Date.now()`, so build-time HTML and visit-time hydration disagreed once a model aged out — now anchored to `dataLastUpdated` (`RECENCY_ANCHOR`) |
 | 2026-09-21 | **QTZ-101 (small half): 2 more models tagged `superseded`** — Mixtral 8x7B → Qwen3 30B-A3B, Stable LM 2 12B → Falcon 3 10B, both with a real `supersededDiffNote()` reason (checked, not templated). DeepSeek-V2-Lite Chat deliberately left untagged — its 163K context and 11GB footprint beat everything else in its class, and its only same-family relative is a code-specialised sibling, not an upgrade; forcing a shorter-context "successor" on it would repeat the Command R 35B mistake. QTZ-101's other half (a `qualityScore` fed by an external leaderboard) needs the site owner to pick a source — not done here |
 | 2026-09-21 | **QTZ-100 + QTZ-106 fixed: format-vs-backend, Mac unified memory** — `fitsOnGpu()` and 7 other functions now check `formatAllowed(gpu, quant.format)` before recommending a quant (AWQ stays allowed on AMD per this site's own FAQ, only EXL2/GPTQ excluded there); Mac unified memory sized at a verified ~75% usable fraction, not full nameplate. The VRAM calculator's `getRecommendations` took a bare vram number, not a GPU, so it had shared neither the bug nor any earlier fix — now takes the `GPU` object and shows an explicit "doesn't run on this backend" message. Mac M3 16G: 52→44 comfortable fits, measured in the built HTML |
 | 2026-09-21 | **Second independent audit, batch 1 (zero-risk fixes)** — spot-checked the new audit's P0 claims against the actual code before acting; most held up, including two foundational ones not yet fixed: `fitsOnGpu()` picks a quant's format with zero awareness of whether the GPU's backend (CUDA/ROCm/Metal/CPU) can run it, and Mac unified memory is never reduced for macOS overhead despite the page's own copy claiming it is. Shipped: a hand-typed nonexistent GPU name ("RTX 4070 Ti 16G"), a hardcoded stale "79+" model count, two Footer links to renamed GitHub orgs, and a best-effort `<!--email_off-->` mitigation for a Cloudflare Scrape-Shield-shaped hydration error |

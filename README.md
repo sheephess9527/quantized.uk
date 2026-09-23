@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-23 — "Latest additions" block; recency anchored to the data, not the clock
+
+`components/home/WeeklyUpdates.tsx` showed `models.filter(isRecentModel).slice(0, 6)` — file order,
+45-day window measured from `Date.now()`. By 2026-09-23 that was 2 models, heading "This week's
+updates", and it would have emptied around late October. It now shows `latestAdditions(models, 6)`
+(`lib/utils/model-meta.ts`, newest `addedAt` first, never empty) under "Latest additions" / 「最近收录」,
+with the NEW badge kept conditional on `isRecentModel`.
+
+`isRecentModel`'s default reference time is now `RECENCY_ANCHOR = Date.parse(dataLastUpdated)`.
+With `Date.now()`, the static HTML (rendered at build) and the client hydration (rendered at visit)
+disagreed whenever a model aged out of the window in between — a text mismatch (React #418/#425)
+on the homepage, every Hub card and the recency filter. This is a deterministic hydration-error
+cause, independent of the Cloudflare email-obfuscation mitigation from 2026-09-21 (a). Measured:
+Hub NEW badges = 10 (the 2026-08-07, 08-08 and 09-11 batches), homepage block = the same six newest.
+
 ### 2026-09-21 (c) — QTZ-101 (small half): two more legacy models tagged `superseded`
 
 Mixtral 8x7B Instruct → `qwen3-30b-a3b` (context 32K→40K, Q4 28.5GB→19GB, faster, lower measured

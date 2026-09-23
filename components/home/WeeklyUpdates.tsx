@@ -5,12 +5,15 @@ import { ArrowRight, Rss, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { isRecentModel } from '@/lib/utils/model-meta';
+import { isRecentModel, latestAdditions } from '@/lib/utils/model-meta';
 
 export default function WeeklyUpdates() {
   const { t, lang } = useLanguage();
   const w = t.home.weekly;
-  const recent = models.filter(m => isRecentModel(m)).slice(0, 6);
+  // Newest first, and never empty: the 45-day window alone left two models
+  // here, in file order, and would have shown nothing a month later under a
+  // heading that still said "this week". The NEW badge keeps the window.
+  const recent = latestAdditions(models, 6);
 
   return (
     <section className="glass rounded-2xl p-5 sm:p-6">
@@ -53,9 +56,11 @@ export default function WeeklyUpdates() {
                 href={`/quant-hub/${m.id}/`}
                 className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
-                  {t.hub.model.newBadge}
-                </span>
+                {isRecentModel(m) && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
+                    {t.hub.model.newBadge}
+                  </span>
+                )}
                 <span className="text-sm text-slate-200 font-medium">{m.name}</span>
                 <span className="block text-xs text-slate-600 font-mono mt-0.5">
                   {/* "added", not a bare date. `addedAt` is when this index

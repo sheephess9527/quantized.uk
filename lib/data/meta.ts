@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-21';
+export const dataLastUpdated = '2026-09-23';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-23',
+    en: 'The homepage block that used to say "This week\'s updates" is now "Latest additions": the six newest models in the index, newest first, each with the date it was added. It had been showing only the models inside a 45-day window, in file order rather than by date, so it was down to two and would have gone empty within weeks while still claiming to be this week\'s news. The NEW badge on model cards now counts those 45 days back from the latest data update rather than from the moment you open the page, so the badge, the homepage and the Hub\'s "recently added" filter always agree, and a page no longer renders one set of badges in its HTML and a different one once the browser takes over.',
+    zh: '首页原来叫「本周更新」的那一块，现在改叫「最近收录」：列出索引里最新加入的 6 个模型，按收录日期从新到旧排，每个都标了收录日期。它原先只显示 45 天窗口内的模型，而且按文件顺序而不是日期排，已经只剩两个，再过几周就会变空，标题却还写着「本周」。模型卡片上的「新」标记，现在从最近一次数据更新往前算 45 天，而不是从你打开页面那一刻算——这样卡片标记、首页和 Hub 的「最近新增」筛选始终一致，页面也不会出现 HTML 里是一组标记、浏览器接管后又变成另一组的情况。',
+  },
   {
     date: '2026-09-21',
     en: 'Tagged two more legacy models `superseded` (QTZ-101\'s small, low-risk half — its other proposal, a new cross-model `qualityScore` fed by an external leaderboard, needs a source the site owner has to pick and is not part of this): Mixtral 8x7B Instruct → Qwen3 30B-A3B (40K context vs 32K, 19GB vs 28.5GB at Q4, faster, lower measured quality loss) and Stable LM 2 12B Chat → Falcon 3 10B Instruct (32K context vs a since-dated 4K, smaller file, faster). Both reasons are the real, checked field `supersededDiffNote()` derives, not a template phrase, and both pages stay `index, follow` with their numbers intact — only `homePicks`/`/best/` stop recommending them first. Two other candidates from the same audit pass were deliberately left untagged after checking, not skipped for convenience: DeepSeek-V2-Lite Chat already carries a 163,840-token context and an 11GB Q4 footprint that nothing else in this class beats, and its only same-family relative in the index is a code-specialised sibling, not a generational upgrade — tagging it "superseded" by a model with less context is exactly the mistake the Command R 35B pick made in an earlier batch. Falcon 3 10B was the only real candidate to replace it with, which is also why it was picked as Stable LM\'s successor instead.',

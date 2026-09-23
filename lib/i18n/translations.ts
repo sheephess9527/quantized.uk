@@ -60,8 +60,8 @@ export const translations = {
         vsLastWeek: 'Editorial estimate',
       },
       weekly: {
-        title: 'This week’s updates',
-        subtitle: 'New models, recency tags, and data cadence',
+        title: 'Latest additions',
+        subtitle: 'The newest models in the index · data last updated',
         viewHub: 'Browse recent models',
         viewChangelog: 'Full changelog',
         rss: 'RSS',
@@ -1007,8 +1007,8 @@ export const translations = {
         vsLastWeek: '编辑估算',
       },
       weekly: {
-        title: '本周更新',
-        subtitle: '新模型、最近新增标签与数据节奏',
+        title: '最近收录',
+        subtitle: '索引里最新加入的模型 · 数据更新于',
         viewHub: '浏览最近模型',
         viewChangelog: '完整更新日志',
         rss: 'RSS',
