@@ -74,6 +74,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
     is the one that bites: headline, description, `url` and `inLanguage` must follow the reader,
     or a Chinese page advertises the English URL its own canonical tag disowns
     (see `app/quant-hub/[modelId]/page.tsx`, `app/cookbook/[slug]/page.tsx`).
+  - **A data object with `title` + `titleZh` needs the language check at every render site**, not
+    just the page that owns it — `GuideReferences` printed `a.title` for linked guides and the
+    Chinese tree showed English guide titles for months; the leak gate cannot catch it (the href is
+    correctly `/zh/…`). Scan `out/zh/**` text nodes for English after touching shared components.
   - **Never compare a raw `usePathname()` against an English href** — it is `/zh/...` for half the
     site. Run it through `toEnPath()` first (this silently killed every nav highlight in the
     Chinese tree).
@@ -786,6 +790,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-23 | **Untranslated `/zh` chrome (QTZ-119)** — footer "Navigate"/"Ecosystem" hardcoded; a scan of all 198 `/zh` pages also found `GuideReferences` linking every Chinese guide's neighbours by English title, plus two calculator labels. Remaining English on `/zh` is proper nouns only |
 | 2026-09-23 | **"Latest additions" + a real hydration-mismatch source (QTZ-112)** — the "This week's updates" block was 2 models in file order and would have emptied; now the 6 newest by `addedAt`. `isRecentModel` measured from `Date.now()`, so build-time HTML and visit-time hydration disagreed once a model aged out — now anchored to `dataLastUpdated` (`RECENCY_ANCHOR`) |
 | 2026-09-21 | **QTZ-101 (small half): 2 more models tagged `superseded`** — Mixtral 8x7B → Qwen3 30B-A3B, Stable LM 2 12B → Falcon 3 10B, both with a real `supersededDiffNote()` reason (checked, not templated). DeepSeek-V2-Lite Chat deliberately left untagged — its 163K context and 11GB footprint beat everything else in its class, and its only same-family relative is a code-specialised sibling, not an upgrade; forcing a shorter-context "successor" on it would repeat the Command R 35B mistake. QTZ-101's other half (a `qualityScore` fed by an external leaderboard) needs the site owner to pick a source — not done here |
 | 2026-09-21 | **QTZ-100 + QTZ-106 fixed: format-vs-backend, Mac unified memory** — `fitsOnGpu()` and 7 other functions now check `formatAllowed(gpu, quant.format)` before recommending a quant (AWQ stays allowed on AMD per this site's own FAQ, only EXL2/GPTQ excluded there); Mac unified memory sized at a verified ~75% usable fraction, not full nameplate. The VRAM calculator's `getRecommendations` took a bare vram number, not a GPU, so it had shared neither the bug nor any earlier fix — now takes the `GPU` object and shows an explicit "doesn't run on this backend" message. Mac M3 16G: 52→44 comfortable fits, measured in the built HTML |

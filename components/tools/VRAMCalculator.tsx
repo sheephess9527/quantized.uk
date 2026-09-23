@@ -352,7 +352,7 @@ export default function VRAMCalculator() {
                           : 'text-slate-500 border border-white/[0.06] hover:text-slate-300',
                       )}
                     >
-                      {g}
+                      {g === 'Full' ? t.calc.fullPrecision : g}
                     </button>
                   ))}
                 </div>

@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-23 (b) — Untranslated chrome on `/zh` (QTZ-119 + one it missed)
+
+`Footer.tsx` hardcoded `'Navigate'` / `'Ecosystem'` as section titles — now `t.footer.navigate` /
+`t.footer.ecosystem` (站内导航 / 生态工具). Found while scanning all 198 `/zh` pages for English-only
+text nodes: `GuideReferences` ("read next" row on every guide) rendered `a.title` regardless of
+language, so Chinese guides linked to their neighbours by English title — now `titleZh` on `/zh`.
+Also `calc.batch` in `zh` was `'Batch Size'` and the calculator's `Full` precision chip was a raw
+`quantGroups` key; both localized (`calc.fullPrecision`). Remaining English on `/zh` is proper nouns
+(model, vendor and product names) and the language switcher's own "English" label.
+
 ### 2026-09-23 — "Latest additions" block; recency anchored to the data, not the clock
 
 `components/home/WeeklyUpdates.tsx` showed `models.filter(isRecentModel).slice(0, 6)` — file order,

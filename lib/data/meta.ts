@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-23',
+    en: 'Chinese pages: the footer\'s "Navigate" and "Ecosystem" headings were still in English on every page, and the "read next" guide links at the end of each Chinese guide showed the English title of the guide they pointed to, although every guide has a Chinese title. Both fixed, along with two calculator labels ("Batch Size", and the "Full" precision chip, now 全精度).',
+    zh: '中文页面：页脚的「Navigate」「Ecosystem」两个标题此前在每个页面上都还是英文；每篇中文教程末尾「接着看」里的教程链接，显示的也是目标教程的英文标题——而每篇教程其实都有中文标题。两处都已修复，顺带修了计算器里的两个标签（「Batch Size」，以及「Full」精度选项，现为「全精度」）。',
+  },
+  {
+    date: '2026-09-23',
     en: 'The homepage block that used to say "This week\'s updates" is now "Latest additions": the six newest models in the index, newest first, each with the date it was added. It had been showing only the models inside a 45-day window, in file order rather than by date, so it was down to two and would have gone empty within weeks while still claiming to be this week\'s news. The NEW badge on model cards now counts those 45 days back from the latest data update rather than from the moment you open the page, so the badge, the homepage and the Hub\'s "recently added" filter always agree, and a page no longer renders one set of badges in its HTML and a different one once the browser takes over.',
     zh: '首页原来叫「本周更新」的那一块，现在改叫「最近收录」：列出索引里最新加入的 6 个模型，按收录日期从新到旧排，每个都标了收录日期。它原先只显示 45 天窗口内的模型，而且按文件顺序而不是日期排，已经只剩两个，再过几周就会变空，标题却还写着「本周」。模型卡片上的「新」标记，现在从最近一次数据更新往前算 45 天，而不是从你打开页面那一刻算——这样卡片标记、首页和 Hub 的「最近新增」筛选始终一致，页面也不会出现 HTML 里是一组标记、浏览器接管后又变成另一组的情况。',
   },

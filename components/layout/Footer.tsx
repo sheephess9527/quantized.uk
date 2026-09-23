@@ -16,7 +16,7 @@ export default function Footer() {
 
   const sections = [
     {
-      title: 'Navigate',
+      title: t.footer.navigate,
       links: [
         { label: t.nav.quantHub,   href: '/quant-hub/' },
         { label: t.best.linkLabel, href: '/best/' },
@@ -38,7 +38,7 @@ export default function Footer() {
       ],
     },
     {
-      title: 'Ecosystem',
+      title: t.footer.ecosystem,
       links: [
         { label: 'Hugging Face', href: 'https://huggingface.co', external: true },
         { label: 'llama.cpp',    href: 'https://github.com/ggml-org/llama.cpp', external: true },

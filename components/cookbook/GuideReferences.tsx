@@ -15,7 +15,7 @@ import type { Article } from '@/lib/data/cookbook';
  * guide is not about.
  */
 export default function GuideReferences({ article }: { article: Article }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const r = t.cookbook.references;
   const x = guideReferences(article);
 
@@ -89,7 +89,7 @@ export default function GuideReferences({ article }: { article: Article }) {
           <Row label={r.next}>
             {x.related.map(a => (
               <Link key={a.id} href={`/cookbook/${a.id}/`} className={chip}>
-                {a.title}
+                {lang === 'zh' ? a.titleZh : a.title}
               </Link>
             ))}
           </Row>
