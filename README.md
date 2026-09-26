@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (c) — Fit counts name their level (QTZ-107)
+
+Audited every surface that prints a per-card model count against `countModelsFitting` /
+`fitsOnGpu`: the values agree (RTX 4060 Ti 16G = 52 comfortable / 61 tight on the GPU page, homepage,
+GPU index, share image and `/best/`; Hub chips show the tight count and say so). Two surfaces printed
+the comfortable count with no level — `home.popular.fitCount` ("52 models fit") and the GPU index
+(`52/81`, now `gpuPage.indexFitCount`). Both now read "fit comfortably".
+
 ### 2026-09-26 (b) — Speeds name their card (QTZ-105)
 
 `QuantVariant.speedRTX4090` is the only per-quant speed field, and three surfaces printed it without

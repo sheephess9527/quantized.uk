@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    en: 'Model counts per card now say what they count. The site gives two honest numbers for a card — how many models fit comfortably (at most 88% of memory) and how many load at all — and a GPU page shows both, but the homepage card list said only "52 models fit" and the GPU index "52/81", which read as the looser number. Both now say "fit comfortably". The numbers themselves were already consistent everywhere; only the labels were missing.',
+    zh: '每张卡「能跑多少模型」的数字，现在都写明了统计口径。本站对一张卡给出两个数字——能从容运行的模型数（占用不超过显存的 88%）和勉强能加载的模型数——显卡页会同时显示两者，但首页的显卡列表只写了「52 个模型可跑」，显卡索引页只写了「52/81」，读起来像是更宽松的那个数。两处现在都标明「可从容运行」。这些数字本身在全站早已一致，缺的只是标注。',
+  },
+  {
+    date: '2026-09-26',
     en: 'Speed figures now say which card they come from. Every model\'s speed in this index was reported on an RTX 4090, but the model table on each GPU page headed that column simply "tok/s" — so the RTX 4060 page, or a Mac page, showed RTX 4090 speeds as if they were that card\'s own. The column is now labelled "tok/s on RTX 4090", every GPU page except the 4090\'s says the column is a reference rather than a speed on that card, and the calculator\'s per-card list labels its speeds the same way. Speeds actually measured on a card still appear under "Measured on this card".',
     zh: '速度数字现在会写明来自哪张卡。本索引里每个模型的速度都是在 RTX 4090 上报告的，但每个显卡页的模型表格里，这一列的表头只写了「tok/s」——于是 RTX 4060 的页面、Mac 的页面，都把 RTX 4090 的速度当成了这张卡自己的速度来展示。现在这一列标为「RTX 4090 上的 tok/s」，除 4090 之外的每个显卡页都会说明这一列只是参考、不是这张卡的速度，计算器里按显卡列出的结果也同样标注。真正在某张卡上实测的速度，仍然列在「在这张卡上的实测数据」里。',
   },

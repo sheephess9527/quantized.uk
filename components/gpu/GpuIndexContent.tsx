@@ -52,7 +52,7 @@ export default function GpuIndexContent() {
                     >
                       <span className="text-sm text-slate-200 font-medium">{gpu.name}</span>
                       <span className="block text-xs text-slate-600 font-mono mt-0.5">
-                        {gpu.vram}GB · {fitsOnGpu(gpu).length}/{models.length}
+                        {gpu.vram}GB · {t.gpuPage.indexFitCount.replace('{n}', String(fitsOnGpu(gpu).length)).replace('{total}', String(models.length))}
                       </span>
                     </Link>
                   </li>

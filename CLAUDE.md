@@ -801,6 +801,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Fit counts name their level (QTZ-107)** — values already agreed across all surfaces; homepage card list and GPU index printed the comfortable count unlabelled, now "fit comfortably" |
 | 2026-09-26 | **Speeds name their card (QTZ-105)** — every GPU page's fit table headed RTX 4090 speeds "tok/s"; now "tok/s on RTX 4090" plus a reference note on all pages but the 4090's; calculator list labelled the same |
 | 2026-09-26 | **Model pages: native reference quant + honest "smallest card" (QTZ-103)** — `referenceQuant()` replaces four copies; GPT-OSS sized at its native MXFP4. "Smallest card" was database order (RTX 5080 for a 16 GB model, MI100 for 32 GB, a RAM row for 70B); now size + count + entry card via `bySmallestCard`. "Just misses" sorted by shortfall; MoE note reached 4 of 13 MoE models |
 | 2026-09-23 | **Untranslated `/zh` chrome (QTZ-119)** — footer "Navigate"/"Ecosystem" hardcoded; a scan of all 198 `/zh` pages also found `GuideReferences` linking every Chinese guide's neighbours by English title, plus two calculator labels. Remaining English on `/zh` is proper nouns only |

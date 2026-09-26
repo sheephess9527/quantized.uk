@@ -110,7 +110,7 @@ export const translations = {
         useTitle: 'By task',
         useSub: 'Filtered views of the index.',
         allGpus: 'All {n} GPUs →',
-        fitCount: '{n} models fit',
+        fitCount: '{n} models fit comfortably',
         useChat: 'General chat models',
         useCode: 'Coding models',
         useMultimodal: 'Vision + text models',
@@ -859,6 +859,7 @@ export const translations = {
     },
     gpuPage: {
       indexTitle: 'What can each GPU run?',
+      indexFitCount: '{n}/{total} fit comfortably',
       indexSubtitle: 'Pick your card to see every model in the index that fits it comfortably, at 4K context.',
       // Name first, no article: "a RTX 4090" is wrong and "an RTX / a Radeon"
       // needs a pronunciation rule for 43 names. Leading with the card is also
@@ -1062,7 +1063,7 @@ export const translations = {
         useTitle: '按用途',
         useSub: '模型索引的筛选视图。',
         allGpus: '全部 {n} 张显卡 →',
-        fitCount: '{n} 个模型可跑',
+        fitCount: '{n} 个模型可从容运行',
         useChat: '通用对话模型',
         useCode: '代码模型',
         useMultimodal: '图文多模态模型',
@@ -1811,6 +1812,7 @@ export const translations = {
     },
     gpuPage: {
       indexTitle: '每张显卡能跑什么？',
+      indexFitCount: '{total} 个中 {n} 个可从容运行',
       indexSubtitle: '选择你的显卡，查看索引中所有能在 4K 上下文下从容运行的模型。',
       title: '{gpu} 能跑哪些大模型？',
       subtitle: '在 {vram}GB、4K 上下文下，索引中 {total} 个模型有 {count} 个可从容运行，各自取仍留有余量的最高质量档位。',
