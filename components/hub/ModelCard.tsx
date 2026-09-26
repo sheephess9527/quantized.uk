@@ -5,7 +5,7 @@ import { ExternalLink, Zap } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
-import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
+import { formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
@@ -39,12 +39,10 @@ export default function ModelCard({ model, lang }: Props) {
    * lowest-perplexity level — three different quantizations presented as if a
    * reader could have all three at once (3.2 GB *and* 235 tok/s *and* Q8_0
    * quality). They now all come from a single variant, and the card says which.
-   * Q4_K_M where it exists: every indexed model ships it, and it is the level
-   * most readers actually run.
+   * `referenceQuant`: the native release when there is one (GPT-OSS ships as
+   * MXFP4), else Q4_K_M — the same level the model page sizes against.
    */
-  const refQuant =
-    model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ??
-    pickBestQuant(model.quants);
+  const refQuant = referenceQuant(model.quants);
   const bestQuant = refQuant;
 
   return (

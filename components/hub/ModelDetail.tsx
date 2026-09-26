@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
-import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
+import { bestQuant as pickBestQuant, formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
@@ -42,9 +42,7 @@ export default function ModelDetail({ model }: Props) {
 
   const bestQuant = pickBestQuant(model.quants);
 
-  const defaultQuant = model.quants.find(q => q.level === 'Q4_K_M')
-    ?? model.quants.find(q => q.format === 'GGUF')
-    ?? model.quants[0];
+  const defaultQuant = referenceQuant(model.quants);
 
   const compareTarget = getSimilarModels(model.id, 1)[0]?.id ?? 'qwen2.5-7b';
   const defaultHfUrl = hfRepo

@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 — Model pages: native reference quant, honest "smallest card" (QTZ-103)
+
+- **`referenceQuant(quants)`** (`lib/utils/quality.ts`) is now the one choice of "the level a model
+  page sizes against": the native release (`isNativeQuant` — `MXFP4` today) when there is one, else
+  GGUF Q4_K_M, else `bestQuant`. It replaces four hand-copied lookups in `modelExplainer`,
+  `modelPlacement`, `ModelCard` and `ModelDetail`. GPT-OSS 20B/120B were described as MXFP4 and sized
+  at Q4_K_M on the same page. The compare tool's common-level row and the roofline reference keep
+  Q4_K_M on purpose (cross-model basis).
+- **`bySmallestCard`** (`model-explainer.ts`): nameplate VRAM, then retail before
+  workstation/datacentre, then lowest bandwidth. Previously ties went to database order, so
+  gpt-oss-20b's "smallest card" was an RTX 5080 and Qwen3 32B's was an Instinct MI100. The text now
+  names the size and the number of cards sharing it. Fit and spare memory still use
+  `usableCapacityGB`.
+- `cardsFitting` excludes `isCPU` rows and counts against GPU rows (59), not all 63 — four 70B-class
+  pages named "64 GB RAM (CPU)" as the smallest card.
+- `modelPlacement` "just misses" = the two smallest `overBy`, not the last two red cards by capacity.
+- MoE detection in `modelExplainer` matched only `-A3B`-style labels; `NNB MoE` labels (8 models)
+  never got the resident-experts note (4 → 13 model pages).
+
 ### 2026-09-23 (b) — Untranslated chrome on `/zh` (QTZ-119 + one it missed)
 
 `Footer.tsx` hardcoded `'Navigate'` / `'Ecosystem'` as section titles — now `t.footer.navigate` /

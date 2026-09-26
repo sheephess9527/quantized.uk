@@ -26,6 +26,29 @@ export function bestQuant(quants: QuantVariant[]): QuantVariant {
   return quants.reduce((best, q) => (qualityRank(q) < qualityRank(best) ? q : best), quants[0]);
 }
 
+/**
+ * Levels a vendor released the weights in. For these models the published
+ * checkpoint *is* the quantized one, so it — not a community requant — is what
+ * a page should size and describe.
+ */
+const NATIVE_LEVELS = new Set(['MXFP4']);
+
+export function isNativeQuant(q: QuantVariant): boolean {
+  return NATIVE_LEVELS.has(q.level);
+}
+
+/**
+ * The one level a model page sizes against: the native release when there is
+ * one, else GGUF Q4_K_M (every indexed model ships it), else the best level.
+ */
+export function referenceQuant(quants: QuantVariant[]): QuantVariant {
+  return (
+    quants.find(isNativeQuant) ??
+    quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ??
+    bestQuant(quants)
+  );
+}
+
 /** `2.9%` when published, `—` when it is not. Never a guess. */
 export function formatLoss(quant: QuantVariant, unknown = '—'): string {
   return quant.pplLossPercent === undefined ? unknown : `${quant.pplLossPercent.toFixed(1)}%`;

@@ -1,6 +1,7 @@
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { bestQuant } from '@/lib/utils/quality';
+import { referenceQuant } from '@/lib/utils/quality';
+import { bySmallestCard } from '@/lib/utils/model-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug, GPU_PAGE_CONTEXT, formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { BEST_TIERS, bestPage } from '@/lib/utils/best-page';
@@ -55,7 +56,7 @@ export interface ModelPlacement {
  * an AWQ/EXL2/GPTQ quant it cannot run.
  */
 function candidateCards(format: QuantVariant['format']): GPU[] {
-  return gpuDatabase.filter(g => !g.isCPU && formatAllowed(g, format)).sort((a, b) => a.vram - b.vram);
+  return gpuDatabase.filter(g => !g.isCPU && formatAllowed(g, format)).sort(bySmallestCard);
 }
 
 export function modelPlacement(model: QuantModel): ModelPlacement {
@@ -64,8 +65,7 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
   // against. `bestQuant` would pick Q8_0 here — the highest-quality level, but
   // not the one the GPU pages, `/best/` and the homepage quote, so this module
   // would have listed a different set of cards from the page it links to.
-  const quant =
-    model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? bestQuant(model.quants);
+  const quant = referenceQuant(model.quants);
   const key = quantLevelKey(quant);
 
   const sized = candidateCards(quant.format).map(gpu => {
@@ -92,10 +92,13 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
   // rather than listing the flagships a reader already knows will work.
   const comfortable = sized.filter(s => s.verdict === 'green').slice(0, 5);
   const tight = sized.filter(s => s.verdict === 'yellow').slice(0, 3);
+  // Closest misses, not the last two in capacity order: that listed an 8 GB Mac
+  // 5.4 GB short under "just misses".
   const misses = sized
     .filter(s => s.verdict === 'red')
-    .slice(-2)
-    .map(s => ({ ...s, overBy: Math.round((s.totalGB - usableCapacityGB(s.gpu)) * 10) / 10 }));
+    .map(s => ({ ...s, overBy: Math.round((s.totalGB - usableCapacityGB(s.gpu)) * 10) / 10 }))
+    .sort((a, b) => a.overBy - b.overBy)
+    .slice(0, 2);
 
   const formatNames: string[] = Array.from(new Set(model.quants.map(q => q.format as string)));
   const formats = formatNames

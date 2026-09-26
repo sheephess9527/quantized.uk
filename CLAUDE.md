@@ -501,6 +501,13 @@ before and after by crawling `out/`, excluding hrefs present on >90% of pages (t
 footer, and it hides everything): the target is **no content page under 3 inbound**, and anchor text
 is always the target's own name — never "here" or "this page".
 
+**A model page sizes the model as released.** `referenceQuant()` (`lib/utils/quality.ts`) is the
+only place that picks the level a model page is sized at — native (`MXFP4`) first, then GGUF
+Q4_K_M. Do not re-type `quants.find(q => q.level === 'Q4_K_M')` in a new model-page component; that
+copy existed four times and GPT-OSS pages described MXFP4 while sizing Q4_K_M. **"Smallest card"
+means a size, not a database position**: sort with `bySmallestCard` (nameplate VRAM, retail first,
+lowest bandwidth), say how many cards share it, and never let a CPU/RAM row stand in for a card.
+
 **A module that sizes a model must use the same quant the rest of the site does.** `modelPlacement`
 first used `bestQuant` (Q8_0 for most models) and listed a card set starting 4 GB above what the GPU
 page it links to shows. GGUF Q4_K_M when the model ships it, `bestQuant` otherwise — the same
@@ -790,6 +797,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Model pages: native reference quant + honest "smallest card" (QTZ-103)** — `referenceQuant()` replaces four copies; GPT-OSS sized at its native MXFP4. "Smallest card" was database order (RTX 5080 for a 16 GB model, MI100 for 32 GB, a RAM row for 70B); now size + count + entry card via `bySmallestCard`. "Just misses" sorted by shortfall; MoE note reached 4 of 13 MoE models |
 | 2026-09-23 | **Untranslated `/zh` chrome (QTZ-119)** — footer "Navigate"/"Ecosystem" hardcoded; a scan of all 198 `/zh` pages also found `GuideReferences` linking every Chinese guide's neighbours by English title, plus two calculator labels. Remaining English on `/zh` is proper nouns only |
 | 2026-09-23 | **"Latest additions" + a real hydration-mismatch source (QTZ-112)** — the "This week's updates" block was 2 models in file order and would have emptied; now the 6 newest by `addedAt`. `isRecentModel` measured from `Date.now()`, so build-time HTML and visit-time hydration disagreed once a model aged out — now anchored to `dataLastUpdated` (`RECENCY_ANCHOR`) |
 | 2026-09-21 | **QTZ-101 (small half): 2 more models tagged `superseded`** — Mixtral 8x7B → Qwen3 30B-A3B, Stable LM 2 12B → Falcon 3 10B, both with a real `supersededDiffNote()` reason (checked, not templated). DeepSeek-V2-Lite Chat deliberately left untagged — its 163K context and 11GB footprint beat everything else in its class, and its only same-family relative is a code-specialised sibling, not an upgrade; forcing a shorter-context "successor" on it would repeat the Command R 35B mistake. QTZ-101's other half (a `qualityScore` fed by an external leaderboard) needs the site owner to pick a source — not done here |

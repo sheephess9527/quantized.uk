@@ -1,8 +1,8 @@
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
-import { bestQuant } from '@/lib/utils/quality';
+import { bestQuant, isNativeQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { contextLabel } from '@/lib/utils/context-label';
 
@@ -58,19 +58,49 @@ export function sizeAt(model: QuantModel, bpw: number, ctx: number) {
  * against each card's usable capacity, not its nameplate figure (macOS
  * reserves part of unified memory for itself — see `usableCapacityGB`).
  */
+/** GPU rows only: "the smallest card" must never be a system-RAM row. */
+const GPU_ROWS = gpuDatabase.filter(g => !g.isCPU).length;
+
 export function cardsFitting(totalGB: number, format: QuantVariant['format']) {
   return gpuDatabase
-    .filter(g => formatAllowed(g, format) && getVerdict(totalGB, usableCapacityGB(g)) === 'green')
-    .sort((a, b) => a.vram - b.vram);
+    .filter(g => !g.isCPU && formatAllowed(g, format) && getVerdict(totalGB, usableCapacityGB(g)) === 'green')
+    .sort(bySmallestCard);
+}
+
+/**
+ * Cards a person buys at retail: consumer GeForce/Radeon RX and Macs. `type`
+ * alone cannot say this — `'amd'` also covers the Instinct MI100.
+ */
+function isRetailCard(g: GPU): boolean {
+  return g.type === 'nvidia-consumer' || g.type === 'apple' || /^Radeon RX/.test(g.name);
+}
+
+/**
+ * Nameplate size first (what a reader buys by — whether it *fits* is decided on
+ * usable capacity elsewhere); among cards of one size, retail before workstation/datacentre, then lowest
+ * bandwidth first.
+ * Without the tie-break the "smallest card" was whichever 16 GB card the
+ * database happened to list first — an RTX 5080 — for a model any 16 GB card
+ * runs. Lowest bandwidth is the entry card of a size.
+ */
+export function bySmallestCard(a: GPU, b: GPU): number {
+  return (
+    a.vram - b.vram ||
+    Number(!isRetailCard(a)) - Number(!isRetailCard(b)) ||
+    (a.bandwidth ?? Infinity) - (b.bandwidth ?? Infinity)
+  );
 }
 
 export function modelExplainer(model: QuantModel): { sections: ExplainerSection[]; faqs: ExplainerFaq[] } {
-  const ref = model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? bestQuant(model.quants);
+  const ref = referenceQuant(model.quants);
   const refKey = quantLevelKey(ref);
   const at4k = sizeAt(model, ref.bpw, REF_CONTEXT);
   const atLong = sizeAt(model, ref.bpw, LONG_CONTEXT);
   const fits = cardsFitting(at4k.totalGB, ref.format);
   const smallest = fits[0];
+  const tier = smallest ? fits.filter(g => g.vram === smallest.vram) : [];
+  const spare = smallest ? usableCapacityGB(smallest) - at4k.totalGB : 0;
+  const native = isNativeQuant(ref);
   const formats = Array.from(new Set(model.quants.map(q => q.format)));
   const levels = model.quants.map(quantLevelKey);
   const best = bestQuant(model.quants);
@@ -78,7 +108,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
     .sort((a, b) => (b.speedRTX4090 ?? 0) - (a.speedRTX4090 ?? 0))[0];
   const hybrid = model.arch.attention;
   const kvGrowth = atLong.kvCacheGB - at4k.kvCacheGB;
-  const isMoE = /A\d/i.test(model.paramLabel);
+  const isMoE = /-A\d|\bMoE\b/i.test(model.paramLabel);
 
   const sections: ExplainerSection[] = [];
 
@@ -90,9 +120,14 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
         `At ${refKey} and ${contextLabel(REF_CONTEXT)} of context, ${model.name} needs about ` +
         `${at4k.totalGB.toFixed(1)} GB — ${at4k.modelWeightsGB.toFixed(1)} GB of weights, ` +
         `${at4k.kvCacheGB.toFixed(2)} GB of KV cache and a ${at4k.activationsGB.toFixed(1)} GB activation buffer. ` +
+        (native
+          ? `${refKey} is the format ${model.name} was released in, so it is the reference here rather than a community requantization. `
+          : '') +
         (smallest
-          ? `The smallest card in this index that clears that comfortably is the ${smallest.name} at ${smallest.vram} GB, ` +
-            `and ${fits.length} of the ${gpuDatabase.length} cards here do. `
+          ? (tier.length > 1
+              ? `The smallest cards in this index that clear that comfortably are ${smallest.vram} GB ones — ${tier.length} of them, from the ${smallest.name} up — `
+              : `The smallest card in this index that clears that comfortably is the ${smallest.name} at ${smallest.vram} GB, `) +
+            `and ${fits.length} of the ${GPU_ROWS} cards here do. `
           : `No card in this index clears that comfortably, so it is a multi-GPU or CPU-offload proposition. `) +
         `These are calculated figures, not measurements: the estimate stops counting a card as comfortable at 88% of its VRAM, ` +
         `which is roughly the room a desktop session needs.`,
@@ -100,8 +135,12 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
         `在 ${refKey}、${contextLabel(REF_CONTEXT)} 上下文下，${model.name} 约需 ` +
         `${at4k.totalGB.toFixed(1)} GB —— 权重 ${at4k.modelWeightsGB.toFixed(1)} GB、` +
         `KV 缓存 ${at4k.kvCacheGB.toFixed(2)} GB、激活缓冲 ${at4k.activationsGB.toFixed(1)} GB。` +
+        (native ? `${refKey} 是 ${model.name} 官方发布时的格式，所以这里以它为基准，而不是社区的二次量化版本。` : '') +
         (smallest
-          ? `本索引中能宽裕跑它的最小显卡是 ${smallest.vram} GB 的 ${smallest.name}，${gpuDatabase.length} 张卡中有 ${fits.length} 张可以。`
+          ? (tier.length > 1
+              ? `本索引中能宽裕跑它的最小规格是 ${smallest.vram} GB 显卡 —— 共 ${tier.length} 张，${smallest.name} 起步；`
+              : `本索引中能宽裕跑它的最小显卡是 ${smallest.vram} GB 的 ${smallest.name}，`) +
+            `${GPU_ROWS} 张卡中有 ${fits.length} 张可以。`
           : `本索引中没有任何单卡能宽裕运行它，因此需要多卡或 CPU 卸载。`) +
         `这些是计算值而非实测值：估算把「宽裕」的界线画在显存的 88%，大致就是桌面环境需要留出的余量。`,
     },
@@ -198,12 +237,15 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
       a: {
         en: smallest
           ? `Yes — at ${refKey} and ${contextLabel(REF_CONTEXT)} context it needs about ${at4k.totalGB.toFixed(1)} GB, which leaves ` +
-            `${(smallest.vram - at4k.totalGB).toFixed(1)} GB spare on a ${smallest.name}. That is the smallest card in this index that clears it comfortably; ` +
-            `${fits.length} of ${gpuDatabase.length} do.`
+            `${spare.toFixed(1)} GB spare on a ${smallest.name}` +
+            (tier.length > 1 ? `, or on any of the other ${smallest.vram} GB cards here (${tier.length} in all). That is the smallest size in this index that clears it comfortably; ` : `. That is the smallest card in this index that clears it comfortably; `) +
+            `${fits.length} of ${GPU_ROWS} do.`
           : `Not comfortably on any single card in this index at ${refKey}. It needs about ${at4k.totalGB.toFixed(1)} GB, which means splitting across GPUs or offloading layers to system RAM.`,
         zh: smallest
           ? `可以 —— 在 ${refKey}、${contextLabel(REF_CONTEXT)} 上下文下约需 ${at4k.totalGB.toFixed(1)} GB，` +
-            `在 ${smallest.name} 上还剩 ${(smallest.vram - at4k.totalGB).toFixed(1)} GB。这是本索引中能宽裕跑它的最小显卡；${gpuDatabase.length} 张中有 ${fits.length} 张可以。`
+            `在 ${smallest.name} 上还剩 ${spare.toFixed(1)} GB` +
+            (tier.length > 1 ? `，本索引中 ${tier.length} 张 ${smallest.vram} GB 显卡都一样。这是能宽裕跑它的最小规格；` : `。这是本索引中能宽裕跑它的最小显卡；`) +
+            `${GPU_ROWS} 张中有 ${fits.length} 张可以。`
           : `在 ${refKey} 下，本索引中没有单卡能宽裕运行它。它约需 ${at4k.totalGB.toFixed(1)} GB，意味着要多卡拆分或把部分层卸载到系统内存。`,
       },
     },
