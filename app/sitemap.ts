@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { articleModifiedAt } from '@/lib/utils/article-dates';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated } from '@/lib/data/meta';
@@ -17,8 +18,8 @@ import { toZhPath } from '@/lib/i18n/routing';
 export default function sitemap(): MetadataRoute.Sitemap {
   // A sitemap where every URL claims the same lastmod carries no information —
   // crawlers discount it. Each entry reports the date that page's own content
-  // actually changed: addedAt for models, verifiedAt (else publishedAt) for
-  // guides, and the site-wide data date only for pages driven by it.
+  // actually changed: addedAt for models, `articleModifiedAt` (latest of
+  // published / updated / verified) for guides, and the site-wide data date only for pages driven by it.
   const siteDate = new Date(dataLastUpdated);
 
   // `/legal/` and `/privacy/` are hand-written pages that do not move with a
@@ -96,7 +97,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...articles.map(a => ({
       path: `/cookbook/${a.id}/`,
-      lastModified: new Date(a.verifiedAt ?? a.publishedAt),
+      lastModified: new Date(articleModifiedAt(a)),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),

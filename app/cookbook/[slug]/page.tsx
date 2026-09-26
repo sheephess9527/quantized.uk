@@ -1,4 +1,5 @@
 import { articles } from '@/lib/data/cookbook';
+import { articleModifiedAt } from '@/lib/utils/article-dates';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage } from '@/lib/seo';
@@ -79,9 +80,7 @@ export default function CookbookArticlePage({
           // entirely when neither does — an invented date would be worse than
           // none, since this is the signal an AI engine weighs most heavily on
           // content that goes stale.
-          ...(article.updatedAt || article.verifiedAt
-            ? { dateModified: article.updatedAt ?? article.verifiedAt }
-            : {}),
+          dateModified: articleModifiedAt(article),
           // The models and hardware this guide is actually about, as entities
           // rather than prose a crawler has to infer them from. Both come from
           // fields the guide already carries for its own links, so they cannot

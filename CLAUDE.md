@@ -609,7 +609,7 @@ content that never varies per-request. Edit the file directly; there is no data 
 
 **A sitemap `lastmod` must be the date that page's own content changed, not the day the site
 rebuilt.** Every URL sharing `dataLastUpdated` is the same "carries no information" fault as a
-uniform meta description — model pages use `addedAt`, guides use `verifiedAt`/`publishedAt`,
+uniform meta description — model pages use `addedAt`, guides use `articleModifiedAt()`,
 `/legal/`/`/privacy/` use their real last-edited date (hardcoded from `git log`, since they are
 hand-written and do not move with a data ship). Only pages actually driven by the data ship — GPU
 pages, format pages, index pages — get `dataLastUpdated` itself.
@@ -675,6 +675,10 @@ format count, MoE, hybrid attention, whether a perplexity or speed figure exists
 template with a name substituted, and measure the result: the model pages sit at mean 0.500 5-gram
 Jaccard, worst pair 0.755. The visible FAQ and the `FAQPage` schema come from the **same call**, so
 they cannot diverge.
+
+**A guide's "last changed" date has one definition: `articleModifiedAt()`** (`lib/utils/article-dates.ts`).
+The byline, JSON-LD `dateModified` and the sitemap each had their own rule, and the sitemap's ignored
+`updatedAt`. Anything new that needs a guide's modification date calls the helper.
 
 **`updatedAt` and `verifiedAt` are different claims.** `verifiedAt` = commands re-run; `updatedAt` =
 content changed. `dateModified` prefers `updatedAt`. Removing an unearned `verifiedAt` used to strip
@@ -806,6 +810,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Guides show their dates (QTZ-114)** — dates were only in JSON-LD; byline now shows published/updated. Sitemap ignored `updatedAt` (17 rewritten guides had 2025 lastmods); all three now use `articleModifiedAt()` |
 | 2026-09-26 | **Heat Index loses its fake precision (QTZ-113)** — unsourced `89%`/bars on `/formats/` and an "adoption estimate" row on every pair page; now a labelled ranking, measured counts carry the numbers. EXL3/MLX sections declined (0 models) |
 | 2026-09-26 | **Editor's Picks derive size + card (QTZ-109)** — `todayFeed` carried typed sizes and cards; one pick named a card it was only tight on, four named cards not in `gpuDatabase`. Now computed with the model page's own `sizeAt`/`cardsFitting` |
 | 2026-09-26 | **Fit counts name their level (QTZ-107)** — values already agreed across all surfaces; homepage card list and GPU index printed the comfortable count unlabelled, now "fit comfortably" |

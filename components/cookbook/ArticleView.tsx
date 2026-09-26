@@ -14,6 +14,7 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { useActiveSection } from '@/lib/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
 import { readingMinutes } from '@/lib/utils/reading-time';
+import { articleModifiedAt } from '@/lib/utils/article-dates';
 
 const difficultyColors = {
   beginner:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -29,6 +30,7 @@ export default function ArticleView({ article }: Props) {
   const { t, lang } = useLanguage();
 
   const title = lang === 'zh' ? article.titleZh : article.title;
+  const modified = articleModifiedAt(article);
   const activeSection = useActiveSection(article.content.length, 'section-');
 
   return (
@@ -53,6 +55,16 @@ export default function ArticleView({ article }: Props) {
           </span>
           <span className="flex items-center gap-1 text-xs text-slate-500">
             <Clock size={10} /> {readingMinutes(article, lang)} {t.cookbook.readTime}
+          </span>
+          <span className="text-xs text-slate-500">
+            {t.cookbook.publishedOn}{' '}
+            <time dateTime={article.publishedAt}>{article.publishedAt}</time>
+            {modified !== article.publishedAt && (
+              <>
+                {' · '}{t.cookbook.updatedOn}{' '}
+                <time dateTime={modified}>{modified}</time>
+              </>
+            )}
           </span>
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-3">{title}</h1>

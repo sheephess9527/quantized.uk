@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (f) — Guides show their dates; sitemap stops ignoring `updatedAt` (QTZ-114)
+
+`articleModifiedAt(article)` (`lib/utils/article-dates.ts`) = latest of `publishedAt`, `updatedAt`,
+`verifiedAt`. It now feeds three places that each had their own rule: the visible byline in
+`ArticleView` (new: "Published … · updated …" as `<time dateTime>`), JSON-LD `dateModified`
+(was `updatedAt ?? verifiedAt`), and `app/sitemap.ts` (was `verifiedAt ?? publishedAt`, which
+ignored `updatedAt` — the 17 guides rewritten in `cookbook-rewrites.ts` reported 2025 lastmods).
+Checked on all 23 built guides: the visible modified date equals `dateModified`.
+
 ### 2026-09-26 (e) — Heat Index is an order, not a percentage (QTZ-113)
 
 `QuantFormat.heatPercent` had no reproducible source ("HF GGUF share and community discussion

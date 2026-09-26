@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    en: 'Every guide now shows when it was published and, if it has changed since, when it was last updated — the dates were already in each page\'s search metadata but nowhere a reader could see them. The sitemap also now reports a guide\'s real last change: it had been ignoring content updates, so the seventeen guides rewritten this month told search engines they had not changed since their 2025 publication.',
+    zh: '每篇指南现在都会显示发布日期，以及（如果之后有改动）最近更新日期——这些日期此前只写在页面的搜索元数据里，读者看不到。站点地图现在也会报告指南真实的最近改动时间：它此前忽略内容更新，导致本月重写的十七篇指南对搜索引擎声称自己自 2025 年发布以来从未改动。',
+  },
+  {
+    date: '2026-09-26',
     en: 'The Format Heat Index on /formats/ no longer prints percentages, and the format comparison pages no longer have an "adoption estimate" row. Those numbers (GGUF 89%, AWQ 45% and so on) were an editorial judgement with no source anyone could re-check, and on the comparison pages they sat directly beside real counts of how many models in this index ship each format, as if the two were the same kind of fact. The ranking stays, labelled as an opinion; the measured part is the per-format model count.',
     zh: '/formats/ 页上的「格式热度指数」不再显示百分比，格式对比页也去掉了「采用率估算」这一行。那些数字（GGUF 89%、AWQ 45% 等）是编辑判断，没有任何人能复核的来源；在对比页上，它们就摆在「本索引中有多少模型提供该格式」这个真实计数旁边，看起来像是同一类事实。排序保留，并注明是判断；实测的部分是每种格式的模型数。',
   },
