@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    en: 'The VRAM calculator page now carries a quick-reference table by model size — memory at 4K and 32K context and the smallest card that holds each whole size class — so its answers are readable without JavaScript, which the interactive calculator needs. Every figure is the calculator\'s own arithmetic. The 32K column counts only models whose context window actually reaches 32K; one it does include, Phi-3.5 Mini, needs about 15.6 GB there because it keeps a full-size cache for every attention head, a real property of the model rather than an error.',
+    zh: '显存计算器页面新增了一张按模型规模的速查表——4K 与 32K 上下文下的显存，以及能装下整个规模档位的最小显卡——这样即使不运行 JavaScript（交互式计算器需要它），也能直接读到答案。表中每个数字都是计算器自己的算法。32K 一列只统计上下文窗口真正达到 32K 的模型；其中 Phi-3.5 Mini 在 32K 下约需 15.6 GB，因为它为每个注意力头都保留完整的缓存——这是模型本身的特性，不是计算错误。',
+  },
+  {
+    date: '2026-09-26',
     en: 'Search-result descriptions now fit what a results page shows. 92 English and a dozen Chinese pages had descriptions long enough to be cut off mid-sentence — every GPU page among them — and a few model pages had the opposite problem, a single short line. Long ones now keep whole sentences up to the limit or were rewritten shorter; short model descriptions gain one computed line with the model\'s size. Two errors turned up on the way: a GPU page description named a model already marked as superseded as the largest one that fits, and the AWQ format was described as NVIDIA-only although this site\'s own guidance, and its fit calculations, allow it on AMD through vLLM.',
     zh: '搜索结果里的页面摘要，现在都控制在结果页能完整显示的长度内。此前有 92 个英文页面和十几个中文页面的摘要长到会被从句子中间截断——所有显卡页都在其中——另有几个模型页正好相反，只有一句很短的话。过长的摘要现在会在限度内保留完整句子，或已改写得更短；过短的模型摘要会补上一句计算出的显存体积。顺带发现两处错误：一个显卡页的摘要把一个已标为过时的模型说成是「能装下的最大模型」；AWQ 格式被描述成只支持 NVIDIA，而本站自己的说明和装载计算都允许它通过 vLLM 在 AMD 上运行。',
   },

@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (h) — Calculator readable without JavaScript (QTZ-123)
+
+`/tools/vram-calc/` shipped ~1,270 words of explainer in its static HTML, but the calculator itself
+was an inert `<select>` before hydration — no figures for a no-JS reader or a crawler. New
+`sizeClassReference()` (`lib/utils/vram-reference.ts`) + `VramQuickReference`: one row per
+`GPU_PAGE_BUCKETS` class (superseded models excluded) with the 4K and 32K range at each model's
+`referenceQuant`, and `cardsFitting` for the smallest card holding the class's largest model. The
+32K range skips models whose `contextLength` is under 32K (Gemma 2 2B otherwise reported 15.6 GB
+at a context it cannot use); Phi-3.5 Mini's 15.6 GB at 32K is real — `kvHeads: 32`, no GQA.
+
 ### 2026-09-26 (g) — Meta descriptions fit the results page (QTZ-122)
 
 Measured all 397 exported pages by display width (CJK = 2): 92 EN and 12 ZH descriptions exceeded

@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import VRAMCalculator from '@/components/tools/VRAMCalculator';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ToolExplainer from '@/components/tools/ToolExplainer';
+import VramQuickReference from '@/components/tools/VramQuickReference';
 import { vramCalcContent } from '@/lib/data/tool-content';
 
 export default function VRAMCalcPage() {
@@ -28,6 +29,7 @@ export default function VRAMCalcPage() {
       <Suspense fallback={<div className="glass rounded-2xl p-8 text-center text-slate-600 text-sm">Loading...</div>}>
         <VRAMCalculator />
       </Suspense>
+      <VramQuickReference />
       <ToolExplainer content={vramCalcContent} toolName={t.calc.title} path="/tools/vram-calc/" />
     </div>
   );

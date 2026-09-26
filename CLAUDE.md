@@ -192,6 +192,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   **3,175 text nodes across 11 pages, 0 below AA**, so any new failure is something you added.
 - **A toggle needs `aria-pressed`.** Filter chips, mode switches and quant/framework chips signalled
   "selected" with a violet background and nothing else.
+- **An interactive tool needs a static answer beside it.** Before hydration the VRAM calculator is
+  an inert dropdown; `VramQuickReference` puts the same arithmetic into the exported HTML. Never size
+  a model at a context longer than its own `contextLength` in a summary table.
 - **A chart's text equivalent must live outside the lazy chart component.** `BenchCharts` and
   `FormatRadarLazy` are `ssr: false`; a table placed inside one exists only after hydration, for
   readers already running Recharts. `BenchDataTables` renders from the page instead, so the figures
@@ -815,6 +818,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Calculator readable without JS (QTZ-123)** — derived size-class table (4K/32K range + smallest card for the whole class) in the static HTML; 32K skips models whose window is shorter |
 | 2026-09-26 | **Meta descriptions within budget (QTZ-122)** — 104 pages over ~160 width (all EN GPU pages); `fitDescription`/`padDescription` + rewritten templates → 0 of 397. GPU description skipped superseded models; AWQ `hardwareReq` said NVIDIA-only |
 | 2026-09-26 | **Guides show their dates (QTZ-114)** — dates were only in JSON-LD; byline now shows published/updated. Sitemap ignored `updatedAt` (17 rewritten guides had 2025 lastmods); all three now use `articleModifiedAt()` |
 | 2026-09-26 | **Heat Index loses its fake precision (QTZ-113)** — unsourced `89%`/bars on `/formats/` and an "adoption estimate" row on every pair page; now a labelled ranking, measured counts carry the numbers. EXL3/MLX sections declined (0 models) |
