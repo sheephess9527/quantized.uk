@@ -17,7 +17,7 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const chat = picks.find(p => p.useCases.includes('chat'));
   const title = `${label}能跑的最好的本地大模型（2026）—— ${fitCount} 个装得下 | quantized.uk`;
   const description = chat
-    ? `${chat.model.name} 在 ${quantLevelKey(chat.quant)} 下需要 ${tier.vram} GB 中的 ${chat.totalGB.toFixed(1)} GB。${models.length} 个量化模型中有 ${fitCount} 个能在 4K 上下文下装下 —— 通用、写代码、图像三种用途各自的推荐，附各自的显存需求，以及上下文拉长后哪个会先撑不住。`
+    ? `${chat.model.name} 在 ${quantLevelKey(chat.quant)} 下需要 ${tier.vram} GB 中的 ${chat.totalGB.toFixed(1)} GB。${models.length} 个模型中有 ${fitCount} 个能在 4K 下装下，附通用、写代码、图像的推荐。`
     : `${models.length} 个量化模型中有 ${fitCount} 个能在 4K 上下文下装进${label}。`;
   const ogAlt = `${label}能跑的最好的本地大模型：${fitCount} 个模型可装下${chat ? `，推荐 ${chat.model.name}` : ''} | quantized.uk`;
   return {

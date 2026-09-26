@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import FaqView from '@/components/faq/FaqView';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { faqGroups } from '@/lib/utils/faq';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 
@@ -10,7 +9,7 @@ export function generateMetadata(): Metadata {
   const path = '/faq';
   const url = canonical(path);
   const title = 'Local LLM FAQ: VRAM and quantization | quantized.uk';
-  const description = `Straight answers to the questions people ask before downloading a 20GB model file: how much VRAM you need, what Q4_K_M costs in quality, whether a 24B fits in 16GB, and which format your runtime can read. Answered from an index of ${models.length} models and ${gpuDatabase.length} GPUs.`;
+  const description = `Before downloading a 20GB model: how much VRAM you need, what Q4 costs in quality, and which format your runtime reads — computed from ${models.length} models.`;
   return {
     title,
     description,

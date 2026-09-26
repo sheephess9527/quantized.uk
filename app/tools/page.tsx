@@ -5,7 +5,7 @@ import { pageMetadata } from '@/lib/seo';
 export const metadata: Metadata = pageMetadata({
   title: 'Local LLM tools: VRAM calc, CLI gen, compare | quantized.uk',
   description:
-    'Four tools for running quantized models locally: estimate VRAM for any model × quant × context, generate a runnable llama.cpp / Ollama / vLLM command, pick a quantization format for your hardware, and compare two models axis by axis.',
+    'Four tools for local quantized LLMs: a VRAM calculator, a llama.cpp / Ollama / vLLM command generator, a format picker, and a two-model compare.',
   path: '/tools/',
 });
 

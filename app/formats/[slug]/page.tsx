@@ -24,7 +24,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     const url = canonical(path);
     const owning = modelsWithFormat(single.name).length;
     const title = `${single.name} format explained — runtime, cost, VRAM | quantized.uk`;
-    const description = `${single.name} runs on ${single.hardwareReq.toLowerCase()} via ${single.framework}. What the format is, which quant levels this index carries, what it costs in VRAM, and all ${owning} of the ${models.length} indexed models that ship in it.`;
+    const description = `${single.name} runs on ${single.hardwareReq.toLowerCase()} via ${single.framework}. Levels, VRAM cost, and the ${owning} of ${models.length} indexed models that ship it.`;
     const ogAlt = `${single.name}: ${single.framework}, ${owning} models ship in it | quantized.uk`;
     return {
       title,
@@ -39,7 +39,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const path = `/formats/${params.slug}`;
   const url = canonical(path);
   const title = `${pair.a.name} vs ${pair.b.name} — which quantization format? | quantized.uk`;
-  const description = `${pair.a.name} runs on ${pair.a.hardwareReq.toLowerCase()}; ${pair.b.name} on ${pair.b.hardwareReq.toLowerCase()}. Compared on runtime, quality and the ${models.length}-model index, with the models that ship both.`;
+  const description = `${pair.a.name} runs on ${pair.a.hardwareReq.toLowerCase()}; ${pair.b.name} on ${pair.b.hardwareReq.toLowerCase()}. Runtime, quality and the models shipping both.`;
   const ogAlt = `${pair.a.name} vs ${pair.b.name} — quantization format comparison | quantized.uk`;
   return {
     title,

@@ -18,7 +18,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     const url = canonical(path);
     const owning = modelsWithFormat(single.name).length;
     const title = `${single.name} 量化格式详解 —— 它是什么、谁能读、要多少显存 | quantized.uk`;
-    const description = `${single.name} 需要 ${single.hardwareReq}，由 ${single.framework} 读取。本页说明这个格式是什么、本索引收录了哪些量化档位、显存开销如何，并列出 ${models.length} 个模型中提供该格式的全部 ${owning} 个。`;
+    const description = `${single.name} 需要 ${single.hardwareReq}，由 ${single.framework} 读取。附量化档位、显存开销，以及 ${models.length} 个模型中提供它的 ${owning} 个。`;
     const ogAlt = `${single.name}：${single.framework}，${owning} 个模型支持此格式 | quantized.uk`;
     return {
       title,

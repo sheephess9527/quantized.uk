@@ -3,6 +3,7 @@ import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { matchesParamRange, type ParamRange } from '@/lib/utils/param-buckets';
 import { qualityRank } from '@/lib/utils/quality';
+import { isSuperseded } from '@/lib/utils/model-meta';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 
 /**
@@ -162,7 +163,9 @@ export function sameBudgetCards(gpu: GPU): GPU[] {
 export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const fits = fitsOnGpu(gpu);
   const total = models.length;
-  const top = fits[0];
+  // "The largest" is a recommendation, so a superseded model cannot hold it —
+  // the RTX 4060's description named Stable LM 2 12B after it was tagged legacy.
+  const top = fits.find(f => !isSuperseded(f.model)) ?? fits[0];
 
   if (!top) {
     return lang === 'zh'
@@ -171,6 +174,7 @@ export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   }
 
   const size = top.totalGB.toFixed(1);
+  const level = top.quant.format === 'GGUF' ? top.quant.level : `${top.quant.format} ${top.quant.level}`;
   // Several card names already carry their capacity — "RTX 4060 Ti 16G",
   // "Mac M3 Max 48G", "16 GB RAM (CPU)" — so the parenthetical is only added
   // where it is not already in the name.
@@ -178,8 +182,8 @@ export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const enCap = statesSize ? '' : ` (${gpu.vram}GB)`;
   const zhCap = statesSize ? '' : `（${gpu.vram}GB）`;
   return lang === 'zh'
-    ? `${gpu.name}${zhCap}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${top.quant.level}，约 ${size}GB）。附每个模型的量化档位、预估显存与剩余余量。`
-    : `${gpu.name}${enCap} runs ${fits.length} of ${total} quantized models comfortably at 4K context — the largest is ${top.model.name} at ${top.quant.level}, about ${size}GB. Per-model quant level, estimated VRAM and headroom.`;
+    ? `${gpu.name}${zhCap}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`
+    : `${gpu.name}${enCap} runs ${fits.length} of ${total} quantized LLMs comfortably at 4K context. Largest: ${top.model.name} at ${level}, about ${size}GB.`;
 }
 
 export interface GpuFit {

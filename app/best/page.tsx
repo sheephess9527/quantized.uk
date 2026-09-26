@@ -8,7 +8,7 @@ export function generateMetadata(): Metadata {
   const path = '/best';
   const url = canonical(path);
   const title = `Best local LLMs by hardware — the 2026 picks | quantized.uk`;
-  const description = `One recommendation per memory budget, computed from an index of ${models.length} quantized models and ${gpuDatabase.length} GPUs: the model to run for general use, coding and images at 8, 12, 16, 24 and 32GB, and on Apple silicon — with the VRAM each one needs.`;
+  const description = `What to run at 8, 12, 16, 24 and 32GB and on Apple silicon: one pick per budget for chat, coding and images, from ${models.length} models and ${gpuDatabase.length} GPUs.`;
   return {
     title,
     description,

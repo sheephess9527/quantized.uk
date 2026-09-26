@@ -8,7 +8,7 @@ export const metadata: Metadata = pageMetadata({
   // bandwidth (see CLAUDE.md), and nothing has re-measured it since. Naming
   // only the cards this page actually has runs for.
   description:
-    'Real hardware throughput and perplexity runs on RTX 4090, RTX 3090, Apple M3 Max and M2 Ultra — plus exactly what is estimated instead, and the full test method.',
+    'Throughput and perplexity measured on RTX 4090, RTX 3090, M3 Max and M2 Ultra — plus what is estimated instead, and the full test method.',
   path: '/benchmarks',
 });
 

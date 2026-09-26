@@ -2,7 +2,7 @@ import { articles } from '@/lib/data/cookbook';
 import { articleModifiedAt } from '@/lib/utils/article-dates';
 import ArticleView from '@/components/cookbook/ArticleView';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage } from '@/lib/seo';
+import { fitDescription, articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage } from '@/lib/seo';
 import { articleEntities } from '@/lib/utils/article-entities';
 import { readingMinutes } from '@/lib/utils/reading-time';
 import type { Metadata } from 'next';
@@ -25,12 +25,12 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const ogAlt = `${article.title}: ${DIFFICULTY_LABEL[article.difficulty]}, ${readingMinutes(article, 'en')} min read | quantized.uk`;
   return {
     title: articlePageTitle(article),
-    description: article.description,
+    description: fitDescription(article.description, 'en'),
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: article.title,
-      description: article.description,
+      description: fitDescription(article.description, 'en'),
       url,
       type: 'article',
       images: [pageOgImage(path, ogAlt)],

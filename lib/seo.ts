@@ -125,9 +125,51 @@ export function modelPageTitle(name: string): string {
  * just in the on-page banner — a reader (or an AI answer engine) that only
  * sees the SERP snippet should not be told this is a current pick.
  */
+/**
+ * What a results page shows of a meta description before truncating it —
+ * about 160 Latin characters of width; a CJK character counts as two.
+ */
+export const DESCRIPTION_BUDGET = 160;
+
+/** Display width: a CJK character is about two Latin ones wide. */
+export function displayWidth(text: string): number {
+  let w = 0;
+  for (const ch of text) w += ch.codePointAt(0)! >= 0x2e80 ? 2 : 1;
+  return w;
+}
+
+/**
+ * Keeps whole sentences while they fit the budget, so a long editorial
+ * description loses its later sentences instead of being cut mid-word by the
+ * search engine. A first sentence that is itself over budget is kept whole —
+ * rewrite that source text rather than truncating it here.
+ */
+export function fitDescription(text: string, lang: 'en' | 'zh'): string {
+  if (displayWidth(text) <= DESCRIPTION_BUDGET) return text;
+  const sentences = lang === 'zh' ? text.split(/(?<=[。！？])/) : text.split(/(?<=[.!?])\s+/);
+  let out = sentences[0];
+  for (const s of sentences.slice(1)) {
+    const next = lang === 'zh' ? out + s : `${out} ${s}`;
+    if (displayWidth(next) > DESCRIPTION_BUDGET) break;
+    out = next;
+  }
+  return out;
+}
+
+/**
+ * Appends a computed fact to a description too short to say much — only
+ * while the result stays inside the budget. Seed-OSS 36B's page otherwise
+ * advertised itself with 37 characters.
+ */
+export function padDescription(base: string, extra: string, lang: 'en' | 'zh'): string {
+  if (displayWidth(base) >= 100) return base;
+  const joined = lang === 'zh' ? base + extra : `${base} ${extra}`;
+  return displayWidth(joined) <= DESCRIPTION_BUDGET ? joined : base;
+}
+
 export function modelPageDescription(description: string, isLegacy: boolean, lang: 'en' | 'zh' = 'en'): string {
-  if (!isLegacy) return description;
-  return lang === 'zh' ? `过时型号。${description}` : `Legacy model. ${description}`;
+  const full = !isLegacy ? description : lang === 'zh' ? `过时型号。${description}` : `Legacy model. ${description}`;
+  return fitDescription(full, lang);
 }
 
 /**
@@ -151,6 +193,7 @@ export function pageMetadata({
   path?: string;
 }): Metadata {
   const url = canonical(path);
+  description = fitDescription(description, path.startsWith('/zh') ? 'zh' : 'en');
   return {
     title,
     description,

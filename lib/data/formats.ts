@@ -63,7 +63,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Best accuracy at 4-bit', 'Blazing fast with vLLM', 'Excellent batch throughput'], zh: ['4-bit 精度最高', 'vLLM 下速度极快', '批量推理吞吐出色'] },
     weaknesses: { en: ['NVIDIA only', 'More setup than GGUF'], zh: ['仅限 NVIDIA', '配置比 GGUF 复杂'] },
-    hardwareReq: 'NVIDIA GPU (CUDA 11.8+)',
+    hardwareReq: 'NVIDIA GPU (CUDA 11.8+) or AMD via vLLM ROCm',
     bestFor: { en: 'High-throughput API server', zh: '高吞吐 API 服务端' },
     framework: 'vLLM · AutoAWQ · TGI',
   },

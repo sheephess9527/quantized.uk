@@ -691,6 +691,11 @@ typed into six files and `public/llms.txt`, so a model batch meant editing six s
 forgetting one left the site advertising a count it no longer had. Step 6 of "Adding models" is
 therefore gone — there is nothing left to refresh by hand.
 
+**A meta description has a width budget: 160, with CJK counting double** (`displayWidth`,
+`DESCRIPTION_BUDGET` in `lib/seo.ts`). `pageMetadata()` fits by whole sentences automatically; a
+hand-rolled `generateMetadata` must call `fitDescription` itself, and a one-sentence template the
+fitter cannot shorten has to be written short. Measure `out/**` after any template change.
+
 **A derived page's meta description must vary as much as the page does.** The GPU template
 interpolated only `gpu.vram`, so 36 of 43 pages shared nine descriptions. `gpuPageDescription()`
 names the card and its largest fitting model. After any template change, walk `out/**` and count
@@ -810,6 +815,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Meta descriptions within budget (QTZ-122)** — 104 pages over ~160 width (all EN GPU pages); `fitDescription`/`padDescription` + rewritten templates → 0 of 397. GPU description skipped superseded models; AWQ `hardwareReq` said NVIDIA-only |
 | 2026-09-26 | **Guides show their dates (QTZ-114)** — dates were only in JSON-LD; byline now shows published/updated. Sitemap ignored `updatedAt` (17 rewritten guides had 2025 lastmods); all three now use `articleModifiedAt()` |
 | 2026-09-26 | **Heat Index loses its fake precision (QTZ-113)** — unsourced `89%`/bars on `/formats/` and an "adoption estimate" row on every pair page; now a labelled ranking, measured counts carry the numbers. EXL3/MLX sections declined (0 models) |
 | 2026-09-26 | **Editor's Picks derive size + card (QTZ-109)** — `todayFeed` carried typed sizes and cards; one pick named a card it was only tight on, four named cards not in `gpuDatabase`. Now computed with the model page's own `sizeAt`/`cardsFitting` |

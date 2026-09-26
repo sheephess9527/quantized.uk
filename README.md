@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (g) — Meta descriptions fit the results page (QTZ-122)
+
+Measured all 397 exported pages by display width (CJK = 2): 92 EN and 12 ZH descriptions exceeded
+~160, including all 63 English GPU pages. New in `lib/seo.ts`: `displayWidth`, `fitDescription`
+(keeps whole sentences within `DESCRIPTION_BUDGET = 160`; applied inside `pageMetadata()`,
+`modelPageDescription()` and the cookbook routes) and `padDescription` (appends a computed size
+sentence to a model description under 100 wide). Single-sentence templates that the fitter cannot
+shorten were rewritten: `/best/`, `/best/[tier]/`, `/formats/[slug]/` (both kinds), `/faq/`,
+`/tools/`, `/benchmarks/`, `/changelog/`, `/quant-hub/`. `gpuPageDescription` dropped its trailing
+sentence, now skips superseded models for "largest" (RTX 4060 named Stable LM 2 12B) and prints the
+full level key (`GPTQ INT4`, not `INT4`). `formats.ts` AWQ `hardwareReq` now includes AMD via vLLM
+ROCm, matching `formatAllowed`. Result: 0 of 397 over budget, 0 duplicates.
+
 ### 2026-09-26 (f) — Guides show their dates; sitemap stops ignoring `updatedAt` (QTZ-114)
 
 `articleModifiedAt(article)` (`lib/utils/article-dates.ts`) = latest of `publishedAt`, `updatedAt`,

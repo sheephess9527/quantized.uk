@@ -8,9 +8,9 @@ import ModelGuides from '@/components/hub/ModelGuides';
 import { guideLinksForModel } from '@/lib/utils/model-guides';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, modelPageTitle, ogLocale, pageOgImage } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, padDescription, modelPageTitle, ogLocale, pageOgImage } from '@/lib/seo';
 import { isSuperseded } from '@/lib/utils/model-meta';
-import { bestQuant } from '@/lib/utils/quality';
+import { bestQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { sizeAt, REF_CONTEXT } from '@/lib/utils/model-explainer';
 
@@ -23,7 +23,12 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   if (!model) return { title: 'Model Not Found | quantized.uk' };
   const url = canonical(`/quant-hub/${model.id}`);
   const path = `/quant-hub/${model.id}`;
-  const description = modelPageDescription(model.description.en, isSuperseded(model), 'en');
+  const ref = referenceQuant(model.quants);
+  const description = padDescription(
+    modelPageDescription(model.description.en, isSuperseded(model), 'en'),
+    `About ${sizeAt(model, ref.bpw, REF_CONTEXT).totalGB.toFixed(1)} GB at ${quantLevelKey(ref)} with 4K context.`,
+    'en',
+  );
   const quant = bestQuant(model.quants);
   const { totalGB } = sizeAt(model, quant.bpw, REF_CONTEXT);
   const retainedPart = quant.pplLossPercent === undefined ? '' : `, ${(100 - quant.pplLossPercent).toFixed(1)}% retained`;
