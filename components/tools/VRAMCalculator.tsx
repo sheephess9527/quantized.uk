@@ -713,7 +713,7 @@ export default function VRAMCalculator() {
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
                             <span>PPL −{formatLoss(quant)}</span>
-                            {quant.speedRTX4090 && <span>{quant.speedRTX4090} tok/s</span>}
+                            {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}</span>}
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">

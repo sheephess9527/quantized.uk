@@ -199,6 +199,7 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
           <>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">
               {fill(g.measuredBody, { count: measured.length, gpu: gpu.name })}
+              {gpu.id !== 'rtx4090' && <> {g.speedColumnNote}</>}
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[440px]">
@@ -224,7 +225,7 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
             </div>
           </>
         ) : (
-          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}</p>
+          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}{gpu.id !== 'rtx4090' && <> {g.speedColumnNote}</>}</p>
         )}
       </section>
 

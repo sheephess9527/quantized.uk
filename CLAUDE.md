@@ -568,6 +568,10 @@ softening it. vLLM's real failure signature is a preemption warning naming
 `PreemptionMode.RECOMPUTE`, which is KV-cache pressure: shorten `--max-model-len` before raising
 `--gpu-memory-utilization`.
 
+**`speedRTX4090` is one card's number — label it wherever it is printed.** It is the only per-quant
+speed field, and a GPU page's fit table headed it "tok/s", presenting 4090 speeds as the RTX 4060's.
+Any new surface printing it names the RTX 4090; a card's own speeds come only from `matrixData`.
+
 **Quote only throughput this index measured.** `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
 which nobody here ran; its batch-1 figure happened to match the index's own 218 tok/s row. Cite
 `matrixData` or say the site has not measured it — batched throughput especially, since that is the
@@ -797,6 +801,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Speeds name their card (QTZ-105)** — every GPU page's fit table headed RTX 4090 speeds "tok/s"; now "tok/s on RTX 4090" plus a reference note on all pages but the 4090's; calculator list labelled the same |
 | 2026-09-26 | **Model pages: native reference quant + honest "smallest card" (QTZ-103)** — `referenceQuant()` replaces four copies; GPT-OSS sized at its native MXFP4. "Smallest card" was database order (RTX 5080 for a 16 GB model, MI100 for 32 GB, a RAM row for 70B); now size + count + entry card via `bySmallestCard`. "Just misses" sorted by shortfall; MoE note reached 4 of 13 MoE models |
 | 2026-09-23 | **Untranslated `/zh` chrome (QTZ-119)** — footer "Navigate"/"Ecosystem" hardcoded; a scan of all 198 `/zh` pages also found `GuideReferences` linking every Chinese guide's neighbours by English title, plus two calculator labels. Remaining English on `/zh` is proper nouns only |
 | 2026-09-23 | **"Latest additions" + a real hydration-mismatch source (QTZ-112)** — the "This week's updates" block was 2 models in file order and would have emptied; now the 6 newest by `addedAt`. `isRecentModel` measured from `Date.now()`, so build-time HTML and visit-time hydration disagreed once a model aged out — now anchored to `dataLastUpdated` (`RECENCY_ANCHOR`) |

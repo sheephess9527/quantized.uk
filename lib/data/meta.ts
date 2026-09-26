@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    en: 'Speed figures now say which card they come from. Every model\'s speed in this index was reported on an RTX 4090, but the model table on each GPU page headed that column simply "tok/s" — so the RTX 4060 page, or a Mac page, showed RTX 4090 speeds as if they were that card\'s own. The column is now labelled "tok/s on RTX 4090", every GPU page except the 4090\'s says the column is a reference rather than a speed on that card, and the calculator\'s per-card list labels its speeds the same way. Speeds actually measured on a card still appear under "Measured on this card".',
+    zh: '速度数字现在会写明来自哪张卡。本索引里每个模型的速度都是在 RTX 4090 上报告的，但每个显卡页的模型表格里，这一列的表头只写了「tok/s」——于是 RTX 4060 的页面、Mac 的页面，都把 RTX 4090 的速度当成了这张卡自己的速度来展示。现在这一列标为「RTX 4090 上的 tok/s」，除 4090 之外的每个显卡页都会说明这一列只是参考、不是这张卡的速度，计算器里按显卡列出的结果也同样标注。真正在某张卡上实测的速度，仍然列在「在这张卡上的实测数据」里。',
+  },
+  {
+    date: '2026-09-26',
     en: 'Model pages now size a model the way it was released. GPT-OSS 20B and 120B ship natively in MXFP4, but their pages described that build and then sized everything at Q4_K_M, a community requantization that loses quality — so the description, the table and the "where it fits" block quoted different numbers. The "smallest card" line on every model page was also misleading: when several cards share the smallest size that fits, it named whichever the database listed first (an RTX 5080 for a model any 16 GB card runs); it now names the size, how many cards share it, and the entry card among them. It also no longer calls a system-RAM row a card, which on four 70B-class models put "64 GB RAM (CPU)" where a GPU belonged. "Just misses" now lists the closest misses rather than an 8 GB Mac 5.4 GB short, and the note that a mixture-of-experts model must keep every expert in memory now appears on all 13 MoE models, not 4.',
     zh: '模型页现在按模型的发布形态来估算显存。GPT-OSS 20B 和 120B 原生以 MXFP4 发布，但页面介绍的是这个版本，估算却全部按 Q4_K_M ——一个会损失精度的社区二次量化——来算，于是介绍、表格和「能跑在哪些卡上」三处给出的数字对不上。每个模型页上「最小显卡」那句话也有误导：当多张卡同为能跑的最小容量时，它直接报出数据库里排在最前的那张（一个任何 16 GB 卡都能跑的模型，写的却是 RTX 5080）；现在改为写明容量、这个容量有几张卡、以及其中的入门型号。它也不会再把系统内存那一行当成显卡——此前 4 个 70B 级模型的页面上，本该是显卡的位置写着「64 GB RAM (CPU)」。「差一点」现在列出的是差得最少的卡，而不是差 5.4 GB 的 8 GB Mac；「MoE 模型所有专家都得驻留显存」的提示，现在出现在全部 13 个 MoE 模型上，而不是只有 4 个。',
   },

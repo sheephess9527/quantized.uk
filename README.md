@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (b) — Speeds name their card (QTZ-105)
+
+`QuantVariant.speedRTX4090` is the only per-quant speed field, and three surfaces printed it without
+saying so: the fit tables on every `/gpu/*` page (header `gpuPage.tableSpeed` was just "tok/s"),
+the VRAM calculator's per-card result list, and — already labelled, left alone — Hub cards
+(`refConfig`), model detail, compare and homepage picks. Header is now "tok/s on RTX 4090";
+`gpuPage.speedColumnNote` follows the measured-runs paragraph on every GPU page except `rtx4090`;
+the calculator uses `calc.speedOn4090`. The "Measured on this card" table keeps a bare "tok/s" —
+those rows are that card's own `matrixData`.
+
 ### 2026-09-26 — Model pages: native reference quant, honest "smallest card" (QTZ-103)
 
 - **`referenceQuant(quants)`** (`lib/utils/quality.ts`) is now the one choice of "the level a model
