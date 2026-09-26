@@ -53,6 +53,9 @@ export const translations = {
         hot: 'HOT',
         upd: 'UPD',
         viewAll: 'View All',
+        sizeAt4k: '{gb} GB at 4K',
+        fitsFrom: 'Comfortable from {gpu} ({vram} GB)',
+        noSingleCard: 'No single card fits it comfortably',
       },
       formatHeat: {
         title: 'Format Heat Index',
@@ -1006,6 +1009,9 @@ export const translations = {
         hot: '热门',
         upd: '已更新',
         viewAll: '查看全部',
+        sizeAt4k: '4K 上下文约 {gb} GB',
+        fitsFrom: '{gpu}（{vram} GB）起可从容运行',
+        noSingleCard: '没有单卡能从容运行',
       },
       formatHeat: {
         title: '格式热度指数',

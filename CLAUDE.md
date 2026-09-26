@@ -356,7 +356,8 @@ follow it to the component that actually reads it in the mode the link opens.
 1. Prefer `lib/data/models-extra-8.ts` (or new `models-extra-N.ts` + import in `models.ts`).
 2. Set `addedAt` to today when shipping a freshness batch.
 3. Wire `hfRepoMap` in **`lib/data/hf-repos.mjs` only** (single source; `hf-repos.ts` re-exports).
-4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks.
+4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks — type only `level`
+   and a short `note`; size and card are computed by `TodayBoard`, never typed.
 5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
 6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`.
 
@@ -801,6 +802,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Editor's Picks derive size + card (QTZ-109)** — `todayFeed` carried typed sizes and cards; one pick named a card it was only tight on, four named cards not in `gpuDatabase`. Now computed with the model page's own `sizeAt`/`cardsFitting` |
 | 2026-09-26 | **Fit counts name their level (QTZ-107)** — values already agreed across all surfaces; homepage card list and GPU index printed the comfortable count unlabelled, now "fit comfortably" |
 | 2026-09-26 | **Speeds name their card (QTZ-105)** — every GPU page's fit table headed RTX 4090 speeds "tok/s"; now "tok/s on RTX 4090" plus a reference note on all pages but the 4090's; calculator list labelled the same |
 | 2026-09-26 | **Model pages: native reference quant + honest "smallest card" (QTZ-103)** — `referenceQuant()` replaces four copies; GPT-OSS sized at its native MXFP4. "Smallest card" was database order (RTX 5080 for a 16 GB model, MI100 for 32 GB, a RAM row for 70B); now size + count + entry card via `bySmallestCard`. "Just misses" sorted by shortfall; MoE note reached 4 of 13 MoE models |

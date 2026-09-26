@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (d) — Editor's Picks derive size and card (QTZ-109)
+
+`todayFeed` (`lib/data/models.ts`) is now `{ id, type, modelId, level, note, quantizer }`; the typed
+`format`, size-in-`detail` and `hardware` fields are gone. `TodayBoard` computes size with
+`sizeAt(model, quant.bpw, REF_CONTEXT)` and the card with `cardsFitting(...)[0]` — the model page's
+own functions. Of 8 picks, the typed card was tight rather than comfortable on one (Magistral Small
+1.2, 15.6 GB on a 16 GB card), not a `gpuDatabase` name on four, and every typed size was the
+published file figure rather than the 4K estimate the model page quotes.
+
 ### 2026-09-26 (c) — Fit counts name their level (QTZ-107)
 
 Audited every surface that prints a per-card model count against `countModelsFitting` /

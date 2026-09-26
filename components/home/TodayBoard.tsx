@@ -5,6 +5,8 @@ import { ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { todayFeed, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
+import { sizeAt, cardsFitting, REF_CONTEXT } from '@/lib/utils/model-explainer';
+import { quantLevelKey } from '@/lib/utils/recommend';
 
 const typeConfig = {
   new:  { className: 'bg-violet-500/15 text-violet-300 border-violet-500/25' },
@@ -31,6 +33,10 @@ export default function TodayBoard() {
         {todayFeed.map((item) => {
           const cfg = typeConfig[item.type];
           const model = models.find(m => m.id === item.modelId);
+          const quant = model?.quants.find(q => q.level === item.level);
+          if (!model || !quant) return null;
+          const size = sizeAt(model, quant.bpw, REF_CONTEXT).totalGB;
+          const smallest = cardsFitting(size, quant.format)[0];
           const href = `/quant-hub/${item.modelId}/`;
           return (
             <li key={item.id}>
@@ -44,19 +50,25 @@ export default function TodayBoard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-medium text-slate-200 truncate group-hover:text-violet-200 transition-colors">
-                      {model?.name ?? item.modelId}
+                      {model.name}
                     </span>
                     <span className={cn('badge text-xs shrink-0', cfg.className)}>
-                      {item.format}
+                      {quant.format}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-mono text-xs text-slate-500">{item.detail[lang]}</span>
+                  <div className="flex flex-wrap items-center gap-x-2 mt-0.5">
+                    <span className="font-mono text-xs text-slate-500">
+                      {quantLevelKey(quant)} · {t.home.todayBoard.sizeAt4k.replace('{gb}', size.toFixed(1))} · {item.note[lang]}
+                    </span>
                     <span aria-hidden className="text-slate-700">·</span>
                     <span className="text-xs text-slate-600">{item.quantizer}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs text-slate-600">{item.hardware}</span>
+                    <span className="text-xs text-slate-600">
+                      {smallest
+                        ? t.home.todayBoard.fitsFrom.replace('{gpu}', smallest.name).replace('{vram}', String(smallest.vram))
+                        : t.home.todayBoard.noSingleCard}
+                    </span>
                   </div>
                 </div>
                 <ArrowUpRight size={12} className="text-slate-700 group-hover:text-slate-400 shrink-0 mt-1 transition-colors" />

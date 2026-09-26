@@ -232,13 +232,20 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * field. It used to be a bare string, which put "vision on 12GB" in the middle
  * of the Chinese homepage.
  */
-export const todayFeed = [
-  { id: 0, type: 'new' as const, modelId: 'qwen3-8-27b', format: 'GGUF', detail: { en: 'Q4_K_M · 15.3 GB · 16 of 64 layers cache KV', zh: 'Q4_K_M · 15.3 GB · 64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth', hardware: 'RTX 4090 / RX 7900 XT' },
-  { id: 7, type: 'new' as const, modelId: 'ministral-3-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.2 GB · official Mistral GGUF', zh: 'Q4_K_M · 5.2 GB · Mistral 官方 GGUF' }, quantizer: 'mistralai', hardware: 'RTX 4060 Ti 8G' },
-  { id: 1, type: 'new' as const, modelId: 'qwen3-vl-8b', format: 'GGUF', detail: { en: 'Q4_K_M · 5.9 GB · vision on a 12GB card', zh: 'Q4_K_M · 5.9 GB · 12GB 显卡上的多模态' }, quantizer: 'bartowski', hardware: 'RTX 3060 12G' },
-  { id: 2, type: 'new' as const, modelId: 'magistral-small-2509', format: 'GGUF', detail: { en: 'Q4_K_M · 14.3 GB · [THINK] reasoning', zh: 'Q4_K_M · 14.3 GB · [THINK] 推理模式' }, quantizer: 'unsloth', hardware: 'RTX 4070 Ti Super' },
-  { id: 3, type: 'new' as const, modelId: 'seed-oss-36b', format: 'GGUF', detail: { en: 'Q4_K_M · 21.8 GB · 512K context', zh: 'Q4_K_M · 21.8 GB · 512K 上下文' }, quantizer: 'unsloth', hardware: '2× RTX 3090' },
-  { id: 4, type: 'new' as const, modelId: 'qwen3-vl-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · 3B active, vision', zh: 'Q4_K_M · 19 GB · 激活 3B，多模态' }, quantizer: 'bartowski', hardware: 'M3 Max / RTX 4090' },
-  { id: 5, type: 'hot' as const, modelId: 'gpt-oss-20b', format: 'GGUF', detail: { en: 'MXFP4 · 12.8 GB · native 4-bit', zh: 'MXFP4 · 12.8 GB · 原生 4-bit' }, quantizer: 'openai', hardware: 'RTX 4070 Ti Super' },
-  { id: 6, type: 'hot' as const, modelId: 'qwen3-coder-30b-a3b', format: 'GGUF', detail: { en: 'Q4_K_M · 19 GB · agentic coder', zh: 'Q4_K_M · 19 GB · agent 编码模型' }, quantizer: 'bartowski', hardware: 'RTX 4090' },
+/**
+ * Editor's picks. Only the choice and the note are typed: size and the card
+ * named beside each pick are computed on render from `calcVRAM` and
+ * `cardsFitting`, the same functions behind the model pages. Typed sizes and
+ * cards drifted — a 15.6 GB pick was labelled for a 16 GB card (tight, not
+ * comfortable) and four named cards were not in the GPU index at all.
+ */
+export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 0, type: 'new', modelId: 'qwen3-8-27b', level: 'Q4_K_M', note: { en: '16 of 64 layers cache KV', zh: '64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth' },
+  { id: 7, type: 'new', modelId: 'ministral-3-8b', level: 'Q4_K_M', note: { en: 'official Mistral GGUF', zh: 'Mistral 官方 GGUF' }, quantizer: 'mistralai' },
+  { id: 1, type: 'new', modelId: 'qwen3-vl-8b', level: 'Q4_K_M', note: { en: 'vision-language at 8B', zh: '8B 视觉语言模型' }, quantizer: 'bartowski' },
+  { id: 2, type: 'new', modelId: 'magistral-small-2509', level: 'Q4_K_M', note: { en: '[THINK] reasoning', zh: '[THINK] 推理模式' }, quantizer: 'unsloth' },
+  { id: 3, type: 'new', modelId: 'seed-oss-36b', level: 'Q4_K_M', note: { en: '512K context', zh: '512K 上下文' }, quantizer: 'unsloth' },
+  { id: 4, type: 'new', modelId: 'qwen3-vl-30b-a3b', level: 'Q4_K_M', note: { en: '3B active, vision', zh: '激活 3B，多模态' }, quantizer: 'bartowski' },
+  { id: 5, type: 'hot', modelId: 'gpt-oss-20b', level: 'MXFP4', note: { en: 'native 4-bit', zh: '原生 4-bit' }, quantizer: 'openai' },
+  { id: 6, type: 'hot', modelId: 'qwen3-coder-30b-a3b', level: 'Q4_K_M', note: { en: 'agentic coder', zh: 'agent 编码模型' }, quantizer: 'bartowski' },
 ];

@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    en: 'The homepage Editor\'s Picks now compute the size and the card beside each pick, the same way the model pages do, instead of carrying them as typed text. The typed versions had drifted: Magistral Small 1.2 was listed for a 16 GB card it only just squeezes onto, Seed-OSS 36B for two RTX 3090s when one 32 GB card holds it, and several named cards were not in this site\'s GPU list at all. Each pick now shows its size at 4K context and the smallest card that runs it comfortably.',
+    zh: '首页「编辑推荐」里每一项旁边的体积和显卡，现在和模型页一样由计算得出，不再是手写的文字。手写版本已经走样：Magistral Small 1.2 标的是一张只能勉强装下它的 16 GB 显卡，Seed-OSS 36B 标的是两张 RTX 3090，其实一张 32 GB 显卡就能装下，还有好几张写到的显卡根本不在本站的显卡列表里。现在每一项都显示 4K 上下文下的体积，以及能从容运行它的最小显卡。',
+  },
+  {
+    date: '2026-09-26',
     en: 'Model counts per card now say what they count. The site gives two honest numbers for a card — how many models fit comfortably (at most 88% of memory) and how many load at all — and a GPU page shows both, but the homepage card list said only "52 models fit" and the GPU index "52/81", which read as the looser number. Both now say "fit comfortably". The numbers themselves were already consistent everywhere; only the labels were missing.',
     zh: '每张卡「能跑多少模型」的数字，现在都写明了统计口径。本站对一张卡给出两个数字——能从容运行的模型数（占用不超过显存的 88%）和勉强能加载的模型数——显卡页会同时显示两者，但首页的显卡列表只写了「52 个模型可跑」，显卡索引页只写了「52/81」，读起来像是更宽松的那个数。两处现在都标明「可从容运行」。这些数字本身在全站早已一致，缺的只是标注。',
   },
