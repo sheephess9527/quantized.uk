@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-26 (e) — Heat Index is an order, not a percentage (QTZ-113)
+
+`QuantFormat.heatPercent` had no reproducible source ("HF GGUF share and community discussion
+volume") yet was printed as `89%` with a proportional bar on `/formats/` and as an "Adoption
+estimate" row on every `/formats/<a>-vs-<b>/` page, directly above the measured "Models in this
+index" row. `FormatHeatmap` now renders an ordered list with no numbers; the pair-page row and its
+`formatCompare.rowAdoption` key are gone. `heatPercent` stays in `formats.ts` as the editorial sort
+key only. The audit's other QTZ-113 asks (MXFP4/EXL3/MLX sections) are not done: MXFP4 is already a
+GGUF level, and EXL3/MLX have 0 models in the index — a section for them is the HQQ mistake.
+
 ### 2026-09-26 (d) — Editor's Picks derive size and card (QTZ-109)
 
 `todayFeed` (`lib/data/models.ts`) is now `{ id, type, modelId, level, note, quantizer }`; the typed

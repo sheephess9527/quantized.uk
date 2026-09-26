@@ -15,6 +15,7 @@ export interface QuantFormat {
   bgClass: string;
   textClass: string;
   borderClass: string;
+  /** Editorial ordering only — never printed as a number (it has no reproducible source). */
   heatPercent: number;
   heatTrend: number;
   description: { en: string; zh: string };

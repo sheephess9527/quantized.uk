@@ -287,6 +287,10 @@ NVFP4 and "Official QAT"); a zero count for something the site does not track is
 with a new name. A format with no published perplexity anywhere shows a dash — a median over an
 empty set is not 0%.
 
+**An editorial judgement is shown as an order, never as a number.** The Heat Index printed
+`GGUF 89%` from no reproducible source, and pair pages set it beside the measured model counts.
+`heatPercent` now only sorts; anything typed from opinion rather than data gets a rank or a word.
+
 **Per-format vocabularies don't share a fallback** — quant levels belong to one format only. The
 wizard's `recommendQuant` fell through to `Q4_K_M` for every format, telling readers to fetch
 "EXL2 · Q4_K_M". Likewise a recommended runtime must follow the **format**, not the hardware, or the
@@ -802,6 +806,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-26 | **Heat Index loses its fake precision (QTZ-113)** — unsourced `89%`/bars on `/formats/` and an "adoption estimate" row on every pair page; now a labelled ranking, measured counts carry the numbers. EXL3/MLX sections declined (0 models) |
 | 2026-09-26 | **Editor's Picks derive size + card (QTZ-109)** — `todayFeed` carried typed sizes and cards; one pick named a card it was only tight on, four named cards not in `gpuDatabase`. Now computed with the model page's own `sizeAt`/`cardsFitting` |
 | 2026-09-26 | **Fit counts name their level (QTZ-107)** — values already agreed across all surfaces; homepage card list and GPU index printed the comfortable count unlabelled, now "fit comfortably" |
 | 2026-09-26 | **Speeds name their card (QTZ-105)** — every GPU page's fit table headed RTX 4090 speeds "tok/s"; now "tok/s on RTX 4090" plus a reference note on all pages but the 4090's; calculator list labelled the same |

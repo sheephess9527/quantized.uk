@@ -14,30 +14,25 @@ export default function FormatHeatmap() {
         <p className="section-subtitle text-xs mt-0.5">{t.home.formatHeat.subtitle}</p>
       </div>
 
-      <ul className="flex flex-col gap-3 flex-1">
+      {/*
+        A ranking, deliberately without numbers. The percentages this used to
+        print had no reproducible source, and the comparison pages showed them
+        beside real inventory counts as if the two were the same kind of fact.
+        The counts per format are in the table above; this is only the order.
+      */}
+      <ol className="flex flex-col gap-2 flex-1">
         {quantFormats.map((fmt, i) => (
-          <li key={fmt.id}>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 w-3">{i + 1}</span>
-                <span
-                  className="badge text-xs font-mono font-semibold"
-                  style={{ background: `${fmt.color}18`, color: fmt.textColor, borderColor: `${fmt.color}30` }}
-                >
-                  {fmt.name}
-                </span>
-              </div>
-              <span className="text-xs font-semibold text-slate-300">{fmt.heatPercent}%</span>
-            </div>
-            <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${fmt.heatPercent}%`, background: fmt.color }}
-              />
-            </div>
+          <li key={fmt.id} className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 w-3">{i + 1}</span>
+            <span
+              className="badge text-xs font-mono font-semibold"
+              style={{ background: `${fmt.color}18`, color: fmt.textColor, borderColor: `${fmt.color}30` }}
+            >
+              {fmt.name}
+            </span>
           </li>
         ))}
-      </ul>
+      </ol>
 
       <p className="text-xs text-slate-600 mt-3 leading-relaxed">{dataSources.formatHeat[lang]}</p>
     </div>

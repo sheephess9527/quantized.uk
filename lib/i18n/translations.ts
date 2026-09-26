@@ -59,7 +59,7 @@ export const translations = {
       },
       formatHeat: {
         title: 'Format Heat Index',
-        subtitle: 'Editorial adoption estimate',
+        subtitle: 'Editorial ranking of what people reach for — an opinion, not a measured share',
         vsLastWeek: 'Editorial estimate',
       },
       weekly: {
@@ -826,7 +826,6 @@ export const translations = {
       rowHardware: 'Runs on',
       rowFramework: 'Runtime',
       rowBestFor: 'Best for',
-      rowAdoption: 'Adoption estimate',
       rowIndexed: 'Models in this index',
       strengths: 'Strengths',
       weaknesses: 'Trade-offs',
@@ -1015,7 +1014,7 @@ export const translations = {
       },
       formatHeat: {
         title: '格式热度指数',
-        subtitle: '社区采用估算（编辑整理）',
+        subtitle: '编辑对常用程度的排序 —— 是判断，不是测得的占比',
         vsLastWeek: '编辑估算',
       },
       weekly: {
@@ -1782,7 +1781,6 @@ export const translations = {
       rowHardware: '可运行于',
       rowFramework: '运行时',
       rowBestFor: '最适合',
-      rowAdoption: '采用率估算',
       rowIndexed: '本索引中的模型数',
       strengths: '优势',
       weaknesses: '取舍',

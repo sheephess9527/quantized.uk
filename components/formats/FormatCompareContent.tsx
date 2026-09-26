@@ -26,7 +26,6 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
     { label: c.rowHardware, a: a.hardwareReq, b: b.hardwareReq },
     { label: c.rowFramework, a: a.framework, b: b.framework },
     { label: c.rowBestFor, a: a.bestFor[lang], b: b.bestFor[lang] },
-    { label: c.rowAdoption, a: `${a.heatPercent}%`, b: `${b.heatPercent}%` },
     { label: c.rowIndexed, a: `${countA} / ${models.length}`, b: `${countB} / ${models.length}` },
   ];
 

@@ -16,8 +16,8 @@ export const dataSources = {
     zh: 'RTX 4090 / 3090 / M3 Max / M2 Ultra 本地实测；llama.cpp b4000+、ExLlamaV2 0.2.x、vLLM 0.6.x、Ollama 0.3.x',
   },
   formatHeat: {
-    en: 'Editorial estimate from HF GGUF share and community discussion volume — not live analytics',
-    zh: '基于 HF GGUF 下载占比与社区讨论量的编辑估算 — 非实时统计',
+    en: 'Editorial judgement from which formats Hugging Face uploads and community threads favour. It is not measured, so it is shown as an order, not a percentage — the per-format model counts above are the measured part.',
+    zh: '依据 Hugging Face 上传与社区讨论更偏向哪种格式做出的编辑判断。它不是测量值，因此只给出排序、不给百分比 —— 上面每种格式的模型数才是实测的部分。',
   },
 } as const;
 
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-26',
+    en: 'The Format Heat Index on /formats/ no longer prints percentages, and the format comparison pages no longer have an "adoption estimate" row. Those numbers (GGUF 89%, AWQ 45% and so on) were an editorial judgement with no source anyone could re-check, and on the comparison pages they sat directly beside real counts of how many models in this index ship each format, as if the two were the same kind of fact. The ranking stays, labelled as an opinion; the measured part is the per-format model count.',
+    zh: '/formats/ 页上的「格式热度指数」不再显示百分比，格式对比页也去掉了「采用率估算」这一行。那些数字（GGUF 89%、AWQ 45% 等）是编辑判断，没有任何人能复核的来源；在对比页上，它们就摆在「本索引中有多少模型提供该格式」这个真实计数旁边，看起来像是同一类事实。排序保留，并注明是判断；实测的部分是每种格式的模型数。',
+  },
   {
     date: '2026-09-26',
     en: 'The homepage Editor\'s Picks now compute the size and the card beside each pick, the same way the model pages do, instead of carrying them as typed text. The typed versions had drifted: Magistral Small 1.2 was listed for a 16 GB card it only just squeezes onto, Seed-OSS 36B for two RTX 3090s when one 32 GB card holds it, and several named cards were not in this site\'s GPU list at all. Each pick now shows its size at 4K context and the smallest card that runs it comfortably.',
