@@ -14,6 +14,7 @@ export default function FormatWizardPage() {
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
+          { label: t.nav.tools, href: '/tools/' },
           { label: t.nav.formatWizard },
         ]}
       />

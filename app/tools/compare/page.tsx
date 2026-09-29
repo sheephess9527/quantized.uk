@@ -15,6 +15,7 @@ export default function ComparePage() {
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
+          { label: t.nav.tools, href: '/tools/' },
           { label: t.nav.modelCompare },
         ]}
       />

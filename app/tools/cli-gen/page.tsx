@@ -14,6 +14,7 @@ export default function CLIGenPage() {
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
+          { label: t.nav.tools, href: '/tools/' },
           { label: t.nav.cliGen },
         ]}
       />

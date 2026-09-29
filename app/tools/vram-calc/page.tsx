@@ -16,6 +16,7 @@ export default function VRAMCalcPage() {
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
+          { label: t.nav.tools, href: '/tools/' },
           { label: t.nav.vramCalc },
         ]}
       />

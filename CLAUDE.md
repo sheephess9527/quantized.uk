@@ -826,6 +826,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |
 | 2026-09-29 | **Structured-data gate** — 1,509 JSON-LD blocks audited, 0 faults; language / canonical url / `/zh` breadcrumbs / ItemList count / visible FAQ now enforced in postbuild |
 | 2026-09-29 | **Title width gate** — 31 `/zh` titles over 60 width; `fitTitle()` drops the brand suffix first; postbuild fails on long or duplicate titles |
 | 2026-09-29 | **Build-time consistency gates (QTZ-110)** — `assertDataConsistent()` (via the sitemap) fails the build on broken cross-references between data files; postbuild gates meta descriptions (present, unique, ≤160 width). Proven by perturbation |

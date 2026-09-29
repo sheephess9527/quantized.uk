@@ -419,6 +419,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-29 (d) — Tool breadcrumbs include the Tools hub
+
+Re-crawled `out/` for the "no content page under 3 inbound" target (excluding hrefs on >90% of
+pages): only `/tools/` (2) and `/zh/tools/` (1) were under it — none of the four tool pages linked
+back to their hub. Their breadcrumbs now carry a `Tools → /tools/` level (the `BreadcrumbList`
+follows, localized): 6 and 5 inbound.
+
 ### 2026-09-29 (c) — Structured-data gate (build only, no visible change)
 
 Audited all 1,509 JSON-LD blocks across 397 pages: 0 faults — every page-level entity's

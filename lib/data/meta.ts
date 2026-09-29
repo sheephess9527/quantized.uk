@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-29',
+    en: 'Each tool page\'s breadcrumb now reads Home › Tools › the tool, so the page listing all four tools is one click away from any of them — before, nothing inside the tools linked back to it.',
+    zh: '每个工具页的面包屑现在是「首页 › 工具 › 当前工具」，从任一工具都能一键回到列出全部四个工具的页面——此前工具页内部没有任何地方链接回去。',
+  },
+  {
+    date: '2026-09-29',
     en: 'Thirty-one Chinese page titles were long enough to be cut off in search results — every model page with a long English name, the "best for your VRAM" pages and a few section pages. They were shortened, and titles that would still overflow now drop the site name before losing any of their own words. The build now fails if any title runs long or two pages share one.',
     zh: '有 31 个中文页面标题长到会在搜索结果里被截断——英文名较长的模型页、「按显存推荐」各页以及几个栏目页。这些标题都已缩短；仍会超长的标题，现在会先去掉网站名，而不是截掉自己的字。今后只要有标题超长或两个页面标题重复，构建就会失败。',
   },
