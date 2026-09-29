@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { articles } from '@/lib/data/cookbook';
-import { fitDescription, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { fitTitle, fitDescription, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { readingMinutes } from '@/lib/utils/reading-time';
 import CookbookArticlePage from '../../../cookbook/[slug]/page';
 
@@ -24,7 +24,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const url = canonical(path);
   const ogAlt = `${article.titleZh}：${DIFFICULTY_LABEL[article.difficulty]}，${readingMinutes(article, 'zh')} 分钟阅读 | quantized.uk`;
   return {
-    title: `${article.titleZh} | quantized.uk`,
+    title: fitTitle(article.titleZh),
     description: fitDescription(article.descriptionZh, 'zh'),
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,

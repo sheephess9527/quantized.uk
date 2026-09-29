@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-29',
+    en: 'Thirty-one Chinese page titles were long enough to be cut off in search results — every model page with a long English name, the "best for your VRAM" pages and a few section pages. They were shortened, and titles that would still overflow now drop the site name before losing any of their own words. The build now fails if any title runs long or two pages share one.',
+    zh: '有 31 个中文页面标题长到会在搜索结果里被截断——英文名较长的模型页、「按显存推荐」各页以及几个栏目页。这些标题都已缩短；仍会超长的标题，现在会先去掉网站名，而不是截掉自己的字。今后只要有标题超长或两个页面标题重复，构建就会失败。',
+  },
+  {
+    date: '2026-09-29',
     en: 'The site now checks itself on every build. Many of the errors fixed this month were two hand-typed files drifting apart — a pick naming a quant its model does not ship, a guide linking a model id that no longer exists, a superseded model pointing at a successor that is itself superseded — or a page quietly growing past a limit. Each of those now stops the build with a message saying exactly what is wrong, instead of shipping a page that looks fine and is not. Nothing a reader sees changed today; this is what keeps the recent corrections corrected.',
     zh: '网站现在每次构建都会自检。本月修掉的很多错误，要么是两个手写文件彼此走样——推荐里写了一个模型并不提供的量化档位、指南链接了一个已不存在的模型、一个过时模型指向的「继任者」本身也已过时——要么是页面悄悄超出了某个限制。这些情况现在都会让构建直接失败，并准确说明哪里出了错，而不是发布一个看起来正常、其实有问题的页面。今天读者看到的内容没有变化；这是为了让最近的修正保持修正。',
   },

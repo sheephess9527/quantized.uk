@@ -52,8 +52,8 @@ hand-typed cross-reference is added, add its rule there and prove it fires by pe
 
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
 `<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
-tree, renders the literal text `undefined`, or any page's meta description is missing, duplicated or
-over 160 width** (a key present in `en` but missing in `zh`
+tree, renders the literal text `undefined`, any page's meta description is missing, duplicated or
+over 160 width, or any `<title>` is duplicated or over 60 width (CJK = 2; use `fitTitle`)** (a key present in `en` but missing in `zh`
 type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
 flaky network. Never "fix" it by removing the postbuild hook.
 
@@ -824,6 +824,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-29 | **Title width gate** — 31 `/zh` titles over 60 width; `fitTitle()` drops the brand suffix first; postbuild fails on long or duplicate titles |
 | 2026-09-29 | **Build-time consistency gates (QTZ-110)** — `assertDataConsistent()` (via the sitemap) fails the build on broken cross-references between data files; postbuild gates meta descriptions (present, unique, ≤160 width). Proven by perturbation |
 | 2026-09-26 | **Calculator readable without JS (QTZ-123)** — derived size-class table (4K/32K range + smallest card for the whole class) in the static HTML; 32K skips models whose window is shorter |
 | 2026-09-26 | **Meta descriptions within budget (QTZ-122)** — 104 pages over ~160 width (all EN GPU pages); `fitDescription`/`padDescription` + rewritten templates → 0 of 397. GPU description skipped superseded models; AWQ `hardwareReq` said NVIDIA-only |

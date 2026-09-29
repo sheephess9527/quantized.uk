@@ -139,6 +139,15 @@ export function displayWidth(text: string): number {
 }
 
 /**
+ * A `<title>` that would overflow drops the brand suffix before it loses any
+ * of its own words. Width-based, so a Chinese title is measured as it renders.
+ */
+export function fitTitle(title: string): string {
+  const full = `${title} | ${SITE_NAME}`;
+  return displayWidth(full) <= TITLE_LIMIT ? full : title;
+}
+
+/**
  * Keeps whole sentences while they fit the budget, so a long editorial
  * description loses its later sentences instead of being cut mid-word by the
  * search engine. A first sentence that is itself over budget is kept whole —

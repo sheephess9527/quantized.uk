@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-29 (b) — `<title>` width gate
+
+All English titles were already within 60 characters; 31 Chinese ones were over 60 display width
+(CJK = 2). New `fitTitle(title)` (`lib/seo.ts`) appends ` | quantized.uk` only when the result fits,
+used by the `/zh` model, guide and `/best/[tier]` routes; the `/zh` home, format and tools titles were
+shortened by hand and `（2026）` dropped from `/zh/best/`. `scripts/localize-export.mjs` now fails
+on any exported title over 60 width or shared by two pages (proven by injecting a long title).
+
 ### 2026-09-29 — Build-time consistency gates (QTZ-110)
 
 - **`lib/data/validate.ts`** — `dataProblems()` / `assertDataConsistent()`, called from

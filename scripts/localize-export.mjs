@@ -227,3 +227,31 @@ if (existsSync(redirectsFile)) {
   }
   console.log(`localize-export: ${seen.size} meta descriptions, all unique and within budget`);
 }
+
+// ── <title>: width ≤ 60 and unique ─────────────────────────────────────────
+// Long titles are cut in results; `fitTitle` / `modelPageTitle` (lib/seo.ts)
+// drop the brand suffix first. 31 Chinese titles were over before that.
+{
+  const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const width = s => [...s].reduce((w, ch) => w + (ch.codePointAt(0) >= 0x2e80 ? 2 : 1), 0);
+  const seen = new Map();
+  const over = [];
+  for (const file of allFiles) {
+    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
+    const m = readFileSync(file, 'utf8').match(/<title>([^<]*)<\/title>/);
+    if (!m) continue;
+    const t = decode(m[1]);
+    const page = relative(OUT, file);
+    if (width(t) > 60) over.push(`${width(t)}  ${page}  ${t}`);
+    seen.set(t, [...(seen.get(t) ?? []), page]);
+  }
+  const dupes = [...seen.values()].filter(p => p.length > 1);
+  if (over.length || dupes.length) {
+    console.error('localize-export: <title> out of budget:');
+    for (const o of over.slice(0, 15)) console.error('  over 60 width: ' + o);
+    for (const p of dupes.slice(0, 10)) console.error('  shared by: ' + p.join(', '));
+    console.error('Route it through `fitTitle` (lib/seo.ts) or shorten the template.');
+    process.exit(1);
+  }
+  console.log(`localize-export: ${seen.size} titles, all unique and within 60 width`);
+}

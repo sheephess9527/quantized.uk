@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, padDescription, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { fitTitle, canonical, defaultRobots, feedAlternates, languageAlternates, modelPageDescription, padDescription, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { isSuperseded } from '@/lib/utils/model-meta';
 import { bestQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -30,7 +30,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   const retainedPart = quant.pplLossPercent === undefined ? '' : `，保留 ${(100 - quant.pplLossPercent).toFixed(1)}% 精度`;
   const ogAlt = `${model.name}：${model.paramLabel}，${quantLevelKey(quant)}，${totalGB.toFixed(1)} GB${retainedPart} | quantized.uk`;
   return {
-    title: `${model.name} — 量化版本与显存占用 | quantized.uk`,
+    title: fitTitle(`${model.name} 量化版本与显存占用`),
     description,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
