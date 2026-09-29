@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-29 (c) — Structured-data gate (build only, no visible change)
+
+Audited all 1,509 JSON-LD blocks across 397 pages: 0 faults — every page-level entity's
+`inLanguage` matches its tree, its `url` equals the page's canonical, `/zh` breadcrumbs stay in
+`/zh`, `ItemList.numberOfItems` equals the list emitted, and every `FAQPage` question appears in the
+visible text. The same checks now run in `scripts/localize-export.mjs` and fail the build (proven by
+injecting a wrong `inLanguage` and an inflated `numberOfItems`). `WebSite`/`Organization` are exempt
+from the language/url rules — they describe the site, not the page, and declare both languages.
+
 ### 2026-09-29 (b) — `<title>` width gate
 
 All English titles were already within 60 characters; 31 Chinese ones were over 60 display width

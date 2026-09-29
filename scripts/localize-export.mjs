@@ -255,3 +255,51 @@ if (existsSync(redirectsFile)) {
   }
   console.log(`localize-export: ${seen.size} titles, all unique and within 60 width`);
 }
+
+// ── Structured data describes the page that exists ─────────────────────────
+// ItemList once claimed 73 items while emitting 30, and a /zh page once
+// advertised the English URL its own canonical disowned. Checked per page:
+// the page's own entities carry its language and its canonical URL, /zh
+// breadcrumbs stay in /zh, ItemList counts match, and every FAQ question is
+// in the visible text.
+{
+  const problems = [];
+  const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const walk = function* (o) {
+    if (Array.isArray(o)) for (const v of o) yield* walk(v);
+    else if (o && typeof o === 'object') { yield o; for (const v of Object.values(o)) yield* walk(v); }
+  };
+  let entities = 0;
+  for (const file of allFiles) {
+    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
+    const page = relative(OUT, file);
+    const zh = page.startsWith('zh/');
+    const html = readFileSync(file, 'utf8');
+    const canon = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    const visible = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ');
+    for (const [, blk] of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+      let data;
+      try { data = JSON.parse(blk); } catch { problems.push(`${page}: JSON-LD does not parse`); continue; }
+      const tops = Array.isArray(data) ? data : data['@graph'] ?? [data];
+      for (const o of tops) {
+        const t = o['@type'];
+        if (['WebSite', 'Organization', 'BreadcrumbList'].includes(t)) continue;
+        entities++;
+        const il = o.inLanguage;
+        if (typeof il === 'string' && il.includes('zh') !== zh) problems.push(`${page}: ${t} inLanguage ${il}`);
+        if (typeof o.url === 'string' && canon && o.url.replace(/\/$/, '') !== canon.replace(/\/$/, '')) problems.push(`${page}: ${t} url ${o.url} ≠ canonical ${canon}`);
+      }
+      for (const o of walk(data)) {
+        if (zh && o['@type'] === 'ListItem' && typeof o.item === 'string' && o.item.startsWith('https://quantized.uk/') && !o.item.includes('/zh')) problems.push(`${page}: breadcrumb leaves /zh → ${o.item}`);
+        if (o['@type'] === 'ItemList' && Array.isArray(o.itemListElement) && 'numberOfItems' in o && o.numberOfItems !== o.itemListElement.length) problems.push(`${page}: ItemList says ${o.numberOfItems}, lists ${o.itemListElement.length}`);
+        if (o['@type'] === 'Question' && typeof o.name === 'string' && !visible.includes(decode(o.name).slice(0, 40))) problems.push(`${page}: FAQ question not in visible text: ${o.name.slice(0, 60)}`);
+      }
+    }
+  }
+  if (problems.length) {
+    console.error(`localize-export: structured data disagrees with the page (${problems.length}):`);
+    for (const p of problems.slice(0, 20)) console.error('  ' + p);
+    process.exit(1);
+  }
+  console.log(`localize-export: structured data checked (${entities} page entities) — language, URL, counts and FAQ text all match`);
+}

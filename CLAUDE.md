@@ -53,7 +53,9 @@ hand-typed cross-reference is added, add its rule there and prove it fires by pe
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
 `<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
 tree, renders the literal text `undefined`, any page's meta description is missing, duplicated or
-over 160 width, or any `<title>` is duplicated or over 60 width (CJK = 2; use `fitTitle`)** (a key present in `en` but missing in `zh`
+over 160 width, any `<title>` is duplicated or over 60 width (CJK = 2; use `fitTitle`), or any
+page's JSON-LD disagrees with the page (language, canonical url, `/zh` breadcrumbs, ItemList count,
+FAQ question not visible)** (a key present in `en` but missing in `zh`
 type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
 flaky network. Never "fix" it by removing the postbuild hook.
 
@@ -214,7 +216,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   collapsed is not. Check any new disclosure the same way as a lazy chart: read `out/**`, not the
   component source, and confirm the text is actually there before hydration.
 - **Structured data must describe the page that exists.** `ItemList` on the GPU pages claimed
-  `numberOfItems: 73` while emitting 30. Audit with a walk over `out/**` after any schema change:
+  `numberOfItems: 73` while emitting 30. The postbuild gate now enforces this; the rules it applies:
   counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear
   in the visible text. There is deliberately no `AggregateRating` or `Review` anywhere — the site has
   no ratings to report, and inventing a reviewer identity is not on the table.
@@ -824,6 +826,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-29 | **Structured-data gate** — 1,509 JSON-LD blocks audited, 0 faults; language / canonical url / `/zh` breadcrumbs / ItemList count / visible FAQ now enforced in postbuild |
 | 2026-09-29 | **Title width gate** — 31 `/zh` titles over 60 width; `fitTitle()` drops the brand suffix first; postbuild fails on long or duplicate titles |
 | 2026-09-29 | **Build-time consistency gates (QTZ-110)** — `assertDataConsistent()` (via the sitemap) fails the build on broken cross-references between data files; postbuild gates meta descriptions (present, unique, ≤160 width). Proven by perturbation |
 | 2026-09-26 | **Calculator readable without JS (QTZ-123)** — derived size-class table (4K/32K range + smallest card for the whole class) in the static HTML; 32K skips models whose window is shorter |
