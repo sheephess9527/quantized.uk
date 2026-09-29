@@ -45,9 +45,15 @@ npm run lint
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
 
+`build` fails on **data invariants** too: `app/sitemap.ts` calls `assertDataConsistent()`
+(`lib/data/validate.ts`) — broken `supersededBy`, a `todayFeed` level the model does not ship, a
+guide pointing at a missing model/GPU, a quant level the calculator cannot select. When a new
+hand-typed cross-reference is added, add its rule there and prove it fires by perturbation.
+
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
 `<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
-tree or renders the literal text `undefined`** (a key present in `en` but missing in `zh`
+tree, renders the literal text `undefined`, or any page's meta description is missing, duplicated or
+over 160 width** (a key present in `en` but missing in `zh`
 type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, this one is a real gate — a failure means a broken export, not a
 flaky network. Never "fix" it by removing the postbuild hook.
 
@@ -818,6 +824,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-29 | **Build-time consistency gates (QTZ-110)** — `assertDataConsistent()` (via the sitemap) fails the build on broken cross-references between data files; postbuild gates meta descriptions (present, unique, ≤160 width). Proven by perturbation |
 | 2026-09-26 | **Calculator readable without JS (QTZ-123)** — derived size-class table (4K/32K range + smallest card for the whole class) in the static HTML; 32K skips models whose window is shorter |
 | 2026-09-26 | **Meta descriptions within budget (QTZ-122)** — 104 pages over ~160 width (all EN GPU pages); `fitDescription`/`padDescription` + rewritten templates → 0 of 397. GPU description skipped superseded models; AWQ `hardwareReq` said NVIDIA-only |
 | 2026-09-26 | **Guides show their dates (QTZ-114)** — dates were only in JSON-LD; byline now shows published/updated. Sitemap ignored `updatedAt` (17 rewritten guides had 2025 lastmods); all three now use `articleModifiedAt()` |

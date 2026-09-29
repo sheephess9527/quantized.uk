@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-26';
+export const dataLastUpdated = '2026-09-29';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-09-29',
+    en: 'The site now checks itself on every build. Many of the errors fixed this month were two hand-typed files drifting apart — a pick naming a quant its model does not ship, a guide linking a model id that no longer exists, a superseded model pointing at a successor that is itself superseded — or a page quietly growing past a limit. Each of those now stops the build with a message saying exactly what is wrong, instead of shipping a page that looks fine and is not. Nothing a reader sees changed today; this is what keeps the recent corrections corrected.',
+    zh: '网站现在每次构建都会自检。本月修掉的很多错误，要么是两个手写文件彼此走样——推荐里写了一个模型并不提供的量化档位、指南链接了一个已不存在的模型、一个过时模型指向的「继任者」本身也已过时——要么是页面悄悄超出了某个限制。这些情况现在都会让构建直接失败，并准确说明哪里出了错，而不是发布一个看起来正常、其实有问题的页面。今天读者看到的内容没有变化；这是为了让最近的修正保持修正。',
+  },
   {
     date: '2026-09-26',
     en: 'The VRAM calculator page now carries a quick-reference table by model size — memory at 4K and 32K context and the smallest card that holds each whole size class — so its answers are readable without JavaScript, which the interactive calculator needs. Every figure is the calculator\'s own arithmetic. The 32K column counts only models whose context window actually reaches 32K; one it does include, Phi-3.5 Mini, needs about 15.6 GB there because it keeps a full-size cache for every attention head, a real property of the model rather than an error.',

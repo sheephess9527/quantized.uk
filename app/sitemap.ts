@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { assertDataConsistent } from '@/lib/data/validate';
 import { articleModifiedAt } from '@/lib/utils/article-dates';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
@@ -16,6 +17,10 @@ import { toZhPath } from '@/lib/i18n/routing';
 // means adding it in three places: the route, its `/zh` mirror, and the
 // entries below.
 export default function sitemap(): MetadataRoute.Sitemap {
+  // The sitemap is built on every export, which makes it the one place a data
+  // invariant can fail the build before a broken page ships.
+  assertDataConsistent();
+
   // A sitemap where every URL claims the same lastmod carries no information —
   // crawlers discount it. Each entry reports the date that page's own content
   // actually changed: addedAt for models, `articleModifiedAt` (latest of

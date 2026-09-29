@@ -419,6 +419,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-29 — Build-time consistency gates (QTZ-110)
+
+- **`lib/data/validate.ts`** — `dataProblems()` / `assertDataConsistent()`, called from
+  `app/sitemap.ts` so every `next build` runs it and fails with the list of problems. Checks: unique
+  model/GPU ids and GPU slugs, dot-free slugs; every `supersededBy` exists, is not self, is not itself
+  superseded; every quant level is selectable in the calculator (`quantBPW` + `quantGroups` via
+  `quantLevelKey`); every `todayFeed` model and level exists; every guide `gpuPreset.gpuId` and
+  `relatedModelIds` entry exists; every `hfRepoMap` key is a model id. Verified by perturbation —
+  four injected faults each reported, and a real build with a bad `todayFeed` level exits 1.
+- **`scripts/localize-export.mjs`** gains a meta-description gate: every exported page has one,
+  it is unique, and its display width (CJK = 2) is ≤ 160.
+
 ### 2026-09-26 (h) — Calculator readable without JavaScript (QTZ-123)
 
 `/tools/vram-calc/` shipped ~1,270 words of explainer in its static HTML, but the calculator itself

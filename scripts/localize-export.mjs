@@ -196,3 +196,34 @@ if (existsSync(redirectsFile)) {
   }
   console.log(`localize-export: ${lines.length} redirects check out`);
 }
+
+// ── Meta descriptions: width budget and uniqueness ─────────────────────────
+// A results page shows ~160 characters of width (a CJK character is two).
+// 104 pages were over it before `fitDescription` (lib/seo.ts); a template that
+// grows past it again, or two pages sharing one description, fails here.
+{
+  const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const width = s => [...s].reduce((w, ch) => w + (ch.codePointAt(0) >= 0x2e80 ? 2 : 1), 0);
+  const seen = new Map();
+  const over = [];
+  const missing = [];
+  for (const file of allFiles) {
+    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
+    const m = readFileSync(file, 'utf8').match(/<meta name="description" content="([^"]*)"/);
+    const page = relative(OUT, file);
+    if (!m) { missing.push(page); continue; }
+    const d = decode(m[1]);
+    if (width(d) > 160) over.push(`${width(d)}  ${page}`);
+    seen.set(d, [...(seen.get(d) ?? []), page]);
+  }
+  const dupes = [...seen.values()].filter(p => p.length > 1);
+  if (over.length || dupes.length || missing.length) {
+    console.error('localize-export: meta descriptions out of budget:');
+    for (const o of over.slice(0, 15)) console.error('  over 160 width: ' + o);
+    for (const p of dupes.slice(0, 10)) console.error('  shared by: ' + p.join(', '));
+    for (const p of missing.slice(0, 10)) console.error('  missing: ' + p);
+    console.error('Fit it with `fitDescription` (lib/seo.ts) or shorten the template.');
+    process.exit(1);
+  }
+  console.log(`localize-export: ${seen.size} meta descriptions, all unique and within budget`);
+}
