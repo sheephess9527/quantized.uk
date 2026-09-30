@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    en: 'Corrected the memory estimates for DeepSeek-V3, DeepSeek-R1, DeepSeek-V2-Lite and DeepSeek-Coder-V2-Lite. All four use MLA attention, which current llama.cpp stores as one compressed vector per token per layer, but this index had been sizing them as conventional attention — too high for current GGUF files, and far too low for old ones. The estimates now follow current files: DeepSeek-V2-Lite at its full 160K context drops from about 47 GB to about 15 GB, and both Lite models now fit comfortably on 10 GB and 16 GB-class hardware. Each page also says what an older conversion costs instead and how to tell the two apart, since the difference is large — about 150 GB of cache at 32K for DeepSeek-V3.',
+    zh: '修正了 DeepSeek-V3、DeepSeek-R1、DeepSeek-V2-Lite 和 DeepSeek-Coder-V2-Lite 的显存估算。四者都采用 MLA 注意力，当前的 llama.cpp 每层每个 token 只存一个压缩向量，但本站此前按常规注意力计算——对当前的 GGUF 文件偏高，对旧文件又严重偏低。现在的估算按当前文件计算：DeepSeek-V2-Lite 用满 16 万上下文所需显存从约 47 GB 降到约 15 GB，两个 Lite 模型现在都能在 10 GB 和 16 GB 级别的硬件上从容运行。由于差别很大（DeepSeek-V3 在 32K 下旧版转换的缓存约 150 GB），每个页面也写明了旧版转换的代价以及如何区分两者。',
+  },
+  {
+    date: '2026-09-30',
     en: 'Two models added, both around 3B active parameters so they run on one card or a Mac: GLM-4.7-Flash (Zhipu, 30B total, 128K context — comfortable on a 24 GB card at Q4) and Kimi Linear 48B-A3B (Moonshot, 1M context — comfortable on a 48 GB Mac at Q4, tight on a 32 GB card). Both use compressed attention caches, and the memory estimates count them the way llama.cpp stores them rather than as conventional keys and values. No GGUF file sizes could be checked for this batch, so their sizes use the calculator\'s generic rates and are marked estimated. Several larger releases from the same weeks (780B and 744B models) were left out as beyond single-machine hardware.',
     zh: '新增两个模型，激活参数都在 3B 左右，单卡或一台 Mac 就能跑：GLM-4.7-Flash（智谱，总参数 30B，128K 上下文——Q4 下 24 GB 显卡可以从容运行）和 Kimi Linear 48B-A3B（月之暗面，100 万上下文——Q4 下 48 GB 的 Mac 可以从容运行，32 GB 显卡只能勉强装下）。两者都使用压缩的注意力缓存，显存估算按 llama.cpp 实际的存储方式计算，而不是当作常规的 K 和 V。这一批未能核对到 GGUF 文件大小，所以体积使用计算器的通用比特率，并标为估算。同期的几个更大的发布（780B、744B 模型）超出单机硬件的范围，没有收录。',
   },

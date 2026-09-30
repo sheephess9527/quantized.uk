@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (c) — DeepSeek MLA entries sized as current llama.cpp caches them
+
+`deepseek-v3`, `deepseek-r1` (61 layers, 128 heads) and `deepseek-v2-lite`, `deepseek-coder-v2-lite`
+(27 layers, 16 heads) were encoded as conventional attention (`kvHeads 8/16 × headDim 128`), which
+is neither real case. llama.cpp (`src/models/deepseek2.cpp`): a GGUF carrying the MLA key lengths
+and split `attn_k_b`/`attn_v_b` caches 576 values per token per layer; a legacy file with unsplit
+`attn_kv_b` caches full K/V — `n_head × (nope+rope) + n_head × v` = 5,120 (Lite) / 40,960 (V3).
+At 32K: Lite 0.95 GB MLA / 8.4 GB legacy / 6.75 GB as previously sized; V3 2.1 / 152 / 7.6 GB.
+Now `kvHeads: 1, headDim: 288` (current converter, consistent with GLM-4.7-Flash / Kimi Linear),
+and each description states the legacy figure and the tensor names that distinguish the two.
+Downstream: Lite models newly comfortable on RTX 3080 10G and Mac M3 16G; Apple `/best/` code
+pick StarCoder2 15B → DeepSeek-Coder-V2-Lite. Mistral Large 3 is not touched — its attention type
+was not verified here.
+
 ### 2026-09-30 (b) — +2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B
 
 New `lib/data/models-extra-10.ts`. Selection: the newest families in transformers' toctree

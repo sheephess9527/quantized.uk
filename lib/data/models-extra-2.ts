@@ -152,10 +152,13 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 163840,
-    arch: { layers: 27, attHeads: 16, kvHeads: 16, headDim: 128 },
+    // MLA, sized as current llama.cpp caches it: one kv_lora_rank + qk_rope_head_dim
+    // (512 + 64) vector per token per layer, no V → kvHeads 1 × headDim 288 (see ModelArch).
+    // A legacy GGUF (unsplit attn_kv_b) caches full K/V instead; the description says so.
+    arch: { layers: 27, attHeads: 16, kvHeads: 1, headDim: 288 },
     description: {
-      en: 'MoE general model (~2.4B active). Long context and strong multilingual chat.',
-      zh: 'MoE 通用模型（激活约 2.4B），长上下文，多语言对话能力强。',
+      en: 'MoE general model (~2.4B active). Long context and strong multilingual chat. Its attention is MLA: a GGUF converted by current llama.cpp (tensors attn_k_b / attn_v_b) caches about 1 GB at 32K, which is what the estimates here assume. An older conversion with a single attn_kv_b tensor caches full keys and values instead — about 8.4 GB at 32K.',
+      zh: 'MoE 通用模型（激活约 2.4B），长上下文，多语言对话能力强。注意力采用 MLA：用当前 llama.cpp 转换的 GGUF（含 attn_k_b / attn_v_b 张量）在 32K 下约缓存 1 GB，本站估算即按此计算；只有单个 attn_kv_b 张量的旧版转换会缓存完整的 K 和 V，32K 下约 8.4 GB。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 11.0, pplLossPercent: 3.0, speedRTX4090: 142, hfSearchUrl: hf('DeepSeek-V2-Lite-Chat GGUF') },

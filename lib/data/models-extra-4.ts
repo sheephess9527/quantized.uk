@@ -76,10 +76,13 @@ export const extraModels4: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 163840,
-    arch: { layers: 61, attHeads: 128, kvHeads: 8, headDim: 128 },
+    // MLA, sized as current llama.cpp caches it: one kv_lora_rank + qk_rope_head_dim
+    // (512 + 64) vector per token per layer, no V → kvHeads 1 × headDim 288 (see ModelArch).
+    // A legacy GGUF (unsplit attn_kv_b) caches full K/V instead; the description says so.
+    arch: { layers: 61, attHeads: 128, kvHeads: 1, headDim: 288 },
     description: {
-      en: 'DeepSeek-V3 frontier MoE (~37B active / 671B total). MLA + FP8; multi-node GPU cluster required at Q4.',
-      zh: 'DeepSeek-V3 前沿 MoE（激活约 37B / 总 671B）。MLA + FP8；Q4 需多节点 GPU 集群。',
+      en: 'DeepSeek-V3 frontier MoE (~37B active / 671B total). MLA + FP8; multi-node GPU cluster required at Q4. MLA cache: a GGUF converted by current llama.cpp (attn_k_b / attn_v_b) holds about 2 GB at 32K, which the estimates here assume; an older conversion with a single attn_kv_b tensor caches full keys and values — about 150 GB at 32K.',
+      zh: 'DeepSeek-V3 前沿 MoE（激活约 37B / 总 671B）。MLA + FP8；Q4 需多节点 GPU 集群。MLA 缓存：用当前 llama.cpp 转换的 GGUF（含 attn_k_b / attn_v_b）在 32K 下约 2 GB，本站估算即按此计算；只有单个 attn_kv_b 张量的旧版转换会缓存完整的 K 和 V，32K 下约 150 GB。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 2.0, speedRTX4090: 4, hfSearchUrl: hf('DeepSeek-V3 GGUF Q4_K_M') },
@@ -95,10 +98,13 @@ export const extraModels4: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 163840,
-    arch: { layers: 61, attHeads: 128, kvHeads: 8, headDim: 128 },
+    // MLA, sized as current llama.cpp caches it: one kv_lora_rank + qk_rope_head_dim
+    // (512 + 64) vector per token per layer, no V → kvHeads 1 × headDim 288 (see ModelArch).
+    // A legacy GGUF (unsplit attn_kv_b) caches full K/V instead; the description says so.
+    arch: { layers: 61, attHeads: 128, kvHeads: 1, headDim: 288 },
     description: {
-      en: 'DeepSeek-R1 reasoning model built on V3 MoE. Chain-of-thought at frontier scale — use distill variants for local GPUs.',
-      zh: '基于 V3 MoE 的 DeepSeek-R1 推理模型。前沿级思维链 — 本地 GPU 请用蒸馏版。',
+      en: 'DeepSeek-R1 reasoning model built on V3 MoE. Chain-of-thought at frontier scale — use distill variants for local GPUs. MLA cache: a GGUF converted by current llama.cpp (attn_k_b / attn_v_b) holds about 2 GB at 32K, which the estimates here assume; an older conversion with a single attn_kv_b tensor caches full keys and values — about 150 GB at 32K.',
+      zh: '基于 V3 MoE 的 DeepSeek-R1 推理模型。前沿级思维链 — 本地 GPU 请用蒸馏版。MLA 缓存：用当前 llama.cpp 转换的 GGUF（含 attn_k_b / attn_v_b）在 32K 下约 2 GB，本站估算即按此计算；只有单个 attn_kv_b 张量的旧版转换会缓存完整的 K 和 V，32K 下约 150 GB。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 1.8, speedRTX4090: 4, hfSearchUrl: hf('DeepSeek-R1 GGUF Q4_K_M bartowski') },

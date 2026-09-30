@@ -727,8 +727,9 @@ and skip anything marked Pre-release.
 
 **MLA models are sized as llama.cpp stores them.** An MLA layer caches one `kv_lora_rank +
 qk_rope_head_dim` vector (576 for DeepSeek-2-style) and no V, so encode `kvHeads: 1, headDim: 288`
-and say so in a comment. The older DeepSeek entries predate this and still use conventional
-numbers — do not copy them. When no GGUF file size is reachable, use the generic bpw and mark the
+and say so in a comment. The DeepSeek V3/R1/V2-Lite entries were brought in line on
+2026-09-30. A legacy GGUF (unsplit `attn_kv_b`) caches full K/V instead — far more; say so in the
+model's description rather than sizing for it. When no GGUF file size is reachable, use the generic bpw and mark the
 row `estimated`; never type a plausible size.
 
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
@@ -835,6 +836,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
 | 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |
