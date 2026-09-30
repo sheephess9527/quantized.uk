@@ -5,6 +5,7 @@ import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { bestQuant, isNativeQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { contextLabel } from '@/lib/utils/context-label';
+import { quantConfidence } from '@/lib/utils/model-meta';
 
 /**
  * Prose and questions for a model page, computed from that model's own row.
@@ -109,6 +110,10 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
   const hybrid = model.arch.attention;
   const kvGrowth = atLong.kvCacheGB - at4k.kvCacheGB;
   const isMoE = /-A\d|\bMoE\b/i.test(model.paramLabel);
+  // "Measured here" only for rows this site actually ran; every other speed is
+  // an estimate and says so. Printing 本站实测 on all 83 pages claimed runs on
+  // 73 models nobody here benchmarked.
+  const fastestMeasured = fastest ? quantConfidence(model.id, fastest) === 'measured' : false;
 
   const sections: ExplainerSection[] = [];
 
@@ -193,7 +198,9 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
           ? `${quantLevelKey(best)} carries the lowest published perplexity loss at ${best.pplLossPercent.toFixed(1)}%. `
           : `No per-level perplexity sweep has been published for this model, so the quality column is empty rather than estimated — within one model, more bits per weight is the only ordering the data supports. `) +
         (fastest
-          ? `The fastest level measured here is ${quantLevelKey(fastest)} at ${fastest.speedRTX4090} tok/s on an RTX 4090, batch 1. `
+          ? (fastestMeasured
+            ? `The fastest level measured here is ${quantLevelKey(fastest)} at ${fastest.speedRTX4090} tok/s on an RTX 4090, batch 1. `
+            : `The fastest level listed is ${quantLevelKey(fastest)} at about ${fastest.speedRTX4090} tok/s on an RTX 4090, batch 1 — an estimate, not a run on this site's hardware. `)
           : `No throughput has been measured for this model on this site's hardware. `) +
         `GGUF runs on llama.cpp and Ollama across NVIDIA, AMD and Apple silicon; AWQ and GPTQ target vLLM on CUDA and ROCm; EXL2 is ExLlamaV2 and CUDA only.`,
       zh:
@@ -202,7 +209,9 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
           ? `其中 ${quantLevelKey(best)} 的公开困惑度损失最低，为 ${best.pplLossPercent.toFixed(1)}%。`
           : `该模型没有公开的逐档困惑度数据，因此质量一列留空而不是填估算值 —— 在同一个模型内部，位数越多越忠实是数据唯一支持的排序。`) +
         (fastest
-          ? `本站实测最快的档位是 ${quantLevelKey(fastest)}，在 RTX 4090、batch 1 下为 ${fastest.speedRTX4090} tok/s。`
+          ? (fastestMeasured
+            ? `本站实测最快的档位是 ${quantLevelKey(fastest)}，在 RTX 4090、batch 1 下为 ${fastest.speedRTX4090} tok/s。`
+            : `列出的最快档位是 ${quantLevelKey(fastest)}，在 RTX 4090、batch 1 下约 ${fastest.speedRTX4090} tok/s —— 这是估算值，不是本站硬件上的实测。`)
           : `本站硬件上没有该模型的吞吐实测数据。`) +
         `GGUF 可在 NVIDIA、AMD 与苹果芯片上通过 llama.cpp 和 Ollama 运行；AWQ 与 GPTQ 面向 CUDA 和 ROCm 上的 vLLM；EXL2 仅限 CUDA 上的 ExLlamaV2。`,
     },

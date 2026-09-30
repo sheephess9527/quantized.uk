@@ -20,10 +20,10 @@ export const extraModels: QuantModel[] = [
       zh: 'Qwen2.5 旗舰模型，需双 4090 或 A100 80G，大规模推理能力卓越。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.6, pplLossPercent: 2.5, speedRTX4090: 28, hfSearchUrl: hf('Qwen2.5-72B-Instruct GGUF Q4_K_M bartowski') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 50.1, pplLossPercent: 1.1, speedRTX4090: 24, hfSearchUrl: hf('Qwen2.5-72B-Instruct GGUF Q5_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.5, pplLossPercent: 3.5, speedRTX4090: 42, hfSearchUrl: hf('Qwen2.5-72B-Instruct AWQ') },
-      { format: 'EXL2', level: '3.5bpw', bpw: 3.5,  vramGB: 33.8, pplLossPercent: 4.8, speedRTX4090: 48, hfSearchUrl: hf('Qwen2.5-72B-Instruct exl2') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.6, pplLossPercent: 2.5, hfSearchUrl: hf('Qwen2.5-72B-Instruct GGUF Q4_K_M bartowski') },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 50.1, pplLossPercent: 1.1, hfSearchUrl: hf('Qwen2.5-72B-Instruct GGUF Q5_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.5, pplLossPercent: 3.5, hfSearchUrl: hf('Qwen2.5-72B-Instruct AWQ') },
+      { format: 'EXL2', level: '3.5bpw', bpw: 3.5,  vramGB: 33.8, pplLossPercent: 4.8, hfSearchUrl: hf('Qwen2.5-72B-Instruct exl2') },
     ],
   },
   {
@@ -61,9 +61,9 @@ export const extraModels: QuantModel[] = [
       zh: 'Meta 最新 70B，多语言能力提升，可无缝替换 Llama 3.1 70B。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.6, speedRTX4090: 38, hfSearchUrl: hf('Llama-3.3-70B-Instruct GGUF unsloth') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 50.1, pplLossPercent: 1.0, speedRTX4090: 32, hfSearchUrl: hf('Llama-3.3-70B-Instruct GGUF Q5_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.7, speedRTX4090: 54, hfSearchUrl: hf('Llama-3.3-70B-Instruct AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.6, hfSearchUrl: hf('Llama-3.3-70B-Instruct GGUF unsloth') },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 50.1, pplLossPercent: 1.0, hfSearchUrl: hf('Llama-3.3-70B-Instruct GGUF Q5_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.7, hfSearchUrl: hf('Llama-3.3-70B-Instruct AWQ') },
     ],
   },
   {
@@ -83,7 +83,7 @@ export const extraModels: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 14.2, pplLossPercent: 2.9, speedRTX4090: 62, hfSearchUrl: hf('Mistral-Small-24B-Instruct GGUF') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 14.2, pplLossPercent: 3.8, speedRTX4090: 78, hfSearchUrl: hf('Mistral-Small-24B-Instruct AWQ city96') },
-      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.5, pplLossPercent: 2.2, speedRTX4090: 88, hfSearchUrl: hf('Mistral-Small-24B exl2') },
+      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.5, pplLossPercent: 2.2, hfSearchUrl: hf('Mistral-Small-24B exl2') },
     ],
   },
   {
@@ -179,8 +179,8 @@ export const extraModels: QuantModel[] = [
       zh: 'R1 推理能力注入 Llama 70B 架构，双卡部署的顶级开源推理模型。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.4, speedRTX4090: 36, hfSearchUrl: hf('DeepSeek-R1-Distill-Llama-70B GGUF') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.5, speedRTX4090: 52, hfSearchUrl: hf('DeepSeek-R1-Distill-Llama-70B AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.4, hfSearchUrl: hf('DeepSeek-R1-Distill-Llama-70B GGUF') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.5, hfSearchUrl: hf('DeepSeek-R1-Distill-Llama-70B AWQ') },
     ],
   },
   {
@@ -219,8 +219,8 @@ export const extraModels: QuantModel[] = [
       zh: '经典 MoE 模型，每 token 约 13B 激活参数，Q4 量化需 32GB+ 显存。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 28.5, pplLossPercent: 2.8, speedRTX4090: 48, hfSearchUrl: hf('Mixtral-8x7B-Instruct-v0.1 GGUF') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 25.2, pplLossPercent: 3.8, speedRTX4090: 62, hfSearchUrl: hf('Mixtral-8x7B AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 28.5, pplLossPercent: 2.8, hfSearchUrl: hf('Mixtral-8x7B-Instruct-v0.1 GGUF') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 25.2, pplLossPercent: 3.8, hfSearchUrl: hf('Mixtral-8x7B AWQ') },
     ],
   },
   {

@@ -103,9 +103,9 @@ export const extraModels3: QuantModel[] = [
       zh: 'Meta Llama 4 Scout MoE（激活 17B / 总 109B），多模态，Q4_K_M 约需 68GB 显存。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 68.0, pplLossPercent: 2.4, speedRTX4090: 22, hfSearchUrl: hf('Llama-4-Scout-17B-16E-Instruct GGUF bartowski') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 55.0, pplLossPercent: 4.8, speedRTX4090: 26, hfSearchUrl: hf('Llama-4-Scout GGUF Q3_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 58.0, pplLossPercent: 3.2, speedRTX4090: 28, hfSearchUrl: hf('Llama-4-Scout AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 68.0, pplLossPercent: 2.4, hfSearchUrl: hf('Llama-4-Scout-17B-16E-Instruct GGUF bartowski') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 55.0, pplLossPercent: 4.8, hfSearchUrl: hf('Llama-4-Scout GGUF Q3_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 58.0, pplLossPercent: 3.2, hfSearchUrl: hf('Llama-4-Scout AWQ') },
     ],
   },
   {
@@ -123,8 +123,8 @@ export const extraModels3: QuantModel[] = [
       zh: 'Llama 4 Maverick 旗舰 MoE（激活 17B / 总 400B），需多卡或 H100 集群。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 245.0, pplLossPercent: 2.2, speedRTX4090: 8, hfSearchUrl: hf('Llama-4-Maverick-17B-128E-Instruct GGUF') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 198.0, pplLossPercent: 4.5, speedRTX4090: 10, hfSearchUrl: hf('Llama-4-Maverick GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 245.0, pplLossPercent: 2.2, hfSearchUrl: hf('Llama-4-Maverick-17B-128E-Instruct GGUF') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 198.0, pplLossPercent: 4.5, hfSearchUrl: hf('Llama-4-Maverick GGUF Q3_K_M') },
     ],
   },
   {
@@ -142,9 +142,9 @@ export const extraModels3: QuantModel[] = [
       zh: 'Meta 前沿稠密 405B，Q4 约需 230GB+ 显存；双 H100 80G 或 8 卡消费级方案。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 238.0, pplLossPercent: 2.3, speedRTX4090: 6, hfSearchUrl: hf('Llama-3.1-405B-Instruct GGUF Q4_K_M bartowski') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 192.0, pplLossPercent: 5.0, speedRTX4090: 8, hfSearchUrl: hf('Llama-3.1-405B-Instruct GGUF Q3_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 210.0, pplLossPercent: 3.5, speedRTX4090: 10, hfSearchUrl: hf('Llama-3.1-405B-Instruct AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 238.0, pplLossPercent: 2.3, hfSearchUrl: hf('Llama-3.1-405B-Instruct GGUF Q4_K_M bartowski') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 192.0, pplLossPercent: 5.0, hfSearchUrl: hf('Llama-3.1-405B-Instruct GGUF Q3_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 210.0, pplLossPercent: 3.5, hfSearchUrl: hf('Llama-3.1-405B-Instruct AWQ') },
     ],
   },
 ];

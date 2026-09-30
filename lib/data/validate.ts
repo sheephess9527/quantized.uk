@@ -24,6 +24,11 @@ export function dataProblems(): string[] {
   });
 
   const selectable = new Set(Object.values(quantGroups).flat());
+  // `speedRTX4090` is one card's number. A row that card cannot hold, or a
+  // dense row faster than its memory bandwidth allows, is not an RTX 4090
+  // figure: 47 rows were one or the other (a 70B Q4 at "38 tok/s").
+  const rtx4090 = gpuDatabase.find(g => g.id === 'rtx4090');
+  if (!rtx4090?.bandwidth) out.push('rtx4090 row missing or has no bandwidth — speed checks cannot run');
   for (const m of models) {
     if (m.status === 'superseded') {
       const next = models.find(x => x.id === m.supersededBy);
@@ -36,6 +41,18 @@ export function dataProblems(): string[] {
       const key = quantLevelKey(q);
       if (!(key in quantBPW) || !selectable.has(key)) {
         out.push(`${m.id}: level '${key}' missing from quantBPW/quantGroups — the calculator cannot select it`);
+      }
+      if (q.speedRTX4090 != null && rtx4090?.bandwidth) {
+        if (q.vramGB > rtx4090.vram) {
+          out.push(`${m.id} ${key}: speedRTX4090 set on a ${q.vramGB} GB row — an RTX 4090 holds ${rtx4090.vram} GB`);
+        } else if (!/-A\d|\bMoE\b/i.test(m.paramLabel)) {
+          // Dense: every token reads every weight. 15% covers params×bpw vs the
+          // real file (untouched input embeddings, mixed-precision heads).
+          const ceiling = rtx4090.bandwidth / (m.params * (q.bpw ?? 4.85) / 8);
+          if (q.speedRTX4090 > ceiling * 1.15) {
+            out.push(`${m.id} ${key}: ${q.speedRTX4090} tok/s exceeds the RTX 4090 bandwidth ceiling (~${Math.round(ceiling)}) for a dense model`);
+          }
+        }
       }
     }
   }

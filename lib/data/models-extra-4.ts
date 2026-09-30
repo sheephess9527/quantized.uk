@@ -62,9 +62,9 @@ export const extraModels4: QuantModel[] = [
       zh: 'Qwen3 旗舰 MoE（激活 22B / 总 235B）。Q4_K_M 约 142GB，对标 DeepSeek-R1 级模型。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 142.0, pplLossPercent: 2.2, speedRTX4090: 10, hfSearchUrl: hf('Qwen3-235B-A22B GGUF Q4_K_M bartowski') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 115.0, pplLossPercent: 4.8, speedRTX4090: 12, hfSearchUrl: hf('Qwen3-235B-A22B GGUF Q3_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 125.0, pplLossPercent: 3.2, speedRTX4090: 14, hfSearchUrl: hf('Qwen3-235B-A22B AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 142.0, pplLossPercent: 2.2, hfSearchUrl: hf('Qwen3-235B-A22B GGUF Q4_K_M bartowski') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 115.0, pplLossPercent: 4.8, hfSearchUrl: hf('Qwen3-235B-A22B GGUF Q3_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 125.0, pplLossPercent: 3.2, hfSearchUrl: hf('Qwen3-235B-A22B AWQ') },
     ],
   },
   {
@@ -85,8 +85,8 @@ export const extraModels4: QuantModel[] = [
       zh: 'DeepSeek-V3 前沿 MoE（激活约 37B / 总 671B）。MLA + FP8；Q4 需多节点 GPU 集群。MLA 缓存：用当前 llama.cpp 转换的 GGUF（含 attn_k_b / attn_v_b）在 32K 下约 2 GB，本站估算即按此计算；只有单个 attn_kv_b 张量的旧版转换会缓存完整的 K 和 V，32K 下约 150 GB。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 2.0, speedRTX4090: 4, hfSearchUrl: hf('DeepSeek-V3 GGUF Q4_K_M') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 310.0, pplLossPercent: 4.5, speedRTX4090: 5, hfSearchUrl: hf('DeepSeek-V3 GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 2.0, hfSearchUrl: hf('DeepSeek-V3 GGUF Q4_K_M') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 310.0, pplLossPercent: 4.5, hfSearchUrl: hf('DeepSeek-V3 GGUF Q3_K_M') },
     ],
   },
   {
@@ -107,8 +107,8 @@ export const extraModels4: QuantModel[] = [
       zh: '基于 V3 MoE 的 DeepSeek-R1 推理模型。前沿级思维链 — 本地 GPU 请用蒸馏版。MLA 缓存：用当前 llama.cpp 转换的 GGUF（含 attn_k_b / attn_v_b）在 32K 下约 2 GB，本站估算即按此计算；只有单个 attn_kv_b 张量的旧版转换会缓存完整的 K 和 V，32K 下约 150 GB。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 1.8, speedRTX4090: 4, hfSearchUrl: hf('DeepSeek-R1 GGUF Q4_K_M bartowski') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 310.0, pplLossPercent: 4.2, speedRTX4090: 5, hfSearchUrl: hf('DeepSeek-R1 GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 385.0, pplLossPercent: 1.8, hfSearchUrl: hf('DeepSeek-R1 GGUF Q4_K_M bartowski') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 310.0, pplLossPercent: 4.2, hfSearchUrl: hf('DeepSeek-R1 GGUF Q3_K_M') },
     ],
   },
 ];

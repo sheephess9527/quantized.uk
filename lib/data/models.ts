@@ -54,10 +54,10 @@ const baseModels: QuantModel[] = [
       zh: 'Meta 前沿 70B 模型，需要 40GB+ 显存，适合双 3090 或 M2 Ultra。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.8, speedRTX4090: 38,  hfSearchUrl: hf('Llama-3.1-70B-Instruct GGUF Q4_K_M') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 49.8, pplLossPercent: 1.2, speedRTX4090: 32,  hfSearchUrl: hf('Llama-3.1-70B-Instruct GGUF Q5_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.9, speedRTX4090: 55,  hfSearchUrl: hf('Llama-3.1-70B-Instruct AWQ') },
-      { format: 'EXL2', level: '3.5bpw', bpw: 3.5,  vramGB: 33.4, pplLossPercent: 5.2, speedRTX4090: 62,  hfSearchUrl: hf('Llama-3.1-70B-Instruct exl2 3.5bpw') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 43.5, pplLossPercent: 2.8,  hfSearchUrl: hf('Llama-3.1-70B-Instruct GGUF Q4_K_M') },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 49.8, pplLossPercent: 1.2,  hfSearchUrl: hf('Llama-3.1-70B-Instruct GGUF Q5_K_M') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 38.2, pplLossPercent: 3.9,  hfSearchUrl: hf('Llama-3.1-70B-Instruct AWQ') },
+      { format: 'EXL2', level: '3.5bpw', bpw: 3.5,  vramGB: 33.4, pplLossPercent: 5.2,  hfSearchUrl: hf('Llama-3.1-70B-Instruct exl2 3.5bpw') },
     ],
   },
   {
@@ -119,7 +119,7 @@ const baseModels: QuantModel[] = [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 10.2, pplLossPercent: 2.9, speedRTX4090: 98, hfSearchUrl: hf('Qwen2.5-14B-Instruct GGUF Q4_K_M') },
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 11.8, pplLossPercent: 1.4, speedRTX4090: 86, hfSearchUrl: hf('Qwen2.5-14B-Instruct GGUF Q5_K_M') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 9.2,  pplLossPercent: 3.8, speedRTX4090: 128, hfSearchUrl: hf('Qwen2.5-14B-Instruct AWQ') },
-      { format: 'EXL2', level: '4.65bpw',bpw: 4.65, vramGB: 9.8,  pplLossPercent: 2.1, speedRTX4090: 138, hfSearchUrl: hf('Qwen2.5-14B-Instruct exl2') },
+      { format: 'EXL2', level: '4.65bpw',bpw: 4.65, vramGB: 9.8,  pplLossPercent: 2.1, hfSearchUrl: hf('Qwen2.5-14B-Instruct exl2') },
     ],
   },
   {
@@ -147,7 +147,7 @@ const baseModels: QuantModel[] = [
     name: 'DeepSeek-Coder-V2-Lite Instruct',
     family: 'DeepSeek',
     params: 15.7,
-    paramLabel: '16B',
+    paramLabel: '16B-A2.4B',
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 163840,

@@ -148,7 +148,7 @@ export const extraModels2: QuantModel[] = [
     name: 'DeepSeek-V2-Lite Chat',
     family: 'DeepSeek',
     params: 15.7,
-    paramLabel: '16B',
+    paramLabel: '16B-A2.4B',
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 163840,
@@ -219,8 +219,8 @@ export const extraModels2: QuantModel[] = [
       zh: '旗舰多模态 Llama，需双 4090 或 A100；视觉模块额外约 3GB 显存。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 54.8, pplLossPercent: 2.8, speedRTX4090: 22, hfSearchUrl: hf('Llama-3.2-90B-Vision-Instruct GGUF') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 44.2, pplLossPercent: 6.5, speedRTX4090: 28, hfSearchUrl: hf('Llama-3.2-90B-Vision GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 54.8, pplLossPercent: 2.8, hfSearchUrl: hf('Llama-3.2-90B-Vision-Instruct GGUF') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 44.2, pplLossPercent: 6.5, hfSearchUrl: hf('Llama-3.2-90B-Vision GGUF Q3_K_M') },
     ],
   },
   {
@@ -391,21 +391,41 @@ export const extraModels2: QuantModel[] = [
     id: 'jamba-1.5-mini',
     name: 'Jamba 1.5 Mini',
     family: 'AI21 Labs',
-    params: 12.0,
+    /**
+     * 52B total, ~12B active. This row was sized as a 12B dense model (Q4 at
+     * 8.5 GB) — the active count typed in as the total. Recomputed from
+     * transformers' `JambaConfig` (32 layers, 16 experts on every 2nd layer,
+     * hidden 4096, FFN 14336): ~51.6B total / ~12.1B active, matching the
+     * "52B" transformers' own Jamba docs give for the smallest checkpoint.
+     */
+    params: 52.0,
     status: 'superseded',
     supersededBy: 'ministral-3-8b',
-    paramLabel: '12B',
+    paramLabel: '52B-A12B',
     categories: ['general', 'instruct'],
-    hardwareTags: ['consumer-gpu', 'mac'],
+    hardwareTags: ['pro-gpu', 'mac'],
     contextLength: 262144,
-    arch: { layers: 32, attHeads: 32, kvHeads: 8, headDim: 128 },
+    arch: {
+      layers: 32,
+      attHeads: 32,
+      kvHeads: 8,
+      headDim: 128,
+      // attn_layer_period 8, offset 4 → layers 4, 12, 20, 28 are attention.
+      attention: {
+        fullLayers: 4,
+        note: {
+          en: '4 of 32 layers are attention and keep a KV cache; the other 28 are Mamba, with a fixed-size state.',
+          zh: '32 层中只有 4 层是注意力层、保留 KV 缓存；其余 28 层是 Mamba，只有固定大小的状态。',
+        },
+      },
+    },
     description: {
-      en: 'Hybrid SSM-Transformer with 256K context. Efficient long-document QA on 16GB.',
-      zh: 'SSM-Transformer 混合架构，256K 上下文，16GB 显存可做长文档问答。',
+      en: 'AI21\'s hybrid Mamba-Transformer MoE: 52B total, about 12B active, 256K context. Only 4 of its 32 layers keep a KV cache, so long context is cheap — but all 52B of weights still have to be resident, about 31 GB at Q4. That is a 32 GB card or a large Mac, not the 16 GB card this entry used to claim. Sizes use the calculator\'s generic rates; no speed has been measured here.',
+      zh: 'AI21 的 Mamba-Transformer 混合 MoE：总参数 52B，激活约 12B，256K 上下文。32 层中只有 4 层保留 KV 缓存，所以长上下文很省——但 52B 权重必须全部载入，Q4 约 31 GB。需要 32 GB 显卡或大内存 Mac，而不是本条目以前写的 16 GB 显卡。体积使用计算器通用比特率；本站未实测速度。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 8.5, pplLossPercent: 3.4, speedRTX4090: 95, hfSearchUrl: hf('jamba-1.5-mini GGUF') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 7.5, pplLossPercent: 4.8, speedRTX4090: 125, hfSearchUrl: hf('jamba-1.5-mini AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 31.5, pplLossPercent: 3.4, hfSearchUrl: hf('jamba-1.5-mini GGUF'), confidence: 'estimated' },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 26.0, pplLossPercent: 4.8, hfSearchUrl: hf('jamba-1.5-mini AWQ'), confidence: 'estimated' },
     ],
   },
   {
@@ -415,7 +435,7 @@ export const extraModels2: QuantModel[] = [
     params: 132.0,
     status: 'superseded',
     supersededBy: 'glm-4.5-air',
-    paramLabel: '132B',
+    paramLabel: '132B MoE',
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 32768,
@@ -425,8 +445,8 @@ export const extraModels2: QuantModel[] = [
       zh: 'MoE 旗舰（激活约 36B），需多卡；大规模代码与推理能力强。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 78.5, pplLossPercent: 2.5, speedRTX4090: 15, hfSearchUrl: hf('dbrx-instruct GGUF') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 63.2, pplLossPercent: 5.8, speedRTX4090: 18, hfSearchUrl: hf('dbrx-instruct GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 78.5, pplLossPercent: 2.5, hfSearchUrl: hf('dbrx-instruct GGUF') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 63.2, pplLossPercent: 5.8, hfSearchUrl: hf('dbrx-instruct GGUF Q3_K_M') },
     ],
   },
 ];

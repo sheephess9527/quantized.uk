@@ -52,8 +52,8 @@ export const extraModels7: QuantModel[] = [
       zh: 'GPT-OSS 大杯（总 117B / 激活 5.1B）。原生 MXFP4 权重约 61GB —— 单张 80GB 卡或 128GB 统一内存 Mac 可跑。24GB 消费卡部分卸载虽慢但可用。',
     },
     quants: [
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.25, vramGB: 61.0, pplLossPercent: 0.0, speedRTX4090: 22, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 58.5, pplLossPercent: 1.6, speedRTX4090: 24, hfSearchUrl: hf('gpt-oss-120b GGUF Q4_K_M') },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.25, vramGB: 61.0, pplLossPercent: 0.0, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 58.5, pplLossPercent: 1.6, hfSearchUrl: hf('gpt-oss-120b GGUF Q4_K_M') },
     ],
   },
   {
@@ -72,9 +72,9 @@ export const extraModels7: QuantModel[] = [
       zh: '智谱 Agent/推理向 MoE（总 106B / 激活 12B）。Q4 约 64GB —— 96GB+ 统一内存 Mac 或双 48GB 卡最合适。同级别中工具调用能力突出。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 64.3, pplLossPercent: 2.4, speedRTX4090: 18, hfSearchUrl: hf('GLM-4.5-Air GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 51.3, pplLossPercent: 5.1, speedRTX4090: 21, hfSearchUrl: hf('GLM-4.5-Air GGUF Q3_K_M') },
-      { format: 'GGUF', level: 'Q2_K',   bpw: 2.63, vramGB: 34.8, pplLossPercent: 12.0, speedRTX4090: 26, hfSearchUrl: hf('GLM-4.5-Air GGUF Q2_K') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 64.3, pplLossPercent: 2.4, hfSearchUrl: hf('GLM-4.5-Air GGUF Q4_K_M'), confidence: 'community' },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 51.3, pplLossPercent: 5.1, hfSearchUrl: hf('GLM-4.5-Air GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q2_K',   bpw: 2.63, vramGB: 34.8, pplLossPercent: 12.0, hfSearchUrl: hf('GLM-4.5-Air GGUF Q2_K') },
     ],
   },
   {
@@ -97,7 +97,7 @@ export const extraModels7: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 55, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q5_K_M') },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 48, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q6_K') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 13.0, pplLossPercent: 4.0, speedRTX4090: 78, hfSearchUrl: hf('Devstral-Small-2507 AWQ') },
-      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, speedRTX4090: 88, hfSearchUrl: hf('Devstral-Small-2507 exl2 4.65') },
+      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, hfSearchUrl: hf('Devstral-Small-2507 exl2 4.65') },
     ],
   },
 ];

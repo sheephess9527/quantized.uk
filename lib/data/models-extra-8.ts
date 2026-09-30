@@ -54,7 +54,7 @@ export const extraModels8: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 19.0, pplLossPercent: 2.6, speedRTX4090: 95, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q4_K_M'), confidence: 'community' },
       { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 15.2, pplLossPercent: 5.4, speedRTX4090: 104, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q3_K_M') },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, pplLossPercent: 0.3, speedRTX4090: 78, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q8_0') },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, pplLossPercent: 0.3, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q8_0') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 17.2, pplLossPercent: 3.7, speedRTX4090: 112, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct AWQ') },
     ],
   },
@@ -78,7 +78,7 @@ export const extraModels8: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 54, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q5_K_M') },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 47, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q6_K') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 13.0, pplLossPercent: 4.0, speedRTX4090: 76, hfSearchUrl: hf('Magistral-Small-2509 AWQ') },
-      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, speedRTX4090: 86, hfSearchUrl: hf('Magistral-Small-2509 exl2 4.65') },
+      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, hfSearchUrl: hf('Magistral-Small-2509 exl2 4.65') },
     ],
   },
   {
@@ -99,7 +99,7 @@ export const extraModels8: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 21.8, pplLossPercent: 2.7, speedRTX4090: 42, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q4_K_M'), confidence: 'community' },
       { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 17.4, pplLossPercent: 5.6, speedRTX4090: 48, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q3_K_M') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 25.6, pplLossPercent: 1.3, speedRTX4090: 37, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q5_K_M') },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 25.6, pplLossPercent: 1.3, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q5_K_M') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 19.5, pplLossPercent: 3.8, speedRTX4090: 55, hfSearchUrl: hf('Seed-OSS-36B-Instruct AWQ') },
     ],
   },

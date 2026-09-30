@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (d) — `speedRTX4090` rows that cannot be RTX 4090 figures; Jamba sized as 52B
+
+A sweep of every `speedRTX4090` against the card itself: **43 rows** sat on builds with
+`vramGB > 24` (Llama 3.1 70B Q4_K_M, 43.5 GB, at "38 tok/s"; DeepSeek-V3 at 385 GB, "4 tok/s") and
+**4 dense EXL2 rows** (Qwen2.5 14B, Mistral Small 24B, Devstral Small 1.1, Magistral Small 1.2) ran
+17–22% over the `bandwidth / (params × bpw / 8)` ceiling. All 47 removed, not adjusted.
+`dataProblems()` (`lib/data/validate.ts`) now rejects both — proven by perturbation. MoE rows are
+exempt from the roofline by `paramLabel` (`-A\d` / `MoE`); DeepSeek-V2-Lite and Coder-V2-Lite were
+labelled `16B` and are now `16B-A2.4B`, DBRX `132B MoE`.
+
+`modelExplainer` printed "the fastest level measured here" / 本站实测 on all 83 pages; it now asks
+`quantConfidence()` and says "an estimate" for the 73 models outside `MEASURED_MODEL_IDS`.
+
+**Jamba 1.5 Mini** was `params: 12` — the active count typed as the total. `JambaConfig` (32 layers,
+16 experts on alternate layers, hidden 4096, FFN 14336) reproduces 51.6B / 12.1B; transformers' docs
+say 52B. Now `52B-A12B`, Q4_K_M 31.5 GB, `attention.fullLayers: 4` (attn period 8, offset 4), speeds
+dropped. GPU pages listing it: 62 → 19.
+
+**Mistral Large 3** is MLA (llama.cpp `MistralMoeModel(DeepseekV2Model)`, vLLM
+`MistralLarge3ForCausalLM(DeepseekV3ForCausalLM)`), but layer count and `kv_lora_rank` are in
+`params.json` on huggingface.co (blocked) — and Mistral Small 4 uses rank 256, not DeepSeek's 512, so
+the shape cannot be copied. Arch left as-is with a source comment; the description calls the 256K
+cache figure an upper bound (~69 GB on the unsourced layout vs ~8.6 GB at 32K).
+
 ### 2026-09-30 (c) — DeepSeek MLA entries sized as current llama.cpp caches them
 
 `deepseek-v3`, `deepseek-r1` (61 layers, 128 heads) and `deepseek-v2-lite`, `deepseek-coder-v2-lite`

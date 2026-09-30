@@ -588,6 +588,12 @@ softening it. vLLM's real failure signature is a preemption warning naming
 speed field, and a GPU page's fit table headed it "tok/s", presenting 4090 speeds as the RTX 4060's.
 Any new surface printing it names the RTX 4090; a card's own speeds come only from `matrixData`.
 
+**`speedRTX4090` is gated at build time.** A row the 4090 cannot hold (`vramGB > 24`) or a dense row
+faster than `1008 / (params × bpw / 8)` × 1.15 fails `dataProblems()`. MoE is recognised **only** by
+`paramLabel` (`-A\d` or `MoE`) — label a new MoE model that way or the gate treats it as dense.
+**Check `params` is the total, not the active count**: Jamba 1.5 Mini shipped as `12` (its active
+figure) and was sized at a quarter of its real weights.
+
 **Quote only throughput this index measured.** `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
 which nobody here ran; its batch-1 figure happened to match the index's own 218 tok/s row. Cite
 `matrixData` or say the site has not measured it — batched throughput especially, since that is the
@@ -839,6 +845,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **Impossible 4090 speeds removed** — 43 rows over 24 GB + 4 dense rows over the bandwidth ceiling; build now rejects both. Jamba 1.5 Mini was sized at its active 12B (real: 52B). "Measured here" only for `MEASURED_MODEL_IDS` |
 | 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |
 | 2026-09-29 | **Structured-data gate** — 1,509 JSON-LD blocks audited, 0 faults; language / canonical url / `/zh` breadcrumbs / ItemList count / visible FAQ now enforced in postbuild |
 | 2026-09-29 | **Title width gate** — 31 `/zh` titles over 60 width; `fitTitle()` drops the brand suffix first; postbuild fails on long or duplicate titles |

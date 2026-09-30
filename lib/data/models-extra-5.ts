@@ -59,14 +59,25 @@ export const extraModels5: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 262144,
+    /**
+     * Attention is MLA, not GQA: llama.cpp converts it as `DeepseekV2Model`
+     * (arch DEEPSEEK2) and vLLM's `MistralLarge3ForCausalLM` subclasses
+     * `DeepseekV3ForCausalLM`. The layer count and kv_lora_rank are NOT
+     * verified — params.json sits on huggingface.co, which is blocked here, and
+     * Mistral's own Small 4 uses rank 256 rather than DeepSeek's 512, so the
+     * DeepSeek shape cannot simply be copied. These GQA numbers are unsourced
+     * and overstate the cache: ~8.6 GB at 32K (~2% of the total, no verdict
+     * moves) but ~69 GB at the full 256K, where the overstatement does matter.
+     * Replace with the real params.json values once readable.
+     */
     arch: { layers: 64, attHeads: 64, kvHeads: 8, headDim: 128 },
     description: {
-      en: 'Mistral 3 flagship MoE (41B active / 675B total) with vision encoder. FP8 on 8×H200; GGUF quant for research clusters only.',
-      zh: 'Mistral 3 旗舰 MoE（激活 41B / 总 675B），含视觉编码器。FP8 需 8×H200；GGUF 量化仅供研究集群。',
+      en: 'Mistral 3 flagship MoE (41B active / 675B total) with vision encoder. FP8 on 8×H200; GGUF quant for research clusters only. Its attention is DeepSeek-style MLA, so the real KV cache is smaller than the figure below, which uses an unverified conventional layout. At 32K that is a rounding error beside ~390 GB of weights; at the full 256K window, treat the cache figure as an upper bound.',
+      zh: 'Mistral 3 旗舰 MoE（激活 41B / 总 675B），含视觉编码器。FP8 需 8×H200；GGUF 量化仅供研究集群。注意力为 DeepSeek 式 MLA，实际 KV 缓存比下方按常规结构（未核实）估算的数字小。32K 下相对约 390 GB 权重可忽略；用满 256K 时，请把缓存数字当作上限。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 388.0, pplLossPercent: 2.1, speedRTX4090: 4, hfSearchUrl: hf('Mistral-Large-3-675B GGUF Q4_K_M') },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 312.0, pplLossPercent: 4.5, speedRTX4090: 5, hfSearchUrl: hf('Mistral-Large-3-675B GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 388.0, pplLossPercent: 2.1, hfSearchUrl: hf('Mistral-Large-3-675B GGUF Q4_K_M') },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 312.0, pplLossPercent: 4.5, hfSearchUrl: hf('Mistral-Large-3-675B GGUF Q3_K_M') },
     ],
   },
   {
