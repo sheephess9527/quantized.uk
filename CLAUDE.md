@@ -720,7 +720,10 @@ indexing. Always render it through `t.hub.model.addedOn` ("added {date}").
 stack those numbers were measured on — editing it to look current would claim runs on releases that
 did not exist at the time. `runtimeVersions` in `meta.ts` carries what the projects are at today,
 shown beside it, with its own `checkedAt`; bump that only when you actually re-check the projects'
-release pages.
+release pages. From this environment `api.github.com` and direct `curl` to github.com are blocked for
+repos outside the session; `WebFetch` of the releases/tags page works — take versions from a
+**verbatim tag list**, not a summarised "latest" (one summary invented `v0.5.0` for llama.cpp),
+and skip anything marked Pre-release.
 
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
@@ -826,6 +829,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
 | 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |
 | 2026-09-29 | **Structured-data gate** — 1,509 JSON-LD blocks audited, 0 faults; language / canonical url / `/zh` breadcrumbs / ItemList count / visible FAQ now enforced in postbuild |
 | 2026-09-29 | **Title width gate** — 31 `/zh` titles over 60 width; `fitTitle()` drops the brand suffix first; postbuild fails on long or duplicate titles |

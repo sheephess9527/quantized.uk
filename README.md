@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 — `runtimeVersions` re-checked
+
+`checkedAt` 2026-09-15 → 2026-09-30, read from each project's GitHub releases/tags page (the API is
+blocked from this environment for repos outside the session; the pages were read via fetch):
+llama.cpp b10978 → **b11277** (tags page, verbatim), vLLM v0.29.0 → **v0.30.0** (marked Latest),
+Ollama v0.34.1 → **v0.35.0** (Latest; v0.35.1 and a v0.40.0 are pre-releases, skipped),
+ExLlamaV2 unchanged at 0.3.2, ExLlamaV3 v1.5.0 → v1.5.3 in the note. One fetch summary reported
+llama.cpp's latest release as "v0.5.0", which contradicts the project's tag scheme — the tags list
+was used instead. Methodology (measured-on) versions untouched, per the history rule.
+
 ### 2026-09-29 (d) — Tool breadcrumbs include the Tools hub
 
 Re-crawled `out/` for the "no content page under 3 inbound" target (excluding hrefs on >90% of
