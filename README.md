@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (i) — Public changelog rewritten for readers
+
+14 entries in `lib/data/meta.ts` (2026-08-18, 2026-09-12 → 09-21) read as internal post-mortems —
+QTZ ticket ids, function names, "the audit said", 1,000–2,300 characters each — and they render on
+`/changelog/`, both RSS feeds and the homepage. Rewritten to what changed for the reader, keeping
+every fact and figure as of its date; the engineering detail already lives in this section. `out/`
+changelog pages and feeds: 0 `QTZ-` ids, 0 "audit"/"审计".
+
 ### 2026-09-30 (h) — Every speed states its source
 
 `components/ui/ConfidenceTag.tsx` renders `quantConfidence()` ("Estimated" / "Community", nothing for

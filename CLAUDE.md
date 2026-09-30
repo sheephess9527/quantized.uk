@@ -797,6 +797,11 @@ With real traffic, **freshness > new tools**. Suggested rhythm:
 | Monthly | Re-verify 1 high-traffic cookbook (`verifiedAt` / `verifiedStack`) |
 | Quarterly | Supersede more legacy models; trim noise |
 
+**`changelog` in `meta.ts` is for readers; README §9 is for maintainers.** It renders on `/changelog/`,
+both feeds and the homepage. Write what changed for someone using the site — no ticket ids, function
+or file names, "the audit said", or process narration — and keep it to a few sentences. The
+engineering detail (sources, before/after figures, what was deliberately not done) goes in README §9.
+
 **A ship is not done when the code is right.** `lib/data/meta.ts` is part of the change, not
 paperwork after it: a commit that alters behaviour but leaves `dataLastUpdated` and `changelog`
 untouched is invisible on the site's own three cadence surfaces, and leaves the "last updated" date
@@ -863,6 +868,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **Public changelog rewritten for readers** — 14 entries were internal post-mortems (QTZ ids, function names, 1–2K chars); now plain statements of what changed |
 | 2026-09-30 | **Speeds state their source** — "Estimated" tag on card/home/calculator/GPU pages; compare row treated a missing speed as 0 and called all speeds "published" |
 | 2026-09-30 | **"63 GPUs" was 59 + 4 CPU rows** — `GPU_COUNT` now excludes `isCPU`; Command R page states the v01 (MHA, 8× cache) vs 8-KV-head ambiguity rather than guessing the release |
 | 2026-09-30 | **Llama 4 chunked attention** — 36 of 48 layers hold one 8K chunk in llama.cpp; Scout @128K 95→77 GB. Rest of index swept against llama.cpp's SWA archs: no others |
