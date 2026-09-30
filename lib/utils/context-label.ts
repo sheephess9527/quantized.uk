@@ -13,6 +13,9 @@
  */
 export function contextLabel(tokens: number): string {
   if (tokens < 1024) return String(tokens);
+  // 1,048,576 read "1024K" and Llama 4 Scout's window "10240K".
+  const m = tokens / (1024 * 1024);
+  if (m >= 1 && Number.isInteger(m * 10)) return `${Number.isInteger(m) ? m : m.toFixed(1)}M`;
   const k = tokens / 1024;
   return `${Number.isInteger(k) ? k : k.toFixed(1)}K`;
 }

@@ -129,7 +129,24 @@ export const extraModels3: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['pro-gpu'],
     contextLength: 10485760,
-    arch: { layers: 48, attHeads: 40, kvHeads: 8, headDim: 128 },
+    // llama.cpp `src/models/llama4.cpp`: chunked attention (8192-token chunks)
+    // on 3 of every 4 layers, iSWA cache of pad256(8192 + 512) = 8704 cells;
+    // transformers Llama4TextConfig marks every 4th layer full (NoPE).
+    arch: {
+      layers: 48,
+      attHeads: 40,
+      kvHeads: 8,
+      headDim: 128,
+      attention: {
+        fullLayers: 12,
+        windowLayers: 36,
+        windowTokens: 8704,
+        note: {
+          en: '12 of 48 layers use full attention; the other 36 attend within 8,192-token chunks, so their cache stops growing there (llama.cpp keeps a chunk + one 512-token batch).',
+          zh: '48 层中 12 层为全注意力；其余 36 层只在 8192 token 的分块内做注意力，缓存到分块大小就不再增长（llama.cpp 保留一个分块加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Meta Llama 4 Scout MoE (17B active / 109B total). Multimodal; needs ~68GB VRAM at Q4_K_M.',
       zh: 'Meta Llama 4 Scout MoE（激活 17B / 总 109B），多模态，Q4_K_M 约需 68GB 显存。',
@@ -149,7 +166,24 @@ export const extraModels3: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['pro-gpu'],
     contextLength: 1048576,
-    arch: { layers: 48, attHeads: 40, kvHeads: 8, headDim: 128 },
+    // llama.cpp `src/models/llama4.cpp`: chunked attention (8192-token chunks)
+    // on 3 of every 4 layers, iSWA cache of pad256(8192 + 512) = 8704 cells;
+    // transformers Llama4TextConfig marks every 4th layer full (NoPE).
+    arch: {
+      layers: 48,
+      attHeads: 40,
+      kvHeads: 8,
+      headDim: 128,
+      attention: {
+        fullLayers: 12,
+        windowLayers: 36,
+        windowTokens: 8704,
+        note: {
+          en: '12 of 48 layers use full attention; the other 36 attend within 8,192-token chunks, so their cache stops growing there (llama.cpp keeps a chunk + one 512-token batch).',
+          zh: '48 层中 12 层为全注意力；其余 36 层只在 8192 token 的分块内做注意力，缓存到分块大小就不再增长（llama.cpp 保留一个分块加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Llama 4 Maverick flagship MoE (17B active / 400B total). Multi-GPU or H100 cluster territory.',
       zh: 'Llama 4 Maverick 旗舰 MoE（激活 17B / 总 400B），需多卡或 H100 集群。',

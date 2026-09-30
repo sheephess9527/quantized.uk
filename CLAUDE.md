@@ -740,7 +740,9 @@ row `estimated`; never type a plausible size.
 
 **Sliding-window layers are sized at what llama.cpp allocates, not the bare window.** With the
 default `swa_full = false`, an SWA layer holds `pad256(n_swa + n_ubatch)` cells (`llama-kv-cache-iswa.cpp`),
-so `windowTokens` is 1536 for Gemma 3 (window 1024), 4608 for Gemma 2 (4096), 768 for GPT-OSS (128).
+so `windowTokens` is 1536 for Gemma 3 (window 1024), 4608 for Gemma 2 (4096), 768 for GPT-OSS (128),
+8704 for Llama 4 (chunked, 8192). Phi-3's SWA is *disabled* in llama.cpp — check `src/models/<arch>.cpp`
+for the arch before encoding a window from `config.json` alone.
 Set `fullLayers` explicitly alongside `windowLayers` — it defaults to *all* layers. A reachable source
 of real `config.json`s: `mlc-ai/mlc-llm` `python/mlc_llm/model/model_preset.py`; for Gemma,
 `google-deepmind/gemma` `gemma/gm/nn/_gemma.py`. transformers' config defaults describe one
@@ -853,6 +855,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **Llama 4 chunked attention** — 36 of 48 layers hold one 8K chunk in llama.cpp; Scout @128K 95→77 GB. Rest of index swept against llama.cpp's SWA archs: no others |
 | 2026-09-30 | **Arch audit + sliding-window sizing** — 8 SWA models (Gemma 2/3, GPT-OSS) were sized at full context on every layer (Gemma 3 27B @32K 34→21 GB); Qwen2.5 3B, Phi-4-mini, Gemma 3 12B, WizardLM-2 7B had wrong arch fields. Three guides re-derived |
 | 2026-09-30 | **Impossible 4090 speeds removed** — 43 rows over 24 GB + 4 dense rows over the bandwidth ceiling; build now rejects both. Jamba 1.5 Mini was sized at its active 12B (real: 52B). "Measured here" only for `MEASURED_MODEL_IDS` |
 | 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |

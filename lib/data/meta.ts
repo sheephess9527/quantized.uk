@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    en: 'Llama 4 Scout and Maverick attend within 8,192-token chunks on three of every four layers, and llama.cpp stores only a chunk\'s worth of cache for those layers. The calculator had been sizing all 48 layers at full context. At 128K context Scout now needs about 77 GB at Q4 instead of about 95 GB; at its full 10-million-token window the cache estimate falls from about 1.9 TB to about 480 GB. Every other model in the index was checked against llama.cpp\'s own list of sliding-window architectures; none is affected.',
+    zh: 'Llama 4 Scout 和 Maverick 每四层中有三层只在 8192 token 的分块内做注意力，llama.cpp 对这些层只保存一个分块大小的缓存。计算器此前把 48 层全部按完整上下文计算。现在 Scout 在 128K 上下文、Q4 下约需 77 GB，而不是约 95 GB；用满 1000 万 token 窗口时，缓存估算从约 1.9 TB 降到约 480 GB。索引中其他模型都已对照 llama.cpp 自己的滑动窗口架构清单核查过，没有受影响的。',
+  },
+  {
+    date: '2026-09-30',
     en: 'Checked every model\'s layer and attention-head figures against published configs and fixed the ones that were wrong. Eight models — Gemma 2 (2B, 9B, 27B), Gemma 3 (4B, 12B, 27B) and GPT-OSS (20B, 120B) — keep a full cache on only some layers; the rest use a short sliding window, which llama.cpp stores at just the window\'s size. The calculator had been sizing every layer at full context, so long-context figures were far too high: Gemma 3 27B at 32K drops from about 34 GB to about 21 GB and now fits a 24 GB card, and at its full 128K from about 86 GB to about 29 GB. Qwen2.5 3B had the wrong layer and head counts (cache overstated about 1.6×), Phi-4-mini\'s cache was understated by a quarter, Gemma 3 12B had the wrong head size, and WizardLM-2 7B had been given another model\'s size and shape — it is a Mistral 7B fine-tune. The GPT-OSS, RTX 4060 Ti and Mac M3 Pro guides were updated to match.',
     zh: '把每个模型的层数和注意力头参数与公开配置逐一核对，修正了错误的条目。Gemma 2（2B、9B、27B）、Gemma 3（4B、12B、27B）和 GPT-OSS（20B、120B）这八个模型只有部分层保留完整缓存，其余层使用较短的滑动窗口，llama.cpp 只按窗口大小存储这部分缓存。计算器此前把所有层都按完整上下文计算，所以长上下文下的数字严重偏高：Gemma 3 27B 在 32K 下从约 34 GB 降到约 21 GB，现在能装进 24 GB 显卡；用满 128K 时从约 86 GB 降到约 29 GB。Qwen2.5 3B 的层数和头数有误（缓存高估约 1.6 倍），Phi-4-mini 的缓存低估了四分之一，Gemma 3 12B 的 head 维度有误，WizardLM-2 7B 此前被填成了另一个模型的规模和结构——它其实是基于 Mistral 7B 微调的。GPT-OSS、RTX 4060 Ti 和 Mac M3 Pro 三篇指南已同步更新。',
   },

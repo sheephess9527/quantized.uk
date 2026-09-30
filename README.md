@@ -419,6 +419,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (f) — Llama 4 chunked attention
+
+llama.cpp `src/models/llama4.cpp` sets `LLAMA_SWA_TYPE_CHUNKED`, `n_swa = 8192`, pattern 4 (3 chunked :
+1 full) unless the GGUF sets the window to 0; transformers' `Llama4TextConfig` marks every 4th layer
+full. Scout and Maverick now `fullLayers 12 / windowLayers 36 / windowTokens 8704` (the iSWA
+allocation, 8192 + 512). Scout Q4_K_M: 95.5 → 77.0 GB at 128K; KV at 10M 1,920 → 481 GB.
+Swept the rest of the index against `src/models/*.cpp`: Phi-3 SWA is disabled in llama.cpp (full
+cache is right), OLMo 2 / Qwen2 / Qwen3 / Llama / Mistral 3 / GLM / Granite / InternLM2 / Seed-OSS
+have none.
+
+`contextLabel()` now prints millions as `M` (`1M`, `10M`) — six model pages read "1024K" / "10240K".
+
 ### 2026-09-30 (e) — Architectures checked against configs; sliding-window attention sized as llama.cpp stores it
 
 Sources reachable from here: `mlc-ai/mlc-llm` `python/mlc_llm/model/model_preset.py` (verbatim
