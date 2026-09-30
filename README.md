@@ -419,6 +419,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (j) — IndexNow on production deploys
+
+`scripts/indexnow.mjs` runs last in `postbuild` (after the export gate passes). On a Cloudflare
+Pages production build (`CF_PAGES_BRANCH === 'main'`) it submits to `api.indexnow.org` every sitemap
+URL whose `lastmod` is the build's UTC date — i.e. the pages changed by a ship dated today (320 of
+400 on a data ship; 0 on a later push with no ship). Key: `public/1ff374a1f4ca010beaf5f65b4eb3b8f8.txt`.
+It first fetches the key file from the live site and skips if it is not served yet (the first deploy
+after this change cannot submit — the next one does). Never fails the build. `--dry-run` prints the
+selection; `--all` / `INDEXNOW_ALL=1` submits every URL. Not exercised end-to-end from the agent
+environment (quantized.uk and api.indexnow.org are both unreachable here): check the Cloudflare
+build log for the `indexnow:` line after the next data ship.
+
 ### 2026-09-30 (i) — Public changelog rewritten for readers
 
 14 entries in `lib/data/meta.ts` (2026-08-18, 2026-09-12 → 09-21) read as internal post-mortems —

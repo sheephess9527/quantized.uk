@@ -50,6 +50,12 @@ stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos
 guide pointing at a missing model/GPU, a quant level the calculator cannot select. When a new
 hand-typed cross-reference is added, add its rule there and prove it fires by perturbation.
 
+`postbuild` ends with `scripts/indexnow.mjs`: on Cloudflare production builds only, it pings
+IndexNow with the sitemap URLs whose `lastmod` is today (UTC) — so honest `lastmod`s now also decide
+what search engines are told changed. Never fails the build. **Do not delete or rename
+`public/1ff374a1f4ca010beaf5f65b4eb3b8f8.txt`** — it is the key IndexNow verifies against.
+`node scripts/indexnow.mjs --dry-run` shows what a deploy today would submit.
+
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
 `<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
 tree, renders the literal text `undefined`, any page's meta description is missing, duplicated or
@@ -868,6 +874,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **IndexNow** — production deploys submit the sitemap URLs whose `lastmod` is today; skips until the key file is live; never fails the build |
 | 2026-09-30 | **Public changelog rewritten for readers** — 14 entries were internal post-mortems (QTZ ids, function names, 1–2K chars); now plain statements of what changed |
 | 2026-09-30 | **Speeds state their source** — "Estimated" tag on card/home/calculator/GPU pages; compare row treated a missing speed as 0 and called all speeds "published" |
 | 2026-09-30 | **"63 GPUs" was 59 + 4 CPU rows** — `GPU_COUNT` now excludes `isCPU`; Command R page states the v01 (MHA, 8× cache) vs 8-KV-head ambiguity rather than guessing the release |
