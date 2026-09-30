@@ -17,7 +17,23 @@ export const extraModels6: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'pro-gpu'],
     contextLength: 131072,
-    arch: { layers: 62, attHeads: 32, kvHeads: 16, headDim: 128 },
+    // google-deepmind/gemma `_gemma.py`: 62 layers → 10 global, window 1024.
+    // llama.cpp iSWA, pattern 6.
+    arch: {
+      layers: 62,
+      attHeads: 32,
+      kvHeads: 16,
+      headDim: 128,
+      attention: {
+        fullLayers: 10,
+        windowLayers: 52,
+        windowTokens: 1536,
+        note: {
+          en: 'Only 10 of 62 layers use global attention; the other 52 are local, with a 1,024-token sliding window (5 local per global), so at long context the cache is mostly the global layers (llama.cpp keeps window + one 512-token batch).',
+          zh: '62 层中只有 10 层为全局注意力；其余 52 层是局部注意力，滑动窗口 1024 token（每 5 个局部层配 1 个全局层），所以长上下文下缓存主要来自全局层（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     addedAt: ADDED,
     description: {
       en: 'Gemma 3 large instruct with long context and multimodal support. Q4 ~16GB — dual-GPU or 24GB card with short ctx.',

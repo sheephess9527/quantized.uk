@@ -37,6 +37,13 @@ export function dataProblems(): string[] {
       else if (next.status === 'superseded') out.push(`${m.id}: successor ${next.id} is itself superseded`);
     }
     if (!m.quants.length) out.push(`${m.id}: no quants`);
+    const att = m.arch.attention;
+    if (att) {
+      const full = att.fullLayers ?? m.arch.layers;
+      const win = att.windowLayers ?? 0;
+      if (full + win > m.arch.layers) out.push(`${m.id}: attention splits ${full} + ${win} layers but the model has ${m.arch.layers}`);
+      if (win > 0 && !att.windowTokens) out.push(`${m.id}: windowLayers set with no windowTokens — the calculator would size those layers at full context`);
+    }
     for (const q of m.quants) {
       const key = quantLevelKey(q);
       if (!(key in quantBPW) || !selectable.has(key)) {

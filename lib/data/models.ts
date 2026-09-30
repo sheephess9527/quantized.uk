@@ -214,7 +214,23 @@ const baseModels: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 8192,
-    arch: { layers: 42, attHeads: 16, kvHeads: 8, headDim: 256 },
+    // Layer split and window: google-deepmind/gemma `_gemma.py`; llama.cpp
+    // `src/models/gemma2.cpp` builds an iSWA cache (pattern 2).
+    arch: {
+      layers: 42,
+      attHeads: 16,
+      kvHeads: 8,
+      headDim: 256,
+      attention: {
+        fullLayers: 21,
+        windowLayers: 21,
+        windowTokens: 4608,
+        note: {
+          en: '21 of 42 layers use global attention; the other 21 alternate in with a 4,096-token sliding window, so their cache stops growing there (llama.cpp keeps window + one 512-token batch).',
+          zh: '42 层中 21 层为全局注意力；另外 21 层交替使用 4096 token 的滑动窗口，缓存到窗口大小就不再增长（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Google\'s compact Gemma 2 with sliding window attention. Punches above 9B.',
       zh: 'Google Gemma 2 采用滑动窗口注意力机制，性能超越同级 9B 模型。',

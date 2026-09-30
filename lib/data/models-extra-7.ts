@@ -24,7 +24,23 @@ export const extraModels7: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 131072,
-    arch: { layers: 24, attHeads: 64, kvHeads: 8, headDim: 64 },
+    // transformers GptOssConfig: sliding_window 128 on alternate layers;
+    // llama.cpp `src/models/openai-moe.cpp` builds an iSWA cache (pattern 2).
+    arch: {
+      layers: 24,
+      attHeads: 64,
+      kvHeads: 8,
+      headDim: 64,
+      attention: {
+        fullLayers: 12,
+        windowLayers: 12,
+        windowTokens: 768,
+        note: {
+          en: '12 of 24 layers use a 128-token sliding window, alternating with 12 full-attention layers, so only half the layers grow a cache with context (llama.cpp keeps window + one 512-token batch, padded to 768).',
+          zh: '24 层中 12 层使用 128 token 滑动窗口，与 12 层全注意力交替，所以只有一半的层会随上下文增长缓存（llama.cpp 保留窗口加一个 512 token 批次，补齐到 768）。',
+        },
+      },
+    },
     addedAt: ADDED,
     description: {
       en: 'OpenAI open-weight MoE (21B total / 3.6B active), shipped natively in MXFP4 — ~12.8GB runs on a 16GB card with no quality tax. Only 3.6B active params means CPU-offload stays usable.',
@@ -45,7 +61,23 @@ export const extraModels7: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 36, attHeads: 64, kvHeads: 8, headDim: 64 },
+    // transformers GptOssConfig: sliding_window 128 on alternate layers;
+    // llama.cpp `src/models/openai-moe.cpp` builds an iSWA cache (pattern 2).
+    arch: {
+      layers: 36,
+      attHeads: 64,
+      kvHeads: 8,
+      headDim: 64,
+      attention: {
+        fullLayers: 18,
+        windowLayers: 18,
+        windowTokens: 768,
+        note: {
+          en: '18 of 36 layers use a 128-token sliding window, alternating with 18 full-attention layers, so only half the layers grow a cache with context (llama.cpp keeps window + one 512-token batch, padded to 768).',
+          zh: '36 层中 18 层使用 128 token 滑动窗口，与 18 层全注意力交替，所以只有一半的层会随上下文增长缓存（llama.cpp 保留窗口加一个 512 token 批次，补齐到 768）。',
+        },
+      },
+    },
     addedAt: ADDED,
     description: {
       en: 'The big GPT-OSS (117B total / 5.1B active). Native MXFP4 checkpoint is ~61GB — fits one 80GB card or a 128GB unified-memory Mac. Partial offload on 24GB consumer cards is slow but works.',

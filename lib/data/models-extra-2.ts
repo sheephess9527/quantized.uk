@@ -14,7 +14,23 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 8192,
-    arch: { layers: 26, attHeads: 8, kvHeads: 4, headDim: 256 },
+    // Layer split and window: google-deepmind/gemma `_gemma.py`; llama.cpp
+    // `src/models/gemma2.cpp` builds an iSWA cache (pattern 2).
+    arch: {
+      layers: 26,
+      attHeads: 8,
+      kvHeads: 4,
+      headDim: 256,
+      attention: {
+        fullLayers: 13,
+        windowLayers: 13,
+        windowTokens: 4608,
+        note: {
+          en: '13 of 26 layers use global attention; the other 13 alternate in with a 4,096-token sliding window, so their cache stops growing there (llama.cpp keeps window + one 512-token batch).',
+          zh: '26 层中 13 层为全局注意力；另外 13 层交替使用 4096 token 的滑动窗口，缓存到窗口大小就不再增长（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Ultra-compact Gemma 2. Runs on 4GB VRAM; great for edge prototyping.',
       zh: '超紧凑 Gemma 2，4GB 显存即可运行，适合边缘原型开发。',
@@ -34,7 +50,23 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'pro-gpu'],
     contextLength: 8192,
-    arch: { layers: 46, attHeads: 16, kvHeads: 8, headDim: 256 },
+    // 32 heads × 128 with 16 KV heads (google-deepmind/gemma `_gemma.py`); was
+    // 16 × 256 / 8 KV — same cache size, wrong fields. llama.cpp iSWA, pattern 2.
+    arch: {
+      layers: 46,
+      attHeads: 32,
+      kvHeads: 16,
+      headDim: 128,
+      attention: {
+        fullLayers: 23,
+        windowLayers: 23,
+        windowTokens: 4608,
+        note: {
+          en: '23 of 46 layers use global attention; the other 23 alternate in with a 4,096-token sliding window, so their cache stops growing there (llama.cpp keeps window + one 512-token batch).',
+          zh: '46 层中 23 层为全局注意力；另外 23 层交替使用 4096 token 的滑动窗口，缓存到窗口大小就不再增长（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Largest open Gemma 2. Strong reasoning; needs 24GB+ VRAM at Q4.',
       zh: '最大开源 Gemma 2，推理能力强，Q4 量化需 24GB+ 显存。',
@@ -112,7 +144,9 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 131072,
-    arch: { layers: 32, attHeads: 32, kvHeads: 8, headDim: 96 },
+    // hidden 3072 over 24 heads = head_dim 128 (Phi-4-mini-instruct config.json,
+    // mirrored in mlc-llm's model_preset.py); was 32 × 96, understating the cache 25%.
+    arch: { layers: 32, attHeads: 24, kvHeads: 8, headDim: 128 },
     description: {
       en: 'Latest Phi mini with improved math and code. Strong 4B-class performer.',
       zh: '最新 Phi mini，数学和代码能力提升，4B 级性能强者。',

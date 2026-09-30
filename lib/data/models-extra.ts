@@ -135,7 +135,9 @@ export const extraModels: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 32768,
-    arch: { layers: 28, attHeads: 16, kvHeads: 4, headDim: 128 },
+    // 36 layers / 2 KV heads per the released config.json (mirrored in mlc-llm's
+    // model_preset.py); was 28 / 4, which overstated the cache 1.56×.
+    arch: { layers: 36, attHeads: 16, kvHeads: 2, headDim: 128 },
     description: {
       en: 'Tiny Qwen2.5 for edge devices. Runs on 4GB VRAM or Raspberry Pi class hardware.',
       zh: 'Qwen2.5 迷你版，适合边缘设备，4GB 显存或树莓派级别硬件即可运行。',
@@ -370,21 +372,24 @@ export const extraModels: QuantModel[] = [
     id: 'wizardlm-2-7b',
     name: 'WizardLM-2 7B',
     family: 'Microsoft / WizardLM',
-    params: 7.62,
+    params: 7.24,
     status: 'superseded',
     supersededBy: 'qwen3-8b',
     paramLabel: '7B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 32768,
-    arch: { layers: 28, attHeads: 28, kvHeads: 4, headDim: 128 },
+    // Mistral-7B-v0.1 fine-tune (its own description says Mistral-based); this row
+    // carried Qwen2.5-7B's 7.62B and 28-layer/4-KV-head arch. Mistral-7B shape
+    // per mlc-llm's model_preset.py.
+    arch: { layers: 32, attHeads: 32, kvHeads: 8, headDim: 128 },
     description: {
       en: 'Evol-Instruct fine-tuned Mistral-based 7B. Strong complex instruction handling.',
       zh: 'Evol-Instruct 微调的 Mistral 系 7B，复杂指令处理能力出色。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 5.4, pplLossPercent: 3.1, speedRTX4090: 152, hfSearchUrl: hf('WizardLM-2-7B GGUF') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 4.8,  pplLossPercent: 4.3, speedRTX4090: 218, hfSearchUrl: hf('WizardLM-2-7B AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 5.1, pplLossPercent: 3.1, speedRTX4090: 152, hfSearchUrl: hf('WizardLM-2-7B GGUF') },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 4.6,  pplLossPercent: 4.3, speedRTX4090: 218, hfSearchUrl: hf('WizardLM-2-7B AWQ') },
     ],
   },
   {

@@ -438,6 +438,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['GPT-OSS', 'MXFP4', 'MoE', 'llama.cpp', 'Ollama', 'GGUF'],
     publishedAt: '2026-08-08',
+    updatedAt: '2026-09-30',
     content: [
       {
         heading: 'The one thing to get right: MXFP4 is the original',
@@ -452,11 +453,11 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Sizing it for your card',
         headingZh: '按你的显卡估算',
-        body: 'The 20B fits a 16GB card with room for a useful context window. Note that GPT-OSS uses a head dimension of 64 rather than the usual 128, which halves its KV cache compared to a same-layer-count model — long context is unusually cheap here. Use the VRAM calculator with the MXFP4 level selected; picking Q4_K_M instead will overstate your weights by roughly 14%.',
-        bodyZh: '20B 在 16GB 卡上可跑，且还剩下够用的上下文空间。注意 GPT-OSS 的 head dim 是 64 而非常见的 128，同层数下 KV cache 直接减半——长上下文在这个模型上便宜得反常。用显存计算器时记得选 MXFP4 档；选 Q4_K_M 会把权重高估约 14%。',
+        body: 'The 20B fits a 16GB card with room for a useful context window. Note that GPT-OSS uses a head dimension of 64 rather than the usual 128, which halves its KV cache compared to a same-layer-count model — and half its layers use a 128-token sliding window, so only the other half grow a cache with context. Long context is unusually cheap here. Use the VRAM calculator with the MXFP4 level selected; picking Q4_K_M instead will overstate your weights by roughly 14%.',
+        bodyZh: '20B 在 16GB 卡上可跑，且还剩下够用的上下文空间。注意 GPT-OSS 的 head dim 是 64 而非常见的 128，同层数下 KV cache 直接减半——而且一半的层使用 128 token 的滑动窗口，只有另一半会随上下文增长缓存。长上下文在这个模型上便宜得反常。用显存计算器时记得选 MXFP4 档；选 Q4_K_M 会把权重高估约 14%。',
         code: {
           lang: 'text',
-          content: 'gpt-oss-20b @ MXFP4, batch=1\n  weights                    ~12.8 GB\n  KV cache @  8K ctx          ~0.4 GB\n  KV cache @ 32K ctx          ~1.5 GB\n  KV cache @ 131K ctx         ~6.2 GB\n\n16GB card  → comfortable to ~32K ctx\n24GB card  → full 131K ctx with headroom',
+          content: 'gpt-oss-20b @ MXFP4, batch=1\n  weights                    ~12.8 GB\n  KV cache @  8K ctx          ~0.2 GB\n  KV cache @ 32K ctx          ~0.8 GB\n  KV cache @ 131K ctx         ~3.0 GB\n\n16GB card  → comfortable to ~32K ctx; full 131K loads, tight (~14.9 GB)\n24GB card  → full 131K ctx with headroom',
         },
       },
       {

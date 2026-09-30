@@ -419,6 +419,39 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (e) — Architectures checked against configs; sliding-window attention sized as llama.cpp stores it
+
+Sources reachable from here: `mlc-ai/mlc-llm` `python/mlc_llm/model/model_preset.py` (verbatim
+`config.json`s for ~60 checkpoints), `google-deepmind/gemma` `gemma/gm/nn/_gemma.py` (layer counts,
+heads, window per Gemma size), llama.cpp `src/models/{gemma2,gemma3,openai-moe}.cpp` and
+`src/llama-kv-cache-iswa.cpp`.
+
+**Sliding window (8 models).** llama.cpp builds an iSWA cache for these archs and, with `swa_full`
+false by default, sizes SWA layers at `pad256(min(ctx, n_swa + n_ubatch))` cells. So `windowTokens`
+is the *allocated* span with the default 512 ubatch, not the bare window:
+
+| Model | full / window layers | window → allocated |
+|---|---|---|
+| Gemma 2 2B / 9B / 27B | 13/13 · 21/21 · 23/23 | 4096 → 4608 |
+| Gemma 3 4B / 12B / 27B | 5/29 · 8/40 · 10/52 (pattern 6) | 1024 → 1536 |
+| GPT-OSS 20B / 120B | 12/12 · 18/18 | 128 → 768 |
+
+Gemma 3 27B Q4_K_M: 34.4 → 20.8 GB at 32K, 85.6 → 29.0 GB at 128K. GPT-OSS 20B MXFP4 at 131K:
+18.2 → 14.9 GB. GPU pages size at 4K, so fit lists barely move (Gemma 3 27B 30 → 31 cards).
+
+**Wrong fields.** Qwen2.5 3B `28 layers / 4 KV` → `36 / 2` (cache ÷1.56). Phi-4-mini `32 × 96` →
+`24 × 128` (cache ×1.33). Gemma 3 12B `headDim 240` → `256`. Gemma 2 27B `16 × 256 / 8 KV` →
+`32 × 128 / 16 KV` (same cache). WizardLM-2 7B carried Qwen2.5-7B's `7.62B` and shape; it is a
+Mistral-7B fine-tune (its own description said so) → `7.24B`, `32 / 8 KV`.
+
+Not changed, unverifiable from here: StarCoder2 15B KV heads, StableLM 2 12B head size, and which
+Command R release `command-r-35b` is (v01 is MHA with 64 KV heads; 08-2024 is GQA with 8).
+
+Guides re-derived: `gpt-oss-mxfp4-local` (KV 0.2 / 0.8 / 3.0 GB), `mac-m3-pro-limits` (GPT-OSS 20B
+11.8 GB), `rtx4060ti-what-to-run` (51 / 60 fits — already stale before this change — 11.7 GB,
+83%). `dataProblems()` now also rejects an attention split larger than the layer count, or window
+layers with no `windowTokens`.
+
 ### 2026-09-30 (d) — `speedRTX4090` rows that cannot be RTX 4090 figures; Jamba sized as 52B
 
 A sweep of every `speedRTX4090` against the card itself: **43 rows** sat on builds with

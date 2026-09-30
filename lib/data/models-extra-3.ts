@@ -57,7 +57,23 @@ export const extraModels3: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
     contextLength: 131072,
-    arch: { layers: 34, attHeads: 8, kvHeads: 4, headDim: 256 },
+    // google-deepmind/gemma `_gemma.py`: 5 local (window 1024) per global; 34
+    // layers → 5 global. llama.cpp `src/models/gemma3.cpp` iSWA, pattern 6.
+    arch: {
+      layers: 34,
+      attHeads: 8,
+      kvHeads: 4,
+      headDim: 256,
+      attention: {
+        fullLayers: 5,
+        windowLayers: 29,
+        windowTokens: 1536,
+        note: {
+          en: 'Only 5 of 34 layers use global attention; the other 29 are local, with a 1,024-token sliding window (5 local per global), so at long context the cache is mostly the global layers (llama.cpp keeps window + one 512-token batch).',
+          zh: '34 层中只有 5 层为全局注意力；其余 29 层是局部注意力，滑动窗口 1024 token（每 5 个局部层配 1 个全局层），所以长上下文下缓存主要来自全局层（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Google Gemma 3 multimodal 4B. 128K context; strong vision + text on 8GB cards.',
       zh: 'Google Gemma 3 多模态 4B，128K 上下文，8GB 显卡可跑图文理解。',
@@ -77,7 +93,23 @@ export const extraModels3: QuantModel[] = [
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 48, attHeads: 16, kvHeads: 8, headDim: 240 },
+    // head_dim 256, not 240 (google-deepmind/gemma `_gemma.py`); 48 layers → 8
+    // global. llama.cpp iSWA, pattern 6, window 1024.
+    arch: {
+      layers: 48,
+      attHeads: 16,
+      kvHeads: 8,
+      headDim: 256,
+      attention: {
+        fullLayers: 8,
+        windowLayers: 40,
+        windowTokens: 1536,
+        note: {
+          en: 'Only 8 of 48 layers use global attention; the other 40 are local, with a 1,024-token sliding window (5 local per global), so at long context the cache is mostly the global layers (llama.cpp keeps window + one 512-token batch).',
+          zh: '48 层中只有 8 层为全局注意力；其余 40 层是局部注意力，滑动窗口 1024 token（每 5 个局部层配 1 个全局层），所以长上下文下缓存主要来自全局层（llama.cpp 保留窗口加一个 512 token 批次）。',
+        },
+      },
+    },
     description: {
       en: 'Mid-size Gemma 3 with vision. Fits 16GB at Q4; excellent multilingual chat.',
       zh: '中型 Gemma 3 视觉模型，Q4 可装入 16GB，多语言对话表现优秀。',

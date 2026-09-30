@@ -20,7 +20,7 @@ import type { Article } from '@/lib/data/cookbook';
  */
 export const cookbookRewrites: Record<string, Partial<Article>> = {
   'rtx4060ti-what-to-run': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-09-30',
     verifiedAt: undefined,
     relatedModelIds: ['qwen3-14b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
     content: [
@@ -34,14 +34,14 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The honest summary of this card',
         headingZh: '关于这张卡的实话',
-        body: 'Capacity is generous and bandwidth is not. 52 of the models in this index fit it comfortably at 4K context and 61 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
-        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 52 个模型能在 4K 上下文下从容装进这张卡，61 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
+        body: 'Capacity is generous and bandwidth is not. 51 of the models in this index fit it comfortably at 4K context and 60 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
+        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 51 个模型能在 4K 上下文下从容装进这张卡，60 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
         heading: 'The three worth starting with',
         headingZh: '值得从这三个开始',
-        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 11.4 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 82% of the card, with nothing left for context.',
-        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 11.4 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 82%，几乎没有余量留给上下文。',
+        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 11.7 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 83% of the card, with nothing left for context.',
+        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 11.7 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 83%，几乎没有余量留给上下文。',
         code: { lang: 'bash', content: 'ollama pull qwen3:14b\nollama run qwen3:14b' },
       },
       {
