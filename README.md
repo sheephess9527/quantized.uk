@@ -423,8 +423,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 `scripts/indexnow.mjs` runs last in `postbuild` (after the export gate passes). On a Cloudflare
 Pages production build (`CF_PAGES_BRANCH === 'main'`) it submits to `api.indexnow.org` every sitemap
-URL whose `lastmod` is the build's UTC date — i.e. the pages changed by a ship dated today (320 of
-400 on a data ship; 0 on a later push with no ship). Key: `public/1ff374a1f4ca010beaf5f65b4eb3b8f8.txt`.
+URL whose `lastmod` is within one day of the build's UTC date — the pages changed by the ship being
+deployed (320 of 400 on a data ship; 0 two days later with no ship). The ±1 day covers ship dates
+written in UTC+8 local time while Cloudflare builds in UTC — an exact-date match missed any push
+before 08:00 Beijing time. Key: `public/1ff374a1f4ca010beaf5f65b4eb3b8f8.txt`.
 It first fetches the key file from the live site and skips if it is not served yet (the first deploy
 after this change cannot submit — the next one does). Never fails the build. `--dry-run` prints the
 selection; `--all` / `INDEXNOW_ALL=1` submits every URL. Not exercised end-to-end from the agent

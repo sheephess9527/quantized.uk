@@ -51,7 +51,8 @@ guide pointing at a missing model/GPU, a quant level the calculator cannot selec
 hand-typed cross-reference is added, add its rule there and prove it fires by perturbation.
 
 `postbuild` ends with `scripts/indexnow.mjs`: on Cloudflare production builds only, it pings
-IndexNow with the sitemap URLs whose `lastmod` is today (UTC) — so honest `lastmod`s now also decide
+IndexNow with the sitemap URLs whose `lastmod` is within a day of the build date (UTC, ±1 for
+the UTC+8 ship dates) — so honest `lastmod`s now also decide
 what search engines are told changed. Never fails the build. **Do not delete or rename
 `public/1ff374a1f4ca010beaf5f65b4eb3b8f8.txt`** — it is the key IndexNow verifies against.
 `node scripts/indexnow.mjs --dry-run` shows what a deploy today would submit.

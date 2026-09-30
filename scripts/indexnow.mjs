@@ -4,11 +4,12 @@
  *
  * Runs last in `postbuild`, on Cloudflare Pages production builds only
  * (`CF_PAGES_BRANCH === 'main'`). Which URLs: every sitemap entry whose
- * `lastmod` is today's UTC date. Sitemap lastmods are each page's real
- * content-change date (model `addedAt`, `articleModifiedAt()`, the data ship
- * date for derived pages), so "lastmod == today" is exactly "changed in a
- * ship dated today" — a push on a later day with no data ship submits
- * nothing. `--all` / `INDEXNOW_ALL=1` submits every URL (first use).
+ * `lastmod` is within a day of the build's UTC date. Sitemap lastmods are
+ * each page's real content-change date (model `addedAt`, `articleModifiedAt()`,
+ * the data ship date for derived pages), so that is "changed in the ship being
+ * deployed" — a push two days after a ship, with no new ship, submits nothing.
+ * `--all` / `INDEXNOW_ALL=1` submits every URL (first use); `INDEXNOW_TODAY`
+ * overrides the build date for testing.
  *
  * Like `fetch-hf-stats.mjs`, this never fails the build: the build runs
  * before the deploy goes live, and a network problem here says nothing about
@@ -47,9 +48,14 @@ async function main() {
   }
 
   const entries = sitemapEntries();
-  const today = new Date().toISOString().slice(0, 10);
-  const urls = all ? entries.map(e => e.loc) : entries.filter(e => e.day === today).map(e => e.loc);
-  log(`${urls.length} of ${entries.length} sitemap URLs selected (${all ? 'all' : `lastmod ${today}`})`);
+  // Within a day either side of the build's UTC date: ship dates are written
+  // in the maintainer's local date, so a UTC+8 push before 08:00 builds on
+  // the previous UTC day. Re-submitting a page once more a day later is fine.
+  const today = process.env.INDEXNOW_TODAY || new Date().toISOString().slice(0, 10);
+  const DAY = 86400000;
+  const recent = day => day && Math.abs(Date.parse(day) - Date.parse(today)) <= DAY;
+  const urls = all ? entries.map(e => e.loc) : entries.filter(e => recent(e.day)).map(e => e.loc);
+  log(`${urls.length} of ${entries.length} sitemap URLs selected (${all ? 'all' : `lastmod within a day of ${today}`})`);
   if (dryRun) {
     urls.slice(0, 5).forEach(u => log(`  ${u}`));
     return;
