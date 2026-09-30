@@ -25,6 +25,13 @@ export interface QuantVariant {
 export interface ModelArch {
   layers: number;
   attHeads: number;
+  /**
+   * `kvHeads × headDim` is what `calcVRAM` sizes, doubled for K and V. For an MLA
+   * model (DeepSeek-2-style: GLM-4.7-Flash, Kimi Linear) llama.cpp caches one
+   * compressed vector of `kv_lora_rank + qk_rope_head_dim` per token per layer
+   * and no V, so those entries use `kvHeads: 1, headDim: (576 / 2) = 288` — a
+   * sizing encoding, not the model's real head layout.
+   */
   kvHeads: number;
   headDim: number;
   /**

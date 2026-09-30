@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    en: 'Two models added, both around 3B active parameters so they run on one card or a Mac: GLM-4.7-Flash (Zhipu, 30B total, 128K context — comfortable on a 24 GB card at Q4) and Kimi Linear 48B-A3B (Moonshot, 1M context — comfortable on a 48 GB Mac at Q4, tight on a 32 GB card). Both use compressed attention caches, and the memory estimates count them the way llama.cpp stores them rather than as conventional keys and values. No GGUF file sizes could be checked for this batch, so their sizes use the calculator\'s generic rates and are marked estimated. Several larger releases from the same weeks (780B and 744B models) were left out as beyond single-machine hardware.',
+    zh: '新增两个模型，激活参数都在 3B 左右，单卡或一台 Mac 就能跑：GLM-4.7-Flash（智谱，总参数 30B，128K 上下文——Q4 下 24 GB 显卡可以从容运行）和 Kimi Linear 48B-A3B（月之暗面，100 万上下文——Q4 下 48 GB 的 Mac 可以从容运行，32 GB 显卡只能勉强装下）。两者都使用压缩的注意力缓存，显存估算按 llama.cpp 实际的存储方式计算，而不是当作常规的 K 和 V。这一批未能核对到 GGUF 文件大小，所以体积使用计算器的通用比特率，并标为估算。同期的几个更大的发布（780B、744B 模型）超出单机硬件的范围，没有收录。',
+  },
+  {
+    date: '2026-09-30',
     en: 'Re-checked the current releases of the runtimes named on the benchmarks page against each project\'s own release list: llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0 (the newest release marked stable — pre-releases were skipped). ExLlamaV2 is still at 0.3.2 from July 2025; ExLlamaV3, where its maintainer now works, is at v1.5.3. The benchmark figures themselves were not re-measured and still describe the older stack they were run on.',
     zh: '对照各项目自己的发布列表，重新核对了基准测试页上各运行时的当前版本：llama.cpp b11277、vLLM v0.30.0、Ollama v0.35.0（取最新的正式版，跳过了预发布版）。ExLlamaV2 仍停在 2025 年 7 月的 0.3.2；其维护者现在工作的 ExLlamaV3 已到 v1.5.3。基准测试数字本身没有重测，仍然对应当初测试时的旧软件栈。',
   },

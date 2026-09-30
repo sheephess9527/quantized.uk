@@ -419,6 +419,29 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (b) — +2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B
+
+New `lib/data/models-extra-10.ts`. Selection: the newest families in transformers' toctree
+(checked on raw.githubusercontent) filtered to what one card or one Mac runs — Hy4-Preview (780B),
+GLM-5.x (744B), Step-3.7-Flash (198B) excluded as beyond single-machine hardware; Qwen4-Exp (no
+released sizes in its docs) and Granite SWA 2B (no primary source for context length or instruct
+status) excluded as unverifiable.
+
+- **GLM-4.7-Flash** — 29.94B computed from `Glm4MoeLiteConfig` (vendor: 30B-A3B), 47 layers, MLA,
+  128K context per the zai-org/GLM-4.5 README, MIT. llama.cpp: `Glm4MoeLiteModel(DeepseekV2Model)`.
+- **Kimi Linear 48B-A3B Instruct** — 48B per the MoonshotAI/Kimi-Linear README (own estimate
+  49.1B), 1M context, `attention.fullLayers: 7` of 27 (README 3:1 ratio and "up to 75%" cache cut;
+  transformers' fallback rule of 6 would be 78%). llama.cpp: `kimi-linear` arch.
+- **MLA sizing:** llama.cpp stores only a 576-value K per token per MLA layer (`has_v = !is_mla`,
+  `src/llama-kv-cache.cpp`), encoded as `kvHeads: 1, headDim: 288` (documented on `ModelArch`).
+- **No GGUF sizes available** (huggingface.co, ollama.com, docs.unsloth.ai blocked): Q4_K_M/Q8_0 at
+  the generic 4.85/8.5 bpw, `confidence: 'estimated'`. Prose checked against `calcVRAM`: Kimi at Q4
+  is 95% of an RTX 5090 (tight) and 85% of a 48 GB Mac (comfortable) — the description says so.
+- Wired through `hf-repos.mjs`, `todayFeed`, `meta.ts`; `assertDataConsistent()` passes.
+- **Not fixed, flagged:** the older DeepSeek-family entries (V3, R1, V2-Lite, Coder-V2-Lite) are
+  MLA models encoded as conventional attention, which overstates their KV cache 3.6–7×. Whether their
+  common GGUFs use llama.cpp's MLA cache depends on when they were converted — needs checking first.
+
 ### 2026-09-30 — `runtimeVersions` re-checked
 
 `checkedAt` 2026-09-15 → 2026-09-30, read from each project's GitHub releases/tags page (the API is

@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **81** in index (`models-extra` … `models-extra-9`) |
+| Models | **83** in index (`models-extra` … `models-extra-10`) |
 | Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -725,6 +725,12 @@ repos outside the session; `WebFetch` of the releases/tags page works — take v
 **verbatim tag list**, not a summarised "latest" (one summary invented `v0.5.0` for llama.cpp),
 and skip anything marked Pre-release.
 
+**MLA models are sized as llama.cpp stores them.** An MLA layer caches one `kv_lora_rank +
+qk_rope_head_dim` vector (576 for DeepSeek-2-style) and no V, so encode `kvHeads: 1, headDim: 288`
+and say so in a comment. The older DeepSeek entries predate this and still use conventional
+numbers — do not copy them. When no GGUF file size is reachable, use the generic bpw and mark the
+row `estimated`; never type a plausible size.
+
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
 (vs the usual 128) halves its KV footprint and a copy-pasted 128 would silently overstate it.
@@ -787,7 +793,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-8)
+lib/data/models-extra-*.ts  # model packs (currently through extra-10)
 lib/data/meta.ts            # dataLastUpdated + changelog
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
@@ -829,6 +835,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
 | 2026-09-29 | **Tools hub under the inbound-link target** — re-crawl found `/tools/` at 2 and `/zh/tools/` at 1; tool breadcrumbs now include Tools |
 | 2026-09-29 | **Structured-data gate** — 1,509 JSON-LD blocks audited, 0 faults; language / canonical url / `/zh` breadcrumbs / ItemList count / visible FAQ now enforced in postbuild |
