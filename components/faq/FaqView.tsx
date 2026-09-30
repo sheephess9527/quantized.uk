@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { GPU_COUNT } from '@/lib/seo';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -32,7 +33,7 @@ export default function FaqView() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{f.title}</h1>
         <p className="text-slate-400 leading-relaxed">
-          {fill(f.intro, { models: models.length, gpus: gpuDatabase.length })}
+          {fill(f.intro, { models: models.length, gpus: GPU_COUNT })}
         </p>
       </div>
 

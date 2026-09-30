@@ -1,4 +1,5 @@
 import { models } from '@/lib/data/models';
+import { GPU_COUNT } from '@/lib/seo';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 
@@ -9,7 +10,7 @@ export function getSiteStats() {
   // documents HQQ too, but no indexed model ships it — counting it here
   // advertised a format the Hub has no filter for.
   const formatCount = SHIPPED_FORMATS.length;
-  const gpuCount = gpuDatabase.length;
+  const gpuCount = GPU_COUNT;
 
   // Quality retention, stated against ONE named level.
   //

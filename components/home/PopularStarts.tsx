@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { GPU_COUNT } from '@/lib/seo';
 import { ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { gpuDatabase } from '@/lib/data/gpus';
@@ -71,7 +72,7 @@ export default function PopularStarts() {
             ))}
           </ul>
           <Link href="/gpu/" className="inline-flex items-center min-h-[44px] mt-2 text-xs text-violet-400 hover:text-violet-300">
-            {p.allGpus.replace('{n}', String(gpuDatabase.length))}
+            {p.allGpus.replace('{n}', String(GPU_COUNT))}
           </Link>
         </div>
 

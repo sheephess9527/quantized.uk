@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GPU_COUNT } from '@/lib/seo';
 import BestHubContent from '@/components/best/BestHubContent';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
@@ -8,7 +9,7 @@ export function generateMetadata(): Metadata {
   const path = '/best';
   const url = canonical(path);
   const title = `Best local LLMs by hardware — the 2026 picks | quantized.uk`;
-  const description = `What to run at 8, 12, 16, 24 and 32GB and on Apple silicon: one pick per budget for chat, coding and images, from ${models.length} models and ${gpuDatabase.length} GPUs.`;
+  const description = `What to run at 8, 12, 16, 24 and 32GB and on Apple silicon: one pick per budget for chat, coding and images, from ${models.length} models and ${GPU_COUNT} GPUs.`;
   return {
     title,
     description,

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { GPU_COUNT } from '@/lib/seo';
 import { Calculator, Terminal, Wand2, GitCompareArrows, Cpu, Layers } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -62,7 +63,7 @@ export default function ToolIndexView() {
               <Cpu size={15} /> {i.gpuTitle}
             </span>
             <p className="text-sm text-slate-400 leading-relaxed mt-2">
-              {i.gpuBody.replace('{gpus}', String(gpuDatabase.length)).replace('{models}', String(models.length))}
+              {i.gpuBody.replace('{gpus}', String(GPU_COUNT)).replace('{models}', String(models.length))}
             </p>
           </Link>
         </li>

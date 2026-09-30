@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { GPU_COUNT } from '@/lib/seo';
 import { ArrowRight, Cpu } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -45,7 +46,7 @@ export default function BestHubContent() {
 
       <div className="glass rounded-2xl p-5 sm:p-6 flex flex-wrap gap-4">
         <Link href="/gpu/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
-          {t.gpuPage.indexTitle} ({gpuDatabase.length}) <ArrowRight size={14} />
+          {t.gpuPage.indexTitle} ({GPU_COUNT}) <ArrowRight size={14} />
         </Link>
         <Link href="/quant-hub/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-400 hover:text-slate-200">
           {t.hub.indexedCount.replace('{total}', String(models.length))} <ArrowRight size={14} />

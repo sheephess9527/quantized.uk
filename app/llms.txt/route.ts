@@ -1,4 +1,5 @@
 import { models } from '@/lib/data/models';
+import { GPU_COUNT, CPU_ROW_COUNT } from '@/lib/seo';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -23,7 +24,7 @@ export function GET() {
 
 - Static reference site (no model hosting, no accounts)
 - ${models.length} quantized LLM index with per-quant VRAM, speed and quality metadata
-- ${gpuDatabase.length} GPUs, each with a page listing what fits it at 4K context
+- ${GPU_COUNT} GPUs and Macs plus ${CPU_ROW_COUNT} CPU-only RAM sizes, each with a page listing what fits it at 4K context
 - ${formatPairs.length} quantization-format comparison pages
 - ${articles.length} deployment cookbook guides (llama.cpp, Ollama, vLLM, Docker, WSL2)
 - Real-hardware benchmarks (RTX 4090/3090, Apple Silicon)

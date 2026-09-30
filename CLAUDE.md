@@ -30,7 +30,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**63** GPUs incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| Tools | VRAM (**59** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 397 pages (199 EN + 198 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
@@ -612,6 +612,10 @@ different populations, so the difference described the groups, not the levels. P
 the median of the per-model deltas. This is the homepage "average accuracy" fault in a new place;
 expect it wherever two optional fields are aggregated side by side.
 
+**"GPUs" is `GPU_COUNT`, never `gpuDatabase.length`.** Four rows are CPU-only RAM sizes (`isCPU`), so
+the raw length advertised "63 GPUs" for 59. Use `gpuDatabase.length` only where a number must equal
+the rows actually rendered (an `ItemList`, a "show all N" list).
+
 **"Consumer GPU" is not `type`.** `type: 'amd'` also covers the Radeon PRO W7900 and Instinct MI100,
 so "the largest consumer card" returned a workstation card. Filter on the name (`/^Radeon RX/`)
 alongside `nvidia-consumer` when the question is "what should I buy".
@@ -855,6 +859,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **"63 GPUs" was 59 + 4 CPU rows** — `GPU_COUNT` now excludes `isCPU`; Command R page states the v01 (MHA, 8× cache) vs 8-KV-head ambiguity rather than guessing the release |
 | 2026-09-30 | **Llama 4 chunked attention** — 36 of 48 layers hold one 8K chunk in llama.cpp; Scout @128K 95→77 GB. Rest of index swept against llama.cpp's SWA archs: no others |
 | 2026-09-30 | **Arch audit + sliding-window sizing** — 8 SWA models (Gemma 2/3, GPT-OSS) were sized at full context on every layer (Gemma 3 27B @32K 34→21 GB); Qwen2.5 3B, Phi-4-mini, Gemma 3 12B, WizardLM-2 7B had wrong arch fields. Three guides re-derived |
 | 2026-09-30 | **Impossible 4090 speeds removed** — 43 rows over 24 GB + 4 dense rows over the bandwidth ceiling; build now rejects both. Jamba 1.5 Mini was sized at its active 12B (real: 52B). "Measured here" only for `MEASURED_MODEL_IDS` |

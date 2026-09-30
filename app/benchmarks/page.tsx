@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { GPU_COUNT } from '@/lib/seo';
 import { useLanguage } from '@/lib/i18n/context';
 import { matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
@@ -62,8 +63,8 @@ export default function BenchmarksPage() {
           '@type': 'Dataset',
           name: 'quantized.uk hardware benchmark matrix',
           description: lang === 'zh'
-            ? `在 ${gpuDatabase.length} 张显卡中的 ${measuredCards().length} 张上实测，共 ${TOTAL_RUNS} 次运行：吞吐量（tok/s）、显存占用与困惑度保留率。`
-            : `${TOTAL_RUNS} measurement runs across ${measuredCards().length} of the ${gpuDatabase.length} cards in the GPU index: throughput (tok/s), VRAM usage and perplexity retained.`,
+            ? `在 ${GPU_COUNT} 张显卡中的 ${measuredCards().length} 张上实测，共 ${TOTAL_RUNS} 次运行：吞吐量（tok/s）、显存占用与困惑度保留率。`
+            : `${TOTAL_RUNS} measurement runs across ${measuredCards().length} of the ${GPU_COUNT} cards in the GPU index: throughput (tok/s), VRAM usage and perplexity retained.`,
           url: `${SITE_URL}${path}/`,
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
           creator: { '@type': 'Organization', name: 'quantized.uk', url: SITE_URL },
@@ -89,7 +90,7 @@ export default function BenchmarksPage() {
           {t.bench.coverageIntro
             .replace('{r}', String(TOTAL_RUNS))
             .replace('{c}', String(measuredCards().length))
-            .replace('{m}', String(gpuDatabase.length))}
+            .replace('{m}', String(GPU_COUNT))}
         </p>
       </div>
 

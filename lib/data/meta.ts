@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    en: 'The site said it covered 63 GPUs; four of those entries are CPU-only RAM sizes (16, 32, 64 and 128 GB) kept so the calculator can answer "no GPU". Every place that says "GPUs" now counts the 59 cards and Macs, and the CPU sizes are named separately. The Command R 35B page now says its sizes assume 8 KV heads and that the original March 2024 release keeps about eight times as much cache (about 40 GB at 32K), since which release the entry describes is not recorded.',
+    zh: '本站此前写"覆盖 63 张显卡"，其中 4 项其实是纯 CPU 的内存规格（16、32、64、128 GB），保留它们是为了让计算器能回答"没有显卡"的情况。现在凡是写"显卡"的地方都只统计 59 张显卡和 Mac，CPU 规格单独说明。Command R 35B 页面现在注明：体积按 8 个 KV 头计算，而 2024 年 3 月的原版缓存约为 8 倍（32K 下约 40 GB）——该条目对应的是哪个版本没有记录。',
+  },
+  {
+    date: '2026-09-30',
     en: 'Llama 4 Scout and Maverick attend within 8,192-token chunks on three of every four layers, and llama.cpp stores only a chunk\'s worth of cache for those layers. The calculator had been sizing all 48 layers at full context. At 128K context Scout now needs about 77 GB at Q4 instead of about 95 GB; at its full 10-million-token window the cache estimate falls from about 1.9 TB to about 480 GB. Every other model in the index was checked against llama.cpp\'s own list of sliding-window architectures; none is affected.',
     zh: 'Llama 4 Scout 和 Maverick 每四层中有三层只在 8192 token 的分块内做注意力，llama.cpp 对这些层只保存一个分块大小的缓存。计算器此前把 48 层全部按完整上下文计算。现在 Scout 在 128K 上下文、Q4 下约需 77 GB，而不是约 95 GB；用满 1000 万 token 窗口时，缓存估算从约 1.9 TB 降到约 480 GB。索引中其他模型都已对照 llama.cpp 自己的滑动窗口架构清单核查过，没有受影响的。',
   },

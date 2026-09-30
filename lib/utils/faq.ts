@@ -1,4 +1,5 @@
 import { models } from '@/lib/data/models';
+import { GPU_COUNT } from '@/lib/seo';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { countModelsFitting, usableCapacityGB } from '@/lib/utils/gpu-page';
@@ -73,7 +74,7 @@ const one = (n: number) => n.toFixed(1);
 export function faqGroups(): FaqGroup[] {
   const stats = getSiteStats();
   const total = models.length;
-  const gpuCount = gpuDatabase.length;
+  const gpuCount = GPU_COUNT;
 
   const b7 = nearest(7);
   const s7 = size(b7.model, b7.quant.bpw, CTX);

@@ -16,7 +16,15 @@ import { gpuDatabase } from '@/lib/data/gpus';
 export const MODEL_COUNT = models.length;
 
 /** Same rule as `MODEL_COUNT`: the GPU count was typed into five more strings. */
-export const GPU_COUNT = gpuDatabase.length;
+/**
+ * Cards and Macs only. `gpuDatabase` also carries four CPU-only RAM rows
+ * (`isCPU`), which let the calculator answer "no GPU" but are not GPUs — every
+ * surface that says "N GPUs" / "N 张显卡" uses this. List lengths that must
+ * match the rows actually rendered (the /gpu/ ItemList, the calculator's
+ * show-all) keep `gpuDatabase.length`.
+ */
+export const GPU_COUNT = gpuDatabase.filter(g => !g.isCPU).length;
+export const CPU_ROW_COUNT = gpuDatabase.length - GPU_COUNT;
 
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';

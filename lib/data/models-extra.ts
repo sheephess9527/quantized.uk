@@ -236,10 +236,17 @@ export const extraModels: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['pro-gpu'],
     contextLength: 131072,
+    /**
+     * Which release this row describes is not recorded. transformers' CohereConfig
+     * (checkpoint c4ai-command-r-v01) leaves num_key_value_heads = heads = 64: full
+     * multi-head attention, 8× the cache below. The 08-2024 release is reported to
+     * use 8 KV heads, but its config.json is on huggingface.co (blocked here) and
+     * could not be read. The sizing assumes 8; the description tells the reader.
+     */
     arch: { layers: 40, attHeads: 40, kvHeads: 8, headDim: 128 },
     description: {
-      en: 'Cohere\'s RAG-optimised model. Excellent retrieval-augmented generation.',
-      zh: 'Cohere RAG 优化模型，检索增强生成能力出色。',
+      en: 'Cohere\'s RAG-optimised model. Excellent retrieval-augmented generation. Sizes here assume grouped-query attention with 8 KV heads (about 5 GB of cache at 32K). The original March 2024 release (c4ai-command-r-v01) keeps a full cache for all 64 heads — about 40 GB at 32K — so check which build you download before planning long context.',
+      zh: 'Cohere RAG 优化模型，检索增强生成能力出色。本页体积按 8 个 KV 头的分组查询注意力计算（32K 下缓存约 5 GB）。2024 年 3 月的原版（c4ai-command-r-v01）为全部 64 个头保留完整缓存——32K 下约 40 GB——计划跑长上下文前，请先确认下载的是哪个版本。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 22.8, pplLossPercent: 3.0, speedRTX4090: 42, hfSearchUrl: hf('Command-R GGUF') },

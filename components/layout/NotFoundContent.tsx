@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { GPU_COUNT } from '@/lib/seo';
 import Link from '@/components/i18n/LocalLink';
 import { Home, Search, BookOpen, Cpu, Wrench, HelpCircle, Sliders, Mail } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -37,7 +38,7 @@ export default function NotFoundContent() {
 
   const sections = [
     { href: '/quant-hub/', icon: Search, label: n.models.replace('{n}', String(models.length)) },
-    { href: '/gpu/', icon: Cpu, label: n.gpus.replace('{n}', String(gpuDatabase.length)) },
+    { href: '/gpu/', icon: Cpu, label: n.gpus.replace('{n}', String(GPU_COUNT)) },
     { href: '/best/', icon: Sliders, label: n.bestByVram },
     { href: '/tools/', icon: Wrench, label: n.tools },
     { href: '/cookbook/', icon: BookOpen, label: n.guides.replace('{n}', String(articles.length)) },

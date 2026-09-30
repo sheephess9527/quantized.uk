@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (g) — "GPUs" counts exclude the CPU rows; Command R release ambiguity stated
+
+`GPU_COUNT` (`lib/seo.ts`) is now `gpuDatabase.filter(g => !g.isCPU).length` (59) with
+`CPU_ROW_COUNT` (4) beside it. Every surface whose copy says "GPUs"/"cards"/"显卡" uses it — homepage
+stat, FAQ intro, `/best/`, `/benchmarks/`, 404, tools index, `/gpu/` title, `llms.txt` (now "59 GPUs
+and Macs plus 4 CPU-only RAM sizes"). List lengths that must equal the rendered rows keep
+`gpuDatabase.length`: the `/gpu/` `ItemList`, the calculator's "All {total} cards", `CoverageSection`.
+`command-r-35b`: which release it is was never recorded; transformers' `CohereConfig` (v01) is full
+MHA (64 KV heads, 8× the 8-head sizing). The 08-2024 config could not be read. Arch left, source
+comment added, description tells the reader both figures (5 GB vs 40 GB at 32K).
+
 ### 2026-09-30 (f) — Llama 4 chunked attention
 
 llama.cpp `src/models/llama4.cpp` sets `LLAMA_SWA_TYPE_CHUNKED`, `n_swa = 8192`, pattern 4 (3 chunked :
