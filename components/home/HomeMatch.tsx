@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Gauge, ShieldCheck, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -171,6 +172,7 @@ export default function HomeMatch() {
                       {pick.quant.speedRTX4090 != null && (
                         <dd className="text-slate-400 font-mono">
                           {m.speedOn4090.replace('{n}', String(pick.quant.speedRTX4090))}
+                          <ConfidenceTag modelId={pick.model.id} quant={pick.quant} />
                         </dd>
                       )}
                     </div>

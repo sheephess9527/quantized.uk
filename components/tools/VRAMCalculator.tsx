@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -713,7 +714,7 @@ export default function VRAMCalculator() {
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
                             <span>PPL −{formatLoss(quant)}</span>
-                            {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}</span>}
+                            {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">

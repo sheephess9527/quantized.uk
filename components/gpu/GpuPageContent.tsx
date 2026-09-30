@@ -1,6 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -152,6 +153,7 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-emerald-400">+{fit.headroomGB} GB</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-500">
                           {fit.quant.speedRTX4090 ?? '—'}
+                          {fit.quant.speedRTX4090 != null && <ConfidenceTag modelId={fit.model.id} quant={fit.quant} />}
                         </td>
                       </tr>
                     ))}

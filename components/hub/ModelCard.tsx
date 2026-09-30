@@ -1,6 +1,8 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
+import { contextLabel } from '@/lib/utils/context-label';
+import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import { ExternalLink, Zap } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
@@ -92,7 +94,7 @@ export default function ModelCard({ model, lang }: Props) {
         </div>
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">
           <p className="text-xs font-bold text-cyan-300">
-            {model.contextLength >= 1000 ? `${(model.contextLength / 1000).toFixed(0)}K` : model.contextLength}
+            {contextLabel(model.contextLength)}
           </p>
           <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.context}</p>
         </div>
@@ -100,7 +102,7 @@ export default function ModelCard({ model, lang }: Props) {
           {refQuant.speedRTX4090 ? (
             <>
               <p className="text-xs font-bold text-orange-300">{refQuant.speedRTX4090}</p>
-              <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.speed}</p>
+              <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.speed}<ConfidenceTag modelId={model.id} quant={refQuant} /></p>
             </>
           ) : (
             <>

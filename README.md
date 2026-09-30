@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-09-30 (h) — Every speed states its source
+
+`components/ui/ConfidenceTag.tsx` renders `quantConfidence()` ("Estimated" / "Community", nothing for
+measured) beside `speedRTX4090` on the Hub card, `HomeMatch`, the calculator's fit list and the GPU
+page table — previously only the model detail table said. Legend rewritten: "Estimated = formula"
+was wrong for speeds, which are not computed; it now says "not run here". Compare tool: the speed row
+passed `Math.max(... ?? 0)`, so a model with no speed entered as 0 and lost; now `undefined` (→ "—",
+no winner), basis `measured` / `unverified` (new `RowBasis` values) instead of "published", and a
+winner only when both sides are measured. `ModelCard` context used `/1000` (131K, 1049K) — now
+`contextLabel()`.
+
 ### 2026-09-30 (g) — "GPUs" counts exclude the CPU rows; Command R release ambiguity stated
 
 `GPU_COUNT` (`lib/seo.ts`) is now `gpuDatabase.filter(g => !g.isCPU).length` (59) with

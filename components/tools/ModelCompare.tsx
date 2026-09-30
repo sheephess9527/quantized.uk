@@ -156,6 +156,8 @@ export default function ModelCompare() {
                           row.basis === 'estimated' && 'bg-cyan-500/10 text-cyan-400',
                           row.basis === 'fixed' && 'bg-white/[0.05] text-slate-500',
                           row.basis === 'spec' && 'bg-white/[0.03] text-slate-600',
+                          row.basis === 'measured' && 'bg-emerald-500/10 text-emerald-400',
+                          row.basis === 'unverified' && 'bg-amber-500/10 text-amber-300',
                         )}>
                           {c.basis[row.basis]}
                         </span>

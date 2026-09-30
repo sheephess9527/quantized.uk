@@ -2,6 +2,7 @@ import { QuantModel } from '@/lib/data/types';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { contextLabel } from '@/lib/utils/context-label';
 import { bestQuant as pickBestQuant } from '@/lib/utils/quality';
+import { quantConfidence } from '@/lib/utils/model-meta';
 
 export type Winner = 'a' | 'b' | 'tie';
 
@@ -17,7 +18,11 @@ export type RowBasis =
   /** Recomputed from the selected context/batch by `calcVRAM`. Moves with the controls. */
   | 'estimated'
   /** A property of the model itself (parameters, context window). */
-  | 'spec';
+  | 'spec'
+  /** Run on this site's own hardware (`quantConfidence` = measured). */
+  | 'measured'
+  /** A figure in the index that this site has not run or sourced. */
+  | 'unverified';
 
 export interface CompareRow {
   key: string;
@@ -87,6 +92,14 @@ export function compareModels(
   const q4B = q4Quant(modelB);
   const bestA = bestQuant(modelA);
   const bestB = bestQuant(modelB);
+  const fastest = (m: QuantModel) => m.quants
+    .filter(q => q.speedRTX4090 != null)
+    .sort((a, b) => (b.speedRTX4090 ?? 0) - (a.speedRTX4090 ?? 0))[0];
+  const fastA = fastest(modelA);
+  const fastB = fastest(modelB);
+  const speedMeasured = !!fastA && !!fastB
+    && quantConfidence(modelA.id, fastA) === 'measured'
+    && quantConfidence(modelB.id, fastB) === 'measured';
 
   /** Estimated total at the reader's current context — the row that must move. */
   const estimate = (m: QuantModel, q: { bpw: number }) =>
@@ -127,10 +140,13 @@ export function compareModels(
       n => `${n.toFixed(1)}%`, 'fixed', { lowerIsBetter: true }),
     row('bestPpl', 'Lowest PPL loss (any level)', '最低困惑度损失（任意档位）', bestA.pplLossPercent, bestB.pplLossPercent,
       n => `${n.toFixed(1)}%`, 'fixed', { lowerIsBetter: true }),
+    // A model with no speed used to enter as 0, handing the win to the other
+    // side; and 73 models' speeds were labelled "published" though nothing here
+    // ran them. Missing stays missing, and a winner needs two measured figures.
     row('speed', 'Peak speed on RTX 4090 (batch 1)', 'RTX 4090 峰值速度（batch 1）',
-      Math.max(...modelA.quants.map(q => q.speedRTX4090 ?? 0)),
-      Math.max(...modelB.quants.map(q => q.speedRTX4090 ?? 0)),
-      n => (n > 0 ? `${n} tok/s` : '—'), 'fixed', { higherIsBetter: true }),
+      fastA?.speedRTX4090, fastB?.speedRTX4090,
+      n => `${n} tok/s`, speedMeasured ? 'measured' : 'unverified',
+      speedMeasured ? { higherIsBetter: true } : {}),
 
     // Inventory of this site, not a property of the model — no winner.
     row('variants', 'Quant variants indexed here', '本站收录的量化变体数',

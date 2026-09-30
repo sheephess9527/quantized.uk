@@ -594,6 +594,10 @@ faster than `1008 / (params × bpw / 8)` × 1.15 fails `dataProblems()`. MoE is 
 **Check `params` is the total, not the active count**: Jamba 1.5 Mini shipped as `12` (its active
 figure) and was sized at a quarter of its real weights.
 
+**Every printed `speedRTX4090` carries `<ConfidenceTag>`** (`components/ui/ConfidenceTag.tsx`) unless
+it is measured — 73 of 83 models' speeds were never run here. A new surface that prints a speed adds
+the tag; a comparison names a faster side only when both figures are measured.
+
 **Quote only throughput this index measured.** `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
 which nobody here ran; its batch-1 figure happened to match the index's own 218 tok/s row. Cite
 `matrixData` or say the site has not measured it — batched throughput especially, since that is the
@@ -859,6 +863,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
+| 2026-09-30 | **Speeds state their source** — "Estimated" tag on card/home/calculator/GPU pages; compare row treated a missing speed as 0 and called all speeds "published" |
 | 2026-09-30 | **"63 GPUs" was 59 + 4 CPU rows** — `GPU_COUNT` now excludes `isCPU`; Command R page states the v01 (MHA, 8× cache) vs 8-KV-head ambiguity rather than guessing the release |
 | 2026-09-30 | **Llama 4 chunked attention** — 36 of 48 layers hold one 8K chunk in llama.cpp; Scout @128K 95→77 GB. Rest of index swept against llama.cpp's SWA archs: no others |
 | 2026-09-30 | **Arch audit + sliding-window sizing** — 8 SWA models (Gemma 2/3, GPT-OSS) were sized at full context on every layer (Gemma 3 27B @32K 34→21 GB); Qwen2.5 3B, Phi-4-mini, Gemma 3 12B, WizardLM-2 7B had wrong arch fields. Three guides re-derived |

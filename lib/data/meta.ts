@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    en: 'Speeds now say where they came from wherever they appear. This site has run benchmarks on 10 models; the speeds listed for the rest were never run here, but the model cards, homepage picks, calculator list and GPU pages showed them exactly like measured ones. Each unmeasured speed now carries an "Estimated" tag. In the compare tool, a model with no speed figure used to count as zero, so the other model won that row by default, and every speed was labelled "published"; the row now says "measured here" or "unverified", and names a faster model only when both figures were measured. Model cards also showed context length in thousands (131K, 1049K) while the rest of the site uses 128K and 1M; they now match.',
+    zh: '速度数字现在在所有出现的地方都注明来源。本站只实测过 10 个模型，其余模型的速度从未在本站跑过，但模型卡片、首页推荐、计算器列表和 GPU 页面把它们和实测数字显示得一模一样。现在每个未实测的速度都带"估算"标签。对比工具中，没有速度数据的模型此前按 0 计算，另一方就在这一行默认"胜出"，而且所有速度都被标为"已发布"；现在这一行标注"本站实测"或"未核实"，只有双方都是实测数字时才判定谁更快。模型卡片的上下文长度此前按千位显示（131K、1049K），与全站其他地方的 128K、1M 不一致，现已统一。',
+  },
+  {
+    date: '2026-09-30',
     en: 'The site said it covered 63 GPUs; four of those entries are CPU-only RAM sizes (16, 32, 64 and 128 GB) kept so the calculator can answer "no GPU". Every place that says "GPUs" now counts the 59 cards and Macs, and the CPU sizes are named separately. The Command R 35B page now says its sizes assume 8 KV heads and that the original March 2024 release keeps about eight times as much cache (about 40 GB at 32K), since which release the entry describes is not recorded.',
     zh: '本站此前写"覆盖 63 张显卡"，其中 4 项其实是纯 CPU 的内存规格（16、32、64、128 GB），保留它们是为了让计算器能回答"没有显卡"的情况。现在凡是写"显卡"的地方都只统计 59 张显卡和 Mac，CPU 规格单独说明。Command R 35B 页面现在注明：体积按 8 个 KV 头计算，而 2024 年 3 月的原版缓存约为 8 倍（32K 下约 40 GB）——该条目对应的是哪个版本没有记录。',
   },
