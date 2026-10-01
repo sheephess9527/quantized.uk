@@ -10,6 +10,7 @@ import { extraModels7 } from './models-extra-7';
 import { extraModels8 } from './models-extra-8';
 import { extraModels9 } from './models-extra-9';
 import { extraModels10 } from './models-extra-10';
+import { extraModels11 } from './models-extra-11';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -243,7 +244,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -260,6 +261,8 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 10, type: 'new', modelId: 'gemma-4-26b-a4b', level: 'Q4_K_M', note: { en: '4B active, 256K window', zh: '激活 4B，256K 上下文' }, quantizer: 'google' },
+  { id: 11, type: 'new', modelId: 'gemma-4-31b', level: 'Q4_K_M', note: { en: '10 of 60 layers cache', zh: '60 层中仅 10 层缓存' }, quantizer: 'google' },
   { id: 8, type: 'new', modelId: 'glm-4.7-flash', level: 'Q4_K_M', note: { en: '3B active, MLA cache', zh: '激活 3B，MLA 压缩缓存' }, quantizer: 'zai-org' },
   { id: 9, type: 'new', modelId: 'kimi-linear-48b-a3b', level: 'Q4_K_M', note: { en: '1M context, 7 of 27 layers cache', zh: '100 万上下文，27 层中仅 7 层缓存' }, quantizer: 'moonshotai' },
   { id: 0, type: 'new', modelId: 'qwen3-8-27b', level: 'Q4_K_M', note: { en: '16 of 64 layers cache KV', zh: '64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth' },

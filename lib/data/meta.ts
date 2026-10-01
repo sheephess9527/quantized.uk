@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-09-30';
+export const dataLastUpdated = '2026-10-01';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-01',
+    en: 'Added Google\'s Gemma 4 26B-A4B and Gemma 4 31B, the two Gemma 4 sizes that run on a single 16–32 GB card or a Mac. Both have a 256K window, but only one layer in six keeps a cache that grows with context, and those layers use fewer, wider heads — so the calculator now sizes the two kinds of layer separately. The result: the 26B-A4B needs about 17 GB at 32K context at Q4 and fits a 24 GB card comfortably; the 31B is about 21 GB at short context, so a 24 GB card holds it only at short context and a 32 GB card is the comfortable choice. The smaller E2B and E4B models share their cache between layers in a way the calculator cannot yet describe, so they are not listed yet.',
+    zh: '新增 Google 的 Gemma 4 26B-A4B 和 Gemma 4 31B，这是 Gemma 4 中能在单张 16–32 GB 显卡或一台 Mac 上运行的两个尺寸。两者都支持 256K 上下文，但每六层中只有一层的缓存随上下文增长，而且这些层用的是更少、更宽的注意力头——所以计算器现在对两种层分开计算。结果是：26B-A4B 在 Q4、32K 上下文下约需 17 GB，24 GB 显卡可以从容运行；31B 短上下文下约 21 GB，24 GB 显卡只能跑短上下文，32 GB 显卡才是从容的选择。更小的 E2B 和 E4B 在层与层之间共享缓存，计算器暂时还无法准确描述，所以暂未收录。',
+  },
   {
     date: '2026-09-30',
     en: 'Speeds now say where they came from wherever they appear. This site has run benchmarks on 10 models; the speeds listed for the rest were never run here, but the model cards, homepage picks, calculator list and GPU pages showed them exactly like measured ones. Each unmeasured speed now carries an "Estimated" tag. In the compare tool, a model with no speed figure used to count as zero, so the other model won that row by default, and every speed was labelled "published"; the row now says "measured here" or "unverified", and names a faster model only when both figures were measured. Model cards also showed context length in thousands (131K, 1049K) while the rest of the site uses 128K and 1M; they now match.',

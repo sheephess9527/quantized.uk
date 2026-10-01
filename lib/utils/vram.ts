@@ -11,7 +11,13 @@ export interface CalcInput {
    * layer keeps a growing KV cache, which is what `layers` alone implies and
    * what every pre-2026 model in the index does.
    */
-  attention?: { fullLayers?: number; windowLayers?: number; windowTokens?: number };
+  attention?: {
+    fullLayers?: number;
+    windowLayers?: number;
+    windowTokens?: number;
+    fullKvHeads?: number;
+    fullHeadDim?: number;
+  };
 }
 
 export interface CalcResult {
@@ -83,11 +89,15 @@ export function calcVRAM(input: CalcInput): CalcResult {
   // 16.00 GB at 8K / 32K / 262K against community figures of 0.5 / 2.0 / 16.4.
   // Sizing all 64 layers instead gives 2.00 / 8.00 / 64.00 — wrong by 4×.
   const perLayerPerToken = 2 * kvHeads * headDim * batchSize * 2;
+  // Full-attention layers may use a different head layout (Gemma 4: fewer,
+  // wider global heads); window layers always use `kvHeads` × `headDim`.
+  const fullPerLayerPerToken =
+    2 * (attention?.fullKvHeads ?? kvHeads) * (attention?.fullHeadDim ?? headDim) * batchSize * 2;
   const fullLayers = attention?.fullLayers ?? layers;
   const windowLayers = attention?.windowLayers ?? 0;
   const windowSpan = Math.min(contextLength, attention?.windowTokens ?? contextLength);
   const kvBytes =
-    perLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
+    fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
   const kvCacheGB = kvBytes / (1024 ** 3);
 
   // Activation buffer: ~10% of (weights + kvcache)

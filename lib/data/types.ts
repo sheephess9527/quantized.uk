@@ -62,6 +62,13 @@ export interface ModelArch {
     windowLayers?: number;
     /** The window, in tokens, that caps `windowLayers`. */
     windowTokens?: number;
+    /**
+     * KV heads / head size on the full-attention layers, when they differ from
+     * the window layers (`kvHeads` / `headDim`). Gemma 4's global layers use
+     * fewer, wider heads (31B: 4 × 512 vs 16 × 256 on its window layers).
+     */
+    fullKvHeads?: number;
+    fullHeadDim?: number;
     /** Where the layer split was sourced from — shown to the reader. */
     note?: { en: string; zh: string };
   };

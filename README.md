@@ -419,6 +419,27 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-01 — Gemma 4 26B-A4B and 31B; per-layer-type KV head layout
+
+`lib/data/models-extra-11.ts` (85 models). Sources: transformers
+`models/gemma4/convert_gemma4_weights.py` `_VARIANTS` (per-size layers, heads, KV heads, global KV
+heads, `attention_k_eq_v`, `sliding_window=1024`, `max_position_embeddings=262_144`),
+`_DEFAULT_LAYER_TYPES` = 5 sliding : 1 full, `head_dim` 256 / `global_head_dim` 512
+(`configuration_gemma4.py`); llama.cpp `src/models/gemma4.cpp` confirms layer counts (30 → 26B-A4B,
+60 → 31B), an iSWA cache, and that K and V are both cached even under `k_eq_v` (V is normed, not
+roped). vLLM's recipe yaml pins 131072 as a serving default; the config value is 262144.
+
+Params counted layer by layer from those configs (text decoder; the vision tower is a separate mmproj
+in llama.cpp): 31B → 30.70B; 26B-A4B → 25.23B total / 3.81B active — matching the vendor's 31B and
+26B/4B labels once the vision tower is added.
+
+`ModelArch.attention` gains `fullKvHeads` / `fullHeadDim`: Gemma 4's global layers use 4 × 512 (31B)
+or 2 × 512 (26B-A4B) against 16 × 256 / 8 × 256 on window layers. `calcVRAM` sizes full layers with
+them when set; every existing model omits them and is unchanged. Q4_K_M: 26B-A4B 17.0 GB @32K,
+21.8 GB @256K; 31B 21.1 GB @4K, 23.5 @32K, 31.7 @128K (a conventional 60-layer cache would be ~120 GB
+at 128K). E2B/E4B (KV shared across 18–20 layers, per-layer embeddings) and the 12B "unified" model
+deliberately not added. Quant rows `estimated` (no GGUF size reachable).
+
 ### 2026-09-30 (j) — IndexNow on production deploys
 
 `scripts/indexnow.mjs` runs last in `postbuild` (after the export gate passes). On a Cloudflare

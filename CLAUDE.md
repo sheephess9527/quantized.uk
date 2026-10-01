@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **83** in index (`models-extra` … `models-extra-10`) |
+| Models | **85** in index (`models-extra` … `models-extra-11`) |
 | Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -758,7 +758,11 @@ default `swa_full = false`, an SWA layer holds `pad256(n_swa + n_ubatch)` cells 
 so `windowTokens` is 1536 for Gemma 3 (window 1024), 4608 for Gemma 2 (4096), 768 for GPT-OSS (128),
 8704 for Llama 4 (chunked, 8192). Phi-3's SWA is *disabled* in llama.cpp — check `src/models/<arch>.cpp`
 for the arch before encoding a window from `config.json` alone.
-Set `fullLayers` explicitly alongside `windowLayers` — it defaults to *all* layers. A reachable source
+Set `fullLayers` explicitly alongside `windowLayers` — it defaults to *all* layers. When the full
+layers use a different head layout from the window layers (Gemma 4: 4 × 512 global vs 16 × 256
+local on the 31B), set `fullKvHeads` / `fullHeadDim`; `kvHeads` / `headDim` then describe the window
+layers. Per-size Gemma 4 configs: transformers `models/gemma4/convert_gemma4_weights.py` `_VARIANTS`
+— a conversion script is often the only reachable copy of every size's real config. A reachable source
 of real `config.json`s: `mlc-ai/mlc-llm` `python/mlc_llm/model/model_preset.py`; for Gemma,
 `google-deepmind/gemma` `gemma/gm/nn/_gemma.py`. transformers' config defaults describe one
 reference checkpoint, often not the size in this index.
@@ -830,7 +834,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-10)
+lib/data/models-extra-*.ts  # model packs (currently through extra-11)
 lib/data/meta.ts            # dataLastUpdated + changelog
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
@@ -872,6 +876,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-01 | **+2 models (85): Gemma 4 26B-A4B, 31B** — configs from transformers' conversion script; `fullKvHeads`/`fullHeadDim` added so global layers (fewer, wider heads) size separately. 26B-A4B 17 GB @32K fits 24 GB; E2B/E4B held back (cross-layer KV sharing) |
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |
 | 2026-09-30 | **Runtime versions re-checked** — llama.cpp b11277, vLLM v0.30.0, Ollama v0.35.0, ExLlamaV3 v1.5.3 (ExLlamaV2 still 0.3.2); read from release/tag pages, pre-releases skipped |
