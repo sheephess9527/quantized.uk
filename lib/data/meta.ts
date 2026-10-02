@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'The command generator\'s Docker and Docker Compose output now follows the GPU you picked. Before, everyone got NVIDIA commands: an AMD card was handed a CUDA image it cannot use, and the Ollama Compose file had its GPU section commented out, so even NVIDIA owners ran on the CPU without being told. Now NVIDIA gets the CUDA image with the GPU passed through, AMD gets the ROCm image with the devices ROCm needs, and on a Mac the generator says plainly that Docker cannot reach the Apple GPU and points you to running natively. The notes under each command are now in Chinese on the Chinese site.',
+    zh: '命令生成器的 Docker 和 Docker Compose 输出现在会跟随你选择的显卡。以前所有人拿到的都是 NVIDIA 的命令：AMD 显卡拿到的是它用不了的 CUDA 镜像；Ollama 的 Compose 文件里 GPU 配置还是被注释掉的，所以连 NVIDIA 用户也在不知情的情况下跑在 CPU 上。现在 NVIDIA 用户拿到 CUDA 镜像并透传 GPU，AMD 用户拿到 ROCm 镜像和 ROCm 所需的设备，Mac 用户会看到明确提示：Docker 用不了苹果 GPU，请直接在本机运行。每条命令下方的说明在中文站也已改为中文。',
+  },
+  {
+    date: '2026-10-02',
     en: 'Re-checked the AMD ROCm guide against llama.cpp\'s current build documentation. The build command now matches the documented form, the guide says ROCm 6.1 or newer is required (older versions are refused at build time), and the note on Windows now says what is actually true: a Windows HIP build is documented, but the workaround for unlisted cards does not work there. The log line that confirms a model is on the GPU now reads "load_tensors: offloaded …" — the older name the AMD and dual-GPU guides told you to look for no longer appears. Also fixed in the command generator: its Docker commands used the CPU-only llama.cpp image while asking for the GPU, so they ran entirely on the CPU without an error. They now use the CUDA image.',
     zh: '对照 llama.cpp 当前的构建文档重新核对了 AMD ROCm 指南。构建命令改为文档中的写法；指南注明需要 ROCm 6.1 或更新版本（更旧的版本会在构建时被拒绝）；关于 Windows 的说法也改为实际情况：文档里有 Windows 上的 HIP 构建方法，但针对未列入支持名单显卡的变通办法在 Windows 上无效。确认模型跑在 GPU 上的那行日志现在是 "load_tensors: offloaded …"——AMD 和双卡指南此前让你找的旧名称已经不会出现了。另外修正了命令生成器：它的 Docker 命令用的是纯 CPU 版本的 llama.cpp 镜像，却又要求使用 GPU，结果全程在 CPU 上运行且不报错。现在改用 CUDA 镜像。',
   },

@@ -22,6 +22,21 @@ export interface CLIOptions {
   threads: number;
   port: number;
   apiKey?: string;
+  /**
+   * The reader's GPU backend (`backendFor()` of the hardware profile). Only
+   * the container commands use it: a CUDA image with `--gpus all` on an AMD
+   * card, or a GPU block commented out on an NVIDIA one, both start cleanly
+   * and run everything on the CPU. Defaults to CUDA.
+   */
+  backend?: 'cuda' | 'rocm' | 'metal' | 'cpu';
+  /** Language of `notes` — they render as visible text on both trees. Defaults to English. */
+  lang?: 'en' | 'zh';
+}
+
+type Lang = NonNullable<CLIOptions['lang']>;
+/** One note in both languages; every note goes through this so `/zh` never shows an English one. */
+function L(lang: Lang, en: string, zh: string): string {
+  return lang === 'zh' ? zh : en;
 }
 
 /**
@@ -39,6 +54,45 @@ function ggufRepoId(hfRepo?: string): string | undefined {
 /** `bartowski/Meta-Llama-3.1-8B-Instruct-GGUF` → `Meta-Llama-3.1-8B-Instruct`. */
 function ggufBase(hfRepo: string): string {
   return (hfRepo.split('/')[1] ?? hfRepo).replace(/-GGUF$/i, '');
+}
+
+type Backend = NonNullable<CLIOptions['backend']>;
+
+/** `docker run` lines that hand the container the GPU (llama.cpp / Ollama docker docs). */
+function dockerGpuLines(backend: Backend): string[] {
+  if (backend === 'cuda') return ['  --gpus all \\'];
+  if (backend === 'rocm') return ['  --device /dev/kfd \\', '  --device /dev/dri \\'];
+  return [];
+}
+
+/** The compose equivalent, indented for a service at two spaces. */
+function composeGpuBlock(backend: Backend): string {
+  if (backend === 'cuda') return `
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]`;
+  if (backend === 'rocm') return `
+    devices:
+      - /dev/kfd
+      - /dev/dri`;
+  return '';
+}
+
+/** llama.cpp server image per backend (docs/docker.md): `:server` alone is the CPU build. */
+function llamaImageTag(backend: Backend): string {
+  return backend === 'cuda' ? 'server-cuda' : backend === 'rocm' ? 'server-rocm' : 'server';
+}
+
+/** Notes every container command carries for the reader's backend. */
+function containerNotes(backend: Backend, lang: Lang): string[] {
+  if (backend === 'cuda') return [L(lang, 'Requires the NVIDIA Container Toolkit on the host', '主机需要安装 NVIDIA Container Toolkit')];
+  if (backend === 'rocm') return [L(lang, 'AMD GPU: needs ROCm drivers on the host; /dev/kfd and /dev/dri are passed through', 'AMD 显卡：主机需要安装 ROCm 驱动；命令已透传 /dev/kfd 和 /dev/dri')];
+  if (backend === 'metal') return [L(lang, 'Docker on macOS cannot reach the Apple GPU — this container runs on the CPU. Choose "macOS Terminal" to run natively on Metal', 'macOS 上的 Docker 无法使用苹果 GPU——这个容器会跑在 CPU 上。想用 Metal 加速，请选择 "macOS Terminal" 直接在本机运行')];
+  return [L(lang, 'CPU-only container', '纯 CPU 容器')];
 }
 
 /** `nproc` is GNU coreutils — it does not exist on a stock macOS. */
@@ -64,6 +118,7 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
 
 function generateExLlama(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, contextLen, port, apiKey } = opts;
+  const lang: Lang = opts.lang ?? 'en';
   const bpw = quantLevel.replace(/[^0-9.]/g, '') || '4.65';
   const modelDir = modelName.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
@@ -86,7 +141,7 @@ function generateExLlama(opts: CLIOptions): CLIOutput {
       `  -c ${contextLen} \\`,
       `  -host 0.0.0.0 -port ${port}`,
     ].join('\n');
-    return { command, notes: ['Requires NVIDIA GPU (Ampere+ recommended)', 'Model must be in EXL2 format from turboderp or equivalent'] };
+    return { command, notes: [L(lang, 'Requires NVIDIA GPU (Ampere+ recommended)', '需要 NVIDIA 显卡（推荐 Ampere 或更新架构）'), L(lang, 'Model must be in EXL2 format from turboderp or equivalent', '模型必须是 EXL2 格式（turboderp 等发布者提供）')] };
   }
 
   if (env === 'compose') {
@@ -112,7 +167,7 @@ services:
               count: all
               capabilities: [gpu]
     restart: unless-stopped`;
-    return { command: serverCmd, compose, notes: ['Fastest inference for NVIDIA consumer GPUs', 'Download EXL2 quants from Hugging Face (turboderp repos)'] };
+    return { command: serverCmd, compose, notes: [L(lang, 'Fastest inference for NVIDIA consumer GPUs', 'NVIDIA 消费级显卡上最快的推理方式'), L(lang, 'Download EXL2 quants from Hugging Face (turboderp repos)', '从 Hugging Face 下载 EXL2 量化版本（如 turboderp 的仓库）')] };
   }
 
   const installCmd = env === 'mac'
@@ -122,17 +177,19 @@ services:
   return {
     command: `${installCmd}\n${serverCmd}`,
     notes: [
-      'ExLlamaV2 is NVIDIA-only — fastest consumer GPU inference for EXL2 quants',
-      `Recommended quant: ${quantLevel} (adjust bpw in model path)`,
-      'Replace <hf-exl2-repo-id> with this model\'s EXL2 repo — EXL2 quants are per-model (turboderp, LoneStriker, bartowski), not derivable from the name',
-      `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`,
-      'Alternative: TabbyAPI wraps ExLlamaV2 with a polished web UI',
+      L(lang, 'ExLlamaV2 is NVIDIA-only — fastest consumer GPU inference for EXL2 quants', 'ExLlamaV2 仅支持 NVIDIA——EXL2 量化在消费级显卡上最快的推理方式'),
+      L(lang, `Recommended quant: ${quantLevel} (adjust bpw in model path)`, `推荐量化：${quantLevel}（在模型路径里调整 bpw）`),
+      L(lang, 'Replace <hf-exl2-repo-id> with this model\'s EXL2 repo — EXL2 quants are per-model (turboderp, LoneStriker, bartowski), not derivable from the name', '把 <hf-exl2-repo-id> 换成这个模型的 EXL2 仓库——EXL2 量化按模型单独发布（turboderp、LoneStriker、bartowski 等），无法从名字推出'),
+      L(lang, `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`, `OpenAI 兼容接口：http://localhost:${port}/v1/chat/completions`),
+      L(lang, 'Alternative: TabbyAPI wraps ExLlamaV2 with a polished web UI', '另一选择：TabbyAPI 给 ExLlamaV2 套了一层完善的 Web 界面'),
     ],
   };
 }
 
 function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, gpuLayers, contextLen, threads, port, apiKey } = opts;
+  const lang: Lang = opts.lang ?? 'en';
+  const backend: Backend = opts.backend ?? 'cuda';
   const hfRepo = ggufRepoId(opts.hfRepo);
   // GGUF repos name their files after the *source* repo, not the display name:
   // bartowski/Meta-Llama-3.1-8B-Instruct-GGUF ships
@@ -162,10 +219,10 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   if (env === 'docker') {
     const command = [
       `docker run --rm -it \\`,
-      `  --gpus all \\`,
+      ...dockerGpuLines(backend),
       `  -p ${port}:${port} \\`,
       `  -v $(pwd)/models:/models \\`,
-      `  ghcr.io/ggml-org/llama.cpp:server-cuda \\`,
+      `  ghcr.io/ggml-org/llama.cpp:${llamaImageTag(backend)} \\`,
       `  -m /models/${modelFile} \\`,
       `  --host 0.0.0.0 --port ${port} \\`,
       `  -ngl ${gpuLayers} \\`,
@@ -173,14 +230,14 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     ].join('\n');
     // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
     // `--gpus all -ngl` starts cleanly and silently runs everything on the CPU.
-    return { command, notes: ['Requires NVIDIA Container Toolkit for GPU passthrough', 'Uses the CUDA 12 image (:server-cuda); :server is CPU-only, :server-rocm is the AMD build', 'Model file must be in ./models/ directory'] };
+    return { command, notes: [...containerNotes(backend, lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
   }
 
   if (env === 'compose') {
     const compose = `version: "3.8"
 services:
   llama-server:
-    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    image: ghcr.io/ggml-org/llama.cpp:${llamaImageTag(backend)}
     container_name: llama-server
     ports:
       - "${port}:${port}"
@@ -192,16 +249,8 @@ services:
       --port ${port}
       -ngl ${gpuLayers}
       -c ${contextLen}${apiKey ? `\n      --api-key ${apiKey}` : ''}
-    restart: unless-stopped
-    # NVIDIA GPU (the -cuda image needs it; for CPU only, use :server and drop this block)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]`;
-    return { command: serverCmd, compose, notes: ['GPU support requires NVIDIA Container Toolkit', 'Edit the compose file to mount your model directory'] };
+    restart: unless-stopped${composeGpuBlock(backend)}`;
+    return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录')] };
   }
 
   // Build flags: llama.cpp renamed every LLAMA_* CMake option to GGML_* well
@@ -220,21 +269,23 @@ services:
   return {
     command: `${installCmd}\n${serverCmd}`,
     notes: [
-      `-ngl ${gpuLayers}: number of layers offloaded to GPU (set to 99 for full GPU)`,
-      `-c ${contextLen}: context length in tokens`,
-      `API endpoint: http://127.0.0.1:${port}/v1/chat/completions (OpenAI-compatible)`,
-      `Health check once it starts: curl -s http://127.0.0.1:${port}/health — expect {"status":"ok"}`,
-      'To reach it from another machine, replace 127.0.0.1 with 0.0.0.0 and put it behind auth first',
-      'Large models ship sharded (…-00001-of-00002.gguf) — point -m at the first shard',
+      L(lang, `-ngl ${gpuLayers}: number of layers offloaded to GPU (set to 99 for full GPU)`, `-ngl ${gpuLayers}：放到 GPU 上的层数（设为 99 即全部放到 GPU）`),
+      L(lang, `-c ${contextLen}: context length in tokens`, `-c ${contextLen}：上下文长度（token 数）`),
+      L(lang, `API endpoint: http://127.0.0.1:${port}/v1/chat/completions (OpenAI-compatible)`, `接口地址：http://127.0.0.1:${port}/v1/chat/completions（OpenAI 兼容）`),
+      L(lang, `Health check once it starts: curl -s http://127.0.0.1:${port}/health — expect {"status":"ok"}`, `启动后检查：curl -s http://127.0.0.1:${port}/health——应返回 {"status":"ok"}`),
+      L(lang, 'To reach it from another machine, replace 127.0.0.1 with 0.0.0.0 and put it behind auth first', '要从其他机器访问，把 127.0.0.1 换成 0.0.0.0，并先加上身份验证'),
+      L(lang, 'Large models ship sharded (…-00001-of-00002.gguf) — point -m at the first shard', '大模型会分片发布（…-00001-of-00002.gguf）——-m 指向第一个分片即可'),
       ...(hfRepo
         ? []
-        : [`Replace ${repoId}/the filename: no GGUF conversion is mapped for this model, only its original weights`]),
+        : [L(lang, `Replace ${repoId}/the filename: no GGUF conversion is mapped for this model, only its original weights`, `请替换 ${repoId} 和文件名：本站没有为这个模型对应的 GGUF 转换版本，只有原始权重`)]),
     ],
   };
 }
 
 function generateOllama(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, port } = opts;
+  const lang: Lang = opts.lang ?? 'en';
+  const backend: Backend = opts.backend ?? 'cuda';
   const hfRepo = ggufRepoId(opts.hfRepo);
   // Ollama library tags are curated and short (`qwen2.5:7b`) — they are not
   // derivable from a display name, so the old slug ("llama-3.1-8b-instruct")
@@ -248,7 +299,7 @@ function generateOllama(opts: CLIOptions): CLIOutput {
     const compose = `version: "3.8"
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:${backend === 'rocm' ? 'rocm' : 'latest'}
     container_name: ollama
     ports:
       - "${port}:11434"
@@ -256,15 +307,7 @@ services:
       - ollama_data:/root/.ollama
     environment:
       - OLLAMA_HOST=0.0.0.0
-    restart: unless-stopped
-    # Uncomment for NVIDIA GPU:
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    restart: unless-stopped${composeGpuBlock(backend)}
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
@@ -284,23 +327,23 @@ volumes:
   webui_data:`;
 
     const command = `# After docker compose up -d:\ndocker exec ollama ollama pull ${ollamaModel}`;
-    return { command, compose, notes: ['Open WebUI available at http://localhost:3000', `OpenAI-compatible API at http://localhost:${port}/v1`] };
+    return { command, compose, notes: [...containerNotes(backend, lang), L(lang, 'Open WebUI available at http://localhost:3000', 'Open WebUI 地址：http://localhost:3000'), L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`)] };
   }
 
   if (env === 'docker') {
     const command = [
       `# Start Ollama container`,
       `docker run -d \\`,
-      `  --gpus all \\`,
+      ...dockerGpuLines(backend),
       `  -p ${port}:11434 \\`,
       `  -v ollama:/root/.ollama \\`,
       `  --name ollama \\`,
-      `  ollama/ollama`,
+      `  ollama/ollama${backend === 'rocm' ? ':rocm' : ''}`,
       ``,
       `# Pull the model`,
       `docker exec ollama ollama pull ${ollamaModel}`,
     ].join('\n');
-    return { command, notes: ['Remove --gpus all if running CPU-only', `API available at http://localhost:${port}/v1`] };
+    return { command, notes: [...containerNotes(backend, lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
   }
 
   const installCmd = env === 'mac'
@@ -322,20 +365,21 @@ volumes:
   return {
     command,
     notes: [
-      `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`,
+      L(lang, `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`, `OpenAI 兼容接口：http://localhost:${port}/v1/chat/completions`),
       ...(hfRepo
         ? [
-            `hf.co/… pulls the GGUF directly and pins the quant to ${quantLevel}`,
-            'If this model has a curated library tag (e.g. `ollama run qwen2.5:7b`), that works too — but it picks the quant for you',
+            L(lang, `hf.co/… pulls the GGUF directly and pins the quant to ${quantLevel}`, `hf.co/… 会直接拉取 GGUF，并固定为 ${quantLevel} 量化`),
+            L(lang, 'If this model has a curated library tag (e.g. `ollama run qwen2.5:7b`), that works too — but it picks the quant for you', '如果这个模型在 Ollama 库里有官方标签（如 `ollama run qwen2.5:7b`），也可以用——但量化档位由它替你选'),
           ]
-        : ['No GGUF conversion is mapped for this model — replace the tag with a real Ollama library tag or an hf.co/<user>/<repo>-GGUF tag']),
-      `Set OLLAMA_NUM_PARALLEL for concurrent requests`,
+        : [L(lang, 'No GGUF conversion is mapped for this model — replace the tag with a real Ollama library tag or an hf.co/<user>/<repo>-GGUF tag', '本站没有为这个模型对应的 GGUF 转换版本——请换成真实的 Ollama 库标签，或 hf.co/<用户>/<仓库>-GGUF 形式的标签')]),
+      L(lang, `Set OLLAMA_NUM_PARALLEL for concurrent requests`, `需要并发请求时设置 OLLAMA_NUM_PARALLEL`),
     ],
   };
 }
 
 function generateVLLM(opts: CLIOptions): CLIOutput {
   const { env, quantLevel, contextLen, port, apiKey } = opts;
+  const lang: Lang = opts.lang ?? 'en';
 
   const isAWQ = quantLevel.toLowerCase().includes('awq');
   const isGPTQ = quantLevel.toLowerCase().includes('gptq');
@@ -378,7 +422,7 @@ volumes:
   huggingface_cache:`;
 
     const command = `# Start vLLM server\ndocker compose up -d\n\n# Test the API\ncurl http://localhost:${port}/v1/models`;
-    return { command, compose, notes: ['Requires NVIDIA Container Toolkit', 'Set HF_TOKEN env var for gated models', 'Recommended: Ampere or newer GPU (RTX 3090+)'] };
+    return { command, compose, notes: [L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量'), L(lang, 'Recommended: Ampere or newer GPU (RTX 3090+)', '推荐：Ampere 或更新架构的显卡（RTX 3090 及以上）')] };
   }
 
   if (env === 'docker') {
@@ -393,7 +437,7 @@ volumes:
       `  --gpu-memory-utilization 0.85 \\`,
       `  --port ${port}${apiKeyFlag}`,
     ].join('\n');
-    return { command, notes: ['Requires NVIDIA Container Toolkit', 'Ampere+ GPU strongly recommended for best performance'] };
+    return { command, notes: [L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Ampere+ GPU strongly recommended for best performance', '强烈推荐 Ampere 或更新架构的显卡以获得最佳性能')] };
   }
 
   const command = [
@@ -411,10 +455,10 @@ volumes:
   return {
     command,
     notes: [
-      `OpenAI-compatible API at http://localhost:${port}/v1`,
-      `Adjust --gpu-memory-utilization (0.7–0.95) based on your GPU`,
-      `Add --tensor-parallel-size N for multi-GPU setups`,
-      `Replace ${repoId} with the ${isAWQ ? 'AWQ' : isGPTQ ? 'GPTQ' : 'FP16'} repo — vLLM does not serve the GGUF repos linked from the model page`,
+      L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`),
+      L(lang, `Adjust --gpu-memory-utilization (0.7–0.95) based on your GPU`, `根据显卡调整 --gpu-memory-utilization（0.7–0.95）`),
+      L(lang, `Add --tensor-parallel-size N for multi-GPU setups`, `多卡时加上 --tensor-parallel-size N`),
+      L(lang, `Replace ${repoId} with the ${isAWQ ? 'AWQ' : isGPTQ ? 'GPTQ' : 'FP16'} repo — vLLM does not serve the GGUF repos linked from the model page`, `把 ${repoId} 换成 ${isAWQ ? 'AWQ' : isGPTQ ? 'GPTQ' : 'FP16'} 仓库——vLLM 不能直接加载模型页链接的 GGUF 仓库`),
     ],
   };
 }

@@ -11,6 +11,8 @@ import RunFeedback from '@/components/feedback/RunFeedback';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { trackEvent } from '@/lib/analytics';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { gpuDatabase } from '@/lib/data/gpus';
+import { backendFor } from '@/lib/utils/gpu-page';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
@@ -32,7 +34,7 @@ const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli'
 ];
 
 export default function CLIGenerator() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { config, hydrated: configReady, updateConfig } = useHardwareProfile();
   const seeded = useRef(false);
   const [framework, setFramework] = useState<Framework>('llamacpp');
@@ -96,6 +98,11 @@ export default function CLIGenerator() {
     }
   }, [availableQuants, quantLevel]);
 
+  // Container commands follow the reader's GPU: an AMD card needs the ROCm
+  // image and device nodes, a Mac's Docker cannot reach Metal at all.
+  const profileGpu = gpuDatabase.find(g => g.id === config.gpuId);
+  const backend = profileGpu ? backendFor(profileGpu) : 'cuda';
+
   const output = useMemo(() => {
     if (!modelId) return null;
     return generateCLI({
@@ -110,8 +117,10 @@ export default function CLIGenerator() {
       threads,
       port,
       apiKey: apiKey || undefined,
+      backend,
+      lang,
     });
-  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey]);
+  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang]);
 
   const copyText = () => {
     const text = activeTab === 'compose' ? output?.compose : output?.command;

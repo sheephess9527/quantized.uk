@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (d) — CLI container commands follow the GPU backend; notes bilingual
+
+`generateCLI` gains `backend` (`backendFor()` of the hardware-profile GPU, default `cuda`) and `lang`.
+llama.cpp and Ollama `docker`/`compose`: CUDA → `:server-cuda` / `ollama/ollama` + `--gpus all` /
+`deploy.resources` NVIDIA reservation; ROCm → `:server-rocm` / `ollama/ollama:rocm` + `--device
+/dev/kfd --device /dev/dri` (Ollama `docs/docker.mdx`; llama.cpp `docs/docker.md` lists the
+`-rocm` images); Metal/CPU → CPU images, no GPU flags, and on Metal a note that Docker on macOS cannot
+reach the GPU. The Ollama compose template had its NVIDIA block commented out, so every Ollama compose
+user ran on CPU. All 16 backend × framework × env container outputs swept; every compose parses as YAML.
+vLLM/ExLlamaV2 container commands stay CUDA (both say so in their notes).
+
+Notes were English-only on `/zh` (a standing bilingual-rule violation): every note now goes through
+`L(lang, en, zh)`. Sweep over 1,368 notes (2 langs × 4 frameworks × 4 envs × 4 backends × 3 repo
+shapes): 0 in the wrong language.
+
 ### 2026-10-02 (c) — AMD ROCm guide re-checked; CLI Docker commands were CPU-only
 
 Monthly guide re-check (documentation check, not a run — no `verifiedAt`): `amd-rocm-llamacpp` against

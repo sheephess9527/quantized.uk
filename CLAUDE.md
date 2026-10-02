@@ -262,6 +262,12 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 | `gpuPreset?: { gpuId, ctx? }` | `Article` (cookbook) | Prefills the reverse VRAM lookup; `gpuId` must exist in `gpus.ts` |
 | `relatedModelIds?: string[]` | `Article` (cookbook) | Renders hub links in `GuideNextSteps` |
 
+**CLI container commands follow the reader's GPU** (`backend` from the hardware profile). A GPU block
+that is commented out, or a CUDA image on an AMD card, starts cleanly and runs on the CPU — the worst
+failure mode for a copy-paste command. Every CLI note goes through `L(lang, en, zh)`; sweep all
+framework × env × backend × lang combinations after touching `lib/utils/cli.ts`, and check notes
+are in the reader's language.
+
 **Identifiers vs display names (CLI generator)** — `model.name` is for humans. Commands need real
 identifiers: pass `hfRepo` from `hfRepoMap`, and gate it through `ggufRepoId()` before using it in
 a GGUF command — **14 of 79 entries map the original weights, not a GGUF conversion**, because
@@ -884,6 +890,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **CLI containers follow the GPU; notes bilingual** — AMD got CUDA images; Ollama compose had its GPU block commented out (CPU for everyone). 1,368 notes swept, 0 wrong-language |
 | 2026-10-02 | **AMD guide re-check + CPU-only Docker bug** — CLI docker/compose used the CPU-only `:server` image with `--gpus all`; now `:server-cuda`. HIP build/ROCm 6.1+/Windows claims and the `load_tensors:` log line corrected |
 | 2026-10-02 | **+6 Macs (70)** — M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G from Apple's pages; M1 bandwidth derived and noted. M1 guide now sized on its own row |
 | 2026-10-02 | **+5 budget cards (64)** — RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G from vendor spec pages; 5050 ships without bandwidth (data rate not stated) |
