@@ -99,7 +99,7 @@ const baseArticles: Article[] = [
         headingZh: '下载模型',
         body: 'Use Q4_K_M for the best accuracy/size tradeoff on limited RAM. The 8B model fits easily in 16 GB.',
         bodyZh: '内存有限时使用 Q4_K_M，8B 模型轻松放入 16GB 内存。',
-        code: { lang: 'bash', content: 'pip install huggingface_hub\nhuggingface-cli download bartowski/Meta-Llama-3.1-8B-Instruct-GGUF \\\n  --include "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf" \\\n  --local-dir ./models' },
+        code: { lang: 'bash', content: 'pip install -U huggingface_hub\nhf download bartowski/Meta-Llama-3.1-8B-Instruct-GGUF \\\n  --include "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf" \\\n  --local-dir ./models' },
       },
       {
         heading: 'Start the server',

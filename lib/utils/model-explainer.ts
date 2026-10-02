@@ -202,7 +202,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             ? `The fastest level measured here is ${quantLevelKey(fastest)} at ${fastest.speedRTX4090} tok/s on an RTX 4090, batch 1. `
             : `The fastest level listed is ${quantLevelKey(fastest)} at about ${fastest.speedRTX4090} tok/s on an RTX 4090, batch 1 — an estimate, not a run on this site's hardware. `)
           : `No throughput has been measured for this model on this site's hardware. `) +
-        `GGUF runs on llama.cpp and Ollama across NVIDIA, AMD and Apple silicon; AWQ and GPTQ target vLLM on CUDA and ROCm; EXL2 is ExLlamaV2 and CUDA only.`,
+        `GGUF runs on llama.cpp and Ollama across NVIDIA, AMD and Apple silicon; AWQ and GPTQ target vLLM on CUDA and ROCm; EXL2 is ExLlamaV2 — CUDA only, and now archived, so local use rather than serving.`,
       zh:
         `${formatSentenceZh} ` +
         (best.pplLossPercent !== undefined
@@ -213,7 +213,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             ? `本站实测最快的档位是 ${quantLevelKey(fastest)}，在 RTX 4090、batch 1 下为 ${fastest.speedRTX4090} tok/s。`
             : `列出的最快档位是 ${quantLevelKey(fastest)}，在 RTX 4090、batch 1 下约 ${fastest.speedRTX4090} tok/s —— 这是估算值，不是本站硬件上的实测。`)
           : `本站硬件上没有该模型的吞吐实测数据。`) +
-        `GGUF 可在 NVIDIA、AMD 与苹果芯片上通过 llama.cpp 和 Ollama 运行；AWQ 与 GPTQ 面向 CUDA 和 ROCm 上的 vLLM；EXL2 仅限 CUDA 上的 ExLlamaV2。`,
+        `GGUF 可在 NVIDIA、AMD 与苹果芯片上通过 llama.cpp 和 Ollama 运行；AWQ 与 GPTQ 面向 CUDA 和 ROCm 上的 vLLM；EXL2 是 ExLlamaV2 —— 仅限 CUDA，而且已经归档，适合本机使用而不适合提供服务。`,
     },
   });
 

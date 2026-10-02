@@ -419,6 +419,41 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (j) — EXL2's runtime is archived; CLI ExLlamaV2 commands were invented; `huggingface-cli` is gone
+
+Sources: ExLlamaV2 `README.md` ("This project is archived for now"; README run commands
+`test_inference.py`, `examples/chat.py -m … -mode … -gs auto`; `-l` from `model_init.py`; repo has no
+`exllamav2/server/__main__.py` and no Dockerfile); TabbyAPI `README.md` (official server for
+ExLlamaV3; supported model types EXL3 + FP16/BF16), `pyproject.toml` (depends on `exllamav3` only),
+`docs/01.-Getting-Started.md`, `config_sample.yml` (`network.host` 127.0.0.1, port 5000,
+`disable_auth: false`), `docker/docker-compose.yml` (`shm_size: "8g"`), `common/auth.py`
+(`x-api-key` / `Authorization: Bearer`), tags page (no tags or releases); text-generation-webui
+README (ExLlamav3 loaders only); huggingface_hub `setup.py` (console_scripts `hf` only — no
+`huggingface-cli`; no `cli` extra) and `docs/source/en/guides/cli.md`.
+
+- **CLI ExLlamaV2 output** printed `python -m exllamav2.server … -host 0.0.0.0` and
+  `ghcr.io/turboderp/exllamav2:latest` — neither exists. Now: clone + `pip install .`,
+  `hf download <repo> --revision <bpw>bpw` (EXL2 bitrates are branches; the old `--include
+  "*4.65bpw*"` matched nothing), `python examples/chat.py -m … -mode <template> -l <ctx> -gs auto`
+  with `exllamaMode()` picking the template from the model name (unknown → `chatml` + a note to run
+  `-modes`). Docker/Compose say there is no image instead of inventing one. Swept 128 outputs (4
+  frameworks × 4 envs × 4 backends × 2 langs): 0 `huggingface-cli`, 0 invented commands, 0
+  non-loopback ports, 0 English notes in `zh`.
+- **`huggingface-cli` → `hf download`** and `huggingface_hub[cli]` → `huggingface_hub` in the CLI and
+  4 guide code blocks; the tool page FAQ names the rename.
+- **Format wizard**: EXL2 −15 with an "archived" reason on NVIDIA, and −40 more for `api`. Sweep:
+  `nvidia/speed/api` EXL2 75 → AWQ 70 wins; `nvidia/speed/chat|code` EXL2 still first (60 vs 55 —
+  the measured speed advantage is real); `quality` second place EXL2 → GPTQ.
+- **EXL2 format entry**: description/strengths/weaknesses state the archive; `framework`
+  `'ExLlamaV2 · TabbyAPI'` → `'ExLlamaV2'` (TabbyAPI no longer reads EXL2; guide matching splits on
+  `·`, so the TabbyAPI guide no longer maps to EXL2).
+- **Guides**: `tabbyapi-exllama-server` rewritten for TabbyAPI-on-EXL3 (title/description/tags
+  overridden, slug kept, `relatedModelIds: []` — the index has no EXL3 builds, so no size or speed
+  figure is given); `exllama-rtx4090-setup` gains the status, clone-not-just-pip (examples live in the
+  repo), `-mode llama3` for Llama 3.1 (`llama` is the Llama 1/2 template), and a count-free GGUF
+  line (said "81 of 81"); `deepseek-r1-exl2-vs-gguf` gains the status line. Model explainer and tool
+  page FAQ updated. CLI zh note told readers to pick "macOS Terminal" while the zh UI says "macOS 终端".
+
 ### 2026-10-02 (i) — Dual-GPU guide vs current llama.cpp; old-flag claim corrected; CLI ports on loopback
 
 **Dual-GPU guide** re-checked against llama.cpp `docs/multi-gpu.md`, `common/arg.cpp`,

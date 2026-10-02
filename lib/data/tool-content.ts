@@ -140,8 +140,8 @@ export const cliGenContent: ToolContent = {
     {
       q: { en: 'The download command matched nothing. Why?', zh: '下载命令一个文件都没匹配到，为什么？' },
       a: {
-        en: '`huggingface-cli download --include` exits 0 when its pattern matches no file, so a wrong filename looks like a successful download of nothing. Check that the repo actually publishes that quant level — smaller models often skip Q8_0, and very large ones ship sharded files whose names carry an `-00001-of-0000N` suffix.',
-        zh: '`huggingface-cli download --include` 在模式匹配不到任何文件时退出码仍是 0，所以文件名写错看起来就像"成功下载了零个文件"。请确认该仓库确实发布了这个量化档位 —— 小模型常常没有 Q8_0，而超大模型的文件是分片的，名字带 `-00001-of-0000N` 后缀。',
+        en: '`hf download --include` (the command was `huggingface-cli` before huggingface_hub renamed it) exits 0 when its pattern matches no file, so a wrong filename looks like a successful download of nothing. Check that the repo actually publishes that quant level — smaller models often skip Q8_0, and very large ones ship sharded files whose names carry an `-00001-of-0000N` suffix.',
+        zh: '`hf download --include`（huggingface_hub 改名之前这个命令叫 `huggingface-cli`）在模式匹配不到任何文件时退出码仍是 0，所以文件名写错看起来就像"成功下载了零个文件"。请确认该仓库确实发布了这个量化档位 —— 小模型常常没有 Q8_0，而超大模型的文件是分片的，名字带 `-00001-of-0000N` 后缀。',
       },
     },
     {
@@ -163,8 +163,8 @@ export const formatWizardContent: ToolContent = {
     {
       heading: { en: 'The formats, in one paragraph each', zh: '四种格式，各一段话' },
       body: {
-        en: '**GGUF** runs everywhere — CPU, NVIDIA, AMD, Apple — and is the only format that splits a model across VRAM and system RAM. **EXL2** is the fastest on consumer NVIDIA cards and lets you pick a fractional bits-per-weight, but it is CUDA-only. **AWQ** is built for batched serving through vLLM. **GPTQ** predates AWQ and covers a similar niche with wider legacy tooling. The wizard only recommends formats an indexed model actually ships.',
-        zh: '**GGUF** 到处都能跑 —— CPU、NVIDIA、AMD、苹果芯片 —— 也是唯一支持把模型拆分在显存与内存之间的格式。**EXL2** 在消费级 NVIDIA 卡上最快，且可以选择小数位的 bpw，但仅支持 CUDA。**AWQ** 面向通过 vLLM 的批量服务场景。**GPTQ** 早于 AWQ，覆盖类似场景，遗留工具链更广。向导只会推荐索引内确实有模型提供的格式。',
+        en: '**GGUF** runs everywhere — CPU, NVIDIA, AMD, Apple — and is the only format that splits a model across VRAM and system RAM. **EXL2** is the fastest on consumer NVIDIA cards and lets you pick a fractional bits-per-weight, but it is CUDA-only and its runtime, ExLlamaV2, is now archived with no maintained API server. **AWQ** is built for batched serving through vLLM. **GPTQ** predates AWQ and covers a similar niche with wider legacy tooling. The wizard only recommends formats an indexed model actually ships.',
+        zh: '**GGUF** 到处都能跑 —— CPU、NVIDIA、AMD、苹果芯片 —— 也是唯一支持把模型拆分在显存与内存之间的格式。**EXL2** 在消费级 NVIDIA 卡上最快，且可以选择小数位的 bpw，但仅支持 CUDA，而且它的运行时 ExLlamaV2 已经归档，没有仍在维护的 API 服务端。**AWQ** 面向通过 vLLM 的批量服务场景。**GPTQ** 早于 AWQ，覆盖类似场景，遗留工具链更广。向导只会推荐索引内确实有模型提供的格式。',
       },
     },
     {
@@ -186,8 +186,8 @@ export const formatWizardContent: ToolContent = {
     {
       q: { en: 'I have an NVIDIA card. Should I always use EXL2?', zh: '我有 NVIDIA 卡，是不是该一直用 EXL2？' },
       a: {
-        en: 'Only if speed is the priority and you are serving one request at a time. GGUF has far wider tooling and is the only option if the model does not fully fit in VRAM; AWQ through vLLM wins on batched throughput. The wizard weights these by the priority you pick.',
-        zh: '只有在速度优先、且一次只处理一个请求时才是。GGUF 的工具链广得多，而且在模型无法完全装进显存时是唯一选择；批量吞吐场景下 AWQ + vLLM 更强。向导会按你选择的优先级加权。',
+        en: 'Only if speed is the priority, you are chatting locally, and you accept an archived runtime: ExLlamaV2 still runs EXL2, but development moved to ExLlamaV3 and no maintained server loads EXL2 any more, so it cannot back an API. GGUF has far wider tooling and is the only option if the model does not fully fit in VRAM; AWQ through vLLM wins on batched throughput. The wizard weights these by the priority you pick.',
+        zh: '只有在速度优先、只在本机对话、并且能接受一个已归档的运行时的情况下才是：ExLlamaV2 仍能跑 EXL2，但开发已转到 ExLlamaV3，也已经没有仍在维护的服务端加载 EXL2，所以它无法用来提供 API。GGUF 的工具链广得多，而且在模型无法完全装进显存时是唯一选择；批量吞吐场景下 AWQ + vLLM 更强。向导会按你选择的优先级加权。',
       },
     },
     {

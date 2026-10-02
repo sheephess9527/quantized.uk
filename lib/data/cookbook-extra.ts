@@ -42,7 +42,7 @@ export const extraArticles: Article[] = [
     },
     content: [
       { heading: 'Speed vs simplicity', headingZh: '速度 vs 简便性', body: 'EXL2 via ExLlamaV2 delivers ~35% faster inference than GGUF via llama.cpp on the same 14B model. GGUF wins on setup simplicity and Ollama compatibility.', bodyZh: 'ExLlamaV2 跑 EXL2 比 llama.cpp 跑 GGUF 快约 35%。GGUF 在部署简便性和 Ollama 兼容性上更优。', code: { lang: 'text', content: 'EXL2 4.65bpw → ~128 tok/s (ExLlamaV2, RTX 4090)\nGGUF Q4_K_M  → ~95 tok/s (llama.cpp, RTX 4090)' } },
-      { heading: 'Download EXL2', headingZh: '下载 EXL2', body: 'Grab the turboderp EXL2 quant from Hugging Face. Use TabbyAPI or ExLlamaV2 server for OpenAI-compatible API.', bodyZh: '从 Hugging Face 下载 turboderp 的 EXL2 量化。用 TabbyAPI 或 ExLlamaV2 server 提供 OpenAI 兼容 API。', code: { lang: 'bash', content: 'huggingface-cli download turboderp/DeepSeek-R1-Distill-Qwen-14B-exl2 \\\n  --include "*4.65bpw*" --local-dir ./models/r1-14b-exl2' } },
+      { heading: 'Download EXL2', headingZh: '下载 EXL2', body: 'Grab the turboderp EXL2 quant from Hugging Face. Use TabbyAPI or ExLlamaV2 server for OpenAI-compatible API.', bodyZh: '从 Hugging Face 下载 turboderp 的 EXL2 量化。用 TabbyAPI 或 ExLlamaV2 server 提供 OpenAI 兼容 API。', code: { lang: 'bash', content: 'hf download turboderp/DeepSeek-R1-Distill-Qwen-14B-exl2 \\\n  --include "*4.65bpw*" --local-dir ./models/r1-14b-exl2' } },
     ],
   },
   {

@@ -78,14 +78,16 @@ export const quantFormats: QuantFormat[] = [
     heatPercent: 32,
     heatTrend: 0,
     description: {
-      en: 'ExLlamaV2 format. Mixed-precision per-layer quantization — best accuracy-per-bit ratio. Fastest single-GPU inference available.',
-      zh: 'ExLlamaV2 格式，每层独立混合精度量化，每比特精度最优，单 GPU 推理速度最快。',
+      en: 'ExLlamaV2 format. Mixed-precision per-layer quantization with a high accuracy-per-bit ratio, and on this site\'s own measurements the fastest single-GPU format it has run. ExLlamaV2 itself is now archived — development moved to ExLlamaV3 and its new EXL3 format — and the servers that used to load EXL2 (TabbyAPI, text-generation-webui) now load EXL3 instead, so EXL2 runs locally through ExLlamaV2\'s own scripts but no longer has a maintained API server.',
+      zh: 'ExLlamaV2 格式，每层独立混合精度量化，每比特精度很高；按本站自己的实测，它是跑过的格式里单卡速度最快的。不过 ExLlamaV2 本身已经归档 —— 开发转到了 ExLlamaV3 及其新的 EXL3 格式 —— 以前能加载 EXL2 的服务端（TabbyAPI、text-generation-webui）现在加载的是 EXL3，所以 EXL2 仍能通过 ExLlamaV2 自带的脚本在本机运行，但已经没有仍在维护的 API 服务端。',
     },
-    strengths: { en: ['Fastest GPU inference', 'Best accuracy per bit', 'Ultra-low 2bpw option'], zh: ['GPU 推理速度最快', '每比特精度最优', '超低 2bpw 选项'] },
-    weaknesses: { en: ['NVIDIA only', 'Steeper learning curve'], zh: ['仅限 NVIDIA', '学习曲线较陡'] },
+    strengths: { en: ['Fastest single-GPU format measured here', 'High accuracy per bit', 'Ultra-low 2bpw option'], zh: ['本站实测单卡最快的格式', '每比特精度高', '超低 2bpw 选项'] },
+    weaknesses: { en: ['NVIDIA only', 'Runtime archived — no maintained API server', 'Steeper learning curve'], zh: ['仅限 NVIDIA', '运行时已归档 —— 没有仍在维护的 API 服务端', '学习曲线较陡'] },
     hardwareReq: 'NVIDIA GPU (Ampere+ recommended)',
-    bestFor: { en: 'Max single-GPU performance', zh: '单卡极致性能' },
-    framework: 'ExLlamaV2 · TabbyAPI',
+    bestFor: { en: 'Local single-GPU chat on NVIDIA', zh: 'NVIDIA 单卡本地对话' },
+    // TabbyAPI dropped EXL2 for EXL3 (pyproject depends on exllamav3 only), so it
+    // is no longer a reader of this format — and guide matching splits on '·'.
+    framework: 'ExLlamaV2',
   },
   {
     id: 'gptq',

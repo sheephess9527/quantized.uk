@@ -57,6 +57,19 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
     if (format === 'HQQ') { score -= 10; }
   }
 
+  // ExLlamaV2 is archived (README, checked 2026-10-02) and the servers that used
+  // to load EXL2 — TabbyAPI, text-generation-webui — now load EXL3 only. It
+  // still runs locally, so a local-chat reader can still be pointed at it; an
+  // API reader cannot.
+  if (format === 'EXL2' && input.hardware === 'nvidia') {
+    score -= 15;
+    reasons.push({ en: 'ExLlamaV2 is archived — it still runs, but gets no fixes or support for new architectures', zh: 'ExLlamaV2 已归档 —— 仍能运行，但不再修复问题，也不会支持新架构' });
+    if (input.useCase === 'api') {
+      score -= 40;
+      reasons.push({ en: 'No maintained server loads EXL2 any more (TabbyAPI and text-generation-webui moved to EXL3), so it cannot back an API', zh: '已经没有仍在维护的服务端加载 EXL2（TabbyAPI 和 text-generation-webui 都转向了 EXL3），无法用来提供 API' });
+    }
+  }
+
   if (input.priority === 'quality') {
     if (format === 'GGUF') { score += 10; reasons.push({ en: 'GGUF Q6_K / Q8_0 offer near-FP16 quality with broad compatibility', zh: 'GGUF Q6_K / Q8_0 在广泛兼容的同时接近 FP16 质量' }); }
     if (format === 'EXL2') { score += 8; reasons.push({ en: 'EXL2 flexible bpw lets you tune the quality/size tradeoff precisely', zh: 'EXL2 灵活 bpw 可精确调节质量/体积权衡' }); }
@@ -82,7 +95,7 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
  * all". Hardware only decides which GGUF runtime to name.
  */
 function recommendFramework(format: string, input: WizardInput): string {
-  if (format === 'EXL2') return 'ExLlamaV2 (CUDA only)';
+  if (format === 'EXL2') return 'ExLlamaV2 (CUDA only, archived)';
   // vLLM ships official ROCm support for both, so "CUDA only" was simply wrong.
   // The scoring still prefers GGUF on Radeon because vLLM's ROCm build covers
   // only some cards (`vllmRocmSupported`) — a different claim from "impossible".

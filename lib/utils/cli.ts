@@ -47,7 +47,7 @@ function L(lang: Lang, en: string, zh: string): string {
  * `hfRepoMap` exists to source HF download/like stats, so for ~14 models it
  * points at the *original weights* (`openai/gpt-oss-20b`,
  * `deepseek-ai/DeepSeek-R1`) rather than a GGUF conversion. Handing one of
- * those to `huggingface-cli download --include "*.gguf"` or to `ollama run
+ * those to `hf download --include "*.gguf"` or to `ollama run
  * hf.co/…` produces a command that looks right and downloads nothing, so a
  * repo only counts here if it is actually a GGUF repo.
  */
@@ -95,7 +95,7 @@ function llamaImageTag(backend: Backend): string {
 function containerNotes(backend: Backend, lang: Lang): string[] {
   if (backend === 'cuda') return [L(lang, 'Requires the NVIDIA Container Toolkit on the host', '主机需要安装 NVIDIA Container Toolkit')];
   if (backend === 'rocm') return [L(lang, 'AMD GPU: needs ROCm drivers on the host; /dev/kfd and /dev/dri are passed through', 'AMD 显卡：主机需要安装 ROCm 驱动；命令已透传 /dev/kfd 和 /dev/dri')];
-  if (backend === 'metal') return [L(lang, 'Docker on macOS cannot reach the Apple GPU — this container runs on the CPU. Choose "macOS Terminal" to run natively on Metal', 'macOS 上的 Docker 无法使用苹果 GPU——这个容器会跑在 CPU 上。想用 Metal 加速，请选择 "macOS Terminal" 直接在本机运行')];
+  if (backend === 'metal') return [L(lang, 'Docker on macOS cannot reach the Apple GPU — this container runs on the CPU. Choose "macOS Terminal" to run natively on Metal', 'macOS 上的 Docker 无法使用苹果 GPU——这个容器会跑在 CPU 上。想用 Metal 加速，请选择 "macOS 终端" 直接在本机运行')];
   return [L(lang, 'CPU-only container', '纯 CPU 容器')];
 }
 
@@ -125,72 +125,84 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
   return { command: '# Select a framework', notes: [] };
 }
 
+/**
+ * ExLlamaV2's chat template for a model, from the names `examples/chat.py`
+ * accepts (`-modes` lists them). A wrong template still runs and answers
+ * badly, so anything unrecognised falls back to `chatml` with a note.
+ */
+function exllamaMode(modelName: string): { mode: string; guessed: boolean } {
+  const n = modelName.toLowerCase();
+  if (/llama[ -]?3|llama 4/.test(n)) return { mode: 'llama3', guessed: false };
+  if (/qwq/.test(n)) return { mode: 'qwq', guessed: false };
+  if (/qwen|yi-|hermes/.test(n)) return { mode: 'chatml', guessed: false };
+  if (/gemma/.test(n)) return { mode: 'gemma', guessed: false };
+  if (/phi-?3|phi-?4/.test(n)) return { mode: 'phi3', guessed: false };
+  if (/deepseek/.test(n)) return { mode: 'deepseek', guessed: false };
+  if (/command[ -]?r|cohere/.test(n)) return { mode: 'cohere', guessed: false };
+  if (/glm/.test(n)) return { mode: 'glm', guessed: false };
+  return { mode: 'chatml', guessed: true };
+}
+
+/**
+ * ExLlamaV2 as it actually stands (checked 2026-10-02): its README marks the
+ * project archived, development has moved to ExLlamaV3, and the servers that
+ * used to load EXL2 — TabbyAPI (`pyproject.toml` depends on exllamav3 only)
+ * and text-generation-webui (ExLlamav3 loaders only) — no longer do. The repo
+ * has no `__main__` server and no Dockerfile, so the `python -m
+ * exllamav2.server` command and `ghcr.io/turboderp/exllamav2` image this used
+ * to print did not exist. What does run is the library's own chat example.
+ */
 function generateExLlama(opts: CLIOptions): CLIOutput {
-  const { env, modelName, quantLevel, contextLen, port, apiKey } = opts;
+  const { env, modelName, quantLevel, contextLen } = opts;
   const lang: Lang = opts.lang ?? 'en';
   const bpw = quantLevel.replace(/[^0-9.]/g, '') || '4.65';
   const modelDir = modelName.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
-  const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
+  const { mode, guessed } = exllamaMode(modelName);
+  const status = L(lang,
+    'ExLlamaV2 is archived (its README says development continues in ExLlamaV3), and TabbyAPI and text-generation-webui now load EXL3, not EXL2 — so there is no maintained OpenAI-compatible server for EXL2 any more. These commands run the model locally with ExLlamaV2\'s own chat script',
+    'ExLlamaV2 已归档（README 写明开发转到 ExLlamaV3），TabbyAPI 和 text-generation-webui 现在加载的是 EXL3 而不是 EXL2 —— 所以 EXL2 已经没有仍在维护的 OpenAI 兼容服务端。下面的命令用 ExLlamaV2 自带的聊天脚本在本机运行模型');
+  const apiAlt = L(lang,
+    'Need an API? Serve the same model as GGUF with llama.cpp, or as AWQ/GPTQ with vLLM — both still maintained',
+    '需要 API？用 llama.cpp 跑这个模型的 GGUF 版本，或用 vLLM 跑 AWQ/GPTQ 版本 —— 两者都仍在维护');
 
-  const serverCmd = [
-    `python -m exllamav2.server \\`,
-    `  -m ./models/${modelDir}-exl2-${bpw}bpw \\`,
-    `  -c ${contextLen} \\`,
-    `  -host 0.0.0.0 -port ${port}${apiKeyFlag}`,
+  if (env === 'mac') {
+    return {
+      command: `# ExLlamaV2 requires an NVIDIA GPU (CUDA) — it does not run on Apple silicon.\n# Use llama.cpp or Ollama with the GGUF build instead.`,
+      notes: [status],
+    };
+  }
+
+  if (env === 'docker' || env === 'compose') {
+    return {
+      command: `# ExLlamaV2 publishes no Docker image, and the maintained servers that used to\n# load EXL2 (TabbyAPI, text-generation-webui) now load EXL3 only.\n# Choose "Linux / Ubuntu" for a local run, or switch to llama.cpp / vLLM for a container.`,
+      notes: [status, apiAlt],
+    };
+  }
+
+  const command = [
+    `# Install ExLlamaV2 from source (the chat script lives in the repo)`,
+    `git clone https://github.com/turboderp-org/exllamav2 && cd exllamav2`,
+    `pip install -r requirements.txt`,
+    `pip install .`,
+    ``,
+    `# Download the EXL2 build — each bitrate is a separate branch of the repo`,
+    `pip install -U huggingface_hub`,
+    `hf download <hf-exl2-repo-id> --revision ${bpw}bpw --local-dir ../models/${modelDir}-exl2-${bpw}bpw`,
+    ``,
+    `# Chat locally (-gs auto splits across GPUs; -l sets the context length)`,
+    `python examples/chat.py -m ../models/${modelDir}-exl2-${bpw}bpw -mode ${mode} -l ${contextLen} -gs auto`,
   ].join('\n');
 
-  if (env === 'docker') {
-    const command = [
-      `docker run --rm -it \\`,
-      `  --gpus all \\`,
-      `  -p 127.0.0.1:${port}:${port} \\`,
-      `  -v $(pwd)/models:/models \\`,
-      `  ghcr.io/turboderp/exllamav2:latest \\`,
-      `  -m /models/${modelDir}-exl2-${bpw}bpw \\`,
-      `  -c ${contextLen} \\`,
-      `  -host 0.0.0.0 -port ${port}`,
-    ].join('\n');
-    return { command, notes: [L(lang, 'Requires NVIDIA GPU (Ampere+ recommended)', '需要 NVIDIA 显卡（推荐 Ampere 或更新架构）'), L(lang, 'Model must be in EXL2 format from turboderp or equivalent', '模型必须是 EXL2 格式（turboderp 等发布者提供）')] };
-  }
-
-  if (env === 'compose') {
-    const compose = `version: "3.8"
-services:
-  exllama:
-    image: ghcr.io/turboderp/exllamav2:latest
-    container_name: exllama-server
-    ports:
-      - "127.0.0.1:${port}:${port}"
-    volumes:
-      - ./models:/models
-    command: >
-      -m /models/${modelDir}-exl2-${bpw}bpw
-      -c ${contextLen}
-      -host 0.0.0.0
-      -port ${port}
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    restart: unless-stopped`;
-    return { command: serverCmd, compose, notes: [L(lang, 'Fastest inference for NVIDIA consumer GPUs', 'NVIDIA 消费级显卡上最快的推理方式'), L(lang, 'Download EXL2 quants from Hugging Face (turboderp repos)', '从 Hugging Face 下载 EXL2 量化版本（如 turboderp 的仓库）')] };
-  }
-
-  const installCmd = env === 'mac'
-    ? `# ExLlamaV2 requires NVIDIA CUDA — not supported on Apple Silicon\n# Use Ollama with GGUF instead`
-    : `# Install ExLlamaV2\npip install exllamav2\n\n# Download EXL2 model (example)\nhuggingface-cli download <hf-exl2-repo-id> --include "*${bpw}bpw*" --local-dir ./models/${modelDir}-exl2-${bpw}bpw\n\n# Run`;
-
   return {
-    command: `${installCmd}\n${serverCmd}`,
+    command,
     notes: [
-      L(lang, 'ExLlamaV2 is NVIDIA-only — fastest consumer GPU inference for EXL2 quants', 'ExLlamaV2 仅支持 NVIDIA——EXL2 量化在消费级显卡上最快的推理方式'),
-      L(lang, `Recommended quant: ${quantLevel} (adjust bpw in model path)`, `推荐量化：${quantLevel}（在模型路径里调整 bpw）`),
-      L(lang, 'Replace <hf-exl2-repo-id> with this model\'s EXL2 repo — EXL2 quants are per-model (turboderp, LoneStriker, bartowski), not derivable from the name', '把 <hf-exl2-repo-id> 换成这个模型的 EXL2 仓库——EXL2 量化按模型单独发布（turboderp、LoneStriker、bartowski 等），无法从名字推出'),
-      L(lang, `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`, `OpenAI 兼容接口：http://localhost:${port}/v1/chat/completions`),
-      L(lang, 'Alternative: TabbyAPI wraps ExLlamaV2 with a polished web UI', '另一选择：TabbyAPI 给 ExLlamaV2 套了一层完善的 Web 界面'),
+      status,
+      L(lang, 'NVIDIA only — ExLlamaV2 has no ROCm or Metal path', '仅支持 NVIDIA —— ExLlamaV2 没有 ROCm 或 Metal 路径'),
+      L(lang, 'Replace <hf-exl2-repo-id> with this model\'s EXL2 repo — EXL2 quants are per-model (turboderp, LoneStriker, bartowski), not derivable from the name. Check the branch name matches the bitrate', '把 <hf-exl2-repo-id> 换成这个模型的 EXL2 仓库——EXL2 量化按模型单独发布（turboderp、LoneStriker、bartowski 等），无法从名字推出。请确认分支名与比特率一致'),
+      guessed
+        ? L(lang, `-mode ${mode} is a guess for this model — run python examples/chat.py -modes to list the templates and pick the model's own`, `-mode ${mode} 是对这个模型的猜测 —— 运行 python examples/chat.py -modes 列出所有模板，选与模型匹配的那个`)
+        : L(lang, `-mode ${mode} is the chat template; python examples/chat.py -modes lists the others`, `-mode ${mode} 是聊天模板；python examples/chat.py -modes 可列出其他模板`),
+      apiAlt,
     ],
   };
 }
@@ -204,7 +216,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   // bartowski/Meta-Llama-3.1-8B-Instruct-GGUF ships
   // Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf. Deriving the filename from the
   // display name drops the "Meta-" and `--include` then matches nothing —
-  // huggingface-cli downloads zero files and exits 0.
+  // `hf download` downloads zero files and exits 0.
   const modelFile = hfRepo
     ? `${ggufBase(hfRepo)}-${quantLevel}.gguf`
     : `${modelName.replace(/[^a-zA-Z0-9._-]/g, '-')}-${quantLevel}.gguf`;
@@ -269,9 +281,9 @@ services:
   // LLAMA_CUBLAS is a fatal error), but a *misspelt* -D is only reported as an
   // unused variable and yields a CPU-only build — emit the current names.
   const downloadCmd = [
-    `# Download the model (installs the CLI the next line needs)`,
-    `pip install -U "huggingface_hub[cli]"`,
-    `huggingface-cli download ${repoId} --include "${modelFile}" --local-dir ./models`,
+    `# Download the model (installs the hf CLI the next line needs)`,
+    `pip install -U huggingface_hub`,
+    `hf download ${repoId} --include "${modelFile}" --local-dir ./models`,
   ].join('\n');
   const installCmd = env === 'mac'
     ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`

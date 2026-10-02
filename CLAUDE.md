@@ -622,6 +622,13 @@ softening it. vLLM's real failure signature is a preemption warning naming
 `PreemptionMode.RECOMPUTE`, which is KV-cache pressure: shorten `--max-model-len` before raising
 `--gpu-memory-utilization`.
 
+**EXL2's runtime is archived (checked 2026-10-02).** ExLlamaV2's README says so; TabbyAPI (main,
+no tags) and text-generation-webui load EXL3/FP16 only. EXL2 still runs locally via
+`examples/chat.py` — say that, never present a server for it. EXL3 is not tracked (0 models); do not
+size it from EXL2 figures. **Hugging Face's CLI is `hf`** — `huggingface-cli` no longer exists in
+`huggingface_hub` (console_scripts is `hf` only), and there is no `[cli]` extra. EXL2/EXL3 bitrates
+are repo **branches** (`--revision 4.65bpw`), not file patterns.
+
 **`speedRTX4090` is one card's number — label it wherever it is printed.** It is the only per-quant
 speed field, and a GPU page's fit table headed it "tok/s", presenting 4090 speeds as the RTX 4060's.
 Any new surface printing it names the RTX 4090; a card's own speeds come only from `matrixData`.
@@ -916,6 +923,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **EXL2 reality check** — ExLlamaV2 archived, TabbyAPI/text-gen-webui EXL3-only; CLI ExLlamaV2 server + image were invented (now real `examples/chat.py` with per-model template); `huggingface-cli` → `hf` everywhere; wizard stops recommending EXL2 for APIs; TabbyAPI guide rewritten |
 | 2026-10-02 | **Dual-GPU guide + two site-wide fixes** — llama.cpp `--fit` on by default (1 GiB/card) now handled with explicit `-ngl all -c`; the "old CMake flags are silently ignored" claim was false (`LLAMA_CUDA` warns + works, `LLAMA_CUBLAS` errors), fixed in 6 places; all CLI container ports bound to `127.0.0.1`, `vllm serve --host 127.0.0.1` |
 | 2026-10-02 | **WSL2 guide re-check** — LAN claim was wrong (NAT mode is not LAN-reachable; mirrored is); `cuda` meta-package installs a Linux driver; WSL's systemd defaults off so Ollama's service never starts; 3 FAQs |
 | 2026-10-02 | **+2 models (87): Gemma 4 E2B, E4B** — KV sharing needs no new field: llama.cpp allocates no cache for the `num_kv_shared_layers` tail, so only the leading layers go into `fullLayers`/`windowLayers`. `params` is the total incl. the per-layer embedding (PLE) table, which llama.cpp keeps in system RAM — sized conservatively, the VRAM saving stated per page |
