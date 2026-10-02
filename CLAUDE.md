@@ -327,9 +327,11 @@ function was called across every hardware × priority combination. Same for the 
 has room for the bytes.** `fitsOnGpu` ranked every quant a model shipped by quality loss alone and
 handed back whichever fit in VRAM — no idea whether the target's backend (CUDA/ROCm/Metal/CPU) could
 load that *format* at all, so a Mac, CPU or AMD GPU page could recommend AWQ/GPTQ/EXL2, none of which
-those backends run (AMD is a partial exception — see the AMD-format FAQ answer, which this fix reused
-rather than re-deriving: vLLM's official ROCm wheels keep AWQ on the table there, only EXL2/GPTQ are
-excluded). `backendFor(gpu)` + `formatAllowed(gpu, format)` (`lib/utils/gpu-page.ts`, derived from the
+those backends run (AMD is a partial exception: on ROCm, AWQ and GPTQ are vLLM-only, so they are allowed **only on
+cards vLLM's ROCm list names** — `vllmRocmSupported()`, the one copy, shared with the CLI; RX 6000,
+RX 7600 XT and MI100 get GGUF only. vLLM's docs chart marks AWQ/GPTQ ❌ on AMD while its source
+(`platforms/rocm.py`, `CMakeLists.txt`) supports both — when vLLM's docs and code disagree, read the
+code). `backendFor(gpu)` + `formatAllowed(gpu, format)` (`lib/utils/gpu-page.ts`, derived from the
 existing `type` field, not a new one to keep in sync across 63 rows) is the one place this is decided
 now. **A fix at the source function does not fix a caller that duplicated the computation instead of
 calling it** — the VRAM calculator's `getRecommendations` took a bare vram *number*, never a `GPU`,
@@ -890,6 +892,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **AMD formats per card** — AWQ/GPTQ (vLLM-only on ROCm) gated by `vllmRocmSupported()`; GPTQ was wrongly CUDA-only (vLLM source builds it for HIP). RX 6000/7600 XT lose up to 4 comfortable fits; GPU-page "can it run" FAQ sizes the smallest *loadable* build (15 pages said "use GGUF" about models shipping GGUF) |
 | 2026-10-02 | **CLI vLLM on AMD + current install** — `vllm/vllm-openai-rocm` with documented flags, ROCm wheel index, `uv pip install … --torch-backend=auto` + `vllm serve`; off-list Radeon cards (RX 6000, 7600 XT) get a note |
 | 2026-10-02 | **CLI containers follow the GPU; notes bilingual** — AMD got CUDA images; Ollama compose had its GPU block commented out (CPU for everyone). 1,368 notes swept, 0 wrong-language |
 | 2026-10-02 | **AMD guide re-check + CPU-only Docker bug** — CLI docker/compose used the CPU-only `:server` image with `--gpus all`; now `:server-cuda`. HIP build/ROCm 6.1+/Windows claims and the `load_tensors:` log line corrected |

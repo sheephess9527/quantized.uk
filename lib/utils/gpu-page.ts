@@ -45,19 +45,39 @@ export function backendFor(gpu: GPU): Backend {
  * loss alone and hand back whichever fit in VRAM, so a Mac or CPU page
  * could recommend AWQ or EXL2, neither of which runs there at all.
  *
- * Sourced from this site's own already-published answer to "which format
- * runs on an AMD card?" (`lib/utils/faq.ts`, `amd-format`), not the more
- * conservative "GGUF only" a first pass at this table assumed: vLLM ships
- * official ROCm wheels, so AWQ is not off the table on AMD the way it is
- * on a Mac — but EXL2 and GPTQ are CUDA-only regardless of backend. Keep
- * this table and that FAQ answer in agreement if either changes.
+ * ROCm: AWQ and GPTQ are served by vLLM, and vLLM's own source is the
+ * authority here, not its docs' compatibility chart (which still marks both
+ * ❌ for AMD): `vllm/platforms/rocm.py` lists `awq` and `gptq` in
+ * `supported_quantization` and switches AWQ to its Triton kernels, and
+ * `CMakeLists.txt` builds the GPTQ `q_gemm` kernel for HIP. EXL2 stays
+ * CUDA-only — ExLlamaV2 has no ROCm path. Which *cards* vLLM runs on is a
+ * separate, narrower question: see `vllmRocmSupported`. Keep this table and
+ * the `amd-format` FAQ answer (`lib/utils/faq.ts`) in agreement.
  */
 export const ALLOWED_FORMATS: Record<Backend, ReadonlyArray<QuantVariant['format']>> = {
   cuda: ['GGUF', 'AWQ', 'GPTQ', 'EXL2', 'HQQ'],
-  rocm: ['GGUF', 'AWQ'],
+  rocm: ['GGUF', 'AWQ', 'GPTQ'],
   metal: ['GGUF'],
   cpu: ['GGUF'],
 };
+
+/** Formats on ROCm that only vLLM serves, so they need a card vLLM supports. */
+const VLLM_ONLY_ON_ROCM: ReadonlyArray<string> = ['AWQ', 'GPTQ'];
+
+/**
+ * vLLM's ROCm requirements (`docs/getting_started/installation/gpu.rocm.inc.md`)
+ * list MI200s (gfx90a), MI300/MI350, Radeon RX 7900 series (gfx1100/1101 —
+ * which also covers the 7800 XT, 7700 XT and PRO W7900), RX 9000 (gfx1200/1201)
+ * and Ryzen AI MAX. Older Radeon (RX 6000, gfx1030), the RX 7600 XT (gfx1102)
+ * and the MI100 (gfx908) are not on it — the kernels may compile for them from
+ * source, but the official wheels and images are not built or tested there,
+ * so this site does not recommend a vLLM-only format on those cards.
+ * Matched on the name, which already carries the generation.
+ */
+export function vllmRocmSupported(gpuName?: string): boolean {
+  if (!gpuName) return true;
+  return /RX 9\d{3}|RX 7(900|800|700)|W7900|MI[23]\d{2}/.test(gpuName);
+}
 
 /**
  * `format` is typed as `string` rather than `QuantVariant['format']` so this
@@ -66,7 +86,9 @@ export const ALLOWED_FORMATS: Record<Backend, ReadonlyArray<QuantVariant['format
  * both are drawn from the same five real values at runtime.
  */
 export function formatAllowed(gpu: GPU, format: string): boolean {
-  return (ALLOWED_FORMATS[backendFor(gpu)] as readonly string[]).includes(format);
+  const backend = backendFor(gpu);
+  if (!(ALLOWED_FORMATS[backend] as readonly string[]).includes(format)) return false;
+  return backend !== 'rocm' || !VLLM_ONLY_ON_ROCM.includes(format) || vllmRocmSupported(gpu.name);
 }
 
 /**

@@ -333,8 +333,8 @@ export function faqGroups(): FaqGroup[] {
           id: 'amd-format',
           q: { en: 'Which format runs on an AMD card?', zh: 'A 卡（AMD）能用哪种格式？' },
           a: {
-            en: `GGUF via llama.cpp's ROCm or Vulkan backend is the reliable answer. vLLM also ships official ROCm builds, so AWQ is not off the table the way it is on a Mac — but EXL2 and GPTQ are CUDA-only. The thing that actually decides whether an AMD setup works is not the format but whether your kernel and card have a working ROCm build, which is a setup question rather than a hardware ceiling.`,
-            zh: `可靠的答案是 GGUF，走 llama.cpp 的 ROCm 或 Vulkan 后端。vLLM 也有官方 ROCm 构建，所以 AWQ 不像在 Mac 上那样完全无解 —— 但 EXL2 和 GPTQ 只支持 CUDA。真正决定一套 A 卡环境能不能用的不是格式，而是你的内核和显卡有没有可用的 ROCm 构建，这是配置问题，不是硬件天花板。`,
+            en: `GGUF via llama.cpp's ROCm or Vulkan backend is the reliable answer, on every Radeon. AWQ and GPTQ run through vLLM's official ROCm builds — but only on the cards vLLM supports: RX 7700 XT and up, RX 9000 and Instinct MI200 or newer. An RX 6000 card, the RX 7600 XT or an MI100 is not on that list, so this site does not recommend those formats there. EXL2 is CUDA-only. Beyond the format, what decides whether an AMD setup works at all is whether your kernel and card have a working ROCm build, which is a setup question rather than a hardware ceiling.`,
+            zh: `可靠的答案是 GGUF，走 llama.cpp 的 ROCm 或 Vulkan 后端，所有 Radeon 都适用。AWQ 和 GPTQ 可以通过 vLLM 的官方 ROCm 构建运行 —— 但仅限 vLLM 支持的显卡：RX 7700 XT 及以上、RX 9000 系列和 Instinct MI200 及更新型号。RX 6000 系列、RX 7600 XT 和 MI100 不在名单上，本站不会在这些卡上推荐这两种格式。EXL2 只支持 CUDA。格式之外，真正决定一套 A 卡环境能不能用的，是你的内核和显卡有没有可用的 ROCm 构建，这是配置问题，不是硬件天花板。`,
           },
           link: { href: '/cookbook/amd-rocm-llamacpp/', label: { en: 'AMD + llama.cpp, step by step', zh: 'AMD + llama.cpp 实操' } },
         },

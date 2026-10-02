@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'AMD recommendations now match what each Radeon card can actually run. AWQ and GPTQ builds on AMD are served by vLLM, and vLLM supports the RX 7700 XT and up, the RX 9000 series and Instinct MI200 or newer — so the RX 6000 series, the RX 7600 XT and the MI100 no longer get AWQ picks they could not load, and their "fits comfortably" counts drop by up to four models. GPTQ, which we had wrongly called NVIDIA-only, is now offered on the supported AMD cards. The "can this card run …" answers on GPU pages also stopped saying a format would not run when the model ships a GGUF build that does — they now size that build instead.',
+    zh: 'AMD 显卡的推荐现在与每张 Radeon 卡的实际能力一致。AMD 上的 AWQ 和 GPTQ 构建靠 vLLM 运行，而 vLLM 支持的是 RX 7700 XT 及以上、RX 9000 系列和 Instinct MI200 及更新型号——所以 RX 6000 系列、RX 7600 XT 和 MI100 不再收到它们加载不了的 AWQ 推荐，「可从容运行」的数量最多减少 4 个。GPTQ 此前被我们误称为只能在 NVIDIA 上跑，现在会在受支持的 AMD 卡上提供。GPU 页面里「这张卡能跑……吗」的回答，也不再在模型其实有可用 GGUF 构建时说「格式跑不了」——现在会按那个 GGUF 构建计算大小。',
+  },
+  {
+    date: '2026-10-02',
     en: 'The command generator\'s vLLM output now covers AMD cards and matches vLLM\'s current documentation. AMD owners get vLLM\'s official ROCm Docker image with the flags its documentation lists, and the ROCm install command; Radeon cards outside vLLM\'s supported list (such as the RX 6000 series and RX 7600 XT) get a note pointing to llama.cpp or Ollama instead. The non-Docker command now installs with uv and starts the server with "vllm serve", as vLLM documents it — it had still shown an older install and entrypoint that contradicted this site\'s own vLLM guide.',
     zh: '命令生成器的 vLLM 输出现在覆盖 AMD 显卡，并与 vLLM 当前文档一致。AMD 用户会拿到 vLLM 官方的 ROCm Docker 镜像、文档列出的运行参数，以及 ROCm 版的安装命令；不在 vLLM 支持名单上的 Radeon 显卡（如 RX 6000 系列和 RX 7600 XT）会看到提示，建议改用 llama.cpp 或 Ollama。非 Docker 命令现在用 uv 安装、用 "vllm serve" 启动服务，与 vLLM 文档一致——此前它仍显示旧的安装方式和入口，和本站自己的 vLLM 指南相矛盾。',
   },

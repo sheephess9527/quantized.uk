@@ -484,7 +484,7 @@ export const translations = {
       hwAdviceGreen: 'Fits with {spare}GB to spare.',
       hwAdviceYellow: 'Marginal — it may load, but lower the context or batch size for headroom.',
       hwAdviceRed: 'Does not fit. Try a smaller quant level or a shorter context.',
-      hwFormatMismatch: '{format} does not run on this card\'s backend, whatever the size — pick a GGUF build instead, or a different card.',
+      hwFormatMismatch: '{format} does not run on this card, whatever the size — pick a GGUF build instead, or a different card.',
       hwUsableOf: '{usable}G usable of {nameplate}G unified',
       hwShowAll: 'All {total} cards',
       refTable: {
@@ -1452,7 +1452,7 @@ export const translations = {
       hwAdviceGreen: '装得下，还余 {spare}GB。',
       hwAdviceYellow: '临界 —— 可能能加载，但建议降低上下文或 batch 以留出余量。',
       hwAdviceRed: '装不下。请换更低的量化档位或更短的上下文。',
-      hwFormatMismatch: '{format} 在这张卡的后端上跑不了，跟体积大小无关——换成 GGUF 构建，或者换一张卡。',
+      hwFormatMismatch: '{format} 在这张卡上跑不了，跟体积大小无关——换成 GGUF 构建，或者换一张卡。',
       hwUsableOf: '{nameplate}G 统一内存中约 {usable}G 可用',
       hwShowAll: '全部 {total} 张卡',
       refTable: {

@@ -103,7 +103,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Wide compatibility', 'Mature ecosystem', 'Works with HF transformers'], zh: ['框架兼容性广', '生态成熟', '支持 HF Transformers'] },
     weaknesses: { en: ['Slow quantization process', 'Lower accuracy than AWQ'], zh: ['量化过程较慢', '精度低于 AWQ'] },
-    hardwareReq: 'NVIDIA GPU (CUDA)',
+    hardwareReq: 'NVIDIA GPU (CUDA) or AMD via vLLM ROCm',
     bestFor: { en: 'Legacy server deployment', zh: '既有服务端部署' },
     framework: 'auto-gptq · vLLM · TGI',
   },

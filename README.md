@@ -419,6 +419,24 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (f) — AMD: AWQ/GPTQ only on vLLM-supported cards; GPTQ was wrongly CUDA-only
+
+`formatAllowed()` let every AMD row load AWQ, but on ROCm AWQ and GPTQ are vLLM-only and vLLM's
+ROCm requirements list only gfx90a/942/950, gfx1100/1101 (RX 7900/7800/7700, PRO W7900),
+gfx1200/1201 (RX 9000) and Ryzen AI MAX. `vllmRocmSupported()` moved from `cli.ts` to
+`gpu-page.ts` (one copy, the CLI imports it) and now gates AWQ/GPTQ on ROCm. **GPTQ added to
+`ALLOWED_FORMATS.rocm`**: vLLM's source lists `gptq` in `RocmPlatform.supported_quantization` and
+`CMakeLists.txt` builds `gptq/q_gemm.cu` for HIP (AWQ runs via Triton, forced on in
+`verify_quantization`). vLLM's docs chart (`features/quantization/README.md`) still marks both ❌
+for AMD — it contradicts the code, and the code was taken as the authority. ExLlamaV2's README has
+no ROCm path, so EXL2 stays CUDA-only. Measured (`fitsOnGpu`, comfortable/tight at 4K):
+RX 6800 XT / 6900 XT / 7600 XT 51/57 → 47/54, RX 6700 XT 45/47 → 45/46, MI100 69/70 → 67/70;
+RX 7900 XTX 66 → 67 and RX 9060 XT 8G 33 → 34 (a GPTQ pick). Also fixed in the GPU-page FAQ
+"Can <card> run <next model up>?": it sized the smallest build in *any* format and, if that was
+AWQ/EXL2, answered "that format doesn't run here — check for GGUF" on 15 EN pages for models that
+do ship GGUF; it now sizes the smallest build the card can load. FAQ `amd-format`, the AMD guide,
+the GPTQ `hardwareReq` and the calculator's mismatch line updated to match.
+
 ### 2026-10-02 (e) — CLI vLLM: ROCm image and install, current entrypoint, supported-card check
 
 Sources: vLLM `docs/getting_started/installation/gpu.rocm.inc.md` (official `vllm/vllm-openai-rocm`

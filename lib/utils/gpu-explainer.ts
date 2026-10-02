@@ -269,9 +269,13 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
       .filter(m => m.params > biggest.model.params)
       .sort((a, b) => a.params - b.params)[0];
     if (nextUp) {
-      const best = nextUp.quants
+      // Smallest build this card can load; only if it can load none of them
+      // does the answer fall back to the format explanation. Picking across
+      // every format said "AWQ doesn't run here" about models that also ship GGUF.
+      const sized = nextUp.quants
         .map(q => ({ q, gb: calcVRAM({ paramsB: nextUp.params, layers: nextUp.arch.layers, kvHeads: nextUp.arch.kvHeads, headDim: nextUp.arch.headDim, attention: nextUp.arch.attention, bpw: q.bpw, contextLength: GPU_PAGE_CONTEXT, batchSize: 1 }).totalGB }))
-        .sort((a, b) => a.gb - b.gb)[0];
+        .sort((a, b) => a.gb - b.gb);
+      const best = sized.find(x => formatAllowed(gpu, x.q.format)) ?? sized[0];
       const capacity = usableCapacityGB(gpu);
       const verdict = formatAllowed(gpu, best.q.format) ? getVerdict(best.gb, capacity) : 'red';
       faqs.push({
@@ -281,14 +285,14 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
         },
         a: {
           en: !formatAllowed(gpu, best.q.format)
-            ? `Not in ${quantLevelKey(best.q)} — that format doesn't run on this card's backend, regardless of size. Check whether ${nextUp.name} ships GGUF instead.`
+            ? `Not with the builds this index lists — ${nextUp.name} ships only formats this card cannot load (${Array.from(new Set(nextUp.quants.map(q => q.format))).join(', ')}), regardless of size.`
             : verdict === 'green'
               ? `Yes — at ${quantLevelKey(best.q)} it needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable.`
               : verdict === 'yellow'
                 ? `Only just. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable — that loads with nothing else running, with no margin for a longer context window. It is not on the list above, which requires a model to stay inside 88% of usable capacity.`
                 : `No. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB and this card has ${capacity.toFixed(1)} GB usable — short by ${(best.gb - capacity).toFixed(1)} GB before any context beyond 4K. The largest model this card does clear is ${biggest.model.name}.`,
           zh: !formatAllowed(gpu, best.q.format)
-            ? `跑不了 ${quantLevelKey(best.q)} —— 这个格式在这张卡的后端上不能运行，跟体积大小无关。可以看看 ${nextUp.name} 有没有 GGUF 版本。`
+            ? `本索引列出的构建都跑不了 —— ${nextUp.name} 只提供这张卡无法加载的格式（${Array.from(new Set(nextUp.quants.map(q => q.format))).join('、')}），跟体积大小无关。`
             : verdict === 'green'
               ? `可以 —— 在 ${quantLevelKey(best.q)} 下约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB。`
               : verdict === 'yellow'

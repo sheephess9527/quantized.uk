@@ -1,3 +1,5 @@
+import { vllmRocmSupported } from '@/lib/utils/gpu-page';
+
 export type Framework = 'llamacpp' | 'ollama' | 'vllm' | 'exllama';
 export type Env = 'linux' | 'mac' | 'docker' | 'compose';
 
@@ -377,17 +379,6 @@ volumes:
       L(lang, `Set OLLAMA_NUM_PARALLEL for concurrent requests`, `需要并发请求时设置 OLLAMA_NUM_PARALLEL`),
     ],
   };
-}
-
-/**
- * vLLM's ROCm requirements list MI200s (gfx90a), MI300/MI350, Radeon RX 7900
- * series (gfx1100/1101 — which also covers the 7800 XT and 7700 XT), RX 9000
- * (gfx1200/1201) and Ryzen AI MAX. Older Radeon (RX 6000, gfx1030) and the
- * RX 7600 XT (gfx1102) are not on it, nor is the MI100 (gfx908).
- */
-function vllmRocmSupported(gpuName?: string): boolean {
-  if (!gpuName) return true;
-  return /RX 9\d{3}|RX 7(900|800|700)|W7900|MI[23]\d{2}/.test(gpuName);
 }
 
 function generateVLLM(opts: CLIOptions): CLIOutput {
