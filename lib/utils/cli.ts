@@ -31,6 +31,8 @@ export interface CLIOptions {
   backend?: 'cuda' | 'rocm' | 'metal' | 'cpu';
   /** Language of `notes` — they render as visible text on both trees. Defaults to English. */
   lang?: 'en' | 'zh';
+  /** Display name of the reader's GPU — vLLM's ROCm build supports only some Radeon/Instinct parts. */
+  gpuName?: string;
 }
 
 type Lang = NonNullable<CLIOptions['lang']>;
@@ -377,9 +379,29 @@ volumes:
   };
 }
 
+/**
+ * vLLM's ROCm requirements list MI200s (gfx90a), MI300/MI350, Radeon RX 7900
+ * series (gfx1100/1101 — which also covers the 7800 XT and 7700 XT), RX 9000
+ * (gfx1200/1201) and Ryzen AI MAX. Older Radeon (RX 6000, gfx1030) and the
+ * RX 7600 XT (gfx1102) are not on it, nor is the MI100 (gfx908).
+ */
+function vllmRocmSupported(gpuName?: string): boolean {
+  if (!gpuName) return true;
+  return /RX 9\d{3}|RX 7(900|800|700)|W7900|MI[23]\d{2}/.test(gpuName);
+}
+
 function generateVLLM(opts: CLIOptions): CLIOutput {
   const { env, quantLevel, contextLen, port, apiKey } = opts;
   const lang: Lang = opts.lang ?? 'en';
+  const backend: Backend = opts.backend ?? 'cuda';
+  const rocm = backend === 'rocm';
+  // Notes that depend on the reader's hardware, shared by every vLLM output.
+  const hwNotes: string[] =
+    backend === 'metal' || backend === 'cpu'
+      ? [L(lang, 'These vLLM commands are for NVIDIA and AMD GPUs — on a Mac or a CPU-only machine, llama.cpp or Ollama is the practical choice', '这些 vLLM 命令面向 NVIDIA 和 AMD 显卡——在 Mac 或纯 CPU 机器上，更实际的选择是 llama.cpp 或 Ollama')]
+      : rocm && !vllmRocmSupported(opts.gpuName)
+        ? [L(lang, `vLLM's ROCm build lists Radeon RX 7900/7800/7700 and RX 9000 cards and Instinct MI200+; ${opts.gpuName} is not on that list — llama.cpp or Ollama will run it`, `vLLM 的 ROCm 版本支持名单只有 Radeon RX 7900/7800/7700、RX 9000 系列和 Instinct MI200 及以上；${opts.gpuName} 不在名单上——用 llama.cpp 或 Ollama 可以运行`)]
+        : [];
 
   const isAWQ = quantLevel.toLowerCase().includes('awq');
   const isGPTQ = quantLevel.toLowerCase().includes('gptq');
@@ -396,7 +418,7 @@ function generateVLLM(opts: CLIOptions): CLIOutput {
     const compose = `version: "3.8"
 services:
   vllm:
-    image: vllm/vllm-openai:latest
+    image: vllm/vllm-openai${rocm ? '-rocm' : ''}:latest
     container_name: vllm
     ports:
       - "${port}:${port}"
@@ -406,14 +428,24 @@ services:
       --model ${repoId}${isAWQ ? '\n      --quantization awq' : ''}
       --max-model-len ${contextLen}
       --port ${port}
-      --gpu-memory-utilization 0.85${apiKey ? `\n      --api-key ${apiKey}` : ''}
+      --gpu-memory-utilization 0.85${apiKey ? `\n      --api-key ${apiKey}` : ''}${rocm ? `
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined` : `
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [gpu]`}
+    ipc: host
     restart: unless-stopped
     environment:
       - HF_TOKEN=\${HF_TOKEN}
@@ -422,31 +454,38 @@ volumes:
   huggingface_cache:`;
 
     const command = `# Start vLLM server\ndocker compose up -d\n\n# Test the API\ncurl http://localhost:${port}/v1/models`;
-    return { command, compose, notes: [L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量'), L(lang, 'Recommended: Ampere or newer GPU (RTX 3090+)', '推荐：Ampere 或更新架构的显卡（RTX 3090 及以上）')] };
+    return { command, compose, notes: [...hwNotes, rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   if (env === 'docker') {
     const command = [
-      `docker run --gpus all \\`,
+      // ROCm flags as vLLM's ROCm install docs give them; --ipc=host as both
+      // vLLM docker examples use it (PyTorch shared memory).
+      ...(rocm
+        ? [`docker run \\`, `  --group-add=video \\`, `  --cap-add=SYS_PTRACE \\`, `  --security-opt seccomp=unconfined \\`, `  --device /dev/kfd \\`, `  --device /dev/dri \\`]
+        : [`docker run --gpus all \\`]),
+      `  --ipc=host \\`,
       `  -p ${port}:${port} \\`,
       `  -v ~/.cache/huggingface:/root/.cache/huggingface \\`,
       `  -e HF_TOKEN=$HF_TOKEN \\`,
-      `  vllm/vllm-openai:latest \\`,
+      `  vllm/vllm-openai${rocm ? '-rocm' : ''}:latest \\`,
       `  --model ${repoId}${quantFlag} \\`,
       `  --max-model-len ${contextLen} \\`,
       `  --gpu-memory-utilization 0.85 \\`,
       `  --port ${port}${apiKeyFlag}`,
     ].join('\n');
-    return { command, notes: [L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Ampere+ GPU strongly recommended for best performance', '强烈推荐 Ampere 或更新架构的显卡以获得最佳性能')] };
+    return { command, notes: [...hwNotes, rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   const command = [
-    `# Install vLLM (requires CUDA 12.1+)`,
-    `pip install vllm`,
+    // Install and entrypoint as vLLM's quickstart documents them: uv picks the
+    // torch build for the CUDA driver; AMD installs from vLLM's ROCm index.
+    ...(rocm
+      ? [`# Install vLLM's ROCm build (Python 3.12, ROCm 7.0)`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`]
+      : [`# Install vLLM (uv picks the torch build for your CUDA driver)`, `pip install --upgrade uv`, `uv pip install vllm --torch-backend=auto`]),
     ``,
     `# Serve the model`,
-    `python -m vllm.entrypoints.openai.api_server \\`,
-    `  --model ${repoId}${quantFlag} \\`,
+    `vllm serve ${repoId}${quantFlag} \\`,
     `  --max-model-len ${contextLen} \\`,
     `  --gpu-memory-utilization 0.85 \\`,
     `  --port ${port}${apiKeyFlag}`,
@@ -455,6 +494,7 @@ volumes:
   return {
     command,
     notes: [
+      ...hwNotes,
       L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`),
       L(lang, `Adjust --gpu-memory-utilization (0.7–0.95) based on your GPU`, `根据显卡调整 --gpu-memory-utilization（0.7–0.95）`),
       L(lang, `Add --tensor-parallel-size N for multi-GPU setups`, `多卡时加上 --tensor-parallel-size N`),

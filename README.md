@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (e) — CLI vLLM: ROCm image and install, current entrypoint, supported-card check
+
+Sources: vLLM `docs/getting_started/installation/gpu.rocm.inc.md` (official `vllm/vllm-openai-rocm`
+image — AMD's `rocm/vllm` is deprecated — run with `--group-add=video --cap-add=SYS_PTRACE
+--security-opt seccomp=unconfined --device /dev/kfd --device /dev/dri --ipc=host`; supported GPUs
+MI200s, MI300/350, RX 7900 series gfx1100/1101, RX 9000 gfx1200/1201, Ryzen AI MAX),
+`docs/getting_started/quickstart.md` (`uv pip install vllm --torch-backend=auto`; AMD: `uv venv
+--python 3.12 --seed` + `--extra-index-url https://wheels.vllm.ai/rocm/`; `vllm serve <repo>`),
+`docs/deployment/docker.md` (`--ipc=host`). The native command still printed `pip install vllm` and
+`python -m vllm.entrypoints.openai.api_server`, contradicting the site's own 2026-09-12 vLLM guide.
+`vllmRocmSupported(gpuName)` (new `gpuName` option) flags Radeon cards off vLLM's list — RX 6000
+(gfx1030), RX 7600 XT (gfx1102), MI100 (gfx908) — with a note; Mac/CPU get a note too. Compose
+gains `ipc: host` and, on ROCm, `devices`/`group_add`/`cap_add`/`security_opt`. Sweep: 584 notes, 0
+wrong-language; every vLLM compose parses as YAML.
+
 ### 2026-10-02 (d) — CLI container commands follow the GPU backend; notes bilingual
 
 `generateCLI` gains `backend` (`backendFor()` of the hardware-profile GPU, default `cuda`) and `lang`.

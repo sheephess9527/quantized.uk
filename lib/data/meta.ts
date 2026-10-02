@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'The command generator\'s vLLM output now covers AMD cards and matches vLLM\'s current documentation. AMD owners get vLLM\'s official ROCm Docker image with the flags its documentation lists, and the ROCm install command; Radeon cards outside vLLM\'s supported list (such as the RX 6000 series and RX 7600 XT) get a note pointing to llama.cpp or Ollama instead. The non-Docker command now installs with uv and starts the server with "vllm serve", as vLLM documents it — it had still shown an older install and entrypoint that contradicted this site\'s own vLLM guide.',
+    zh: '命令生成器的 vLLM 输出现在覆盖 AMD 显卡，并与 vLLM 当前文档一致。AMD 用户会拿到 vLLM 官方的 ROCm Docker 镜像、文档列出的运行参数，以及 ROCm 版的安装命令；不在 vLLM 支持名单上的 Radeon 显卡（如 RX 6000 系列和 RX 7600 XT）会看到提示，建议改用 llama.cpp 或 Ollama。非 Docker 命令现在用 uv 安装、用 "vllm serve" 启动服务，与 vLLM 文档一致——此前它仍显示旧的安装方式和入口，和本站自己的 vLLM 指南相矛盾。',
+  },
+  {
+    date: '2026-10-02',
     en: 'The command generator\'s Docker and Docker Compose output now follows the GPU you picked. Before, everyone got NVIDIA commands: an AMD card was handed a CUDA image it cannot use, and the Ollama Compose file had its GPU section commented out, so even NVIDIA owners ran on the CPU without being told. Now NVIDIA gets the CUDA image with the GPU passed through, AMD gets the ROCm image with the devices ROCm needs, and on a Mac the generator says plainly that Docker cannot reach the Apple GPU and points you to running natively. The notes under each command are now in Chinese on the Chinese site.',
     zh: '命令生成器的 Docker 和 Docker Compose 输出现在会跟随你选择的显卡。以前所有人拿到的都是 NVIDIA 的命令：AMD 显卡拿到的是它用不了的 CUDA 镜像；Ollama 的 Compose 文件里 GPU 配置还是被注释掉的，所以连 NVIDIA 用户也在不知情的情况下跑在 CPU 上。现在 NVIDIA 用户拿到 CUDA 镜像并透传 GPU，AMD 用户拿到 ROCm 镜像和 ROCm 所需的设备，Mac 用户会看到明确提示：Docker 用不了苹果 GPU，请直接在本机运行。每条命令下方的说明在中文站也已改为中文。',
   },

@@ -890,6 +890,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **CLI vLLM on AMD + current install** — `vllm/vllm-openai-rocm` with documented flags, ROCm wheel index, `uv pip install … --torch-backend=auto` + `vllm serve`; off-list Radeon cards (RX 6000, 7600 XT) get a note |
 | 2026-10-02 | **CLI containers follow the GPU; notes bilingual** — AMD got CUDA images; Ollama compose had its GPU block commented out (CPU for everyone). 1,368 notes swept, 0 wrong-language |
 | 2026-10-02 | **AMD guide re-check + CPU-only Docker bug** — CLI docker/compose used the CPU-only `:server` image with `--gpus all`; now `:server-cuda`. HIP build/ROCm 6.1+/Windows claims and the `load_tensors:` log line corrected |
 | 2026-10-02 | **+6 Macs (70)** — M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G from Apple's pages; M1 bandwidth derived and noted. M1 guide now sized on its own row |

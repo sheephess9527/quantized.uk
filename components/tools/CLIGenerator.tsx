@@ -119,8 +119,9 @@ export default function CLIGenerator() {
       apiKey: apiKey || undefined,
       backend,
       lang,
+      gpuName: profileGpu?.name,
     });
-  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang]);
+  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang, profileGpu]);
 
   const copyText = () => {
     const text = activeTab === 'compose' ? output?.compose : output?.command;
