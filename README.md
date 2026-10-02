@@ -419,6 +419,24 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (g) — +2 models (87): Gemma 4 E2B, E4B; wizard AMD wording
+
+Configs from transformers `convert_gemma4_weights.py` `_VARIANTS` (E2B: hidden 1536, 35 layers,
+pattern 4 sliding + 1 full, 8 heads, 1 KV head, `num_kv_shared_layers` 20, double-wide MLP on shared
+layers; E4B: hidden 2560, 42 layers, 5:1, 2 KV heads, 18 shared) and `configuration_gemma4.py`
+defaults (head_dim 256, global_head_dim 512, sliding_window 512, max_position 131072, PLE 262,144 ×
+layers × 256; `attention_k_eq_v` false, so global layers keep the same KV-head count). llama.cpp:
+`reuse` callback for GEMMA4 allocates no cache for layers ≥ `n_layer_kv_from_start`; window cells
+pad256(512 + 512) = 1024. So E2B caches 3 full + 12 SWA layers, E4B 4 full + 20 SWA. Parameter count
+by layer: E2B 4.647B text (2.298B without PLE — matches the vendor's "2.3B effective"), E4B 7.518B;
+both + encoders reconcile with the vendor's 5.1B / 8B. `per_layer_token_embd` is a LAYER_INPUT tensor
+(CPU-resident in llama.cpp), so `params` = total and the description states the ~1.3 / 1.6 GB of VRAM
+that saves at Q4 on a discrete card — conservative rather than a new field threaded through every
+`calcVRAM` call. Q4_K_M at 4K / 128K: E2B 3.0 / 3.8 GB, E4B 4.9 / 7.0 GB; both comfortable on the
+smallest card here (8 GB). Sizes `estimated` (no GGUF file size reachable). E4B added to Editor's
+Picks. Format wizard: the AMD AWQ/GPTQ reason now names vLLM's supported cards; GPTQ runtime label
+no longer says "partial ROCm".
+
 ### 2026-10-02 (f) — AMD: AWQ/GPTQ only on vLLM-supported cards; GPTQ was wrongly CUDA-only
 
 `formatAllowed()` let every AMD row load AWQ, but on ROCm AWQ and GPTQ are vLLM-only and vLLM's
@@ -511,7 +529,7 @@ Supersedes the 2026-09-11 note that left the RTX 5050 and RX 9060 XT out as unco
 
 ### 2026-10-01 — Gemma 4 26B-A4B and 31B; per-layer-type KV head layout
 
-`lib/data/models-extra-11.ts` (85 models). Sources: transformers
+`lib/data/models-extra-11.ts` (85 models at the time). Sources: transformers
 `models/gemma4/convert_gemma4_weights.py` `_VARIANTS` (per-size layers, heads, KV heads, global KV
 heads, `attention_k_eq_v`, `sliding_window=1024`, `max_position_embeddings=262_144`),
 `_DEFAULT_LAYER_TYPES` = 5 sliding : 1 full, `head_dim` 256 / `global_head_dim` 512

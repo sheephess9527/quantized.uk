@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'Two new models: Gemma 4 E2B and E4B, Google\'s on-device sizes with image and audio input and a 128K window. Most of their layers reuse an earlier layer\'s cache, so long context is cheap: at Q4, E2B needs about 3.0 GB at 4K and 3.8 GB at the full window, E4B about 4.9 GB and 7.0 GB — both run comfortably on an 8 GB card or an 8 GB Mac. The format wizard\'s AMD advice now names the cards vLLM supports.',
+    zh: '新增两个模型：Gemma 4 E2B 和 E4B，Google 面向端侧的两个尺寸，支持图像和音频输入，128K 上下文。它们大部分层复用前面层的缓存，所以长上下文很便宜：Q4 下 E2B 在 4K 时约 3.0 GB、用满窗口约 3.8 GB，E4B 约 4.9 GB 和 7.0 GB——8 GB 显卡或 8 GB 的 Mac 都能从容运行。格式向导给 AMD 的建议现在会写明 vLLM 支持哪些显卡。',
+  },
+  {
+    date: '2026-10-02',
     en: 'AMD recommendations now match what each Radeon card can actually run. AWQ and GPTQ builds on AMD are served by vLLM, and vLLM supports the RX 7700 XT and up, the RX 9000 series and Instinct MI200 or newer — so the RX 6000 series, the RX 7600 XT and the MI100 no longer get AWQ picks they could not load, and their "fits comfortably" counts drop by up to four models. GPTQ, which we had wrongly called NVIDIA-only, is now offered on the supported AMD cards. The "can this card run …" answers on GPU pages also stopped saying a format would not run when the model ships a GGUF build that does — they now size that build instead.',
     zh: 'AMD 显卡的推荐现在与每张 Radeon 卡的实际能力一致。AMD 上的 AWQ 和 GPTQ 构建靠 vLLM 运行，而 vLLM 支持的是 RX 7700 XT 及以上、RX 9000 系列和 Instinct MI200 及更新型号——所以 RX 6000 系列、RX 7600 XT 和 MI100 不再收到它们加载不了的 AWQ 推荐，「可从容运行」的数量最多减少 4 个。GPTQ 此前被我们误称为只能在 NVIDIA 上跑，现在会在受支持的 AMD 卡上提供。GPU 页面里「这张卡能跑……吗」的回答，也不再在模型其实有可用 GGUF 构建时说「格式跑不了」——现在会按那个 GGUF 构建计算大小。',
   },

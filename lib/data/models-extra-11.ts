@@ -5,12 +5,12 @@ function hf(q: string) {
 }
 
 const ADDED = '2026-10-01';
+const ADDED_E = '2026-10-02';
 
 /**
- * Gemma 4's two larger sizes — the ones that land on a single 16–32 GB card.
- * E2B/E4B (per-layer embeddings, KV shared across 18–20 layers) and the 12B
- * "unified" variant are left out until their cache layout can be sized as
- * carefully as these two.
+ * Gemma 4's two larger sizes — the ones that land on a single 16–32 GB card —
+ * and, since 2026-10-02, the two on-device sizes E2B/E4B. The 12B "unified"
+ * variant is still left out.
  *
  * Sources: per-size configs from transformers'
  * `models/gemma4/convert_gemma4_weights.py` (`_VARIANTS`); layer pattern
@@ -100,6 +100,88 @@ export const extraModels11: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 18.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    id: 'gemma-4-e4b',
+    name: 'Gemma 4 E4B IT',
+    family: 'Google Gemma 4',
+    // 7.52B text total = 4.70B + a 2.82B per-layer embedding table (262,144 ×
+    // 42 × 256). Vendor "8B" adds the vision and audio encoders.
+    params: 7.52,
+    paramLabel: 'E4B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: {
+      layers: 42,
+      attHeads: 8,
+      kvHeads: 2,
+      headDim: 256,
+      // num_kv_shared_layers = 18: layers 24–41 reuse the cache of earlier
+      // layers, and llama.cpp allocates none for them (`reuse` callback in
+      // llama-model.cpp for GEMMA3N/GEMMA4). Of the 24 that keep one, the 5:1
+      // pattern gives 4 global and 20 sliding. Window 512 → pad256(512 + 512).
+      attention: {
+        fullLayers: 4,
+        windowLayers: 20,
+        windowTokens: 1024,
+        fullKvHeads: 2,
+        fullHeadDim: 512,
+        note: {
+          en: 'Only 24 of 42 layers keep a cache — the last 18 reuse it. Of those 24, 4 are global (2 KV heads × 512) and grow with context; 20 use a 512-token sliding window.',
+          zh: '42 层中只有 24 层有自己的缓存——最后 18 层复用前面层的缓存。这 24 层里 4 层为全局注意力（2 个 KV 头 × 512 维），缓存随上下文增长；其余 20 层是 512 token 滑动窗口。',
+        },
+      },
+    },
+    addedAt: ADDED_E,
+    description: {
+      en: 'Google\'s on-device Gemma 4: about 4.7B parameters doing the work plus a 2.8B per-layer embedding table, a 128K window, and image and audio input. Only 4 of its 42 layers keep a cache that grows with context, so the full 128K window costs about 2.0 GB of cache. At Q4 it is about 4.9 GB at 4K and 7.0 GB at the full window — an 8 GB card runs it comfortably at everyday context lengths. Sizes here count the whole model in GPU memory, which is what a Mac or a full GPU load uses; llama.cpp keeps the embedding table in system RAM instead, so on a discrete card it needs roughly 1.6 GB less VRAM than shown at Q4. Sizes use the calculator\'s generic rates — no GGUF file size could be checked.',
+      zh: 'Google 面向端侧的 Gemma 4：实际参与计算的约 4.7B 参数，外加一张 2.8B 的逐层嵌入表，128K 上下文，支持图像和音频输入。42 层中只有 4 层的缓存随上下文增长，所以用满 128K 也只要约 2.0 GB 缓存。Q4 下 4K 上下文约 4.9 GB，用满窗口约 7.0 GB——日常上下文长度下 8 GB 显卡可以从容运行。这里的体积按整个模型都放进 GPU 内存计算，也就是 Mac 或整模型上 GPU 时的占用；llama.cpp 会把嵌入表留在系统内存，所以在独立显卡上，Q4 实际显存占用比这里少约 1.6 GB。体积使用计算器通用比特率——未能核对到 GGUF 文件大小。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 4.56, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 7.99, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    id: 'gemma-4-e2b',
+    name: 'Gemma 4 E2B IT',
+    family: 'Google Gemma 4',
+    // 4.65B text total = 2.30B (vendor "2.3B effective") + a 2.35B per-layer
+    // embedding table (262,144 × 35 × 256). Vendor "5.1B" adds the encoders.
+    params: 4.65,
+    paramLabel: 'E2B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: {
+      layers: 35,
+      attHeads: 8,
+      kvHeads: 1,
+      headDim: 256,
+      // num_kv_shared_layers = 20: only layers 0–14 keep a cache. Pattern is
+      // 4 sliding + 1 global, so 3 global and 12 sliding. Window 512 → 1024 cells.
+      attention: {
+        fullLayers: 3,
+        windowLayers: 12,
+        windowTokens: 1024,
+        fullKvHeads: 1,
+        fullHeadDim: 512,
+        note: {
+          en: 'Only 15 of 35 layers keep a cache — the last 20 reuse it. Of those 15, 3 are global (1 KV head × 512) and grow with context; 12 use a 512-token sliding window.',
+          zh: '35 层中只有 15 层有自己的缓存——最后 20 层复用前面层的缓存。这 15 层里 3 层为全局注意力（1 个 KV 头 × 512 维），缓存随上下文增长；其余 12 层是 512 token 滑动窗口。',
+        },
+      },
+    },
+    addedAt: ADDED_E,
+    description: {
+      en: 'The smallest Gemma 4: about 2.3B parameters doing the work plus a 2.3B per-layer embedding table, a 128K window, and image and audio input. Its cache barely grows — 3 of 35 layers track the full context, about 0.8 GB at 128K. At Q4 it is about 3.0 GB at 4K and 3.8 GB at the full window — comfortable on any card in this index and on an 8 GB Mac. Sizes count the whole model in GPU memory; llama.cpp keeps the embedding table in system RAM, so on a discrete card it needs roughly 1.3 GB less VRAM than shown at Q4. Sizes use the calculator\'s generic rates — no GGUF file size could be checked.',
+      zh: '最小的 Gemma 4：实际参与计算的约 2.3B 参数，外加一张 2.3B 的逐层嵌入表，128K 上下文，支持图像和音频输入。它的缓存几乎不增长——35 层中只有 3 层跟踪完整上下文，128K 下约 0.8 GB。Q4 下 4K 上下文约 3.0 GB，用满窗口约 3.8 GB——本索引中任何一张卡、以及 8 GB 的 Mac 都能从容运行。体积按整个模型都放进 GPU 内存计算；llama.cpp 会把嵌入表留在系统内存，所以在独立显卡上，Q4 实际显存占用比这里少约 1.3 GB。体积使用计算器通用比特率——未能核对到 GGUF 文件大小。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 2.82, hfSearchUrl: hf('gemma-4-E2B-it GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 4.94, hfSearchUrl: hf('gemma-4-E2B-it GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

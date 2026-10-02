@@ -261,6 +261,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 12, type: 'new', modelId: 'gemma-4-e4b', level: 'Q4_K_M', note: { en: 'image + audio on 8 GB', zh: '8 GB 跑图像 + 音频' }, quantizer: 'google' },
   { id: 10, type: 'new', modelId: 'gemma-4-26b-a4b', level: 'Q4_K_M', note: { en: '4B active, 256K window', zh: '激活 4B，256K 上下文' }, quantizer: 'google' },
   { id: 11, type: 'new', modelId: 'gemma-4-31b', level: 'Q4_K_M', note: { en: '10 of 60 layers cache', zh: '60 层中仅 10 层缓存' }, quantizer: 'google' },
   { id: 8, type: 'new', modelId: 'glm-4.7-flash', level: 'Q4_K_M', note: { en: '3B active, MLA cache', zh: '激活 3B，MLA 压缩缓存' }, quantizer: 'zai-org' },

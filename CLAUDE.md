@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **85** in index (`models-extra` … `models-extra-11`) |
+| Models | **87** in index (`models-extra` … `models-extra-11`) |
 | Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**70** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 427 pages (214 EN + 213 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 431 pages (216 EN + 215 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -783,6 +783,13 @@ of real `config.json`s: `mlc-ai/mlc-llm` `python/mlc_llm/model/model_preset.py`;
 `google-deepmind/gemma` `gemma/gm/nn/_gemma.py`. transformers' config defaults describe one
 reference checkpoint, often not the size in this index.
 
+**Cross-layer KV sharing (Gemma 3n/4 E-models) is encoded by leaving the shared layers out.**
+llama.cpp's `reuse` callback (`llama-model.cpp`, GEMMA3N/GEMMA4) allocates no cache for layers ≥
+`n_layer_kv_from_start`, so `fullLayers` + `windowLayers` count only the leading layers that keep
+one — summing to less than `layers` is correct, not a bug. Per-layer embedding tables are
+`LLM_TENSOR_LAYER_INPUT` and stay in system RAM under llama.cpp; `params` still counts them (it is
+the total), and the description states the VRAM that saves on a discrete card.
+
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
 (vs the usual 128) halves its KV footprint and a copy-pasted 128 would silently overstate it.
@@ -892,6 +899,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **+2 models (87): Gemma 4 E2B, E4B** — KV sharing needs no new field: llama.cpp allocates no cache for the `num_kv_shared_layers` tail, so only the leading layers go into `fullLayers`/`windowLayers`. `params` is the total incl. the per-layer embedding (PLE) table, which llama.cpp keeps in system RAM — sized conservatively, the VRAM saving stated per page |
 | 2026-10-02 | **AMD formats per card** — AWQ/GPTQ (vLLM-only on ROCm) gated by `vllmRocmSupported()`; GPTQ was wrongly CUDA-only (vLLM source builds it for HIP). RX 6000/7600 XT lose up to 4 comfortable fits; GPU-page "can it run" FAQ sizes the smallest *loadable* build (15 pages said "use GGUF" about models shipping GGUF) |
 | 2026-10-02 | **CLI vLLM on AMD + current install** — `vllm/vllm-openai-rocm` with documented flags, ROCm wheel index, `uv pip install … --torch-backend=auto` + `vllm serve`; off-list Radeon cards (RX 6000, 7600 XT) get a note |
 | 2026-10-02 | **CLI containers follow the GPU; notes bilingual** — AMD got CUDA images; Ollama compose had its GPU block commented out (CPU for everyone). 1,368 notes swept, 0 wrong-language |
