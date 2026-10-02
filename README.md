@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (h) — WSL2 + Ollama guide re-checked against current docs
+
+Sources: MicrosoftDocs/WSL `wsl-config.md` (`memory` default "50% of total memory on Windows";
+`[boot] systemd` default `false`; `sparseVhd` applies to newly created VHDs; `networkingMode`
+nat/mirrored/bridged-deprecated), `networking.md` (LAN access in NAT mode needs `netsh interface
+portproxy`; mirrored mode, Windows 11 22H2+, connects WSL directly to the LAN); NVIDIA CUDA on WSL
+user guide via search on nvidia.com (driver stubbed as libcuda.so; do not install a Linux driver; the
+`cuda` / `cuda-drivers` meta-packages install one, use `cuda-toolkit-12-x` only); Ollama `faq.mdx`
+(`ollama ps` columns NAME ID SIZE PROCESSOR UNTIL; default context 4096), `scripts/install.sh` (WSL2
+branch installs no driver, prints "Nvidia GPU detected."; warns "systemd is not running" and starts
+no service). Corrections: the guide said a 0.0.0.0-bound server in WSL is LAN-reachable — false in
+default NAT, true in mirrored mode; `ollama ps` sample lacked ID. Additions: cuda meta-package
+pitfall, systemd step, sparseVhd caveat, example model qwen2.5:7b → qwen3:8b with its size from
+`calcVRAM` (5.8 GB at 4K, Q4_K_M), `gpuPreset.ctx` 8192 → 4096 to match Ollama's default, 3 FAQs
+(one says the site has not measured WSL-vs-native and gives no number). `updatedAt` 2026-10-02, no
+`verifiedAt` — a documentation check, not a run.
+
 ### 2026-10-02 (g) — +2 models (87): Gemma 4 E2B, E4B; wizard AMD wording
 
 Configs from transformers `convert_gemma4_weights.py` `_VARIANTS` (E2B: hidden 1536, 35 layers,

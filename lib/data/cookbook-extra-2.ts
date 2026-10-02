@@ -127,8 +127,8 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'wsl2-ollama-gpu',
-    gpuPreset: { gpuId: 'rtx4060ti16', ctx: 8192 },
-    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'gpt-oss-20b'],
+    gpuPreset: { gpuId: 'rtx4060ti16', ctx: 4096 },
+    relatedModelIds: ['qwen3-8b', 'llama-3.1-8b', 'gpt-oss-20b'],
     title: 'WSL2 + Ollama GPU Passthrough on Windows',
     titleZh: 'Windows WSL2 + Ollama GPU 透传',
     description: 'Run Ollama with NVIDIA GPU acceleration inside WSL2 — the most reliable Windows path for local LLMs.',
@@ -137,11 +137,11 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['WSL2', 'Windows', 'Ollama', 'NVIDIA', 'CUDA'],
     publishedAt: '2026-06-24',
-    // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-09-08',
-    // Expanded 2026-09-08 with prerequisites, verification and the failure
-    // modes readers actually hit. The new steps have not been re-run on a
-    // Windows box since, so this carries a target stack but no verified date.
+    // Re-checked 2026-10-02 against Microsoft's WSL docs (wsl-config.md,
+    // networking.md), NVIDIA's CUDA on WSL user guide, Ollama's docs (faq.mdx,
+    // linux.mdx) and scripts/install.sh. A documentation check, not a run on a
+    // Windows box — so a target stack, no verified date. See README §9.
+    updatedAt: '2026-10-02',
     verifiedStack: {
       en: 'Windows 11 (or Win10 21H2+) · WSL2 Ubuntu 22.04/24.04 · recent NVIDIA Windows driver · Ollama Linux install · GGUF Q4_K_M',
       zh: 'Windows 11（或 Win10 21H2+）· WSL2 Ubuntu 22.04/24.04 · 较新的 NVIDIA Windows 驱动 · Ollama Linux 版 · GGUF Q4_K_M',
@@ -151,13 +151,13 @@ export const extraArticles2: Article[] = [
         heading: 'Who this is for',
         headingZh: '适用于谁',
         body: 'A Windows machine with an NVIDIA GPU, where you want the Linux tooling (Ollama, llama.cpp, Python) without dual-booting. If you only want to chat with a model and never touch a terminal, the native Windows Ollama app is simpler — this guide is for the case where you also want the Linux side.',
-        bodyZh: '一台带 NVIDIA 显卡的 Windows 机器，你想用 Linux 那套工具（Ollama、llama.cpp、Python）又不想装双系统。如果你只是想聊天、完全不碰终端，Windows 原生版 Ollama 更简单 —— 本指南面向的是同时还要 Linux 环境的情况。',
+        bodyZh: '一台带 NVIDIA 显卡的 Windows 机器，你想用 Linux 那套工具（Ollama、llama.cpp、Python）又不想装双系统。如果你只是想聊天、完全不碰终端，Windows 原生的 Ollama 应用更简单 —— 这篇是写给同时还想要 Linux 环境的情况。',
       },
       {
         heading: 'Prerequisites',
         headingZh: '前置条件',
-        body: 'Windows 11 (or Windows 10 21H2+), an NVIDIA GPU, and a current NVIDIA driver installed on Windows. The single most important rule: do not install an NVIDIA driver inside WSL. The Windows driver projects CUDA into the WSL kernel through /usr/lib/wsl/lib, and installing a Linux driver on top overwrites those stubs and breaks passthrough — this is the most common way a working setup stops working.',
-        bodyZh: 'Windows 11（或 Windows 10 21H2+）、一张 NVIDIA 显卡，以及 Windows 侧安装好的较新 NVIDIA 驱动。最重要的一条规则：不要在 WSL 里安装 NVIDIA 驱动。Windows 驱动通过 /usr/lib/wsl/lib 把 CUDA 投射进 WSL 内核，再在里面装一份 Linux 驱动会覆盖这些桩文件、直接破坏透传 —— 这是本来能用的环境突然坏掉最常见的原因。',
+        body: 'Windows 11 (or Windows 10 21H2+), an NVIDIA GPU, and a current NVIDIA driver installed on Windows. The one rule that matters: install no NVIDIA driver inside WSL. NVIDIA\'s CUDA on WSL guide is explicit — the Windows driver is stubbed into WSL as libcuda.so under /usr/lib/wsl/lib, and a Linux driver installed on top overwrites it. The easy way to do that by accident is apt install cuda (or cuda-drivers): those meta-packages pull in the Linux driver. If you need the CUDA toolkit inside WSL for building things, NVIDIA says to install the cuda-toolkit-12-x package only.',
+        bodyZh: 'Windows 11（或 Windows 10 21H2+）、一张 NVIDIA 显卡，以及 Windows 侧装好的较新 NVIDIA 驱动。唯一要紧的规则：不要在 WSL 里装任何 NVIDIA 驱动。NVIDIA 的 CUDA on WSL 指南写得很明确 —— Windows 驱动会以 libcuda.so 的形式映射进 WSL（/usr/lib/wsl/lib），在它上面再装 Linux 驱动就会把它覆盖掉。最容易误踩的是 apt install cuda（或 cuda-drivers）：这两个元包会顺带装上 Linux 驱动。如果你确实需要在 WSL 里编译东西用的 CUDA 工具包，NVIDIA 的说法是只装 cuda-toolkit-12-x 这个包。',
         code: {
           lang: 'powershell',
           content: '# PowerShell (Administrator)\nwsl --install\nwsl --update\nwsl --status          # want: default version 2\n\n# The check that matters — GPU visible from inside the WSL VM\nwsl nvidia-smi',
@@ -166,8 +166,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Give the WSL VM enough RAM',
         headingZh: '给 WSL 虚拟机足够内存',
-        body: 'WSL2 runs in a lightweight VM with its own memory limit, historically about half of host RAM. That ceiling is invisible until a model needs CPU offload and the VM runs out well before Windows does. Set it explicitly in %UserProfile%\\.wslconfig, then wsl --shutdown to apply. Leave several GB for Windows itself.',
-        bodyZh: 'WSL2 跑在一个轻量虚拟机里，有自己的内存上限，通常约为主机内存的一半。这个上限平时看不见，直到模型需要 CPU 卸载时，虚拟机会远早于 Windows 先耗尽内存。在 %UserProfile%\\.wslconfig 里显式设置，然后 wsl --shutdown 生效。记得给 Windows 本身留出若干 GB。',
+        body: 'WSL2 runs in a lightweight VM whose memory limit defaults to 50% of the host\'s RAM (Microsoft\'s documented default for the memory setting). That ceiling is invisible until a model needs CPU offload and the VM runs out well before Windows does. Set it explicitly in %UserProfile%\\.wslconfig, then wsl --shutdown to apply. Leave several GB for Windows itself.',
+        bodyZh: 'WSL2 跑在一个轻量虚拟机里，内存上限默认是主机内存的 50%（微软文档里 memory 设置的默认值）。这个上限平时看不见，直到模型需要 CPU 卸载时，虚拟机会比 Windows 先耗尽内存。在 %UserProfile%\\.wslconfig 里显式设置，然后 wsl --shutdown 让它生效。给 Windows 自己留几 GB。',
         code: {
           lang: 'text',
           content: '# %UserProfile%\\.wslconfig   (example for a 32GB machine)\n[wsl2]\nmemory=20GB\nswap=8GB\n\n# then, in PowerShell:\n# wsl --shutdown',
@@ -176,28 +176,28 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Install Ollama inside WSL',
         headingZh: '在 WSL 中安装 Ollama',
-        body: 'Install the Linux build inside Ubuntu, not the Windows app — running both leaves two servers competing for port 11434 and for the GPU. Keep models on the WSL filesystem (~/.ollama); putting them under /mnt/c crosses the 9p filesystem boundary on every read and is dramatically slower to load.',
-        bodyZh: '在 Ubuntu 里安装 Linux 版，而不是 Windows 应用 —— 两者同时装会有两个服务同时抢 11434 端口和 GPU。模型放在 WSL 文件系统里（~/.ollama）；放到 /mnt/c 下每次读取都要跨 9p 文件系统边界，加载会慢得多。',
+        body: 'Install the Linux build inside Ubuntu, not the Windows app — running both leaves two servers competing for port 11434 and for the GPU. On WSL2 the install script installs no GPU driver at all; it only checks for the passthrough and prints "Nvidia GPU detected." when nvidia-smi works, so if that line is missing, fix the passthrough before going further. The script also starts Ollama as a systemd service. WSL\'s documented default is systemd off, and without it the script warns "systemd is not running" and nothing is serving — enable it in /etc/wsl.conf, or run ollama serve in a second terminal. Keep models on the WSL filesystem (~/.ollama); under /mnt/c every read crosses into the Windows filesystem and loads are dramatically slower.',
+        bodyZh: '在 Ubuntu 里装 Linux 版，而不是 Windows 应用 —— 两个都装会有两个服务同时抢 11434 端口和 GPU。在 WSL2 上安装脚本完全不装 GPU 驱动，只检查透传是否可用，nvidia-smi 正常时会打印 "Nvidia GPU detected."；如果没看到这一行，先修好透传再往下走。脚本还会把 Ollama 注册成 systemd 服务。WSL 文档里 systemd 默认是关闭的，没开的话脚本会警告 "systemd is not running"，此时没有任何服务在运行 —— 在 /etc/wsl.conf 里开启它，或者在另一个终端里运行 ollama serve。模型放在 WSL 文件系统里（~/.ollama）；放在 /mnt/c 下，每次读取都要跨到 Windows 文件系统，加载会慢得多。',
         code: {
           lang: 'bash',
-          content: 'curl -fsSL https://ollama.com/install.sh | sh\n\n# Default tag is Q4_K_M for most models, regardless of your card\nollama pull qwen2.5:7b\nollama run qwen2.5:7b',
+          content: 'curl -fsSL https://ollama.com/install.sh | sh\n# look for: "Nvidia GPU detected."\n\n# If it warned "systemd is not running":\n#   printf \'[boot]\\nsystemd=true\\n\' | sudo tee -a /etc/wsl.conf\n#   then in PowerShell: wsl --shutdown\n\n# Most library tags default to Q4_K_M\nollama pull qwen3:8b\nollama run qwen3:8b',
         },
       },
       {
         heading: 'Verify it is actually on the GPU',
         headingZh: '确认真的用上了 GPU',
-        body: 'Ollama will fall back to CPU rather than fail, so a model that answers slowly is the symptom of a broken passthrough, not of a slow card. Two checks: ollama ps shows a PROCESSOR column that reads 100% GPU when the whole model is resident on the card, and nvidia-smi inside WSL should show the ollama process holding roughly the model size. If PROCESSOR shows a CPU share on a model that should fit, the passthrough is the problem, not the model.',
-        bodyZh: 'Ollama 装不下时会退回 CPU 而不是报错，所以“回答很慢”通常是透传坏了，而不是显卡慢。两个检查点：ollama ps 的 PROCESSOR 一列，整模型在显卡上时显示 100% GPU；在 WSL 里跑 nvidia-smi，应能看到 ollama 进程占用约等于模型大小的显存。如果一个本该装得下的模型出现了 CPU 占比，问题出在透传而不是模型。',
+        body: 'Ollama falls back to CPU rather than failing, so a model that answers slowly is the symptom of a broken passthrough, not of a slow card. Two checks: ollama ps shows a PROCESSOR column that reads 100% GPU when the whole model is on the card, and nvidia-smi inside WSL shows the ollama process holding roughly the model\'s size. For Qwen3 8B at Q4_K_M and Ollama\'s default 4,096-token context, this site\'s calculator puts that at about 5.8 GB. If PROCESSOR shows a CPU share on a model that should fit, the passthrough is the problem, not the model.',
+        bodyZh: 'Ollama 装不下或找不到 GPU 时会退回 CPU 而不是报错，所以"回答很慢"通常是透传坏了，而不是显卡慢。两个检查点：ollama ps 的 PROCESSOR 一列，整个模型都在显卡上时显示 100% GPU；WSL 里的 nvidia-smi 应该能看到 ollama 进程占着大约模型大小的显存。Qwen3 8B 在 Q4_K_M、Ollama 默认 4096 token 上下文下，本站计算器给出的是约 5.8 GB。如果一个本该装得下的模型 PROCESSOR 里出现了 CPU 占比，问题在透传，不在模型。',
         code: {
           lang: 'bash',
-          content: 'ollama ps\n# NAME            SIZE     PROCESSOR    UNTIL\n# qwen2.5:7b      5.1 GB   100% GPU     4 minutes from now\n\nnvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv',
+          content: 'ollama ps\n# NAME        ID     SIZE    PROCESSOR   UNTIL\n# qwen3:8b    <id>   ...     100% GPU    4 minutes from now\n\nnvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv',
         },
       },
       {
         heading: 'Reaching the API from Windows',
         headingZh: '从 Windows 访问 API',
-        body: 'WSL2 forwards localhost, so http://localhost:11434 from a Windows browser or PowerShell reaches the server inside WSL with no extra configuration. Prefer that over binding Ollama to 0.0.0.0: the WSL VM sits on a bridged network, and a server bound to all interfaces there is reachable from your LAN with no authentication in front of it.',
-        bodyZh: 'WSL2 会转发 localhost，所以在 Windows 浏览器或 PowerShell 里访问 http://localhost:11434 就能连到 WSL 内的服务，不需要额外配置。优先用这种方式，而不是把 Ollama 绑到 0.0.0.0：WSL 虚拟机处于桥接网络，绑定到所有网卡的服务在局域网内可直接访问，且前面没有任何鉴权。',
+        body: 'WSL2 forwards localhost by default, so http://localhost:11434 from a Windows browser or PowerShell reaches the server inside WSL with no extra configuration. In WSL\'s default NAT networking, nothing on your LAN can reach that server — Microsoft\'s docs say LAN access needs a netsh portproxy rule. That changes in mirrored networking mode (networkingMode=mirrored, Windows 11 22H2+), which connects WSL directly to the LAN: there, an Ollama bound to 0.0.0.0 is reachable by every machine on the network, with no authentication in front of it. Leave OLLAMA_HOST at its default unless you mean that.',
+        bodyZh: 'WSL2 默认会转发 localhost，所以在 Windows 浏览器或 PowerShell 里访问 http://localhost:11434 就能连到 WSL 内的服务，不需要额外配置。在 WSL 默认的 NAT 网络模式下，局域网里的其他机器访问不到这个服务 —— 微软文档写明局域网访问需要配一条 netsh portproxy 规则。换成镜像网络模式（networkingMode=mirrored，Windows 11 22H2+）就不一样了：WSL 直接接入局域网，绑定在 0.0.0.0 上的 Ollama 对网络里每台机器都可见，而且前面没有任何鉴权。除非你确实想这样，否则 OLLAMA_HOST 保持默认。',
         code: {
           lang: 'powershell',
           content: '# From Windows PowerShell\ncurl http://localhost:11434/api/tags',
@@ -206,14 +206,34 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Common problems',
         headingZh: '常见问题',
-        body: 'wsl nvidia-smi fails: update the Windows driver, then wsl --update and wsl --shutdown; do not install a driver inside WSL. nvidia-smi works but Ollama uses CPU: usually a second Ollama (the Windows app) already holding the port, or a model too large for the card — check ollama ps. Disk fills up: the WSL virtual disk grows to hold pulled models and does not shrink on its own; ollama rm removes a model, and reclaiming the space needs a manual compact of the vhdx. First load painfully slow: the model is probably under /mnt/c.',
-        bodyZh: 'wsl nvidia-smi 失败：更新 Windows 驱动，然后 wsl --update 与 wsl --shutdown；不要在 WSL 里装驱动。nvidia-smi 正常但 Ollama 走 CPU：通常是另一份 Ollama（Windows 应用）已经占住端口，或模型对显卡来说太大 —— 用 ollama ps 确认。磁盘被占满：WSL 虚拟磁盘会随拉取的模型增长且不会自动收缩；ollama rm 可删除模型，但回收空间需要手动压缩 vhdx。首次加载极慢：模型多半放在 /mnt/c 下。',
+        body: 'wsl nvidia-smi fails: update the Windows driver, then wsl --update and wsl --shutdown; do not install a driver inside WSL. It worked and then stopped after an apt upgrade: check whether a cuda or cuda-drivers package got installed — that is the Linux driver overwriting the stub. "could not connect to ollama app": the server is not running, almost always because systemd is off (see the install step). nvidia-smi works but Ollama uses CPU: usually a second Ollama (the Windows app) already holding the port, or a model too large for the card — check ollama ps. Disk fills up: the WSL virtual disk grows to hold pulled models and does not shrink by itself; ollama rm removes a model, and getting the space back needs the vhdx compacted (sparseVhd=true in .wslconfig only applies to newly created disks). First load painfully slow: the model is probably under /mnt/c.',
+        bodyZh: 'wsl nvidia-smi 失败：更新 Windows 驱动，然后 wsl --update 与 wsl --shutdown；不要在 WSL 里装驱动。原本好好的，一次 apt upgrade 之后不行了：检查是不是装进了 cuda 或 cuda-drivers 包 —— 那是 Linux 驱动把映射进来的驱动覆盖了。"could not connect to ollama app"：服务没在运行，几乎都是因为 systemd 没开（见安装一节）。nvidia-smi 正常但 Ollama 走 CPU：通常是另一份 Ollama（Windows 应用）占着端口，或者模型对这张卡太大 —— 用 ollama ps 看。磁盘被占满：WSL 虚拟磁盘会为拉取的模型扩容，但不会自己缩回去；ollama rm 能删模型，要真正回收空间得压缩 vhdx（.wslconfig 里的 sparseVhd=true 只对新建的磁盘生效）。首次加载极慢：模型多半放在 /mnt/c 下。',
       },
       {
         heading: 'Next steps',
         headingZh: '下一步',
         body: 'Put your card into the VRAM calculator to see what else fits at the context you actually use before pulling a larger model — on Windows, subtract the 0.5–1.5GB the desktop already holds.',
-        bodyZh: '在拉更大的模型之前，把你的显卡填进显存计算器，看看在你实际使用的上下文下还有什么装得下 —— Windows 上记得先减去桌面本身占用的 0.5–1.5GB。',
+        bodyZh: '拉取更大的模型之前，先把你的显卡放进显存计算器，看看在你实际使用的上下文长度下还能装下什么 —— 在 Windows 上，记得减去桌面已经占用的 0.5–1.5GB。',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Do I need to install the CUDA toolkit inside WSL to run Ollama?',
+        qZh: '在 WSL 里跑 Ollama 需要装 CUDA 工具包吗？',
+        a: 'No. Ollama ships its own CUDA libraries and uses the driver that Windows projects into WSL. The toolkit is only for compiling CUDA code yourself — and if you do install it, install cuda-toolkit-12-x alone, never the cuda or cuda-drivers meta-packages, which bring a Linux driver that breaks passthrough.',
+        aZh: '不需要。Ollama 自带 CUDA 运行库，用的是 Windows 映射进 WSL 的驱动。工具包只在你要自己编译 CUDA 代码时才需要 —— 真要装的话只装 cuda-toolkit-12-x，千万别装 cuda 或 cuda-drivers 元包，它们会带上 Linux 驱动，把透传弄坏。',
+      },
+      {
+        q: 'Is WSL2 slower than running Ollama natively on Windows?',
+        qZh: 'WSL2 会比在 Windows 上原生跑 Ollama 慢吗？',
+        a: 'This site has not measured the difference, so it will not quote a number. What it can say: once the model is on the GPU, generation runs on the same card through the same driver either way. The real WSL2 costs come from the edges — a 50% RAM ceiling that bites when a model spills to the CPU, and slow loads when models live under /mnt/c — both covered above.',
+        aZh: '本站没有实测过两者的差距，所以不给数字。能说的是：模型进了 GPU 之后，两种方式都是同一张卡、同一个驱动在生成。WSL2 真正的代价在边缘 —— 模型溢出到 CPU 时才会碰到的 50% 内存上限，以及模型放在 /mnt/c 下时的慢加载，上文都讲了。',
+      },
+      {
+        q: 'Can other machines on my network use this Ollama server?',
+        qZh: '局域网里的其他机器能用这个 Ollama 服务吗？',
+        a: 'Not in WSL\'s default NAT mode — that needs a netsh portproxy rule on Windows. In mirrored networking mode they can, as soon as Ollama listens on 0.0.0.0, and the API has no authentication. If you want LAN access, put an authenticating proxy in front of it rather than exposing port 11434 directly.',
+        aZh: '在 WSL 默认的 NAT 模式下不能 —— 需要在 Windows 上配 netsh portproxy 规则。在镜像网络模式下，只要 Ollama 监听 0.0.0.0 就能访问，而这个 API 没有任何鉴权。如果需要局域网访问，在前面加一层带鉴权的反向代理，不要直接暴露 11434 端口。',
       },
     ],
   },

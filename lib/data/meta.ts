@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'The WSL2 + Ollama guide was re-checked against Microsoft\'s, NVIDIA\'s and Ollama\'s current documentation. Two claims were wrong: in WSL\'s default networking mode your LAN cannot reach the server at all (the real exposure risk is mirrored mode), and the sample status output was missing a column. It now also covers the two failures readers most often hit — the "cuda" package quietly installing a Linux driver that breaks GPU passthrough, and systemd being off so Ollama never starts — and ends with three answered questions.',
+    zh: 'WSL2 + Ollama 指南按微软、NVIDIA 和 Ollama 当前的文档重新核对了一遍。有两处说错了：在 WSL 默认的网络模式下，局域网根本访问不到这个服务（真正有暴露风险的是镜像模式）；示例里的状态输出少了一列。现在还补上了读者最常碰到的两个故障 —— "cuda" 包悄悄装上 Linux 驱动、把 GPU 透传弄坏，以及 systemd 没开导致 Ollama 根本没启动 —— 文末新增三个问答。',
+  },
+  {
+    date: '2026-10-02',
     en: 'Two new models: Gemma 4 E2B and E4B, Google\'s on-device sizes with image and audio input and a 128K window. Most of their layers reuse an earlier layer\'s cache, so long context is cheap: at Q4, E2B needs about 3.0 GB at 4K and 3.8 GB at the full window, E4B about 4.9 GB and 7.0 GB — both run comfortably on an 8 GB card or an 8 GB Mac. The format wizard\'s AMD advice now names the cards vLLM supports.',
     zh: '新增两个模型：Gemma 4 E2B 和 E4B，Google 面向端侧的两个尺寸，支持图像和音频输入，128K 上下文。它们大部分层复用前面层的缓存，所以长上下文很便宜：Q4 下 E2B 在 4K 时约 3.0 GB、用满窗口约 3.8 GB，E4B 约 4.9 GB 和 7.0 GB——8 GB 显卡或 8 GB 的 Mac 都能从容运行。格式向导给 AMD 的建议现在会写明 vLLM 支持哪些显卡。',
   },

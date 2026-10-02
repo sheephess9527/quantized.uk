@@ -567,7 +567,11 @@ switch is `GGML_CUDA=ON` (CMake ignores an unknown `-D`, so `LLAMA_CUDA` yields 
 CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `main`; Windows's
 **System Memory Fallback** silently spills VRAM into system RAM, turning an OOM into a mysteriously
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
-unified memory leaves no separate VRAM figure to watch.
+unified memory leaves no separate VRAM figure to watch. WSL2 (re-checked 2026-10-02 from Microsoft's
+WSL docs, NVIDIA's CUDA-on-WSL guide and Ollama's `install.sh`): VM memory defaults to 50% of host
+RAM; `[boot] systemd` defaults **off**, and Ollama's installer then starts no service; `apt install
+cuda`/`cuda-drivers` installs a Linux driver over the passthrough stub (`cuda-toolkit-12-x` only);
+in default NAT mode nothing on the LAN can reach a WSL server — only mirrored mode exposes it.
 
 **A GPU database gap forces an honest substitution, stated in the text.** `m1-8gb-ollama-limits` once
 sized against the Mac M3 8G row because there was no M1 entry, and said so — 8GB is 8GB, bandwidth is
@@ -899,6 +903,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **WSL2 guide re-check** — LAN claim was wrong (NAT mode is not LAN-reachable; mirrored is); `cuda` meta-package installs a Linux driver; WSL's systemd defaults off so Ollama's service never starts; 3 FAQs |
 | 2026-10-02 | **+2 models (87): Gemma 4 E2B, E4B** — KV sharing needs no new field: llama.cpp allocates no cache for the `num_kv_shared_layers` tail, so only the leading layers go into `fullLayers`/`windowLayers`. `params` is the total incl. the per-layer embedding (PLE) table, which llama.cpp keeps in system RAM — sized conservatively, the VRAM saving stated per page |
 | 2026-10-02 | **AMD formats per card** — AWQ/GPTQ (vLLM-only on ROCm) gated by `vllmRocmSupported()`; GPTQ was wrongly CUDA-only (vLLM source builds it for HIP). RX 6000/7600 XT lose up to 4 comfortable fits; GPU-page "can it run" FAQ sizes the smallest *loadable* build (15 pages said "use GGUF" about models shipping GGUF) |
 | 2026-10-02 | **CLI vLLM on AMD + current install** — `vllm/vllm-openai-rocm` with documented flags, ROCm wheel index, `uv pip install … --torch-backend=auto` + `vllm serve`; off-list Radeon cards (RX 6000, 7600 XT) get a note |
