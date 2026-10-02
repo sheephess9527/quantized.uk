@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'Re-checked the AMD ROCm guide against llama.cpp\'s current build documentation. The build command now matches the documented form, the guide says ROCm 6.1 or newer is required (older versions are refused at build time), and the note on Windows now says what is actually true: a Windows HIP build is documented, but the workaround for unlisted cards does not work there. The log line that confirms a model is on the GPU now reads "load_tensors: offloaded …" — the older name the AMD and dual-GPU guides told you to look for no longer appears. Also fixed in the command generator: its Docker commands used the CPU-only llama.cpp image while asking for the GPU, so they ran entirely on the CPU without an error. They now use the CUDA image.',
+    zh: '对照 llama.cpp 当前的构建文档重新核对了 AMD ROCm 指南。构建命令改为文档中的写法；指南注明需要 ROCm 6.1 或更新版本（更旧的版本会在构建时被拒绝）；关于 Windows 的说法也改为实际情况：文档里有 Windows 上的 HIP 构建方法，但针对未列入支持名单显卡的变通办法在 Windows 上无效。确认模型跑在 GPU 上的那行日志现在是 "load_tensors: offloaded …"——AMD 和双卡指南此前让你找的旧名称已经不会出现了。另外修正了命令生成器：它的 Docker 命令用的是纯 CPU 版本的 llama.cpp 镜像，却又要求使用 GPU，结果全程在 CPU 上运行且不报错。现在改用 CUDA 镜像。',
+  },
+  {
+    date: '2026-10-02',
     en: 'Six popular Macs added, each with its own page and a place in the calculator: the M4 with 16 GB and 24 GB (the base Mac mini and its common upgrade), the M2 with 16 GB, the M1 with 8 GB and 16 GB, and the M1 Max with 64 GB. As on every Mac here, only about three quarters of the memory is counted as usable by a model. Apple does not list the original M1\'s memory bandwidth directly, so its page gives a figure derived from Apple\'s own comparisons and says so. The guide for 8 GB M1 Macs now uses the M1\'s own entry instead of borrowing the M3\'s.',
     zh: '新增六款热门 Mac，各有自己的页面，计算器里也能选择：M4 的 16 GB 和 24 GB 版本（Mac mini 基础款和常见的升级款）、M2 16 GB、M1 的 8 GB 和 16 GB 版本，以及 M1 Max 64 GB。和本站所有 Mac 一样，只按约四分之三的内存计为模型可用。苹果没有直接列出初代 M1 的内存带宽，所以它的页面给出的是由苹果官方对比推算的数字，并注明了这一点。8 GB M1 Mac 的指南现在直接使用 M1 自己的条目，不再借用 M3 的。',
   },

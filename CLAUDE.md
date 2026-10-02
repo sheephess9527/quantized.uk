@@ -582,6 +582,11 @@ count written down earlier. Model titles go through `modelPageTitle()` and cookb
 carries an optional `seoTitle` for the rare guide whose real title is long on its own; it changes
 only the `<title>` tag, never the visible H1.
 
+**llama.cpp facts re-checked 2026-10-02** (`docs/build.md`, `docs/docker.md`, source): the offload log
+line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); HIP builds use
+`HIPCXX=… -DGPU_TARGETS=gfx…` and require ROCm ≥ 6.1; the repo and images live under `ggml-org`;
+**`ghcr.io/ggml-org/llama.cpp:server` is CPU-only** — GPU commands need `:server-cuda` / `:server-rocm`.
+
 **Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
 projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
 vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm --torch-backend=auto`;
@@ -879,6 +884,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **AMD guide re-check + CPU-only Docker bug** — CLI docker/compose used the CPU-only `:server` image with `--gpus all`; now `:server-cuda`. HIP build/ROCm 6.1+/Windows claims and the `load_tensors:` log line corrected |
 | 2026-10-02 | **+6 Macs (70)** — M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G from Apple's pages; M1 bandwidth derived and noted. M1 guide now sized on its own row |
 | 2026-10-02 | **+5 budget cards (64)** — RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G from vendor spec pages; 5050 ships without bandwidth (data rate not stated) |
 | 2026-10-01 | **+2 models (85): Gemma 4 26B-A4B, 31B** — configs from transformers' conversion script; `fullKvHeads`/`fullHeadDim` added so global layers (fewer, wider heads) size separately. 26B-A4B 17 GB @32K fits 24 GB; E2B/E4B held back (cross-layer KV sharing) |

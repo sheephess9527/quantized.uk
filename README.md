@@ -419,6 +419,26 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (c) — AMD ROCm guide re-checked; CLI Docker commands were CPU-only
+
+Monthly guide re-check (documentation check, not a run — no `verifiedAt`): `amd-rocm-llamacpp` against
+llama.cpp `docs/build.md` (HIP) and `ggml/src/ggml-hip/CMakeLists.txt`. Build block now the documented
+`HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" cmake -S . -B build -DGGML_HIP=ON
+-DGPU_TARGETS=…`; `AMDGPU_TARGETS` is still forwarded and `hipcc` as compiler still works but warns
+"legacy" — both said in the text. `FATAL_ERROR "At least ROCM/HIP V6.1 is required"` → stack line and
+prerequisites say ROCm 6.1+. Windows: docs now carry a Windows HIP build, and `HSA_OVERRIDE_GFX_VERSION`
+is "not supported on Windows" — the old "Windows is experimental, use Vulkan" claim replaced with that.
+
+Offload log: `LLAMA_LOG_INFO("%s: offloaded %d/%d layers to GPU", __func__ …)` inside
+`llama_model_base::load_tensors` → `load_tensors: offloaded …`, not `llm_load_tensors:` (AMD and
+`dual-gpu-70b-llamacpp` guides, the latter `updatedAt` 2026-10-02). Repo URL `ggerganov/llama.cpp` →
+`ggml-org/llama.cpp` in three guide sources and `lib/utils/cli.ts`.
+
+**Bug:** `generateCLI` docker/compose emitted `ghcr.io/ggerganov/llama.cpp:server` with `--gpus all
+-ngl` — per `docs/docker.md` `:server` is the CPU-only image, so the container ran on CPU silently.
+Now `ghcr.io/ggml-org/llama.cpp:server-cuda`; the compose `deploy.resources` GPU reservation is
+uncommented (the CUDA image needs it); a note names `:server` (CPU) and `:server-rocm` (AMD).
+
 ### 2026-10-02 (b) — Six Macs: M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G
 
 64 → 70 GPU/Mac rows. Sources via web search restricted to apple.com (spec pages, Support tech specs,

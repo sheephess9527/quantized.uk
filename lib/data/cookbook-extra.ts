@@ -80,7 +80,7 @@ export const extraArticles: Article[] = [
     tags: ['70B', 'Multi-GPU', 'llama.cpp', 'RTX 3090', 'tensor-split'],
     publishedAt: '2025-07-02',
     // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-09-08',
+    updatedAt: '2026-10-02',
     // No `verifiedAt`: expanded 2026-09-08 with figures taken from this
     // site's own calculator, but nothing here has been re-run on a two-card
     // machine since. `gpuPreset` names a single 3090 deliberately — the
@@ -128,7 +128,7 @@ export const extraArticles: Article[] = [
         bodyZh: '启动日志会打印卸载到 GPU 的层数；只要不是全部，就说明还有一部分在 CPU 上，无论显卡如何生成都会很慢。nvidia-smi 里两张卡应各占约一半权重。若一张卡占了约 23GB 而另一张接近 0，说明切分根本没生效。',
         code: {
           lang: 'bash',
-          content: '# In the startup log:\n#   llm_load_tensors: offloaded 81/81 layers to GPU\n\nwatch -n1 nvidia-smi --query-gpu=index,memory.used --format=csv',
+          content: '# In the startup log:\n#   load_tensors: offloaded 81/81 layers to GPU\n\nwatch -n1 nvidia-smi --query-gpu=index,memory.used --format=csv',
         },
       },
       {
@@ -261,7 +261,7 @@ export const extraArticles: Article[] = [
     },
     content: [
       { heading: 'Prerequisites', headingZh: '前置条件', body: 'Install Visual Studio Build Tools, CMake, and CUDA Toolkit 12.x.', bodyZh: '安装 Visual Studio Build Tools、CMake 和 CUDA Toolkit 12.x。', code: { lang: 'powershell', content: 'winget install Kitware.CMake\n# CUDA: download from developer.nvidia.com/cuda-downloads' } },
-      { heading: 'Build', headingZh: '编译', body: 'Enable CUDA backend during CMake configure.', bodyZh: 'CMake 配置时启用 CUDA 后端。', code: { lang: 'powershell', content: 'git clone https://github.com/ggerganov/llama.cpp\ncd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j' } },
+      { heading: 'Build', headingZh: '编译', body: 'Enable CUDA backend during CMake configure.', bodyZh: 'CMake 配置时启用 CUDA 后端。', code: { lang: 'powershell', content: 'git clone https://github.com/ggml-org/llama.cpp\ncd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j' } },
     ],
   },
   {

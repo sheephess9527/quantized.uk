@@ -165,20 +165,22 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
       `  --gpus all \\`,
       `  -p ${port}:${port} \\`,
       `  -v $(pwd)/models:/models \\`,
-      `  ghcr.io/ggerganov/llama.cpp:server \\`,
+      `  ghcr.io/ggml-org/llama.cpp:server-cuda \\`,
       `  -m /models/${modelFile} \\`,
       `  --host 0.0.0.0 --port ${port} \\`,
       `  -ngl ${gpuLayers} \\`,
       `  -c ${contextLen}${apiKey ? ` \\\n  --api-key "${apiKey}"` : ''}`,
     ].join('\n');
-    return { command, notes: ['Requires NVIDIA Container Toolkit for GPU passthrough', 'Model file must be in ./models/ directory'] };
+    // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
+    // `--gpus all -ngl` starts cleanly and silently runs everything on the CPU.
+    return { command, notes: ['Requires NVIDIA Container Toolkit for GPU passthrough', 'Uses the CUDA 12 image (:server-cuda); :server is CPU-only, :server-rocm is the AMD build', 'Model file must be in ./models/ directory'] };
   }
 
   if (env === 'compose') {
     const compose = `version: "3.8"
 services:
   llama-server:
-    image: ghcr.io/ggerganov/llama.cpp:server
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
     container_name: llama-server
     ports:
       - "${port}:${port}"
@@ -191,14 +193,14 @@ services:
       -ngl ${gpuLayers}
       -c ${contextLen}${apiKey ? `\n      --api-key ${apiKey}` : ''}
     restart: unless-stopped
-    # Uncomment for NVIDIA GPU:
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]`;
+    # NVIDIA GPU (the -cuda image needs it; for CPU only, use :server and drop this block)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]`;
     return { command: serverCmd, compose, notes: ['GPU support requires NVIDIA Container Toolkit', 'Edit the compose file to mount your model directory'] };
   }
 
@@ -212,8 +214,8 @@ services:
     `huggingface-cli download ${repoId} --include "${modelFile}" --local-dir ./models`,
   ].join('\n');
   const installCmd = env === 'mac'
-    ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`
-    : `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\nsudo apt install -y build-essential cmake git\ngit clone https://github.com/ggerganov/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
+    ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`
+    : `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\nsudo apt install -y build-essential cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
 
   return {
     command: `${installCmd}\n${serverCmd}`,
