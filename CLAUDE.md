@@ -30,8 +30,8 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**59** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 397 pages (199 EN + 198 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**64** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 415 pages (208 EN + 207 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -663,7 +663,9 @@ shipping both formats brings the page back with no code change.
 its page differ from its same-capacity siblings. `GPU` carries `{ id, name, vram, type, bandwidth?, memType? }`
 and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —
 no architecture, no benchmarks. Do confirm it: a card whose VRAM is a guess generates a whole page
-of guesses, which is why the RTX 5050 and RX 9060 XT are still absent. Keep `gpuSlug()` dot-free,
+of guesses. The RTX 5050 and RX 9060 XT waited until official spec pages could be read (2026-10-02, via
+web search restricted to nvidia.com / amd.com — the spec sites themselves are blocked here); the
+5050's data rate was not stated, so it ships with no `bandwidth` rather than a computed guess. Keep `gpuSlug()` dot-free,
 and expect the page to say "no benchmark runs recorded on this card" unless `matrixData` has a row
 whose hardware string resolves to it.
 
@@ -876,6 +878,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **+5 budget cards (64)** — RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G from vendor spec pages; 5050 ships without bandwidth (data rate not stated) |
 | 2026-10-01 | **+2 models (85): Gemma 4 26B-A4B, 31B** — configs from transformers' conversion script; `fullKvHeads`/`fullHeadDim` added so global layers (fewer, wider heads) size separately. 26B-A4B 17 GB @32K fits 24 GB; E2B/E4B held back (cross-layer KV sharing) |
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |
 | 2026-09-30 | **+2 models (83): GLM-4.7-Flash, Kimi Linear 48B-A3B** — picked from transformers' newest families for single-machine hardware; MLA cache sized as llama.cpp stores it; Kimi's 7 full layers reconciled against the vendor's 75% claim; sizes `estimated` (no GGUF source reachable) |

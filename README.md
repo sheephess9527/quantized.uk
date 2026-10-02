@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 — Five budget cards: RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G
+
+59 → 64 GPU/Mac rows (68 with the CPU rows), +10 pages. Sources, read through web search restricted
+to nvidia.com / amd.com because every spec site (Wikipedia, TechPowerUp, the vendor pages directly)
+is blocked here; each bandwidth is cross-checked as bus width × data rate from the same pages:
+RTX 3060 12 GB GDDR6, 192-bit × 15 Gbps = 360 GB/s; RX 7600 XT 16 GB GDDR6, 128-bit × 18 Gbps = 288;
+RX 9060 XT 16 GB / 8 GB GDDR6, 128-bit × 20 Gbps = 320 (both). RTX 5050: 8 GB GDDR6, 128-bit — no
+data rate in the results, so `bandwidth` is omitted and its page says "bandwidth not listed".
+Comfortable fits at 4K: RTX 3060 45 / 85, RX 7600 XT and 9060 XT 16G 51, RTX 5050 34, 9060 XT 8G 33.
+Supersedes the 2026-09-11 note that left the RTX 5050 and RX 9060 XT out as unconfirmed.
+
 ### 2026-10-01 — Gemma 4 26B-A4B and 31B; per-layer-type KV head layout
 
 `lib/data/models-extra-11.ts` (85 models). Sources: transformers

@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-01';
+export const dataLastUpdated = '2026-10-02';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-02',
+    en: 'Five popular budget cards now have their own pages and appear in the calculator: GeForce RTX 3060 12G, GeForce RTX 5050, Radeon RX 7600 XT, and Radeon RX 9060 XT in both its 16 GB and 8 GB versions. Capacities and memory speeds come from NVIDIA\'s and AMD\'s own specification pages. NVIDIA\'s page for the RTX 5050 does not give its memory speed, so that page shows the card\'s capacity but no bandwidth figure rather than a guessed one.',
+    zh: '五张热门入门显卡现在有了自己的页面，计算器里也能选择：GeForce RTX 3060 12G、GeForce RTX 5050、Radeon RX 7600 XT，以及 Radeon RX 9060 XT 的 16 GB 和 8 GB 两个版本。显存容量和速率取自 NVIDIA、AMD 官方规格页。NVIDIA 官方页面没有给出 RTX 5050 的显存速率，所以它的页面只显示容量、不显示带宽，而不是填一个猜测的数字。',
+  },
   {
     date: '2026-10-01',
     en: 'Added Google\'s Gemma 4 26B-A4B and Gemma 4 31B, the two Gemma 4 sizes that run on a single 16–32 GB card or a Mac. Both have a 256K window, but only one layer in six keeps a cache that grows with context, and those layers use fewer, wider heads — so the calculator now sizes the two kinds of layer separately. The result: the 26B-A4B needs about 17 GB at 32K context at Q4 and fits a 24 GB card comfortably; the 31B is about 21 GB at short context, so a 24 GB card holds it only at short context and a 32 GB card is the comfortable choice. The smaller E2B and E4B models share their cache between layers in a way the calculator cannot yet describe, so they are not listed yet.',
