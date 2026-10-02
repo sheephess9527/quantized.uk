@@ -87,7 +87,7 @@ export const extraArticles2: Article[] = [
   },
   {
     id: 'm1-8gb-ollama-limits',
-    gpuPreset: { gpuId: 'm3-8', ctx: 4096 },
+    gpuPreset: { gpuId: 'm1-8', ctx: 4096 },
     relatedModelIds: ['llama-3.2-3b', 'qwen2.5-3b', 'phi-3.5-mini'],
     title: 'M1 / M2 Mac 8GB: Realistic Ollama Limits',
     titleZh: 'M1 / M2 Mac 8GB：Ollama 真实能力边界',

@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'Six popular Macs added, each with its own page and a place in the calculator: the M4 with 16 GB and 24 GB (the base Mac mini and its common upgrade), the M2 with 16 GB, the M1 with 8 GB and 16 GB, and the M1 Max with 64 GB. As on every Mac here, only about three quarters of the memory is counted as usable by a model. Apple does not list the original M1\'s memory bandwidth directly, so its page gives a figure derived from Apple\'s own comparisons and says so. The guide for 8 GB M1 Macs now uses the M1\'s own entry instead of borrowing the M3\'s.',
+    zh: '新增六款热门 Mac，各有自己的页面，计算器里也能选择：M4 的 16 GB 和 24 GB 版本（Mac mini 基础款和常见的升级款）、M2 16 GB、M1 的 8 GB 和 16 GB 版本，以及 M1 Max 64 GB。和本站所有 Mac 一样，只按约四分之三的内存计为模型可用。苹果没有直接列出初代 M1 的内存带宽，所以它的页面给出的是由苹果官方对比推算的数字，并注明了这一点。8 GB M1 Mac 的指南现在直接使用 M1 自己的条目，不再借用 M3 的。',
+  },
+  {
+    date: '2026-10-02',
     en: 'Five popular budget cards now have their own pages and appear in the calculator: GeForce RTX 3060 12G, GeForce RTX 5050, Radeon RX 7600 XT, and Radeon RX 9060 XT in both its 16 GB and 8 GB versions. Capacities and memory speeds come from NVIDIA\'s and AMD\'s own specification pages. NVIDIA\'s page for the RTX 5050 does not give its memory speed, so that page shows the card\'s capacity but no bandwidth figure rather than a guessed one.',
     zh: '五张热门入门显卡现在有了自己的页面，计算器里也能选择：GeForce RTX 3060 12G、GeForce RTX 5050、Radeon RX 7600 XT，以及 Radeon RX 9060 XT 的 16 GB 和 8 GB 两个版本。显存容量和速率取自 NVIDIA、AMD 官方规格页。NVIDIA 官方页面没有给出 RTX 5050 的显存速率，所以它的页面只显示容量、不显示带宽，而不是填一个猜测的数字。',
   },

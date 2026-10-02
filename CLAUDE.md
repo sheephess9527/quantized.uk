@@ -30,8 +30,8 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**64** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 415 pages (208 EN + 207 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**70** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 427 pages (214 EN + 213 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
 
 ## Commands
@@ -561,11 +561,12 @@ CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
 unified memory leaves no separate VRAM figure to watch.
 
-**A GPU database gap forces an honest substitution, stated in the text.** `gpuDatabase` has no
-M1 or M2 base-chip row (only M2 Max/Ultra), so `m1-8gb-ollama-limits` sizes against the Mac M3 8G
-entry for capacity and says so — 8GB is 8GB regardless of generation, but bandwidth is not (M3: 100
-GB/s; M1 base: ~68 GB/s; M2 base: ~100 GB/s). Never silently borrow a different card's row without
-naming the substitution and where it breaks.
+**A GPU database gap forces an honest substitution, stated in the text.** `m1-8gb-ollama-limits` once
+sized against the Mac M3 8G row because there was no M1 entry, and said so — 8GB is 8GB, bandwidth is
+not. The M1/M2/M4 base rows now exist (2026-10-02) and the guide uses `m1-8`; the rule stands for the
+next gap. Never silently borrow a different card's row without naming the substitution and where it
+breaks. A bandwidth Apple does not state directly (the M1's, derived from its "M2 is 50% faster" and
+"M1 Max is nearly 6×" statements) carries a `bandwidthNote` saying so.
 
 **A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** A guide called
 GGUF Q4_K_M "the sweet spot" for a 32B model on a 24GB card; run through the calculator it is 90% of
@@ -878,6 +879,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **+6 Macs (70)** — M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G from Apple's pages; M1 bandwidth derived and noted. M1 guide now sized on its own row |
 | 2026-10-02 | **+5 budget cards (64)** — RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G from vendor spec pages; 5050 ships without bandwidth (data rate not stated) |
 | 2026-10-01 | **+2 models (85): Gemma 4 26B-A4B, 31B** — configs from transformers' conversion script; `fullKvHeads`/`fullHeadDim` added so global layers (fewer, wider heads) size separately. 26B-A4B 17 GB @32K fits 24 GB; E2B/E4B held back (cross-layer KV sharing) |
 | 2026-09-30 | **DeepSeek MLA sizing fixed** — V3/R1/V2-Lite/Coder-V2-Lite were sized as conventional attention (too high for current GGUFs, far too low for legacy ones); now 576-value MLA cache with the legacy cost stated per page. Lite models newly fit 10–16 GB hardware |

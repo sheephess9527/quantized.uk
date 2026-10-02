@@ -963,7 +963,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'm1-8gb-ollama-limits': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-02',
     verifiedAt: undefined,
     verifiedStack: {
       en: 'M1/M2 8GB Mac · Ollama 0.6+ · GGUF Q4_K_M · 3B-class models · short context',
@@ -978,10 +978,10 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         code: { lang: 'bash', content: 'brew install ollama\nollama --version' },
       },
       {
-        heading: 'This index has no M1/M2 base entry — here is the substitute',
-        headingZh: '本索引没有 M1/M2 基础版条目 —— 这是替代方案',
-        body: 'The GPU database behind this site’s calculator has no M1 or M2 base-tier row — only M2 Max and M2 Ultra, the higher configurations. The 8GB capacity figures below use the Mac M3 8G entry as a stand-in, since the calculator only reads capacity, and 8GB is 8GB regardless of chip generation. Bandwidth is not: the M3 entry is rated at 100 GB/s, while the M2 base chip is close to that at 100 GB/s and the original M1 base chip is meaningfully slower at roughly 68 GB/s. On an M1 specifically, expect generation speed below what the M3-based numbers here would suggest; on an M2, expect them to be close.',
-        bodyZh: '本站计算器背后的显卡数据库里没有 M1 或 M2 基础版的条目 —— 只有更高配置的 M2 Max 和 M2 Ultra。下面的 8GB 容量数字用 Mac M3 8G 条目作为替代，因为计算器只读取容量，而不管芯片是哪一代，8GB 就是 8GB。带宽则不一样：M3 条目标称 100 GB/s，M2 基础版芯片与此接近同为 100 GB/s，而最初的 M1 基础版芯片明显更慢，约 68 GB/s。如果你用的具体是 M1，实际生成速度会低于这里按 M3 数字推算出的结果；如果是 M2，会比较接近。',
+        heading: 'M1 and M2 base chips: same capacity, different speed',
+        headingZh: 'M1 与 M2 基础版：容量相同，速度不同',
+        body: 'The sizes below come from this site’s Mac M1 8G entry, so they describe the M1 directly. Capacity does not depend on chip generation — 8GB is 8GB, and an M2 or M3 with 8GB fits exactly the same models. Speed does: Apple rates the M2 base chip at 100 GB/s and describes it as 50% faster than the M1, which puts the M1 at roughly 67–68 GB/s. Generating a token reads every weight once, so with the same model an M1 is noticeably slower than an M2 or M3 — the M1 is fine for a 3B assistant, but this is where its age shows.',
+        bodyZh: '下面的体积数字取自本站的 Mac M1 8G 条目，直接描述的就是 M1。容量与芯片代际无关——8GB 就是 8GB，8GB 的 M2 或 M3 能装下的模型完全一样。速度则不同：苹果给 M2 基础版标的带宽是 100 GB/s，并称它比 M1 快 50%，由此 M1 约为 67–68 GB/s。每生成一个 token 都要把所有权重读一遍，所以跑同一个模型，M1 明显比 M2、M3 慢——M1 跑 3B 助手没问题，但这正是它老态显露的地方。',
       },
       {
         heading: 'What actually fits',
@@ -1028,8 +1028,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Does this guide’s data apply to the original M1 the same as an M2?',
         qZh: '这篇指南的数据对原版 M1 和 M2 一样适用吗？',
-        a: 'The capacity numbers do — 8GB is 8GB. Speed does not: this site’s calculator has no M1 or M2 base-tier entry and substitutes the Mac M3 8G row for capacity, which is rated at 100 GB/s. The original M1 base chip is meaningfully slower, around 68 GB/s, so expect generation speed below what the figures here imply; the M2 base chip is close to the M3 figure.',
-        aZh: '容量数字适用——8GB 就是 8GB。速度不适用：本站计算器没有 M1 或 M2 基础版的条目，容量方面用 Mac M3 8G 那一行代替，标称 100 GB/s。原版 M1 基础版芯片明显更慢，约 68 GB/s，所以实际生成速度会低于这里数字暗示的水平；M2 基础版芯片则和 M3 的数字比较接近。',
+        a: 'The capacity numbers do — 8GB is 8GB, and the sizes here come from this site’s Mac M1 8G entry. Speed does not carry over: Apple rates the M2 base chip at 100 GB/s, 50% more than the M1, so with the same model an M2 generates roughly half again as fast as an M1.',
+        aZh: '容量数字适用——8GB 就是 8GB，这里的体积数字取自本站的 Mac M1 8G 条目。速度则不能照搬：苹果给 M2 基础版标的带宽是 100 GB/s，比 M1 高 50%，所以跑同一个模型，M2 的生成速度大约是 M1 的 1.5 倍。',
       },
       {
         q: 'How do I stop Ollama from thrashing my 8GB Mac?',

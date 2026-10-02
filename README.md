@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (b) — Six Macs: M4 16G/24G, M2 16G, M1 8G/16G, M1 Max 64G
+
+64 → 70 GPU/Mac rows. Sources via web search restricted to apple.com (spec pages, Support tech specs,
+Newsroom): M4 16 GB configurable to 24/32 GB at 120 GB/s; M2 100 GB/s, "50 percent more than M1", up
+to 24 GB; M1 8 GB configurable to 16 GB; M1 Max up to 64 GB at 400 GB/s, "nearly 6x that of M1". Apple
+never states the M1's own figure: both comparisons put it at 66.7–68 GB/s, entered as 68 with a
+`bandwidthNote` on the page. `memType` omitted on all six — not in the sources read. Comfortable fits
+at 4K (75% usable): M4 24G 52 / 85, M4 16G / M2 16G / M1 16G 45, M1 8G 18, M1 Max 64G 71.
+`m1-8gb-ollama-limits`: `gpuPreset` `m3-8` → `m1-8`; the "no M1 entry, here is the substitute" section
+and FAQ rewritten around the real M1 row; `updatedAt` 2026-10-02.
+
 ### 2026-10-02 — Five budget cards: RTX 3060 12G, RTX 5050, RX 7600 XT, RX 9060 XT 16G/8G
 
 59 → 64 GPU/Mac rows (68 with the CPU rows), +10 pages. Sources, read through web search restricted
