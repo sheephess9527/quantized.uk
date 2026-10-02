@@ -459,7 +459,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['GPT-OSS', 'MXFP4', 'MoE', 'llama.cpp', 'Ollama', 'GGUF'],
     publishedAt: '2026-08-08',
-    updatedAt: '2026-09-30',
+    updatedAt: '2026-10-02',
     content: [
       {
         heading: 'The one thing to get right: MXFP4 is the original',
@@ -498,7 +498,7 @@ export const extraArticles2: Article[] = [
         bodyZh: 'GPT-OSS 使用 OpenAI 的 "harmony" 响应格式训练，该格式把推理通道与最终回答分开。这个结构写在模型的 chat template 里，所以 llama.cpp 需要 --jinja 才会套用。不加这个参数，你会看到通道标记直接漏进回复里，或者模型停不下来——这个现象很像量化坏了，其实纯粹是模板问题。',
         code: {
           lang: 'bash',
-          content: '# 20B, all layers on a 16GB+ GPU\nllama-server \\\n  -hf ggml-org/gpt-oss-20b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --ctx-size 32768 \\\n  --host 0.0.0.0 --port 8080\n\n# --jinja       applies the harmony chat template  (do not omit)\n# -ngl 99       offload every layer to the GPU\n# --ctx-size    raise freely — KV cache is cheap on this model',
+          content: '# 20B, all layers on a 16GB+ GPU\nllama-server \\\n  -hf ggml-org/gpt-oss-20b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --ctx-size 32768 \\\n  --host 127.0.0.1 --port 8080\n\n# --jinja       applies the harmony chat template  (do not omit)\n# -ngl 99       offload every layer to the GPU\n# --ctx-size    raise freely — KV cache is cheap on this model',
         },
       },
       {

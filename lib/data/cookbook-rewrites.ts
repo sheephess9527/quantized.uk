@@ -167,8 +167,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Build with CUDA on',
         headingZh: '开启 CUDA 编译',
-        body: 'The flag is `GGML_CUDA`, not `LLAMA_CUDA`. This matters more than it looks: CMake ignores an unknown `-D` without complaining, so the old name produces a clean, successful, CPU-only build — and the first sign of trouble is a model that runs at a tenth of the speed you expected.',
-        bodyZh: '开关是 `GGML_CUDA`，不是 `LLAMA_CUDA`。这一点比看上去重要得多：CMake 遇到不认识的 `-D` 会默默忽略，所以用旧名字会得到一次干净、成功、但纯 CPU 的构建 —— 而你发现不对劲的第一个迹象，是模型只有预期十分之一的速度。',
+        body: 'The flag is `GGML_CUDA`. Older names are caught — `LLAMA_CUDA` still works with a deprecation warning, `LLAMA_CUBLAS` stops with an error — but a misspelt one is not: CMake mentions an unknown `-D` only in a "Manually-specified variables were not used" warning at the end of configure and carries on, producing a clean, successful, CPU-only build. The first sign of trouble is then a model running at a fraction of the speed you expected, so read the end of the configure output.',
+        bodyZh: '开关是 `GGML_CUDA`。旧名字会被识别 —— `LLAMA_CUDA` 仍然有效、只是附带弃用警告，`LLAMA_CUBLAS` 会直接报错停止 —— 但拼错的名字不会：CMake 对不认识的 `-D` 只在配置结束时给一条 "Manually-specified variables were not used" 警告，然后照常继续，得到一次干净、成功、却是纯 CPU 的构建。之后你发现不对劲的第一个迹象，就是模型只有预期速度的零头，所以请看完配置输出的结尾。',
         code: { lang: 'powershell', content: 'git clone https://github.com/ggml-org/llama.cpp\ncd llama.cpp\n\n# CMAKE_CUDA_ARCHITECTURES is optional but cuts build time a lot:\n#   86 = RTX 30-series, 89 = RTX 40-series, 120 = RTX 50-series\ncmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="89"\ncmake --build build --config Release -j' },
       },
       {
@@ -194,16 +194,16 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'When it does not work',
         headingZh: '出问题时',
-        body: '`nvcc` not found: you are not in a Developer Command Prompt, or the CUDA Toolkit went in after Visual Studio and its MSBuild integration never registered. The build succeeds but there is no CUDA device: you passed `LLAMA_CUDA` instead of `GGML_CUDA`, and CMake ignored it — delete `build\\` and configure again, because a stale cache keeps the old answer. Everything is mysteriously slow rather than failing: Windows has System Memory Fallback on by default in the NVIDIA control panel, which spills VRAM into system RAM instead of reporting an out-of-memory error, so a model that does not fit becomes a model that crawls. Turn it off while you are measuring. And an unspecified compiler error deep in a CUDA header usually means the toolkit and the Visual Studio version disagree — check the toolkit\u2019s supported MSVC range before suspecting your code.',
-        bodyZh: '找不到 `nvcc`：要么你不在开发人员命令提示符里，要么 CUDA Toolkit 是在 Visual Studio 之后装的，MSBuild 集成没有注册上。编译成功但没有 CUDA 设备：你传的是 `LLAMA_CUDA` 而不是 `GGML_CUDA`，CMake 直接忽略了它 —— 删掉 `build\\` 重新配置，因为旧的缓存会保留之前的结论。不报错但莫名很慢：Windows 的 NVIDIA 控制面板默认开启「系统内存回退」，它会把超出的显存溢出到系统内存而不是报 OOM，于是「装不下的模型」变成了「爬着走的模型」。测量时请关掉它。至于 CUDA 头文件深处那种没头没尾的编译错误，通常是工具链版本和 Visual Studio 版本不匹配 —— 先去查该 CUDA 版本支持的 MSVC 区间，再怀疑自己的代码。',
+        body: '`nvcc` not found: you are not in a Developer Command Prompt, or the CUDA Toolkit went in after Visual Studio and its MSBuild integration never registered. The build succeeds but there is no CUDA device: the configure step never saw `-DGGML_CUDA=ON` — it was left off, or misspelt and listed under "Manually-specified variables were not used" — so delete `build\\` and configure again, because a stale cache keeps the old answer. Everything is mysteriously slow rather than failing: Windows has System Memory Fallback on by default in the NVIDIA control panel, which spills VRAM into system RAM instead of reporting an out-of-memory error, so a model that does not fit becomes a model that crawls. Turn it off while you are measuring. And an unspecified compiler error deep in a CUDA header usually means the toolkit and the Visual Studio version disagree — check the toolkit\u2019s supported MSVC range before suspecting your code.',
+        bodyZh: '找不到 `nvcc`：要么你不在开发人员命令提示符里，要么 CUDA Toolkit 是在 Visual Studio 之后装的，MSBuild 集成没有注册上。编译成功但没有 CUDA 设备：配置步骤根本没收到 `-DGGML_CUDA=ON` —— 要么漏写了，要么拼错了、被列在 "Manually-specified variables were not used" 里 —— 删掉 `build\\` 重新配置，因为旧的缓存会保留之前的结论。不报错但莫名很慢：Windows 的 NVIDIA 控制面板默认开启「系统内存回退」，它会把超出的显存溢出到系统内存而不是报 OOM，于是「装不下的模型」变成了「爬着走的模型」。测量时请关掉它。至于 CUDA 头文件深处那种没头没尾的编译错误，通常是工具链版本和 Visual Studio 版本不匹配 —— 先去查该 CUDA 版本支持的 MSVC 区间，再怀疑自己的代码。',
       },
     ],
     faqs: [
       {
         q: 'Why does my llama.cpp build ignore the GPU on Windows?',
         qZh: 'Windows 上编译出来的 llama.cpp 为什么不用 GPU？',
-        a: 'Almost always the build flag. It is `-DGGML_CUDA=ON`; the older `LLAMA_CUDA` name no longer does anything, and CMake ignores an unknown `-D` silently, so you get a successful CPU-only build with no warning. Delete the `build` directory before reconfiguring — a stale CMake cache will keep the previous answer. A working build prints its CUDA device and its layer offload count at load time.',
-        aZh: '几乎总是编译开关的问题。正确的是 `-DGGML_CUDA=ON`；旧的 `LLAMA_CUDA` 已经不起任何作用，而 CMake 遇到不认识的 `-D` 会静默忽略，于是你得到一次成功的、纯 CPU 的构建，没有任何警告。重新配置前请删掉 `build` 目录 —— 旧的 CMake 缓存会保留之前的结论。正常的构建会在加载时打印 CUDA 设备和层的 offload 数量。',
+        a: 'Almost always the build flag. It is `-DGGML_CUDA=ON`. Leave it off, or misspell it, and you get a successful CPU-only build — CMake only lists an unknown `-D` under "Manually-specified variables were not used" at the end of configure. (The older `LLAMA_CUDA` still works with a deprecation warning.) Delete the `build` directory before reconfiguring — a stale CMake cache will keep the previous answer. A working build prints its CUDA device and its layer offload count at load time.',
+        aZh: '几乎总是编译开关的问题。正确的是 `-DGGML_CUDA=ON`。漏写或拼错，都会得到一次成功的、纯 CPU 的构建 —— CMake 只会在配置结束时把不认识的 `-D` 列在 "Manually-specified variables were not used" 下面。（旧的 `LLAMA_CUDA` 仍然有效，只是附带弃用警告。）重新配置前请删掉 `build` 目录 —— 旧的 CMake 缓存会保留之前的结论。正常的构建会在加载时打印 CUDA 设备和层的 offload 数量。',
       },
       {
         q: 'Do I need WSL to run llama.cpp with CUDA on Windows?',

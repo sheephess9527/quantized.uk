@@ -419,6 +419,36 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-02 (i) — Dual-GPU guide vs current llama.cpp; old-flag claim corrected; CLI ports on loopback
+
+**Dual-GPU guide** re-checked against llama.cpp `docs/multi-gpu.md`, `common/arg.cpp`,
+`common/common.h`: `-ngl` defaults to `auto` and `--fit` defaults **on** with a 1 GiB margin per
+device (`fit_params_target`), adjusting only unset args; `n_ctx` 0 = trained context (128K for Llama
+3.3), cut by fit down to `fit_params_min_ctx` 4096; `--tensor-split` optional (default proportional
+to memory); split modes `layer` (default) / `row` (deprecated) / `tensor` (experimental: needs flash
+attention, unquantized KV, no auto-fit). Guide now passes `-ngl all -c 4096`, drops the needless
+`--tensor-split 1,1`, adds `--list-devices`, a split-mode section with no speed claim (not measured),
+and 3 FAQs. Figures re-run through `calcVRAM` (unchanged: 46.1 / 47.5 GB). The guide suggested
+Q3_K_M "which the model index prints per level" — Llama 3.3 70B ships no Q3_K_M here; now stated
+as the calculator's generic rate (38.4 GB @8K, 37.1 GB @4K for a 24+16 GB pair = 93%, tight).
+
+**Old CMake flag claim was wrong, site-wide.** llama.cpp `CMakeLists.txt` `llama_option_depr`:
+`LLAMA_CUBLAS` → `FATAL_ERROR`, `LLAMA_CUDA` → `WARNING` and sets `GGML_CUDA` ON. The site said the
+old names were "silently ignored" and gave a CPU-only build (tool page FAQ, the Windows CUDA guide
+×3, the dual-GPU guide, a `cli.ts` comment, CLAUDE.md). What does give a CPU-only build is no flag or
+a misspelt one, which CMake reports only under "Manually-specified variables were not used".
+
+**CLI exposure.** Every Docker `-p` / Compose `ports:` mapping was bare (`8080:8080`), which
+publishes on all host interfaces (Docker's iptables rules also bypass ufw) — the code comment
+claimed the mapping limited exposure. Now `127.0.0.1:` on all 9 mappings (incl. Open WebUI) plus an
+`exposureNote` on every container output. Native `vllm serve` had no `--host` (vLLM's default is
+`None` = all interfaces) → `--host 127.0.0.1`; native Ollama printed `OLLAMA_HOST=0.0.0.0:<port>
+ollama serve` → loopback, and on 11434 (where the installer's service / the macOS app already
+listens) a commented stop-first hint instead of a second server. Swept 96 framework × env × backend
+× lang outputs: 0 non-loopback mappings, 0 native `0.0.0.0`. GPT-OSS guide's `--host 0.0.0.0` →
+`127.0.0.1`. ExLlamaV2 CLI output still binds 0.0.0.0 — it is being replaced (its `python -m
+exllamav2.server` and image do not exist; next ship).
+
 ### 2026-10-02 (h) — WSL2 + Ollama guide re-checked against current docs
 
 Sources: MicrosoftDocs/WSL `wsl-config.md` (`memory` default "50% of total memory on Windows";

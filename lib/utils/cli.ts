@@ -99,6 +99,11 @@ function containerNotes(backend: Backend, lang: Lang): string[] {
   return [L(lang, 'CPU-only container', '纯 CPU 容器')];
 }
 
+/** Every container port here is published on loopback only; say how to widen it. */
+function exposureNote(lang: Lang): string {
+  return L(lang, 'Port published on 127.0.0.1 only — a bare -p PORT:PORT would expose this unauthenticated API on every network interface. To reach it from other machines, put an authenticating proxy in front first', '端口只发布在 127.0.0.1 上——如果写成 -p 端口:端口，这个没有鉴权的接口会暴露在所有网卡上。要从其他机器访问，先在前面加一层带鉴权的反向代理');
+}
+
 /** `nproc` is GNU coreutils — it does not exist on a stock macOS. */
 function coreCount(env: Env): string {
   return env === 'mac' ? '$(sysctl -n hw.ncpu)' : '$(nproc)';
@@ -138,7 +143,7 @@ function generateExLlama(opts: CLIOptions): CLIOutput {
     const command = [
       `docker run --rm -it \\`,
       `  --gpus all \\`,
-      `  -p ${port}:${port} \\`,
+      `  -p 127.0.0.1:${port}:${port} \\`,
       `  -v $(pwd)/models:/models \\`,
       `  ghcr.io/turboderp/exllamav2:latest \\`,
       `  -m /models/${modelDir}-exl2-${bpw}bpw \\`,
@@ -155,7 +160,7 @@ services:
     image: ghcr.io/turboderp/exllamav2:latest
     container_name: exllama-server
     ports:
-      - "${port}:${port}"
+      - "127.0.0.1:${port}:${port}"
     volumes:
       - ./models:/models
     command: >
@@ -208,9 +213,11 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
 
   // Loopback by default. `--host 0.0.0.0` publishes an unauthenticated
   // inference server to every interface on the machine, which is not what
-  // "run it on my laptop" should mean. The Docker/Compose paths below still
-  // bind 0.0.0.0 because inside a container that *is* the local interface and
-  // the port mapping is what controls exposure.
+  // "run it on my laptop" should mean. Inside a container the server must
+  // bind 0.0.0.0 to be reachable through the port mapping at all, so exposure
+  // is decided by the mapping: a bare `-p 8080:8080` publishes on every host
+  // interface (and Docker's own iptables rules bypass ufw), so every mapping
+  // here is `127.0.0.1:` — see `exposureNote`.
   const serverCmd = [
     `./build/bin/llama-server \\`,
     `  -m ./models/${modelFile} \\`,
@@ -224,7 +231,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     const command = [
       `docker run --rm -it \\`,
       ...dockerGpuLines(backend),
-      `  -p ${port}:${port} \\`,
+      `  -p 127.0.0.1:${port}:${port} \\`,
       `  -v $(pwd)/models:/models \\`,
       `  ghcr.io/ggml-org/llama.cpp:${llamaImageTag(backend)} \\`,
       `  -m /models/${modelFile} \\`,
@@ -234,7 +241,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     ].join('\n');
     // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
     // `--gpus all -ngl` starts cleanly and silently runs everything on the CPU.
-    return { command, notes: [...containerNotes(backend, lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
+    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
   }
 
   if (env === 'compose') {
@@ -244,7 +251,7 @@ services:
     image: ghcr.io/ggml-org/llama.cpp:${llamaImageTag(backend)}
     container_name: llama-server
     ports:
-      - "${port}:${port}"
+      - "127.0.0.1:${port}:${port}"
     volumes:
       - ./models:/models
     command: >
@@ -254,13 +261,13 @@ services:
       -ngl ${gpuLayers}
       -c ${contextLen}${apiKey ? `\n      --api-key ${apiKey}` : ''}
     restart: unless-stopped${composeGpuBlock(backend)}`;
-    return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录')] };
+    return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录')] };
   }
 
-  // Build flags: llama.cpp renamed every LLAMA_* CMake option to GGML_* well
-  // before the b4000-series this site targets. The old names are silently
-  // ignored by CMake, which yields a CPU-only build that "works" and is 20×
-  // slower — the worst possible failure mode for a copy-paste command.
+  // Build flags: llama.cpp renamed every LLAMA_* CMake option to GGML_*. Its
+  // CMakeLists maps the old names (LLAMA_CUDA warns and still enables CUDA,
+  // LLAMA_CUBLAS is a fatal error), but a *misspelt* -D is only reported as an
+  // unused variable and yields a CPU-only build — emit the current names.
   const downloadCmd = [
     `# Download the model (installs the CLI the next line needs)`,
     `pip install -U "huggingface_hub[cli]"`,
@@ -306,7 +313,7 @@ services:
     image: ollama/ollama:${backend === 'rocm' ? 'rocm' : 'latest'}
     container_name: ollama
     ports:
-      - "${port}:11434"
+      - "127.0.0.1:${port}:11434"
     volumes:
       - ollama_data:/root/.ollama
     environment:
@@ -317,7 +324,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     ports:
-      - "3000:8080"
+      - "127.0.0.1:3000:8080"
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
     depends_on:
@@ -331,7 +338,7 @@ volumes:
   webui_data:`;
 
     const command = `# After docker compose up -d:\ndocker exec ollama ollama pull ${ollamaModel}`;
-    return { command, compose, notes: [...containerNotes(backend, lang), L(lang, 'Open WebUI available at http://localhost:3000', 'Open WebUI 地址：http://localhost:3000'), L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`)] };
+    return { command, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Open WebUI available at http://localhost:3000', 'Open WebUI 地址：http://localhost:3000'), L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`)] };
   }
 
   if (env === 'docker') {
@@ -339,7 +346,7 @@ volumes:
       `# Start Ollama container`,
       `docker run -d \\`,
       ...dockerGpuLines(backend),
-      `  -p ${port}:11434 \\`,
+      `  -p 127.0.0.1:${port}:11434 \\`,
       `  -v ollama:/root/.ollama \\`,
       `  --name ollama \\`,
       `  ollama/ollama${backend === 'rocm' ? ':rocm' : ''}`,
@@ -347,7 +354,7 @@ volumes:
       `# Pull the model`,
       `docker exec ollama ollama pull ${ollamaModel}`,
     ].join('\n');
-    return { command, notes: [...containerNotes(backend, lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
+    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
   }
 
   const installCmd = env === 'mac'
@@ -362,8 +369,14 @@ volumes:
     `ollama pull ${ollamaModel}`,
     `ollama run ${ollamaModel}`,
     ``,
-    `# Or start as API server`,
-    `OLLAMA_HOST=0.0.0.0:${port} ollama serve`,
+    env === 'mac'
+      ? `# The Ollama app already serves the API on 127.0.0.1:11434 while it is open.`
+      : `# The Linux installer already runs the API on 127.0.0.1:11434 as a service.`,
+    ...(port === 11434
+      ? env === 'mac'
+        ? [`# To run it in the foreground instead, quit the Ollama app first, then:`, `#   ollama serve`]
+        : [`# To run it in the foreground instead, stop the service first:`, `#   sudo systemctl stop ollama && ollama serve`]
+      : [`# To serve on port ${port} instead (loopback only):`, `OLLAMA_HOST=127.0.0.1:${port} ollama serve`]),
   ].join('\n');
 
   return {
@@ -412,7 +425,7 @@ services:
     image: vllm/vllm-openai${rocm ? '-rocm' : ''}:latest
     container_name: vllm
     ports:
-      - "${port}:${port}"
+      - "127.0.0.1:${port}:${port}"
     volumes:
       - huggingface_cache:/root/.cache/huggingface
     command: >
@@ -445,7 +458,7 @@ volumes:
   huggingface_cache:`;
 
     const command = `# Start vLLM server\ndocker compose up -d\n\n# Test the API\ncurl http://localhost:${port}/v1/models`;
-    return { command, compose, notes: [...hwNotes, rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
+    return { command, compose, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   if (env === 'docker') {
@@ -456,7 +469,7 @@ volumes:
         ? [`docker run \\`, `  --group-add=video \\`, `  --cap-add=SYS_PTRACE \\`, `  --security-opt seccomp=unconfined \\`, `  --device /dev/kfd \\`, `  --device /dev/dri \\`]
         : [`docker run --gpus all \\`]),
       `  --ipc=host \\`,
-      `  -p ${port}:${port} \\`,
+      `  -p 127.0.0.1:${port}:${port} \\`,
       `  -v ~/.cache/huggingface:/root/.cache/huggingface \\`,
       `  -e HF_TOKEN=$HF_TOKEN \\`,
       `  vllm/vllm-openai${rocm ? '-rocm' : ''}:latest \\`,
@@ -465,7 +478,7 @@ volumes:
       `  --gpu-memory-utilization 0.85 \\`,
       `  --port ${port}${apiKeyFlag}`,
     ].join('\n');
-    return { command, notes: [...hwNotes, rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
+    return { command, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   const command = [
@@ -479,7 +492,9 @@ volumes:
     `vllm serve ${repoId}${quantFlag} \\`,
     `  --max-model-len ${contextLen} \\`,
     `  --gpu-memory-utilization 0.85 \\`,
-    `  --port ${port}${apiKeyFlag}`,
+    // `--host` defaults to None (every interface) in vllm serve; loopback, as
+    // the llama.cpp command does.
+    `  --host 127.0.0.1 --port ${port}${apiKeyFlag}`,
   ].join('\n');
 
   return {

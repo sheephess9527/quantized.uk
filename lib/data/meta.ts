@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-02',
+    en: 'The two-GPU 70B guide now reflects how current llama.cpp behaves: its automatic memory fitting is on by default and keeps 1 GB free on each card, which can quietly push some of a 70B onto the CPU, so the guide passes the GPU-layer and context settings explicitly. It also covers mixing two different cards and the new experimental split mode, and answers three questions. Separately, we had been telling readers that llama.cpp\'s old build-flag names are silently ignored; they are not — one still works with a warning and the other stops the build — so that advice is corrected on every page. Docker and Compose commands from the command generator now publish their port on this machine only (127.0.0.1) instead of on every network interface, and the vLLM and Ollama commands no longer listen on the whole network by default.',
+    zh: '双卡 70B 指南现在反映了 llama.cpp 当前的行为：它的自动显存适配默认开启，会在每张卡上留出 1 GB，可能悄悄把 70B 的一部分挪到 CPU 上，所以指南改为显式指定 GPU 层数和上下文长度。指南还补充了两张不同显卡混用的情况、新的实验性切分模式，并新增三个问答。另外，我们此前一直说 llama.cpp 的旧编译开关名会被静默忽略，其实不是 —— 一个仍然有效、只是附带警告，另一个会让构建直接报错 —— 所有页面上的这条说法都已更正。命令生成器给出的 Docker 和 Compose 命令现在只把端口发布在本机（127.0.0.1）上，不再暴露到所有网卡；vLLM 和 Ollama 命令默认也不再监听整个网络。',
+  },
+  {
+    date: '2026-10-02',
     en: 'The WSL2 + Ollama guide was re-checked against Microsoft\'s, NVIDIA\'s and Ollama\'s current documentation. Two claims were wrong: in WSL\'s default networking mode your LAN cannot reach the server at all (the real exposure risk is mirrored mode), and the sample status output was missing a column. It now also covers the two failures readers most often hit — the "cuda" package quietly installing a Linux driver that breaks GPU passthrough, and systemd being off so Ollama never starts — and ends with three answered questions.',
     zh: 'WSL2 + Ollama 指南按微软、NVIDIA 和 Ollama 当前的文档重新核对了一遍。有两处说错了：在 WSL 默认的网络模式下，局域网根本访问不到这个服务（真正有暴露风险的是镜像模式）；示例里的状态输出少了一列。现在还补上了读者最常碰到的两个故障 —— "cuda" 包悄悄装上 Linux 驱动、把 GPU 透传弄坏，以及 systemd 没开导致 Ollama 根本没启动 —— 文末新增三个问答。',
   },

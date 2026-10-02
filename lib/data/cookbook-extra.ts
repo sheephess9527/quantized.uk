@@ -73,75 +73,100 @@ export const extraArticles: Article[] = [
     relatedModelIds: ['llama-3.3-70b', 'llama-3.1-70b', 'seed-oss-36b'],
     title: 'Running 70B on Dual RTX 3090 with llama.cpp',
     titleZh: '双 RTX 3090 跑 70B（llama.cpp）',
-    description: 'Split a 70B GGUF across two 24GB cards with --tensor-split — how much actually fits, and what to change when it does not.',
-    descriptionZh: '用 --tensor-split 把 70B GGUF 拆到两张 24GB 卡上 —— 到底能装下多少，装不下时该改什么。',
+    description: 'Split a 70B GGUF across two 24GB cards with llama.cpp — how much fits, which flags matter now that auto-fit is on, and what to change when it does not.',
+    descriptionZh: '用 llama.cpp 把 70B GGUF 拆到两张 24GB 卡上 —— 到底能装下多少、自动适配开启后哪些参数要紧、装不下时改什么。',
     category: 'server',
     difficulty: 'advanced',
     tags: ['70B', 'Multi-GPU', 'llama.cpp', 'RTX 3090', 'tensor-split'],
     publishedAt: '2025-07-02',
-    // Rewritten from the index on this date; see README §9, 2026-09-08.
+    // Re-checked 2026-10-02 against llama.cpp's docs/multi-gpu.md,
+    // common/arg.cpp, common/common.h and CMakeLists.txt. A documentation
+    // check, not a run on a two-card machine — so no `verifiedAt`.
+    // `gpuPreset` names a single 3090 deliberately — the calculator has no
+    // combined-card entry, and inventing one would misrepresent the split.
     updatedAt: '2026-10-02',
-    // No `verifiedAt`: expanded 2026-09-08 with figures taken from this
-    // site's own calculator, but nothing here has been re-run on a two-card
-    // machine since. `gpuPreset` names a single 3090 deliberately — the
-    // calculator has no combined-card entry, and inventing one would
-    // misrepresent how the split actually works.
     verifiedStack: {
-      en: '2× RTX 3090 24G (48GB total) · Linux · llama.cpp CUDA · 70B GGUF Q4_K_M · --tensor-split',
-      zh: '2× RTX 3090 24G（合计 48GB）· Linux · llama.cpp CUDA · 70B GGUF Q4_K_M · --tensor-split',
+      en: '2× RTX 3090 24G (48GB total) · Linux · llama.cpp CUDA, --split-mode layer · 70B GGUF Q4_K_M',
+      zh: '2× RTX 3090 24G（合计 48GB）· Linux · llama.cpp CUDA，--split-mode layer · 70B GGUF Q4_K_M',
     },
     content: [
       {
         heading: 'What actually fits on 48GB',
         headingZh: '48GB 到底装得下什么',
-        body: 'A 70B at Q4_K_M is about 40.7GB of weights; with a 4K KV cache and the activation buffer the estimate lands near 46GB against 48GB of combined VRAM. That is 96% of the pair — it loads, but it is the amber band, not a comfortable fit, and it leaves nothing for a desktop session on either card. At 8K context the same model is around 47.5GB and you are running out of room to do anything else. Treat 70B Q4_K_M on 48GB as a headless configuration.',
-        bodyZh: '70B 的 Q4_K_M 权重约 40.7GB；加上 4K 的 KV 缓存和激活缓冲，估算约 46GB，而两卡合计 48GB。这是整体容量的 96% —— 能加载，但属于黄色区间而非宽裕，且两张卡都不再有余量跑桌面。上下文提到 8K 时约 47.5GB，基本没有腾挪空间。48GB 上的 70B Q4_K_M 请按无显示输出的纯计算配置来对待。',
+        body: 'A 70B at Q4_K_M is about 40.7GB of weights; with a 4K KV cache and the activation buffer the estimate lands near 46GB against 48GB of combined VRAM. That is 96% of the pair — it loads, but it is the amber band, not a comfortable fit, and it leaves nothing for a desktop session on either card. At 8K context the same model is around 47.5GB. Treat 70B Q4_K_M on 48GB as a headless configuration, and know that llama.cpp\'s own defaults will not even try to fit it entirely: its auto-fit keeps 1 GiB free on each card, which puts the pair\'s budget at about 46GB before the model is weighed.',
+        bodyZh: '70B 的 Q4_K_M 权重约 40.7GB；加上 4K 的 KV 缓存和激活缓冲，估算约 46GB，而两张卡合计 48GB。这是 96% —— 能加载，但属于"偏紧"区间，不是从容运行，任何一张卡上都没有余量再跑桌面。8K 上下文时同一个模型约 47.5GB。请把 48GB 上跑 70B Q4_K_M 当成无显示器的配置来对待，并且要知道 llama.cpp 的默认设置甚至不会尝试把它整个放上去：它的自动适配会在每张卡上留出 1 GiB，于是还没开始算模型，两张卡的预算就只剩约 46GB。',
         code: {
           lang: 'text',
-          content: 'Llama 3.3 70B  Q4_K_M  @4K ctx   ≈ 46.1 GB of 48 GB   amber — loads, no margin\nLlama 3.3 70B  Q4_K_M  @8K ctx   ≈ 47.5 GB of 48 GB   amber — at the ceiling\nSeed-OSS 36B   Q4_K_M  @8K ctx   ≈ 25.0 GB of 48 GB   comfortable\n\n(estimates from this site’s calculator: weights + KV cache + 10% activations)',
+          content: 'Llama 3.3 70B  Q4_K_M  @4K ctx   ≈ 46.1 GB of 48 GB   amber — loads, no margin\nLlama 3.3 70B  Q4_K_M  @8K ctx   ≈ 47.5 GB of 48 GB   amber — at the ceiling\nLlama 3.3 70B  Q3_K_M* @8K ctx   ≈ 38.4 GB of 48 GB   comfortable\nSeed-OSS 36B   Q4_K_M  @8K ctx   ≈ 25.0 GB of 48 GB   comfortable\n\n(estimates from this site’s calculator: weights + KV cache + 10% activations)\n* generic Q3_K_M rate — this index lists no Q3_K_M build of Llama 3.3 70B',
         },
       },
       {
         heading: 'Prerequisites',
         headingZh: '前置条件',
-        body: 'Two CUDA cards visible to the driver, a llama.cpp build with CUDA enabled (GGML_CUDA=ON — the old LLAMA_CUBLAS name is silently ignored and gives you a CPU-only binary), and enough system RAM to load the file before it is distributed. The cards do not need NVLink: llama.cpp splits by layer, so the only cross-card traffic is the activations at the boundary, which PCIe handles.',
-        bodyZh: '两张能被驱动识别的 CUDA 卡、一个启用 CUDA 编译的 llama.cpp（GGML_CUDA=ON —— 旧的 LLAMA_CUBLAS 名称会被静默忽略，得到的是纯 CPU 版本），以及足够在分发前把文件读入的系统内存。两张卡不需要 NVLink：llama.cpp 按层切分，跨卡传输的只有边界处的激活值，PCIe 足以承担。',
+        body: 'Two CUDA cards visible to the driver, a llama.cpp build with CUDA enabled, and enough system RAM to read the file while it is distributed. The flag is GGML_CUDA=ON. The old names are caught rather than ignored — LLAMA_CUDA still works with a deprecation warning and LLAMA_CUBLAS stops the configure step — but a misspelt flag only shows up under "Manually-specified variables were not used" at the end of configure, and you get a CPU-only build. The cards do not need NVLink: in the default layer split each card holds a run of whole layers, so only the activations at the boundary cross between them, and llama.cpp\'s multi-GPU documentation says this mode tolerates slow interconnects.',
+        bodyZh: '两张能被驱动识别的 CUDA 卡、一个启用了 CUDA 的 llama.cpp，以及足够在分发过程中读取模型文件的系统内存。开关是 GGML_CUDA=ON。旧名字会被识别而不是被忽略 —— LLAMA_CUDA 仍然有效、只是附带弃用警告，LLAMA_CUBLAS 会让配置步骤直接报错 —— 但拼错的开关只会在配置结束时出现在 "Manually-specified variables were not used" 下面，编出来的是纯 CPU 版本。两张卡不需要 NVLink：默认的按层切分模式下，每张卡承载一段完整的层，跨卡传输的只有分界处的激活值，llama.cpp 的多卡文档也写明这种模式能容忍较慢的互联。',
         code: {
           lang: 'bash',
-          content: 'nvidia-smi --query-gpu=index,name,memory.total --format=csv\n\ncmake -B build -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release\ncmake --build build -j$(nproc)',
+          content: 'nvidia-smi --query-gpu=index,name,memory.total --format=csv\n\ncmake -B build -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release\ncmake --build build -j$(nproc)\n\n./build/bin/llama-server --list-devices   # both cards should be listed',
         },
       },
       {
         heading: 'Split across the cards',
         headingZh: '在两张卡之间切分',
-        body: '--tensor-split takes proportions, not gigabytes. "24,24" works on a matched pair only because it is the ratio 1:1 — the same as "1,1" — and writing gigabytes into it on a mismatched pair does not do what it looks like it does. On two identical 3090s, leave it at an even split and put every layer on the GPUs with -ngl 99. Bind to loopback: llama-server has no authentication of its own.',
-        bodyZh: '--tensor-split 接受的是比例，不是 GB。在两张同型号卡上写 "24,24" 之所以有效，只因为它等价于 1:1（和写 "1,1" 一样）；在两张不同显存的卡上按 GB 填写，效果并不是字面看上去的那样。两张同样的 3090 就保持均分，并用 -ngl 99 把所有层放到 GPU 上。绑定到本地回环：llama-server 自身没有鉴权。',
+        body: 'Two things changed in llama.cpp that this step depends on. --tensor-split is now optional: left out, the layer split is proportional to each card\'s memory, which on two identical 3090s is already an even split. When you do set it, it takes proportions, not gigabytes — 3,1 gives the first card 75%. And -ngl defaults to auto, with --fit on: llama.cpp adjusts any memory setting you did not set yourself so the model fits with a 1 GiB margin per card, which on a 46GB model means quietly running some layers on the CPU. Set -ngl all and -c explicitly, so a model that does not fit fails at load instead of loading slowly. Without -c, llama.cpp starts from the model\'s full trained context — 128K for Llama 3.3 — and lets auto-fit cut it down. Bind to loopback: llama-server has no authentication of its own.',
+        bodyZh: '这一步依赖的两处 llama.cpp 行为都变了。--tensor-split 现在是可选的：不写的话，按层切分会按每张卡的显存比例分配，两张同型号 3090 本来就是平均切分。写的话，它接受的是比例而不是 GB —— 3,1 表示第一张卡分到 75%。另外 -ngl 默认是 auto，并且 --fit 默认开启：llama.cpp 会调整所有你没有手动设置的内存参数，让模型在每张卡留出 1 GiB 余量的前提下装下，对一个 46GB 的模型来说，这意味着悄悄把一些层放到 CPU 上跑。请显式设置 -ngl all 和 -c，这样装不下的模型会在加载时直接报错，而不是加载成功却很慢。不写 -c 的话，llama.cpp 会从模型训练时的完整上下文开始 —— Llama 3.3 是 128K —— 再由自动适配往下砍。绑定到本机回环地址：llama-server 自己没有任何鉴权。',
         code: {
           lang: 'bash',
-          content: './build/bin/llama-server \\\n  -m ./models/Llama-3.3-70B-Instruct-Q4_K_M.gguf \\\n  --tensor-split 1,1 \\\n  -ngl 99 -c 4096 \\\n  --host 127.0.0.1 --port 8080',
+          content: './build/bin/llama-server \\\n  -m ./models/Llama-3.3-70B-Instruct-Q4_K_M.gguf \\\n  -ngl all -c 4096 \\\n  --host 127.0.0.1 --port 8080\n\n# Mismatched pair (e.g. 24GB + 16GB)? The default split already follows memory;\n# override it with proportions only if one card also drives a display:\n#   --tensor-split 3,2',
         },
       },
       {
         heading: 'Confirm both cards are carrying the model',
         headingZh: '确认两张卡都在承载模型',
-        body: 'The startup log states how many layers were offloaded; anything short of all of them means part of the model is on the CPU and generation will be slow regardless of what the cards are doing. nvidia-smi should show both GPUs holding roughly half the weights each. A single card at ~23GB while the other sits near zero means the split never took effect.',
-        bodyZh: '启动日志会打印卸载到 GPU 的层数；只要不是全部，就说明还有一部分在 CPU 上，无论显卡如何生成都会很慢。nvidia-smi 里两张卡应各占约一半权重。若一张卡占了约 23GB 而另一张接近 0，说明切分根本没生效。',
+        body: 'The startup log states how many layers were offloaded; anything short of all of them means part of the model is on the CPU and generation will be slow regardless of what the cards are doing. nvidia-smi should show both GPUs holding roughly half the weights each. A single card at ~23GB while the other sits near zero means the second card was never used — check --list-devices and CUDA_VISIBLE_DEVICES.',
+        bodyZh: '启动日志会打印卸载到 GPU 的层数；只要不是全部，就说明还有一部分在 CPU 上，无论显卡在做什么，生成速度都会很慢。nvidia-smi 里两张卡应该各自占着大约一半的权重。如果一张卡约 23GB、另一张接近 0，说明第二张卡根本没被用上 —— 检查 --list-devices 的输出和 CUDA_VISIBLE_DEVICES。',
         code: {
           lang: 'bash',
           content: '# In the startup log:\n#   load_tensors: offloaded 81/81 layers to GPU\n\nwatch -n1 nvidia-smi --query-gpu=index,memory.used --format=csv',
         },
       },
       {
+        heading: 'The other split mode',
+        headingZh: '另一种切分模式',
+        body: 'llama.cpp now also has --split-mode tensor, which splits every layer across both cards instead of giving each card whole layers. Its documentation describes it as experimental, aimed at faster token generation on NVIDIA cards, and more dependent on the link between the cards than the default. It needs flash attention, will not take a quantized KV cache, and turns auto-fit off, so you size the context yourself. The older row mode is deprecated. This site has not measured either against the default on a pair of 3090s, so it makes no speed claim; if you try tensor mode, compare tokens per second against the layer split on your own machine before keeping it.',
+        bodyZh: 'llama.cpp 现在还有 --split-mode tensor：它把每一层都拆到两张卡上，而不是每张卡承载完整的若干层。官方文档把它标为实验性功能，目标是在 NVIDIA 卡上加快生成速度，并且比默认模式更依赖两卡之间的互联。它要求开启 flash attention，不接受量化的 KV 缓存，并且会关掉自动适配，所以上下文要自己定。更早的 row 模式已被弃用。本站没有在两张 3090 上对比过这两种模式和默认模式，因此不给速度结论；如果你要试 tensor 模式，先在自己的机器上和按层切分比较一下每秒 token 数再决定。',
+      },
+      {
         heading: 'When 46 of 48 GB is not enough',
         headingZh: '当 48GB 装不下这 46GB 时',
-        body: 'Three changes, in the order worth trying. Lower the context: the KV cache is the only part that scales with it, and going from 8K to 4K gives back over a gigabyte. Step down a quant level: Q3_K_M cuts the weights substantially at a real quality cost, which the model index prints per level. Or run a smaller model — a 36B at Q4_K_M is around 25GB on the same pair and leaves room to actually use the machine. What will not help is adding system RAM: once layers spill to the CPU, throughput falls off a cliff on a model this size.',
-        bodyZh: '三种调整，按值得尝试的顺序。降低上下文：只有 KV 缓存随它增长，从 8K 降到 4K 能省下 1GB 以上。降一档量化：Q3_K_M 能明显压缩权重，但有实打实的质量代价，模型索引里按档位列出了数值。或者换更小的模型 —— 同样两张卡上，36B 的 Q4_K_M 约 25GB，还能留出余量真正使用这台机器。没用的做法是加系统内存：模型一旦有层溢出到 CPU，这个体量下吞吐会断崖式下降。',
+        body: 'Three changes, in the order worth trying. Lower the context: the KV cache is the only part that scales with it, and going from 8K to 4K gives back over a gigabyte. Step down a quant level: at the calculator\'s generic Q3_K_M rate the same model is about 38.4GB at 8K, a comfortable fit on the pair — but this index lists no Q3_K_M build of Llama 3.3 70B, so that is an estimate from the generic rate, and no quality-loss figure for it has been published here. Or run a smaller model — Seed-OSS 36B at Q4_K_M is about 25GB at 8K on the same pair and leaves room to actually use the machine. What will not help is adding system RAM: once layers spill to the CPU, throughput falls off a cliff on a model this size.',
+        bodyZh: '三种调整，按值得尝试的顺序。降低上下文：只有 KV 缓存随它增长，从 8K 降到 4K 能省出一个多 GB。降一档量化：按计算器的通用 Q3_K_M 比特率，同一个模型在 8K 下约 38.4GB，在两张卡上可以从容运行 —— 不过本索引没有收录 Llama 3.3 70B 的 Q3_K_M 构建，这只是按通用比特率估算的结果，本站也没有它的质量损失数据。或者换一个更小的模型 —— Seed-OSS 36B 在 Q4_K_M、8K 下约 25GB，同样两张卡还能留出余量正常使用机器。加系统内存是没用的：一旦有层溢出到 CPU，这种规模的模型吞吐量会断崖式下跌。',
       },
       {
         heading: 'Next steps',
         headingZh: '下一步',
         body: 'The calculator sizes one card at a time, so check a 70B against a single 24GB card to see the per-card half, then double it — and read the amber verdict as the warning it is.',
-        bodyZh: '计算器一次只针对一张卡，所以先用单张 24GB 卡去算 70B，看到的是每张卡承担的那一半，再乘以二 —— 并且请把黄色判定当作真正的警告。',
+        bodyZh: '计算器一次只针对一张卡，所以先用单张 24GB 卡去算 70B，看到的是每张卡承担的那一半，再乘以二 —— 并且把"偏紧"的结论当成真正的警告来看待。',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Do two RTX 3090s need NVLink to run a 70B in llama.cpp?',
+        qZh: '两张 RTX 3090 用 llama.cpp 跑 70B 需要 NVLink 吗？',
+        a: 'No. The default split mode gives each card a run of whole layers, so only the activations at the boundary cross between them, and llama.cpp\'s multi-GPU documentation says this mode tolerates slow interconnects. The link matters more for the experimental tensor split mode, which exchanges data inside every layer.',
+        aZh: '不需要。默认切分模式下每张卡承载一段完整的层，跨卡传输的只有分界处的激活值，llama.cpp 的多卡文档也写明这种模式能容忍较慢的互联。互联速度对实验性的 tensor 切分模式更重要，因为那种模式在每一层内部都要交换数据。',
+      },
+      {
+        q: 'Can I pair two different cards, like an RTX 3090 and a 16GB card?',
+        qZh: '能不能把两张不同的卡配在一起用，比如 RTX 3090 加一张 16GB 的卡？',
+        a: 'Yes — the default split is proportional to each card\'s memory, so you do not have to set --tensor-split. But 24 + 16 is 40GB, and a 70B at Q4_K_M needs about 46GB at 4K, so it does not fit. At the calculator\'s generic Q3_K_M rate it is about 37.1GB at 4K — 93% of the pair, which this site rates tight rather than comfortable.',
+        aZh: '可以 —— 默认切分本来就按每张卡的显存比例分配，不需要设置 --tensor-split。但 24 + 16 是 40GB，而 70B 的 Q4_K_M 在 4K 下约需 46GB，装不下。按计算器的通用 Q3_K_M 比特率，4K 下约 37.1GB —— 占两张卡的 93%，本站把这算作偏紧，而不是从容运行。',
+      },
+      {
+        q: 'Why does llama.cpp put some layers on the CPU when the model should fit?',
+        qZh: '模型明明应该装得下，为什么 llama.cpp 还是把一些层放到了 CPU 上？',
+        a: 'Because auto-fit is on by default and keeps 1 GiB free on each card, and -ngl defaults to auto. Any setting you leave unset is adjusted to stay inside that margin, and on a model within a couple of gigabytes of the limit that means moving layers to the CPU without an error. Pass -ngl all and an explicit -c so it either loads entirely on the GPUs or fails with an out-of-memory error you can act on.',
+        aZh: '因为自动适配默认开启，会在每张卡上留出 1 GiB，而且 -ngl 默认是 auto。所有你没有设置的参数都会被调整到这个余量之内，对一个离上限只差一两 GB 的模型来说，这就意味着不报错、直接把一些层挪到 CPU 上。请传 -ngl all 和明确的 -c，让它要么完整加载到 GPU 上，要么报出一个你能处理的显存不足错误。',
       },
     ],
   },

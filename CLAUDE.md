@@ -273,8 +273,10 @@ identifiers: pass `hfRepo` from `hfRepoMap`, and gate it through `ggufRepoId()` 
 a GGUF command — **14 of 79 entries map the original weights, not a GGUF conversion**, because
 that map's job is HF stats. When the right repo isn't derivable (vLLM needs FP16/AWQ/GPTQ, EXL2
 repos are per-model), emit a visible `<placeholder>`: an obvious placeholder beats a plausible
-wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`; CMake
-ignores the old names and silently produces a CPU-only build.
+wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`. (Checked 2026-10-02 in
+llama.cpp's `CMakeLists.txt`: `LLAMA_CUDA` warns and still enables CUDA, `LLAMA_CUBLAS` is a fatal
+error — the site long claimed both were "silently ignored"; a *misspelt* flag is what gives a
+CPU-only build, reported only as an unused manually-specified variable.)
 
 **A displayed number must state its basis, and one row must not mix two.** The compare tool had a
 VRAM row fed by a fixed published figure sitting under copy that promised it tracked the context
@@ -563,8 +565,8 @@ same array the route emits as `FAQPage`. A rewrite **removes** the unearned `ver
 `updatedAt`; checking commands against a project's current docs is a documentation check, not a run.
 
 Material worth reusing, verified from the projects' own docs rather than memory: the llama.cpp build
-switch is `GGML_CUDA=ON` (CMake ignores an unknown `-D`, so `LLAMA_CUDA` yields a successful
-CPU-only build); the binaries are `llama-server` / `llama-cli`, not `server` / `main`; Windows's
+switch is `GGML_CUDA=ON` (CMake only warns about an unknown `-D`, so a misspelt flag yields a
+successful CPU-only build; the old `LLAMA_CUDA` is mapped with a warning, `LLAMA_CUBLAS` errors); the binaries are `llama-server` / `llama-cli`, not `server` / `main`; Windows's
 **System Memory Fallback** silently spills VRAM into system RAM, turning an OOM into a mysteriously
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
 unified memory leaves no separate VRAM figure to watch. WSL2 (re-checked 2026-10-02 from Microsoft's
@@ -593,6 +595,17 @@ count written down earlier. Model titles go through `modelPageTitle()` and cookb
 `articlePageTitle()` (`lib/seo.ts`) — a short-tier fallback, never a runtime ellipsis. `Article`
 carries an optional `seoTitle` for the rare guide whose real title is long on its own; it changes
 only the `<title>` tag, never the visible H1.
+
+**llama.cpp multi-GPU defaults (2026-10-02, `docs/multi-gpu.md`, `common/common.h`):** `-ngl` defaults
+to `auto` and `--fit` is **on**, keeping 1 GiB free per device and adjusting only unset args — a model
+within a couple of GB of the limit silently loses layers to the CPU. Guides pass `-ngl all` and an
+explicit `-c` (omitting `-c` starts from the trained context). `--tensor-split` is optional
+(proportional to memory); `row` is deprecated, `tensor` experimental.
+
+**A container port is exposed by its mapping, not by the bind inside the container.** A bare
+`-p 8080:8080` publishes on every host interface and Docker's iptables rules bypass ufw; every
+generated mapping is `127.0.0.1:` and carries `exposureNote`. Native servers bind loopback too —
+`vllm serve` listens on all interfaces unless given `--host`.
 
 **llama.cpp facts re-checked 2026-10-02** (`docs/build.md`, `docs/docker.md`, source): the offload log
 line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); HIP builds use
@@ -903,6 +916,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-02 | **Dual-GPU guide + two site-wide fixes** — llama.cpp `--fit` on by default (1 GiB/card) now handled with explicit `-ngl all -c`; the "old CMake flags are silently ignored" claim was false (`LLAMA_CUDA` warns + works, `LLAMA_CUBLAS` errors), fixed in 6 places; all CLI container ports bound to `127.0.0.1`, `vllm serve --host 127.0.0.1` |
 | 2026-10-02 | **WSL2 guide re-check** — LAN claim was wrong (NAT mode is not LAN-reachable; mirrored is); `cuda` meta-package installs a Linux driver; WSL's systemd defaults off so Ollama's service never starts; 3 FAQs |
 | 2026-10-02 | **+2 models (87): Gemma 4 E2B, E4B** — KV sharing needs no new field: llama.cpp allocates no cache for the `num_kv_shared_layers` tail, so only the leading layers go into `fullLayers`/`windowLayers`. `params` is the total incl. the per-layer embedding (PLE) table, which llama.cpp keeps in system RAM — sized conservatively, the VRAM saving stated per page |
 | 2026-10-02 | **AMD formats per card** — AWQ/GPTQ (vLLM-only on ROCm) gated by `vllmRocmSupported()`; GPTQ was wrongly CUDA-only (vLLM source builds it for HIP). RX 6000/7600 XT lose up to 4 comfortable fits; GPU-page "can it run" FAQ sizes the smallest *loadable* build (15 pages said "use GGUF" about models shipping GGUF) |

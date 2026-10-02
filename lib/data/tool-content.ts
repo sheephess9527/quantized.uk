@@ -117,8 +117,8 @@ export const cliGenContent: ToolContent = {
     {
       heading: { en: 'Build flags that silently do nothing', zh: '会静默失效的编译参数' },
       body: {
-        en: 'llama.cpp renamed its CMake options from `LLAMA_*` to `GGML_*`. CMake does not error on an unknown option — it defines an unused variable and carries on — so `-DLLAMA_CUDA=ON` produces a build that compiles, runs, and is CPU-only. If a build of yours is inexplicably slow, check the flag names before anything else. The commands here use the current names.',
-        zh: 'llama.cpp 把 CMake 选项从 `LLAMA_*` 改名为 `GGML_*`。CMake 遇到未知选项不会报错 —— 它只是定义一个没人用的变量然后继续 —— 所以 `-DLLAMA_CUDA=ON` 会编出一个能编译、能运行、但纯 CPU 的版本。如果你的构建莫名很慢，先检查参数名。本页生成的命令使用的是当前名称。',
+        en: 'llama.cpp renamed its CMake options from `LLAMA_*` to `GGML_*`, and the commands here use the current names. The old ones are handled, not ignored: `LLAMA_CUDA` still turns CUDA on with a deprecation warning, and `LLAMA_CUBLAS` stops the configure step with an error. What does give you a build that compiles, runs and is CPU-only is no GPU flag at all, or a misspelt one — CMake only mentions it in a "Manually-specified variables were not used" warning at the end of configure. If a build of yours is inexplicably slow, read that warning before anything else.',
+        zh: 'llama.cpp 把 CMake 选项从 `LLAMA_*` 改名为 `GGML_*`，本页生成的命令使用的是当前名称。旧名字是被处理的，并没有被忽略：`LLAMA_CUDA` 仍会打开 CUDA，只是附带一条弃用警告；`LLAMA_CUBLAS` 会直接让配置步骤报错停止。真正会编出「能编译、能运行、却是纯 CPU」版本的，是根本没加 GPU 开关，或者开关名拼错了 —— CMake 只会在配置结束时用一条 "Manually-specified variables were not used" 警告提一句。如果你的构建莫名很慢，先去看这条警告。',
       },
     },
   ],
