@@ -260,8 +260,9 @@ export const extraArticles2: Article[] = [
   {
     id: 'docker-ollama-gpu',
     relatedModelIds: ['llama-3.1-8b'],
-    title: 'Docker: Ollama with NVIDIA GPU Passthrough',
-    titleZh: 'Docker：Ollama NVIDIA GPU 透传',
+    title: 'Docker: Ollama with NVIDIA or AMD GPU Passthrough',
+    seoTitle: 'Docker Ollama: NVIDIA or AMD GPU Passthrough',
+    titleZh: 'Docker：Ollama 的 NVIDIA / AMD GPU 透传',
     description: 'Containerised Ollama with GPU access — isolate models, pin versions, and run alongside other services.',
     descriptionZh: '容器化 Ollama 并启用 GPU — 隔离模型、固定版本、与其他服务共存。',
     category: 'docker',

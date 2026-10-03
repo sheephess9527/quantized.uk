@@ -661,7 +661,10 @@ figure) and was sized at a quarter of its real weights.
 it is measured — 73 of 83 models' speeds were never run here. A new surface that prints a speed adds
 the tag; a comparison names a faster side only when both figures are measured.
 
-**Quote only throughput this index measured.** `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
+**Quote only throughput this index measured — and from the right row.** `docker-ollama-gpu` cited
+the RTX 4090's 218 tok/s as "measured in Ollama at Q4_K_M"; it is the vLLM AWQ row (llama.cpp
+Q4_K_M is 148). Match model + hardware + framework + quant before attributing a figure.
+ `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
 which nobody here ran; its batch-1 figure happened to match the index's own 218 tok/s row. Cite
 `matrixData` or say the site has not measured it — batched throughput especially, since that is the
 number every vendor benchmark inflates.
@@ -941,6 +944,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Docker + Ollama guide** — 218 tok/s was vLLM AWQ, not Ollama (llama.cpp Q4_K_M is 148); `nvidia-ctk runtime configure` step added; AMD via `:rocm` + `/dev/kfd` `/dev/dri`; 4 FAQs |
 | 2026-10-03 | **Windows Ollama guide** — "AMD is CPU-only" was false (ROCm RX 7600–7900, Vulkan default for the rest); Win 10 22H2+; `curl -d` in PowerShell blocks replaced (5.1 alias); 4 FAQs |
 | 2026-10-03 | **One contact address** — `FEEDBACK_EMAIL` → `zjy@quantized.uk` (owner's mailbox); unconfirmed `hello@` retired site-wide; `/about/` gets a direct line; maintainer still unnamed |
 | 2026-10-03 | **AMD ROCm guide FAQs** — ROCm vs Vulkan, AWQ/GPTQ via vLLM ROCm on listed cards only, 24 vs 16 GB Radeon (69 vs 53 comfortable); `LLAMA_HIPBLAS` is reported as an unused variable, not silent (still CPU-only) |

@@ -300,7 +300,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'docker-llm-compose': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     relatedModelIds: ['llama-3.1-8b', 'qwen3-8b'],
     content: [
@@ -335,8 +335,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'What the numbers should look like',
         headingZh: '数字大概该是什么样',
-        body: 'Containerisation costs nothing measurable at inference time — the weights are on the card either way, and the ceiling is your card’s memory bandwidth. Llama 3.1 8B at Q4_K_M is 4.6 GB of weights, so a 288 GB/s card caps generation near 62 tok/s and a 1,008 GB/s RTX 4090 near 218. What containerisation does cost is disk: the model volume grows with every pull and nothing prunes it for you.',
-        bodyZh: '容器化在推理时的开销小到测不出来 —— 反正权重都在显卡上，上限依然是显卡的显存带宽。Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB，所以 288 GB/s 的卡生成上限约 62 tok/s，1,008 GB/s 的 RTX 4090 约 218。容器化真正的代价在磁盘：模型卷会随每次 pull 不断增长，而且没有任何东西会替你清理。',
+        body: 'A container should cost nothing noticeable at inference time once the GPU is passed through — this site has not measured containerised against native, but the weights are on the card either way, and the ceiling is your card’s memory bandwidth. Llama 3.1 8B at Q4_K_M is 4.6 GB of weights, so a 288 GB/s card caps generation near 62 tok/s and a 1,008 GB/s RTX 4090 near 218. What containerisation does cost is disk: the model volume grows with every pull and nothing prunes it for you.',
+        bodyZh: 'GPU 正确直通之后，容器在推理时不应带来明显开销 —— 本站没有实测过容器与原生的对比，但权重反正都在显卡上，上限依然是显卡的显存带宽。Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB，所以 288 GB/s 的卡生成上限约 62 tok/s，1,008 GB/s 的 RTX 4090 约 218。容器化真正的代价在磁盘：模型卷会随每次 pull 不断增长，而且没有任何东西会替你清理。',
         code: { lang: 'bash', content: 'docker exec ollama ollama list\ndocker system df -v | grep ollama_data' },
       },
       {
@@ -1067,73 +1067,84 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'docker-ollama-gpu': {
-    updatedAt: '2026-09-12',
+    // Re-checked 2026-10-03 against Ollama's docs/docker.mdx and NVIDIA's container-toolkit
+    // sample workload. Fixed: the "218 tok/s measured in Ollama" figure was this index's
+    // vLLM AWQ row, not Ollama Q4_K_M; the toolkit's `nvidia-ctk runtime configure` step was
+    // missing; AMD (ollama/ollama:rocm, Vulkan in the default image) was absent. Not run here.
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
+    tags: ['Docker', 'Ollama', 'NVIDIA', 'AMD', 'GPU', 'Compose'],
     relatedModelIds: ['llama-3.1-8b'],
     verifiedStack: {
-      en: 'Docker Engine + NVIDIA Container Toolkit · ollama/ollama image · GGUF Q4_K_M · GPU passthrough',
-      zh: 'Docker Engine + NVIDIA Container Toolkit · ollama/ollama 镜像 · GGUF Q4_K_M · GPU 直通',
+      en: 'Docker Engine on Linux · NVIDIA Container Toolkit or AMD ROCm devices · ollama/ollama (:rocm for AMD) · GGUF Q4_K_M',
+      zh: 'Linux 上的 Docker Engine · NVIDIA Container Toolkit 或 AMD ROCm 设备 · ollama/ollama（AMD 用 :rocm）· GGUF Q4_K_M',
     },
     content: [
       {
         heading: 'What you need first',
         headingZh: '开始之前',
-        body: 'Docker Engine, and the NVIDIA Container Toolkit specifically — an ordinary Docker install has no idea a GPU exists, and a container run without it silently falls back to the CPU with no error. Verify the toolkit works before touching Ollama at all; debugging "Ollama is slow in Docker" is much harder than debugging "does my container see the GPU".',
-        bodyZh: '需要 Docker Engine，以及**专门的** NVIDIA Container Toolkit ——普通的 Docker 安装完全不知道显卡的存在，没装这个工具包时容器会静默回落到 CPU，不会报任何错误。在碰 Ollama 之前先验证这个工具包能用；调试「Ollama 在 Docker 里很慢」比调试「我的容器看不看得到 GPU」难得多。',
-        code: { lang: 'bash', content: '# Verify BEFORE running Ollama:\ndocker run --rm --gpus=all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi\n\n# If that fails, install the toolkit first — nothing below will work.' },
+        body: 'Docker Engine on Linux, plus one thing that depends on your card. On NVIDIA you need the NVIDIA Container Toolkit, and installing the package is only half of it. `nvidia-ctk runtime configure` registers the runtime with Docker, and Docker has to restart before it notices. Skip either step and containers start fine but cannot see the GPU. On AMD there is no toolkit: the container is handed the `/dev/kfd` and `/dev/dri` devices directly. Prove the GPU is visible before you touch Ollama, because "does my container see the GPU" is far easier to debug than "Ollama is slow in Docker".',
+        bodyZh: '需要 Linux 上的 Docker Engine，再加上一样取决于显卡的东西。NVIDIA 需要 NVIDIA Container Toolkit，而装上这个包只是一半。`nvidia-ctk runtime configure` 负责把运行时注册给 Docker，之后 Docker 必须重启才会认到。漏掉任何一步，容器照样能启动，只是看不到 GPU。AMD 没有 toolkit：直接把 `/dev/kfd` 和 `/dev/dri` 两个设备交给容器。动 Ollama 之前先确认容器能看到 GPU，因为“容器看不看得到 GPU”比“Docker 里的 Ollama 为什么慢”好查得多。',
+        code: { lang: 'bash', content: '# NVIDIA: after installing nvidia-container-toolkit\nsudo nvidia-ctk runtime configure --runtime=docker\nsudo systemctl restart docker\n\n# NVIDIA\'s own check: the toolkit injects nvidia-smi into a plain image\nsudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi\n\n# AMD: these must exist on the host\nls -l /dev/kfd /dev/dri' },
       },
       {
         heading: 'The compose file',
         headingZh: 'compose 文件',
-        body: 'The GPU reservation block is what most copy-pasted examples get wrong or omit entirely. Bind the port to loopback unless you intend to expose the API — Ollama has no authentication of its own.',
-        bodyZh: 'GPU 预留那一段正是大多数抄来的示例会配错或者干脆漏掉的地方。除非你打算把 API 暴露出去，否则端口要绑定到回环地址——Ollama 自己没有任何鉴权。',
-        code: { lang: 'yaml', content: 'services:\n  ollama:\n    image: ollama/ollama\n    container_name: ollama\n    ports:\n      - "127.0.0.1:11434:11434"\n    volumes:\n      - ollama_data:/root/.ollama\n    restart: unless-stopped\n    deploy:\n      resources:\n        reservations:\n          devices:\n            - driver: nvidia\n              count: all\n              capabilities: [gpu]\n\nvolumes:\n  ollama_data:' },
+        body: 'Most copy-pasted examples get the GPU part wrong or leave it out. On NVIDIA it is the `deploy.resources.reservations.devices` block. On AMD it is the `devices` list and the `:rocm` image tag. Ollama’s default image also includes Vulkan, which it uses when it can reach the GPU devices, so a Radeon that ROCm does not support can try the plain image with the same two devices. Bind the port to 127.0.0.1 unless you mean to expose the API. Ollama has no authentication, and Docker’s published ports bypass ufw.',
+        bodyZh: '大多数抄来的示例，GPU 那部分要么配错，要么干脆没写。NVIDIA 是 `deploy.resources.reservations.devices` 这一段；AMD 是 `devices` 列表加上 `:rocm` 镜像标签。Ollama 的默认镜像还带 Vulkan，只要能访问到 GPU 设备就会使用，所以 ROCm 不支持的 Radeon 可以用普通镜像配同样两个设备试试。除非你确实想对外开放 API，否则把端口绑定到 127.0.0.1：Ollama 没有任何鉴权，而且 Docker 发布的端口会绕过 ufw。',
+        code: { lang: 'yaml', content: '# NVIDIA\nservices:\n  ollama:\n    image: ollama/ollama\n    container_name: ollama\n    ports:\n      - "127.0.0.1:11434:11434"\n    volumes:\n      - ollama_data:/root/.ollama\n    restart: unless-stopped\n    deploy:\n      resources:\n        reservations:\n          devices:\n            - driver: nvidia\n              count: all\n              capabilities: [gpu]\n\nvolumes:\n  ollama_data:\n\n# AMD: same file, but replace image + deploy with\n#    image: ollama/ollama:rocm\n#    devices:\n#      - /dev/kfd\n#      - /dev/dri' },
       },
       {
         heading: 'Start it and pull a model',
         headingZh: '启动并拉取模型',
-        body: 'Bring the container up, then pull a model into it — the model store lives in the named volume, so it survives `down` and `up` without a re-download. Llama 3.1 8B at Q4_K_M is 5.6 GB at 4K context, a reasonable first pull on any 8GB+ card.',
-        bodyZh: '把容器起来，然后向里面拉取模型——模型存储在命名卷里，所以 `down` 再 `up` 不需要重新下载。Llama 3.1 8B 的 Q4_K_M 在 4K 上下文下是 5.6 GB，对任何 8GB 以上的卡来说都是一个合理的首次拉取。',
+        body: 'Bring the container up, then pull a model into it. The model store lives in the named volume, so it survives `down` and `up` without a re-download. Llama 3.1 8B at Q4_K_M needs about 5.6 GB at 4K context, which is Ollama’s default window, so it is a reasonable first pull on any card with 8GB or more.',
+        bodyZh: '把容器起来，然后往里面拉一个模型。模型存放在命名卷里，所以 `down` 再 `up` 不用重新下载。Llama 3.1 8B 的 Q4_K_M 在 4K 上下文下约需 5.6 GB，而 4K 正是 Ollama 的默认窗口，所以任何 8GB 及以上的显卡都适合先拉它。',
         code: { lang: 'bash', content: 'docker compose up -d\ndocker exec ollama ollama pull llama3.1:8b' },
       },
       {
         heading: 'Check it actually ran on the GPU',
         headingZh: '确认它真的跑在 GPU 上',
-        body: 'This is the step containerisation makes easy to skip, because the container starts successfully either way — on the CPU or the GPU — and only speed tells the difference. Ask the container, not the host.',
-        bodyZh: '容器化让这一步特别容易被跳过，因为不管是在 CPU 还是 GPU 上，容器都会正常启动——只有速度能看出区别。要问容器，而不是问宿主机。',
-        code: { lang: 'bash', content: 'docker exec ollama ollama run llama3.1:8b "hi" >/dev/null\ndocker exec ollama ollama ps\n# PROCESSOR should read 100% GPU\n\nnvidia-smi --query-gpu=memory.used,utilization.gpu --format=csv -l 1' },
+        body: 'This is the step containers make easy to skip. The container starts successfully either way, on the CPU or the GPU, and only speed tells you which. Ask the container, not the host: `ollama ps` inside it reports where the loaded model actually sits. The container log also names the GPU Ollama found when it started, which is the quickest check on AMD.',
+        bodyZh: '容器化让这一步特别容易被跳过：不管在 CPU 还是 GPU 上，容器都会正常启动，只有速度能看出区别。要问容器，而不是问宿主机：容器里的 `ollama ps` 会报告已加载模型实际放在哪里。容器日志里也会写明 Ollama 启动时找到的 GPU，这是 AMD 上最快的检查办法。',
+        code: { lang: 'bash', content: 'docker exec ollama ollama run llama3.1:8b "hi" >/dev/null\ndocker exec ollama ollama ps\n# NAME           ID     SIZE      PROCESSOR    UNTIL\n# llama3.1:8b    …      6.1 GB    100% GPU     4 minutes from now\n\ndocker logs ollama 2>&1 | grep -i -E "gpu|rocm|cuda|vulkan" | head\n\n# NVIDIA, on the host:\nnvidia-smi --query-gpu=memory.used,utilization.gpu --format=csv -l 1' },
       },
       {
         heading: 'What the numbers should look like',
         headingZh: '数字大概该是什么样',
-        body: 'Containerisation adds no measurable overhead to inference — the GPU does the same work either way. Llama 3.1 8B at Q4_K_M is 4.6 GB of weights; on an RTX 4090 at 1,008 GB/s that puts a ceiling near 218 tok/s, which is what this index measured for this exact model and quant on that card, in Ollama, without a container. A containerised run should land at essentially the same figure.',
-        bodyZh: '容器化不会给推理增加可测量的开销——GPU 干的是同一份工作。Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB；在带宽 1,008 GB/s 的 RTX 4090 上，上限约 218 tok/s，这也正是本索引在那张卡上、不套容器直接用 Ollama 跑同一个模型和档位实测到的数字。套上容器之后应该落在基本相同的数字上。',
+        body: 'A container passes the GPU through rather than emulating it, so once passthrough works there is no reason to expect a different speed. This site has not measured a containerised run against a native one, so take that as an expectation, not a measurement. What it does have is a ceiling: Llama 3.1 8B at Q4_K_M is 4.6 GB of weights, and token generation reads all of them for every token. On an RTX 4090 at 1,008 GB/s that caps generation near 218 tok/s. The index’s own llama.cpp run of that model and quant on that card measured 148, and Ollama uses llama.cpp underneath. A result an order of magnitude lower means the container is on the CPU.',
+        bodyZh: '容器是把 GPU 直通进去，而不是模拟它，所以直通一旦正常，就没有理由指望速度会不一样。本站没有实测过容器内和原生运行的对比，所以这是预期，不是测量结果。我们能给的是上限：Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB，每生成一个 token 都要把它们全读一遍。在带宽 1,008 GB/s 的 RTX 4090 上，这把生成速度封顶在约 218 tok/s。本索引在同一张卡上用 llama.cpp 跑这个模型和量化档位，实测是 148，而 Ollama 底层用的就是 llama.cpp。如果结果低了一个数量级，说明容器跑在 CPU 上。',
       },
       {
         heading: 'When it does not work',
         headingZh: '出问题时',
-        body: '`ollama ps` inside the container reports a CPU share while `nvidia-smi` on the host works fine: the `deploy.resources.reservations.devices` block is missing from the compose file, or the NVIDIA Container Toolkit is not installed — the verification command from the first section isolates which. Container starts but the toolkit check from step one already failed: fix that first; nothing about Ollama’s configuration will work around a missing toolkit. Models disappear after `docker compose down`: no named volume was used, or it was removed with `-v` — the `ollama_data` volume above is what survives a recreate. And on Windows, this requires the WSL2 backend with GPU support enabled in Docker Desktop’s settings; without that, the toolkit check fails the same way it would on a host with no toolkit at all.',
-        bodyZh: '容器内 `ollama ps` 报告有 CPU 占比，而宿主机上 `nvidia-smi` 一切正常：compose 文件里缺了 `deploy.resources.reservations.devices` 那一段，或者没装 NVIDIA Container Toolkit——用第一段的验证命令就能区分是哪种情况。容器启动了，但第一步的工具包检查就已经失败：先解决那个问题；Ollama 自己的配置解决不了缺工具包的问题。`docker compose down` 之后模型消失了：没用命名卷，或者用 `-v` 把它删掉了——上面那个 `ollama_data` 卷就是重建后能保留下来的东西。另外在 Windows 上，这需要在 Docker Desktop 设置里启用带 GPU 支持的 WSL2 后端；不启用的话，工具包检查会像宿主机完全没装工具包一样失败。',
+        body: '`ollama ps` in the container shows a CPU share while `nvidia-smi` on the host works. The toolkit check from the first step tells you which part is missing. If it fails, the toolkit is not installed or `nvidia-ctk runtime configure` was never run, and nothing in Ollama’s configuration works around that. If it passes, the compose file is missing its `deploy` block. On AMD the container starts but finds no GPU: check that `/dev/kfd` and `/dev/dri` exist on the host and are listed under `devices`. On SELinux distributions, Ollama’s docs give `sudo setsebool container_use_devices=1` to let containers use them. Models disappear after `docker compose down`: no named volume was used, or it was removed with `-v`. On Windows this needs Docker Desktop’s WSL2 backend with GPU support for NVIDIA. On a Mac, run Ollama natively, because Docker containers on macOS cannot reach the Apple GPU.',
+        bodyZh: '容器内 `ollama ps` 显示有 CPU 份额，而宿主机上 `nvidia-smi` 正常：第一步的 toolkit 检查能告诉你缺的是哪一块。检查不通过，就是 toolkit 没装或者 `nvidia-ctk runtime configure` 从没运行过，Ollama 这边怎么配都绕不过去；检查通过，就是 compose 文件少了 `deploy` 那一段。AMD 上容器能启动却找不到 GPU：确认宿主机上存在 `/dev/kfd` 和 `/dev/dri`，并且写在 `devices` 里；在启用 SELinux 的发行版上，Ollama 文档给出的办法是 `sudo setsebool container_use_devices=1`，允许容器使用这些设备。`docker compose down` 之后模型没了：没用命名卷，或者用 `-v` 把卷删了。在 Windows 上，NVIDIA 需要 Docker Desktop 的 WSL2 后端并开启 GPU 支持。在 Mac 上请直接原生运行 Ollama，因为 macOS 上的 Docker 容器用不到 Apple GPU。',
       },
     ],
     faqs: [
       {
         q: 'Why does Ollama in Docker use my CPU instead of my GPU?',
         qZh: 'Docker 里的 Ollama 为什么用 CPU 而不是 GPU？',
-        a: 'Almost always the NVIDIA Container Toolkit is missing, or the compose file is missing its `deploy.resources.reservations.devices` block. Verify the toolkit independently first with `docker run --rm --gpus=all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi` — if that fails, the problem is the toolkit, not Ollama or your compose file.',
-        aZh: '几乎总是因为没装 NVIDIA Container Toolkit，或者 compose 文件里漏了 `deploy.resources.reservations.devices` 那一段。先单独用 `docker run --rm --gpus=all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi` 验证工具包——如果这一步就失败，问题出在工具包上，不是 Ollama 或你的 compose 文件。',
+        a: 'On NVIDIA it is almost always the container toolkit or the compose file. Either the NVIDIA Container Toolkit is missing, it was installed but `sudo nvidia-ctk runtime configure --runtime=docker` and a Docker restart never followed, or the compose file has no `deploy.resources.reservations.devices` block. Test the toolkit on its own with `sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi`. If that fails, the problem is not Ollama. On AMD, the container needs `/dev/kfd` and `/dev/dri` passed in and the `ollama/ollama:rocm` image.',
+        aZh: 'NVIDIA 上几乎总是 container toolkit 或 compose 文件的问题：要么没装 NVIDIA Container Toolkit；要么装了，但没运行 `sudo nvidia-ctk runtime configure --runtime=docker` 并重启 Docker；要么 compose 文件里没有 `deploy.resources.reservations.devices` 这一段。先用 `sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi` 单独测试 toolkit，如果这一步失败，问题就不在 Ollama。AMD 上，容器需要传入 `/dev/kfd` 和 `/dev/dri`，并使用 `ollama/ollama:rocm` 镜像。',
+      },
+      {
+        q: 'Can I run Ollama in Docker on an AMD GPU?',
+        qZh: '能在 AMD 显卡上用 Docker 跑 Ollama 吗？',
+        a: 'Yes, on Linux. Ollama’s docs use the `ollama/ollama:rocm` image with `--device /dev/kfd --device /dev/dri`, and no container toolkit is involved. The default `ollama/ollama` image also includes Vulkan and uses it when it can reach the same devices. That is the option to try for a Radeon that ROCm does not support. Check `docker logs ollama` to see which GPU it found.',
+        aZh: '可以，在 Linux 上。Ollama 文档用的是 `ollama/ollama:rocm` 镜像，加上 `--device /dev/kfd --device /dev/dri`，不涉及任何 container toolkit。默认的 `ollama/ollama` 镜像也带 Vulkan，只要能访问到同样的设备就会使用，ROCm 不支持的 Radeon 可以试这个。用 `docker logs ollama` 查看它找到了哪块 GPU。',
       },
       {
         q: 'Does running Ollama in Docker slow it down?',
         qZh: '在 Docker 里跑 Ollama 会变慢吗？',
-        a: 'No, once the GPU is actually passed through. This index measured 218 tok/s for Llama 3.1 8B at Q4_K_M on an RTX 4090 running Ollama directly; a correctly configured container does the same work on the same GPU and should land at essentially the same figure. Overhead only appears when the GPU passthrough is not working and the container has silently fallen back to the CPU.',
-        aZh: '不会，前提是 GPU 真的被正确直通了。本索引实测 RTX 4090 上直接用 Ollama 跑 Llama 3.1 8B 的 Q4_K_M 是 218 tok/s；配置正确的容器在同一张 GPU 上干的是同一份工作，应该落在基本相同的数字上。只有在 GPU 直通没生效、容器静默回落到 CPU 时才会出现明显的开销。',
+        a: 'It should not once the GPU is passed through, because the container hands the real device to Ollama rather than emulating it. This site has not measured a containerised run against a native one, though. The large slowdowns people report are almost always a container that has fallen back to the CPU, and `ollama ps` inside the container shows that immediately.',
+        aZh: 'GPU 正确直通之后不应该变慢，因为容器是把真实设备交给 Ollama，而不是模拟它。不过本站没有实测过容器内与原生运行的对比。大家遇到的明显变慢，几乎都是容器悄悄退回了 CPU，在容器里运行 `ollama ps` 一眼就能看出来。',
       },
       {
         q: 'How do I keep my downloaded models after recreating the container?',
         qZh: '重建容器之后怎么保留已下载的模型？',
-        a: 'Use a named volume mapped to `/root/.ollama`, as in the compose file above. That keeps the model blobs outside the container’s own lifecycle, so `docker compose down` followed by `up` does not trigger a re-download. Removing the volume explicitly with `down -v` does delete them — that is the one command to avoid.',
-        aZh: '像上面 compose 文件那样，用一个命名卷映射到 `/root/.ollama`。这样模型文件就存放在容器生命周期之外，`docker compose down` 再 `up` 不会触发重新下载。用 `down -v` 显式删除卷才会真的删掉它们——这是唯一要避免的命令。',
+        a: 'Use a named volume mapped to `/root/.ollama`, as in the compose file above. The model files then live outside the container’s lifecycle, so `docker compose down` followed by `up` does not trigger a re-download. Removing the volume with `down -v` does delete them, so that is the one command to avoid.',
+        aZh: '像上面 compose 文件那样，用一个命名卷映射到 `/root/.ollama`。这样模型文件就在容器的生命周期之外，`docker compose down` 再 `up` 不会触发重新下载。用 `down -v` 删除卷会把它们一起删掉，所以要避开的就是这一条命令。',
       },
     ],
   },

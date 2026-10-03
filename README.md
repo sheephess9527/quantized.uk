@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (h) — Docker + Ollama guide: AMD, the missing toolkit step, a misattributed speed
+
+Checked against Ollama's `docs/docker.mdx` (main) and NVIDIA's container-toolkit sample workload
+(`NVIDIA/cloud-native-docs` `container-toolkit/sample-workload.md`):
+- **Misattributed measurement:** the guide said 218 tok/s "is what this index measured for this
+  exact model and quant on that card, in Ollama". The only 218 row in `benchmarks.ts` is **vLLM AWQ
+  INT4**; the GGUF Q4_K_M row on the RTX 4090 is **llama.cpp, 148**. 218 survives only as the
+  bandwidth roofline (1008 / 4.6 GB), labelled as such; 148 cited as the measured figure. The FAQ
+  repeated the same claim — fixed. "No measurable overhead" (here and in `docker-llm-compose`)
+  softened to an expectation: no container-vs-native run exists in the index.
+- **Missing step:** `sudo nvidia-ctk runtime configure --runtime=docker` + Docker restart after
+  installing the toolkit (`docker.mdx`). Verify command is now NVIDIA's own
+  `docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi` (no CUDA image tag to rot).
+- **AMD added:** `ollama/ollama:rocm` with `/dev/kfd` + `/dev/dri`; the default image bundles
+  Vulkan (used when the devices are reachable); SELinux `container_use_devices=1` from
+  `gpu.mdx`; macOS containers cannot reach the Apple GPU. Title now "NVIDIA or AMD", tags + `AMD`.
+- 4 FAQs (new: AMD in Docker). `docker-ollama-gpu` and `docker-llm-compose` `updatedAt` → 2026-10-03;
+  no `verifiedAt` (not run).
+
 ### 2026-10-03 (g) — Windows Ollama guide: AMD works; PowerShell-safe API calls
 
 Checked against Ollama's own docs on `main` (`docs/windows.mdx`, `docs/gpu.mdx`, `docs/faq.mdx`,

@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The Docker + Ollama guide now covers AMD cards as well as NVIDIA. It adds the step that tells Docker about the NVIDIA runtime, which was missing and leaves containers unable to see the GPU. It also corrects a speed claim: the 218 tok/s it quoted as an Ollama measurement was a different runtime and format. The guide now gives the ceiling and the measured llama.cpp figure instead, and says plainly that a container-versus-native run has not been measured here.',
+    zh: 'Docker + Ollama 指南现在除了 NVIDIA，也讲了 AMD 显卡。补上了原来漏掉的一步 —— 把 NVIDIA 运行时注册给 Docker，不做这一步容器就看不到 GPU。同时更正了一处速度说法：指南里当作 Ollama 实测引用的 218 tok/s，其实来自另一种运行时和格式。现在改为给出理论上限和 llama.cpp 的实测数字，并明确说明本站没有实测过容器与原生运行的对比。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The Windows Ollama guide said AMD cards run on the CPU only. That was wrong: Ollama\'s Windows app uses Radeon GPUs, through ROCm on the RX 7600 to 7900 series and through Vulkan, which is on by default, on others such as the RX 6000 series. The guide now covers AMD alongside NVIDIA, says Windows 10 22H2 is enough, and replaces the curl examples, which fail in Windows PowerShell, with commands that work there.',
     zh: 'Windows 版 Ollama 指南原先说 AMD 显卡只能用 CPU，这是错的：Ollama 的 Windows 应用能用 Radeon 显卡 —— RX 7600 到 7900 系列走 ROCm，RX 6000 等其他型号走默认开启的 Vulkan。指南现在把 AMD 和 NVIDIA 一起讲清楚，写明 Windows 10 22H2 就够用，并把在 Windows PowerShell 里会出错的 curl 示例换成了能直接运行的命令。',
   },
