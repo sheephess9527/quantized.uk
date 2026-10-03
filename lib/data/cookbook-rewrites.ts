@@ -850,7 +850,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'quantize-own-model-gguf': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     content: [
       {
@@ -863,36 +863,36 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Convert to GGUF',
         headingZh: '转换为 GGUF',
-        body: 'The conversion script is `convert_hf_to_gguf.py`. The older `convert.py` name that circulates in older tutorials no longer exists in the repository — if a guide you are reading elsewhere still uses it, that guide predates the rename. Convert to a high-precision intermediate first; converting straight to a low bit-depth from safetensors is not how the pipeline works.',
-        bodyZh: '转换脚本是 `convert_hf_to_gguf.py`。旧教程里流传的 `convert.py` 这个名字在仓库里已经不存在了 —— 如果你在别处看到的指南还在用它，说明那篇指南是改名之前写的。先转换成高精度的中间文件；直接从 safetensors 转成低位宽不是这套流程的工作方式。',
-        code: { lang: 'bash', content: 'python convert_hf_to_gguf.py /path/to/my-model \\\n  --outfile my-model-f16.gguf \\\n  --outtype f16' },
+        body: 'The conversion script is `convert_hf_to_gguf.py`. The older `convert.py` name that circulates in older tutorials no longer exists in the repository — if a guide you are reading elsewhere still uses it, that guide predates the rename. Convert to a high-precision intermediate first; converting straight to a low bit-depth from safetensors is not how the pipeline works. llama.cpp\u2019s own example uses `--outtype bf16`, and `auto` (the default) picks the highest-fidelity 16-bit type for you. Forcing `f16` on a model released in BF16 can overflow values that BF16 holds fine. Newer architectures such as Gemma 4 need transformers 5, while the requirements file installs 4, so `pip install -U transformers` if the script does not recognise your model.',
+        bodyZh: '转换脚本是 `convert_hf_to_gguf.py`。旧教程里流传的 `convert.py` 这个名字在仓库里已经不存在了 —— 如果你在别处看到的指南还在用它，说明那篇指南是改名之前写的。先转换成高精度的中间文件；直接从 safetensors 转成低位宽不是这套流程的工作方式。llama.cpp 自己的示例用的是 `--outtype bf16`，而默认的 `auto` 会替你选保真度最高的 16 位类型。对一个以 BF16 发布的模型强行指定 `f16`，可能让 BF16 本来存得下的数值溢出。较新的架构（比如 Gemma 4）需要 transformers 5，而 requirements 文件装的是 4，所以如果脚本认不出你的模型，先 `pip install -U transformers`。',
+        code: { lang: 'bash', content: 'python convert_hf_to_gguf.py /path/to/my-model \\\n  --outfile my-model-bf16.gguf \\\n  --outtype bf16' },
       },
       {
         heading: 'Quantize it',
         headingZh: '量化',
-        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16, and every model in this index that ships GGUF ships this level.',
-        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%，而且本站每一个提供 GGUF 的模型都提供这个档位。',
-        code: { lang: 'bash', content: './build/bin/llama-quantize my-model-f16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
+        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16 (across the 79 models that report one), and every model in this index that ships GGUF ships this level.',
+        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%（基于公布了该数字的 79 个模型），而且本站每一个提供 GGUF 的模型都提供这个档位。',
+        code: { lang: 'bash', content: './build/bin/llama-quantize my-model-bf16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
       },
       {
         heading: 'Do it properly: an importance matrix',
         headingZh: '做得更好：重要性矩阵',
         body: 'A plain quantization treats every weight the same. An importance matrix (imatrix), computed by running representative text through the F16 model first, tells the quantizer which weights matter more and protects them — the same idea behind why Q4_K_M already beats a naive 4-bit round-off, taken further. This step is what separates a quant you would publish from one that is merely usable.',
         bodyZh: '普通量化会一视同仁地对待每一个权重。重要性矩阵（imatrix）先用有代表性的文本跑一遍 F16 模型算出来，告诉量化器哪些权重更重要、该被保护 —— 这正是 Q4_K_M 已经优于朴素 4-bit 取整的原因，只是做得更彻底。这一步是「值得发布的量化版本」和「勉强能用的量化版本」之间的分水岭。',
-        code: { lang: 'bash', content: './build/bin/llama-imatrix \\\n  -m my-model-f16.gguf \\\n  -f calibration-data.txt \\\n  -o my-model.imatrix\n\n./build/bin/llama-quantize \\\n  --imatrix my-model.imatrix \\\n  my-model-f16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
+        code: { lang: 'bash', content: '# .gguf extension = current format; any other extension writes the legacy one\n./build/bin/llama-imatrix \\\n  -m my-model-bf16.gguf \\\n  -f calibration-data.txt \\\n  -o my-model.imatrix.gguf \\\n  -ngl 99   # offload to the GPU if the model fits; much faster\n\n./build/bin/llama-quantize \\\n  --imatrix my-model.imatrix.gguf \\\n  my-model-bf16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
       },
       {
         heading: 'Check it actually worked',
         headingZh: '确认它真的没问题',
-        body: 'Load the quantized file and run a real prompt — a successful conversion that produces garbage output is a real failure mode, usually from a tokenizer or chat-template mismatch during conversion rather than from quantization itself. Compare the file size against expectation: a Q4_K_M file should land near params × 0.6 bytes per parameter, and a figure wildly off that suggests the conversion picked up the wrong precision.',
-        bodyZh: '加载量化后的文件、跑一个真实的提示词 —— 转换「成功」但输出乱码是一种真实的失败模式，通常是转换过程中分词器或聊天模板不匹配，而不是量化本身的问题。把文件大小和预期对比一下：Q4_K_M 文件大小应该接近「参数量 × 每参数 0.6 字节」，如果差得很远，说明转换过程选错了精度。',
-        code: { lang: 'bash', content: './build/bin/llama-cli -m my-model-Q4_K_M.gguf -p "Explain quantization in one sentence." -n 64\n\nls -lh my-model-Q4_K_M.gguf   # sanity-check the size' },
+        body: 'Load the quantized file and run a real prompt through `llama-cli`, which applies the model\u2019s chat template, so it tests the template too. Current `llama-cli` is a chat program, so add `-st` to answer once and exit. A successful conversion that produces garbage output is a real failure mode, usually from a tokenizer or chat-template mismatch during conversion rather than from quantization itself. Compare the file size against expectation: a Q4_K_M file should land near params × 0.6 bytes per parameter, and a figure wildly off that suggests the conversion picked up the wrong precision.',
+        bodyZh: '加载量化后的文件，用 `llama-cli` 跑一个真实的提示词 —— 它会套用模型的聊天模板，所以顺带也检验了模板。现在的 `llama-cli` 是一个聊天程序，加 `-st` 才会回答一次就退出。转换「成功」但输出乱码是一种真实的失败模式，通常是转换过程中分词器或聊天模板不匹配，而不是量化本身的问题。把文件大小和预期对比一下：Q4_K_M 文件大小应该接近「参数量 × 每参数 0.6 字节」，如果差得很远，说明转换过程选错了精度。',
+        code: { lang: 'bash', content: '# -st = single turn: answer once and exit. Without it llama-cli is a chat\n# session and waits for your next message.\n./build/bin/llama-cli -m my-model-Q4_K_M.gguf -p "Explain quantization in one sentence." -n 64 -st\n\nls -lh my-model-Q4_K_M.gguf   # sanity-check the size' },
       },
       {
         heading: 'When it does not work',
         headingZh: '出问题时',
-        body: 'The conversion script fails with an unknown architecture: your model uses a layer type `convert_hf_to_gguf.py` does not yet recognise — check the script’s supported-architecture list before assuming your model is fine and the tool is broken. Output is fluent but wrong (repeats itself, ignores the prompt): usually a chat-template mismatch carried over from the original model, not a quantization artifact — verify with the F16 intermediate before blaming the quant step. Running out of disk mid-conversion: this is the three-copies problem from the first section: clean up the F16 intermediate once the quantized file is verified, but not before. And if you would rather not run any of this yourself, the GGUF-my-repo Space on Hugging Face runs the same pipeline and syncs from llama.cpp’s main branch every six hours.',
-        bodyZh: '转换脚本报未知架构错误：你的模型用了 `convert_hf_to_gguf.py` 还不认识的层类型 —— 先查一下脚本支持的架构列表，别急着认为是工具坏了。输出通顺但答非所问（自我重复、无视提示词）：通常是原模型自带的聊天模板不匹配，而不是量化的问题 —— 先用 F16 中间文件验证一下，再怀疑量化那一步。转换到一半磁盘满了：这就是开头说的「三份拷贝」问题 —— 确认量化文件没问题之后再清理 F16 中间文件，而不是提前清。如果你不想自己跑这一套，Hugging Face 上的 GGUF-my-repo Space 跑的是同一套流程，每六小时从 llama.cpp 的 main 分支同步一次。',
+        body: 'The conversion script fails with an unknown architecture: your model uses a layer type `convert_hf_to_gguf.py` does not yet recognise — check the script’s supported-architecture list before assuming your model is fine and the tool is broken. Output is fluent but wrong (repeats itself, ignores the prompt): usually a chat-template mismatch carried over from the original model, not a quantization artifact — verify with the BF16 intermediate before blaming the quant step. Running out of disk mid-conversion: this is the three-copies problem from the first section: clean up the BF16 intermediate once the quantized file is verified, but not before. And if you would rather not run any of this yourself, the GGUF-my-repo Space on Hugging Face runs the same pipeline and syncs from llama.cpp’s main branch every six hours.',
+        bodyZh: '转换脚本报未知架构错误：你的模型用了 `convert_hf_to_gguf.py` 还不认识的层类型 —— 先查一下脚本支持的架构列表，别急着认为是工具坏了。输出通顺但答非所问（自我重复、无视提示词）：通常是原模型自带的聊天模板不匹配，而不是量化的问题 —— 先用 BF16 中间文件验证一下，再怀疑量化那一步。转换到一半磁盘满了：这就是开头说的「三份拷贝」问题 —— 确认量化文件没问题之后再清理 F16 中间文件，而不是提前清。如果你不想自己跑这一套，Hugging Face 上的 GGUF-my-repo Space 跑的是同一套流程，每六小时从 llama.cpp 的 main 分支同步一次。',
       },
     ],
     faqs: [
@@ -918,7 +918,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'cpu-inference-optimization': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     relatedModelIds: ['llama-3.1-8b'],
     verifiedStack: {
@@ -936,9 +936,9 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'What actually speeds up generation',
         headingZh: '真正能让生成变快的是什么',
-        body: 'Generating each token means reading every weight once, so on CPU — exactly as on a GPU — the ceiling is memory bandwidth divided by weight size. Nothing about a BLAS library changes that arithmetic. The two levers that do matter: thread count set to your physical core count (not the hyperthread-doubled figure `nproc` reports, which mostly adds contention past that point), and the quant level, since a smaller file is fewer bytes to read per token.',
-        bodyZh: '每生成一个 token 都要把所有权重读一遍，所以在 CPU 上——和 GPU 一模一样——上限就是「带宽 ÷ 权重体积」。BLAS 库改变不了这个算术。真正管用的是两个杠杆：线程数设成物理核心数（而不是 `nproc` 报出来的、把超线程也算进去翻倍的数字，超过物理核心数之后主要是增加争用），以及量化档位，因为文件越小，每个 token 要读的字节就越少。',
-        code: { lang: 'bash', content: './build/bin/llama-server \\\n  -m ./models/Llama-3.1-8B-Q4_K_M.gguf \\\n  -t 8 \\\n  -c 4096 \\\n  --host 127.0.0.1 --port 8080\n\n# -t 8 assumes 8 PHYSICAL cores — check with lscpu, not nproc' },
+        body: 'Generating each token means reading every weight once, so on CPU — exactly as on a GPU — the ceiling is memory bandwidth divided by weight size. Nothing about a BLAS library changes that arithmetic. The two levers that do matter are the thread count and the quant level. Use as many threads as you have physical cores, not the hyperthread-doubled figure `nproc` reports, because threads past the physical count mostly add contention. llama.cpp already does this when `-t` is left out: it uses the physical core count, and on hybrid Intel chips only the performance cores. The startup log prints the choice as `system_info: n_threads = N`. The quant level matters because a smaller file is fewer bytes to read per token.',
+        bodyZh: '每生成一个 token 都要把所有权重读一遍，所以在 CPU 上——和 GPU 一模一样——上限就是「带宽 ÷ 权重体积」。BLAS 库改变不了这个算术。真正管用的是两个杠杆。一是线程数：设成物理核心数，而不是 `nproc` 报出来的、把超线程也算进去翻倍的数字，超过物理核心数之后主要是增加争用。不写 `-t` 时 llama.cpp 本来就是这么做的：它用物理核心数，在混合架构的 Intel 处理器上只用性能核，启动日志里会打印 `system_info: n_threads = N`。二是量化档位，因为文件越小，每个 token 要读的字节就越少。',
+        code: { lang: 'bash', content: './build/bin/llama-server \\\n  -m ./models/Llama-3.1-8B-Q4_K_M.gguf \\\n  -c 4096 \\\n  --host 127.0.0.1 --port 8080\n\n# No -t: llama.cpp uses your physical core count (P-cores only on\n# hybrid Intel). Override with -t N only to test a different value.' },
       },
       {
         heading: 'What OpenBLAS actually helps',
@@ -950,9 +950,9 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Check it actually worked',
         headingZh: '确认调整真的有效',
-        body: 'Measure generation and prompt processing separately — llama.cpp prints both at the end of a run. If you built with BLAS expecting faster chat and the generation number did not move, that is not a broken build; it is the documented behaviour above.',
-        bodyZh: '把生成速度和提示词处理速度分开测——llama.cpp 在每次运行结束时会分别打印这两个数字。如果你为了让聊天变快而编译了 BLAS，结果生成速度的数字没动，那不是构建坏了，而是上面文档写明的行为。',
-        code: { lang: 'bash', content: './build/bin/llama-cli -m ./models/Llama-3.1-8B-Q4_K_M.gguf \\\n  -p "Write a short paragraph about coffee." -n 128\n\n# Look for two separate lines at the end:\n#   prompt eval time = ... tokens per second\n#   eval time         = ... tokens per second   <- this is generation' },
+        body: 'Measure generation and prompt processing separately. `llama-bench` does exactly that: it reports prompt processing (`pp512`) and generation (`tg128`) as separate rows, each averaged over five runs. Current `llama-cli` is a chat program and no longer prints timings by default, so it is the wrong tool for this. If you built with BLAS expecting faster chat and the generation number did not move, that is not a broken build; it is the documented behaviour above.',
+        bodyZh: '把生成速度和提示词处理速度分开测。`llama-bench` 正是干这个的：它把提示词处理（`pp512`）和生成（`tg128`）分成两行报告，每行是五次运行的平均值。现在的 `llama-cli` 是聊天程序，默认已经不打印耗时，不适合做这件事。如果你为了让聊天变快而编译了 BLAS，结果生成速度的数字没动，那不是构建坏了，而是上面文档写明的行为。',
+        code: { lang: 'bash', content: './build/bin/llama-bench -m ./models/Llama-3.1-8B-Q4_K_M.gguf\n\n# Two rows, two different bottlenecks:\n#   pp512  t/s   <- prompt processing (BLAS can move this)\n#   tg128  t/s   <- generation (bandwidth-bound; BLAS will not)\n\n# Compare thread counts in one run:\n./build/bin/llama-bench -m ./models/Llama-3.1-8B-Q4_K_M.gguf -t 4,8,16' },
       },
       {
         heading: 'What the numbers should look like',
@@ -977,8 +977,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'How many threads should I use for CPU inference?',
         qZh: 'CPU 推理该用多少线程？',
-        a: 'Your physical core count, checked with `lscpu`, not the number `nproc` reports if hyperthreading is on — that figure is doubled and pushing thread count past the physical count typically adds contention rather than throughput. Set it with `-t`.',
-        aZh: '用 `lscpu` 查到的物理核心数，而不是开了超线程时 `nproc`报出来的数字——那个数字是翻倍的，线程数超过物理核心数通常只会增加争用，而不是吞吐量。用 `-t` 设置这个数。',
+        a: 'Your physical core count, checked with `lscpu`, not the number `nproc` reports when hyperthreading is on. That figure is doubled, and going past the physical count usually adds contention rather than throughput. You rarely need to set it: when `-t` is left out, llama.cpp already uses the physical core count, and on hybrid Intel chips only the performance cores. To test other values, `llama-bench -t 4,8,16` measures them side by side.',
+        aZh: '用 `lscpu` 查到的物理核心数，而不是开了超线程时 `nproc` 报出来的数字。那个数字是翻倍的，超过物理核心数通常只会增加争用，而不是吞吐量。其实很少需要手动设置：不写 `-t` 时，llama.cpp 本来就用物理核心数，在混合架构的 Intel 处理器上只用性能核。想试别的值，`llama-bench -t 4,8,16` 可以一次并排测出来。',
       },
       {
         q: 'How fast is CPU inference compared to a GPU?',

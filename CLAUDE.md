@@ -619,6 +619,11 @@ explicit `-c` (omitting `-c` starts from the trained context). `--tensor-split` 
 generated mapping is `127.0.0.1:` and carries `exposureNote`. Native servers bind loopback too —
 `vllm serve` listens on all interfaces unless given `--host`.
 
+**`llama-cli` is a chat program now (re-checked 2026-10-03):** `-p` alone answers then waits for input —
+add `-st` for one turn, or use `llama-completion -no-cnv` for raw text; it no longer prints timings
+(`--perf` defaults off), so measure speed with `llama-bench` (`pp512` / `tg128`). `llama-imatrix -o`
+needs a `.gguf` extension or it writes the legacy format. `-t` unset already means physical cores.
+
 **llama.cpp facts re-checked 2026-10-02** (`docs/build.md`, `docs/docker.md`, source): the offload log
 line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); HIP builds use
 `HIPCXX=… -DGPU_TARGETS=gfx…` and require ROCm ≥ 6.1; the repo and images live under `ggml-org`;
@@ -946,6 +951,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Quantize + CPU guides vs llama.cpp master** — `llama-cli` is chat-only now (`-st` for one-shot; no timings → `llama-bench`); imatrix `-o` needs `.gguf` or writes legacy; convert at `bf16`; `-t` defaults to physical cores |
 | 2026-10-03 | **vLLM guides vs V1 source** — `PreemptionMode.RECOMPUTE` was V0 (deleted); V1 shows `Preemptions:` in its stats line + `vllm:num_preemptions`; install lacked the venv `uv pip` requires (guide + CLI); AutoAWQ deprecated |
 | 2026-10-03 | **Docker + Ollama guide** — 218 tok/s was vLLM AWQ, not Ollama (llama.cpp Q4_K_M is 148); `nvidia-ctk runtime configure` step added; AMD via `:rocm` + `/dev/kfd` `/dev/dri`; 4 FAQs |
 | 2026-10-03 | **Windows Ollama guide** — "AMD is CPU-only" was false (ROCm RX 7600–7900, Vulkan default for the rest); Win 10 22H2+; `curl -d` in PowerShell blocks replaced (5.1 alias); 4 FAQs |

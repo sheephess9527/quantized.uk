@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (j) — Quantize-your-own-GGUF + CPU inference guides vs llama.cpp master
+
+Read from `ggml-org/llama.cpp` master: `tools/quantize/README.md`, `tools/imatrix/README.md`,
+`tools/cli/README.md`, `tools/completion/README.md`, `tools/llama-bench/README.md`,
+`convert_hf_to_gguf.py`, `docs/build.md`, `common/common.cpp`.
+- **`llama-cli` is now the chat tool** (one-shot raw completion moved to `llama-completion
+  -no-cnv`). `llama-cli -p … -n 64` answers and then waits for input; the quantize guide's check now
+  passes `-st` ("will not be interactive if first turn is predefined with --prompt"), which also
+  exercises the chat template — the failure that check exists to catch. `--perf` defaults to false,
+  so the CPU guide's "look for prompt eval time / eval time at the end" no longer printed anything;
+  it now uses `llama-bench` (`pp512` vs `tg128` rows, `-t 4,8,16` sweep).
+- **imatrix:** `-o my-model.imatrix` wrote the *legacy* format (any non-`.gguf` extension does);
+  now `-o my-model.imatrix.gguf`, plus `-ngl 99` from the README's example.
+- **Conversion:** `--outtype f16` → `bf16` (the README's own example; `auto`, the default, picks the
+  highest-fidelity 16-bit type). Note added that newer archs need `pip install -U transformers`
+  (README: requirements pin transformers 4; Gemma 4 needs 5). `convert.py` confirmed absent (legacy
+  script lives at `examples/convert_legacy_llama.py`); GGUF-my-repo "syncs every 6 hours" is the
+  quantize README's own statement — kept.
+- **Threads:** `-t` unset → `common_cpu_get_num_math()` = physical cores, performance cores only on
+  hybrid x86 Linux; the guide no longer hardcodes `-t 8`, and points to the
+  `system_info: n_threads` log line. BLAS claim re-confirmed verbatim in `docs/build.md`.
+- Q4_K_M claims recomputed: all 87 GGUF models ship it; median loss 2.9% over the 79 reporting it
+  (sample size now stated). Both guides `updatedAt` 2026-10-03, no `verifiedAt`.
+
 ### 2026-10-03 (i) — vLLM guides + CLI against vLLM V1 source
 
 Read from `vllm-project/vllm` main (raw.githubusercontent): `vllm/v1/core/sched/scheduler.py`,

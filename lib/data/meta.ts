@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The guides on quantizing your own GGUF and on CPU inference were checked against llama.cpp\'s current tools. llama-cli is now a chat program, so the one-off test commands would have sat waiting for more input. The quantize guide now adds the flag that answers once and exits. The CPU guide now measures speed with llama-bench, which reports prompt processing and generation separately. The quantize guide also converts at BF16, as llama.cpp\'s own example does, and saves the importance matrix in the current file format. The CPU guide notes that llama.cpp already picks your physical core count on its own.',
+    zh: '“自己量化 GGUF”和“CPU 推理优化”两篇指南已对照 llama.cpp 当前的工具核对。llama-cli 现在是聊天程序，原来的一次性测试命令执行后会停在那里等你继续输入。量化指南现在加上了“回答一次就退出”的参数；CPU 指南改用 llama-bench 测速，它会把提示词处理和生成速度分开报告。量化指南还改成按 llama.cpp 官方示例用 BF16 转换，并用当前格式保存重要性矩阵。CPU 指南则注明了 llama.cpp 默认就会自动使用物理核心数。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The two vLLM guides and the command builder were checked against vLLM\'s current code and docs. The install now creates a virtual environment first, because the install command stops without one. The guides also described a warning that current vLLM no longer prints. When the memory for active requests runs out, vLLM now reports it as a "Preemptions" count in its regular status line and in its metrics, and the guides say where to look. They also note that AutoAWQ, the tool behind most AWQ builds, is deprecated, although existing AWQ models still load.',
     zh: '两篇 vLLM 指南和命令生成器已对照 vLLM 当前的代码和文档核对。安装步骤现在会先建虚拟环境，因为没有虚拟环境时安装命令会直接中止。指南里还描述了一条现在的 vLLM 已经不再打印的警告：当在途请求的显存不够用时，vLLM 现在会在定期打印的状态行和监控指标里显示 "Preemptions" 计数，指南已说明去哪里看。另外注明了大多数 AWQ 版本所用的 AutoAWQ 工具已被弃用，但已有的 AWQ 模型仍可正常加载。',
   },
