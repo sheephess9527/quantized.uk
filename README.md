@@ -419,6 +419,31 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (g) — Windows Ollama guide: AMD works; PowerShell-safe API calls
+
+Checked against Ollama's own docs on `main` (`docs/windows.mdx`, `docs/gpu.mdx`, `docs/faq.mdx`,
+fetched via raw.githubusercontent):
+- **Wrong claim removed:** the guide's description said "AMD is CPU-only for now". The Windows app
+  supports Radeon: ROCm (needs a ROCm v7 / HIP7 driver) on RX 7900 XTX/XT/GRE, 7800 XT, 7700 XT,
+  7600 XT, 7600 + W7x00; Vulkan enabled by default for other cards (`gpu.mdx`), the documented
+  fallback for RX 6000 that may not expose ROCm 7 on Windows drivers (`windows.mdx` note);
+  `GGML_VK_VISIBLE_DEVICES` when a mixed iGPU/dGPU system picks the iGPU.
+- Requirements now Windows 10 22H2+ and NVIDIA driver ≥ 551.61 (was "Windows 11").
+- API examples used `curl -d` in a PowerShell block; in Windows PowerShell 5.1 `curl` aliases
+  `Invoke-WebRequest`, so they fail. Now `Invoke-RestMethod` (the docs' own example uses
+  `Invoke-WebRequest -Body`), with a `curl.exe` note.
+- `ollama ps` sample gained the `ID` column (docs: NAME ID SIZE PROCESSOR UNTIL); default context
+  4096 and 5-minute keep-alive cited from `faq.mdx`; `server.log` under `%LOCALAPPDATA%\Ollama`
+  as the AMD check. 4 FAQs (new: "Does Ollama on Windows use an AMD Radeon GPU?"); `AMD` tag added
+  (model-page links to the guide unchanged: still 1 model page, checked in `out/`).
+- `amd-rocm-llamacpp` ROCm-vs-Vulkan FAQ gains one sentence pointing Windows readers at Ollama's
+  Windows app. No other site copy claimed AMD-on-Windows was CPU-only (grepped).
+- Same PowerShell sweep over every guide code block: `llamacpp-windows-cuda` ran `llama-server.exe`
+  with `^` continuations in a `powershell` block — cmd syntax, so PowerShell would have started the
+  server with no flags; now one line (works in both). `wsl2-ollama-gpu`'s Windows-side check is
+  `curl.exe`. Both guides' `updatedAt` → 2026-10-03.
+- Not run (no Windows/GPU here) — `updatedAt` 2026-10-03, no `verifiedAt`.
+
 ### 2026-10-03 (f) — One contact address: `zjy@quantized.uk`
 
 - Site owner's own address `zjy@quantized.uk` is now **the only** contact address:

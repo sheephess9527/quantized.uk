@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The Windows Ollama guide said AMD cards run on the CPU only. That was wrong: Ollama\'s Windows app uses Radeon GPUs, through ROCm on the RX 7600 to 7900 series and through Vulkan, which is on by default, on others such as the RX 6000 series. The guide now covers AMD alongside NVIDIA, says Windows 10 22H2 is enough, and replaces the curl examples, which fail in Windows PowerShell, with commands that work there.',
+    zh: 'Windows 版 Ollama 指南原先说 AMD 显卡只能用 CPU，这是错的：Ollama 的 Windows 应用能用 Radeon 显卡 —— RX 7600 到 7900 系列走 ROCm，RX 6000 等其他型号走默认开启的 Vulkan。指南现在把 AMD 和 NVIDIA 一起讲清楚，写明 Windows 10 22H2 就够用，并把在 Windows PowerShell 里会出错的 curl 示例换成了能直接运行的命令。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The site has one contact address now: zjy@quantized.uk, which reaches the maintainer directly. Use it for feedback, corrections and anything else — it is in the footer of every page and on the About page.',
     zh: '本站现在只有一个联系邮箱：zjy@quantized.uk，可直接联系到维护者。反馈、纠错或其他事情都请发到这里 —— 每一页的页脚和“关于”页面都有这个地址。',
   },

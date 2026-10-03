@@ -161,7 +161,7 @@ export const extraArticles2: Article[] = [
     // networking.md), NVIDIA's CUDA on WSL user guide, Ollama's docs (faq.mdx,
     // linux.mdx) and scripts/install.sh. A documentation check, not a run on a
     // Windows box — so a target stack, no verified date. See README §9.
-    updatedAt: '2026-10-02',
+    updatedAt: '2026-10-03',
     verifiedStack: {
       en: 'Windows 11 (or Win10 21H2+) · WSL2 Ubuntu 22.04/24.04 · recent NVIDIA Windows driver · Ollama Linux install · GGUF Q4_K_M',
       zh: 'Windows 11（或 Win10 21H2+）· WSL2 Ubuntu 22.04/24.04 · 较新的 NVIDIA Windows 驱动 · Ollama Linux 版 · GGUF Q4_K_M',
@@ -220,7 +220,7 @@ export const extraArticles2: Article[] = [
         bodyZh: 'WSL2 默认会转发 localhost，所以在 Windows 浏览器或 PowerShell 里访问 http://localhost:11434 就能连到 WSL 内的服务，不需要额外配置。在 WSL 默认的 NAT 网络模式下，局域网里的其他机器访问不到这个服务 —— 微软文档写明局域网访问需要配一条 netsh portproxy 规则。换成镜像网络模式（networkingMode=mirrored，Windows 11 22H2+）就不一样了：WSL 直接接入局域网，绑定在 0.0.0.0 上的 Ollama 对网络里每台机器都可见，而且前面没有任何鉴权。除非你确实想这样，否则 OLLAMA_HOST 保持默认。',
         code: {
           lang: 'powershell',
-          content: '# From Windows PowerShell\ncurl http://localhost:11434/api/tags',
+          content: '# From Windows PowerShell (curl.exe — plain curl is an alias there)\ncurl.exe http://localhost:11434/api/tags',
         },
       },
       {
@@ -431,8 +431,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'Should I use ROCm or Vulkan for llama.cpp on a Radeon?',
         qZh: 'Radeon 上跑 llama.cpp，该用 ROCm 还是 Vulkan？',
-        a: 'On Linux with a card AMD officially supports, ROCm (the HIP build in this guide) is the documented path. Vulkan is the fallback that needs no ROCm install at all: build with -DGGML_VULKAN=ON instead of GGML_HIP. It is the better choice on Windows for a card outside AMD’s list, because llama.cpp’s build docs note that HSA_OVERRIDE_GFX_VERSION is not supported on Windows. This site has not measured either backend on a Radeon, so it does not say which is faster — run both on your card with the same model and context and compare.',
-        aZh: '在 Linux 上、且显卡在 AMD 官方支持列表里时，ROCm（也就是本指南的 HIP 构建）是文档给出的路径。Vulkan 是完全不需要安装 ROCm 的后备方案：编译时用 -DGGML_VULKAN=ON 代替 GGML_HIP。在 Windows 上、显卡又不在 AMD 列表里时，它是更好的选择，因为 llama.cpp 的构建文档写明 HSA_OVERRIDE_GFX_VERSION 在 Windows 上不受支持。本站没有在 Radeon 上实测过任何一个后端，所以不下“谁更快”的结论 —— 用同一个模型和上下文在你的卡上两个都跑一遍再比较。',
+        a: 'On Linux with a card AMD officially supports, ROCm (the HIP build in this guide) is the documented path. Vulkan is the fallback that needs no ROCm install at all: build with -DGGML_VULKAN=ON instead of GGML_HIP. It is the better choice on Windows for a card outside AMD’s list, because llama.cpp’s build docs note that HSA_OVERRIDE_GFX_VERSION is not supported on Windows. If you only want to run models on Windows rather than build llama.cpp, Ollama’s Windows app handles Radeon cards itself: ROCm on the RX 7600 to 7900 series, and Vulkan on the others. This site has not measured either backend on a Radeon, so it does not say which is faster — run both on your card with the same model and context and compare.',
+        aZh: '在 Linux 上、且显卡在 AMD 官方支持列表里时，ROCm（也就是本指南的 HIP 构建）是文档给出的路径。Vulkan 是完全不需要安装 ROCm 的后备方案：编译时用 -DGGML_VULKAN=ON 代替 GGML_HIP。在 Windows 上、显卡又不在 AMD 列表里时，它是更好的选择，因为 llama.cpp 的构建文档写明 HSA_OVERRIDE_GFX_VERSION 在 Windows 上不受支持。如果你只是想在 Windows 上跑模型、不想自己编译 llama.cpp，Ollama 的 Windows 版会自己处理 Radeon 显卡：RX 7600 到 7900 系列走 ROCm，其他型号走 Vulkan。本站没有在 Radeon 上实测过任何一个后端，所以不下“谁更快”的结论 —— 用同一个模型和上下文在你的卡上两个都跑一遍再比较。',
       },
       {
         q: 'Can a Radeon run AWQ, GPTQ or EXL2 models?',
@@ -452,8 +452,8 @@ export const extraArticles2: Article[] = [
     id: 'windows-ollama-native',
     title: 'Ollama on Windows (Native, No WSL)',
     titleZh: 'Windows 原生 Ollama（不用 WSL）',
-    description: 'Install the Windows Ollama app for the simplest path — GPU works on NVIDIA; AMD is CPU-only for now.',
-    descriptionZh: '安装 Windows 版 Ollama 最简单 — NVIDIA 可用 GPU；AMD 目前仅 CPU。',
+    description: 'Install the Windows Ollama app for the simplest path — NVIDIA and AMD Radeon GPUs both work, with no WSL and no toolkit to install.',
+    descriptionZh: '安装 Windows 版 Ollama 最简单 —— NVIDIA 和 AMD Radeon 显卡都能用 GPU，不用 WSL，也不用装工具包。',
     category: 'edge',
     difficulty: 'beginner',
     tags: ['Windows', 'Ollama', 'NVIDIA', 'Desktop'],

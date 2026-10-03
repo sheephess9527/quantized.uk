@@ -581,6 +581,11 @@ WSL docs, NVIDIA's CUDA-on-WSL guide and Ollama's `install.sh`): VM memory defau
 RAM; `[boot] systemd` defaults **off**, and Ollama's installer then starts no service; `apt install
 cuda`/`cuda-drivers` installs a Linux driver over the passthrough stub (`cuda-toolkit-12-x` only);
 in default NAT mode nothing on the LAN can reach a WSL server — only mirrored mode exposes it.
+**Ollama on native Windows runs AMD Radeon** (re-checked 2026-10-03, `docs/windows.mdx`/`gpu.mdx`):
+ROCm on RX 7600–7900 with a ROCm 7 driver, Vulkan (default-on) for the rest incl. RX 6000; Windows
+10 22H2+, NVIDIA ≥ 551.61. In a `powershell` code block never write `curl -d` — Windows PowerShell
+5.1 aliases `curl` to `Invoke-WebRequest`; use `Invoke-RestMethod` or `curl.exe`. Nor `^` line continuations (cmd only; PowerShell's is a
+backtick) — when a block must work in both, write the command on one line.
 
 **A GPU database gap forces an honest substitution, stated in the text.** `m1-8gb-ollama-limits` once
 sized against the Mac M3 8G row because there was no M1 entry, and said so — 8GB is 8GB, bandwidth is
@@ -936,6 +941,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Windows Ollama guide** — "AMD is CPU-only" was false (ROCm RX 7600–7900, Vulkan default for the rest); Win 10 22H2+; `curl -d` in PowerShell blocks replaced (5.1 alias); 4 FAQs |
 | 2026-10-03 | **One contact address** — `FEEDBACK_EMAIL` → `zjy@quantized.uk` (owner's mailbox); unconfirmed `hello@` retired site-wide; `/about/` gets a direct line; maintainer still unnamed |
 | 2026-10-03 | **AMD ROCm guide FAQs** — ROCm vs Vulkan, AWQ/GPTQ via vLLM ROCm on listed cards only, 24 vs 16 GB Radeon (69 vs 53 comfortable); `LLAMA_HIPBLAS` is reported as an unused variable, not silent (still CPU-only) |
 | 2026-10-03 | **GPT-OSS guide vs llama.cpp's gpt-oss guide** — `--n-cpu-moe` for 8/12GB cards, `--chat-template-kwargs` reasoning effort, OpenAI sampling (temp 1.0, top_p 1.0, no rep penalty); unsourced 120B speed/RAM claim removed; 3 FAQs |
