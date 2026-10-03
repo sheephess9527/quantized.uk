@@ -8,7 +8,6 @@ import { formatOverview } from '@/lib/utils/format-overview';
 import { FORMAT_PAGES } from '@/lib/utils/format-page';
 import { models } from '@/lib/data/models';
 import FormatHeatmap from '@/components/home/FormatHeatmap';
-import FormatRadar from '@/components/home/FormatRadarLazy';
 
 const rows = formatOverview();
 const count = (name: string) => rows.find(r => r.format.name === name)?.modelCount ?? 0;
@@ -123,19 +122,14 @@ export default function FormatIndexView() {
       </ul>
 
       {/*
-        Both of these used to sit on the homepage, where they answered a
-        question nobody arrives with. They are editorial context about the
-        formats themselves — an adoption estimate and a six-axis profile — so
-        they belong on the page about formats, next to the pairwise
-        comparisons that share their vocabulary.
+        Editorial context about the formats: an adoption ranking (an order,
+        never a number). A six-axis "radar" of typed 0–100 scores used to sit
+        beside it; it was removed 2026-10-03 because no axis came from a
+        reproducible source and its "accuracy per bit" axis ranked AWQ above
+        GGUF Q4_K_M, the opposite of every paired model in this index.
       */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-        <div className="lg:col-span-1">
-          <FormatHeatmap />
-        </div>
-        <div className="lg:col-span-2">
-          <FormatRadar />
-        </div>
+      <div className="mt-8 max-w-xl">
+        <FormatHeatmap />
       </div>
     </div>
   );

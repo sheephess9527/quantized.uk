@@ -58,11 +58,11 @@ export const quantFormats: QuantFormat[] = [
     heatPercent: 45,
     heatTrend: 7,
     description: {
-      en: 'Activation-Aware Weight Quantization. High-accuracy INT4 for NVIDIA. Pairs perfectly with vLLM for server deployment.',
-      zh: '激活感知权重量化，高精度 INT4，专为 NVIDIA GPU 优化，与 vLLM 搭配是服务端最优解。',
+      en: 'Activation-Aware Weight Quantization: 4-bit weights quantized with the activation statistics in hand, served mainly by vLLM on NVIDIA and on the AMD cards vLLM\'s ROCm build supports. On every model in this index that ships both, the AWQ INT4 file is smaller than GGUF Q4_K_M (median 18% smaller) and its published quality loss is higher (median 1.1 points more). AutoAWQ, the tool most AWQ builds were made with, is deprecated in favour of vLLM\'s llm-compressor; existing AWQ checkpoints still load.',
+      zh: '激活感知权重量化：在掌握激活统计的前提下把权重量化到 4-bit，主要由 vLLM 在 NVIDIA 以及 vLLM ROCm 版本支持的 AMD 显卡上运行。在本索引中同时提供两者的每一个模型上，AWQ INT4 文件都比 GGUF Q4_K_M 小（中位数小 18%），公布的质量损失则更高（中位数多 1.1 个百分点）。大多数 AWQ 版本所用的 AutoAWQ 已被弃用，改由 vLLM 的 llm-compressor 接替；已有的 AWQ 权重仍可正常加载。',
     },
-    strengths: { en: ['Best accuracy at 4-bit', 'Blazing fast with vLLM', 'Excellent batch throughput'], zh: ['4-bit 精度最高', 'vLLM 下速度极快', '批量推理吞吐出色'] },
-    weaknesses: { en: ['NVIDIA only', 'More setup than GGUF'], zh: ['仅限 NVIDIA', '配置比 GGUF 复杂'] },
+    strengths: { en: ['Smaller than GGUF Q4_K_M on every paired model here', 'Served by vLLM with continuous batching', 'Measured 218 tok/s (Llama 3.1 8B, RTX 4090, vLLM)'], zh: ['在本站每个可配对模型上都比 GGUF Q4_K_M 小', '由 vLLM 以连续批处理方式提供服务', '实测 218 tok/s（Llama 3.1 8B，RTX 4090，vLLM）'] },
+    weaknesses: { en: ['Higher published loss than Q4_K_M on every paired model here', 'GPU only — no CPU or Apple path', 'AutoAWQ deprecated (llm-compressor replaces it)'], zh: ['在本站每个可配对模型上公布的损失都高于 Q4_K_M', '只能用 GPU —— 没有 CPU 或 Apple 路径', 'AutoAWQ 已弃用（由 llm-compressor 接替）'] },
     hardwareReq: 'NVIDIA GPU (CUDA 11.8+) or AMD via vLLM ROCm',
     bestFor: { en: 'High-throughput API server', zh: '高吞吐 API 服务端' },
     framework: 'vLLM · AutoAWQ · TGI',
@@ -100,14 +100,14 @@ export const quantFormats: QuantFormat[] = [
     heatPercent: 28,
     heatTrend: -2,
     description: {
-      en: 'GPT Quantization — one of the first mainstream post-training methods. Wide framework compatibility; being gradually superseded by AWQ.',
-      zh: '最早普及的训练后量化格式之一，框架兼容性广，新模型正逐渐被 AWQ 取代。',
+      en: 'GPT Quantization, one of the first mainstream post-training methods, with wide framework compatibility. AutoGPTQ, its original tooling, is unmaintained, and its README points to GPTQModel. No model in this index ships both a GPTQ and an AWQ build, so this site has no paired figure to say which loses less quality.',
+      zh: '最早普及的训练后量化方法之一，框架兼容性广。它原本的工具 AutoGPTQ 已停止维护，README 推荐改用 GPTQModel。本索引里没有任何模型同时提供 GPTQ 和 AWQ 版本，所以本站没有可配对的数据来判断哪个质量损失更小。',
     },
     strengths: { en: ['Wide compatibility', 'Mature ecosystem', 'Works with HF transformers'], zh: ['框架兼容性广', '生态成熟', '支持 HF Transformers'] },
-    weaknesses: { en: ['Slow quantization process', 'Lower accuracy than AWQ'], zh: ['量化过程较慢', '精度低于 AWQ'] },
+    weaknesses: { en: ['Slow quantization process', 'AutoGPTQ unmaintained (GPTQModel replaces it)'], zh: ['量化过程较慢', 'AutoGPTQ 已停止维护（由 GPTQModel 接替）'] },
     hardwareReq: 'NVIDIA GPU (CUDA) or AMD via vLLM ROCm',
     bestFor: { en: 'Legacy server deployment', zh: '既有服务端部署' },
-    framework: 'auto-gptq · vLLM · TGI',
+    framework: 'GPTQModel · vLLM · TGI',
   },
   {
     id: 'hqq',
@@ -120,10 +120,10 @@ export const quantFormats: QuantFormat[] = [
     heatPercent: 18,
     heatTrend: 12,
     description: {
-      en: 'Half-Quadratic Quantization. No calibration data needed. Impressive quality at 2-bit. Rising star for extreme compression.',
-      zh: '半二次量化，无需校准数据，2-bit 下质量令人印象深刻，极端压缩场景的新星。',
+      en: 'Half-Quadratic Quantization. It needs no calibration data, which its own README makes the headline feature, and it targets extreme compression down to 2-bit. No model in this index ships an HQQ build, so this site has no quality or size figure of its own for it.',
+      zh: '半二次量化。无需校准数据，这也是它 README 里的首要卖点，面向低至 2-bit 的极端压缩。本索引没有任何模型提供 HQQ 版本，所以本站没有关于它的质量或体积数据。',
     },
-    strengths: { en: ['No calibration data', 'Excellent 2-bit quality', 'Fast quantization'], zh: ['无需校准数据', '2-bit 质量出众', '量化速度快'] },
+    strengths: { en: ['No calibration data', 'Fast quantization', 'Aimed at 2–4-bit compression'], zh: ['无需校准数据', '量化速度快', '面向 2–4 bit 压缩'] },
     weaknesses: { en: ['Smaller ecosystem', 'Fewer model releases'], zh: ['生态相对较小', '可用模型较少'] },
     hardwareReq: 'NVIDIA GPU, AMD ROCm',
     bestFor: { en: 'Research · extreme compression', zh: '研究 · 极端压缩' },
@@ -131,11 +131,3 @@ export const quantFormats: QuantFormat[] = [
   },
 ];
 
-export const formatRadarData = [
-  { subject: 'CPU Compat',      GGUF: 95, AWQ: 20, EXL2: 5,  GPTQ: 15, HQQ: 40 },
-  { subject: 'VRAM Efficiency', GGUF: 65, AWQ: 80, EXL2: 95, GPTQ: 75, HQQ: 85 },
-  { subject: 'Speed',           GGUF: 60, AWQ: 85, EXL2: 95, GPTQ: 75, HQQ: 70 },
-  { subject: 'Accuracy/bit',    GGUF: 75, AWQ: 80, EXL2: 88, GPTQ: 72, HQQ: 82 },
-  { subject: 'Ease of Use',     GGUF: 95, AWQ: 65, EXL2: 48, GPTQ: 55, HQQ: 58 },
-  { subject: 'Server Scale',    GGUF: 38, AWQ: 88, EXL2: 70, GPTQ: 82, HQQ: 60 },
-];

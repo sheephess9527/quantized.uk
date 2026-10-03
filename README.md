@@ -29,7 +29,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 
 | Feature | Route | What it does |
 |---|---|---|
-| **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, format heat map, format radar chart, quick links to tools |
+| **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, quick links to tools (format heat ranking lives on `/formats/`; the radar chart was removed 2026-10-03) |
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
@@ -58,7 +58,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 - **Next.js 14** (App Router) with `output: 'export'` → static HTML
 - **TypeScript** throughout
 - **Tailwind CSS** for styling, custom animations in `tailwind.config.ts`
-- **Recharts** — radar (format comparison), bar (speed), line (perplexity)
+- **Recharts** — bar (speed), line (perplexity); the format radar was removed 2026-10-03 (typed scores, no source)
 - **Framer Motion** — hero + micro-interactions
 - **lucide-react** icons, `clsx` + `tailwind-merge` (`cn()` helper)
 
@@ -99,7 +99,7 @@ lib/
     cookbook*.ts            #   cookbook + extras (23 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
-    formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ) + radar data
+    formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   43 GPUs (NVIDIA consumer/pro, AMD Radeon/ROCm, Apple Silicon, CPU RAM)
     meta.ts                 #   dataLastUpdated + changelog
@@ -352,7 +352,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add a model | `lib/data/models-extra-7.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
-| Add/track a quant format | `lib/data/formats.ts` (+ `formatRadarData`) |
+| Add/track a quant format | `lib/data/formats.ts` |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
@@ -418,6 +418,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-10-03 (n) — Site-wide sweep: format cards vs the index's own data; radar removed
+
+After the nine-guide batch, the same fault classes were swept across the CLI, tool content, FAQ,
+model/GPU explainers and `lib/data/formats.ts`. Command patterns came back clean (one inline ROCm
+`uv pip` mention gained "in a venv"). The format cards did not:
+- **AWQ "Best accuracy at 4-bit" contradicted the index.** Paired over the 53 models shipping both
+  AWQ INT4 and GGUF Q4_K_M: AWQ's `pplLossPercent` is higher on **53 of 53** (median +1.1 pp) and its
+  `bpw` lower on 53 of 53 (median −0.85, ratio 0.825). Card now states that trade-off; "NVIDIA only"
+  (contradicting its own `hardwareReq`) and the unmeasured "blazing fast / excellent batch
+  throughput" replaced with the measured 218 tok/s row and what vLLM actually does; AutoAWQ
+  deprecation noted.
+- **GPTQ "Lower accuracy than AWQ":** zero models ship both — no basis; removed and said so. AutoGPTQ
+  README: "unmaintained — we suggest using GPTQModel"; framework line updated.
+- **HQQ "Impressive / Excellent 2-bit quality":** 0 HQQ models in the index and HQQ's own README only
+  headlines "no calibration data"; quality claims removed.
+- **Format radar removed** (`FormatRadar.tsx`, `FormatRadarLazy.tsx`, `formatRadarData`,
+  `t.home.radar` en+zh): six axes of hand-typed 0–100 scores with no source, presented with no
+  caveat — the same fault as the removed "GGUF 89%" heat score — and its "Accuracy/bit" axis ranked
+  AWQ (80) over GGUF (75), opposite to every paired row. The heat *ranking* stays. Recharts remains
+  for `BenchCharts` only.
+- FAQ "GGUF or AWQ" named NVIDIA alone; now includes vLLM-ROCm Radeon cards.
 
 ### 2026-10-03 (m) — Nginx proxy guide: `http2 on;` broke stock Ubuntu Nginx
 

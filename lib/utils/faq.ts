@@ -294,8 +294,8 @@ export function faqGroups(): FaqGroup[] {
           id: 'gguf-or-awq',
           q: { en: 'GGUF or AWQ — which should I use?', zh: 'GGUF 和 AWQ 有什么区别，该用哪个？' },
           a: {
-            en: `GGUF unless you are running a server. GGUF runs on anything — CPU, NVIDIA, AMD, Apple — and ${gguf} of the ${total} models here ship it, against ${awq} for AWQ. AWQ's case is throughput under vLLM with batched requests on an NVIDIA card; for one person talking to one model, it buys you nothing GGUF does not already do. ${modelsWithFormat('GGUF').filter(m => m.quants.some(q => q.format === 'AWQ')).length} models here ship both, which is the only set where the two can be compared on the same weights.`,
-            zh: `除非你是在跑服务端，否则选 GGUF。GGUF 什么硬件都能跑 —— CPU、NVIDIA、AMD、Apple —— 本站 ${total} 个模型中有 ${gguf} 个提供它，而 AWQ 是 ${awq} 个。AWQ 的价值在于 NVIDIA 显卡上用 vLLM 做批量请求时的吞吐；如果只是你一个人和一个模型对话，它给不了 GGUF 给不了的东西。本站有 ${modelsWithFormat('GGUF').filter(m => m.quants.some(q => q.format === 'AWQ')).length} 个模型同时提供两种格式，那也是唯一能在同一份权重上比较它们的集合。`,
+            en: `GGUF unless you are running a server. GGUF runs on anything — CPU, NVIDIA, AMD, Apple — and ${gguf} of the ${total} models here ship it, against ${awq} for AWQ. AWQ's case is throughput under vLLM with batched requests, on an NVIDIA card or one of the Radeon cards vLLM's ROCm build supports; for one person talking to one model, it buys you nothing GGUF does not already do. ${modelsWithFormat('GGUF').filter(m => m.quants.some(q => q.format === 'AWQ')).length} models here ship both, which is the only set where the two can be compared on the same weights.`,
+            zh: `除非你是在跑服务端，否则选 GGUF。GGUF 什么硬件都能跑 —— CPU、NVIDIA、AMD、Apple —— 本站 ${total} 个模型中有 ${gguf} 个提供它，而 AWQ 是 ${awq} 个。AWQ 的价值在于用 vLLM 做批量请求时的吞吐，适用于 NVIDIA 显卡或 vLLM ROCm 版本支持的 Radeon 显卡；如果只是你一个人和一个模型对话，它给不了 GGUF 给不了的东西。本站有 ${modelsWithFormat('GGUF').filter(m => m.quants.some(q => q.format === 'AWQ')).length} 个模型同时提供两种格式，那也是唯一能在同一份权重上比较它们的集合。`,
           },
           link: { href: '/formats/gguf-vs-awq/', label: { en: 'GGUF vs AWQ, on the models that ship both', zh: '在同时提供两者的模型上对比' } },
         },

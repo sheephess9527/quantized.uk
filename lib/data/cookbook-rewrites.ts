@@ -419,8 +419,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Does vLLM only run on NVIDIA?',
         qZh: 'vLLM 只能在 NVIDIA 上跑吗？',
-        a: 'No — that is a common claim and it is wrong. vLLM publishes official ROCm wheels (`uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`) and ROCm Docker images, alongside backends for Intel XPU and TPU. CUDA is the best-trodden path, not the only one.',
-        aZh: '不是 —— 这是一个常见但错误的说法。vLLM 提供官方 ROCm wheel（`uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`）和 ROCm Docker 镜像，另外还有 Intel XPU 与 TPU 后端。CUDA 是走得最熟的路，不是唯一的路。',
+        a: 'No — that is a common claim and it is wrong. vLLM publishes official ROCm wheels (in a venv: `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`) and ROCm Docker images, alongside backends for Intel XPU and TPU. CUDA is the best-trodden path, not the only one.',
+        aZh: '不是 —— 这是一个常见但错误的说法。vLLM 提供官方 ROCm wheel（在虚拟环境里：`uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`）和 ROCm Docker 镜像，另外还有 Intel XPU 与 TPU 后端。CUDA 是走得最熟的路，不是唯一的路。',
       },
       {
         q: 'Why does vLLM reserve so much VRAM before I send a request?',

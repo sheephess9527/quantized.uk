@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The format pages no longer say AWQ has the best 4-bit accuracy. On every model in this index that ships both, AWQ INT4 is the smaller file but loses more quality than GGUF Q4_K_M. The pages now say that, and stop claiming AWQ is NVIDIA-only. The six-axis format radar chart has been removed: its scores were typed in by hand, not measured, and one axis contradicted the index\'s own data. GPTQ and HQQ descriptions now only claim what can be checked.',
+    zh: '格式页面不再说 AWQ 的 4-bit 精度最高。在本索引中同时提供两者的每个模型上，AWQ INT4 的文件更小，但质量损失比 GGUF Q4_K_M 更大 —— 页面现在照实这么写，也不再声称 AWQ 只能用于 NVIDIA。六维格式雷达图已移除：它的分数是手工填写的，不是实测，其中一项还与本索引自己的数据相矛盾。GPTQ 和 HQQ 的介绍现在只保留可以核实的说法。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The Nginx reverse-proxy guide used an HTTP/2 setting that only newer Nginx versions understand, so its config failed to load on the Nginx that Ubuntu 22.04 and 24.04 install. It now uses the form that works on every version. The guide also says where each part of the config goes, and corrects a claim that llama.cpp and vLLM have no API keys: both accept one, though neither requires it, and Ollama has no key option at all.',
     zh: 'Nginx 反向代理指南用了一个只有较新版本 Nginx 才认识的 HTTP/2 写法，Ubuntu 22.04 和 24.04 自带的 Nginx 加载这份配置会直接报错。现在改成了所有版本都能用的写法。指南还注明了每段配置该放在哪里，并更正了“llama.cpp 和 vLLM 没有 API 密钥”的说法：两者都能设置密钥，只是默认不要求；Ollama 则完全没有密钥选项。',
   },

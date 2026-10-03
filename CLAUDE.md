@@ -125,7 +125,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `--disable-javascript`: above-the-fold content must render in full. framer-motion is **not** a
   dependency any more — do not reintroduce it for an entrance animation.
 - **Recharts must be lazy** — import chart components via `next/dynamic` (`ssr: false` + a
-  skeleton), never statically from a page (see `FormatRadarLazy`, `BenchCharts`).
+  skeleton), never statically from a page (see `BenchCharts`).
 - **OG image is `/og.png`** (rendered from master `og.svg`, README §10 recipe) — social
   platforms don't render SVG `og:image`; re-render the PNG whenever `og.svg` changes. GPU, model,
   cookbook, `/best/` and format pages override this with their own build-time-generated
@@ -210,8 +210,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **An interactive tool needs a static answer beside it.** Before hydration the VRAM calculator is
   an inert dropdown; `VramQuickReference` puts the same arithmetic into the exported HTML. Never size
   a model at a context longer than its own `contextLength` in a summary table.
-- **A chart's text equivalent must live outside the lazy chart component.** `BenchCharts` and
-  `FormatRadarLazy` are `ssr: false`; a table placed inside one exists only after hydration, for
+- **A chart's text equivalent must live outside the lazy chart component.** `BenchCharts` is
+  `ssr: false` (the format radar was too, until it was removed); a table placed inside one exists only after hydration, for
   readers already running Recharts. `BenchDataTables` renders from the page instead, so the figures
   are in the exported HTML.
 - **A collapsed-by-default disclosure renders nothing into a static export.** `MethodologyPanel`'s
@@ -314,7 +314,9 @@ NVFP4 and "Official QAT"); a zero count for something the site does not track is
 with a new name. A format with no published perplexity anywhere shows a dash — a median over an
 empty set is not 0%.
 
-**An editorial judgement is shown as an order, never as a number.** The Heat Index printed
+**An editorial judgement is shown as an order, never as a number.** (The six-axis format radar — typed
+0–100 scores — was removed for this on 2026-10-03; its accuracy axis also contradicted the paired data.
+A format card's quality claim must survive a paired comparison over the index, e.g. AWQ vs Q4_K_M.) The Heat Index printed
 `GGUF 89%` from no reproducible source, and pair pages set it beside the measured model counts.
 `heatPercent` now only sorts; anything typed from opinion rather than data gets a rank or a word.
 
@@ -954,6 +956,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Format cards vs the data; radar removed** — AWQ "best 4-bit accuracy" was false on 53/53 paired models (higher loss, 18% smaller); GPTQ/HQQ quality claims unsupported (0 pairs / 0 models); typed-score radar deleted |
 | 2026-10-03 | **Nginx proxy guide** — `http2 on;` needs Nginx 1.25.1+, Ubuntu 22.04/24.04 ship 1.18/1.24 → config failed `nginx -t`; now `listen 443 ssl http2;`. llama.cpp/vLLM *do* have `--api-key` (not required by default) |
 | 2026-10-03 | **Qwen Coder 32B guide** — per-context verdicts (GGUF 104% at 16K; AWQ 107% at 32K); "best coding model" claim dropped (no coding benchmarks); Qwen3-Coder 30B-A3B AWQ 80% at 32K as the long-context option, repo left as a placeholder |
 | 2026-10-03 | **VPS guide** — prose said physical cores, command passed `-t $(nproc)` (vCPUs); `-t` dropped (llama.cpp defaults to physical cores); unverifiable Hetzner plan/price removed; RAM at 8K/32K/128K from `calcVRAM` (full window doesn't fit 16 GB) |

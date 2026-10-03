@@ -173,10 +173,6 @@ export const translations = {
         showLess: 'Show fewer',
         latest: 'Latest {n} of {total}',
       },
-      radar: {
-        title: 'Format Intelligence Radar',
-        subtitle: 'Compare quantization formats across 6 key dimensions',
-      },
     },
     hub: {
       title: 'Quant Hub',
@@ -1141,10 +1137,6 @@ export const translations = {
         showAll: '展开全部 {n} 条',
         showLess: '收起',
         latest: '最近 {n} 条 / 共 {total} 条',
-      },
-      radar: {
-        title: '格式特征雷达图',
-        subtitle: '六个维度多方位对比主流量化格式',
       },
     },
     hub: {
