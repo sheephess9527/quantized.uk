@@ -894,6 +894,8 @@ With real traffic, **freshness > new tools**. Suggested rhythm:
 both feeds and the homepage. Write what changed for someone using the site — no ticket ids, function
 or file names, "the audit said", or process narration — and keep it to a few sentences. The
 engineering detail (sources, before/after figures, what was deliberately not done) goes in README §9.
+The feed's item `<title>` is the entry's **first sentence** (`headline()` in `lib/feed/build.ts`) —
+so lead each entry with a sentence that stands alone as a headline.
 
 **A ship is not done when the code is right.** `lib/data/meta.ts` is part of the change, not
 paperwork after it: a commit that alters behaviour but leaves `dataLastUpdated` and `changelog`

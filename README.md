@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (p) — RSS changelog items get headlines
+
+`lib/feed/build.ts` used each changelog entry's full text (often 500+ characters) as the item
+`<title>`, so feed readers listing titles on one line cut every item mid-sentence. `headline()` now
+takes the first sentence (EN `.!?` before whitespace, ZH `。！？`), trimmed at a word boundary past
+110 / 60 characters with an ellipsis; the full entry stays in `<description>`. The item `<link>`
+pointed at `/#changelog` (the homepage's collapsed block) and now points at `/changelog/` (or
+`/zh/changelog/`). The guid is unchanged, so existing subscribers see no duplicate items.
+
 ### 2026-10-03 (o) — +2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B; guide model-count gate
 
 New pack `lib/data/models-extra-12.ts`, both full attention on every layer (no new sizing shape):

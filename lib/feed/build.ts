@@ -12,6 +12,27 @@ function escapeXml(s: string) {
     .replace(/"/g, '&quot;');
 }
 
+/**
+ * A changelog entry is a paragraph; an RSS `<title>` is a headline. Feed readers show the title in
+ * a one-line list, so the whole entry there was truncated mid-sentence on every item. The title is
+ * the first sentence (cut at a word boundary if even that is long); the full text stays in
+ * `<description>`.
+ */
+function headline(text: string, lang: Lang): string {
+  const max = lang === 'zh' ? 60 : 110;
+  // A clause break (colon, semicolon, dash) is a better cut than a mid-clause ellipsis.
+  const m = lang === 'zh'
+    ? text.match(/^.+?(?=[。！？：；]|\s?——)/)
+    : text.match(/^.+?(?=[.!?;:](?:\s|$)| — )/);
+  let h = (m ? m[0] : text).trim().replace(/[.:;,—，\s]+$/, '');
+  if (h.length > max) {
+    const cut = h.slice(0, max);
+    const sp = cut.lastIndexOf(lang === 'zh' ? '，' : ' ');
+    h = (sp > max / 2 ? cut.slice(0, sp) : cut).replace(/[\s,;:—，]+$/, '') + '…';
+  }
+  return h;
+}
+
 const CHANNEL = {
   en: {
     title: 'quantized.uk — updates',
@@ -50,8 +71,8 @@ export function buildFeed(lang: Lang): string {
     const text = entry[lang];
     items.push(`
     <item>
-      <title>${escapeXml(text)}</title>
-      <link>${SITE_URL}${c.base}/#changelog</link>
+      <title>${escapeXml(headline(text, lang))}</title>
+      <link>${SITE_URL}${c.base}/changelog/</link>
       <guid isPermaLink="false">changelog-${lang}-${entry.date}-${escapeXml(entry.en.slice(0, 40))}</guid>
       <pubDate>${new Date(entry.date + 'T12:00:00Z').toUTCString()}</pubDate>
       <description>${escapeXml(text)}</description>
