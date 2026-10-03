@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (k) — VPS llama.cpp guide: thread contradiction, unverified plan, real memory
+
+- **Self-contradiction:** the prose said "set the thread count to your physical core count" and the
+  command passed `-t $(nproc)` (vCPUs — hyperthreads on many plans). Dropped `-t`: llama.cpp's
+  default is `common_cpu_get_num_math()` = physical cores (source read for the 2026-10-03 (j) ship).
+  `lscpu` check for `Thread(s) per core` added. The CLI tool takes the reader's own `-t` value, so
+  it was left alone.
+- **Unverifiable provider claim removed:** "~€15–25/month for an 8-core 16–32 GB instance (Hetzner
+  CX32-class)". The plan naming did not obviously match the stated size and neither price nor spec
+  could be checked from here (provider sites blocked) — removed, FAQ reworded to "a budget 16 GB VPS".
+- **Memory now from `calcVRAM`:** Llama 3.1 8B Q4_K_M = 6.19 GB @8K, 9.49 @32K, 22.69 @128K — the
+  guide had only "4.6 GB of weights … room past 8K", silently implying the trained window fits 16 GB.
+- Speed check added (`llama-bench`, `tg128`) — the section claimed to "confirm both" start-up and
+  speed but only checked start-up. Build prerequisites re-checked against `docs/build.md` (OpenSSL
+  optional, not needed with a reverse proxy). `updatedAt` 2026-10-03, no `verifiedAt`.
+
 ### 2026-10-03 (j) — Quantize-your-own-GGUF + CPU inference guides vs llama.cpp master
 
 Read from `ggml-org/llama.cpp` master: `tools/quantize/README.md`, `tools/imatrix/README.md`,

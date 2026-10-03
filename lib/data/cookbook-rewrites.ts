@@ -1150,7 +1150,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'llama-vps-llamacpp': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     verifiedStack: {
       en: 'Ubuntu 22.04/24.04 VPS · llama.cpp CPU build (GGML_BLAS optional) · GGUF Q4_K_M · llama-server',
@@ -1162,7 +1162,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         headingZh: '开始之前',
         body: 'A Linux VPS with at least 16 GB RAM — 32 GB gives more comfortable headroom for the OS and a longer context window. CPU-only inference on a small model is genuinely usable for personal use, which is the honest case for this whole guide: it is not a production API, it is a private assistant that costs less than a coffee subscription.',
         bodyZh: '一台至少 16 GB 内存的 Linux VPS——32 GB 能给系统和更长的上下文窗口留出更舒适的余量。小模型的纯 CPU 推理对个人使用来说是真的可用，这也是这整篇指南存在的理由：它不是一个生产 API，而是一个花费不到一杯咖啡订阅费的私人助手。',
-        code: { lang: 'bash', content: '# Tested on Ubuntu 22.04/24.04 LTS. Typical cost: ~€15-25/month\n# for an 8-core, 16-32GB instance (Hetzner CX32-class or similar).\nfree -h\nnproc --all' },
+        code: { lang: 'bash', content: '# Ubuntu 22.04/24.04 LTS. Check what the plan actually gives you:\nfree -h\nlscpu | grep -E "^CPU\\(s\\)|^Thread|^Core|^Socket"\n# vCPUs are often hyperthreads: "Thread(s) per core: 2" means\n# half of nproc is the number of real cores.' },
       },
       {
         heading: 'Build llama.cpp',
@@ -1174,22 +1174,22 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Download the model and start the server',
         headingZh: '下载模型并启动服务',
-        body: 'Q4_K_M is the right default — 4.6 GB of weights, comfortable in 16 GB of RAM with room for the OS and a real context window. Set the thread count to your physical core count, bind to loopback, and put an API key in front of it if this box has any public exposure at all.',
-        bodyZh: 'Q4_K_M 是合适的默认选择——权重 4.6 GB，在 16 GB 内存里很从容，还能给系统和真正的上下文窗口留出空间。线程数设成物理核心数，绑定到回环地址，如果这台机器有任何公网暴露，就在前面加一个 API key。',
-        code: { lang: 'bash', content: 'pip install -U huggingface_hub\nhf download bartowski/Meta-Llama-3.1-8B-Instruct-GGUF \\\n  --include "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf" --local-dir ./models\n\n./build/bin/llama-server \\\n  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \\\n  --host 127.0.0.1 --port 8080 \\\n  -c 8192 -t $(nproc) \\\n  --api-key "your-secret-key"' },
+        body: 'Q4_K_M is the right default — 4.6 GB of weights, comfortable in 16 GB of RAM with room for the OS and a real context window. Leave `-t` out: llama.cpp already uses the physical core count, while `$(nproc)` counts vCPUs, which on many plans are hyperthreads and add contention rather than speed. Bind to loopback, and put an API key in front of it if this box has any public exposure at all.',
+        bodyZh: 'Q4_K_M 是合适的默认选择——权重 4.6 GB，在 16 GB 内存里很从容，还能给系统和真正的上下文窗口留出空间。不要写 `-t`：llama.cpp 本来就用物理核心数，而 `$(nproc)` 数的是 vCPU，在很多套餐上那是超线程，只会增加争用而不会更快。绑定到回环地址，如果这台机器有任何公网暴露，就在前面加一个 API key。',
+        code: { lang: 'bash', content: 'pip install -U huggingface_hub\nhf download bartowski/Meta-Llama-3.1-8B-Instruct-GGUF \\\n  --include "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf" --local-dir ./models\n\n./build/bin/llama-server \\\n  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \\\n  --host 127.0.0.1 --port 8080 \\\n  -c 8192 \\\n  --api-key "your-secret-key"' },
       },
       {
         heading: 'Check it actually worked',
         headingZh: '确认它真的没问题',
-        body: 'A successful start is not the same as a usably fast one on a VPS — confirm both. The binary is `llama-server`; older tutorials referencing a bare `server` binary predate the CLI rename.',
-        bodyZh: '在 VPS 上，「启动成功」和「速度可用」不是一回事——两个都要确认。可执行文件是 `llama-server`；旧教程里那个裸 `server` 的名字是 CLI 改名之前的写法。',
-        code: { lang: 'bash', content: 'curl -H "Authorization: Bearer your-secret-key" \\\n  http://127.0.0.1:8080/v1/chat/completions \\\n  -H "Content-Type: application/json" \\\n  -d \'{"messages":[{"role":"user","content":"hi"}]}\'\n\n# Watch resident memory while it runs:\nps aux | grep llama-server' },
+        body: 'A successful start is not the same as a usably fast one on a VPS — confirm both: one request proves the server answers, and `llama-bench` measures generation (`tg128`) on the hardware you are actually renting. The binary is `llama-server`; older tutorials referencing a bare `server` binary predate the CLI rename.',
+        bodyZh: '在 VPS 上，「启动成功」和「速度可用」不是一回事——两个都要确认：发一个请求证明服务能应答，再用 `llama-bench` 在你实际租用的硬件上测生成速度（`tg128`）。可执行文件是 `llama-server`；旧教程里那个裸 `server` 的名字是 CLI 改名之前的写法。',
+        code: { lang: 'bash', content: 'curl -H "Authorization: Bearer your-secret-key" \\\n  http://127.0.0.1:8080/v1/chat/completions \\\n  -H "Content-Type: application/json" \\\n  -d \'{"messages":[{"role":"user","content":"hi"}]}\'\n\n# Watch resident memory while it runs:\nps aux | grep llama-server\n\n# Generation speed on this box (tg128 row = tokens/s):\n./build/bin/llama-bench -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf' },
       },
       {
         heading: 'What the numbers should look like',
         headingZh: '数字大概该是什么样',
-        body: 'Llama 3.1 8B at Q4_K_M is 4.6 GB of weights. Generation speed is bandwidth divided by that figure, and system RAM bandwidth on a shared VPS varies far more than GPU VRAM bandwidth does — it depends on what the host actually allocates you, not just the advertised vCPU count — so this guide will not quote a specific tok/s figure nobody here measured on your specific provider. Memory is the number worth watching: 4.6 GB of weights plus the OS should sit comfortably inside 16 GB, leaving room for a context window past the 8K used above.',
-        bodyZh: 'Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB。生成速度是「带宽除以这个数字」，而共享型 VPS 的系统内存带宽差异，比显卡显存带宽的差异大得多——它取决于宿主机实际分配给你的资源，而不只是宣传的 vCPU 数量——所以本文不会引用一个没有人在你具体的服务商上实测过的 tok/s 数字。真正值得盯的是内存：4.6 GB 权重加上系统开销应该能舒适地放进 16 GB，还能给比上面用的 8K 更长的上下文留出空间。',
+        body: 'Llama 3.1 8B at Q4_K_M is 4.6 GB of weights. Generation speed is bandwidth divided by that figure, and system RAM bandwidth on a shared VPS varies far more than GPU VRAM bandwidth does — it depends on what the host actually allocates you, not just the advertised vCPU count — so this guide will not quote a specific tok/s figure nobody here measured on your specific provider. Memory is the number worth watching. On this site\u2019s calculator, Llama 3.1 8B at Q4_K_M at 8K context comes to about 6.2 GB, and at 32K about 9.5 GB. Either fits a 16 GB box with the OS beside it. The model\u2019s full 128K window needs about 22.7 GB and does not fit, so set `-c` deliberately rather than leaving it at the trained length.',
+        bodyZh: 'Llama 3.1 8B 的 Q4_K_M 权重是 4.6 GB。生成速度是「带宽除以这个数字」，而共享型 VPS 的系统内存带宽差异，比显卡显存带宽的差异大得多——它取决于宿主机实际分配给你的资源，而不只是宣传的 vCPU 数量——所以本文不会引用一个没有人在你具体的服务商上实测过的 tok/s 数字。真正值得盯的是内存。按本站计算器，Llama 3.1 8B 的 Q4_K_M 在 8K 上下文下约 6.2 GB，32K 下约 9.5 GB，两者都能和系统一起放进 16 GB 的机器。这个模型完整的 128K 窗口需要约 22.7 GB，放不下，所以要明确设置 `-c`，不要让它停留在训练时的长度。',
       },
       {
         heading: 'When it does not work',
@@ -1200,10 +1200,10 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
     faqs: [
       {
-        q: 'Is a €20/month VPS actually usable for running an 8B model?',
-        qZh: '一台 €20/月 的 VPS 真的能跑 8B 模型吗？',
-        a: 'For personal use, yes. Llama 3.1 8B at Q4_K_M needs 4.6 GB of weights, comfortable on a 16GB instance. Generation speed depends on the provider’s system RAM bandwidth, which this index has not measured across providers — treat it as usable for a private assistant, not as a production API with guaranteed throughput.',
-        aZh: '个人使用的话可以。Llama 3.1 8B 的 Q4_K_M 权重需要 4.6 GB，16 GB 的实例很从容。生成速度取决于服务商的系统内存带宽，本索引没有跨服务商测过这个数字——把它当作一个可用的私人助手，而不是有吞吐保证的生产级 API。',
+        q: 'Is a budget 16 GB VPS actually usable for running an 8B model?',
+        qZh: '一台 16 GB 内存的廉价 VPS 真的能跑 8B 模型吗？',
+        a: 'For personal use, yes. Llama 3.1 8B at Q4_K_M needs 4.6 GB of weights and about 6.2 GB at 8K context, comfortable on a 16 GB instance. Generation speed depends on the provider’s system RAM bandwidth, which this index has not measured across providers — treat it as usable for a private assistant, not as a production API with guaranteed throughput.',
+        aZh: '个人使用的话可以。Llama 3.1 8B 的 Q4_K_M 权重需要 4.6 GB，8K 上下文下合计约 6.2 GB，16 GB 的实例很从容。生成速度取决于服务商的系统内存带宽，本索引没有跨服务商测过这个数字——把它当作一个可用的私人助手，而不是有吞吐保证的生产级 API。',
       },
       {
         q: 'Should I build llama.cpp with OpenBLAS on a VPS?',

@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The VPS guide for llama.cpp told readers to use their physical core count, then passed every vCPU to the server — on many plans those are hyperthreads that slow it down. The command now leaves the thread count to llama.cpp, which picks physical cores itself. The guide also gives the real memory figures (about 6.2 GB at 8K context, 9.5 GB at 32K; the model\'s full window does not fit 16 GB), adds a speed check, and drops a provider price and plan name this site could not confirm.',
+    zh: 'llama.cpp 的 VPS 指南一边让读者用物理核心数，一边又把所有 vCPU 都交给了服务端 —— 在很多套餐上，这些 vCPU 是超线程，反而会变慢。现在命令不再指定线程数，交给 llama.cpp 自己选物理核心。指南还给出了真实的内存数字（8K 上下文约 6.2 GB，32K 约 9.5 GB；该模型完整的上下文窗口放不进 16 GB），加了测速步骤，并删掉了本站无法核实的服务商价格和套餐名称。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The guides on quantizing your own GGUF and on CPU inference were checked against llama.cpp\'s current tools. llama-cli is now a chat program, so the one-off test commands would have sat waiting for more input. The quantize guide now adds the flag that answers once and exits. The CPU guide now measures speed with llama-bench, which reports prompt processing and generation separately. The quantize guide also converts at BF16, as llama.cpp\'s own example does, and saves the importance matrix in the current file format. The CPU guide notes that llama.cpp already picks your physical core count on its own.',
     zh: '“自己量化 GGUF”和“CPU 推理优化”两篇指南已对照 llama.cpp 当前的工具核对。llama-cli 现在是聊天程序，原来的一次性测试命令执行后会停在那里等你继续输入。量化指南现在加上了“回答一次就退出”的参数；CPU 指南改用 llama-bench 测速，它会把提示词处理和生成速度分开报告。量化指南还改成按 llama.cpp 官方示例用 BF16 转换，并用当前格式保存重要性矩阵。CPU 指南则注明了 llama.cpp 默认就会自动使用物理核心数。',
   },

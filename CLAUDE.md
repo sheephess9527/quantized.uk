@@ -622,7 +622,7 @@ generated mapping is `127.0.0.1:` and carries `exposureNote`. Native servers bin
 **`llama-cli` is a chat program now (re-checked 2026-10-03):** `-p` alone answers then waits for input —
 add `-st` for one turn, or use `llama-completion -no-cnv` for raw text; it no longer prints timings
 (`--perf` defaults off), so measure speed with `llama-bench` (`pp512` / `tg128`). `llama-imatrix -o`
-needs a `.gguf` extension or it writes the legacy format. `-t` unset already means physical cores.
+needs a `.gguf` extension or it writes the legacy format. `-t` unset already means physical cores — never write `-t $(nproc)` (vCPUs/hyperthreads).
 
 **llama.cpp facts re-checked 2026-10-02** (`docs/build.md`, `docs/docker.md`, source): the offload log
 line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); HIP builds use
@@ -951,6 +951,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **VPS guide** — prose said physical cores, command passed `-t $(nproc)` (vCPUs); `-t` dropped (llama.cpp defaults to physical cores); unverifiable Hetzner plan/price removed; RAM at 8K/32K/128K from `calcVRAM` (full window doesn't fit 16 GB) |
 | 2026-10-03 | **Quantize + CPU guides vs llama.cpp master** — `llama-cli` is chat-only now (`-st` for one-shot; no timings → `llama-bench`); imatrix `-o` needs `.gguf` or writes legacy; convert at `bf16`; `-t` defaults to physical cores |
 | 2026-10-03 | **vLLM guides vs V1 source** — `PreemptionMode.RECOMPUTE` was V0 (deleted); V1 shows `Preemptions:` in its stats line + `vllm:num_preemptions`; install lacked the venv `uv pip` requires (guide + CLI); AutoAWQ deprecated |
 | 2026-10-03 | **Docker + Ollama guide** — 218 tok/s was vLLM AWQ, not Ollama (llama.cpp Q4_K_M is 148); `nvidia-ctk runtime configure` step added; AMD via `:rocm` + `/dev/kfd` `/dev/dri`; 4 FAQs |
