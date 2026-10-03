@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (r) — Quarterly supersede: Gemma 2 ×3, Mistral 7B v0.3
+
+| Legacy | → Successor | Context | Q4_K_M `vramGB` |
+|---|---|---|---|
+| Gemma 2 2B | Gemma 4 E2B | 8K → 128K | 2.0 → 2.82 |
+| Gemma 2 9B | Gemma 4 E4B | 8K → 128K | 6.5 → 4.56 |
+| Gemma 2 27B | Gemma 3 27B | 8K → 128K | 18.5 → 16.2 |
+| Mistral 7B v0.3 | Ministral 3 8B | 32K → 256K | 5.2 → 5.2 |
+
+Rules applied: same maker; `supersededDiffNote()` must land on its context branch (never the generic
+"still gets builds" line, which nobody here can verify); the successor must fit the hardware the
+legacy model fit. That last check changed one pick: Gemma 2 9B first pointed at Gemma 3 12B, whose
+8.8 GB would have told an 8 GB-card reader to "prefer" a model their card cannot hold comfortably —
+switched to Gemma 4 E4B. **Deliberately not superseded:** Llama 3.1 70B → 3.3 70B and Phi-3.5 mini →
+Phi-4-mini (same context and quant count, so the only available reason is the unverifiable generic
+line); Phi-3 medium → Phi-4 (16K < 131K context); Qwen2.5 → Qwen3 (41K < 131K).
+`homePicks` swept over every GPU × use case before and after: 654 picks, identical — none of the
+four held a recommendation.
+
 ### 2026-10-03 (q) — Homepage picks + share card catch up
 
 - `todayFeed` (`lib/data/models.ts`): ERNIE 4.5 21B-A3B and SmolLM3 3B added at the top (both

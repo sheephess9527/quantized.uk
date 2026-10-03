@@ -212,6 +212,8 @@ const baseModels: QuantModel[] = [
     name: 'Gemma 2 9B Instruct',
     family: 'Google Gemma 2',
     params: 9.24,
+    status: 'superseded',
+    supersededBy: 'gemma-4-e4b',
     paramLabel: '9B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],

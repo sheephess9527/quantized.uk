@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'Four older models are now marked as legacy, each pointing to a newer model from the same maker that fits the same hardware. Gemma 2 2B points to Gemma 4 E2B, Gemma 2 9B to Gemma 4 E4B, Gemma 2 27B to Gemma 3 27B, and Mistral 7B v0.3 to Ministral 3 8B. The newer models read 128K–256K tokens of context where the old ones stopped at 8K–32K, and each needs about the same memory or less at Q4_K_M, except Gemma 4 E2B, which needs about 0.8 GB more. The old pages stay up; the Hub hides them unless you choose to show legacy models.',
+    zh: '四个较老的模型已标为“旧版”，各自指向同一厂商、能在同样硬件上运行的新模型：Gemma 2 2B → Gemma 4 E2B，Gemma 2 9B → Gemma 4 E4B，Gemma 2 27B → Gemma 3 27B，Mistral 7B v0.3 → Ministral 3 8B。新模型的上下文为 128K–256K，旧模型只有 8K–32K；在 Q4_K_M 下显存占用相当或更少，只有 Gemma 4 E2B 多约 0.8 GB。旧页面继续保留；模型库默认隐藏旧版模型，可手动显示。',
+  },
+  {
+    date: '2026-10-03',
     en: 'Two models added, both picked for modest hardware. SmolLM3 3B is Hugging Face\'s fully open 3B model, with its training data published. At Q4_K_M it is about 2.3 GB at 4K context, fits an 8 GB card even at its full 64K window, and is realistic on a CPU. ERNIE 4.5 21B-A3B is Baidu\'s mixture-of-experts model, about 21.8B parameters in total with roughly 3B active per token. At Q4_K_M it is about 14.1 GB, right at the edge of comfortable on a 16 GB card, and comfortable on 24 GB. Both now appear in the homepage picks. Sizes for both are estimates: no file size could be checked, and no quality figures have been published. The RSS feed also lists the newest models again: it had been showing the same 20 older ones since August. Each update in the feed now has a short headline instead of the whole paragraph, and links to the changelog page.',
     zh: '新增两个模型，都是为普通硬件挑选的。SmolLM3 3B 是 Hugging Face 完全开源的 3B 模型，训练数据一并公开；Q4_K_M 在 4K 上下文下约 2.3 GB，即使用满 64K 窗口也能放进 8 GB 显卡，在 CPU 上也现实可用。ERNIE 4.5 21B-A3B 是百度的混合专家模型，总参数约 21.8B，每个 token 约激活 3B；Q4_K_M 约 14.1 GB，在 16 GB 显卡上正好处于“宽裕”的边缘，在 24 GB 上则很宽裕。两者现已列入首页精选。两者的体积都是估算值：未能核对到文件大小，质量数据也未公布。RSS 订阅源也重新开始列出最新的模型：自 8 月以来，它一直显示同一批 20 个较早的模型。订阅源里的每条更新现在有简短标题，不再把整段文字当标题，并链接到更新日志页面。',
   },

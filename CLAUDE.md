@@ -405,7 +405,10 @@ phrase**. It tries context length, falls back to quant-level count, and only rea
 "still gets new builds" line when neither number favours the newer model. Pick the `supersededBy`
 target itself with the same care: the first pick for Command R 35B (context 131K) was a model with
 *less* context (41K) — checking the actual numbers before writing the reason caught it, and the
-target was swapped for one genuinely longer (262K). `/quant-hub/` hides superseded models by default
+target was swapped for one genuinely longer (262K). **The successor must also fit what the legacy model
+fit** — Gemma 2 9B (6.5 GB) → Gemma 3 12B (8.8 GB) would have told 8 GB readers to "prefer" a model
+their card cannot hold; it points at Gemma 4 E4B instead (2026-10-03). If the only reason
+`supersededDiffNote()` can give is its generic line, do not supersede. `/quant-hub/` hides superseded models by default
 (`?legacy=show` brings them back) — **never `noindex`** them, they keep their SEO value and their
 pages still 200.
 
@@ -963,6 +966,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Quarterly supersede** — Gemma 2 2B/9B/27B → Gemma 4 E2B / Gemma 4 E4B / Gemma 3 27B, Mistral 7B v0.3 → Ministral 3 8B; successor must fit the same hardware (9B's first pick, Gemma 3 12B, did not); Llama 3.1 70B / Phi-3.5 mini left (generic reason only) |
 | 2026-10-03 | **+2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B** — configs from transformers, context for SmolLM3 from HF's own post (64K native, 128K only via YaRN); all `estimated`; typed guide counts recomputed and now gated (`guideModelCountProblems`) |
 | 2026-10-03 | **Format cards vs the data; radar removed** — AWQ "best 4-bit accuracy" was false on 53/53 paired models (higher loss, 18% smaller); GPTQ/HQQ quality claims unsupported (0 pairs / 0 models); typed-score radar deleted |
 | 2026-10-03 | **Nginx proxy guide** — `http2 on;` needs Nginx 1.25.1+, Ubuntu 22.04/24.04 ship 1.18/1.24 → config failed `nginx -t`; now `listen 443 ssl http2;`. llama.cpp/vLLM *do* have `--api-key` (not required by default) |
