@@ -583,7 +583,7 @@ next gap. Never silently borrow a different card's row without naming the substi
 breaks. A bandwidth Apple does not state directly (the M1's, derived from its "M2 is 50% faster" and
 "M1 Max is nearly 6×" statements) carries a `bandwidthNote` saying so.
 
-**A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** A guide called
+**A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** **And re-run a guide's numbers after any arch fix** — the 2026-09-30 corrections moved three figures in the 8GB guide and pushed one row over the 88% line without anyone touching the guide. A guide called
 GGUF Q4_K_M "the sweet spot" for a 32B model on a 24GB card; run through the calculator it is 90% of
 the card — this site's own `tight`, not `comfortable`. Run the number before writing "fits" or
 "comfortable" into prose, the same rule as the VRAM-guide fault from 2026-09-08.
@@ -925,6 +925,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **8GB guide re-run** — three figures drifted after the 09-30 arch fixes; Llama 3.1 8B @16K is 91% (`tight`) but the row said "fits"; AWQ route is Linux/WSL2 only (vLLM); 2 image models added; 3 FAQs |
 | 2026-10-03 | **Mac M3 Pro guide** — "Metal can't partially offload" was false (Ollama splits over-budget models CPU/GPU); M3 Pro bandwidth ceilings as upper bounds; 3 FAQs; shared `isMoE()` (roofline missed `… MoE` labels — latent) |
 | 2026-10-02 | **EXL2 reality check** — ExLlamaV2 archived, TabbyAPI/text-gen-webui EXL3-only; CLI ExLlamaV2 server + image were invented (now real `examples/chat.py` with per-model template); `huggingface-cli` → `hf` everywhere; wizard stops recommending EXL2 for APIs; TabbyAPI guide rewritten |
 | 2026-10-02 | **Dual-GPU guide + two site-wide fixes** — llama.cpp `--fit` on by default (1 GiB/card) now handled with explicit `-ngl all -c`; the "old CMake flags are silently ignored" claim was false (`LLAMA_CUDA` warns + works, `LLAMA_CUBLAS` errors), fixed in 6 places; all CLI container ports bound to `127.0.0.1`, `vllm serve --host 127.0.0.1` |

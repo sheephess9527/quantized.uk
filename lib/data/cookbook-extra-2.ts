@@ -4,7 +4,7 @@ export const extraArticles2: Article[] = [
   {
     id: '8gb-gpu-starter-guide',
     gpuPreset: { gpuId: 'rtx4060', ctx: 4096 },
-    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'qwen3-4b', 'phi-4-mini', 'qwen3-vl-8b'],
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'qwen3-4b', 'phi-4-mini', 'qwen3-vl-8b', 'gemma-4-e4b'],
     title: '8GB GPU Starter Guide: 3060 / 4060 / 3070',
     titleZh: '8GB 显卡入门指南：3060 / 4060 / 3070',
     description: 'The most common local LLM hardware tier — which models, quants, and context lengths actually fit in 8GB VRAM.',
@@ -14,7 +14,7 @@ export const extraArticles2: Article[] = [
     tags: ['8GB VRAM', 'RTX 3060', 'RTX 4060', 'GGUF', 'Ollama'],
     publishedAt: '2026-06-24',
     // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-09-08',
+    updatedAt: '2026-10-03',
     // No `verifiedAt`: the guide previously carried one while its own VRAM
     // figures were ~2 GB above what this site's calculator returns for the
     // same models. The numbers are corrected and now derive from the index,
@@ -38,17 +38,17 @@ export const extraArticles2: Article[] = [
         bodyZh: '以下数字来自本站显存计算器的估算：按该量化档位实测的 bits-per-weight 计算权重，加上对应上下文的 KV 缓存，再加 10% 激活缓冲。它们不是实际文件大小，也不包含桌面本身已占用的显存 —— Windows 上通常是 0.5–1.5GB。这也是绿色区间到 88% 就截止、而不是 100% 的原因。4K 上下文下，8GB 显卡跑 7–8B 的 Q4_K_M 有实打实的余量；14B 在任何上下文下都装不进 Q4_K_M，因为光权重就超过整张卡。',
         code: {
           lang: 'text',
-          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        2.9 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.1 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.1 GB     fits, little margin\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
+          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        3.0 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.0 GB     fits\nGemma 4 E4B (image, audio)  Q4_K_M   4K        4.9 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nQwen3-VL 8B (image)         Q4_K_M   4K        6.2 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.3 GB     tight — 91% of the card\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
         },
       },
       {
         heading: 'What "over the card" actually means',
         headingZh: '“超出显卡容量”到底意味着什么',
-        body: 'A 14B at Q4_K_M needs about 9.7GB against 8GB of VRAM. That is not "tight" — it will not load fully on the GPU. Two real options: use the AWQ/GPTQ INT4 build of the same model, which the index puts at about 8.1GB and which is still above the comfortable band, or keep GGUF and offload part of the model to system RAM. Partial offload works and is what Ollama does by default when a model does not fit, but the layers left on the CPU are read over PCIe every token, so throughput falls sharply — how far depends on your PCIe link and RAM speed, and this guide has not measured it on your hardware. Budget for the offloaded weights in system RAM on top of what the OS needs: roughly 2GB for the 14B case above, and keep 16GB total system RAM as the floor.',
-        bodyZh: '14B 的 Q4_K_M 约需 9.7GB，而显卡只有 8GB。这不是“勉强”，而是根本无法完整装入 GPU。两条现实路径：改用同一模型的 AWQ/GPTQ INT4 版本（索引给出约 8.1GB，仍高于宽裕区间），或者继续用 GGUF 并把一部分模型卸载到系统内存。部分卸载确实可行，Ollama 在装不下时默认就这么做，但留在 CPU 上的层每生成一个 token 都要经 PCIe 读取，吞吐会大幅下降 —— 具体降多少取决于你的 PCIe 带宽和内存速度，本指南没有在你的硬件上实测过。请为卸载出去的权重额外预留系统内存：上面这个 14B 的例子约 2GB，系统内存建议不低于 16GB。',
+        body: 'A 14B at Q4_K_M needs about 9.7GB against 8GB of VRAM. That is not "tight" — it will not load fully on the GPU. Two real options: use the AWQ/GPTQ INT4 build of the same model, which the index puts at about 8.1GB and which is still above the comfortable band, — and note vLLM, which serves those, runs on Linux only (its docs say it does not support Windows natively), so on Windows that route goes through WSL2 — or keep GGUF and offload part of the model to system RAM. Partial offload works and is what Ollama does by default when a model does not fit, but the layers left on the CPU are read over PCIe every token, so throughput falls sharply — how far depends on your PCIe link and RAM speed, and this guide has not measured it on your hardware. Budget for the offloaded weights in system RAM on top of what the OS needs: roughly 2GB for the 14B case above, and keep 16GB total system RAM as the floor.',
+        bodyZh: '14B 的 Q4_K_M 约需 9.7GB，而显卡只有 8GB。这不是“勉强”，而是根本无法完整装入 GPU。两条现实路径：改用同一模型的 AWQ/GPTQ INT4 版本（索引给出约 8.1GB，仍高于宽裕区间）—— 注意提供这类服务的 vLLM 只支持 Linux（官方文档写明不原生支持 Windows），所以在 Windows 上要走 WSL2 —— 或者继续用 GGUF 并把一部分模型卸载到系统内存。部分卸载确实可行，Ollama 在装不下时默认就这么做，但留在 CPU 上的层每生成一个 token 都要经 PCIe 读取，吞吐会大幅下降 —— 具体降多少取决于你的 PCIe 带宽和内存速度，本指南没有在你的硬件上实测过。请为卸载出去的权重额外预留系统内存：上面这个 14B 的例子约 2GB，系统内存建议不低于 16GB。',
         code: {
           lang: 'bash',
-          content: '# llama.cpp: choose the split yourself, and watch the log line\n# "offloaded N/M layers to GPU" to confirm what actually landed on the card\nllama-server -m qwen3-14b-Q4_K_M.gguf -ngl 28 -c 2048 --host 127.0.0.1\n\n# Fewer layers on the GPU = less VRAM, slower generation.\n# Drop -ngl until it loads, rather than guessing.',
+          content: '# llama.cpp now picks the split itself by default: with -ngl left unset it\n# fits as many layers as it can while keeping 1 GiB of the card free\nllama-server -m qwen3-14b-Q4_K_M.gguf -c 2048 --host 127.0.0.1\n\n# Either way, the log line says what actually landed on the card:\n#   load_tensors: offloaded N/M layers to GPU\n# To choose yourself, pass -ngl (e.g. -ngl 28): fewer layers = less VRAM,\n# slower generation.',
         },
       },
       {
@@ -68,20 +68,40 @@ export const extraArticles2: Article[] = [
         bodyZh: '静默退回 CPU 卸载的模型照样能回答，只是很慢 —— 这正是“本地推理怎么这么卡”最常见的原因。两个检查点：`ollama ps` 会打印 PROCESSOR 一列，整模型都在显卡上时显示 100% GPU，否则会显示拆分比例（例如 70%/30% CPU/GPU）；`nvidia-smi` 中应能看到一个占用量接近上面估算值的进程。只要 PROCESSOR 里出现 CPU 占比，就换更小的模型或更低的量化档位，不要将就。',
         code: {
           lang: 'bash',
-          content: 'ollama ps\n# NAME            SIZE     PROCESSOR    UNTIL\n# qwen2.5:7b      5.6 GB   100% GPU     4 minutes from now\n\nnvidia-smi --query-compute-apps=pid,used_memory --format=csv',
+          content: 'ollama ps\n# NAME          ID     SIZE    PROCESSOR   UNTIL\n# qwen2.5:7b    <id>   ...     100% GPU    4 minutes from now\n\nnvidia-smi --query-compute-apps=pid,used_memory --format=csv',
         },
       },
       {
         heading: 'Common problems',
         headingZh: '常见问题',
-        body: 'Out of memory on load: the context is usually the cause, not the weights — the KV cache grows linearly with it, so 16K costs a 8B model about 2GB over its 4K figure. Lower the context first. Slow generation with a model that should fit: check `ollama ps` as above; something else on the card (a browser, a game, a second model still resident) is the usual culprit, and `ollama stop <model>` frees the previous one. Windows specifically: the desktop compositor holds VRAM that never appears in your model\'s own accounting, so treat the 88% band as the real ceiling.',
-        bodyZh: '加载时显存不足：多数情况是上下文而不是权重造成的 —— KV 缓存随上下文线性增长，8B 模型从 4K 提到 16K 大约要多占 2GB。先降上下文。本该装得下却很慢：按上面的方法看 `ollama ps`；通常是显卡上还有别的东西（浏览器、游戏、上一个还驻留的模型），`ollama stop <模型>` 可以释放前一个。Windows 特别注意：桌面合成器占用的显存不会出现在模型自己的统计里，所以请把 88% 这条线当作真正的上限。',
+        body: 'Out of memory on load: the context is usually the cause, not the weights — the KV cache grows linearly with it, so 16K costs an 8B model about 1.7GB over its 4K figure, and puts it at 91% of an 8GB card. Lower the context first. Slow generation with a model that should fit: check `ollama ps` as above; something else on the card (a browser, a game, a second model still resident) is the usual culprit, and `ollama stop <model>` frees the previous one. Windows specifically: the desktop compositor holds VRAM that never appears in your model\'s own accounting, so treat the 88% band as the real ceiling.',
+        bodyZh: '加载时显存不足：多数情况是上下文而不是权重造成的 —— KV 缓存随上下文线性增长，8B 模型从 4K 提到 16K 大约要多占 1.7GB，占到 8GB 显卡的 91%。先降上下文。本该装得下却很慢：按上面的方法看 `ollama ps`；通常是显卡上还有别的东西（浏览器、游戏、上一个还驻留的模型），`ollama stop <模型>` 可以释放前一个。Windows 特别注意：桌面合成器占用的显存不会出现在模型自己的统计里，所以请把 88% 这条线当作真正的上限。',
       },
       {
         heading: 'Next steps',
         headingZh: '下一步',
         body: 'Put your own card into the VRAM calculator to see the full list of what fits at the context you actually use — the numbers above are one row of that table. If you are on Windows, the WSL2 + Ollama GPU guide covers driver passthrough, which is where most 8GB setups actually get stuck.',
         bodyZh: '把你自己的显卡填进显存计算器，就能看到在你实际使用的上下文下完整的可运行列表 —— 上面的表格只是其中几行。如果你用 Windows，WSL2 + Ollama GPU 指南讲的是驱动直通，这才是多数 8GB 配置真正卡住的地方。',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can an 8GB GPU run a 14B model?',
+        qZh: '8GB 显卡能跑 14B 模型吗？',
+        a: 'Not entirely on the card. Qwen3 14B at Q4_K_M is about 9.7GB even at 2K context, so the weights alone are over 8GB. It still runs with part of the model offloaded to system RAM — Ollama and llama.cpp both do this by default — but the layers on the CPU slow every token down. The AWQ INT4 build is about 8.1GB, which still leaves no room for the desktop. For a model that sits fully on the card, stay at 7–8B.',
+        aZh: '没法完整放在显卡上。Qwen3 14B 的 Q4_K_M 即使在 2K 上下文下也要约 9.7GB，光权重就超过 8GB。把一部分模型卸载到系统内存还是能跑的 —— Ollama 和 llama.cpp 默认都会这么做 —— 但留在 CPU 上的层会拖慢每一个 token。AWQ INT4 版本约 8.1GB，仍然没给桌面留出余地。想让模型完整待在显卡上，就选 7–8B。',
+      },
+      {
+        q: 'Which models run on an 8GB card with image input?',
+        qZh: '8GB 显卡上有哪些能看图的模型？',
+        a: 'Two in this index fit comfortably at 4K context: Gemma 4 E4B at about 4.9GB, which also takes audio, and Qwen3-VL 8B at about 6.2GB. Both are Q4_K_M estimates from this site\'s calculator. Image input adds a vision encoder, which llama.cpp loads from a separate file and which these figures do not include, so leave some margin.',
+        aZh: '本索引里有两个在 4K 上下文下可以从容运行：Gemma 4 E4B 约 4.9GB，还支持音频输入；Qwen3-VL 8B 约 6.2GB。两者都是本站计算器给出的 Q4_K_M 估算。图像输入需要额外的视觉编码器，llama.cpp 会从单独的文件加载它，上面的数字不包含这部分，所以要留出一些余量。',
+      },
+      {
+        q: 'How much context can an 8GB card handle?',
+        qZh: '8GB 显卡能撑多长的上下文？',
+        a: 'For an 8B model at Q4_K_M, about 16K before it leaves the comfortable band: Llama 3.1 8B is 5.6GB at 4K and 7.3GB at 16K, which is 91% of the card — tight, with nothing left for the desktop. The KV cache is the only part that grows with context. A lower quant frees room for it by shrinking the weights; a smaller model does that and also has a smaller cache per token, so it buys more window for the same memory.',
+        aZh: '对 Q4_K_M 的 8B 模型来说，大约到 16K 就会离开宽裕区间：Llama 3.1 8B 在 4K 时 5.6GB，16K 时 7.3GB，占显卡的 91% —— 偏紧，已经没有余量留给桌面。随上下文增长的只有 KV 缓存。降低量化档位能通过缩小权重给它腾出空间；换更小的模型不但同样缩小权重，每个 token 的缓存也更小，所以同样的显存能换来更长的窗口。',
       },
     ],
   },

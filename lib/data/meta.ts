@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The 8GB GPU starter guide was re-run against the calculator. Three figures had drifted after earlier model-data corrections, and one verdict changed: Llama 3.1 8B at 16K context is 7.3GB, which is 91% of an 8GB card — tight, not a comfortable fit. The guide now lists two models that take images and still fit (Gemma 4 E4B and Qwen3-VL 8B), notes that the AWQ route needs Linux or WSL2 because vLLM does not run on Windows directly, reflects llama.cpp choosing the GPU layer count itself by default, and answers three common questions.',
+    zh: '8GB 显卡入门指南按计算器重新核对了一遍。早先修正模型数据后，有三个数字发生了变化，其中一个结论也变了：Llama 3.1 8B 在 16K 上下文下是 7.3GB，占 8GB 显卡的 91% —— 偏紧，而不是从容运行。指南现在列出了两个能看图、仍然装得下的模型（Gemma 4 E4B 和 Qwen3-VL 8B），注明 AWQ 路线需要 Linux 或 WSL2（vLLM 不能直接在 Windows 上运行），反映了 llama.cpp 默认会自行决定放多少层到 GPU，并新增三个常见问答。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The Mac M3 Pro guide corrected one wrong claim: it said a model too big for the Mac\'s GPU memory would fail to load or swap. Ollama actually splits it, running the layers that do not fit on the CPU, and its status shows that as a CPU/GPU percentage, which is the real sign you are over the limit. The guide now also gives the speed ceiling the M3 Pro\'s memory bandwidth sets (about 8 tokens per second for a 32B at 4-bit, clearly labelled as an upper bound rather than a measurement) and answers three questions.',
     zh: 'Mac M3 Pro 指南改正了一处错误说法：它说超出 Mac GPU 内存的模型会加载失败或触发换页。实际上 Ollama 会把它拆开，放不下的层跑在 CPU 上，状态里会显示 CPU/GPU 百分比 —— 这才是超限的真正信号。指南还新增了 M3 Pro 内存带宽决定的速度上限（4-bit 的 32B 约每秒 8 个 token，明确标注为上限而非实测），并新增三个问答。',
   },

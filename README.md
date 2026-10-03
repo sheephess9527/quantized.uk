@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (b) — 8GB starter guide re-run against the calculator
+
+Every row re-derived with `calcVRAM`: Phi-4 Mini 2.9 → 3.0 GB and Qwen3 4B Q6_K 4.1 → 4.0 GB (arch
+fixes of 2026-09-30), Llama 3.1 8B Q4_K_M @16K 7.1 → 7.3 GB = 91% — the site's `tight` band, so the
+row said "fits, little margin" against its own threshold; "16K costs ~2GB" → 1.7GB. Added Gemma 4
+E4B (4.9 GB) and Qwen3-VL 8B (6.2 GB) as the image-capable fits; `gemma-4-e4b` added to
+`relatedModelIds`. AWQ suggestion now says vLLM is Linux-only (vLLM `installation/gpu.md`: "does not
+support Windows natively"). Offload snippet updated for llama.cpp's default `-ngl auto` + `--fit`;
+`ollama ps` sample gains ID and drops a size that was another model's figure. 3 FAQs; `updatedAt`
+2026-10-03.
+
 ### 2026-10-03 — Mac M3 Pro guide: partial offload exists; bandwidth ceilings; shared `isMoE()`
 
 - **Wrong claim fixed**: the guide said "Metal has no partial-offload equivalent — a model that does
