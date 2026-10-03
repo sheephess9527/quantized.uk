@@ -79,8 +79,8 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
-    en: 'You can now write to the site\'s maintainer directly at zjy@quantized.uk — the address is in the footer of every page and on the About page. hello@quantized.uk still works for feedback and corrections.',
-    zh: '现在可以直接写信给本站维护者：zjy@quantized.uk —— 每一页的页脚和“关于”页面都有这个地址。反馈和纠错仍可发往 hello@quantized.uk。',
+    en: 'The site has one contact address now: zjy@quantized.uk, which reaches the maintainer directly. Use it for feedback, corrections and anything else — it is in the footer of every page and on the About page.',
+    zh: '本站现在只有一个联系邮箱：zjy@quantized.uk，可直接联系到维护者。反馈、纠错或其他事情都请发到这里 —— 每一页的页脚和“关于”页面都有这个地址。',
   },
   {
     date: '2026-10-03',

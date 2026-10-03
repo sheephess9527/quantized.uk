@@ -4,7 +4,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
 import { formatPairs } from '@/lib/utils/format-compare';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { SITE_URL, FEEDBACK_EMAIL, MAINTAINER_EMAIL } from '@/lib/seo';
+import { SITE_URL, FEEDBACK_EMAIL } from '@/lib/seo';
 
 export const dynamic = 'force-static';
 
@@ -69,7 +69,7 @@ export function GET() {
 
 ## Contact
 
-No public source repository link on the site. Feedback: ${FEEDBACK_EMAIL}. Maintainer: ${MAINTAINER_EMAIL}.
+No public source repository link on the site. Contact (feedback, corrections, the maintainer): ${FEEDBACK_EMAIL}.
 See /about/ for maintenance and update policy.
 `;
 

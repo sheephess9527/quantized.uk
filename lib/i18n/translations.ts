@@ -952,7 +952,6 @@ export const translations = {
       rssDesc: 'Plain feed. No email, no tracking.',
       changelogDesc: 'Every change, dated, including corrections.',
       foundWrong: 'Found a wrong number?',
-      maintainerContact: 'Maintainer',
     },
     common: {
       new: 'New',
@@ -1919,7 +1918,6 @@ export const translations = {
       rssDesc: '纯净订阅源，不收邮箱、不追踪。',
       changelogDesc: '每次变更都带日期，包括读者指出的修正。',
       foundWrong: '发现数字不对？',
-      maintainerContact: '维护者',
     },
     common: {
       new: '最新',

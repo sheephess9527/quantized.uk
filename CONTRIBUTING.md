@@ -133,4 +133,4 @@ Push to `main` → Cloudflare Pages builds `npm run build` → publishes `out/`.
 
 Do **not** put private GitHub profile/repo URLs on live site pages (Footer / About / marketing copy).
 
-Questions? Site feedback: `hello@quantized.uk`; maintainer: `zjy@quantized.uk` (both in the Footer).
+Questions? `zjy@quantized.uk` (Footer and `/about/`).

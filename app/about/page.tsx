@@ -4,7 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import { Heart } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { MODEL_COUNT, MAINTAINER_EMAIL } from '@/lib/seo';
+import { MODEL_COUNT, FEEDBACK_EMAIL } from '@/lib/seo';
 import EmailOffGuard from '@/components/ui/EmailOffGuard';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
@@ -40,10 +40,10 @@ export default function AboutPage() {
           {a.maintainerContact}{' '}
           <EmailOffGuard>
             <a
-              href={`mailto:${MAINTAINER_EMAIL}?subject=quantized.uk`}
+              href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk`}
               className="text-violet-400 hover:text-violet-300 transition-colors"
             >
-              {MAINTAINER_EMAIL}
+              {FEEDBACK_EMAIL}
             </a>
           </EmailOffGuard>
         </p>

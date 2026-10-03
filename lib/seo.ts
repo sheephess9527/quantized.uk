@@ -28,13 +28,12 @@ export const CPU_ROW_COUNT = gpuDatabase.length - GPU_COUNT;
 
 export const SITE_URL = 'https://quantized.uk';
 export const SITE_NAME = 'quantized.uk';
-/** General feedback / corrections address — Footer, the 404 page and the run-feedback mailto use it. */
-export const FEEDBACK_EMAIL = 'hello@quantized.uk';
 /**
- * The maintainer's own address, set by the site owner (2026-10-03). Shown beside the feedback
- * address in the Footer and on /about/; render it as text only through `EmailOffGuard`.
+ * The one contact address on the site — Footer, /about/, the 404 page, the run-feedback mailto,
+ * JSON-LD `contactPoint` and /llms.txt all use it. The site owner's own mailbox (2026-10-03); the
+ * earlier `hello@` was never confirmed to receive mail, so it was retired rather than kept beside it.
  */
-export const MAINTAINER_EMAIL = 'zjy@quantized.uk';
+export const FEEDBACK_EMAIL = 'zjy@quantized.uk';
 
 /** Search engine HTML-tag verification codes (public in page source). */
 export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dxbkmE';
