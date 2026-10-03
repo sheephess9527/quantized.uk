@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (l) — Qwen Coder 32B / 4090 guide: per-context verdicts, the long-context option
+
+All figures from `calcVRAM` on each model's own row (and passed by `guideFigureProblems()`):
+- **Stack line vs the numbers:** `verifiedStack` read "4K–16K context" for GGUF *or* AWQ, but GGUF
+  Q4_K_M is 21.7 / 22.8 / 25.0 GB at 4K / 8K / 16K (90 / 95 / **104%**). AWQ INT4 is 18.1 / 19.2 /
+  21.4 / 25.8 GB at 4K / 8K / 16K / 32K (75 / 80 / 89 / 107%). The guide now gives every band.
+- **Unearned ranking:** the description said "the best open coding model that fits in 24GB" — the
+  site runs no coding benchmarks. Rewritten as a fit question.
+- **Long-context option added:** Qwen3-Coder 30B-A3B (in the index) — Q4_K_M 19.7 GB @4K (82%),
+  22.6 @32K (94%); AWQ 16.4 @4K, 19.2 @32K (80%, comfortable). No AWQ repo name is given for it
+  (could not confirm which publisher ships one): a visible `<placeholder>` instead. No speed claim:
+  no measured row; MoE ceiling described qualitatively.
+- EXL2 3.5bpw build (16.0 GB @4K) acknowledged with the archived-runtime caveat. vLLM commands gain
+  `--host 127.0.0.1` (vLLM binds all interfaces by default) and the Linux/WSL2 note; the "check it
+  ran on the GPU" step adds `ollama ps`. 44 tok/s re-confirmed as `matrixData`'s llama.cpp Q4_K_M row
+  for base Qwen2.5 32B; ceiling 1008/18.7 ≈ 54 stated. `relatedModelIds` + `qwen3-coder-30b-a3b`.
+
 ### 2026-10-03 (k) — VPS llama.cpp guide: thread contradiction, unverified plan, real memory
 
 - **Self-contradiction:** the prose said "set the thread count to your physical core count" and the

@@ -951,6 +951,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Qwen Coder 32B guide** — per-context verdicts (GGUF 104% at 16K; AWQ 107% at 32K); "best coding model" claim dropped (no coding benchmarks); Qwen3-Coder 30B-A3B AWQ 80% at 32K as the long-context option, repo left as a placeholder |
 | 2026-10-03 | **VPS guide** — prose said physical cores, command passed `-t $(nproc)` (vCPUs); `-t` dropped (llama.cpp defaults to physical cores); unverifiable Hetzner plan/price removed; RAM at 8K/32K/128K from `calcVRAM` (full window doesn't fit 16 GB) |
 | 2026-10-03 | **Quantize + CPU guides vs llama.cpp master** — `llama-cli` is chat-only now (`-st` for one-shot; no timings → `llama-bench`); imatrix `-o` needs `.gguf` or writes legacy; convert at `bf16`; `-t` defaults to physical cores |
 | 2026-10-03 | **vLLM guides vs V1 source** — `PreemptionMode.RECOMPUTE` was V0 (deleted); V1 shows `Preemptions:` in its stats line + `vllm:num_preemptions`; install lacked the venv `uv pip` requires (guide + CLI); AutoAWQ deprecated |

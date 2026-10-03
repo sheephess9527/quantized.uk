@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The Qwen2.5-Coder 32B on RTX 4090 guide now gives a verdict for each context length, not only 4K. The GGUF build stops fitting at 16K, and the AWQ build is comfortable to 8K but does not fit at 32K. For long-context coding on a 24GB card it points to Qwen3-Coder 30B-A3B, whose AWQ build stays comfortable at 32K. It no longer calls either model "the best", because this site does not benchmark coding quality.',
+    zh: '“单卡 RTX 4090 运行 Qwen2.5-Coder 32B”指南现在给出每种上下文长度下的判定，而不只是 4K：GGUF 版本到 16K 就放不下，AWQ 版本 8K 以内宽裕、32K 放不下。需要在 24GB 显卡上做长上下文编程时，指南指向 Qwen3-Coder 30B-A3B —— 它的 AWQ 版本在 32K 下仍然宽裕。指南也不再称任何一个模型为“最佳”，因为本站不评测代码能力。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The VPS guide for llama.cpp told readers to use their physical core count, then passed every vCPU to the server — on many plans those are hyperthreads that slow it down. The command now leaves the thread count to llama.cpp, which picks physical cores itself. The guide also gives the real memory figures (about 6.2 GB at 8K context, 9.5 GB at 32K; the model\'s full window does not fit 16 GB), adds a speed check, and drops a provider price and plan name this site could not confirm.',
     zh: 'llama.cpp 的 VPS 指南一边让读者用物理核心数，一边又把所有 vCPU 都交给了服务端 —— 在很多套餐上，这些 vCPU 是超线程，反而会变慢。现在命令不再指定线程数，交给 llama.cpp 自己选物理核心。指南还给出了真实的内存数字（8K 上下文约 6.2 GB，32K 约 9.5 GB；该模型完整的上下文窗口放不进 16 GB），加了测速步骤，并删掉了本站无法核实的服务商价格和套餐名称。',
   },
