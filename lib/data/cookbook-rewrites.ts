@@ -20,7 +20,7 @@ import type { Article } from '@/lib/data/cookbook';
  */
 export const cookbookRewrites: Record<string, Partial<Article>> = {
   'rtx4060ti-what-to-run': {
-    updatedAt: '2026-09-30',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     relatedModelIds: ['qwen3-14b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
     content: [
@@ -40,8 +40,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The three worth starting with',
         headingZh: '值得从这三个开始',
-        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 11.7 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 83% of the card, with nothing left for context.',
-        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 11.7 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 83%，几乎没有余量留给上下文。',
+        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 12.8 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 83% of the card, with nothing left for context.',
+        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 12.8 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 83%，几乎没有余量留给上下文。',
         code: { lang: 'bash', content: 'ollama pull qwen3:14b\nollama run qwen3:14b' },
       },
       {
@@ -87,7 +87,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'mac-ollama-setup': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     content: [
       {
@@ -100,8 +100,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Pull a model and run it',
         headingZh: '拉一个模型跑起来',
-        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max runs 71 of the 81 models here comfortably — the largest being GLM-4.5-Air at 37.2 GB.',
-        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能从容运行本站 81 个模型中的 71 个 —— 最大的是 37.2 GB 的 GLM-4.5-Air。',
+        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 71 of the 87 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
+        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 87 个模型中的 71 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
         code: { lang: 'bash', content: 'ollama pull llama3.1:8b\nollama run llama3.1:8b "Summarise the difference between Q4_K_M and Q5_K_M."' },
       },
       {

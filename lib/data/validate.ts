@@ -2,7 +2,7 @@ import { models, todayFeed } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { quantBPW, quantGroups } from '@/lib/utils/vram';
+import { calcVRAM, quantBPW, quantGroups } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { isMoE } from '@/lib/utils/model-meta';
@@ -82,6 +82,58 @@ export function dataProblems(): string[] {
 
   for (const id of Object.keys(hfRepoMap)) {
     if (!modelIds.has(id)) out.push(`hfRepoMap: '${id}' is not a model id`);
+  }
+  out.push(...guideFigureProblems());
+  return out;
+}
+
+/**
+ * A size printed in a guide must still be what the calculator says. Guides
+ * quote calcVRAM output as text, so an arch or bpw fix silently leaves them
+ * behind — the 8GB guide drifted three figures and one verdict that way, and a
+ * GPT-OSS bpw fix moved two more. Strict on purpose: only a single sentence
+ * or table row naming a model, a quant level, a context ("8K") and a GB figure
+ * is checked, which is what makes a false positive unlikely. It must match the
+ * total or the weights within 0.3 GB.
+ */
+function guideFigureProblems(): string[] {
+  const out: string[] = [];
+  const aliases: { re: RegExp; m: (typeof models)[number] }[] = [];
+  for (const m of models) {
+    const base = m.name.replace(/\b(Instruct|IT|Chat|Preview)\b/gi, '').replace(/\s+/g, ' ').trim();
+    for (const a of Array.from(new Set([m.name, base]))) {
+      const esc = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '[ -]?');
+      aliases.push({ re: new RegExp(`(^|[^A-Za-z0-9.])${esc}(?![0-9.])`, 'i'), m });
+    }
+  }
+  aliases.sort((a, b) => b.re.source.length - a.re.source.length);
+  const LEVEL = /\b(Q[2-8]_K_[MS]|Q[2-8]_K|Q8_0|Q4_0|MXFP4|INT4|[2-8]\.\d+bpw)\b/;
+  for (const a of articles) {
+    const texts: string[] = [];
+    for (const sec of a.content ?? []) {
+      texts.push(sec.body ?? '');
+      if (sec.code?.content) texts.push(...sec.code.content.split('\n'));
+    }
+    for (const f of a.faqs ?? []) texts.push(f.a);
+    for (const t of texts) for (const sent of t.split(/(?<=[.;:—])\s+|\n/)) {
+      const gb = sent.match(/(\d+(?:\.\d+)?)\s*GB\b/);
+      const lv = sent.match(LEVEL);
+      const ctx = sent.match(/\b(\d+)K\b/);
+      if (!gb || !lv || !ctx) continue;
+      const hit = aliases.find(x => x.re.test(sent));
+      if (!hit) continue;
+      const m = hit.m;
+      const bpw = m.quants.find(q => q.level === lv[1])?.bpw ?? (quantBPW as Record<string, number>)[lv[1]];
+      if (!bpw) continue;
+      const r = calcVRAM({
+        paramsB: m.params, layers: m.arch.layers, kvHeads: m.arch.kvHeads, headDim: m.arch.headDim,
+        attention: m.arch.attention, bpw, contextLength: Number(ctx[1]) * 1024, batchSize: 1,
+      });
+      const stated = Number(gb[1]);
+      if (Math.abs(stated - r.totalGB) > 0.3 && Math.abs(stated - r.modelWeightsGB) > 0.3) {
+        out.push(`guide ${a.id}: "${sent.trim().slice(0, 90)}" says ${stated} GB; calculator gives ${r.totalGB.toFixed(1)} (weights ${r.modelWeightsGB.toFixed(1)})`);
+      }
+    }
   }
   return out;
 }

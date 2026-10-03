@@ -419,6 +419,29 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (c) — GPT-OSS effective bpw; guide figures gated against the calculator
+
+**GPT-OSS** MXFP4 rows used `bpw: 4.25` — MXFP4's rate, which applies only to the MoE expert tensors
+(OpenAI README: "MXFP4 quantization of the MoE weights"; llama.cpp `conversion/gpt_oss.py` repacks
+only the expert tensors). llama.cpp's own guide (ggml-org/llama.cpp discussion #15396) gives the
+GGUF files as 11.27 GiB (20B) and 59.02 GiB (120B) → effective 4.63 / 4.34 bpw. Cross-check: a
+tensor-by-tensor count from transformers `GptOssConfig` reproduces the parameter totals exactly
+(20.91B / 116.83B; 1.80B / 2.13B non-expert). 20B @4K 11.7 → 12.8 GB; 14 verdicts change (12 GB
+cards and 16 GB Macs tight → over; M3 Pro 18G comfortable → tight); comfortable counts unchanged.
+The same guide lists totals of 14.9 / 15.5 / 17.9 GB at 8K / 32K / 131K — higher than `calcVRAM`
+(12.9 / 13.5 / 16.0) because it counts compute buffers in full; the GPT-OSS guide now prints both and
+calls the calculator a lower bound rather than adding a model-specific fudge. Its "Q4_K_M overstates
+by ~14%" line (true only against 4.25) is gone. Q8_0/Q4_K_M GPT-OSS rows untouched (no source).
+
+**`guideFigureProblems()`** in `lib/data/validate.ts` (runs in `assertDataConsistent()`): any guide
+sentence or table row naming a model + quant level + context + GB figure must match `calcVRAM` total
+or weights within 0.3 GB. Strict single-sentence matching keeps false positives out (a paragraph-level
+variant mis-paired "288 GB/s" and a Q2_K figure). Proven by perturbation (restoring the Mac row's old
+11.8 fails the build). A broader one-off scan also fixed: RTX 4060 Ti guide 11.7 → 12.8; Mac setup
+guide "48GB M3 Max runs 71 of 81 … GLM-4.5-Air at 37.2 GB" — the 37.2 was Q2_K and over the 36 GB
+usable budget; now 71 of 87, largest Kimi Linear 48B-A3B at 30.4 GB. Mac M3 Pro guide GPT-OSS row
+11.8 → 12.9 (tight).
+
 ### 2026-10-03 (b) — 8GB starter guide re-run against the calculator
 
 Every row re-derived with `calcVRAM`: Phi-4 Mini 2.9 → 3.0 GB and Qwen3 4B Q6_K 4.1 → 4.0 GB (arch

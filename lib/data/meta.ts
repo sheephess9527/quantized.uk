@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'GPT-OSS sizes corrected. We were sizing GPT-OSS 20B and 120B as if every weight were stored at MXFP4\'s 4.25 bits, but only the expert layers are — the real files, per llama.cpp\'s own guide, are 11.3 GiB and 59 GiB. GPT-OSS 20B now needs about 12.8GB at 4K context rather than 11.7GB, so it no longer counts as fitting a 12GB card or a 16GB Mac, and it is tight on an 18GB M3 Pro. The GPT-OSS guide also quotes llama.cpp\'s own, higher totals beside ours. Four guides that printed the old figures were corrected, and the site now checks every size printed in a guide against the calculator whenever it is rebuilt.',
+    zh: 'GPT-OSS 的体积已更正。我们此前按"所有权重都是 MXFP4 的 4.25 bit"来估算 GPT-OSS 20B 和 120B，但实际上只有专家层是 —— 按 llama.cpp 官方指南，真实文件是 11.3 GiB 和 59 GiB。GPT-OSS 20B 在 4K 上下文下现在约需 12.8GB，而不是 11.7GB，因此不再算作能装进 12GB 显卡或 16GB 的 Mac，在 18GB 的 M3 Pro 上也属于偏紧。GPT-OSS 指南还在本站数字旁边列出了 llama.cpp 自己给出的、更高的总量。四篇印着旧数字的指南已更正；此后每次构建，网站都会把指南里印出的每个体积和计算器重新核对一遍。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The 8GB GPU starter guide was re-run against the calculator. Three figures had drifted after earlier model-data corrections, and one verdict changed: Llama 3.1 8B at 16K context is 7.3GB, which is 91% of an 8GB card — tight, not a comfortable fit. The guide now lists two models that take images and still fit (Gemma 4 E4B and Qwen3-VL 8B), notes that the AWQ route needs Linux or WSL2 because vLLM does not run on Windows directly, reflects llama.cpp choosing the GPU layer count itself by default, and answers three common questions.',
     zh: '8GB 显卡入门指南按计算器重新核对了一遍。早先修正模型数据后，有三个数字发生了变化，其中一个结论也变了：Llama 3.1 8B 在 16K 上下文下是 7.3GB，占 8GB 显卡的 91% —— 偏紧，而不是从容运行。指南现在列出了两个能看图、仍然装得下的模型（Gemma 4 E4B 和 Qwen3-VL 8B），注明 AWQ 路线需要 Linux 或 WSL2（vLLM 不能直接在 Windows 上运行），反映了 llama.cpp 默认会自行决定放多少层到 GPU，并新增三个常见问答。',
   },

@@ -417,6 +417,11 @@ questions and a legacy model's own GPU page should still say honestly that it fi
 `model-meta.ts`) with `speedRTX4090` default to **measured**; otherwise **estimated** unless
 `confidence` is set explicitly.
 
+**A native format's nominal rate is not the file's rate.** MXFP4 is 4.25 bits on the MoE experts
+only; GPT-OSS's attention and embeddings are wider, so its rows carry the *effective* bpw from the
+real file size (4.63 / 4.34, llama.cpp discussion #15396). Derive `bpw` from a file size whenever one
+exists; a format's headline number understated GPT-OSS 20B by ~1 GB for two months.
+
 **Natively-quantized weights** (e.g. GPT-OSS ships as MXFP4) — the released checkpoint *is* the
 quantized one, so set `pplLossPercent: 0.0` on that row and say why in `description`. Don't invent
 a loss figure against an FP16 original that was never published. Use the vendor's own name as
@@ -583,7 +588,7 @@ next gap. Never silently borrow a different card's row without naming the substi
 breaks. A bandwidth Apple does not state directly (the M1's, derived from its "M2 is 50% faster" and
 "M1 Max is nearly 6×" statements) carries a `bandwidthNote` saying so.
 
-**A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** **And re-run a guide's numbers after any arch fix** — the 2026-09-30 corrections moved three figures in the 8GB guide and pushed one row over the 88% line without anyone touching the guide. A guide called
+**A quoted verdict must match `calcVRAM`'s own threshold, checked, not assumed.** **And re-run a guide's numbers after any arch fix** — the build now does part of this: `guideFigureProblems()` fails it when a guide sentence naming model + level + context + GB disagrees with `calcVRAM` by >0.3 GB (it cannot see verdict words or counts, so still read those) — the 2026-09-30 corrections moved three figures in the 8GB guide and pushed one row over the 88% line without anyone touching the guide. A guide called
 GGUF Q4_K_M "the sweet spot" for a 32B model on a 24GB card; run through the calculator it is 90% of
 the card — this site's own `tight`, not `comfortable`. Run the number before writing "fits" or
 "comfortable" into prose, the same rule as the VRAM-guide fault from 2026-09-08.
@@ -925,6 +930,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **GPT-OSS effective bpw + guide-figure gate** — MXFP4 4.25 applies to experts only; real files 11.27 / 59.02 GiB → 4.63 / 4.34 bpw (20B @4K 11.7 → 12.8 GB, 14 verdicts); build now checks guide sizes against `calcVRAM`; 4 guides corrected |
 | 2026-10-03 | **8GB guide re-run** — three figures drifted after the 09-30 arch fixes; Llama 3.1 8B @16K is 91% (`tight`) but the row said "fits"; AWQ route is Linux/WSL2 only (vLLM); 2 image models added; 3 FAQs |
 | 2026-10-03 | **Mac M3 Pro guide** — "Metal can't partially offload" was false (Ollama splits over-budget models CPU/GPU); M3 Pro bandwidth ceilings as upper bounds; 3 FAQs; shared `isMoE()` (roofline missed `… MoE` labels — latent) |
 | 2026-10-02 | **EXL2 reality check** — ExLlamaV2 archived, TabbyAPI/text-gen-webui EXL3-only; CLI ExLlamaV2 server + image were invented (now real `examples/chat.py` with per-model template); `huggingface-cli` → `hf` everywhere; wizard stops recommending EXL2 for APIs; TabbyAPI guide rewritten |

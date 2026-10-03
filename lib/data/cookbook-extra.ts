@@ -232,7 +232,7 @@ export const extraArticles: Article[] = [
         bodyZh: '比本指南早先版本所说的更多。14B 的 Q4_K_M 在 8K 上下文下约 11.0GB，确实装得下 —— 之前这里写的是“需要 36GB 以上”，那是错的。7–8B 模型约 6GB，加载着也还能继续干别的活。真正装不下的是 30B：即便是 MoE 的 Qwen3 30B-A3B，在 8K 下也约 20GB，既超过 75% 上限也超过整机内存。',
         code: {
           lang: 'text',
-          content: 'Llama 3.1 8B    Q4_K_M  @8K   ≈  6.2 GB   comfortable\nQwen3 8B        Q4_K_M  @8K   ≈  6.4 GB   comfortable\nQwen2.5 14B     Q4_K_M  @8K   ≈ 11.0 GB   fits, watch what else is open\nGPT-OSS 20B     MXFP4   @8K   ≈ 11.8 GB   fits, near the 13.5 GB ceiling\nQwen3 30B-A3B   Q4_K_M  @8K   ≈ 20.1 GB   does not fit',
+          content: 'Llama 3.1 8B    Q4_K_M  @8K   ≈  6.2 GB   comfortable\nQwen3 8B        Q4_K_M  @8K   ≈  6.4 GB   comfortable\nQwen2.5 14B     Q4_K_M  @8K   ≈ 11.0 GB   fits, watch what else is open\nGPT-OSS 20B     MXFP4   @8K   ≈ 12.9 GB   tight — 95% of the 13.5 GB ceiling\nQwen3 30B-A3B   Q4_K_M  @8K   ≈ 20.1 GB   does not fit',
         },
       },
       {

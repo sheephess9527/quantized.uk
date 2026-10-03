@@ -479,7 +479,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['GPT-OSS', 'MXFP4', 'MoE', 'llama.cpp', 'Ollama', 'GGUF'],
     publishedAt: '2026-08-08',
-    updatedAt: '2026-10-02',
+    updatedAt: '2026-10-03',
     content: [
       {
         heading: 'The one thing to get right: MXFP4 is the original',
@@ -488,17 +488,17 @@ export const extraArticles2: Article[] = [
         bodyZh: '本站几乎所有其他模型都是 BF16 发布、社区事后量化，所以"找 Q4_K_M"是对的直觉。GPT-OSS 打破了这个直觉：OpenAI 在后训练阶段就把 MoE 权重做成了 MXFP4（约 4.25 bit），而 MoE 权重占参数量 90% 以上。这份 MXFP4 权重不是某个更好版本的有损副本——它本身就是模型。把它转成 Q8_0 或平移到 Q4_K_M，只会得到一个更大但并不更准的文件，因为你补回去的精度从来就不存在。',
         code: {
           lang: 'text',
-          content: 'gpt-oss-20b   MXFP4 (native) ~12.8 GB   ← use this\ngpt-oss-20b   Q8_0  (upcast)  ~13.8 GB   bigger, not better\n\ngpt-oss-120b  MXFP4 (native) ~61 GB     ← use this\n\nRule: for GPT-OSS, "bigger quant" buys you nothing.\nSpend the VRAM on context length instead.',
+          content: 'gpt-oss-20b   MXFP4 (native)  11.3 GiB file   ← use this\ngpt-oss-120b  MXFP4 (native)  59.0 GiB file   ← use this\n\n(file sizes from llama.cpp\'s own gpt-oss guide)\n\nRule: for GPT-OSS, "bigger quant" buys you nothing.\nSpend the VRAM on context length instead.',
         },
       },
       {
         heading: 'Sizing it for your card',
         headingZh: '按你的显卡估算',
-        body: 'The 20B fits a 16GB card with room for a useful context window. Note that GPT-OSS uses a head dimension of 64 rather than the usual 128, which halves its KV cache compared to a same-layer-count model — and half its layers use a 128-token sliding window, so only the other half grow a cache with context. Long context is unusually cheap here. Use the VRAM calculator with the MXFP4 level selected; picking Q4_K_M instead will overstate your weights by roughly 14%.',
-        bodyZh: '20B 在 16GB 卡上可跑，且还剩下够用的上下文空间。注意 GPT-OSS 的 head dim 是 64 而非常见的 128，同层数下 KV cache 直接减半——而且一半的层使用 128 token 的滑动窗口，只有另一半会随上下文增长缓存。长上下文在这个模型上便宜得反常。用显存计算器时记得选 MXFP4 档；选 Q4_K_M 会把权重高估约 14%。',
+        body: 'The 20B fits a 16GB card with room for a useful context window. Note that GPT-OSS uses a head dimension of 64 rather than the usual 128, which halves its KV cache compared to a same-layer-count model — and half its layers use a 128-token sliding window, so only the other half grow a cache with context. Long context is unusually cheap here. Use the VRAM calculator with the MXFP4 level selected. MXFP4 is about 4.25 bits on the expert weights only — attention and embeddings are stored wider — so the whole 20B file works out to about 4.6 bits per weight, which is the rate the calculator uses for it. llama.cpp\'s own gpt-oss guide lists a higher total than this calculator does (14.9 GB at 8K context for the 20B, against about 12.9 here), because its figure includes the runtime\'s compute buffers in full; treat the calculator as the lower bound and leave room.',
+        bodyZh: '20B 在 16GB 卡上可跑，且还剩下够用的上下文空间。注意 GPT-OSS 的 head dim 是 64 而非常见的 128，同层数下 KV cache 直接减半——而且一半的层使用 128 token 的滑动窗口，只有另一半会随上下文增长缓存。长上下文在这个模型上便宜得反常。用显存计算器时记得选 MXFP4 档。MXFP4 约 4.25 bit 只针对专家权重 —— 注意力和嵌入层存得更宽 —— 所以 20B 整个文件折合约每权重 4.6 bit，计算器用的就是这个比率。llama.cpp 自己的 gpt-oss 指南给出的总量比本计算器高（20B 在 8K 上下文下是 14.9 GB，这里约 12.9 GB），因为它把运行时的计算缓冲区完整算了进去；请把计算器的数字当作下限，留出余量。',
         code: {
           lang: 'text',
-          content: 'gpt-oss-20b @ MXFP4, batch=1\n  weights                    ~12.8 GB\n  KV cache @  8K ctx          ~0.2 GB\n  KV cache @ 32K ctx          ~0.8 GB\n  KV cache @ 131K ctx         ~3.0 GB\n\n16GB card  → comfortable to ~32K ctx; full 131K loads, tight (~14.9 GB)\n24GB card  → full 131K ctx with headroom',
+          content: 'gpt-oss-20b @ MXFP4, batch=1 (this site\'s calculator)\n  weights                    ~11.5 GB\n  KV cache @  8K ctx          ~0.2 GB\n  KV cache @ 32K ctx          ~0.8 GB\n  KV cache @ 131K ctx         ~3.0 GB\n  total @ 8K / 32K / 131K     12.9 / 13.5 / 16.0 GB\n\nllama.cpp\'s own guide, same model: 14.9 / 15.5 / 17.9 GB\n\n16GB card  → comfortable to ~32K ctx; the full 131K window does not fit\n24GB card  → full 131K ctx with headroom',
         },
       },
       {

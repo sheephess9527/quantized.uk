@@ -47,7 +47,12 @@ export const extraModels7: QuantModel[] = [
       zh: 'OpenAI 开放权重 MoE（总 21B / 激活 3.6B），原生以 MXFP4 发布 —— 约 12.8GB，16GB 显卡即可跑且无额外精度损失。激活仅 3.6B，CPU 卸载也还能用。',
     },
     quants: [
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.25, vramGB: 12.8, pplLossPercent: 0.0, speedRTX4090: 195, hfSearchUrl: hf('gpt-oss-20b GGUF MXFP4'), confidence: 'community' },
+      // bpw is the file's effective rate, not MXFP4's 4.25: only the MoE expert
+      // tensors are MXFP4 (llama.cpp conversion/gpt_oss.py repacks those alone),
+      // attention and embeddings are wider. llama.cpp's own gpt-oss guide
+      // (ggml-org/llama.cpp discussion #15396) reports the file at 11.27 GiB →
+      // 11.27 × 2^30 × 8 / 20.9e9 = 4.63. 4.25 understated weights by ~0.9 GiB.
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.63, vramGB: 12.8, pplLossPercent: 0.0, speedRTX4090: 195, hfSearchUrl: hf('gpt-oss-20b GGUF MXFP4'), confidence: 'community' },
       { format: 'GGUF', level: 'Q8_0',  bpw: 5.10, vramGB: 13.8, pplLossPercent: 0.0, speedRTX4090: 178, hfSearchUrl: hf('gpt-oss-20b GGUF Q8_0') },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 11.9, pplLossPercent: 1.4, speedRTX4090: 205, hfSearchUrl: hf('gpt-oss-20b GGUF Q4_K_M') },
     ],
@@ -84,7 +89,9 @@ export const extraModels7: QuantModel[] = [
       zh: 'GPT-OSS 大杯（总 117B / 激活 5.1B）。原生 MXFP4 权重约 61GB —— 单张 80GB 卡或 128GB 统一内存 Mac 可跑。24GB 消费卡部分卸载虽慢但可用。',
     },
     quants: [
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.25, vramGB: 61.0, pplLossPercent: 0.0, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
+      // Same reasoning as the 20B: 59.02 GiB file (llama.cpp discussion #15396)
+      // → 59.02 × 2^30 × 8 / 116.8e9 = 4.34 effective bpw.
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 61.0, pplLossPercent: 0.0, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 58.5, pplLossPercent: 1.6, hfSearchUrl: hf('gpt-oss-120b GGUF Q4_K_M') },
     ],
   },
