@@ -614,6 +614,9 @@ within a couple of GB of the limit silently loses layers to the CPU. Guides pass
 explicit `-c` (omitting `-c` starts from the trained context). `--tensor-split` is optional
 (proportional to memory); `row` is deprecated, `tensor` experimental.
 
+**Nginx config in guides targets the distro package, not mainline:** Ubuntu 22.04/24.04 ship 1.18/1.24,
+so no `http2 on;` (1.25.1+) — use `listen 443 ssl http2;`. Checked in nginx source tags 2026-10-03.
+
 **A container port is exposed by its mapping, not by the bind inside the container.** A bare
 `-p 8080:8080` publishes on every host interface and Docker's iptables rules bypass ufw; every
 generated mapping is `127.0.0.1:` and carries `exposureNote`. Native servers bind loopback too —
@@ -951,6 +954,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Nginx proxy guide** — `http2 on;` needs Nginx 1.25.1+, Ubuntu 22.04/24.04 ship 1.18/1.24 → config failed `nginx -t`; now `listen 443 ssl http2;`. llama.cpp/vLLM *do* have `--api-key` (not required by default) |
 | 2026-10-03 | **Qwen Coder 32B guide** — per-context verdicts (GGUF 104% at 16K; AWQ 107% at 32K); "best coding model" claim dropped (no coding benchmarks); Qwen3-Coder 30B-A3B AWQ 80% at 32K as the long-context option, repo left as a placeholder |
 | 2026-10-03 | **VPS guide** — prose said physical cores, command passed `-t $(nproc)` (vCPUs); `-t` dropped (llama.cpp defaults to physical cores); unverifiable Hetzner plan/price removed; RAM at 8K/32K/128K from `calcVRAM` (full window doesn't fit 16 GB) |
 | 2026-10-03 | **Quantize + CPU guides vs llama.cpp master** — `llama-cli` is chat-only now (`-st` for one-shot; no timings → `llama-bench`); imatrix `-o` needs `.gguf` or writes legacy; convert at `bf16`; `-t` defaults to physical cores |

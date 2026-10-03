@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The Nginx reverse-proxy guide used an HTTP/2 setting that only newer Nginx versions understand, so its config failed to load on the Nginx that Ubuntu 22.04 and 24.04 install. It now uses the form that works on every version. The guide also says where each part of the config goes, and corrects a claim that llama.cpp and vLLM have no API keys: both accept one, though neither requires it, and Ollama has no key option at all.',
+    zh: 'Nginx 反向代理指南用了一个只有较新版本 Nginx 才认识的 HTTP/2 写法，Ubuntu 22.04 和 24.04 自带的 Nginx 加载这份配置会直接报错。现在改成了所有版本都能用的写法。指南还注明了每段配置该放在哪里，并更正了“llama.cpp 和 vLLM 没有 API 密钥”的说法：两者都能设置密钥，只是默认不要求；Ollama 则完全没有密钥选项。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The Qwen2.5-Coder 32B on RTX 4090 guide now gives a verdict for each context length, not only 4K. The GGUF build stops fitting at 16K, and the AWQ build is comfortable to 8K but does not fit at 32K. For long-context coding on a 24GB card it points to Qwen3-Coder 30B-A3B, whose AWQ build stays comfortable at 32K. It no longer calls either model "the best", because this site does not benchmark coding quality.',
     zh: '“单卡 RTX 4090 运行 Qwen2.5-Coder 32B”指南现在给出每种上下文长度下的判定，而不只是 4K：GGUF 版本到 16K 就放不下，AWQ 版本 8K 以内宽裕、32K 放不下。需要在 24GB 显卡上做长上下文编程时，指南指向 Qwen3-Coder 30B-A3B —— 它的 AWQ 版本在 32K 下仍然宽裕。指南也不再称任何一个模型为“最佳”，因为本站不评测代码能力。',
   },

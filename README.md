@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (m) — Nginx proxy guide: `http2 on;` broke stock Ubuntu Nginx
+
+- **Config that would not load:** the server block used `http2 on;`. Checked in Nginx source
+  (`nginx/nginx` on GitHub; nginx.org is blocked here): `src/http/v2/ngx_http_v2_module.c` has only
+  the `$http2` variable at `release-1.24.0` and gains the `http2` directive at `release-1.25.1`.
+  Ubuntu's packages (packages.ubuntu.com) are 1.18.0 on 22.04 and 1.24.0 on 24.04, so `nginx -t`
+  rejects it as an unknown directive. Now `listen 443 ssl http2;`, which master still accepts with a
+  deprecation warning (`ngx_http_core_module.c`), with a comment saying so.
+- `limit_req_zone` / `map` labelled as http-context (conf.d), the `location` as server-context: the
+  snippet mixed both levels without saying which goes where.
+- FAQ said "Ollama, llama.cpp and vLLM ship with no authentication". llama-server documents
+  `--api-key` (`tools/server/README.md`) and vLLM has `--api-key`; none *requires* auth by default,
+  Ollama has no key option. Wording corrected in both languages. `updatedAt` 2026-10-03.
+- This closes the batch of nine guides last checked 2026-09-12; every guide now has an
+  `updatedAt` of 2026-10-02 or later.
+
 ### 2026-10-03 (l) — Qwen Coder 32B / 4090 guide: per-context verdicts, the long-context option
 
 All figures from `calcVRAM` on each model's own row (and passed by `guideFigureProblems()`):

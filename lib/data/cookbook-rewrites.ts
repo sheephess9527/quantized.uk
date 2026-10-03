@@ -653,7 +653,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'nginx-llm-api-proxy': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     verifiedStack: {
       en: 'Nginx · TLS via certbot · proxy_buffering off for SSE · long read timeouts · limit_req rate limiting',
@@ -672,14 +672,14 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         headingZh: '会弄坏流式输出的两个设置',
         body: 'This is the part people get wrong, and the symptom is confusing: the API "works" in curl with a non-streaming request and appears to hang with a streaming one. Nginx buffers proxied responses by default, so server-sent events arrive in one lump at the end instead of token by token. And the default read timeout is 60 seconds — long enough for a short reply and not for a long generation, which then looks like the model crashed.',
         bodyZh: '这是最容易配错的一段，而且症状很迷惑人：用 curl 发非流式请求时 API「是好的」，一发流式请求就像卡住了。Nginx 默认会缓冲被代理的响应，于是 SSE 事件不再逐 token 到达，而是在最后一次性吐出来。另外默认读超时是 60 秒 —— 够短回复用，不够长生成用，而那看起来就像模型崩了。',
-        code: { lang: 'nginx', content: 'server {\n    listen 443 ssl;\n    http2 on;\n    server_name llm.example.com;\n\n    ssl_certificate     /etc/letsencrypt/live/llm.example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/llm.example.com/privkey.pem;\n\n    location /v1/ {\n        proxy_pass http://127.0.0.1:11434;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n\n        # Stream tokens instead of buffering the whole reply:\n        proxy_buffering off;\n        proxy_cache off;\n\n        # A long generation is not a hung connection:\n        proxy_read_timeout 600s;\n        proxy_send_timeout 600s;\n    }\n}' },
+        code: { lang: 'nginx', content: 'server {\n    # Works on every Nginx. The newer `http2 on;` needs 1.25.1+, and Ubuntu\n    # 22.04/24.04 ship 1.18/1.24, where it is an unknown directive.\n    listen 443 ssl http2;\n    server_name llm.example.com;\n\n    ssl_certificate     /etc/letsencrypt/live/llm.example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/llm.example.com/privkey.pem;\n\n    location /v1/ {\n        proxy_pass http://127.0.0.1:11434;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n\n        # Stream tokens instead of buffering the whole reply:\n        proxy_buffering off;\n        proxy_cache off;\n\n        # A long generation is not a hung connection:\n        proxy_read_timeout 600s;\n        proxy_send_timeout 600s;\n    }\n}' },
       },
       {
         heading: 'Put something in front of it',
         headingZh: '在它前面加一道门',
         body: 'An open endpoint on the public internet is a GPU anyone can spend. Nginx can do the cheap half of that — a shared secret and a rate limit — and it should, because the backends mostly have no authentication of their own. `limit_req` with a burst absorbs a normal client’s bursty behaviour while still stopping a script.',
         bodyZh: '一个暴露在公网上的开放端点，等于把你的 GPU 交给任何人花。Nginx 能做掉其中便宜的那一半 —— 一个共享密钥加上限流 —— 而且应该做，因为这些后端大多自己没有任何鉴权。带 burst 的 `limit_req` 既能容纳正常客户端的突发行为，又能挡住脚本。',
-        code: { lang: 'nginx', content: 'limit_req_zone $binary_remote_addr zone=llm:10m rate=10r/m;\n\nmap $http_authorization $api_ok {\n    default                  0;\n    "Bearer YOUR_LONG_RANDOM_TOKEN" 1;\n}\n\nlocation /v1/ {\n    if ($api_ok = 0) { return 401; }\n    limit_req zone=llm burst=5 nodelay;\n    # …proxy settings from above…\n}' },
+        code: { lang: 'nginx', content: '# These two go in the http {} context, e.g. a file in /etc/nginx/conf.d/:\nlimit_req_zone $binary_remote_addr zone=llm:10m rate=10r/m;\n\nmap $http_authorization $api_ok {\n    default                  0;\n    "Bearer YOUR_LONG_RANDOM_TOKEN" 1;\n}\n\n# …and this inside the server {} block from above:\nlocation /v1/ {\n    if ($api_ok = 0) { return 401; }\n    limit_req zone=llm burst=5 nodelay;\n    # …proxy settings from above…\n}' },
       },
       {
         heading: 'Check it actually worked',
@@ -717,8 +717,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is a reverse proxy enough to secure a local LLM API?',
         qZh: '一层反向代理足以保护本地大模型 API 吗？',
-        a: 'Only if the backend is not reachable without it. Ollama, llama.cpp and vLLM ship with no authentication, so the proxy must be the only route in — bind the backend to `127.0.0.1` and verify from another machine that its port refuses connections. Adding a token check and a `limit_req` rate limit at the proxy covers the cheap half of the problem; leaving the backend on `0.0.0.0` means none of it counts.',
-        aZh: '只有在「没有它就访问不到后端」的前提下才够。Ollama、llama.cpp 和 vLLM 出厂都不带鉴权，所以反向代理必须是唯一的入口 —— 把后端绑定到 `127.0.0.1`，并从另一台机器验证它的端口拒绝连接。在代理层加 token 校验和 `limit_req` 限流能解决问题中便宜的那一半；而把后端留在 `0.0.0.0` 上，前面做的一切都不作数。',
+        a: 'Only if the backend is not reachable without it. None of Ollama, llama.cpp and vLLM requires authentication by default. llama-server and vLLM accept an `--api-key`, but Ollama has no key option at all. So the proxy must be the only route in — bind the backend to `127.0.0.1` and verify from another machine that its port refuses connections. Adding a token check and a `limit_req` rate limit at the proxy covers the cheap half of the problem; leaving the backend on `0.0.0.0` means none of it counts.',
+        aZh: '只有在「没有它就访问不到后端」的前提下才够。Ollama、llama.cpp 和 vLLM 默认都不要求鉴权：llama-server 和 vLLM 可以加 `--api-key`，Ollama 则根本没有密钥选项。所以反向代理必须是唯一的入口 —— 把后端绑定到 `127.0.0.1`，并从另一台机器验证它的端口拒绝连接。在代理层加 token 校验和 `limit_req` 限流能解决问题中便宜的那一半；而把后端留在 `0.0.0.0` 上，前面做的一切都不作数。',
       },
     ],
   },
