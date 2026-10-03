@@ -419,6 +419,29 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (i) — vLLM guides + CLI against vLLM V1 source
+
+Read from `vllm-project/vllm` main (raw.githubusercontent): `vllm/v1/core/sched/scheduler.py`,
+`vllm/v1/metrics/loggers.py`, `vllm/config/scheduler.py`, `docs/getting_started/quickstart.md`,
+`docs/features/quantization/auto_awq.md`.
+- **Stale failure signature:** both guides (and this repo's CLAUDE.md) said KV pressure shows up as a
+  warning naming `PreemptionMode.RECOMPUTE`. That was the V0 engine; `vllm/core/scheduler.py` is gone
+  and `vllm/engine/llm_engine.py` is an alias for the V1 engine, whose scheduler logs no preemption
+  warning. V1 reports it in the periodic `LoggingStatLogger` line (`… Running: N reqs, Waiting: N
+  reqs, Preemptions: N, GPU KV cache usage: X%`, the `Preemptions` part only when > 0) and the
+  `vllm:num_preemptions` counter. 4 passages rewritten in both languages; the old name is kept only
+  as "older guides quote…".
+- **Install could not run as written:** `uv pip install` needs a virtual environment; the quickstart
+  creates one with `uv venv --python 3.12 --seed`. Added to `rtx4090-vllm-api` and to the CLI's
+  CUDA native path (`lib/utils/cli.ts`; the ROCm path already had it). Python range 3.10–3.13
+  stated. CLI swept: 128 framework × env × backend × lang combos, 0 problems.
+- Chunked prefill is on by default (`enable_chunked_prefill: bool = True`); the
+  `max_num_batched_tokens < max_model_len` start-up error applies only when it is turned off —
+  wording now says so.
+- AutoAWQ marked deprecated in vLLM's docs (→ `llm-compressor`); FAQ says so, existing checkpoints
+  still load. Stale "53 of the 81" → 53 of 87 (recounted).
+- Both guides `updatedAt` 2026-10-03; no `verifiedAt` (no GPU here).
+
 ### 2026-10-03 (h) — Docker + Ollama guide: AMD, the missing toolkit step, a misattributed speed
 
 Checked against Ollama's `docs/docker.mdx` (main) and NVIDIA's container-toolkit sample workload

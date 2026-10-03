@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The two vLLM guides and the command builder were checked against vLLM\'s current code and docs. The install now creates a virtual environment first, because the install command stops without one. The guides also described a warning that current vLLM no longer prints. When the memory for active requests runs out, vLLM now reports it as a "Preemptions" count in its regular status line and in its metrics, and the guides say where to look. They also note that AutoAWQ, the tool behind most AWQ builds, is deprecated, although existing AWQ models still load.',
+    zh: '两篇 vLLM 指南和命令生成器已对照 vLLM 当前的代码和文档核对。安装步骤现在会先建虚拟环境，因为没有虚拟环境时安装命令会直接中止。指南里还描述了一条现在的 vLLM 已经不再打印的警告：当在途请求的显存不够用时，vLLM 现在会在定期打印的状态行和监控指标里显示 "Preemptions" 计数，指南已说明去哪里看。另外注明了大多数 AWQ 版本所用的 AutoAWQ 工具已被弃用，但已有的 AWQ 模型仍可正常加载。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The Docker + Ollama guide now covers AMD cards as well as NVIDIA. It adds the step that tells Docker about the NVIDIA runtime, which was missing and leaves containers unable to see the GPU. It also corrects a speed claim: the 218 tok/s it quoted as an Ollama measurement was a different runtime and format. The guide now gives the ceiling and the measured llama.cpp figure instead, and says plainly that a container-versus-native run has not been measured here.',
     zh: 'Docker + Ollama 指南现在除了 NVIDIA，也讲了 AMD 显卡。补上了原来漏掉的一步 —— 把 NVIDIA 运行时注册给 Docker，不做这一步容器就看不到 GPU。同时更正了一处速度说法：指南里当作 Ollama 实测引用的 218 tok/s，其实来自另一种运行时和格式。现在改为给出理论上限和 llama.cpp 的实测数字，并明确说明本站没有实测过容器与原生运行的对比。',
   },

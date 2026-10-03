@@ -368,7 +368,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'rtx4090-vllm-api': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     verifiedStack: {
       en: 'RTX 4090 24GB · vLLM (uv install) · AWQ INT4 · OpenAI-compatible API on :8000',
@@ -378,9 +378,9 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'What you need first',
         headingZh: '开始之前',
-        body: 'An NVIDIA card with enough memory for the model plus its KV cache, a recent driver, and Python 3.12. vLLM is a server, not a chat app — reach for it when you want an OpenAI-compatible endpoint serving concurrent requests, and reach for llama.cpp or Ollama when you want one person talking to one model.',
-        bodyZh: '一张显存足够容纳模型和 KV 缓存的 NVIDIA 显卡、较新的驱动，以及 Python 3.12。vLLM 是服务端，不是聊天应用 —— 当你需要一个能并发处理请求的 OpenAI 兼容端点时用它；如果只是一个人和一个模型对话，用 llama.cpp 或 Ollama。',
-        code: { lang: 'bash', content: '# uv is the documented install path now; it picks the right torch build\n# from your installed CUDA driver.\npip install --upgrade uv\nuv pip install vllm --torch-backend=auto\n\nvllm --version' },
+        body: 'An NVIDIA card with enough memory for the model plus its KV cache, a recent driver, and Python 3.10 to 3.13 — vLLM\u2019s quickstart uses 3.12 in a fresh virtual environment, and `uv pip install` refuses to run without one. vLLM is a server, not a chat app — reach for it when you want an OpenAI-compatible endpoint serving concurrent requests, and reach for llama.cpp or Ollama when you want one person talking to one model.',
+        bodyZh: '一张显存足够容纳模型和 KV 缓存的 NVIDIA 显卡、较新的驱动，以及 Python 3.10 到 3.13 —— vLLM 快速入门在一个新建的虚拟环境里用 3.12，而 `uv pip install` 没有虚拟环境会拒绝运行。vLLM 是服务端，不是聊天应用 —— 当你需要一个能并发处理请求的 OpenAI 兼容端点时用它；如果只是一个人和一个模型对话，用 llama.cpp 或 Ollama。',
+        code: { lang: 'bash', content: '# vLLM\'s documented path: a fresh venv, then uv picks the torch build\n# that matches your installed CUDA driver.\npip install --upgrade uv\nuv venv --python 3.12 --seed\nsource .venv/bin/activate\nuv pip install vllm --torch-backend=auto\n\nvllm --version' },
       },
       {
         heading: 'Serve the model',
@@ -405,16 +405,16 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'When it does not work',
         headingZh: '出问题时',
-        body: 'The server logs a preemption warning mentioning `PreemptionMode.RECOMPUTE` and throughput collapses: there is not enough KV cache space for the requests in flight. Raise `--gpu-memory-utilization`, or lower `--max-num-seqs` so fewer requests are batched, or shorten `--max-model-len` — that last one is what most people actually need, because a 128K window reserves cache for a context nobody sends. Out of memory at start-up rather than under load: `--gpu-memory-utilization` is a fraction of the whole card, so anything else holding VRAM comes out of vLLM’s share. Startup takes minutes: that is compilation and CUDA-graph capture; `--enforce-eager` skips both and costs steady-state decode speed, which is a good trade while you are iterating and a bad one in production.',
-        bodyZh: '日志里出现提到 `PreemptionMode.RECOMPUTE` 的抢占警告，吞吐随之崩塌：说明在途请求的 KV 缓存空间不够。提高 `--gpu-memory-utilization`，或降低 `--max-num-seqs` 减少批内请求数，或缩短 `--max-model-len` —— 多数人真正需要的是最后一个，因为 128K 的窗口会为一个根本没人发送的上下文预留缓存。启动时（而不是压力下）就显存不足：`--gpu-memory-utilization` 是相对整张卡的比例，所以任何别的东西占用的显存都会从 vLLM 的份额里扣。启动要好几分钟：那是编译和 CUDA graph 捕获；`--enforce-eager` 会跳过这两步，代价是稳态解码速度变慢 —— 这在调试迭代时是划算的，在生产里不是。',
+        body: 'Throughput collapses and the periodic stats line vLLM logs every few seconds shows a `Preemptions:` count climbing: there is not enough KV cache space for the requests in flight. (The old `PreemptionMode.RECOMPUTE` warning came from vLLM\u2019s V0 engine, which has been removed — current releases report preemptions in that stats line and the `vllm:num_preemptions` metric instead.) Raise `--gpu-memory-utilization`, or lower `--max-num-seqs` so fewer requests are batched, or shorten `--max-model-len` — that last one is what most people actually need, because a 128K window reserves cache for a context nobody sends. Out of memory at start-up rather than under load: `--gpu-memory-utilization` is a fraction of the whole card, so anything else holding VRAM comes out of vLLM’s share. Startup takes minutes: that is compilation and CUDA-graph capture; `--enforce-eager` skips both and costs steady-state decode speed, which is a good trade while you are iterating and a bad one in production.',
+        bodyZh: '吞吐崩塌，而 vLLM 每隔几秒打印的统计行里 `Preemptions:` 计数不断上涨：说明在途请求的 KV 缓存空间不够。（旧的 `PreemptionMode.RECOMPUTE` 警告来自 vLLM 已被移除的 V0 引擎 —— 现在的版本改在那行统计和 `vllm:num_preemptions` 指标里报告抢占。）提高 `--gpu-memory-utilization`，或降低 `--max-num-seqs` 减少批内请求数，或缩短 `--max-model-len` —— 多数人真正需要的是最后一个，因为 128K 的窗口会为一个根本没人发送的上下文预留缓存。启动时（而不是压力下）就显存不足：`--gpu-memory-utilization` 是相对整张卡的比例，所以任何别的东西占用的显存都会从 vLLM 的份额里扣。启动要好几分钟：那是编译和 CUDA graph 捕获；`--enforce-eager` 会跳过这两步，代价是稳态解码速度变慢 —— 这在调试迭代时是划算的，在生产里不是。',
       },
     ],
     faqs: [
       {
         q: 'What is the current command to start a vLLM server?',
         qZh: '现在启动 vLLM 服务的命令是什么？',
-        a: '`vllm serve <model-repo>`. The `python -m vllm.entrypoints.openai.api_server` form that most tutorials still show is no longer the documented entrypoint. Install with `uv pip install vllm --torch-backend=auto`, which selects the torch build matching your installed CUDA driver.',
-        aZh: '是 `vllm serve <模型仓库>`。大多数教程里仍在用的 `python -m vllm.entrypoints.openai.api_server` 已不再是官方文档的入口形式。安装用 `uv pip install vllm --torch-backend=auto`，它会根据你已安装的 CUDA 驱动选择匹配的 torch 构建。',
+        a: '`vllm serve <model-repo>`. The `python -m vllm.entrypoints.openai.api_server` form that most tutorials still show is no longer the documented entrypoint. Install with `uv pip install vllm --torch-backend=auto` inside a virtual environment (`uv venv --python 3.12 --seed`, then activate it); uv selects the torch build matching your installed CUDA driver.',
+        aZh: '是 `vllm serve <模型仓库>`。大多数教程里仍在用的 `python -m vllm.entrypoints.openai.api_server` 已不再是官方文档的入口形式。安装时先建虚拟环境（`uv venv --python 3.12 --seed` 后激活），再运行 `uv pip install vllm --torch-backend=auto`，uv 会根据你已安装的 CUDA 驱动选择匹配的 torch 构建。',
       },
       {
         q: 'Does vLLM only run on NVIDIA?',
@@ -432,7 +432,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'vllm-awq-production': {
-    updatedAt: '2026-09-12',
+    updatedAt: '2026-10-03',
     verifiedAt: undefined,
     relatedModelIds: ['qwen2.5-7b', 'llama-3.1-8b'],
     verifiedStack: {
@@ -470,8 +470,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'When it does not work',
         headingZh: '出问题时',
-        body: 'Preemption warnings naming `PreemptionMode.RECOMPUTE`: the cache cannot hold the in-flight requests, so vLLM throws work away and redoes it — throughput falls off a cliff rather than degrading gently. Shorten `--max-model-len`, lower `--max-num-seqs`, or raise `--gpu-memory-utilization`, in that order. Out of memory at start-up: something else holds VRAM, and the utilisation fraction is of the whole card. Crash at start-up with chunked prefill disabled: `--max-num-batched-tokens` must exceed `--max-model-len` in that configuration. And if latency is fine but throughput is poor under concurrency, check you are not running `--enforce-eager` left over from debugging — it skips CUDA-graph capture, which is exactly the steady-state decode path you want in production.',
-        bodyZh: '出现提到 `PreemptionMode.RECOMPUTE` 的抢占警告：缓存装不下在途请求，vLLM 会丢弃已完成的工作并重算 —— 吞吐是断崖式下跌而不是缓慢劣化。按这个顺序处理：缩短 `--max-model-len`、降低 `--max-num-seqs`、提高 `--gpu-memory-utilization`。启动时显存不足：有别的东西占着显存，而利用率比例是相对整张卡算的。在禁用 chunked prefill 的配置下启动崩溃：此时 `--max-num-batched-tokens` 必须大于 `--max-model-len`。如果延迟正常但并发下吞吐很差，检查是不是把调试时的 `--enforce-eager` 留下了 —— 它会跳过 CUDA graph 捕获，而那正是生产环境需要的稳态解码路径。',
+        body: 'A `Preemptions:` count in vLLM\u2019s periodic stats line, or `vllm:num_preemptions` rising in `/metrics`: the cache cannot hold the in-flight requests, so vLLM throws work away and redoes it — throughput falls off a cliff rather than degrading gently. Shorten `--max-model-len`, lower `--max-num-seqs`, or raise `--gpu-memory-utilization`, in that order. Out of memory at start-up: something else holds VRAM, and the utilisation fraction is of the whole card. Crash at start-up after you turned chunked prefill off (it is on by default): `--max-num-batched-tokens` must exceed `--max-model-len` in that configuration. And if latency is fine but throughput is poor under concurrency, check you are not running `--enforce-eager` left over from debugging — it skips CUDA-graph capture, which is exactly the steady-state decode path you want in production.',
+        bodyZh: 'vLLM 定期打印的统计行里出现 `Preemptions:` 计数，或 `/metrics` 里的 `vllm:num_preemptions` 在上涨：缓存装不下在途请求，vLLM 会丢弃已完成的工作并重算 —— 吞吐是断崖式下跌而不是缓慢劣化。按这个顺序处理：缩短 `--max-model-len`、降低 `--max-num-seqs`、提高 `--gpu-memory-utilization`。启动时显存不足：有别的东西占着显存，而利用率比例是相对整张卡算的。你手动关闭 chunked prefill（默认是开启的）后启动崩溃：此时 `--max-num-batched-tokens` 必须大于 `--max-model-len`。如果延迟正常但并发下吞吐很差，检查是不是把调试时的 `--enforce-eager` 留下了 —— 它会跳过 CUDA graph 捕获，而那正是生产环境需要的稳态解码路径。',
       },
     ],
     faqs: [
@@ -484,14 +484,14 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Why is my vLLM throughput collapsing under load?',
         qZh: 'vLLM 一上负载吞吐就崩，是为什么？',
-        a: 'Almost always KV cache pressure. The log names it: a preemption warning mentioning `PreemptionMode.RECOMPUTE` means requests are being evicted and recomputed, which costs more than it saves. It is a memory problem rather than a compute one — shorten the declared context window first, then reduce the batch width.',
-        aZh: '几乎总是 KV 缓存压力。日志里会写明：提到 `PreemptionMode.RECOMPUTE` 的抢占警告意味着请求被踢出并重算，得不偿失。这是显存问题而不是算力问题 —— 先缩短声明的上下文窗口，再减小批宽度。',
+        a: 'Almost always KV cache pressure. vLLM\u2019s periodic stats line shows it as a `Preemptions:` count, and `/metrics` as `vllm:num_preemptions`: requests are being evicted and recomputed, which costs more than it saves. Older guides quote a `PreemptionMode.RECOMPUTE` warning; that came from the V0 engine, which current vLLM no longer has. It is a memory problem rather than a compute one — shorten the declared context window first, then reduce the batch width.',
+        aZh: '几乎总是 KV 缓存压力。vLLM 定期打印的统计行里会出现 `Preemptions:` 计数，`/metrics` 里对应 `vllm:num_preemptions`：说明请求被踢出并重算，得不偿失。旧教程里引用的 `PreemptionMode.RECOMPUTE` 警告来自 V0 引擎，现在的 vLLM 已经没有它了。这是显存问题而不是算力问题 —— 先缩短声明的上下文窗口，再减小批宽度。',
       },
       {
         q: 'Is AWQ the right format for serving?',
         qZh: '做服务端该用 AWQ 吗？',
-        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 81 models in this index ship an AWQ build. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
-        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 81 个模型中有 53 个提供 AWQ 版本。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
+        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 87 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
+        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 87 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
       },
     ],
   },

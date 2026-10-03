@@ -498,7 +498,7 @@ volumes:
     // torch build for the CUDA driver; AMD installs from vLLM's ROCm index.
     ...(rocm
       ? [`# Install vLLM's ROCm build (Python 3.12, ROCm 7.0)`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`]
-      : [`# Install vLLM (uv picks the torch build for your CUDA driver)`, `pip install --upgrade uv`, `uv pip install vllm --torch-backend=auto`]),
+      : [`# Install vLLM in a fresh venv (uv picks the torch build for your CUDA driver)`, `pip install --upgrade uv`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --torch-backend=auto`]),
     ``,
     `# Serve the model`,
     `vllm serve ${repoId}${quantFlag} \\`,

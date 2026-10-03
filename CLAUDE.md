@@ -630,9 +630,11 @@ vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm -
 it ships official **ROCm** wheels plus XPU/TPU backends. ExLlamaV2 now lives at
 **`turboderp-org/exllamav2`** and its example passes `-gs auto`. **TabbyAPI's own README says it is
 a hobby project "not meant to run on production servers"** — quote the maintainers rather than
-softening it. vLLM's real failure signature is a preemption warning naming
-`PreemptionMode.RECOMPUTE`, which is KV-cache pressure: shorten `--max-model-len` before raising
-`--gpu-memory-utilization`.
+softening it. vLLM's KV-pressure signature (re-checked 2026-10-03 in V1 source) is a `Preemptions: N` count in the
+periodic stats log line and the `vllm:num_preemptions` metric — the `PreemptionMode.RECOMPUTE`
+warning was V0, which is deleted. Shorten `--max-model-len` before raising
+`--gpu-memory-utilization`. `uv pip install` needs a venv (`uv venv --python 3.12 --seed`) — every
+install snippet creates one. AutoAWQ is deprecated (vLLM points to `llm-compressor`).
 
 **GPT-OSS facts (llama.cpp discussion #15396, 2026-10-03):** official command uses `--jinja`; reasoning
 effort is `--chat-template-kwargs '{"reasoning_effort": "low|medium|high"}'`; sampling temperature 1.0 /
@@ -944,6 +946,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **vLLM guides vs V1 source** — `PreemptionMode.RECOMPUTE` was V0 (deleted); V1 shows `Preemptions:` in its stats line + `vllm:num_preemptions`; install lacked the venv `uv pip` requires (guide + CLI); AutoAWQ deprecated |
 | 2026-10-03 | **Docker + Ollama guide** — 218 tok/s was vLLM AWQ, not Ollama (llama.cpp Q4_K_M is 148); `nvidia-ctk runtime configure` step added; AMD via `:rocm` + `/dev/kfd` `/dev/dri`; 4 FAQs |
 | 2026-10-03 | **Windows Ollama guide** — "AMD is CPU-only" was false (ROCm RX 7600–7900, Vulkan default for the rest); Win 10 22H2+; `curl -d` in PowerShell blocks replaced (5.1 alias); 4 FAQs |
 | 2026-10-03 | **One contact address** — `FEEDBACK_EMAIL` → `zjy@quantized.uk` (owner's mailbox); unconfirmed `hello@` retired site-wide; `/about/` gets a direct line; maintainer still unnamed |
