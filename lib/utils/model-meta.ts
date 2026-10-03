@@ -36,6 +36,15 @@ export function quantConfidence(modelId: string, q: QuantVariant): QuantConfiden
   return 'estimated';
 }
 
+/**
+ * Mixture-of-experts, recognised from `paramLabel` alone (`30B-A3B`, `21B MoE`).
+ * One definition for the build gate, the model pages and the bandwidth ceiling —
+ * the ceiling once used `/A\d/` and treated every "… MoE" label as dense.
+ */
+export function isMoE(m: Pick<QuantModel, 'paramLabel'>): boolean {
+  return /-A\d|\bMoE\b/i.test(m.paramLabel);
+}
+
 export function isSuperseded(m: QuantModel): boolean {
   return m.status === 'superseded';
 }

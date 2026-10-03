@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-02';
+export const dataLastUpdated = '2026-10-03';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-03',
+    en: 'The Mac M3 Pro guide corrected one wrong claim: it said a model too big for the Mac\'s GPU memory would fail to load or swap. Ollama actually splits it, running the layers that do not fit on the CPU, and its status shows that as a CPU/GPU percentage, which is the real sign you are over the limit. The guide now also gives the speed ceiling the M3 Pro\'s memory bandwidth sets (about 8 tokens per second for a 32B at 4-bit, clearly labelled as an upper bound rather than a measurement) and answers three questions.',
+    zh: 'Mac M3 Pro 指南改正了一处错误说法：它说超出 Mac GPU 内存的模型会加载失败或触发换页。实际上 Ollama 会把它拆开，放不下的层跑在 CPU 上，状态里会显示 CPU/GPU 百分比 —— 这才是超限的真正信号。指南还新增了 M3 Pro 内存带宽决定的速度上限（4-bit 的 32B 约每秒 8 个 token，明确标注为上限而非实测），并新增三个问答。',
+  },
   {
     date: '2026-10-02',
     en: 'EXL2 advice brought up to date. ExLlamaV2, the runtime behind the EXL2 format, is now archived, and TabbyAPI and text-generation-webui load the newer EXL3 format instead — so EXL2 still runs locally, but nothing maintained serves it as an API. The command generator\'s ExLlamaV2 option had been printing a server command and a Docker image that do not exist; it now gives the library\'s real local chat command, with the right chat template for the model. The TabbyAPI guide is rewritten for TabbyAPI as it is today, the format wizard no longer recommends EXL2 for an API, and the ExLlamaV2 guide uses the correct template for Llama 3. Every download command on the site now uses the hf command; the older huggingface-cli has been removed from current versions of the Hugging Face tools.',

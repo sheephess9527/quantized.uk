@@ -5,6 +5,7 @@ import { hfRepoMap } from '@/lib/data/hf-repos';
 import { quantBPW, quantGroups } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug } from '@/lib/utils/gpu-page';
+import { isMoE } from '@/lib/utils/model-meta';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -52,7 +53,7 @@ export function dataProblems(): string[] {
       if (q.speedRTX4090 != null && rtx4090?.bandwidth) {
         if (q.vramGB > rtx4090.vram) {
           out.push(`${m.id} ${key}: speedRTX4090 set on a ${q.vramGB} GB row — an RTX 4090 holds ${rtx4090.vram} GB`);
-        } else if (!/-A\d|\bMoE\b/i.test(m.paramLabel)) {
+        } else if (!isMoE(m)) {
           // Dense: every token reads every weight. 15% covers params×bpw vs the
           // real file (untouched input embeddings, mixed-precision heads).
           const ceiling = rtx4090.bandwidth / (m.params * (q.bpw ?? 4.85) / 8);

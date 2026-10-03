@@ -569,7 +569,8 @@ switch is `GGML_CUDA=ON` (CMake only warns about an unknown `-D`, so a misspelt 
 successful CPU-only build; the old `LLAMA_CUDA` is mapped with a warning, `LLAMA_CUBLAS` errors); the binaries are `llama-server` / `llama-cli`, not `server` / `main`; Windows's
 **System Memory Fallback** silently spills VRAM into system RAM, turning an OOM into a mysteriously
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
-unified memory leaves no separate VRAM figure to watch. WSL2 (re-checked 2026-10-02 from Microsoft's
+unified memory leaves no separate VRAM figure to watch — over Metal's budget Ollama **splits** the
+model (`metal_partial_offload` in `server/sched.go`, shown as `x%/y% CPU/GPU`), it does not refuse it. WSL2 (re-checked 2026-10-02 from Microsoft's
 WSL docs, NVIDIA's CUDA-on-WSL guide and Ollama's `install.sh`): VM memory defaults to 50% of host
 RAM; `[boot] systemd` defaults **off**, and Ollama's installer then starts no service; `apt install
 cuda`/`cuda-drivers` installs a Linux driver over the passthrough stub (`cuda-toolkit-12-x` only);
@@ -635,7 +636,8 @@ Any new surface printing it names the RTX 4090; a card's own speeds come only fr
 
 **`speedRTX4090` is gated at build time.** A row the 4090 cannot hold (`vramGB > 24`) or a dense row
 faster than `1008 / (params × bpw / 8)` × 1.15 fails `dataProblems()`. MoE is recognised **only** by
-`paramLabel` (`-A\d` or `MoE`) — label a new MoE model that way or the gate treats it as dense.
+`paramLabel` (`-A\d` or `MoE`) through **`isMoE()`** (`lib/utils/model-meta.ts`) — label a new MoE model that way or
+the gate treats it as dense, and never re-type the regex (the bandwidth ceiling had its own `/A\d/` and missed every `… MoE` label).
 **Check `params` is the total, not the active count**: Jamba 1.5 Mini shipped as `12` (its active
 figure) and was sized at a quarter of its real weights.
 
@@ -923,6 +925,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Mac M3 Pro guide** — "Metal can't partially offload" was false (Ollama splits over-budget models CPU/GPU); M3 Pro bandwidth ceilings as upper bounds; 3 FAQs; shared `isMoE()` (roofline missed `… MoE` labels — latent) |
 | 2026-10-02 | **EXL2 reality check** — ExLlamaV2 archived, TabbyAPI/text-gen-webui EXL3-only; CLI ExLlamaV2 server + image were invented (now real `examples/chat.py` with per-model template); `huggingface-cli` → `hf` everywhere; wizard stops recommending EXL2 for APIs; TabbyAPI guide rewritten |
 | 2026-10-02 | **Dual-GPU guide + two site-wide fixes** — llama.cpp `--fit` on by default (1 GiB/card) now handled with explicit `-ngl all -c`; the "old CMake flags are silently ignored" claim was false (`LLAMA_CUDA` warns + works, `LLAMA_CUBLAS` errors), fixed in 6 places; all CLI container ports bound to `127.0.0.1`, `vllm serve --host 127.0.0.1` |
 | 2026-10-02 | **WSL2 guide re-check** — LAN claim was wrong (NAT mode is not LAN-reachable; mirrored is); `cuda` meta-package installs a Linux driver; WSL's systemd defaults off so Ollama's service never starts; 3 FAQs |

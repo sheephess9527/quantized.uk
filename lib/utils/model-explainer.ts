@@ -4,6 +4,7 @@ import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { bestQuant, isNativeQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import { isMoE } from '@/lib/utils/model-meta';
 import { contextLabel } from '@/lib/utils/context-label';
 import { quantConfidence } from '@/lib/utils/model-meta';
 
@@ -109,7 +110,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
     .sort((a, b) => (b.speedRTX4090 ?? 0) - (a.speedRTX4090 ?? 0))[0];
   const hybrid = model.arch.attention;
   const kvGrowth = atLong.kvCacheGB - at4k.kvCacheGB;
-  const isMoE = /-A\d|\bMoE\b/i.test(model.paramLabel);
+  const moe = isMoE(model);
   // "Measured here" only for rows this site actually ran; every other speed is
   // an estimate and says so. Printing 本站实测 on all 83 pages claimed runs on
   // 73 models nobody here benchmarked.
@@ -269,13 +270,13 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             ? `${quantLevelKey(best)} has the lowest published quality loss (${best.pplLossPercent.toFixed(1)}%), and ${refKey} is the level most people run. `
             : `No published quality comparison exists for this model, so pick by footprint: ${refKey} is the level most people run, and a higher bits-per-weight level is more faithful. `) +
           `All ${levels.length} levels in the index are ${levels.join(', ')}.` +
-          (isMoE ? ` Note this is a mixture-of-experts model — all parameters must be resident even though only a fraction are active per token, so the memory cost follows the total, not the active count.` : ''),
+          (moe ? ` Note this is a mixture-of-experts model — all parameters must be resident even though only a fraction are active per token, so the memory cost follows the total, not the active count.` : ''),
         zh:
           (best.pplLossPercent !== undefined
             ? `${quantLevelKey(best)} 的公开质量损失最低（${best.pplLossPercent.toFixed(1)}%），而 ${refKey} 是多数人实际使用的档位。`
             : `该模型没有公开的质量对比数据，所以按体积来选：${refKey} 是多数人使用的档位，bits-per-weight 越高越忠实。`) +
           `索引中的 ${levels.length} 个档位是 ${levels.join('、')}。` +
-          (isMoE ? ` 注意这是 MoE 模型 —— 尽管每个 token 只激活一部分参数，全部参数仍需驻留显存，因此显存开销按总参数量算，而不是激活参数量。` : ''),
+          (moe ? ` 注意这是 MoE 模型 —— 尽管每个 token 只激活一部分参数，全部参数仍需驻留显存，因此显存开销按总参数量算，而不是激活参数量。` : ''),
       },
     },
   ];

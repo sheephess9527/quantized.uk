@@ -5,6 +5,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, type GpuFit } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
+import { isMoE } from '@/lib/utils/model-meta';
 
 /**
  * The decision summary and questions for one GPU landing page.
@@ -102,7 +103,7 @@ export function rooflineReference(): { model: QuantModel; quant: QuantVariant } 
  */
 export function rooflineTokS(gpu: GPU, model: QuantModel, quant: QuantVariant): number | undefined {
   if (!gpu.bandwidth) return undefined;
-  if (/A\d/i.test(model.paramLabel)) return undefined;
+  if (isMoE(model)) return undefined;
   return Math.round(gpu.bandwidth / weightsGB(model, quant));
 }
 

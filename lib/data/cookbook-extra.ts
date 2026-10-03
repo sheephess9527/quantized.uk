@@ -205,7 +205,7 @@ export const extraArticles: Article[] = [
     tags: ['Mac', 'M3 Pro', 'Apple Silicon', 'Ollama', 'Metal'],
     publishedAt: '2025-07-08',
     // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-09-30',
+    updatedAt: '2026-10-03',
     // No `verifiedAt`: rewritten 2026-09-08 because the previous version told
     // 18GB readers a 14B "needs 36GB+" when this site's own calculator puts it
     // at 11.0 GB — a wrong answer in the discouraging direction. The figures
@@ -238,21 +238,21 @@ export const extraArticles: Article[] = [
       {
         heading: '36GB M3 Pro',
         headingZh: '36GB 的 M3 Pro',
-        body: 'A 32B at Q4_K_M is about 22.8GB at 8K, which fits inside the ~27GB ceiling — the earlier claim that 32B "requires Q3 or heavy context sacrifice" was too conservative. 14B models at 8K leave most of the machine free. The honest limit on this tier is speed rather than capacity: memory bandwidth, not VRAM, is what makes a 32B feel slow on an M3 Pro, and this guide has no measured tok/s for that combination.',
-        bodyZh: '32B 的 Q4_K_M 在 8K 下约 22.8GB，能放进约 27GB 的上限内 —— 早先“32B 需要 Q3 或大幅缩减上下文”的说法过于保守。14B 在 8K 下则会让整机大部分内存仍然空闲。这一档真正的限制是速度而非容量：让 32B 在 M3 Pro 上显得慢的是内存带宽，不是显存，而本指南没有该组合的实测 tok/s。',
+        body: 'A 32B at Q4_K_M is about 22.8GB at 8K, which fits inside the ~27GB ceiling — the earlier claim that 32B "requires Q3 or heavy context sacrifice" was too conservative. 14B models at 8K leave most of the machine free. The honest limit on this tier is speed rather than capacity. Generating a token reads every weight once, so the M3 Pro\'s 150 GB/s sets a ceiling: about 8 tok/s for a 32B at Q4_K_M, 18 for a 14B, 32 for an 8B. Those are upper bounds, not measurements — real runs land below them, and this site has no measured M3 Pro figures. The mixture-of-experts Qwen3 30B-A3B is the exception worth knowing: about 20.1GB at 8K (comfortable here), but it reads only its few active experts per token, so it is not held to a dense model\'s ceiling.',
+        bodyZh: '32B 的 Q4_K_M 在 8K 下约 22.8GB，能放进约 27GB 的上限内 —— 早先“32B 需要 Q3 或大幅缩减上下文”的说法过于保守。14B 在 8K 下则会让整机大部分内存仍然空闲。这一档真正的限制是速度而非容量：让 32B 在 M3 Pro 上显得慢的是内存带宽，不是显存，生成每个 token 都要把全部权重读一遍，所以 M3 Pro 的 150 GB/s 就是速度上限：32B 的 Q4_K_M 约 8 tok/s，14B 约 18，8B 约 32。这些是上限而不是实测 —— 实际速度会低于它们，本站也没有 M3 Pro 的实测数据。值得知道的例外是混合专家模型 Qwen3 30B-A3B：8K 下约 20.1GB（在这一档可以从容运行），但每个 token 只读取少数激活的专家，所以不受稠密模型那条上限的约束。',
         code: {
           lang: 'bash',
-          content: 'ollama pull qwen2.5:14b     # ≈ 11 GB at 8K — plenty of room\nollama pull qwen2.5:32b     # ≈ 23 GB at 8K — fits, expect it to be slow',
+          content: 'ollama pull qwen2.5:14b     # ≈ 11 GB at 8K — plenty of room\nollama pull qwen2.5:32b     # ≈ 23 GB at 8K — fits; ceiling ≈ 8 tok/s\nollama pull qwen3:30b-a3b   # ≈ 20 GB at 8K — fits; MoE, not bound by that ceiling',
         },
       },
       {
         heading: 'Check what it is really using',
         headingZh: '确认它实际占用了多少',
-        body: 'ollama ps reports the resident size and whether the model is on the GPU; on Apple Silicon it should read 100% GPU, because Metal has no partial-offload equivalent — a model that does not fit fails or swaps rather than splitting. If the machine starts paging, you will feel it everywhere before you see it in any model metric, so watch memory pressure in Activity Monitor rather than free memory.',
-        bodyZh: 'ollama ps 会报告驻留大小以及模型是否在 GPU 上；在苹果芯片上应显示 100% GPU，因为 Metal 没有部分卸载的对应机制 —— 装不下的模型是加载失败或触发换页，而不是拆分。一旦机器开始换页，你会先在整机体验上感觉到，而不是在任何模型指标里看到，所以请看活动监视器里的“内存压力”，而不是可用内存。',
+        body: 'ollama ps reports the resident size and where the model is running; on Apple Silicon it should read 100% GPU. When a model is larger than what Metal lets the GPU use, Ollama does not refuse it — it puts the layers that do not fit on the CPU, and the column reads something like 25%/75% CPU/GPU, with generation slowing accordingly. That split, not an error, is the sign you are over the limit. If the machine starts paging, you will feel it everywhere before you see it in any model metric, so watch memory pressure in Activity Monitor rather than free memory.',
+        bodyZh: 'ollama ps 会报告驻留大小以及模型跑在哪里；在苹果芯片上应显示 100% GPU。当模型超出 Metal 允许 GPU 使用的上限时，Ollama 并不会拒绝加载 —— 它会把放不下的层放到 CPU 上，这一列会显示类似 25%/75% CPU/GPU，生成速度也随之下降。超限的信号是这种拆分，而不是报错。一旦机器开始换页，你会先在整机体验上感觉到，而不是在任何模型指标里看到，所以请看活动监视器里的“内存压力”，而不是可用内存。',
         code: {
           lang: 'bash',
-          content: 'ollama ps\n# NAME            SIZE      PROCESSOR    UNTIL\n# qwen2.5:14b     11 GB     100% GPU     4 minutes from now',
+          content: 'ollama ps\n# NAME           ID     SIZE    PROCESSOR   UNTIL\n# qwen2.5:14b    <id>   ...     100% GPU    4 minutes from now\n#\n# Over the limit, the same column reads e.g.  25%/75% CPU/GPU',
         },
       },
       {
@@ -266,6 +266,26 @@ export const extraArticles: Article[] = [
         headingZh: '下一步',
         body: 'Select your Mac in the VRAM calculator — the unified-memory machines are in the list — and compare at the context you actually use. Remember to judge the result against ~75% of the machine, not 100%.',
         bodyZh: '在显存计算器里选择你的 Mac —— 统一内存机型都在列表里 —— 并按你实际使用的上下文比较。记得用整机内存的约 75% 而不是 100% 去判断结果。',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can an 18GB M3 Pro run a 14B model?',
+        qZh: '18GB 的 M3 Pro 能跑 14B 模型吗？',
+        a: 'Yes, at everyday context lengths. Qwen2.5 14B at Q4_K_M is about 11.0GB at 8K, against roughly 13.5GB that Metal lets the GPU use on an 18GB machine — 81%, which this site rates comfortable. Long context is what breaks it: at 32K the same model is about 15.9GB, over the limit, and Ollama will start putting layers on the CPU.',
+        aZh: '日常上下文长度下可以。Qwen2.5 14B 的 Q4_K_M 在 8K 下约 11.0GB，而 18GB 机器上 Metal 允许 GPU 使用的大约是 13.5GB —— 占 81%，本站算作从容运行。会让它装不下的是长上下文：32K 时同一个模型约 15.9GB，超过上限，Ollama 就会开始把一部分层放到 CPU 上。',
+      },
+      {
+        q: 'Should I raise iogpu.wired_limit_mb to fit a bigger model?',
+        qZh: '要不要调高 iogpu.wired_limit_mb 来装下更大的模型？',
+        a: 'Usually not. The default leaves roughly a quarter of memory to macOS and your open applications; taking it for the model moves the shortage onto the rest of the system, and once macOS starts swapping everything slows, the model included. A smaller quant or a shorter context gets the same model to fit without that trade.',
+        aZh: '通常不要。默认设置给 macOS 和你打开的应用留了大约四分之一的内存；把它划给模型，只是把紧张转嫁到系统其他部分，一旦 macOS 开始换页，所有东西都会变慢，模型也不例外。换一档更小的量化或者缩短上下文，就能让同一个模型装下，而不必做这种取舍。',
+      },
+      {
+        q: 'How fast will a 32B model be on an M3 Pro?',
+        qZh: '32B 模型在 M3 Pro 上能跑多快？',
+        a: 'At most about 8 tokens per second at Q4_K_M, and in practice less. Each generated token reads all of the weights once, and the M3 Pro has 150 GB/s of memory bandwidth against roughly 20GB of weights — that ratio is a ceiling no runtime can beat. This site has not measured an M3 Pro, so it gives the ceiling rather than a run. A mixture-of-experts model such as Qwen3 30B-A3B reads far less per token and is not bound by it.',
+        aZh: 'Q4_K_M 下最多约每秒 8 个 token，实际会更低。每生成一个 token 都要把全部权重读一遍，而 M3 Pro 的内存带宽是 150 GB/s，权重约 20GB —— 这个比值就是任何运行时都突破不了的上限。本站没有在 M3 Pro 上实测过，所以给出的是上限而不是实测值。像 Qwen3 30B-A3B 这样的混合专家模型每个 token 读取的数据少得多，不受这条上限约束。',
       },
     ],
   },

@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 — Mac M3 Pro guide: partial offload exists; bandwidth ceilings; shared `isMoE()`
+
+- **Wrong claim fixed**: the guide said "Metal has no partial-offload equivalent — a model that does
+  not fit fails or swaps rather than splitting". Ollama `server/sched.go` has an explicit
+  `metal_partial_offload` path (predicted VRAM > available on a Metal device) and `discover/` sizes
+  the GPU from Metal's `recommendedMaxWorkingSetSize`; `cmd/cmd.go` prints the split as
+  `%d%%/%d%% CPU/GPU`. Guide now says the split is the over-limit signal; `ollama ps` sample gains the
+  ID column (Ollama `faq.mdx`).
+- **Speed**: ceilings from `rooflineTokS()` on the `m3-pro-18` row (150 GB/s): 8B 32, 14B 18, 32B 8
+  tok/s — stated as upper bounds; no M3 Pro rows in `matrixData`. Qwen3 30B-A3B added to the 36GB
+  section (20.1 GB @8K = 75% of 27 GB, comfortable) with no number, since the roofline does not apply
+  to MoE. All sizes re-run through `calcVRAM` (unchanged). 3 FAQs; `updatedAt` 2026-10-03.
+- **`isMoE()`** (`lib/utils/model-meta.ts`) replaces three copies. `rooflineTokS` used `/A\d/` and
+  treated the 10 `… MoE`-labelled models (Mixtral, DBRX, Llama 4, DeepSeek V3/R1, Mistral Large 3,
+  GPT-OSS ×2, GLM-4.5-Air) as dense — latent: the GPU pages compute the ceiling only for a dense
+  reference model, so a visible-text diff of all 140 GPU pages showed 0 changes.
+
 ### 2026-10-02 (j) — EXL2's runtime is archived; CLI ExLlamaV2 commands were invented; `huggingface-cli` is gone
 
 Sources: ExLlamaV2 `README.md` ("This project is archived for now"; README run commands
