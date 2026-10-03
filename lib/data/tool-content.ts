@@ -145,10 +145,10 @@ export const cliGenContent: ToolContent = {
       },
     },
     {
-      q: { en: 'Can I run these commands on AMD or Apple silicon?', zh: '这些命令能在 AMD 或苹果芯片上跑吗？' },
+      q: { en: 'Can I run these commands on AMD, Intel Arc or Apple silicon?', zh: '这些命令能在 AMD、Intel Arc 或苹果芯片上跑吗？' },
       a: {
-        en: 'The llama.cpp and Ollama paths, yes — pick the matching environment and the build flags change to Metal or ROCm. **ExLlamaV2 is CUDA-only.** vLLM is not: it ships official ROCm builds, so it runs on supported Radeon and Instinct cards, though kernel coverage for AWQ and GPTQ there is narrower than on CUDA and moves between releases — check the vLLM installation docs for your card before committing to it. Neither runs on Apple silicon.',
-        zh: 'llama.cpp 和 Ollama 可以 —— 选择对应环境后编译参数会切换为 Metal 或 ROCm。**ExLlamaV2 仅支持 CUDA。** vLLM 并非如此：它提供官方 ROCm 构建，可在受支持的 Radeon 与 Instinct 卡上运行，只是 AWQ/GPTQ 算子在该平台的覆盖比 CUDA 窄且随版本变动 —— 选定前请查阅 vLLM 安装文档确认你的卡。两者都不支持苹果芯片。',
+        en: 'The llama.cpp and Ollama paths, yes — the build and the container follow the card in your hardware profile: Metal on a Mac, ROCm/HIP on Radeon, SYCL on Intel Arc (Ollama reaches Arc through Vulkan), or a plain CPU build. **ExLlamaV2 is CUDA-only.** vLLM is not: it ships official ROCm builds, so it runs on supported Radeon and Instinct cards, though kernel coverage for AWQ and GPTQ there is narrower than on CUDA and moves between releases — check the vLLM installation docs for your card before committing to it. Neither runs on Apple silicon, and this site does not generate vLLM commands for Intel Arc.',
+        zh: 'llama.cpp 和 Ollama 可以 —— 编译方式和容器会跟随你硬件配置里的显卡：Mac 用 Metal，Radeon 用 ROCm/HIP，Intel Arc 用 SYCL（Ollama 通过 Vulkan 支持 Arc），否则是纯 CPU 构建。**ExLlamaV2 仅支持 CUDA。** vLLM 并非如此：它提供官方 ROCm 构建，可在受支持的 Radeon 与 Instinct 卡上运行，只是 AWQ/GPTQ 算子在该平台的覆盖比 CUDA 窄且随版本变动 —— 选定前请查阅 vLLM 安装文档确认你的卡。两者都不支持苹果芯片；本站也不为 Intel Arc 生成 vLLM 命令。',
       },
     },
   ],
@@ -163,8 +163,8 @@ export const formatWizardContent: ToolContent = {
     {
       heading: { en: 'The formats, in one paragraph each', zh: '四种格式，各一段话' },
       body: {
-        en: '**GGUF** runs everywhere — CPU, NVIDIA, AMD, Apple — and is the only format that splits a model across VRAM and system RAM. **EXL2** is the fastest on consumer NVIDIA cards and lets you pick a fractional bits-per-weight, but it is CUDA-only and its runtime, ExLlamaV2, is now archived with no maintained API server. **AWQ** is built for batched serving through vLLM. **GPTQ** predates AWQ and covers a similar niche with wider legacy tooling. The wizard only recommends formats an indexed model actually ships.',
-        zh: '**GGUF** 到处都能跑 —— CPU、NVIDIA、AMD、苹果芯片 —— 也是唯一支持把模型拆分在显存与内存之间的格式。**EXL2** 在消费级 NVIDIA 卡上最快，且可以选择小数位的 bpw，但仅支持 CUDA，而且它的运行时 ExLlamaV2 已经归档，没有仍在维护的 API 服务端。**AWQ** 面向通过 vLLM 的批量服务场景。**GPTQ** 早于 AWQ，覆盖类似场景，遗留工具链更广。向导只会推荐索引内确实有模型提供的格式。',
+        en: '**GGUF** runs everywhere — CPU, NVIDIA, AMD, Intel Arc, Apple — and is the only format that splits a model across VRAM and system RAM. **EXL2** is the fastest on consumer NVIDIA cards and lets you pick a fractional bits-per-weight, but it is CUDA-only and its runtime, ExLlamaV2, is now archived with no maintained API server. **AWQ** is built for batched serving through vLLM. **GPTQ** predates AWQ and covers a similar niche with wider legacy tooling. The wizard only recommends formats an indexed model actually ships.',
+        zh: '**GGUF** 到处都能跑 —— CPU、NVIDIA、AMD、Intel Arc、苹果芯片 —— 也是唯一支持把模型拆分在显存与内存之间的格式。**EXL2** 在消费级 NVIDIA 卡上最快，且可以选择小数位的 bpw，但仅支持 CUDA，而且它的运行时 ExLlamaV2 已经归档，没有仍在维护的 API 服务端。**AWQ** 面向通过 vLLM 的批量服务场景。**GPTQ** 早于 AWQ，覆盖类似场景，遗留工具链更广。向导只会推荐索引内确实有模型提供的格式。',
       },
     },
     {

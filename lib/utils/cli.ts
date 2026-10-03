@@ -30,7 +30,7 @@ export interface CLIOptions {
    * card, or a GPU block commented out on an NVIDIA one, both start cleanly
    * and run everything on the CPU. Defaults to CUDA.
    */
-  backend?: 'cuda' | 'rocm' | 'metal' | 'cpu';
+  backend?: 'cuda' | 'rocm' | 'sycl' | 'metal' | 'cpu';
   /** Language of `notes` — they render as visible text on both trees. Defaults to English. */
   lang?: 'en' | 'zh';
   /** Display name of the reader's GPU — vLLM's ROCm build supports only some Radeon/Instinct parts. */
@@ -66,6 +66,9 @@ type Backend = NonNullable<CLIOptions['backend']>;
 function dockerGpuLines(backend: Backend): string[] {
   if (backend === 'cuda') return ['  --gpus all \\'];
   if (backend === 'rocm') return ['  --device /dev/kfd \\', '  --device /dev/dri \\'];
+  // Intel: the render nodes only — /dev/kfd is AMD's, and Docker refuses to
+  // start a container whose --device does not exist on the host.
+  if (backend === 'sycl') return ['  --device /dev/dri \\'];
   return [];
 }
 
@@ -83,18 +86,22 @@ function composeGpuBlock(backend: Backend): string {
     devices:
       - /dev/kfd
       - /dev/dri`;
+  if (backend === 'sycl') return `
+    devices:
+      - /dev/dri`;
   return '';
 }
 
 /** llama.cpp server image per backend (docs/docker.md): `:server` alone is the CPU build. */
 function llamaImageTag(backend: Backend): string {
-  return backend === 'cuda' ? 'server-cuda' : backend === 'rocm' ? 'server-rocm' : 'server';
+  return backend === 'cuda' ? 'server-cuda' : backend === 'rocm' ? 'server-rocm' : backend === 'sycl' ? 'server-intel' : 'server';
 }
 
 /** Notes every container command carries for the reader's backend. */
 function containerNotes(backend: Backend, lang: Lang): string[] {
   if (backend === 'cuda') return [L(lang, 'Requires the NVIDIA Container Toolkit on the host', '主机需要安装 NVIDIA Container Toolkit')];
   if (backend === 'rocm') return [L(lang, 'AMD GPU: needs ROCm drivers on the host; /dev/kfd and /dev/dri are passed through', 'AMD 显卡：主机需要安装 ROCm 驱动；命令已透传 /dev/kfd 和 /dev/dri')];
+  if (backend === 'sycl') return [L(lang, "Intel Arc: needs Intel's GPU driver on the host (dgpu-docs.intel.com); /dev/dri is passed through", 'Intel Arc 显卡：主机需要安装英特尔 GPU 驱动（见 dgpu-docs.intel.com）；命令已透传 /dev/dri')];
   if (backend === 'metal') return [L(lang, 'Docker on macOS cannot reach the Apple GPU — this container runs on the CPU. Choose "macOS Terminal" to run natively on Metal', 'macOS 上的 Docker 无法使用苹果 GPU——这个容器会跑在 CPU 上。想用 Metal 加速，请选择 "macOS 终端" 直接在本机运行')];
   return [L(lang, 'CPU-only container', '纯 CPU 容器')];
 }
@@ -207,6 +214,28 @@ function generateExLlama(opts: CLIOptions): CLIOutput {
   };
 }
 
+/**
+ * The native Linux build for the reader's backend (llama.cpp docs/build.md,
+ * docs/backend/SYCL.md). This used to be the CUDA build for everyone: an AMD
+ * reader got `-DGGML_CUDA=ON`, which stops at CMake for want of nvcc, and a
+ * CPU-only reader was told to install a CUDA toolkit first.
+ */
+function linuxBuild(backend: Backend): string {
+  const clone = `sudo apt install -y build-essential cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp`;
+  if (backend === 'rocm') {
+    // GPU_TARGETS is the card's gfx id; it is not derivable from a marketing
+    // name reliably enough to print, so it stays a visible placeholder.
+    return `# Prerequisites: ROCm 6.1+ on the host, Python 3\n# Install on Linux (with ROCm / HIP)\n${clone}\n# <gfx-target>: your card's id from \`rocminfo | grep gfx\` (e.g. gfx1100 for RX 7900)\nHIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \\\n  cmake -S . -B build -DGGML_HIP=ON -DGPU_TARGETS=<gfx-target> -DCMAKE_BUILD_TYPE=Release`;
+  }
+  if (backend === 'sycl') {
+    return `# Prerequisites: Intel's GPU driver and the oneAPI Base Toolkit, Python 3\n# Install on Linux (with SYCL, for Intel Arc)\n${clone}\nsource /opt/intel/oneapi/setvars.sh\ncmake -B build -DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DGGML_SYCL_F16=ON`;
+  }
+  if (backend === 'cpu') {
+    return `# Prerequisites: Python 3\n# Install on Linux (CPU only)\n${clone}\ncmake -B build`;
+  }
+  return `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\n${clone}\ncmake -B build -DGGML_CUDA=ON`;
+}
+
 function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, gpuLayers, contextLen, threads, port, apiKey } = opts;
   const lang: Lang = opts.lang ?? 'en';
@@ -253,7 +282,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     ].join('\n');
     // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
     // `--gpus all -ngl` starts cleanly and silently runs everything on the CPU.
-    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
+    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD, :server-intel is Intel (SYCL)`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD，:server-intel 用于英特尔（SYCL）`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
   }
 
   if (env === 'compose') {
@@ -287,7 +316,7 @@ services:
   ].join('\n');
   const installCmd = env === 'mac'
     ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`
-    : `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\nsudo apt install -y build-essential cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
+    : `${linuxBuild(backend)}\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`;
 
   return {
     command: `${installCmd}\n${serverCmd}`,
@@ -303,6 +332,11 @@ services:
         : [L(lang, `Replace ${repoId}/the filename: no GGUF conversion is mapped for this model, only its original weights`, `请替换 ${repoId} 和文件名：本站没有为这个模型对应的 GGUF 转换版本，只有原始权重`)]),
     ],
   };
+}
+
+/** Ollama has no SYCL build; it reaches Intel Arc through Vulkan (docs/gpu.mdx). */
+function ollamaIntelNote(lang: Lang): string {
+  return L(lang, "Intel Arc runs through Ollama's Vulkan backend, which is on by default — `ollama ps` should show GPU in the PROCESSOR column. On Linux, install Intel's GPU driver first", 'Intel Arc 通过 Ollama 的 Vulkan 后端运行，默认已开启——`ollama ps` 的 PROCESSOR 一列应显示 GPU。Linux 上需先安装英特尔 GPU 驱动')
 }
 
 function generateOllama(opts: CLIOptions): CLIOutput {
@@ -350,7 +384,7 @@ volumes:
   webui_data:`;
 
     const command = `# After docker compose up -d:\ndocker exec ollama ollama pull ${ollamaModel}`;
-    return { command, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Open WebUI available at http://localhost:3000', 'Open WebUI 地址：http://localhost:3000'), L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`)] };
+    return { command, compose, notes: [...containerNotes(backend, lang), ...(backend === 'sycl' ? [ollamaIntelNote(lang)] : []), exposureNote(lang), L(lang, 'Open WebUI available at http://localhost:3000', 'Open WebUI 地址：http://localhost:3000'), L(lang, `OpenAI-compatible API at http://localhost:${port}/v1`, `OpenAI 兼容接口：http://localhost:${port}/v1`)] };
   }
 
   if (env === 'docker') {
@@ -366,7 +400,7 @@ volumes:
       `# Pull the model`,
       `docker exec ollama ollama pull ${ollamaModel}`,
     ].join('\n');
-    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
+    return { command, notes: [...containerNotes(backend, lang), ...(backend === 'sycl' ? [ollamaIntelNote(lang)] : []), exposureNote(lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
   }
 
   const installCmd = env === 'mac'
@@ -394,6 +428,7 @@ volumes:
   return {
     command,
     notes: [
+      ...(backend === 'sycl' ? [ollamaIntelNote(lang)] : []),
       L(lang, `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`, `OpenAI 兼容接口：http://localhost:${port}/v1/chat/completions`),
       ...(hfRepo
         ? [
@@ -413,8 +448,8 @@ function generateVLLM(opts: CLIOptions): CLIOutput {
   const rocm = backend === 'rocm';
   // Notes that depend on the reader's hardware, shared by every vLLM output.
   const hwNotes: string[] =
-    backend === 'metal' || backend === 'cpu'
-      ? [L(lang, 'These vLLM commands are for NVIDIA and AMD GPUs — on a Mac or a CPU-only machine, llama.cpp or Ollama is the practical choice', '这些 vLLM 命令面向 NVIDIA 和 AMD 显卡——在 Mac 或纯 CPU 机器上，更实际的选择是 llama.cpp 或 Ollama')]
+    backend === 'metal' || backend === 'cpu' || backend === 'sycl'
+      ? [L(lang, 'These vLLM commands are for NVIDIA and AMD GPUs — on Intel Arc, a Mac or a CPU-only machine, llama.cpp or Ollama is the practical choice', '这些 vLLM 命令面向 NVIDIA 和 AMD 显卡——在 Intel Arc、Mac 或纯 CPU 机器上，更实际的选择是 llama.cpp 或 Ollama')]
       : rocm && !vllmRocmSupported(opts.gpuName)
         ? [L(lang, `vLLM's ROCm build lists Radeon RX 7900/7800/7700 and RX 9000 cards and Instinct MI200+; ${opts.gpuName} is not on that list — llama.cpp or Ollama will run it`, `vLLM 的 ROCm 版本支持名单只有 Radeon RX 7900/7800/7700、RX 9000 系列和 Instinct MI200 及以上；${opts.gpuName} 不在名单上——用 llama.cpp 或 Ollama 可以运行`)]
         : [];

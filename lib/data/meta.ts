@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'Intel Arc cards are now in the hardware list: the Arc B580 12G, B570 10G, A770 16G and A750 8G, with capacity and bandwidth from Intel\'s own specification pages. Each has its own page, and the calculator, the format wizard and the command builder all know them. The site recommends GGUF on Arc, run through llama.cpp\'s SYCL backend or Ollama\'s Vulkan backend. The command builder\'s native Linux build for llama.cpp also follows your card now: it used to print the NVIDIA (CUDA) build for everyone, which fails on an AMD card and is the wrong build on a CPU-only machine.',
+    zh: 'Intel Arc 显卡已加入硬件列表：Arc B580 12G、B570 10G、A770 16G 和 A750 8G，显存容量与带宽取自英特尔官方规格页。每张卡都有自己的页面，显存计算器、格式向导和命令生成器也都认得它们。本站在 Arc 上推荐 GGUF，通过 llama.cpp 的 SYCL 后端或 Ollama 的 Vulkan 后端运行。命令生成器里 llama.cpp 的 Linux 本机编译命令现在也会跟随你的显卡：以前它对所有人都输出 NVIDIA（CUDA）编译方式，在 AMD 显卡上会直接失败，在纯 CPU 机器上也不对。',
+  },
+  {
+    date: '2026-10-03',
     en: 'Four older models are now marked as legacy, each pointing to a newer model from the same maker that fits the same hardware. Gemma 2 2B points to Gemma 4 E2B, Gemma 2 9B to Gemma 4 E4B, Gemma 2 27B to Gemma 3 27B, and Mistral 7B v0.3 to Ministral 3 8B. The newer models read 128K–256K tokens of context where the old ones stopped at 8K–32K, and each needs about the same memory or less at Q4_K_M, except Gemma 4 E2B, which needs about 0.8 GB more. The old pages stay up; the Hub hides them unless you choose to show legacy models.',
     zh: '四个较老的模型已标为“旧版”，各自指向同一厂商、能在同样硬件上运行的新模型：Gemma 2 2B → Gemma 4 E2B，Gemma 2 9B → Gemma 4 E4B，Gemma 2 27B → Gemma 3 27B，Mistral 7B v0.3 → Ministral 3 8B。新模型的上下文为 128K–256K，旧模型只有 8K–32K；在 Q4_K_M 下显存占用相当或更少，只有 Gemma 4 E2B 多约 0.8 GB。旧页面继续保留；模型库默认隐藏旧版模型，可手动显示。',
   },

@@ -32,6 +32,7 @@ const EXAMPLE_GPU_ID = 'rtx4060ti16';
 const GROUPS: { type: GPU['type']; label: string }[] = [
   { type: 'nvidia-consumer', label: 'NVIDIA GeForce' },
   { type: 'amd', label: 'AMD Radeon' },
+  { type: 'intel', label: 'Intel Arc' },
   { type: 'apple', label: 'Apple Silicon' },
   { type: 'nvidia-pro', label: 'NVIDIA data centre' },
   { type: 'cpu', label: 'CPU / system RAM' },

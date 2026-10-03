@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (s) — Intel Arc as a hardware class; native llama.cpp build follows the backend
+
+**New GPU type `'intel'`, backend `'sycl'`.** Four cards from intel.com product specification
+pages (2026-10-03): Arc B580 12 GB / 456 GB/s, B570 10 GB / 380, A770 16 GB / 560, A750 8 GB / 512,
+all GDDR6. `ALLOWED_FORMATS.sycl = ['GGUF']`: llama.cpp's `docs/backend/SYCL.md` lists A770, A750
+and B580 as verified; Ollama reaches Arc through Vulkan (`docs/gpu.mdx`, on by default). vLLM has an
+XPU backend, but which quantized formats it serves on consumer Arc was not checked, so nothing beyond
+GGUF is claimed. Fit counts at 4K (comfortable): B580 48, B570 40, A770 51, A750 33 — all GGUF.
+
+Touched everywhere `type` is read: `backendFor`, `gpu-explainer` (an Intel bottleneck paragraph),
+`GpuIndexContent` (group + label), `HomeMatch` (picker group), format wizard (`HardwareType`
+`'intel'`, GGUF scoring, `llama.cpp (SYCL) / Ollama (Vulkan)` runtime; 9 priority × use-case combos
+all return GGUF), FAQ/model-explainer "consumer/retail card" filters, the CLI tool FAQ.
+`homePicks` for the existing 74 hardware rows: identical before/after.
+
+**CLI generator.** Containers: `--device /dev/dri` only (not `/dev/kfd`, which is AMD's — Docker
+refuses a missing device), llama.cpp image `:server-intel` (`docs/docker.md` tag list), Ollama the
+default image with a Vulkan note. **Native Linux llama.cpp build was CUDA for every backend** — an
+AMD reader got `-DGGML_CUDA=ON` (stops at CMake without nvcc) and a CPU-only reader was told to install
+a CUDA toolkit. `linuxBuild(backend)` now emits HIP (`docs/build.md`, `GPU_TARGETS=<gfx-target>` left
+as a visible placeholder with the `rocminfo` hint), SYCL (`setvars.sh` + `icx/icpx`), plain CPU, or
+CUDA. Sweep: 4 frameworks × 4 envs × 5 backends × 2 langs = 160 combos, 0 wrong-language notes,
+no NVIDIA/kfd lines on Intel containers, every native llama.cpp build carries its backend's flag.
+
 ### 2026-10-03 (r) — Quarterly supersede: Gemma 2 ×3, Mistral 7B v0.3
 
 | Legacy | → Successor | Context | Q4_K_M `vramGB` |

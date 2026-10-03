@@ -2,7 +2,7 @@ export interface GPU {
   id: string;
   name: string;
   vram: number;
-  type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
+  type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'intel' | 'cpu';
   isUnified?: boolean;
   isCPU?: boolean;
   icon: string;
@@ -115,6 +115,13 @@ export const gpuDatabase: GPU[] = [
   { id: 'rx6700xt',    name: 'Radeon RX 6700 XT',     vram: 12,  type: 'amd', icon: '🔴', bandwidth: 384, memType: 'GDDR6', },
   { id: 'w7900',       name: 'Radeon PRO W7900 48G',  vram: 48,  type: 'amd', icon: '🔴', bandwidth: 864, memType: 'GDDR6 ECC', },
   { id: 'mi100',       name: 'Instinct MI100 32G',    vram: 32,  type: 'amd', icon: '🔴', bandwidth: 1228, memType: 'HBM2', },
+  // Intel Arc — capacity, bandwidth and memory type from intel.com's product
+  // specification pages (checked 2026-10-03). The A770 also shipped as an 8 GB
+  // card, hence the size in the name.
+  { id: 'arc-b580',    name: 'Arc B580 12G',          vram: 12,  type: 'intel', icon: '🔵', bandwidth: 456, memType: 'GDDR6', },
+  { id: 'arc-b570',    name: 'Arc B570 10G',          vram: 10,  type: 'intel', icon: '🔵', bandwidth: 380, memType: 'GDDR6', },
+  { id: 'arc-a770-16', name: 'Arc A770 16G',          vram: 16,  type: 'intel', icon: '🔵', bandwidth: 560, memType: 'GDDR6', },
+  { id: 'arc-a750',    name: 'Arc A750 8G',           vram: 8,   type: 'intel', icon: '🔵', bandwidth: 512, memType: 'GDDR6', },
   { id: 'cpu-128',     name: '128 GB RAM (CPU)',       vram: 128, type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-64',      name: '64 GB RAM (CPU)',        vram: 64,  type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-32',      name: '32 GB RAM (CPU)',        vram: 32,  type: 'cpu', isCPU: true,      icon: '💻' },

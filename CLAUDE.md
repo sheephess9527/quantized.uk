@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-08-20):**
+**Live snapshot (2026-10-03):**
 
 | Surface | Notes |
 |--------|--------|
 | Models | **89** in index (`models-extra` … `models-extra-12`) |
-| Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **23** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**70** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 435 pages (218 EN + 217 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**74** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 443 pages (222 EN + 221 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -262,7 +262,7 @@ Shared types: `lib/data/types.ts`. Helpers: `lib/utils/model-meta.ts`.
 | `gpuPreset?: { gpuId, ctx? }` | `Article` (cookbook) | Prefills the reverse VRAM lookup; `gpuId` must exist in `gpus.ts` |
 | `relatedModelIds?: string[]` | `Article` (cookbook) | Renders hub links in `GuideNextSteps` |
 
-**CLI container commands follow the reader's GPU** (`backend` from the hardware profile). A GPU block
+**CLI container commands *and the native llama.cpp build* follow the reader's GPU** (`backend` from the hardware profile; `linuxBuild()` — the native build was CUDA for everyone until 2026-10-03). A GPU block
 that is commented out, or a CUDA image on an AMD card, starts cleanly and runs on the CPU — the worst
 failure mode for a copy-paste command. Every CLI note goes through `L(lang, en, zh)`; sweep all
 framework × env × backend × lang combinations after touching `lib/utils/cli.ts`, and check notes
@@ -593,6 +593,11 @@ ROCm on RX 7600–7900 with a ROCm 7 driver, Vulkan (default-on) for the rest in
 10 22H2+, NVIDIA ≥ 551.61. In a `powershell` code block never write `curl -d` — Windows PowerShell
 5.1 aliases `curl` to `Invoke-WebRequest`; use `Invoke-RestMethod` or `curl.exe`. Nor `^` line continuations (cmd only; PowerShell's is a
 backtick) — when a block must work in both, write the command on one line.
+
+**Intel Arc is `type: 'intel'` / backend `'sycl'`, GGUF only** (2026-10-03): llama.cpp SYCL lists A770/A750/B580
+as verified; Ollama runs Arc via Vulkan; vLLM XPU's quantized-format coverage on consumer Arc is unchecked,
+so `ALLOWED_FORMATS.sycl` stays `['GGUF']` until someone reads vLLM's XPU source. Intel containers pass
+`/dev/dri` only — `/dev/kfd` is AMD's and Docker refuses a device that does not exist.
 
 **A GPU database gap forces an honest substitution, stated in the text.** `m1-8gb-ollama-limits` once
 sized against the Mac M3 8G row because there was no M1 entry, and said so — 8GB is 8GB, bandwidth is
@@ -966,6 +971,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Intel Arc (74 GPUs)** — B580/B570/A770/A750 from intel.com; GGUF-only via SYCL/Vulkan; wizard/CLI/picker/index know it. CLI native llama.cpp build was CUDA for AMD and CPU readers too — now HIP/SYCL/CPU/CUDA per backend |
 | 2026-10-03 | **Quarterly supersede** — Gemma 2 2B/9B/27B → Gemma 4 E2B / Gemma 4 E4B / Gemma 3 27B, Mistral 7B v0.3 → Ministral 3 8B; successor must fit the same hardware (9B's first pick, Gemma 3 12B, did not); Llama 3.1 70B / Phi-3.5 mini left (generic reason only) |
 | 2026-10-03 | **+2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B** — configs from transformers, context for SmolLM3 from HF's own post (64K native, 128K only via YaRN); all `estimated`; typed guide counts recomputed and now gated (`guideModelCountProblems`) |
 | 2026-10-03 | **Format cards vs the data; radar removed** — AWQ "best 4-bit accuracy" was false on 53/53 paired models (higher loss, 18% smaller); GPTQ/HQQ quality claims unsupported (0 pairs / 0 models); typed-score radar deleted |

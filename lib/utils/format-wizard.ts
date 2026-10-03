@@ -1,4 +1,4 @@
-export type HardwareType = 'nvidia' | 'amd' | 'mac' | 'cpu';
+export type HardwareType = 'nvidia' | 'amd' | 'intel' | 'mac' | 'cpu';
 export type Priority = 'quality' | 'speed' | 'ease';
 export type UseCase = 'chat' | 'code' | 'api';
 
@@ -46,6 +46,16 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
     } else {
       score -= 35;
       reasons.push({ en: 'AWQ/GPTQ on Radeon means vLLM, whose ROCm build supports only RX 7700 XT and up, RX 9000 and Instinct MI200+ — not RX 6000 or the RX 7600 XT. GGUF runs on every Radeon, so it is the safer default', zh: 'Radeon 上跑 AWQ/GPTQ 要靠 vLLM，而它的 ROCm 版本只支持 RX 7700 XT 及以上、RX 9000 和 Instinct MI200 及以上 —— 不含 RX 6000 和 RX 7600 XT。GGUF 在所有 Radeon 上都能跑，所以是更稳妥的默认选择' });
+    }
+  }
+
+  if (input.hardware === 'intel') {
+    if (format === 'GGUF') {
+      score += 32;
+      reasons.push({ en: 'GGUF runs on Intel Arc through llama.cpp (SYCL — the A770, A750 and B580 are on its verified list) or Ollama (Vulkan)', zh: 'GGUF 可在 Intel Arc 上通过 llama.cpp（SYCL——A770、A750、B580 在其已验证名单上）或 Ollama（Vulkan）运行' });
+    } else {
+      score -= 50;
+      reasons.push({ en: 'AWQ, GPTQ and EXL2 need vLLM or ExLlamaV2; ExLlamaV2 is CUDA-only, and this site has not confirmed which quantized formats vLLM serves on consumer Arc cards', zh: 'AWQ、GPTQ、EXL2 需要 vLLM 或 ExLlamaV2；ExLlamaV2 只支持 CUDA，而 vLLM 在消费级 Arc 显卡上支持哪些量化格式，本站尚未确认' });
     }
   }
 
@@ -107,6 +117,7 @@ function recommendFramework(format: string, input: WizardInput): string {
   if (input.hardware === 'mac') return 'Ollama / llama.cpp (Metal)';
   if (input.hardware === 'cpu') return 'llama.cpp';
   if (input.hardware === 'amd') return 'Ollama / llama.cpp (ROCm)';
+  if (input.hardware === 'intel') return 'llama.cpp (SYCL) / Ollama (Vulkan)';
   return input.priority === 'ease' ? 'Ollama' : 'llama.cpp';
 }
 

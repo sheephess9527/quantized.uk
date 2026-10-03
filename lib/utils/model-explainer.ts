@@ -70,11 +70,11 @@ export function cardsFitting(totalGB: number, format: QuantVariant['format']) {
 }
 
 /**
- * Cards a person buys at retail: consumer GeForce/Radeon RX and Macs. `type`
+ * Cards a person buys at retail: consumer GeForce/Radeon RX/Arc and Macs. `type`
  * alone cannot say this — `'amd'` also covers the Instinct MI100.
  */
 function isRetailCard(g: GPU): boolean {
-  return g.type === 'nvidia-consumer' || g.type === 'apple' || /^Radeon RX/.test(g.name);
+  return g.type === 'nvidia-consumer' || g.type === 'apple' || g.type === 'intel' || /^Radeon RX/.test(g.name);
 }
 
 /**

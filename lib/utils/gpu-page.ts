@@ -30,12 +30,13 @@ export const GPU_PAGE_CONTEXT = 4096;
  * rather than stored — one more field on 63 rows to keep in sync with
  * something `type` already encodes.
  */
-export type Backend = 'cuda' | 'rocm' | 'metal' | 'cpu';
+export type Backend = 'cuda' | 'rocm' | 'sycl' | 'metal' | 'cpu';
 
 export function backendFor(gpu: GPU): Backend {
   if (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro') return 'cuda';
   if (gpu.type === 'apple') return 'metal';
   if (gpu.type === 'amd') return 'rocm';
+  if (gpu.type === 'intel') return 'sycl';
   return 'cpu';
 }
 
@@ -57,6 +58,11 @@ export function backendFor(gpu: GPU): Backend {
 export const ALLOWED_FORMATS: Record<Backend, ReadonlyArray<QuantVariant['format']>> = {
   cuda: ['GGUF', 'AWQ', 'GPTQ', 'EXL2', 'HQQ'],
   rocm: ['GGUF', 'AWQ', 'GPTQ'],
+  // Intel Arc: llama.cpp's SYCL backend lists the A770/A750/B580 as verified
+  // (docs/backend/SYCL.md), and Ollama reaches them through Vulkan. vLLM has an
+  // XPU backend, but this site has not checked which quantized formats it
+  // serves on consumer Arc cards, so nothing beyond GGUF is claimed.
+  sycl: ['GGUF'],
   metal: ['GGUF'],
   cpu: ['GGUF'],
 };

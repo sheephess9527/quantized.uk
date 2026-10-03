@@ -149,6 +149,13 @@ function ceilingText(gpu: GPU, fits: GpuFit[], total: number): { en: string; zh:
     };
   }
 
+  if (gpu.type === 'intel') {
+    return {
+      en: `Backend coverage, not capacity. At ${bw ? `${gbs(bw)} GB/s` : 'this bandwidth'} the card has the memory system for its size class; what limits it is which runtimes reach it. llama.cpp's SYCL backend lists Arc A-series and B580 cards as verified, and Ollama runs them through Vulkan — so GGUF is the format this site recommends here. AWQ, GPTQ and EXL2 are not.`,
+      zh: `瓶颈是后端支持，不是容量。在 ${bw ? `${gbs(bw)} GB/s` : '该带宽'} 下，这张卡的显存子系统与同容量级别相称；限制它的是哪些运行时能用上它。llama.cpp 的 SYCL 后端把 Arc A 系列和 B580 列为已验证，Ollama 通过 Vulkan 运行它们 —— 所以本站在这里推荐 GGUF 格式，不推荐 AWQ、GPTQ 和 EXL2。`,
+    };
+  }
+
   if (twin && bw) {
     return {
       en: `Bandwidth, not capacity. The models on this page fit, but at ${gbs(bw)} GB/s this card reads the whole weight set once per generated token — a ${gbs(twin.bandwidth ?? 0)} GB/s ${twin.name} holds exactly the same ${gpu.vram} GB and moves those bytes ${((twin.bandwidth ?? 0) / bw).toFixed(1)}× faster. Expect the same quant to generate proportionally slower here.`,

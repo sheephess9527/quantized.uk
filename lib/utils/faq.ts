@@ -90,7 +90,7 @@ export function faqGroups(): FaqGroup[] {
   const small70 = [...b70.model.quants].sort((a, b) => a.bpw - b.bpw)[0];
   const s70small = size(b70.model, small70.bpw, CTX);
   const cards70 = gpuDatabase.filter(g => getVerdict(s70.totalGB, usableCapacityGB(g)) === 'green');
-  const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || /^Radeon RX/.test(g.name));
+  const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || g.type === 'intel' || /^Radeon RX/.test(g.name));
 
   const card8 = gpuDatabase.find(g => g.id === 'rtx4060')!;
   const card16 = gpuDatabase.find(g => g.id === 'rtx4060ti16')!;
@@ -108,7 +108,7 @@ export function faqGroups(): FaqGroup[] {
   // Instinct MI100, and picking by capacity handed a workstation card back as
   // the answer to "what should I buy".
   const isConsumer = (g: (typeof gpuDatabase)[number]) =>
-    g.type === 'nvidia-consumer' || /^Radeon RX/.test(g.name);
+    g.type === 'nvidia-consumer' || g.type === 'intel' || /^Radeon RX/.test(g.name);
   const biggestConsumer = gpuDatabase
     .filter(isConsumer)
     .sort((a, b) => b.vram - a.vram || (b.bandwidth ?? 0) - (a.bandwidth ?? 0))[0];
