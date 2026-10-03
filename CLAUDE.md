@@ -276,7 +276,8 @@ repos are per-model), emit a visible `<placeholder>`: an obvious placeholder bea
 wrong answer. Same rule for llama.cpp build flags — they are `GGML_*`, never `LLAMA_*`. (Checked 2026-10-02 in
 llama.cpp's `CMakeLists.txt`: `LLAMA_CUDA` warns and still enables CUDA, `LLAMA_CUBLAS` is a fatal
 error — the site long claimed both were "silently ignored"; a *misspelt* flag is what gives a
-CPU-only build, reported only as an unused manually-specified variable.)
+CPU-only build, reported only as an unused manually-specified variable — and so does `LLAMA_HIPBLAS`,
+which is absent from `llama_option_depr` and therefore not forwarded to `GGML_HIP`.)
 
 **A displayed number must state its basis, and one row must not mix two.** The compare tool had a
 VRAM row fed by a fixed published figure sitting under copy that promised it tracked the context
@@ -935,6 +936,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **AMD ROCm guide FAQs** — ROCm vs Vulkan, AWQ/GPTQ via vLLM ROCm on listed cards only, 24 vs 16 GB Radeon (69 vs 53 comfortable); `LLAMA_HIPBLAS` is reported as an unused variable, not silent (still CPU-only) |
 | 2026-10-03 | **GPT-OSS guide vs llama.cpp's gpt-oss guide** — `--n-cpu-moe` for 8/12GB cards, `--chat-template-kwargs` reasoning effort, OpenAI sampling (temp 1.0, top_p 1.0, no rep penalty); unsourced 120B speed/RAM claim removed; 3 FAQs |
 | 2026-10-03 | **GPT-OSS effective bpw + guide-figure gate** — MXFP4 4.25 applies to experts only; real files 11.27 / 59.02 GiB → 4.63 / 4.34 bpw (20B @4K 11.7 → 12.8 GB, 14 verdicts); build now checks guide sizes against `calcVRAM`; 4 guides corrected |
 | 2026-10-03 | **8GB guide re-run** — three figures drifted after the 09-30 arch fixes; Llama 3.1 8B @16K is 91% (`tight`) but the row said "fits"; AWQ route is Linux/WSL2 only (vLLM); 2 image models added; 3 FAQs |

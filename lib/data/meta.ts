@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The AMD ROCm guide now ends with three common questions: whether to use ROCm or Vulkan on a Radeon, which Radeon cards can run AWQ and GPTQ models (and that none can run EXL2), and how much more fits on a 24GB RX 7900 XTX than on a 16GB card. One build note was also corrected: the old LLAMA_HIPBLAS flag is not silently ignored — CMake lists it as unused — but the result is still a build that runs only on the CPU.',
+    zh: 'AMD ROCm 指南文末新增三个常见问答：Radeon 上该用 ROCm 还是 Vulkan；哪些 Radeon 能跑 AWQ 和 GPTQ 模型（以及没有一张能跑 EXL2）；24GB 的 RX 7900 XTX 比 16GB 显卡能多装下多少。同时更正了一处编译说明：旧的 LLAMA_HIPBLAS 开关并不是被静默忽略 —— CMake 会把它列为未使用变量 —— 但结果仍然是只能在 CPU 上运行的构建。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The GPT-OSS guide was checked against llama.cpp\'s own gpt-oss guide. It now shows how to run the 20B on an 8GB or 12GB card by keeping some of its experts in system RAM, gives llama.cpp\'s documented way to set reasoning effort, adds OpenAI\'s recommended sampling settings (temperature 1.0, top_p 1.0, no repetition penalty), and drops a speed claim for the 120B that no one here had measured. Three common questions are answered at the end.',
     zh: 'GPT-OSS 指南已对照 llama.cpp 官方的 gpt-oss 指南核对。现在指南说明了如何把一部分专家留在系统内存、让 20B 在 8GB 或 12GB 显卡上运行，给出了 llama.cpp 文档里设置推理强度的写法，补充了 OpenAI 推荐的采样参数（temperature 1.0、top_p 1.0、不用重复惩罚），并删掉了一条本站没有实测过的 120B 速度说法。文末新增三个常见问答。',
   },

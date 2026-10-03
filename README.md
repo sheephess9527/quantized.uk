@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (e) — AMD ROCm guide: FAQs; `LLAMA_HIPBLAS` wording
+
+- **3 FAQs** on `amd-rocm-llamacpp` (the last high-traffic guide without them): ROCm vs Vulkan
+  (Vulkan needs no ROCm; `HSA_OVERRIDE_GFX_VERSION` is unsupported on Windows per llama.cpp
+  `docs/build.md`; no speed verdict — no Radeon measurements), AWQ/GPTQ only via vLLM ROCm on the
+  cards `vllmRocmSupported()` names, EXL2 never; 24 GB vs 16 GB Radeon (69 vs 53 comfortable fits
+  at 4K via `countModelsFitting`; Qwen3 30B-A3B Q4_K_M @8K 20.2 GB = 84% of 24 GB; GPT-OSS 20B
+  MXFP4 @8K 12.9 GB) — all figures from `calcVRAM`, passed by `guideFigureProblems()`.
+- **Correction:** the guide said CMake ignores the old `LLAMA_HIPBLAS` silently. It is not in
+  llama.cpp's `llama_option_depr` list (top-level `CMakeLists.txt`, checked today), so it is not
+  forwarded like `LLAMA_CUDA`, but CMake does report it under "Manually-specified variables were not
+  used". Outcome unchanged (CPU-only build); wording fixed in the build step and in Common problems.
+- `updatedAt` → 2026-10-03; still no `verifiedAt` (no Radeon here).
+
 ### 2026-10-03 (d) — GPT-OSS guide checked against llama.cpp's gpt-oss guide
 
 Source: ggml-org/llama.cpp discussion #15396 (fetched verbatim): recommended commands

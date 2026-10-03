@@ -346,8 +346,8 @@ export const extraArticles2: Article[] = [
     difficulty: 'advanced',
     tags: ['AMD', 'ROCm', 'llama.cpp', 'HIP', 'Linux'],
     publishedAt: '2026-06-24',
-    // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-10-02',
+    // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03.
+    updatedAt: '2026-10-03',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
@@ -381,8 +381,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Build llama.cpp with the HIP backend',
         headingZh: '用 HIP 后端编译 llama.cpp',
-        body: 'The flag is GGML_HIP=ON. The older LLAMA_HIPBLAS name is gone, and CMake ignores unknown -D options silently — pass the old name and you get a build that compiles cleanly, runs, and is CPU-only. Set GPU_TARGETS to your gfx target so the kernels are compiled for your card (the older AMDGPU_TARGETS name is still forwarded; leaving both out builds for every GPU in the machine). Point HIPCXX at ROCm’s own clang, as llama.cpp’s build docs do — passing hipcc as the compiler still works, but CMake now warns that it is legacy.',
-        bodyZh: '编译开关是 GGML_HIP=ON。旧的 LLAMA_HIPBLAS 名称已被移除，而 CMake 对不认识的 -D 参数是静默忽略的 —— 用旧名字会得到一个编译顺利、能运行、但纯 CPU 的构建。同时把 GPU_TARGETS 设为你的 gfx 目标，确保内核为你的卡编译（旧名 AMDGPU_TARGETS 仍会被转发；两个都不设则为机器里所有 GPU 编译）。按 llama.cpp 构建文档的做法，用 HIPCXX 指向 ROCm 自带的 clang —— 把 hipcc 当编译器仍然可用，但 CMake 现在会警告这是旧做法。',
+        body: 'The flag is GGML_HIP=ON. The older LLAMA_HIPBLAS name is gone and, unlike LLAMA_CUDA, is not forwarded to the new one — pass it and you get a build that compiles cleanly, runs, and is CPU-only. CMake’s only complaint is a line near the end of configure listing it under “Manually-specified variables were not used by the project”, which is easy to scroll past. Set GPU_TARGETS to your gfx target so the kernels are compiled for your card (the older AMDGPU_TARGETS name is still forwarded; leaving both out builds for every GPU in the machine). Point HIPCXX at ROCm’s own clang, as llama.cpp’s build docs do — passing hipcc as the compiler still works, but CMake now warns that it is legacy.',
+        bodyZh: '编译开关是 GGML_HIP=ON。旧的 LLAMA_HIPBLAS 名称已被移除，而且不像 LLAMA_CUDA 那样会被转发到新名字 —— 用旧名字会得到一个编译顺利、能运行、但纯 CPU 的构建。CMake 唯一的提示是配置末尾的一行，把它列在 “Manually-specified variables were not used by the project” 之下，很容易一滚而过。同时把 GPU_TARGETS 设为你的 gfx 目标，确保内核为你的卡编译（旧名 AMDGPU_TARGETS 仍会被转发；两个都不设则为机器里所有 GPU 编译）。按 llama.cpp 构建文档的做法，用 HIPCXX 指向 ROCm 自带的 clang —— 把 hipcc 当编译器仍然可用，但 CMake 现在会警告这是旧做法。',
         code: {
           lang: 'bash',
           content: 'git clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\n\nHIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \\\n  cmake -S . -B build \\\n  -DGGML_HIP=ON \\\n  -DGPU_TARGETS=gfx1100 \\\n  -DCMAKE_BUILD_TYPE=Release\ncmake --build build --config Release -j$(nproc)',
@@ -417,14 +417,34 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Common problems',
         headingZh: '常见问题',
-        body: 'rocminfo finds no agents: group membership, or the kernel module did not load — check dmesg for amdgpu. hipErrorNoBinaryForGpu at load: the build did not include your gfx target; rebuild with the right GPU_TARGETS, or set HSA_OVERRIDE_GFX_VERSION. Builds fine but runs on CPU: almost always the old LLAMA_HIPBLAS flag, silently ignored — check the startup log for the backend line. Hangs or garbage output after an override: the override is not a supported path; drop back to a lower context or a different quant before assuming the model is at fault.',
-        bodyZh: 'rocminfo 找不到设备：要么是用户组没加，要么是内核模块没加载 —— 用 dmesg 查 amdgpu。加载时报 hipErrorNoBinaryForGpu：编译时没有包含你的 gfx 目标；用正确的 GPU_TARGETS 重新编译，或设置 HSA_OVERRIDE_GFX_VERSION。能编译但跑在 CPU 上：几乎都是用了被静默忽略的旧 LLAMA_HIPBLAS 开关 —— 看启动日志里的后端那一行。设置 override 后卡死或输出乱码：override 本就不是受支持路径；先降低上下文或换一个量化档位，再去怀疑模型本身。',
+        body: 'rocminfo finds no agents: group membership, or the kernel module did not load — check dmesg for amdgpu. hipErrorNoBinaryForGpu at load: the build did not include your gfx target; rebuild with the right GPU_TARGETS, or set HSA_OVERRIDE_GFX_VERSION. Builds fine but runs on CPU: almost always the old LLAMA_HIPBLAS flag, which CMake lists as unused and otherwise ignores — check the startup log for the backend line. Hangs or garbage output after an override: the override is not a supported path; drop back to a lower context or a different quant before assuming the model is at fault.',
+        bodyZh: 'rocminfo 找不到设备：要么是用户组没加，要么是内核模块没加载 —— 用 dmesg 查 amdgpu。加载时报 hipErrorNoBinaryForGpu：编译时没有包含你的 gfx 目标；用正确的 GPU_TARGETS 重新编译，或设置 HSA_OVERRIDE_GFX_VERSION。能编译但跑在 CPU 上：几乎都是用了旧的 LLAMA_HIPBLAS 开关，CMake 只把它列为未使用变量、其余一概忽略 —— 看启动日志里的后端那一行。设置 override 后卡死或输出乱码：override 本就不是受支持路径；先降低上下文或换一个量化档位，再去怀疑模型本身。',
       },
       {
         heading: 'Next steps',
         headingZh: '下一步',
         body: 'The models linked below are the ones this guide is written around. Open any of them with your Radeon selected in the calculator to see the context length it can actually hold.',
         bodyZh: '下方链接的模型就是本指南所围绕的那几个。在计算器里选好你的 Radeon 再打开其中任意一个，就能看到它实际能撑住多长的上下文。',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Should I use ROCm or Vulkan for llama.cpp on a Radeon?',
+        qZh: 'Radeon 上跑 llama.cpp，该用 ROCm 还是 Vulkan？',
+        a: 'On Linux with a card AMD officially supports, ROCm (the HIP build in this guide) is the documented path. Vulkan is the fallback that needs no ROCm install at all: build with -DGGML_VULKAN=ON instead of GGML_HIP. It is the better choice on Windows for a card outside AMD’s list, because llama.cpp’s build docs note that HSA_OVERRIDE_GFX_VERSION is not supported on Windows. This site has not measured either backend on a Radeon, so it does not say which is faster — run both on your card with the same model and context and compare.',
+        aZh: '在 Linux 上、且显卡在 AMD 官方支持列表里时，ROCm（也就是本指南的 HIP 构建）是文档给出的路径。Vulkan 是完全不需要安装 ROCm 的后备方案：编译时用 -DGGML_VULKAN=ON 代替 GGML_HIP。在 Windows 上、显卡又不在 AMD 列表里时，它是更好的选择，因为 llama.cpp 的构建文档写明 HSA_OVERRIDE_GFX_VERSION 在 Windows 上不受支持。本站没有在 Radeon 上实测过任何一个后端，所以不下“谁更快”的结论 —— 用同一个模型和上下文在你的卡上两个都跑一遍再比较。',
+      },
+      {
+        q: 'Can a Radeon run AWQ, GPTQ or EXL2 models?',
+        qZh: 'Radeon 能跑 AWQ、GPTQ 或 EXL2 模型吗？',
+        a: 'AWQ and GPTQ, yes, but only through vLLM’s ROCm builds, and only on cards vLLM lists: the RX 7700 XT, 7800 XT and 7900 series, and the RX 9000 series. The RX 6000 series and the RX 7600 XT are not on that list, so on those cards GGUF through llama.cpp is the route. EXL2 needs CUDA and does not run on any Radeon, and its runtime, ExLlamaV2, is now archived anyway. The GPU pages and the VRAM calculator apply the same rule, so they only recommend formats your card can load.',
+        aZh: 'AWQ 和 GPTQ 可以，但只能通过 vLLM 的 ROCm 构建，而且只限 vLLM 列出的显卡：RX 7700 XT、7800 XT、7900 系列，以及 RX 9000 系列。RX 6000 系列和 RX 7600 XT 不在列表里，这些卡请走 llama.cpp + GGUF。EXL2 需要 CUDA，任何 Radeon 都跑不了，况且它的运行时 ExLlamaV2 已经归档。本站的显卡页面和显存计算器用的是同一条规则，只会推荐你的卡能加载的格式。',
+      },
+      {
+        q: 'What fits on a 24GB RX 7900 XTX compared with a 16GB Radeon?',
+        qZh: '24GB 的 RX 7900 XTX 和 16GB 的 Radeon 能装下的模型差多少？',
+        a: 'At 4K context, 69 of the 87 models in this index fit the RX 7900 XTX comfortably, against 53 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
+        aZh: '在 4K 上下文下，本索引 87 个模型中有 69 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 53 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
       },
     ],
   },
