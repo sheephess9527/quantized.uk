@@ -419,6 +419,31 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (o) — +2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B; guide model-count gate
+
+New pack `lib/data/models-extra-12.ts`, both full attention on every layer (no new sizing shape):
+- **SmolLM3 3B** (`smollm3-3b`) — transformers `configuration_smollm3.py`: 36 layers, hidden 2048,
+  16 / 4 KV heads (head_dim 128), intermediate 11008, vocab 128256 tied → 3.08B by count. Context
+  65536 from Hugging Face's own `smollm3.md` (trained 4K→32K→64K; 128K "using YaRN" only), not the
+  transformers default 32768. NoPE every 4th layer does not change the cache. Q4_K_M 2.26 GB @4K,
+  4.43 @32K, 6.90 @64K (86% of 8 GB).
+- **ERNIE 4.5 21B-A3B** (`ernie-4.5-21b-a3b`) — `configuration_ernie4_5_moe.py`: 28 layers, hidden
+  2560, 20 / 4 KV heads (128), 64 routed experts top-6 + 2 shared (width 1536), layer 0 dense
+  (12288), vocab 103424 tied, 131072 positions → 21.8B total / ~3B active by count. Q4_K_M 14.05 GB
+  @4K (87.8% of 16 GB — on the comfortable line), 15.74 @32K (tight), 21.51 @128K. First draft of
+  its description said "fits 16 GB with room for context" — corrected before shipping.
+- Both archs confirmed in llama.cpp `src/llama-arch.cpp`. Repo ids for `hfRepoMap` taken from
+  transformers' model docs (`HuggingFaceTB/SmolLM3-3B`, `baidu/ERNIE-4.5-21B-A3B-PT`). No GGUF
+  size reachable → generic bpw, rows `estimated`, no `pplLossPercent`, no speed.
+- **Typed counts in guides went stale** with this batch, and one was already two batches old
+  ("71 of the 81 models" in `mac-m3-pro-limits`'s FAQ). Recomputed: RX 7900 XTX 71 / RX 7800 XT 55
+  comfortable, M3 Max 48G 73 (largest still Kimi Linear at 30.4 GB), AWQ 53 of 89.
+  New gate `guideModelCountProblems()` in `validate.ts`: any guide sentence naming "N of the M
+  models" / "the M models here|in this index" / "本索引|本站 M 个模型" fails the build unless
+  M = `models.length`. Proven by perturbation (88 → 2 failures). Fit counts inside those sentences
+  are not checked — re-run them when it fires.
+- `og.svg` still says "79+ Models" — true, so not re-rendered.
+
 ### 2026-10-03 (n) — Site-wide sweep: format cards vs the index's own data; radar removed
 
 After the nine-guide batch, the same fault classes were swept across the CLI, tool content, FAQ,

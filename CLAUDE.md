@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **87** in index (`models-extra` … `models-extra-11`) |
+| Models | **89** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **23** guides; 5 rewritten in full, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**70** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 431 pages (216 EN + 215 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 435 pages (218 EN + 217 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -394,7 +394,9 @@ follow it to the component that actually reads it in the mode the link opens.
 4. Update `todayFeed` in `models.ts` if it should appear on the homepage picks — type only `level`
    and a short `note`; size and card are computed by `TodayBoard`, never typed.
 5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
-6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`.
+6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`. **Guides are the
+   exception**: their prose counts are typed, and `guideModelCountProblems()` fails the build until
+   every "N of the M models" names the new total — then re-run the fit count N it quotes.
 
 **Superseding models** — set `status: 'superseded'` + `supersededBy`; do **not** delete (keeps
 links/SEO). Card + detail show amber "Prefer {name}", with a reason from `supersededDiffNote()`
@@ -914,7 +916,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-11)
+lib/data/models-extra-*.ts  # model packs (currently through extra-12)
 lib/data/meta.ts            # dataLastUpdated + changelog
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
@@ -956,6 +958,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **+2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B** — configs from transformers, context for SmolLM3 from HF's own post (64K native, 128K only via YaRN); all `estimated`; typed guide counts recomputed and now gated (`guideModelCountProblems`) |
 | 2026-10-03 | **Format cards vs the data; radar removed** — AWQ "best 4-bit accuracy" was false on 53/53 paired models (higher loss, 18% smaller); GPTQ/HQQ quality claims unsupported (0 pairs / 0 models); typed-score radar deleted |
 | 2026-10-03 | **Nginx proxy guide** — `http2 on;` needs Nginx 1.25.1+, Ubuntu 22.04/24.04 ship 1.18/1.24 → config failed `nginx -t`; now `listen 443 ssl http2;`. llama.cpp/vLLM *do* have `--api-key` (not required by default) |
 | 2026-10-03 | **Qwen Coder 32B guide** — per-context verdicts (GGUF 104% at 16K; AWQ 107% at 32K); "best coding model" claim dropped (no coding benchmarks); Qwen3-Coder 30B-A3B AWQ 80% at 32K as the long-context option, repo left as a placeholder |

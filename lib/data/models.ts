@@ -11,6 +11,7 @@ import { extraModels8 } from './models-extra-8';
 import { extraModels9 } from './models-extra-9';
 import { extraModels10 } from './models-extra-10';
 import { extraModels11 } from './models-extra-11';
+import { extraModels12 } from './models-extra-12';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -244,7 +245,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12];
 
 /**
  * Editor's Picks — refresh with each data cadence.

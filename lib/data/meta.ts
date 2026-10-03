@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'Two models added, both picked for modest hardware. SmolLM3 3B is Hugging Face\'s fully open 3B model, with its training data published. At Q4_K_M it is about 2.3 GB at 4K context, fits an 8 GB card even at its full 64K window, and is realistic on a CPU. ERNIE 4.5 21B-A3B is Baidu\'s mixture-of-experts model, about 21.8B parameters in total with roughly 3B active per token. At Q4_K_M it is about 14.1 GB, right at the edge of comfortable on a 16 GB card, and comfortable on 24 GB. Sizes for both are estimates: no file size could be checked, and no quality figures have been published.',
+    zh: '新增两个模型，都是为普通硬件挑选的。SmolLM3 3B 是 Hugging Face 完全开源的 3B 模型，训练数据一并公开；Q4_K_M 在 4K 上下文下约 2.3 GB，即使用满 64K 窗口也能放进 8 GB 显卡，在 CPU 上也现实可用。ERNIE 4.5 21B-A3B 是百度的混合专家模型，总参数约 21.8B，每个 token 约激活 3B；Q4_K_M 约 14.1 GB，在 16 GB 显卡上正好处于“宽裕”的边缘，在 24 GB 上则很宽裕。两者的体积都是估算值：未能核对到文件大小，质量数据也未公布。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The format pages no longer say AWQ has the best 4-bit accuracy. On every model in this index that ships both, AWQ INT4 is the smaller file but loses more quality than GGUF Q4_K_M. The pages now say that, and stop claiming AWQ is NVIDIA-only. The six-axis format radar chart has been removed: its scores were typed in by hand, not measured, and one axis contradicted the index\'s own data. GPTQ and HQQ descriptions now only claim what can be checked.',
     zh: '格式页面不再说 AWQ 的 4-bit 精度最高。在本索引中同时提供两者的每个模型上，AWQ INT4 的文件更小，但质量损失比 GGUF Q4_K_M 更大 —— 页面现在照实这么写，也不再声称 AWQ 只能用于 NVIDIA。六维格式雷达图已移除：它的分数是手工填写的，不是实测，其中一项还与本索引自己的数据相矛盾。GPTQ 和 HQQ 的介绍现在只保留可以核实的说法。',
   },

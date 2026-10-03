@@ -444,8 +444,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'What fits on a 24GB RX 7900 XTX compared with a 16GB Radeon?',
         qZh: '24GB 的 RX 7900 XTX 和 16GB 的 Radeon 能装下的模型差多少？',
-        a: 'At 4K context, 69 of the 87 models in this index fit the RX 7900 XTX comfortably, against 53 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
-        aZh: '在 4K 上下文下，本索引 87 个模型中有 69 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 53 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
+        a: 'At 4K context, 71 of the 89 models in this index fit the RX 7900 XTX comfortably, against 55 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
+        aZh: '在 4K 上下文下，本索引 89 个模型中有 71 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 55 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
       },
     ],
   },

@@ -84,6 +84,7 @@ export function dataProblems(): string[] {
     if (!modelIds.has(id)) out.push(`hfRepoMap: '${id}' is not a model id`);
   }
   out.push(...guideFigureProblems());
+  out.push(...guideModelCountProblems());
   return out;
 }
 
@@ -96,6 +97,32 @@ export function dataProblems(): string[] {
  * is checked, which is what makes a false positive unlikely. It must match the
  * total or the weights within 0.3 GB.
  */
+/**
+ * Guides are hand-written, so a count like "71 of the 87 models" freezes the day it is typed and goes
+ * stale with the next model batch (the Mac FAQ still said 81 two batches later). Any sentence that
+ * names a total model count must name the current one. Fit counts themselves are not checked here —
+ * they depend on the card and context the sentence describes — so re-run those when this fires.
+ */
+function guideModelCountProblems(): string[] {
+  const out: string[] = [];
+  const total = models.length;
+  const patterns = [
+    /\b(\d+) of the (\d+) models\b/g,
+    /\bthe (\d+) models (?:in this index|here)\b/g,
+    /(?:本索引|本站)\s?(\d+) 个模型/g,
+  ];
+  for (const a of articles) {
+    const text = JSON.stringify(a);
+    for (const re of patterns) {
+      for (const m of Array.from(text.matchAll(re))) {
+        const n = Number(m[m.length - 1]);
+        if (n !== total) out.push(`guide ${a.id}: "${m[0]}" names ${n} models; the index has ${total}`);
+      }
+    }
+  }
+  return out;
+}
+
 function guideFigureProblems(): string[] {
   const out: string[] = [];
   const aliases: { re: RegExp; m: (typeof models)[number] }[] = [];
