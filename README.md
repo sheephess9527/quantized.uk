@@ -443,6 +443,10 @@ New pack `lib/data/models-extra-12.ts`, both full attention on every layer (no n
   M = `models.length`. Proven by perturbation (88 → 2 failures). Fit counts inside those sentences
   are not checked — re-run them when it fires.
 - `og.svg` still says "79+ Models" — true, so not re-rendered.
+- **RSS never showed a new model since August:** `lib/feed/build.ts` took `models.filter(addedAt)
+  .slice(0, 20)` in *file order*, i.e. the first 20 dated entries of the early packs; every batch
+  from `models-extra-8` on was cut. Now sorted by `addedAt` descending (both feeds verified in
+  `out/`: SmolLM3, ERNIE, Gemma 4 lead). Same fault class as the 2026-09-23 "latest additions" fix.
 
 ### 2026-10-03 (n) — Site-wide sweep: format cards vs the index's own data; radar removed
 

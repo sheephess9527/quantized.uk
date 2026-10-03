@@ -902,7 +902,8 @@ pointing at an older ship — which then misleads anyone verifying a deploy. Thi
 twice; check `git show --stat` for `lib/data/meta.ts` before calling a batch complete.
 
 Home **Weekly updates** (`components/home/WeeklyUpdates.tsx`) + Hub `?recency=recent` +
-`/feed.xml` are the three surfaces that should reflect every cadence ship.
+`/feed.xml` are the three surfaces that should reflect every cadence ship. **Any "newest N" list must
+sort by `addedAt` before slicing** — file order put the feed's 20 models in June/July for two months.
 
 **GPU landing pages are derived, not authored** — `lib/utils/gpu-page.ts` turns `gpuDatabase` +
 `models` into 61 pages per language. `fitsOnGpu()` reuses `calcVRAM`/`getVerdict`, so a page and the

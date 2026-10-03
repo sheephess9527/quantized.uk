@@ -38,7 +38,12 @@ const CHANNEL = {
 export function buildFeed(lang: Lang): string {
   const c = CHANNEL[lang];
   const selfPath = `${c.base}/feed.xml`;
-  const recentModels = models.filter(m => isRecentModel(m) || m.addedAt);
+  // Newest first. This used to take the first 20 in *file order*, so every model added after the
+  // early packs (August onward, including each new batch) fell past the cut and never reached the
+  // feed — the same fault the homepage "latest additions" block had (README §9, 2026-09-23).
+  const recentModels = models
+    .filter(m => isRecentModel(m) || m.addedAt)
+    .sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''));
   const items: string[] = [];
 
   for (const entry of changelog.slice(0, 12)) {
