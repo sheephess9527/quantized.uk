@@ -262,6 +262,8 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 13, type: 'new', modelId: 'ernie-4.5-21b-a3b', level: 'Q4_K_M', note: { en: '3B active, 128K window', zh: '激活 3B，128K 上下文' }, quantizer: 'baidu' },
+  { id: 14, type: 'new', modelId: 'smollm3-3b', level: 'Q4_K_M', note: { en: 'training data published', zh: '训练数据公开' }, quantizer: 'HuggingFaceTB' },
   { id: 12, type: 'new', modelId: 'gemma-4-e4b', level: 'Q4_K_M', note: { en: 'image + audio on 8 GB', zh: '8 GB 跑图像 + 音频' }, quantizer: 'google' },
   { id: 10, type: 'new', modelId: 'gemma-4-26b-a4b', level: 'Q4_K_M', note: { en: '4B active, 256K window', zh: '激活 4B，256K 上下文' }, quantizer: 'google' },
   { id: 11, type: 'new', modelId: 'gemma-4-31b', level: 'Q4_K_M', note: { en: '10 of 60 layers cache', zh: '60 层中仅 10 层缓存' }, quantizer: 'google' },
@@ -270,8 +272,6 @@ export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: stri
   { id: 0, type: 'new', modelId: 'qwen3-8-27b', level: 'Q4_K_M', note: { en: '16 of 64 layers cache KV', zh: '64 层中仅 16 层缓存 KV' }, quantizer: 'unsloth' },
   { id: 7, type: 'new', modelId: 'ministral-3-8b', level: 'Q4_K_M', note: { en: 'official Mistral GGUF', zh: 'Mistral 官方 GGUF' }, quantizer: 'mistralai' },
   { id: 1, type: 'new', modelId: 'qwen3-vl-8b', level: 'Q4_K_M', note: { en: 'vision-language at 8B', zh: '8B 视觉语言模型' }, quantizer: 'bartowski' },
-  { id: 2, type: 'new', modelId: 'magistral-small-2509', level: 'Q4_K_M', note: { en: '[THINK] reasoning', zh: '[THINK] 推理模式' }, quantizer: 'unsloth' },
-  { id: 3, type: 'new', modelId: 'seed-oss-36b', level: 'Q4_K_M', note: { en: '512K context', zh: '512K 上下文' }, quantizer: 'unsloth' },
   { id: 4, type: 'new', modelId: 'qwen3-vl-30b-a3b', level: 'Q4_K_M', note: { en: '3B active, vision', zh: '激活 3B，多模态' }, quantizer: 'bartowski' },
   { id: 5, type: 'hot', modelId: 'gpt-oss-20b', level: 'MXFP4', note: { en: 'native 4-bit', zh: '原生 4-bit' }, quantizer: 'openai' },
   { id: 6, type: 'hot', modelId: 'qwen3-coder-30b-a3b', level: 'Q4_K_M', note: { en: 'agentic coder', zh: 'agent 编码模型' }, quantizer: 'bartowski' },

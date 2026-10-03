@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (q) — Homepage picks + share card catch up
+
+- `todayFeed` (`lib/data/models.ts`): ERNIE 4.5 21B-A3B and SmolLM3 3B added at the top (both
+  Q4_K_M, which each ships); the two oldest August entries (Magistral Small 1.2, Seed-OSS 36B)
+  dropped so the board stays at 13. `quantizer` is the weights' publisher (`baidu`,
+  `HuggingFaceTB`), the same convention as the Google/Z.ai/Moonshot rows — no GGUF publisher was
+  verifiable (huggingface.co is blocked here).
+- `public/og.svg` / `og.png`: "79+ Models" → "85+ Models" (a floor that stays true for a few
+  batches), and the **HQQ badge removed** — the index ships 0 HQQ models, the same fault fixed on
+  the hero badges on 2026-08-23 but left in the share card. The checked-in `og.png` was also not a
+  render of the current `og.svg` (older layout); re-rendered with `headless_shell` (§10) — the full
+  `chrome --headless` reserves ~87 px of the window and left a black band at the bottom.
+
 ### 2026-10-03 (p) — RSS changelog items get headlines
 
 `lib/feed/build.ts` used each changelog entry's full text (often 500+ characters) as the item
@@ -3635,6 +3648,16 @@ ren(){ T=$1; W=$((T*2)); "$CHROME" --headless --disable-gpu --no-sandbox --hide-
   --user-data-dir=/tmp/cd$T --force-device-scale-factor=0.5 --virtual-time-budget=3000 \
   --screenshot="$2" --window-size="$W,$W" file:///tmp/wrap.html; }   # 2×window + 0.5 dsf = T px
 ren 512 icon-512.png; ren 192 icon-192.png; ren 180 apple-touch-icon.png
+```
+
+**`og.png` (1200×630)** — use the headless shell, not `chrome --headless`: the latter's
+`--window-size` includes ~87 px the page never gets, leaving a black band at the bottom.
+
+```bash
+S=/tmp/og; mkdir -p $S; cp public/og.svg $S/
+echo '<!doctype html><style>*{margin:0}html,body{width:1200px;height:630px;overflow:hidden}img{display:block;width:1200px;height:630px}</style><img src="file:///tmp/og/og.svg">' > $S/wrap.html
+/opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell --no-sandbox --hide-scrollbars \
+  --virtual-time-budget=3000 --window-size=1200,630 --screenshot=public/og.png file://$S/wrap.html
 ```
 
 Favicons under ~48px render blank in this Chromium, so the favicon is served as the SVG

@@ -955,7 +955,9 @@ README §10 (this env has no ImageMagick/sharp). Update all sizes together after
 Also keep `public/favicon.svg` in sync when the mark changes.
 
 **OG:** master text lives in `public/og.svg`; ship `public/og.png` for social (platforms ignore SVG).
-After changing model-count copy in `og.svg`, re-render PNG via README §10 so shares stay accurate.
+After changing model-count copy in `og.svg`, re-render PNG via README §10 so shares stay accurate
+(use `headless_shell`, not `chrome --headless`, or the PNG gets a black bottom band). The card's
+format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was removed 2026-10-03.
 
 ## Recent ships (summary for context)
 
