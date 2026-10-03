@@ -7,7 +7,7 @@ import { mirrorPath } from '@/lib/i18n/routing';
 import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { FEEDBACK_EMAIL, MAINTAINER_EMAIL } from '@/lib/seo';
 import EmailOffGuard from '@/components/ui/EmailOffGuard';
 
 export default function Footer() {
@@ -77,6 +77,18 @@ export default function Footer() {
                 {t.footer.feedback}: {FEEDBACK_EMAIL}
               </a>
             </EmailOffGuard>
+            <div className="mt-1.5">
+              <EmailOffGuard>
+                <a
+                  href={`mailto:${MAINTAINER_EMAIL}?subject=quantized.uk`}
+                  onClick={() => trackEvent('Feedback Click')}
+                  className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                >
+                  <Mail size={12} />
+                  {t.footer.maintainerContact}: {MAINTAINER_EMAIL}
+                </a>
+              </EmailOffGuard>
+            </div>
           </div>
 
           {/*

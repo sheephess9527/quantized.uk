@@ -32,7 +32,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**70** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 431 pages (216 EN + 215 ZH), hreflang-paired, Chinese baked into static HTML |
-| Privacy | No public repo link on site pages; feedback `hello@quantized.uk` in Footer |
+| Privacy | No public repo link on site pages; feedback `hello@quantized.uk` + maintainer `zjy@quantized.uk` in Footer (maintainer also on `/about/`) |
 
 ## Commands
 
@@ -159,7 +159,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   errors (#418/#425 — text content mismatch). `FEEDBACK_EMAIL` (`lib/seo.ts`) rendered as visible
   text — Footer (every page), `MaintainerNote`, `RunFeedback` — now goes through
   `EmailOffGuard`/`textWithGuardedEmail` (`components/ui/EmailOffGuard.tsx`), which wraps the address
-  in Cloudflare's own documented `<!--email_off--><!--/email_off-->` escape comment via
+  in Cloudflare's own documented `<!--email_off--><!--/email_off-->` escape comment (same for
+  `MAINTAINER_EMAIL`, the owner's own address, shown in the Footer and on `/about/`) via
   `dangerouslySetInnerHTML` on inert siblings (never a wrapping element — Cloudflare's rewriter reads
   the token stream in document order, and nesting the comment inside an element risks it reading as
   scoped to that element). Use it any time `FEEDBACK_EMAIL` is rendered as text rather than only
@@ -936,6 +937,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **Maintainer address** — `MAINTAINER_EMAIL` (`zjy@quantized.uk`) beside the feedback address in Footer, `/about/`, `/llms.txt`; maintainer still unnamed |
 | 2026-10-03 | **AMD ROCm guide FAQs** — ROCm vs Vulkan, AWQ/GPTQ via vLLM ROCm on listed cards only, 24 vs 16 GB Radeon (69 vs 53 comfortable); `LLAMA_HIPBLAS` is reported as an unused variable, not silent (still CPU-only) |
 | 2026-10-03 | **GPT-OSS guide vs llama.cpp's gpt-oss guide** — `--n-cpu-moe` for 8/12GB cards, `--chat-template-kwargs` reasoning effort, OpenAI sampling (temp 1.0, top_p 1.0, no rep penalty); unsourced 120B speed/RAM claim removed; 3 FAQs |
 | 2026-10-03 | **GPT-OSS effective bpw + guide-figure gate** — MXFP4 4.25 applies to experts only; real files 11.27 / 59.02 GiB → 4.63 / 4.34 bpw (20B @4K 11.7 → 12.8 GB, 14 verdicts); build now checks guide sizes against `calcVRAM`; 4 guides corrected |

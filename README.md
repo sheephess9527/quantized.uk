@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (f) — Maintainer contact address
+
+- Site owner asked for their own address on the site: `MAINTAINER_EMAIL = 'zjy@quantized.uk'`
+  (`lib/seo.ts`) beside `FEEDBACK_EMAIL`. Rendered in the Footer brand column (every page), the
+  `/about/` "Who maintains this?" card, and `/llms.txt` (now built from both constants instead of a
+  typed address). Text renders go through `EmailOffGuard`, same as the feedback address.
+- Unchanged on purpose: the maintainer stays unnamed (an address is not a `Person`), and the
+  `Organization` JSON-LD `contactPoint` keeps `FEEDBACK_EMAIL`.
+- New i18n keys: `footer.maintainerContact`, `about.maintainerContact` (en + zh).
+
 ### 2026-10-03 (e) — AMD ROCm guide: FAQs; `LLAMA_HIPBLAS` wording
 
 - **3 FAQs** on `amd-rocm-llamacpp` (the last high-traffic guide without them): ROCm vs Vulkan

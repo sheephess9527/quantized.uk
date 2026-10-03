@@ -4,7 +4,8 @@ import Link from '@/components/i18n/LocalLink';
 import { Heart } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { MODEL_COUNT } from '@/lib/seo';
+import { MODEL_COUNT, MAINTAINER_EMAIL } from '@/lib/seo';
+import EmailOffGuard from '@/components/ui/EmailOffGuard';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function AboutPage() {
@@ -35,6 +36,17 @@ export default function AboutPage() {
       <div className="glass rounded-2xl p-6 mb-8 border border-violet-500/10">
         <p className="text-sm font-medium text-slate-200 mb-2">{a.maintainerTitle}</p>
         <p className="text-sm text-slate-400 leading-relaxed">{a.maintainerBody}</p>
+        <p className="text-sm text-slate-400 leading-relaxed mt-3">
+          {a.maintainerContact}{' '}
+          <EmailOffGuard>
+            <a
+              href={`mailto:${MAINTAINER_EMAIL}?subject=quantized.uk`}
+              className="text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              {MAINTAINER_EMAIL}
+            </a>
+          </EmailOffGuard>
+        </p>
       </div>
 
       <div className="space-y-8">

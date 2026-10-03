@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'You can now write to the site\'s maintainer directly at zjy@quantized.uk — the address is in the footer of every page and on the About page. hello@quantized.uk still works for feedback and corrections.',
+    zh: '现在可以直接写信给本站维护者：zjy@quantized.uk —— 每一页的页脚和“关于”页面都有这个地址。反馈和纠错仍可发往 hello@quantized.uk。',
+  },
+  {
+    date: '2026-10-03',
     en: 'The AMD ROCm guide now ends with three common questions: whether to use ROCm or Vulkan on a Radeon, which Radeon cards can run AWQ and GPTQ models (and that none can run EXL2), and how much more fits on a 24GB RX 7900 XTX than on a 16GB card. One build note was also corrected: the old LLAMA_HIPBLAS flag is not silently ignored — CMake lists it as unused — but the result is still a build that runs only on the CPU.',
     zh: 'AMD ROCm 指南文末新增三个常见问答：Radeon 上该用 ROCm 还是 Vulkan；哪些 Radeon 能跑 AWQ 和 GPTQ 模型（以及没有一张能跑 EXL2）；24GB 的 RX 7900 XTX 比 16GB 显卡能多装下多少。同时更正了一处编译说明：旧的 LLAMA_HIPBLAS 开关并不是被静默忽略 —— CMake 会把它列为未使用变量 —— 但结果仍然是只能在 CPU 上运行的构建。',
   },

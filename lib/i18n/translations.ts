@@ -662,6 +662,7 @@ export const translations = {
       backHome: 'Back to Home',
       linkLabel: 'About',
       maintainerTitle: 'Who maintains this?',
+      maintainerContact: 'Write to the maintainer directly:',
       maintainerBody:
         'quantized.uk is an indie side project by a developer who got tired of guessing VRAM requirements and digging through scattered Hugging Face repos. It is maintained in spare time — data gets corrected and expanded as new models ship and as real-world testing surfaces better numbers.',
       cta: 'Found a wrong VRAM number? Know a model we should add?',
@@ -951,6 +952,7 @@ export const translations = {
       rssDesc: 'Plain feed. No email, no tracking.',
       changelogDesc: 'Every change, dated, including corrections.',
       foundWrong: 'Found a wrong number?',
+      maintainerContact: 'Maintainer',
     },
     common: {
       new: 'New',
@@ -1630,6 +1632,7 @@ export const translations = {
       backHome: '返回首页',
       linkLabel: '关于我们',
       maintainerTitle: '谁在维护？',
+      maintainerContact: '直接联系维护者：',
       maintainerBody:
         'quantized.uk 是一个开发者业余维护的独立项目，起因很简单：不想再靠猜显存、翻遍 Hugging Face 找量化版本。利用空余时间更新 — 有新模型发布或实测发现更准的数字时，就会修正和扩充数据。',
       cta: '发现显存数据不对？知道该收录哪个模型？',
@@ -1916,6 +1919,7 @@ export const translations = {
       rssDesc: '纯净订阅源，不收邮箱、不追踪。',
       changelogDesc: '每次变更都带日期，包括读者指出的修正。',
       foundWrong: '发现数字不对？',
+      maintainerContact: '维护者',
     },
     common: {
       new: '最新',
