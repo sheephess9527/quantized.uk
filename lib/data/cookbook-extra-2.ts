@@ -518,17 +518,17 @@ export const extraArticles2: Article[] = [
         bodyZh: 'GPT-OSS 使用 OpenAI 的 "harmony" 响应格式训练，该格式把推理通道与最终回答分开。这个结构写在模型的 chat template 里，所以 llama.cpp 需要 --jinja 才会套用。不加这个参数，你会看到通道标记直接漏进回复里，或者模型停不下来——这个现象很像量化坏了，其实纯粹是模板问题。',
         code: {
           lang: 'bash',
-          content: '# 20B, all layers on a 16GB+ GPU\nllama-server \\\n  -hf ggml-org/gpt-oss-20b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --ctx-size 32768 \\\n  --host 127.0.0.1 --port 8080\n\n# --jinja       applies the harmony chat template  (do not omit)\n# -ngl 99       offload every layer to the GPU\n# --ctx-size    raise freely — KV cache is cheap on this model',
+          content: '# 20B, all layers on a 16GB+ GPU\nllama-server \\\n  -hf ggml-org/gpt-oss-20b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --ctx-size 32768 \\\n  --host 127.0.0.1 --port 8080\n\n# --jinja       applies the harmony chat template  (do not omit)\n# -ngl 99       offload every layer to the GPU\n# --ctx-size    32K is ~13.5 GB by this site\'s estimate, 15.5 GB by\n#               llama.cpp\'s own table — fine on 16GB with nothing else\n#               on the card. llama.cpp\'s guide uses --ctx-size 0 (the\n#               full 131K) and -ub 2048 -b 2048, which needs ~18 GB.',
         },
       },
       {
         heading: 'Running the 120B on a 24GB consumer card',
         headingZh: '在 24GB 消费级显卡上跑 120B',
-        body: 'This is where the MoE architecture pays off. Only 5.1B parameters are active per token, so the expert weights are read sparsely — which makes them the ideal thing to leave in system RAM. Keep attention and the dense layers on the GPU, push the MoE experts to CPU, and a 61GB model becomes usable on a 24GB card. It is not fast, but it is a genuinely different outcome from "does not fit".',
-        bodyZh: '这正是 MoE 架构的价值所在。每个 token 只激活 5.1B 参数，专家权重是稀疏读取的——因此它们最适合留在系统内存里。把注意力层和稠密层放显卡、MoE 专家推给 CPU，61GB 的模型就能在 24GB 卡上跑起来。速度不快，但这和"装不下"是两种结果。',
+        body: 'This is where the MoE architecture pays off. Only 5.1B parameters are active per token, so the expert weights are read sparsely — which makes them the ideal thing to leave in system RAM. llama.cpp\'s own guidance is to offload the whole model and use --n-cpu-moe to keep as many layers\' experts on the CPU as necessary; whatever stays on the CPU lives in system RAM, so budget most of the 59 GiB file there. The same flag brings the 20B to smaller cards: llama.cpp\'s guide runs it on an 8GB RTX 2060 with --n-cpu-moe 16. This site has not measured either setup, so it gives no speed for them.',
+        bodyZh: '这正是 MoE 架构的价值所在。每个 token 只激活 5.1B 参数，专家权重是稀疏读取的——因此它们最适合留在系统内存里。llama.cpp 官方的做法是把整个模型都放到 GPU 上，再用 --n-cpu-moe 把需要的若干层专家留在 CPU；留在 CPU 上的部分占用的是系统内存，所以要为这 59 GiB 的文件留出大部分内存。同一个参数也能让 20B 跑在更小的卡上：llama.cpp 的指南就用 --n-cpu-moe 16 在 8GB 的 RTX 2060 上运行它。这两种配置本站都没有实测，所以不给速度数字。',
         code: {
           lang: 'bash',
-          content: '# Offload the MoE experts of N layers to CPU RAM\nllama-server \\\n  -hf ggml-org/gpt-oss-120b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --n-cpu-moe 28 \\\n  --ctx-size 16384\n\n# Tune --n-cpu-moe down until you OOM, then back off by 2.\n# Lower value = more experts on GPU = faster.\n# Needs ~64GB system RAM. Expect single-digit tok/s.',
+          content: '# 120B on 24GB: keep the experts of N layers on the CPU\nllama-server \\\n  -hf ggml-org/gpt-oss-120b-GGUF \\\n  --jinja \\\n  -ngl 99 \\\n  --n-cpu-moe 28 \\\n  --ctx-size 16384 \\\n  --host 127.0.0.1 --port 8080\n\n# 20B on an 8GB card (llama.cpp\'s own RTX 2060 example)\nllama-server -hf ggml-org/gpt-oss-20b-GGUF --jinja \\\n  --ctx-size 32768 --n-cpu-moe 16 --host 127.0.0.1\n\n# Lower N = more experts on the GPU = faster. Lower it until\n# loading fails for lack of VRAM, then step back up.',
         },
       },
       {
@@ -538,18 +538,38 @@ export const extraArticles2: Article[] = [
         bodyZh: 'GPT-OSS 支持 low / medium / high 三档推理强度。high 会在回答前消耗多得多的 token 思考，在本地硬件上这就是"响应利落的助手"和"卡一分钟"的区别。日常对话和补全用 low，只在真正需要思维链的问题上开 high。',
         code: {
           lang: 'text',
-          content: 'Simplest portable form — put it in the system message:\n\n  System: Reasoning: low\n\nRough local cost on a 16GB card (20B):\n  low     fast, chat-grade latency\n  medium  noticeably more thinking tokens\n  high    can multiply time-to-first-answer several times over\n\nStart at low. Raise it per-task, not globally.',
+          content: 'llama.cpp (from its gpt-oss guide):\n\n  llama-server ... --chat-template-kwargs \'{"reasoning_effort": "low"}\'\n\nAny client that can only set the system message:\n\n  System: Reasoning: low\n\nRough local cost on a 16GB card (20B):\n  low     fast, chat-grade latency\n  medium  noticeably more thinking tokens\n  high    can multiply time-to-first-answer several times over\n\nStart at low. Raise it per-task, not globally.',
         },
       },
       {
         heading: 'Common failure modes',
         headingZh: '常见故障对照',
-        body: 'Most GPT-OSS problems reported locally are one of four things, and none of them are the quantization. Check these before hunting for a different build.',
-        bodyZh: '本地跑 GPT-OSS 报的问题绝大多数是以下四种之一，且没有一种是量化的锅。换构建之前先对照检查。',
+        body: 'Most GPT-OSS problems reported locally are one of five things, and none of them are the quantization. Check these before hunting for a different build.',
+        bodyZh: '本地跑 GPT-OSS 报的问题绝大多数是以下五种之一，且没有一种是量化的锅。换构建之前先对照检查。',
         code: {
           lang: 'text',
-          content: 'Channel markers in the output, or it never stops\n  → missing --jinja (harmony template not applied)\n\n"unknown model architecture" on load\n  → llama.cpp / Ollama predates gpt-oss support; update\n\nSlower than expected on the 120B\n  → --n-cpu-moe too high; lower it until GPU VRAM is nearly full\n\nFile is much bigger than ~12.8GB (20B)\n  → you downloaded an upcast build; get the MXFP4 one',
+          content: 'Channel markers in the output, or it never stops\n  → missing --jinja (harmony template not applied)\n\n"unknown model architecture" on load\n  → llama.cpp / Ollama predates gpt-oss support; update\n\nSlower than expected on the 120B\n  → --n-cpu-moe too high; lower it until GPU VRAM is nearly full\n\nRepetitive or oddly degraded answers\n  → check sampling: OpenAI recommends temperature 1.0 and\n    top_p 1.0, and llama.cpp\'s guide says not to use a\n    repetition penalty\n\nFile much bigger than ~11.3 GiB (20B)\n  → you downloaded an upcast build; get the MXFP4 one',
         },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can GPT-OSS 20B run on an 8GB or 12GB GPU?',
+        qZh: 'GPT-OSS 20B 能在 8GB 或 12GB 显卡上跑吗？',
+        a: 'Not entirely on the card — this site sizes it at about 12.8GB at 4K context, and llama.cpp\'s own table is higher. It runs with some of its experts kept in system RAM: llama.cpp\'s gpt-oss guide shows it on an 8GB RTX 2060 with --n-cpu-moe 16, and reports about 67 tokens per second at the start of generation on a 12GB RTX 3060 with offloading. Because only about 3.6B parameters are active per token, it slows down far less from offloading than a dense 20B would.',
+        aZh: '没法完整放在显卡上 —— 本站按 4K 上下文估算约 12.8GB，llama.cpp 自己的表格还更高。把一部分专家留在系统内存就能跑：llama.cpp 的 gpt-oss 指南用 --n-cpu-moe 16 在 8GB 的 RTX 2060 上运行它，并报告 12GB 的 RTX 3060 在卸载状态下生成初期约每秒 67 个 token。由于每个 token 只激活约 3.6B 参数，卸载带来的减速远小于同体量的稠密模型。',
+      },
+      {
+        q: 'How fast is GPT-OSS 20B on an RTX 4090?',
+        qZh: 'GPT-OSS 20B 在 RTX 4090 上有多快？',
+        a: 'llama.cpp\'s own benchmark in its gpt-oss guide reports about 222 tokens per second of generation and about 8,000 tokens per second of prompt processing on an RTX 4090. Those are the llama.cpp developers\' measurements, not this site\'s; this site\'s own figure for the same card is listed on the model page with its source marked.',
+        aZh: 'llama.cpp 在其 gpt-oss 指南里给出的基准测试：RTX 4090 上生成约每秒 222 个 token，提示词处理约每秒 8,000 个 token。这是 llama.cpp 开发者测的，不是本站测的；本站对同一张卡的数字列在模型页上，并标明了来源。',
+      },
+      {
+        q: 'What sampling settings should I use for GPT-OSS?',
+        qZh: 'GPT-OSS 应该用什么采样参数？',
+        a: 'OpenAI recommends temperature 1.0 and top_p 1.0, and llama.cpp\'s gpt-oss guide adds: do not use a repetition penalty. Many front-ends apply their own defaults, often a lower temperature and a repetition penalty, so set these explicitly if answers come out repetitive or strangely clipped.',
+        aZh: 'OpenAI 推荐 temperature 1.0、top_p 1.0，llama.cpp 的 gpt-oss 指南还补充了一条：不要用重复惩罚。很多前端会套用自己的默认值，通常是更低的 temperature 加上重复惩罚，所以如果回答重复或者莫名被截断，请显式设置这几个参数。',
       },
     ],
   },

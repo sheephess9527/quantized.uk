@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-03 (d) — GPT-OSS guide checked against llama.cpp's gpt-oss guide
+
+Source: ggml-org/llama.cpp discussion #15396 (fetched verbatim): recommended commands
+`llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048`; `--n-cpu-moe N`
+("keep as many MoE layers as necessary on the CPU"), RTX 2060 8GB example `--n-cpu-moe 16`; reasoning
+effort via `--chat-template-kwargs '{"reasoning_effort": "high"}'`; "OpenAI recommends temperature=1.0
+and top_p=1.0" / "Do not use repetition penalties"; RTX 4090 llama-bench tg128 221.95, pp2048 8022;
+RTX 3060 12GB "67 tok/sec initial" with offloading. Guide: 8GB `--n-cpu-moe` example added; the
+unsourced "Needs ~64GB system RAM. Expect single-digit tok/s" (120B on 24GB) removed — no speed given;
+the 20B command's comment now states 32K is 13.5 GB here / 15.5 GB by llama.cpp's table and that the
+official `--ctx-size 0 -ub 2048` form needs ~18 GB; failure table "bigger than ~12.8GB" → 11.3 GiB and a
+sampling row added; `--host 127.0.0.1` on the 120B command. 3 FAQs (8/12GB cards, 4090 speed —
+attributed to llama.cpp's devs, sampling).
+
 ### 2026-10-03 (c) — GPT-OSS effective bpw; guide figures gated against the calculator
 
 **GPT-OSS** MXFP4 rows used `bpw: 4.25` — MXFP4's rate, which applies only to the MoE expert tensors

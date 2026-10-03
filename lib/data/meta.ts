@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-03',
+    en: 'The GPT-OSS guide was checked against llama.cpp\'s own gpt-oss guide. It now shows how to run the 20B on an 8GB or 12GB card by keeping some of its experts in system RAM, gives llama.cpp\'s documented way to set reasoning effort, adds OpenAI\'s recommended sampling settings (temperature 1.0, top_p 1.0, no repetition penalty), and drops a speed claim for the 120B that no one here had measured. Three common questions are answered at the end.',
+    zh: 'GPT-OSS 指南已对照 llama.cpp 官方的 gpt-oss 指南核对。现在指南说明了如何把一部分专家留在系统内存、让 20B 在 8GB 或 12GB 显卡上运行，给出了 llama.cpp 文档里设置推理强度的写法，补充了 OpenAI 推荐的采样参数（temperature 1.0、top_p 1.0、不用重复惩罚），并删掉了一条本站没有实测过的 120B 速度说法。文末新增三个常见问答。',
+  },
+  {
+    date: '2026-10-03',
     en: 'GPT-OSS sizes corrected. We were sizing GPT-OSS 20B and 120B as if every weight were stored at MXFP4\'s 4.25 bits, but only the expert layers are — the real files, per llama.cpp\'s own guide, are 11.3 GiB and 59 GiB. GPT-OSS 20B now needs about 12.8GB at 4K context rather than 11.7GB, so it no longer counts as fitting a 12GB card or a 16GB Mac, and it is tight on an 18GB M3 Pro. The GPT-OSS guide also quotes llama.cpp\'s own, higher totals beside ours. Four guides that printed the old figures were corrected, and the site now checks every size printed in a guide against the calculator whenever it is rebuilt.',
     zh: 'GPT-OSS 的体积已更正。我们此前按"所有权重都是 MXFP4 的 4.25 bit"来估算 GPT-OSS 20B 和 120B，但实际上只有专家层是 —— 按 llama.cpp 官方指南，真实文件是 11.3 GiB 和 59 GiB。GPT-OSS 20B 在 4K 上下文下现在约需 12.8GB，而不是 11.7GB，因此不再算作能装进 12GB 显卡或 16GB 的 Mac，在 18GB 的 M3 Pro 上也属于偏紧。GPT-OSS 指南还在本站数字旁边列出了 llama.cpp 自己给出的、更高的总量。四篇印着旧数字的指南已更正；此后每次构建，网站都会把指南里印出的每个体积和计算器重新核对一遍。',
   },

@@ -628,6 +628,11 @@ softening it. vLLM's real failure signature is a preemption warning naming
 `PreemptionMode.RECOMPUTE`, which is KV-cache pressure: shorten `--max-model-len` before raising
 `--gpu-memory-utilization`.
 
+**GPT-OSS facts (llama.cpp discussion #15396, 2026-10-03):** official command uses `--jinja`; reasoning
+effort is `--chat-template-kwargs '{"reasoning_effort": "low|medium|high"}'`; sampling temperature 1.0 /
+top_p 1.0 with no repetition penalty; `--n-cpu-moe N` keeps N layers' experts on the CPU (RTX 2060 8GB
+example: 16). Its memory table runs ~2 GB above `calcVRAM` because it uses `-ub 2048` compute buffers.
+
 **EXL2's runtime is archived (checked 2026-10-02).** ExLlamaV2's README says so; TabbyAPI (main,
 no tags) and text-generation-webui load EXL3/FP16 only. EXL2 still runs locally via
 `examples/chat.py` — say that, never present a server for it. EXL3 is not tracked (0 models); do not
@@ -930,6 +935,7 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-03 | **GPT-OSS guide vs llama.cpp's gpt-oss guide** — `--n-cpu-moe` for 8/12GB cards, `--chat-template-kwargs` reasoning effort, OpenAI sampling (temp 1.0, top_p 1.0, no rep penalty); unsourced 120B speed/RAM claim removed; 3 FAQs |
 | 2026-10-03 | **GPT-OSS effective bpw + guide-figure gate** — MXFP4 4.25 applies to experts only; real files 11.27 / 59.02 GiB → 4.63 / 4.34 bpw (20B @4K 11.7 → 12.8 GB, 14 verdicts); build now checks guide sizes against `calcVRAM`; 4 guides corrected |
 | 2026-10-03 | **8GB guide re-run** — three figures drifted after the 09-30 arch fixes; Llama 3.1 8B @16K is 91% (`tight`) but the row said "fits"; AWQ route is Linux/WSL2 only (vLLM); 2 image models added; 3 FAQs |
 | 2026-10-03 | **Mac M3 Pro guide** — "Metal can't partially offload" was false (Ollama splits over-budget models CPU/GPU); M3 Pro bandwidth ceilings as upper bounds; 3 FAQs; shared `isMoE()` (roofline missed `… MoE` labels — latent) |
