@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-04 (b) — 12GB GPU guide (25 guides)
+
+`guidesForGpu()` showed seven 12 GB CUDA cards (3060 12G, 4070/Super/Ti, 5070, 3080 12G/Ti) with no
+guide at all — the 8 GB and 16 GB tiers each had one. New `12gb-gpu-what-to-run` (preset `rtx3060`
+@8K): fit table at Q4_K_M 8K/16K/32K from `calcVRAM` (Qwen3 14B 10.0 GB @4K comfortable → 10.7 @8K
+tight → 12.1 @16K out; Gemma 3 12B 10.4 @32K still comfortable thanks to SWA; Mistral Nemo 13.2 @32K
+out), counts 48 comfortable / 50 tight of 89, per-card roofline ceilings (76–193 tok/s for Qwen3 8B),
+Ollama + llama.cpp (`-ngl all -c`) commands, Windows Sysmem Fallback check, 3 FAQs (14B on 12 GB;
+3060 12G vs 4060 Ti 16G — 48 vs 55 comfortable, 360 vs 288 GB/s; GPT-OSS 20B 12.8 GB → `--n-cpu-moe`).
+Cards without a guide: 14 → 7 (32 GB RTX 5090 and the datacentre rows).
+
 ### 2026-10-04 — Intel Arc guide (24 guides); GPU pages link their guides
 
 **`intel-arc-llamacpp`** (`cookbook-extra-2.ts`, preset `arc-b580` @8K): SYCL build and checks from

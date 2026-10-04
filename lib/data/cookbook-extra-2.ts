@@ -709,4 +709,108 @@ export const extraArticles2: Article[] = [
       },
     ],
   },
+
+  {
+    id: '12gb-gpu-what-to-run',
+    gpuPreset: { gpuId: 'rtx3060', ctx: 8192 },
+    relatedModelIds: ['qwen3-8b', 'gemma-3-12b-it', 'qwen3-14b', 'deepseek-v2-lite'],
+    title: 'What to Run on a 12GB GPU (RTX 3060 12G, 4070, 5070)',
+    titleZh: '12GB 显卡能跑什么（RTX 3060 12G、4070、5070）',
+    seoTitle: '12GB GPU: What to Run (RTX 3060, 4070, 5070)',
+    description: 'Which models fit a 12GB NVIDIA card at 8K–32K context, where 14B stops fitting, how to run them with Ollama or llama.cpp, and how to prove they are on the GPU.',
+    descriptionZh: '12GB NVIDIA 显卡在 8K–32K 上下文下能装下哪些模型、14B 从哪里开始装不下、如何用 Ollama 或 llama.cpp 运行，以及如何确认确实跑在 GPU 上。',
+    category: 'edge',
+    difficulty: 'beginner',
+    tags: ['12GB', 'RTX 3060', 'RTX 4070', 'RTX 5070', 'Ollama', 'llama.cpp', 'GGUF'],
+    publishedAt: '2026-10-04',
+    updatedAt: '2026-10-04',
+    // Written 2026-10-04. Every size is calcVRAM on the model's own row; speeds are
+    // roofline ceilings from vendor bandwidth. No `verifiedAt` — no GPU here.
+    verifiedStack: {
+      en: 'Windows or Linux · NVIDIA driver with CUDA · Ollama, or llama.cpp built with GGML_CUDA=ON · GGUF Q4_K_M',
+      zh: 'Windows 或 Linux · 带 CUDA 的 NVIDIA 驱动 · Ollama，或以 GGML_CUDA=ON 编译的 llama.cpp · GGUF Q4_K_M',
+    },
+    content: [
+      {
+        heading: 'Which cards this covers',
+        headingZh: '适用于哪些显卡',
+        body: 'Seven NVIDIA cards in this index have 12GB: the RTX 3060 12G, RTX 4070, 4070 Super and 4070 Ti, RTX 5070, and RTX 3080 12G and 3080 Ti. They fit exactly the same models — only capacity decides what fits — but they do not run them at the same speed, because token generation is limited by memory bandwidth, and that ranges from 360 GB/s on the 3060 to 912 GB/s on the 3080s. A 12GB Radeon or an Arc B580 fits the same list too; the AMD and Intel Arc guides cover their runtimes.',
+        bodyZh: '本索引里有七张 12GB 的 NVIDIA 卡：RTX 3060 12G、RTX 4070、4070 Super、4070 Ti、RTX 5070，以及 RTX 3080 12G 和 3080 Ti。它们能装下的模型完全一样 —— 决定能否装下的只有容量 —— 但跑起来速度不同，因为生成 token 的速度受显存带宽限制，而带宽从 3060 的 360 GB/s 到 3080 的 912 GB/s 不等。12GB 的 Radeon 或 Arc B580 能装下的模型清单也相同，它们的运行时请看 AMD 和 Intel Arc 指南。',
+        code: {
+          lang: 'text',
+          content: 'Card            Bandwidth   ceiling for Qwen3 8B Q4_K_M\nRTX 3060 12G    360 GB/s    76 tok/s\nRTX 4070 / Super / Ti   504 GB/s    107 tok/s\nRTX 5070        672 GB/s    142 tok/s\nRTX 3080 12G / Ti       912 GB/s    193 tok/s\n\nCeilings = bandwidth ÷ weight file size. Not measured here; real speed is lower.',
+        },
+      },
+      {
+        heading: 'What fits, and where 14B stops fitting',
+        headingZh: '能装下什么，以及 14B 从哪里开始装不下',
+        body: '48 of the 89 models in this index fit a 12GB card comfortably at 4K context, and 50 load at all. 7B–12B models are the comfortable zone, and the context length is what decides the rest. Gemma 3 12B at Q4_K_M with a 32K context is about 10.4 GB, still comfortable, because most of its layers use a short sliding window. Mistral Nemo 12B at Q4_K_M with a 32K context is about 13.2 GB, which does not fit. 14B is the edge: Qwen3 14B at Q4_K_M with a 4K context is about 10.0 GB, comfortable, but Qwen3 14B at Q4_K_M with an 8K context is about 10.7 GB — 89% of the card, past this site’s comfortable line — and with 16K it no longer fits.',
+        bodyZh: '本索引 89 个模型中，有 48 个能在 4K 上下文下宽裕地装进 12GB 显卡，能加载的共 50 个。7B–12B 是宽裕区间，其余取决于上下文长度。Gemma 3 12B 在 Q4_K_M、32K 上下文下约 10.4 GB，仍然宽裕，因为它大部分层只用很短的滑动窗口。Mistral Nemo 12B 在 Q4_K_M、32K 上下文下约 13.2 GB，装不下。14B 是边界：Qwen3 14B 在 Q4_K_M、4K 上下文下约 10.0 GB，宽裕；但在 8K 上下文下约 10.7 GB —— 占显卡 89%，超过了本站的宽裕线 —— 到 16K 就装不下了。',
+        code: {
+          lang: 'text',
+          content: 'GGUF Q4_K_M            8K        16K       32K\nLlama 3.1 8B           6.2 GB    7.3 GB    9.5 GB\nQwen3 8B               6.4 GB    7.7 GB    10.1 GB\nGemma 3 12B            8.8 GB    9.3 GB    10.4 GB\nMistral Nemo 12B       9.1 GB    10.5 GB   13.2 GB  ✗\nQwen3 14B              10.7 GB ~ 12.1 GB ✗ 14.9 GB ✗\nPhi-4 14B              11.0 GB ~ 12.8 GB ✗ (16K max)\n\n~ = tight (88–105% of the card)   ✗ = does not fit',
+        },
+      },
+      {
+        heading: 'Run it with Ollama',
+        headingZh: '用 Ollama 运行',
+        body: 'Ollama is the shortest path on Windows or Linux. Pulling straight from a Hugging Face GGUF repo pins the exact quant, which matters here: the difference between Q4_K_M and Q8_0 on a 12B model is the difference between fitting and not. Ollama sets its own context length; raise it inside the session when you need more, and check the table above before you do.',
+        bodyZh: 'Windows 或 Linux 上最短的路是 Ollama。直接从 Hugging Face 的 GGUF 仓库拉取可以固定具体的量化档位，这一点在这里很关键：12B 模型用 Q4_K_M 还是 Q8_0，就是装得下和装不下的区别。Ollama 有自己的默认上下文长度；需要更长时在会话里调大，调之前先对照上面的表。',
+        code: {
+          lang: 'bash',
+          content: 'ollama run hf.co/Qwen/Qwen3-8B-GGUF:Q4_K_M\n\n# inside the session, for a longer context:\n/set parameter num_ctx 16384\n\nollama ps          # PROCESSOR should read 100% GPU',
+        },
+      },
+      {
+        heading: 'Or run it with llama.cpp',
+        headingZh: '或者用 llama.cpp 运行',
+        body: 'With llama.cpp, pass -ngl all and an explicit -c. Recent builds fit the model to the card automatically and keep about 1 GiB free, so a model near the limit silently loses layers to the CPU; asking for every layer makes a model that does not fit fail loudly instead of running slowly. Bind to 127.0.0.1 unless you mean to serve your network.',
+        bodyZh: '用 llama.cpp 时，传 -ngl all 和明确的 -c。新版本会自动按显卡容量调整，并保留约 1 GiB 空闲，所以接近上限的模型会悄悄把部分层留在 CPU 上；明确要求全部层上 GPU，能让装不下的模型直接报错，而不是慢吞吞地跑。除非你确实要对局域网提供服务，否则绑定 127.0.0.1。',
+        code: {
+          lang: 'bash',
+          content: 'pip install -U huggingface_hub\nhf download Qwen/Qwen3-8B-GGUF --include "Qwen3-8B-Q4_K_M.gguf" --local-dir ./models\n\n./build/bin/llama-server -m ./models/Qwen3-8B-Q4_K_M.gguf \\\n  -ngl all -c 16384 --host 127.0.0.1 --port 8080\n\n# startup log:  load_tensors: offloaded 37/37 layers to GPU',
+        },
+      },
+      {
+        heading: 'Check it is really on the GPU',
+        headingZh: '确认真的在 GPU 上',
+        body: 'Three checks, any one of which is enough: ollama ps shows 100% GPU; llama.cpp’s startup log reports every layer offloaded; nvidia-smi shows the memory held while the model is loaded. On Windows, watch for the slow-but-working case: the NVIDIA control panel’s System Memory Fallback is on by default and spills VRAM into system RAM instead of failing, so a model that does not fit turns into a model that crawls. Set CUDA Sysmem Fallback Policy to prefer no fallback while you are sizing things.',
+        bodyZh: '三项检查，任何一项都够：ollama ps 显示 100% GPU；llama.cpp 的启动日志显示所有层都已卸载；模型加载期间 nvidia-smi 显示显存被占用。在 Windows 上要留意“能跑但很慢”的情况：NVIDIA 控制面板的系统内存回退默认开启，显存不够时会溢出到系统内存而不是报错，于是装不下的模型变成了慢得出奇的模型。调试显存占用时，把 CUDA 系统内存回退策略设为不回退。',
+        code: {
+          lang: 'bash',
+          content: 'nvidia-smi --query-gpu=name,memory.used,memory.total --format=csv\n\n# measure speed on your own card:\n./build/bin/llama-bench -m ./models/Qwen3-8B-Q4_K_M.gguf -ngl 99   # pp512 / tg128',
+        },
+      },
+      {
+        heading: 'When it does not work',
+        headingZh: '出问题时',
+        body: 'Most problems on a 12GB card are the context, not the model.',
+        bodyZh: '12GB 显卡上的大多数问题出在上下文，而不是模型。',
+        code: {
+          lang: 'text',
+          content: 'Out of memory after a while, not at load\n  → the KV cache grows with the conversation; lower -c / num_ctx\n\nLoads, but generates at a few tok/s\n  → layers on the CPU: check ollama ps / the load_tensors line\n  → Windows: System Memory Fallback is hiding an out-of-memory\n\n14B fits at 4K, fails at 16K\n  → expected (see the table); drop to 8K, or use a 12B model\n\nA 20B MoE model "almost" fits\n  → keep some experts on the CPU (--n-cpu-moe), see the GPT-OSS guide',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can a 12GB GPU run a 14B model?',
+        qZh: '12GB 显卡能跑 14B 模型吗？',
+        a: 'Yes, at Q4_K_M with a short context. This site sizes Qwen3 14B at Q4_K_M at about 10.0 GB at 4K context, which is comfortable, and about 10.7 GB at 8K, which is tight. At 16K it no longer fits. If you need a long context on a 12GB card, Gemma 3 12B is the larger model that stays comfortable at 32K, because most of its layers use a sliding window.',
+        aZh: '可以，用 Q4_K_M 并保持较短的上下文。本站估算 Qwen3 14B 在 Q4_K_M、4K 上下文下约 10.0 GB，宽裕；8K 下约 10.7 GB，偏紧；16K 就装不下了。如果在 12GB 显卡上需要长上下文，Gemma 3 12B 是在 32K 下仍然宽裕的较大模型，因为它大部分层使用滑动窗口。',
+      },
+      {
+        q: 'RTX 3060 12G or RTX 4060 Ti 16G for local LLMs?',
+        qZh: '跑本地大模型，RTX 3060 12G 还是 RTX 4060 Ti 16G？',
+        a: 'The 16GB card fits more: 55 of the 89 models in this index comfortably at 4K, against 48 for any 12GB card, and it holds 14B models at long contexts that a 12GB card cannot. On speed the 3060 is not behind — its 360 GB/s of memory bandwidth is higher than the 4060 Ti\'s 288 GB/s, and bandwidth is what limits generation once a model fits. If the models you want already fit in 12GB, the extra 4GB buys nothing.',
+        aZh: '16GB 的卡能装下更多：本索引 89 个模型中，它能在 4K 下宽裕装下 55 个，任何 12GB 卡是 48 个；它还能在长上下文下装下 12GB 卡装不下的 14B 模型。速度上 3060 并不落后 —— 它 360 GB/s 的显存带宽高于 4060 Ti 的 288 GB/s，而模型装下之后，限制生成速度的正是带宽。如果你想跑的模型 12GB 已经装得下，多出的 4GB 并不带来什么。',
+      },
+      {
+        q: 'Can I run GPT-OSS 20B on a 12GB card?',
+        qZh: '12GB 显卡能跑 GPT-OSS 20B 吗？',
+        a: 'Not entirely on the card: this site sizes GPT-OSS 20B at its native MXFP4 at about 12.8 GB at 4K context, just over the limit. Because it is a mixture-of-experts model, it runs well with some experts kept in system RAM using llama.cpp\'s --n-cpu-moe option — the GPT-OSS guide covers the settings.',
+        aZh: '无法完整放在显卡上：本站估算 GPT-OSS 20B 在原生 MXFP4 下、4K 上下文约 12.8 GB，略超上限。由于它是混合专家模型，用 llama.cpp 的 --n-cpu-moe 选项把部分专家留在系统内存里也能跑得不错 —— 具体设置见 GPT-OSS 指南。',
+      },
+    ],
+  },
 ];

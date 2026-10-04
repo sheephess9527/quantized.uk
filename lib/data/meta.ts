@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-04',
+    en: 'New guide for 12GB graphics cards — the RTX 3060 12G, the RTX 4070 family, the RTX 5070 and the 12GB RTX 3080s, which until now had no guide of their own. It shows which models fit at 8K, 16K and 32K context, where 14B models stop fitting (comfortable at 4K, tight at 8K, too large at 16K), how to run them with Ollama or llama.cpp, and how to make sure they are really running on the card.',
+    zh: '新增 12GB 显卡指南 —— RTX 3060 12G、RTX 4070 系列、RTX 5070 以及 12GB 版 RTX 3080，此前它们没有专门的指南。内容包括：8K、16K、32K 上下文下能装下哪些模型，14B 模型从哪里开始装不下（4K 宽裕、8K 偏紧、16K 装不下），如何用 Ollama 或 llama.cpp 运行，以及如何确认真的跑在显卡上。',
+  },
+  {
+    date: '2026-10-04',
     en: 'New guide: running models on Intel Arc cards. It covers both routes — llama.cpp built with Intel\'s SYCL backend, and Ollama, which reaches Arc through Vulkan with no build step — how to confirm the card is actually doing the work, and what fits on the B580, B570, A770 and A750. The speed figures in it are upper limits worked out from memory bandwidth, not measurements: nobody has run these on Arc for this site yet. Every graphics card page now also links the setup guides written for that card\'s runtime or memory size — until now none of them linked a guide at all.',
     zh: '新指南：在 Intel Arc 显卡上跑模型。内容包括两条路线 —— 用英特尔 SYCL 后端编译的 llama.cpp，以及无需编译、通过 Vulkan 使用 Arc 的 Ollama —— 如何确认显卡真的在干活，以及 B580、B570、A770、A750 各能装下什么。其中的速度数字是根据显存带宽推算的上限，不是实测：本站还没有人在 Arc 上跑过。另外，每个显卡页面现在都会链接适用于该卡运行时或显存容量的部署指南 —— 此前没有一个显卡页面链接任何指南。',
   },
