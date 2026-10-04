@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-04 (c) — RTX 5090 guide (26 guides)
+
+The last consumer card without a guide. `rtx5090-32gb-what-to-run` (preset `rtx5090` @32K) leads
+with the finding rather than the marketing: at 4K, 73 of 89 models fit comfortably vs 71 on a 24 GB
+4090. The difference is context — Qwen3 32B Q4_K_M @8K 22.9 GB (comfortable here, tight on 24 GB),
+Gemma 4 31B @32K 23.5 GB (98% of a 4090), Qwen3.8 27B @128K 26.0 GB (no 24 GB card) — and the
+bandwidth ceiling (1,792 vs 1,008 GB/s; Qwen3 32B ≤95, Gemma 3 27B ≤114 tok/s, roofline only).
+Llama 3.3 70B Q4_K_M @8K 47.5 GB stated as not fitting. Blackwell stack note: CUDA 12.8 is the first
+toolkit with sm_120 / RTX 50 support (NVIDIA 12.8 release notes, checked 2026-10-04). Figure gate
+proven by perturbation. `seoTitle` added (63 wide). Cards without a guide: 7 → 6, all datacentre.
+
 ### 2026-10-04 (b) — 12GB GPU guide (25 guides)
 
 `guidesForGpu()` showed seven 12 GB CUDA cards (3060 12G, 4070/Super/Ti, 5070, 3080 12G/Ti) with no

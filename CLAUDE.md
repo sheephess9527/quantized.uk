@@ -26,12 +26,12 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **89** in index (`models-extra` … `models-extra-12`) |
-| Cookbook | **25** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **26** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**74** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 447 pages (224 EN + 223 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 449 pages (225 EN + 224 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -971,6 +971,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-04 | **RTX 5090 guide (26)** — 32 GB fits 73 vs 71 models at 4K; the gain is long context on 27B–32B and the bandwidth ceiling, said plainly; Blackwell needs CUDA 12.8+. Only datacentre rows now lack a guide |
 | 2026-10-04 | **12GB GPU guide (25)** — seven 12 GB CUDA cards had no guide; fit table from `calcVRAM` (14B: 4K comfortable, 8K tight, 16K out), roofline ceilings per card, 3 FAQs |
 | 2026-10-04 | **Intel Arc guide (24) + GPU pages link guides** — SYCL/Ollama-Vulkan guide from llama.cpp/Ollama docs, sizes from `calcVRAM`, speeds as roofline ceilings; GPU pages had linked no guide at all — `guidesForGpu()` reverses `gpuPreset` (64 of 78 rows) |
 | 2026-10-03 | **Intel Arc (74 GPUs)** — B580/B570/A770/A750 from intel.com; GGUF-only via SYCL/Vulkan; wizard/CLI/picker/index know it. CLI native llama.cpp build was CUDA for AMD and CPU readers too — now HIP/SYCL/CPU/CUDA per backend |

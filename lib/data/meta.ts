@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-04',
+    en: 'New guide for the RTX 5090, the one consumer card that had no guide. The honest finding is that 32GB fits only two more of this index\'s models than a 24GB card at short context; what it buys is long context on 27B–32B models and a higher speed ceiling. The guide shows the sizes at 8K to 128K, what a Blackwell card needs from the software stack, and how to check the model is really on the GPU.',
+    zh: '新增 RTX 5090 指南，这是此前唯一没有指南的消费级显卡。实话实说：在短上下文下，32GB 只比 24GB 多装下本索引的两个模型；它真正换来的是 27B–32B 模型的长上下文和更高的速度上限。指南给出 8K 到 128K 的显存占用、Blackwell 显卡对软件栈的要求，以及如何确认模型真的跑在 GPU 上。',
+  },
+  {
+    date: '2026-10-04',
     en: 'New guide for 12GB graphics cards — the RTX 3060 12G, the RTX 4070 family, the RTX 5070 and the 12GB RTX 3080s, which until now had no guide of their own. It shows which models fit at 8K, 16K and 32K context, where 14B models stop fitting (comfortable at 4K, tight at 8K, too large at 16K), how to run them with Ollama or llama.cpp, and how to make sure they are really running on the card.',
     zh: '新增 12GB 显卡指南 —— RTX 3060 12G、RTX 4070 系列、RTX 5070 以及 12GB 版 RTX 3080，此前它们没有专门的指南。内容包括：8K、16K、32K 上下文下能装下哪些模型，14B 模型从哪里开始装不下（4K 宽裕、8K 偏紧、16K 装不下），如何用 Ollama 或 llama.cpp 运行，以及如何确认真的跑在显卡上。',
   },

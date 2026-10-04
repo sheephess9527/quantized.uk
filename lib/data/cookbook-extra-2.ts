@@ -813,4 +813,106 @@ export const extraArticles2: Article[] = [
       },
     ],
   },
+
+  {
+    id: 'rtx5090-32gb-what-to-run',
+    gpuPreset: { gpuId: 'rtx5090', ctx: 32768 },
+    relatedModelIds: ['qwen3-32b', 'gemma-4-31b', 'qwen3-8-27b', 'qwen3-coder-30b-a3b'],
+    title: 'RTX 5090: What 32GB Actually Buys for Local LLMs',
+    seoTitle: 'RTX 5090 32GB: What It Buys for Local LLMs',
+    titleZh: 'RTX 5090：32GB 显存在本地大模型上到底多出什么',
+    description: 'What fits on an RTX 5090 that does not fit on a 24GB card: not many more models, but much longer context and higher speed ceilings. Sizes from the calculator, setup for Blackwell.',
+    descriptionZh: 'RTX 5090 能装下而 24GB 卡装不下的是什么：模型数量没多几个，但上下文长得多、速度上限更高。数字来自计算器，附 Blackwell 的配置要点。',
+    category: 'edge',
+    difficulty: 'intermediate',
+    tags: ['RTX 5090', '32GB', 'Blackwell', 'llama.cpp', 'Ollama', 'GGUF', 'long context'],
+    publishedAt: '2026-10-04',
+    updatedAt: '2026-10-04',
+    // Written 2026-10-04. Sizes are calcVRAM on each model's own row; speeds are
+    // roofline ceilings from NVIDIA's 1,792 GB/s figure. CUDA 12.8 as the first
+    // toolkit with RTX 50 (sm_120) support is from NVIDIA's 12.8 release notes.
+    // No `verifiedAt` — there is no GPU here.
+    verifiedStack: {
+      en: 'Windows or Linux · NVIDIA driver with CUDA 12.8+ · current Ollama, or llama.cpp built with GGML_CUDA=ON against CUDA 12.8+ · GGUF',
+      zh: 'Windows 或 Linux · 支持 CUDA 12.8+ 的 NVIDIA 驱动 · 新版 Ollama，或基于 CUDA 12.8+、以 GGML_CUDA=ON 编译的 llama.cpp · GGUF',
+    },
+    content: [
+      {
+        heading: 'The honest answer: not many more models',
+        headingZh: '老实说：能多装的模型并不多',
+        body: 'At 4K context, 73 of the 89 models in this index fit an RTX 5090 comfortably, against 71 for a 24GB RTX 4090. The models that fit on neither are the 70B-and-up class: Llama 3.3 70B at Q4_K_M with an 8K context is about 47.5 GB, so a single 5090 does not change that — it takes two cards, or offloading layers to system RAM. What the extra 8GB does buy is room for context on the 27B–36B models that a 24GB card can only run with a short one, and the bandwidth — 1,792 GB/s against 1,008 — raises the speed ceiling on everything by about 1.8×.',
+        bodyZh: '在 4K 上下文下，本索引 89 个模型中有 73 个能宽裕地装进 RTX 5090，24GB 的 RTX 4090 是 71 个。两张卡都装不下的是 70B 及以上：Llama 3.3 70B 在 Q4_K_M、8K 上下文下约 47.5 GB，单张 5090 改变不了这一点 —— 需要两张卡，或者把部分层卸载到系统内存。多出来的 8GB 真正换来的，是 27B–36B 模型的上下文空间（24GB 卡上只能用短上下文跑这些模型）；而 1,792 GB/s 对 1,008 GB/s 的带宽，让所有模型的速度上限提高约 1.8 倍。',
+      },
+      {
+        heading: 'Where the extra 8GB goes: context',
+        headingZh: '多出的 8GB 用在哪：上下文',
+        body: 'The table below is where 24GB and 32GB actually differ. Qwen3 32B at Q4_K_M with an 8K context is about 22.9 GB, which is comfortable here and tight on a 24GB card. Gemma 4 31B at Q4_K_M with a 32K context is about 23.5 GB: comfortable on the 5090, 98% of a 4090. Qwen3.8 27B at Q4_K_M with a 128K context is about 26.0 GB, which a 24GB card cannot hold at all — it stays this small because only a quarter of its layers keep a growing cache. Dense 32B models still run out at long context: Qwen3 32B at Q4_K_M with a 32K context is about 29.6 GB, tight even here.',
+        bodyZh: '下表就是 24GB 和 32GB 真正拉开差距的地方。Qwen3 32B 在 Q4_K_M、8K 上下文下约 22.9 GB，在这里宽裕，在 24GB 卡上偏紧。Gemma 4 31B 在 Q4_K_M、32K 上下文下约 23.5 GB：在 5090 上宽裕，在 4090 上占 98%。Qwen3.8 27B 在 Q4_K_M、128K 上下文下约 26.0 GB，24GB 卡完全装不下 —— 它能这么小，是因为只有四分之一的层保留随上下文增长的缓存。稠密 32B 模型在长上下文下仍会吃紧：Qwen3 32B 在 Q4_K_M、32K 上下文下约 29.6 GB，即使在这里也偏紧。',
+        code: {
+          lang: 'text',
+          content: 'GGUF Q4_K_M               8K        32K       64K       128K\nQwen3.8 27B (hybrid)      17.8 GB   19.4 GB   21.6 GB   26.0 GB\nGemma 3 27B               18.7 GB   20.8 GB   23.5 GB   29.0 GB ~\nGemma 4 31B               21.4 GB   23.5 GB   26.2 GB   31.7 GB ~\nQwen3-Coder 30B-A3B       20.1 GB   22.6 GB   25.9 GB   32.5 GB ~\nQwen3 32B (40K max)       22.9 GB   29.6 GB ~\nSeed-OSS 36B              25.0 GB   31.6 GB ~ 40.4 GB ✗\n\n~ = tight (88–105% of 32 GB)   ✗ = does not fit',
+        },
+      },
+      {
+        heading: 'Blackwell needs a current stack',
+        headingZh: 'Blackwell 需要较新的软件栈',
+        body: 'The RTX 50 series is a new architecture (compute capability 12.0), and NVIDIA’s CUDA 12.8 is the first toolkit that supports it. In practice that means: a current driver, a current Ollama, and if you build llama.cpp yourself, a CUDA 12.8 or newer toolkit. An older build either fails to load the CUDA backend or falls back to the CPU — which is why the GPU check below matters more on a brand-new card than on an old one.',
+        bodyZh: 'RTX 50 系列是新架构（计算能力 12.0），NVIDIA 的 CUDA 12.8 是第一个支持它的工具包。实际意味着：要用新驱动、新版 Ollama；如果自己编译 llama.cpp，要用 CUDA 12.8 或更新的工具包。旧版本要么加载不了 CUDA 后端，要么退回 CPU —— 所以在新卡上，下面的 GPU 检查比在老卡上更重要。',
+        code: {
+          lang: 'bash',
+          content: 'nvidia-smi                 # driver version, and the CUDA version it supports\nnvcc --version             # if building llama.cpp: needs 12.8 or newer\n\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j',
+        },
+      },
+      {
+        heading: 'Run a 32B model with a real context',
+        headingZh: '用真正够用的上下文跑 32B 模型',
+        body: 'Pass -ngl all and an explicit -c to llama.cpp. Recent builds fit the model to the card automatically and keep about 1 GiB free, which on a model near the limit quietly moves layers to the CPU; asking for every layer makes an oversized setting fail at load instead. Bind to 127.0.0.1 unless you intend to serve your network. With Ollama, pull the exact quant from the GGUF repo and raise num_ctx inside the session.',
+        bodyZh: '给 llama.cpp 传 -ngl all 和明确的 -c。新版本会自动按显卡容量调整并保留约 1 GiB 空闲，模型接近上限时会悄悄把部分层挪到 CPU；明确要求全部层上 GPU，设置过大时就会在加载阶段直接报错。除非你确实要对局域网提供服务，否则绑定 127.0.0.1。用 Ollama 时，从 GGUF 仓库拉取指定量化档位，并在会话里调大 num_ctx。',
+        code: {
+          lang: 'bash',
+          content: 'hf download Qwen/Qwen3-32B-GGUF --include "Qwen3-32B-Q4_K_M.gguf" --local-dir ./models\n\n./build/bin/llama-server -m ./models/Qwen3-32B-Q4_K_M.gguf \\\n  -ngl all -c 16384 --host 127.0.0.1 --port 8080\n#   load_tensors: offloaded 65/65 layers to GPU\n\n# or with Ollama:\nollama run hf.co/Qwen/Qwen3-32B-GGUF:Q4_K_M\n/set parameter num_ctx 16384',
+        },
+      },
+      {
+        heading: 'What the speed should look like',
+        headingZh: '速度大概是什么样',
+        body: 'Generation reads the whole weight file once per token, so bandwidth divided by file size is a hard ceiling. At 1,792 GB/s that puts Qwen3 32B at Q4_K_M under about 95 tok/s and Gemma 3 27B under about 114. These are ceilings, not measurements — this site has no runs on a 5090, and real throughput lands below them. Mixture-of-experts models such as Qwen3-Coder 30B-A3B read only their active experts per token, so they run well above what their total size suggests. Measure your own with llama-bench.',
+        bodyZh: '生成每个 token 都要把整个权重文件读一遍，所以带宽除以文件大小就是硬上限。按 1,792 GB/s 算，Qwen3 32B（Q4_K_M）上限约 95 tok/s，Gemma 3 27B 上限约 114 tok/s。这些是上限，不是实测 —— 本站没有 5090 的实测记录，真实吞吐会低于它。Qwen3-Coder 30B-A3B 这类混合专家模型每个 token 只读取激活的专家，所以跑得比总参数量看上去快得多。用 llama-bench 测你自己的卡。',
+        code: {
+          lang: 'bash',
+          content: './build/bin/llama-bench -m ./models/Qwen3-32B-Q4_K_M.gguf -ngl 99   # pp512 / tg128',
+        },
+      },
+      {
+        heading: 'When it does not work',
+        headingZh: '出问题时',
+        body: 'On a new card most failures are the software stack, not the model.',
+        bodyZh: '在新卡上，大多数问题出在软件栈，而不是模型。',
+        code: {
+          lang: 'text',
+          content: 'CUDA backend fails to load, or "no kernel image is available"\n  → toolkit / build older than CUDA 12.8; rebuild, or update Ollama\n\nRuns, but at CPU speed\n  → check ollama ps (100% GPU) or the load_tensors line\n  → Windows: System Memory Fallback is hiding an out-of-memory\n\n32B fine at 8K, fails at 32K\n  → expected for dense 32B (29.6 GB); use 16K, or a hybrid model like Qwen3.8 27B\n\nWant 70B\n  → does not fit one 32 GB card at Q4_K_M; see the dual-GPU guide',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is the RTX 5090 worth it over the RTX 4090 for local LLMs?',
+        qZh: '跑本地大模型，RTX 5090 比 RTX 4090 值吗？',
+        a: 'Only if you need the context or the speed. At 4K context the 5090 fits 73 of the 89 models in this index comfortably and the 4090 fits 71, so the list of models barely changes. What changes is long context on 27B–32B models — Gemma 4 31B at 32K is comfortable on the 5090 and 98% of a 4090 — and the speed ceiling, which rises with bandwidth from 1,008 to 1,792 GB/s.',
+        aZh: '只有你需要更长的上下文或更快的速度时才值。在 4K 上下文下，5090 能宽裕装下本索引 89 个模型中的 73 个，4090 是 71 个，模型清单几乎没变。变化在于 27B–32B 模型的长上下文 —— Gemma 4 31B 在 32K 下在 5090 上宽裕、在 4090 上占 98% —— 以及速度上限，它随带宽从 1,008 GB/s 提高到 1,792 GB/s。',
+      },
+      {
+        q: 'Can an RTX 5090 run a 70B model?',
+        qZh: 'RTX 5090 能跑 70B 模型吗？',
+        a: 'Not on the card alone at a usable quality. This site sizes Llama 3.3 70B at Q4_K_M at about 47.5 GB with an 8K context, half again more than the card holds. Two cards, or offloading part of the model to system RAM at a large speed cost, are the realistic routes — the dual-GPU guide covers the first.',
+        aZh: '单靠这张卡、以可用的质量跑不了。本站估算 Llama 3.3 70B 在 Q4_K_M、8K 上下文下约 47.5 GB，比显卡容量还多出一半。现实的路线是两张卡，或者把部分模型卸载到系统内存（速度损失很大）—— 前者见双卡指南。',
+      },
+      {
+        q: 'What do I need to run llama.cpp on an RTX 5090?',
+        qZh: '在 RTX 5090 上跑 llama.cpp 需要什么？',
+        a: 'A driver and toolkit that know Blackwell: NVIDIA\'s CUDA 12.8 is the first toolkit to support the RTX 50 series, so build llama.cpp with GGML_CUDA=ON against 12.8 or newer, or use a current Ollama release. Then confirm the startup log reports every layer offloaded to the GPU — on a new card, a stack that is too old can fall back to the CPU without an obvious error.',
+        aZh: '需要认识 Blackwell 的驱动和工具包：NVIDIA 的 CUDA 12.8 是第一个支持 RTX 50 系列的工具包，所以要基于 12.8 或更新版本以 GGML_CUDA=ON 编译 llama.cpp，或使用新版 Ollama。然后确认启动日志显示所有层都已卸载到 GPU —— 在新卡上，过旧的软件栈可能在没有明显报错的情况下退回 CPU。',
+      },
+    ],
+  },
 ];
