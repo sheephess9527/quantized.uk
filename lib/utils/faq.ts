@@ -2,7 +2,8 @@ import { models } from '@/lib/data/models';
 import { GPU_COUNT } from '@/lib/seo';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { countModelsFitting, usableCapacityGB } from '@/lib/utils/gpu-page';
+import { countModelsFitting, usableCapacityGB, ALLOWED_FORMATS, backendFor } from '@/lib/utils/gpu-page';
+import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 import { modelsWithFormat } from '@/lib/utils/format-compare';
 import { getSiteStats } from '@/lib/stats';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -112,6 +113,23 @@ export function faqGroups(): FaqGroup[] {
   const biggestConsumer = gpuDatabase
     .filter(isConsumer)
     .sort((a, b) => b.vram - a.vram || (b.bandwidth ?? 0) - (a.bandwidth ?? 0))[0];
+
+  // Per-vendor answer for "NVIDIA, AMD or Intel": the largest retail card each
+  // vendor has in the index, what it fits, and which tracked formats its
+  // backend loads — all derived, so a new card or format moves the answer.
+  const largest = (pred: (g: (typeof gpuDatabase)[number]) => boolean) =>
+    gpuDatabase.filter(pred).sort((a, b) => b.vram - a.vram || (b.bandwidth ?? 0) - (a.bandwidth ?? 0))[0];
+  const vendorTop = {
+    nvidia: largest(g => g.type === 'nvidia-consumer'),
+    amd: largest(g => /^Radeon RX/.test(g.name)),
+    intel: largest(g => g.type === 'intel'),
+  };
+  const formatsOn = (g: (typeof gpuDatabase)[number], sep = ', ') =>
+    SHIPPED_FORMATS.filter(f => (ALLOWED_FORMATS[backendFor(g)] as ReadonlyArray<string>).includes(f)).join(sep);
+  // Same capacity, different loadable formats: the honest comparison is two
+  // cards of equal VRAM, because format gating is what makes their counts differ.
+  const nvSame = largest(g => g.type === 'nvidia-consumer' && g.vram === vendorTop.intel.vram);
+  const intelCards = gpuDatabase.filter(g => g.type === 'intel');
 
   const mxfp4 = models.filter(m => m.quants.some(q => q.level === 'MXFP4'));
 
@@ -338,6 +356,15 @@ export function faqGroups(): FaqGroup[] {
           },
           link: { href: '/cookbook/amd-rocm-llamacpp/', label: { en: 'AMD + llama.cpp, step by step', zh: 'AMD + llama.cpp 实操' } },
         },
+        {
+          id: 'intel-format',
+          q: { en: 'Which format runs on an Intel Arc card?', zh: 'Intel Arc 显卡能用哪种格式？' },
+          a: {
+            en: `GGUF. llama.cpp runs it on Arc through its SYCL backend, whose documentation lists the A770, A750 and B580 as verified, and Ollama runs it through Vulkan with no build step. This site recommends nothing else on Arc: EXL2 is CUDA-only, and which quantized formats vLLM's Intel backend serves on consumer Arc cards has not been checked here. The index has ${intelCards.length} Arc cards; the largest, the ${vendorTop.intel.name}, fits ${countModelsFitting(vendorTop.intel, 'comfortable')} of the ${total} models comfortably at 4K context.`,
+            zh: `GGUF。llama.cpp 通过 SYCL 后端在 Arc 上运行它（文档把 A770、A750、B580 列为已验证），Ollama 则通过 Vulkan 运行，无需编译。本站在 Arc 上不推荐其他格式：EXL2 只支持 CUDA，而 vLLM 的英特尔后端在消费级 Arc 上支持哪些量化格式，本站尚未核实。本索引收录了 ${intelCards.length} 张 Arc 显卡，其中最大的 ${vendorTop.intel.name} 能在 4K 上下文下从容运行 ${total} 个模型中的 ${countModelsFitting(vendorTop.intel, 'comfortable')} 个。`,
+          },
+          link: { href: '/cookbook/intel-arc-llamacpp/', label: { en: 'Intel Arc, step by step', zh: 'Intel Arc 实操' } },
+        },
       ],
     },
     {
@@ -352,6 +379,15 @@ export function faqGroups(): FaqGroup[] {
             zh: `预算内显存最大的那张 —— 能不能跑得起来完全由容量决定，别的都不决定。本索引的 ${gpuCount} 张卡里，消费级容量最大的是 ${biggestConsumer.name}，${biggestConsumer.vram} GB${biggestConsumer.bandwidth ? `、${biggestConsumer.bandwidth.toLocaleString('en-US')} GB/s` : ''}，能从容运行本站 ${total} 个模型中的 ${countModelsFitting(biggestConsumer, 'comfortable')} 个，而 8 GB 的卡是 ${fits8} 个。带宽是第二个问题而不是第一个：它决定已经装得下的模型生成有多快，同样显存的两张卡在这一项上可以差 2.5 倍以上。`,
           },
           link: { href: '/gpu/', label: { en: `Compare all ${gpuCount} cards`, zh: `对比全部 ${gpuCount} 张卡` } },
+        },
+        {
+          id: 'nvidia-amd-intel',
+          q: { en: 'NVIDIA, AMD or Intel for local LLMs?', zh: '跑本地大模型，选 NVIDIA、AMD 还是 Intel？' },
+          a: {
+            en: `Memory decides most of it, but not all: the formats a vendor's software can load trim the list too. At ${vendorTop.intel.vram} GB, the ${vendorTop.intel.name} fits ${countModelsFitting(vendorTop.intel, 'comfortable')} of the ${total} models comfortably at 4K and the ${nvSame.name} fits ${countModelsFitting(nvSame, 'comfortable')}, because some models only squeeze in at a 4-bit AWQ size that Arc cannot load. The biggest retail cards in this index are the ${vendorTop.nvidia.name} (${vendorTop.nvidia.vram} GB, ${countModelsFitting(vendorTop.nvidia, 'comfortable')} of ${total} models comfortably at 4K), the ${vendorTop.amd.name} (${vendorTop.amd.vram} GB, ${countModelsFitting(vendorTop.amd, 'comfortable')}) and the ${vendorTop.intel.name} (${vendorTop.intel.vram} GB, ${countModelsFitting(vendorTop.intel, 'comfortable')}). NVIDIA runs every tracked format (${formatsOn(vendorTop.nvidia)}); a Radeon runs ${formatsOn(vendorTop.amd)} — AWQ and GPTQ only through vLLM, on the cards vLLM supports; Intel Arc runs ${formatsOn(vendorTop.intel)}. If GGUF through llama.cpp or Ollama is all you need, buy the most memory your budget allows from any of them.`,
+            zh: `显存决定了大部分，但不是全部：各家软件能加载的格式也会让清单变短。同为 ${vendorTop.intel.vram} GB，${vendorTop.intel.name} 在 4K 下能从容运行 ${total} 个模型中的 ${countModelsFitting(vendorTop.intel, 'comfortable')} 个，${nvSame.name} 是 ${countModelsFitting(nvSame, 'comfortable')} 个，因为有些模型只有用 Arc 加载不了的 4-bit AWQ 体积才装得下。本索引里各家最大的零售卡是 ${vendorTop.nvidia.name}（${vendorTop.nvidia.vram} GB，4K 下可从容运行 ${total} 个模型中的 ${countModelsFitting(vendorTop.nvidia, 'comfortable')} 个）、${vendorTop.amd.name}（${vendorTop.amd.vram} GB，${countModelsFitting(vendorTop.amd, 'comfortable')} 个）和 ${vendorTop.intel.name}（${vendorTop.intel.vram} GB，${countModelsFitting(vendorTop.intel, 'comfortable')} 个）。NVIDIA 能跑本站跟踪的所有格式（${formatsOn(vendorTop.nvidia, '、')}）；Radeon 能跑 ${formatsOn(vendorTop.amd, '、')} —— 其中 AWQ 和 GPTQ 只能通过 vLLM，且限 vLLM 支持的显卡；Intel Arc 只能跑 ${formatsOn(vendorTop.intel, '、')}。如果你只用 llama.cpp 或 Ollama 跑 GGUF，那就在预算内买显存最大的，哪家都行。`,
+          },
+          link: { href: '/gpu/', label: { en: 'Compare cards by vendor', zh: '按厂商对比显卡' } },
         },
         {
           id: 'is-8gb-enough',

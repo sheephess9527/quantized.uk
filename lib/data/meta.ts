@@ -79,8 +79,8 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-04',
-    en: 'Current runtime versions re-checked on the projects\' own release pages: llama.cpp b11390, Ollama v0.35.1, vLLM v0.30.0 (unchanged) and ExLlamaV3 v1.5.4. ExLlamaV2 is still at v0.3.2 from July 2025, and its README still says the project is archived.',
-    zh: '已在各项目自己的发布页上重新核对当前运行时版本：llama.cpp b11390、Ollama v0.35.1、vLLM v0.30.0（未变）、ExLlamaV3 v1.5.4。ExLlamaV2 仍停留在 2025 年 7 月的 v0.3.2，其 README 依然写明项目已归档。',
+    en: 'Current runtime versions re-checked on the projects\' own release pages: llama.cpp b11390, Ollama v0.35.1, vLLM v0.30.0 (unchanged) and ExLlamaV3 v1.5.4. ExLlamaV2 is still at v0.3.2 from July 2025, and its README still says the project is archived. The FAQ also answers two new questions: which format runs on an Intel Arc card, and whether to choose NVIDIA, AMD or Intel — with the counts worked out from the index, including why a 16GB Arc card fits four fewer models than a 16GB NVIDIA card.',
+    zh: '已在各项目自己的发布页上重新核对当前运行时版本：llama.cpp b11390、Ollama v0.35.1、vLLM v0.30.0（未变）、ExLlamaV3 v1.5.4。ExLlamaV2 仍停留在 2025 年 7 月的 v0.3.2，其 README 依然写明项目已归档。常见问题页还新增了两个问答：Intel Arc 显卡能用哪种格式，以及该选 NVIDIA、AMD 还是 Intel —— 数字均由索引计算，包括为什么 16GB 的 Arc 卡比 16GB 的 NVIDIA 卡少装下四个模型。',
   },
   {
     date: '2026-10-04',

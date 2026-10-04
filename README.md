@@ -427,6 +427,13 @@ From each project's GitHub tags/releases page, read as a verbatim list: llama.cp
 v0.3.2 (2025-07-13). The releases-page summary claimed ExLlamaV2 was "not archived"; its README's
 first line says "This project is archived for now" — the README is the source, wording unchanged.
 
+**FAQ +2 (`lib/utils/faq.ts`):** `intel-format` and `nvidia-amd-intel`, every figure derived —
+largest retail card per vendor (RTX 5090 / RX 7900 XTX / Arc A770 16G → 73 / 71 / 51 comfortable),
+formats from `ALLOWED_FORMATS[backendFor()]` ∩ `SHIPPED_FORMATS`. The first draft said equal-VRAM
+cards "fit exactly the same models"; running it showed A770 16G 51 vs RTX 5080 55 — the 4 extra are
+all AWQ INT4 (Mistral Small 24B, Devstral, Magistral, Codestral). The answer now states that
+comparison instead.
+
 ### 2026-10-04 (c) — RTX 5090 guide (26 guides)
 
 The last consumer card without a guide. `rtx5090-32gb-what-to-run` (preset `rtx5090` @32K) leads
