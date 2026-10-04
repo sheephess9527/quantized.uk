@@ -419,6 +419,24 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-04 — Intel Arc guide (24 guides); GPU pages link their guides
+
+**`intel-arc-llamacpp`** (`cookbook-extra-2.ts`, preset `arc-b580` @8K): SYCL build and checks from
+llama.cpp `docs/backend/SYCL.md` (render/video groups, oneAPI at `/opt/intel/oneapi`, `GGML_SYCL=ON`
++ `icx/icpx` + `GGML_SYCL_F16`, `sycl-ls` / `llama-ls-sycl-device`, the `detect 1 SYCL GPUs` line,
+JIT first-run slowness, `ONEAPI_DEVICE_SELECTOR`, Windows prebuilt `bin-win-sycl-x64` needing no
+oneAPI); Ollama route from `docs/gpu.mdx` (Vulkan on by default, `setcap cap_perfmon+ep` for VRAM
+data, `GGML_VK_VISIBLE_DEVICES`). Sizes from `calcVRAM` at Q4_K_M @8K: Qwen3 8B 6.4 GB, Gemma 3 12B
+8.8, Qwen3 14B 10.7 (89% of a B580 — tight, stated). Speeds are `rooflineTokS` ceilings, labelled as
+such. No `verifiedAt`. `guideFigureProblems` proven to cover it by perturbation (6.4 → 7.4 fails).
+`seoTitle` added (title was 61 wide).
+
+**GPU pages linked no guide at all** — the RX 7900 XTX page did not link the AMD guide whose
+`gpuPreset` is that card. `guidesForGpu()` (`guide-references.ts`) reverses `gpuPreset`: exact card
+(10), same non-CUDA backend (6), same-VRAM CUDA card (3); top 3, titles localized. 64 of 78
+hardware rows now carry a guide section; the 14 without are CUDA capacities no guide targets
+(32 GB, datacentre). Two dead `gpuPage.guidesTitle` strings removed.
+
 ### 2026-10-03 (s) — Intel Arc as a hardware class; native llama.cpp build follows the backend
 
 **New GPU type `'intel'`, backend `'sycl'`.** Four cards from intel.com product specification

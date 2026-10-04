@@ -1,7 +1,7 @@
 import { articles, type Article } from '@/lib/data/cookbook';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { gpuSlug } from '@/lib/utils/gpu-page';
+import { gpuSlug, backendFor } from '@/lib/utils/gpu-page';
 import { sameBudgetCards } from '@/lib/utils/gpu-page';
 import { formatById, FORMAT_PAGES } from '@/lib/utils/format-page';
 import { BEST_TIERS } from '@/lib/utils/best-page';
@@ -156,3 +156,32 @@ export function guideReferences(article: Article): GuideReferences {
 }
 
 export { gpuSlug };
+
+/**
+ * Guides for a GPU page — the reverse of `gpuPreset`. GPU pages linked no guide
+ * at all (not even the RX 7900 XTX page to the AMD guide whose preset *is* that
+ * card), so a reader landing on a card page from search never reached the setup
+ * instructions for it. Derived from the preset alone, never listed:
+ *
+ *  - the guide's preset is this card;
+ *  - the preset card shares this card's backend, for every backend but CUDA
+ *    (ROCm, SYCL, Metal and CPU each have a handful of guides, all relevant);
+ *  - on CUDA, where most guides live, the preset card has the same VRAM.
+ */
+export function guidesForGpu(gpu: GPU, limit = 3): Article[] {
+  const backend = backendFor(gpu);
+  return articles
+    .map(a => {
+      const preset = a.gpuPreset ? gpuDatabase.find(g => g.id === a.gpuPreset!.gpuId) : undefined;
+      if (!preset) return { a, score: 0 };
+      if (preset.id === gpu.id) return { a, score: 10 };
+      const pb = backendFor(preset);
+      if (pb !== backend) return { a, score: 0 };
+      if (backend !== 'cuda') return { a, score: 6 };
+      return { a, score: preset.vram === gpu.vram ? 3 : 0 };
+    })
+    .filter(x => x.score > 0)
+    .sort((x, y) => y.score - x.score)
+    .slice(0, limit)
+    .map(x => x.a);
+}

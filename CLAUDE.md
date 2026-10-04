@@ -26,12 +26,12 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **89** in index (`models-extra` … `models-extra-12`) |
-| Cookbook | **23** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **24** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**74** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 443 pages (222 EN + 221 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 445 pages (223 EN + 222 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -540,7 +540,7 @@ says so rather than implying a quality ranking. Verify a change by perturbation 
 against the first Apple entry — a 512 GB Mac Studio — and recommended a 675B model needing 429 GB
 while the same page's context ladder used the declared 36 GB. One page, two capacities.
 
-**Internal links are computed from relationships, never listed.** `ModelPlacement`
+**Internal links are computed from relationships, never listed.** `guidesForGpu()` gives every GPU page its guides by reversing `gpuPreset` (a new guide's preset is what makes card pages link it). `ModelPlacement`
 (`model-placement.ts`) and `GuideReferences` (`guide-references.ts`) join models ↔ hardware ↔
 formats ↔ `/best/` ↔ guides out of data the site already holds, so the graph cannot rot. Measure
 before and after by crawling `out/`, excluding hrefs present on >90% of pages (that is the nav and
@@ -971,6 +971,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-04 | **Intel Arc guide (24) + GPU pages link guides** — SYCL/Ollama-Vulkan guide from llama.cpp/Ollama docs, sizes from `calcVRAM`, speeds as roofline ceilings; GPU pages had linked no guide at all — `guidesForGpu()` reverses `gpuPreset` (64 of 78 rows) |
 | 2026-10-03 | **Intel Arc (74 GPUs)** — B580/B570/A770/A750 from intel.com; GGUF-only via SYCL/Vulkan; wizard/CLI/picker/index know it. CLI native llama.cpp build was CUDA for AMD and CPU readers too — now HIP/SYCL/CPU/CUDA per backend |
 | 2026-10-03 | **Quarterly supersede** — Gemma 2 2B/9B/27B → Gemma 4 E2B / Gemma 4 E4B / Gemma 3 27B, Mistral 7B v0.3 → Ministral 3 8B; successor must fit the same hardware (9B's first pick, Gemma 3 12B, did not); Llama 3.1 70B / Phi-3.5 mini left (generic reason only) |
 | 2026-10-03 | **+2 models (89): SmolLM3 3B, ERNIE 4.5 21B-A3B** — configs from transformers, context for SmolLM3 from HF's own post (64K native, 128K only via YaRN); all `estimated`; typed guide counts recomputed and now gated (`guideModelCountProblems`) |

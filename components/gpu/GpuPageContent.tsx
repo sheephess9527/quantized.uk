@@ -11,6 +11,7 @@ import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, 
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
+import { guidesForGpu } from '@/lib/utils/guide-references';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 
@@ -28,6 +29,7 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   const groups = groupFitsByBucket(fits);
   const step = nextStepUp(gpu, fits.length);
   const siblings = sameBudgetCards(gpu);
+  const guides = guidesForGpu(gpu);
   // The system-RAM entry at this same capacity, if one exists.
   const ramTwin = gpu.isCPU ? undefined : gpuDatabase.find(o => o.isCPU && o.vram === gpu.vram);
   const measured = measuredRowsFor(gpu);
@@ -268,6 +270,22 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
                   className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 min-h-[44px] text-sm text-slate-300 hover:border-violet-500/25 hover:text-white transition-all"
                 >
                   <span aria-hidden>{sib.icon}</span> {sib.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {guides.length > 0 && (
+        <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
+          <h2 className="text-lg font-bold text-slate-100 mb-2">{g.guidesTitle}</h2>
+          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.guidesBody, { gpu: gpu.name })}</p>
+          <ul className="mt-3 space-y-2">
+            {guides.map(a => (
+              <li key={a.id}>
+                <Link href={`/cookbook/${a.id}/`} className="inline-flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 min-h-[44px]">
+                  {lang === 'zh' ? a.titleZh : a.title} <ArrowRight size={14} aria-hidden />
                 </Link>
               </li>
             ))}

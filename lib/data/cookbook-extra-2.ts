@@ -594,4 +594,119 @@ export const extraArticles2: Article[] = [
       },
     ],
   },
+
+  {
+    id: 'intel-arc-llamacpp',
+    gpuPreset: { gpuId: 'arc-b580', ctx: 8192 },
+    relatedModelIds: ['qwen3-8b', 'gemma-3-12b-it', 'qwen3-14b', 'gemma-4-e4b'],
+    title: 'Intel Arc: llama.cpp (SYCL) or Ollama (Vulkan)',
+    seoTitle: 'Intel Arc: llama.cpp SYCL or Ollama Vulkan',
+    titleZh: 'Intel Arc 显卡：llama.cpp（SYCL）或 Ollama（Vulkan）',
+    description: 'Run GGUF models on an Arc B580, B570, A770 or A750 — the SYCL build, the Ollama route, how to prove the GPU is doing the work, and what fits in 8–16 GB.',
+    descriptionZh: '在 Arc B580、B570、A770、A750 上跑 GGUF —— SYCL 编译、Ollama 路线、如何确认真的在用 GPU，以及 8–16 GB 能装下什么。',
+    category: 'edge',
+    difficulty: 'intermediate',
+    tags: ['Intel Arc', 'SYCL', 'llama.cpp', 'Ollama', 'Vulkan', 'GGUF'],
+    publishedAt: '2026-10-04',
+    updatedAt: '2026-10-04',
+    // Written 2026-10-04 from llama.cpp docs/backend/SYCL.md, docs/build.md and
+    // docs/docker.md, and Ollama docs/gpu.mdx + docs/docker.mdx. No `verifiedAt`:
+    // there is no Arc card in this environment, so nothing here was run.
+    verifiedStack: {
+      en: 'Linux (Ubuntu) or Windows 11 · Intel GPU driver · oneAPI Base Toolkit · llama.cpp built with GGML_SYCL=ON · or Ollama with Vulkan · GGUF',
+      zh: 'Linux（Ubuntu）或 Windows 11 · 英特尔 GPU 驱动 · oneAPI Base Toolkit · 以 GGML_SYCL=ON 编译的 llama.cpp · 或启用 Vulkan 的 Ollama · GGUF',
+    },
+    content: [
+      {
+        heading: 'What works on Arc, and what does not',
+        headingZh: 'Arc 上哪些能用，哪些不能',
+        body: 'GGUF works, through two routes. llama.cpp has a SYCL backend built on Intel’s oneAPI, and its documentation lists the Arc A770, A750 and B580 as verified cards; the B570 is the same Xe2 generation as the B580 but is not on that list. Ollama has no SYCL build — it reaches Arc through its Vulkan backend, which is on by default. AWQ, GPTQ and EXL2 are not options here: ExLlamaV2 is CUDA-only, and this site has not confirmed which quantized formats vLLM’s Intel backend serves on consumer Arc cards, so the calculator and every recommendation on an Arc page use GGUF only.',
+        bodyZh: 'GGUF 可以用，有两条路线。llama.cpp 有基于英特尔 oneAPI 的 SYCL 后端，文档把 Arc A770、A750 和 B580 列为已验证；B570 与 B580 同属 Xe2 一代，但不在名单上。Ollama 没有 SYCL 版本，它通过 Vulkan 后端使用 Arc，默认开启。AWQ、GPTQ、EXL2 在这里不可选：ExLlamaV2 只支持 CUDA，而 vLLM 的英特尔后端在消费级 Arc 上支持哪些量化格式本站尚未确认，所以计算器和 Arc 页面上的所有推荐都只用 GGUF。',
+        code: {
+          lang: 'text',
+          content: 'llama.cpp SYCL, verified list:  Arc A770, A750, B580\nSame generation, not listed:     Arc B570\nOllama:                          Vulkan backend, on by default\nFormats this site recommends:    GGUF only',
+        },
+      },
+      {
+        heading: 'Prerequisites on Linux',
+        headingZh: 'Linux 上的前置条件',
+        body: 'Install Intel’s GPU driver by following dgpu-docs.intel.com for your distribution, then add your user to the render and video groups and log out and back in. Then install the oneAPI Base Toolkit, keeping the default path /opt/intel/oneapi. Check the card is visible before building anything: sycl-ls should list a level_zero GPU entry. If it does not, the SYCL docs’ own advice is to run sudo sycl-ls and check the group membership — a missing group is the usual cause, not the build.',
+        bodyZh: '按 dgpu-docs.intel.com 上对应发行版的说明安装英特尔 GPU 驱动，然后把用户加入 render 和 video 组并重新登录。接着安装 oneAPI Base Toolkit，保留默认路径 /opt/intel/oneapi。编译之前先确认能看到显卡：sycl-ls 应列出一个 level_zero 的 GPU 条目。如果没有，SYCL 文档自己的建议是运行 sudo sycl-ls 并检查用户组 —— 通常是没加组，而不是编译的问题。',
+        code: {
+          lang: 'bash',
+          content: 'sudo usermod -aG render $USER\nsudo usermod -aG video $USER   # then log out and back in\n\nsource /opt/intel/oneapi/setvars.sh\nsycl-ls                        # expect a [level_zero:gpu] line for the Arc card',
+        },
+      },
+      {
+        heading: 'Build llama.cpp with SYCL',
+        headingZh: '用 SYCL 编译 llama.cpp',
+        body: 'The switch is GGML_SYCL=ON, compiled with Intel’s icx/icpx from the oneAPI environment you just sourced; GGML_SYCL_F16=ON is what the docs recommend for speed. Every new shell needs setvars.sh sourced again before you build or run. The first run is slower than later ones: the build has no ahead-of-time kernels, so they are compiled on first use.',
+        bodyZh: '开关是 GGML_SYCL=ON，用刚才加载的 oneAPI 环境里的英特尔 icx/icpx 编译；文档建议加上 GGML_SYCL_F16=ON 以获得更好的速度。每开一个新 shell，编译或运行前都要重新 source setvars.sh。第一次运行比之后慢：这个构建没有预编译内核，内核在首次使用时才编译。',
+        code: {
+          lang: 'bash',
+          content: 'git clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\nsource /opt/intel/oneapi/setvars.sh\ncmake -B build -DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DGGML_SYCL_F16=ON\ncmake --build build --config Release -j\n\n./build/bin/llama-ls-sycl-device   # lists the SYCL devices the build can see',
+        },
+      },
+      {
+        heading: 'Start the server and check it is on the GPU',
+        headingZh: '启动服务并确认在用 GPU',
+        body: 'Bind to 127.0.0.1 — llama-server has no authentication unless you pass --api-key. The confirmation is in the startup log, not in the fact that it answers: look for the SYCL device detection line and load_tensors reporting every layer offloaded. A build that fell back to the CPU still answers, slowly. On a machine with Intel integrated graphics as well, pin the discrete card with ONEAPI_DEVICE_SELECTOR, or list devices with --list-devices and choose one with --device.',
+        bodyZh: '绑定 127.0.0.1 —— 除非传 --api-key，llama-server 没有任何鉴权。确认的依据在启动日志里，而不是“它能回答”：找 SYCL 设备检测那一行，以及 load_tensors 报告所有层都已卸载。退回 CPU 的构建照样能回答，只是很慢。如果机器上同时有英特尔核显，用 ONEAPI_DEVICE_SELECTOR 固定独显，或者用 --list-devices 列出设备、再用 --device 指定。',
+        code: {
+          lang: 'bash',
+          content: 'ONEAPI_DEVICE_SELECTOR="level_zero:0" ./build/bin/llama-server \\\n  -m ./models/Qwen3-8B-Q4_K_M.gguf \\\n  -ngl 99 -c 8192 --host 127.0.0.1 --port 8080\n\n# In the startup log:\n#   detect 1 SYCL GPUs: [0] with top Max compute units:...\n#   load_tensors: offloaded 37/37 layers to GPU',
+        },
+      },
+      {
+        heading: 'The Ollama route',
+        headingZh: 'Ollama 路线',
+        body: 'If you would rather not install oneAPI, Ollama runs Arc through Vulkan with no build step. On Windows the GPU driver already ships Vulkan support; on Linux install Intel’s driver first. Ollama’s docs note that without root or the cap_perfmon capability it cannot read free VRAM from Vulkan and falls back to approximate sizes when scheduling, so grant it. ollama ps is the check: the PROCESSOR column should say GPU, not a CPU/GPU split. In a container, pass /dev/dri only — /dev/kfd is AMD’s device, and Docker will not start a container whose device does not exist.',
+        bodyZh: '如果不想装 oneAPI，Ollama 通过 Vulkan 支持 Arc，不需要编译。Windows 上 GPU 驱动已自带 Vulkan 支持；Linux 上要先装英特尔驱动。Ollama 文档提到：没有 root 权限或 cap_perfmon 能力时，它读不到 Vulkan 的可用显存，调度时只能按估算大小处理，所以要授予这个能力。检查方法是 ollama ps：PROCESSOR 一列应显示 GPU，而不是 CPU/GPU 拆分。在容器里只透传 /dev/dri —— /dev/kfd 是 AMD 的设备，宿主机上没有时 Docker 会拒绝启动容器。',
+        code: {
+          lang: 'bash',
+          content: 'curl -fsSL https://ollama.com/install.sh | sh\nsudo setcap cap_perfmon+ep /usr/local/bin/ollama\n\nollama run hf.co/Qwen/Qwen3-8B-GGUF:Q4_K_M\nollama ps                          # PROCESSOR should read 100% GPU\n\n# With an Intel iGPU too, pick the discrete card by its Vulkan index:\n#   GGML_VK_VISIBLE_DEVICES=1 ollama serve',
+        },
+      },
+      {
+        heading: 'What fits, and the speed ceiling',
+        headingZh: '能装下什么，以及速度上限',
+        body: 'Memory arithmetic does not care which vendor made the card. The figures below come from this site’s calculator at Q4_K_M, which every one of these models ships. Qwen3 8B at Q4_K_M with an 8K context is about 6.4 GB. Gemma 3 12B at Q4_K_M with an 8K context is about 8.8 GB. Qwen3 14B at Q4_K_M with an 8K context is about 10.7 GB, which is 89% of a B580 — past this site’s comfortable line, so keep the context short or move to the 16 GB A770. The speed column is a ceiling, not a measurement: generation reads the whole weight file once per token, so bandwidth divided by file size bounds tok/s. Nobody here has run these on Arc; real throughput will be lower.',
+        bodyZh: '显存算术不关心是哪家的卡。下表来自本站计算器，均为 Q4_K_M（这几个模型都提供该档位）。Qwen3 8B 在 Q4_K_M、8K 上下文下约 6.4 GB。Gemma 3 12B 在 Q4_K_M、8K 上下文下约 8.8 GB。Qwen3 14B 在 Q4_K_M、8K 上下文下约 10.7 GB，占 B580 的 89% —— 超过了本站的“宽裕”线，所以要么缩短上下文，要么换 16 GB 的 A770。速度一栏是上限，不是实测：生成每个 token 都要把整个权重文件读一遍，所以带宽除以文件大小就是 tok/s 的上限。本站没有人在 Arc 上实际跑过，真实吞吐会更低。',
+        code: {
+          lang: 'text',
+          content: 'Model, Q4_K_M, 8K context     size     B580 12G   A770 16G   ceiling B580 / A770\nQwen3 8B                       6.4 GB   54%        40%        97 / 119 tok/s\nGemma 3 12B                    8.8 GB   73%        55%        65 / 80 tok/s\nQwen3 14B                      10.7 GB  89%        67%        54 / 66 tok/s\n\nMeasure your own: ./build/bin/llama-bench -m <model.gguf> -ngl 99   (pp512 / tg128)',
+        },
+      },
+      {
+        heading: 'When it does not work',
+        headingZh: '出问题时',
+        body: 'Most first-day failures on Arc are one of a few things, and only the last is the model.',
+        bodyZh: 'Arc 上第一天遇到的问题大多是下面几种之一，只有最后一种和模型有关。',
+        code: {
+          lang: 'text',
+          content: 'sycl-ls shows no level_zero GPU\n  → driver not installed, or user not in render/video (log out and back in)\n\n"setvars.sh" forgotten → icx not found at build, or SYCL libraries missing at run\n\nFirst run very slow, later runs normal\n  → kernels compiled on first use (no ahead-of-time build) — expected\n\nRuns, but on the integrated GPU\n  → ONEAPI_DEVICE_SELECTOR="level_zero:0" (llama.cpp) / GGML_VK_VISIBLE_DEVICES (Ollama)\n\nOut of device memory\n  → shorten -c, or pick a smaller quant (the SYCL docs\' own advice)',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Should I use llama.cpp SYCL or Ollama on an Intel Arc card?',
+        qZh: 'Intel Arc 显卡上该用 llama.cpp SYCL 还是 Ollama？',
+        a: 'Ollama is the shorter path: no oneAPI install, no build, and it reaches Arc through its Vulkan backend, which is on by default. llama.cpp with SYCL takes more setup but is the route llama.cpp documents for Intel GPUs, with the A770, A750 and B580 on its verified list. This site has not benchmarked either on Arc, so it cannot tell you which is faster on your card — llama-bench will.',
+        aZh: 'Ollama 路线更短：不用装 oneAPI，不用编译，通过默认开启的 Vulkan 后端使用 Arc。llama.cpp + SYCL 配置更多，但它是 llama.cpp 官方为英特尔 GPU 写的路线，A770、A750、B580 在其已验证名单上。本站没有在 Arc 上做过基准测试，所以无法告诉你哪个在你的卡上更快 —— 用 llama-bench 测。',
+      },
+      {
+        q: 'Can I use llama.cpp SYCL on Windows without installing oneAPI?',
+        qZh: '在 Windows 上不装 oneAPI 能用 llama.cpp SYCL 吗？',
+        a: 'Yes. llama.cpp publishes a Windows SYCL build (the bin-win-sycl-x64 zip on its releases page), and its SYCL docs say the package carries the runtime it needs, so no separate oneAPI install is required. Building from source on Windows does need Visual Studio and the oneAPI Base Toolkit. Windows 11 is the version the docs name.',
+        aZh: '可以。llama.cpp 在发布页提供 Windows 的 SYCL 构建（bin-win-sycl-x64 压缩包），其 SYCL 文档说明包里已带所需运行时，无需单独安装 oneAPI。在 Windows 上从源码编译则需要 Visual Studio 和 oneAPI Base Toolkit。文档点名的系统版本是 Windows 11。',
+      },
+      {
+        q: 'How many models fit on an Arc B580?',
+        qZh: 'Arc B580 能装下多少个模型？',
+        a: '48 of the 89 models in this index fit the B580 comfortably at 4K context, all as GGUF — the same count as any other 12 GB card, because only capacity decides what fits. The A770 16G fits 51, the B570 10G 40, and the A750 8G 33. Speed is a different question: the B580 has 456 GB/s of memory bandwidth, which sets the ceiling on tokens per second once a model fits.',
+        aZh: '本索引 89 个模型中，有 48 个能以 GGUF 在 4K 上下文下宽裕地装进 B580 —— 与其他 12 GB 显卡相同，因为决定能否装下的只有容量。A770 16G 可装 51 个，B570 10G 40 个，A750 8G 33 个。速度是另一个问题：B580 的显存带宽为 456 GB/s，模型装下之后，它决定了每秒 token 数的上限。',
+      },
+    ],
+  },
 ];

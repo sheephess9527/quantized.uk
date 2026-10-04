@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-03';
+export const dataLastUpdated = '2026-10-04';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-04',
+    en: 'New guide: running models on Intel Arc cards. It covers both routes — llama.cpp built with Intel\'s SYCL backend, and Ollama, which reaches Arc through Vulkan with no build step — how to confirm the card is actually doing the work, and what fits on the B580, B570, A770 and A750. The speed figures in it are upper limits worked out from memory bandwidth, not measurements: nobody has run these on Arc for this site yet. Every graphics card page now also links the setup guides written for that card\'s runtime or memory size — until now none of them linked a guide at all.',
+    zh: '新指南：在 Intel Arc 显卡上跑模型。内容包括两条路线 —— 用英特尔 SYCL 后端编译的 llama.cpp，以及无需编译、通过 Vulkan 使用 Arc 的 Ollama —— 如何确认显卡真的在干活，以及 B580、B570、A770、A750 各能装下什么。其中的速度数字是根据显存带宽推算的上限，不是实测：本站还没有人在 Arc 上跑过。另外，每个显卡页面现在都会链接适用于该卡运行时或显存容量的部署指南 —— 此前没有一个显卡页面链接任何指南。',
+  },
   {
     date: '2026-10-03',
     en: 'Intel Arc cards are now in the hardware list: the Arc B580 12G, B570 10G, A770 16G and A750 8G, with capacity and bandwidth from Intel\'s own specification pages. Each has its own page, and the calculator, the format wizard and the command builder all know them. The site recommends GGUF on Arc, run through llama.cpp\'s SYCL backend or Ollama\'s Vulkan backend. The command builder\'s native Linux build for llama.cpp also follows your card now: it used to print the NVIDIA (CUDA) build for everyone, which fails on an AMD card and is the wrong build on a CPU-only machine.',
