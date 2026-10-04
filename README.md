@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-04 (d) — Runtime versions re-checked
+
+From each project's GitHub tags/releases page, read as a verbatim list: llama.cpp **b11390**
+(was b11277), Ollama **v0.35.1** (was v0.35.0; **v0.40.0 is marked Pre-release and skipped**), vLLM
+**v0.30.0** (unchanged, still marked Latest), ExLlamaV3 **v1.5.4** (2026-10-03). ExLlamaV2 still
+v0.3.2 (2025-07-13). The releases-page summary claimed ExLlamaV2 was "not archived"; its README's
+first line says "This project is archived for now" — the README is the source, wording unchanged.
+
 ### 2026-10-04 (c) — RTX 5090 guide (26 guides)
 
 The last consumer card without a guide. `rtx5090-32gb-what-to-run` (preset `rtx5090` @32K) leads

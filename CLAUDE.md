@@ -971,6 +971,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-04 | **Runtime versions re-checked** — llama.cpp b11390, Ollama v0.35.1 (v0.40.0 pre-release skipped), vLLM v0.30.0, ExLlamaV3 v1.5.4; ExLlamaV2 README still says archived (a WebFetch summary said otherwise — read the README) |
 | 2026-10-04 | **RTX 5090 guide (26)** — 32 GB fits 73 vs 71 models at 4K; the gain is long context on 27B–32B and the bandwidth ceiling, said plainly; Blackwell needs CUDA 12.8+. Only datacentre rows now lack a guide |
 | 2026-10-04 | **12GB GPU guide (25)** — seven 12 GB CUDA cards had no guide; fit table from `calcVRAM` (14B: 4K comfortable, 8K tight, 16K out), roofline ceilings per card, 3 FAQs |
 | 2026-10-04 | **Intel Arc guide (24) + GPU pages link guides** — SYCL/Ollama-Vulkan guide from llama.cpp/Ollama docs, sizes from `calcVRAM`, speeds as roofline ceilings; GPU pages had linked no guide at all — `guidesForGpu()` reverses `gpuPreset` (64 of 78 rows) |

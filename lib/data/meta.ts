@@ -59,11 +59,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-09-30',
+  checkedAt: '2026-10-04',
   current: {
-    llamacpp: 'b11277',
+    llamacpp: 'b11390',
     vllm: 'v0.30.0',
-    ollama: 'v0.35.0',
+    ollama: 'v0.35.1',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -71,12 +71,17 @@ export const runtimeVersions = {
     exllama: 'v0.3.2 (stalled)',
   },
   note: {
-    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.5.3 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
-    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.5.3，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
+    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.5.4 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
+    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.5.4，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
   },
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-04',
+    en: 'Current runtime versions re-checked on the projects\' own release pages: llama.cpp b11390, Ollama v0.35.1, vLLM v0.30.0 (unchanged) and ExLlamaV3 v1.5.4. ExLlamaV2 is still at v0.3.2 from July 2025, and its README still says the project is archived.',
+    zh: '已在各项目自己的发布页上重新核对当前运行时版本：llama.cpp b11390、Ollama v0.35.1、vLLM v0.30.0（未变）、ExLlamaV3 v1.5.4。ExLlamaV2 仍停留在 2025 年 7 月的 v0.3.2，其 README 依然写明项目已归档。',
+  },
   {
     date: '2026-10-04',
     en: 'New guide for the RTX 5090, the one consumer card that had no guide. The honest finding is that 32GB fits only two more of this index\'s models than a 24GB card at short context; what it buys is long context on 27B–32B models and a higher speed ceiling. The guide shows the sizes at 8K to 128K, what a Blackwell card needs from the software stack, and how to check the model is really on the GPU.',
