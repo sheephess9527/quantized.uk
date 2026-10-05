@@ -23,6 +23,12 @@ export interface GPU {
   memType?: string;
   /** Set where the headline figure depends on a form factor the name omits. */
   bandwidthNote?: { en: string; zh: string };
+  /**
+   * `YYYY-MM-DD` this index picked the row up — from `git log`, never typed
+   * from memory. Feeds the homepage "Latest additions" beside new models.
+   * Rows older than the field (2026-10-02) simply omit it.
+   */
+  addedAt?: string;
 }
 
 export const gpuDatabase: GPU[] = [
@@ -43,7 +49,7 @@ export const gpuDatabase: GPU[] = [
   { id: 'rtx5060ti16', name: 'RTX 5060 Ti 16G',       vram: 16,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR7', },
   { id: 'rtx5060ti',   name: 'RTX 5060 Ti 8G',        vram: 8,   type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR7', },
   { id: 'rtx5060',     name: 'RTX 5060',              vram: 8,   type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR7', },
-  { id: 'rtx5050',     name: 'RTX 5050',              vram: 8,   type: 'nvidia-consumer', icon: '🟢', memType: 'GDDR6', },
+  { id: 'rtx5050',     name: 'RTX 5050',              vram: 8,   type: 'nvidia-consumer', icon: '🟢', memType: 'GDDR6', addedAt: '2026-10-02', },
   { id: 'rtx4090',     name: 'RTX 4090',             vram: 24,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 1008, memType: 'GDDR6X', },
   { id: 'rtx4080s',    name: 'RTX 4080 Super',        vram: 16,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 736, memType: 'GDDR6X', },
   { id: 'rtx4070tis',  name: 'RTX 4070 Ti Super',     vram: 16,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 672, memType: 'GDDR6X', },
@@ -59,7 +65,7 @@ export const gpuDatabase: GPU[] = [
   { id: 'rtx3080',     name: 'RTX 3080 10G',          vram: 10,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 760, memType: 'GDDR6X', },
   { id: 'rtx3070ti',   name: 'RTX 3070 Ti',           vram: 8,   type: 'nvidia-consumer', icon: '🟢', bandwidth: 608, memType: 'GDDR6X', },
   { id: 'rtx3070',     name: 'RTX 3070',              vram: 8,   type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR6', },
-  { id: 'rtx3060',     name: 'RTX 3060 12G',          vram: 12,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 360, memType: 'GDDR6', },
+  { id: 'rtx3060',     name: 'RTX 3060 12G',          vram: 12,  type: 'nvidia-consumer', icon: '🟢', bandwidth: 360, memType: 'GDDR6', addedAt: '2026-10-02', },
   { id: 'a100-80',     name: 'A100 80G',              vram: 80,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 1935, memType: 'HBM2e', bandwidthNote: { en: 'PCIe figure. The SXM module is 2,039 GB/s.', zh: 'PCIe 版数据。SXM 模组为 2,039 GB/s。' }, },
   { id: 'a100-40',     name: 'A100 40G',              vram: 40,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 1555, memType: 'HBM2', bandwidthNote: { en: 'PCIe figure. The SXM module is 1,555 GB/s as well.', zh: 'PCIe 版数据，SXM 模组同为 1,555 GB/s。' }, },
   { id: 'l40s',        name: 'L40S 48G',              vram: 48,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 864, memType: 'GDDR6', },
@@ -75,8 +81,8 @@ export const gpuDatabase: GPU[] = [
    * carries macOS's ~75% wired-memory cap, which has nothing to do with
    * DGX OS. `tightCeiling()` instead stops the 'tight' band at 100%.
    */
-  { id: 'dgx-spark-128', name: 'DGX Spark 128G',      vram: 128, type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: 'GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, },
-  { id: 'dgx-spark-64', name: 'DGX Spark 64G',        vram: 64,  type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'Same 273 GB/s as the 128 GB model. One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: '带宽与 128 GB 版相同，均为 273 GB/s。GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, },
+  { id: 'dgx-spark-128', name: 'DGX Spark 128G',      vram: 128, type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: 'GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, addedAt: '2026-10-05', },
+  { id: 'dgx-spark-64', name: 'DGX Spark 64G',        vram: 64,  type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'Same 273 GB/s as the 128 GB model. One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: '带宽与 128 GB 版相同，均为 273 GB/s。GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, addedAt: '2026-10-05', },
   /*
    * Pascal-generation datacentre cards (2016), still traded second-hand for
    * their VRAM-per-dollar — a common budget home-lab pick, especially in the
@@ -104,24 +110,24 @@ export const gpuDatabase: GPU[] = [
   { id: 'm3-8',        name: 'Mac M3 8G',             vram: 8,   type: 'apple', isUnified: true, icon: '🍎', bandwidth: 100, memType: 'Unified LPDDR5', },
   // Apple's own spec pages and newsroom (2026-10-02): M4 16/24GB at 120 GB/s, M2 at 100 GB/s,
   // M1 Max up to 64GB at 400 GB/s. memType omitted: the sources read did not state it.
-  { id: 'm4-24',       name: 'Mac M4 24G',            vram: 24,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 120, },
-  { id: 'm4-16',       name: 'Mac M4 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 120, },
-  { id: 'm2-16',       name: 'Mac M2 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 100, },
-  { id: 'm1-max-64',   name: 'Mac M1 Max 64G',        vram: 64,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 400, },
-  { id: 'm1-16',       name: 'Mac M1 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 68, bandwidthNote: { en: 'Derived from Apple\'s statements that the M2 (100 GB/s) is 50% faster and the M1 Max (400 GB/s) nearly 6× faster; Apple does not list the M1 figure directly.', zh: '由苹果的两处表述推算：M2（100 GB/s）比它快 50%，M1 Max（400 GB/s）是它的近 6 倍；苹果没有直接列出 M1 的数字。' }, },
-  { id: 'm1-8',        name: 'Mac M1 8G',             vram: 8,   type: 'apple', isUnified: true, icon: '🍎', bandwidth: 68, bandwidthNote: { en: 'Derived from Apple\'s statements that the M2 (100 GB/s) is 50% faster and the M1 Max (400 GB/s) nearly 6× faster; Apple does not list the M1 figure directly.', zh: '由苹果的两处表述推算：M2（100 GB/s）比它快 50%，M1 Max（400 GB/s）是它的近 6 倍；苹果没有直接列出 M1 的数字。' }, },
+  { id: 'm4-24',       name: 'Mac M4 24G',            vram: 24,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 120, addedAt: '2026-10-02', },
+  { id: 'm4-16',       name: 'Mac M4 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 120, addedAt: '2026-10-02', },
+  { id: 'm2-16',       name: 'Mac M2 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 100, addedAt: '2026-10-02', },
+  { id: 'm1-max-64',   name: 'Mac M1 Max 64G',        vram: 64,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 400, addedAt: '2026-10-02', },
+  { id: 'm1-16',       name: 'Mac M1 16G',            vram: 16,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 68, bandwidthNote: { en: 'Derived from Apple\'s statements that the M2 (100 GB/s) is 50% faster and the M1 Max (400 GB/s) nearly 6× faster; Apple does not list the M1 figure directly.', zh: '由苹果的两处表述推算：M2（100 GB/s）比它快 50%，M1 Max（400 GB/s）是它的近 6 倍；苹果没有直接列出 M1 的数字。' }, addedAt: '2026-10-02', },
+  { id: 'm1-8',        name: 'Mac M1 8G',             vram: 8,   type: 'apple', isUnified: true, icon: '🍎', bandwidth: 68, bandwidthNote: { en: 'Derived from Apple\'s statements that the M2 (100 GB/s) is 50% faster and the M1 Max (400 GB/s) nearly 6× faster; Apple does not list the M1 figure directly.', zh: '由苹果的两处表述推算：M2（100 GB/s）比它快 50%，M1 Max（400 GB/s）是它的近 6 倍；苹果没有直接列出 M1 的数字。' }, addedAt: '2026-10-02', },
   { id: 'm2-ultra',    name: 'Mac M2 Ultra 192G',     vram: 192, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 800, memType: 'Unified LPDDR5', },
   { id: 'm2-max-96',   name: 'Mac M2 Max 96G',        vram: 96,  type: 'apple', isUnified: true, icon: '🍎', bandwidth: 400, memType: 'Unified LPDDR5', },
   { id: 'rx9070xt',    name: 'Radeon RX 9070 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 640, memType: 'GDDR6', },
   { id: 'rx9070',      name: 'Radeon RX 9070',        vram: 16,  type: 'amd', icon: '🔴', bandwidth: 640, memType: 'GDDR6', },
-  { id: 'rx9060xt16',  name: 'Radeon RX 9060 XT 16G', vram: 16,  type: 'amd', icon: '🔴', bandwidth: 320, memType: 'GDDR6', },
-  { id: 'rx9060xt8',   name: 'Radeon RX 9060 XT 8G',  vram: 8,   type: 'amd', icon: '🔴', bandwidth: 320, memType: 'GDDR6', },
+  { id: 'rx9060xt16',  name: 'Radeon RX 9060 XT 16G', vram: 16,  type: 'amd', icon: '🔴', bandwidth: 320, memType: 'GDDR6', addedAt: '2026-10-02', },
+  { id: 'rx9060xt8',   name: 'Radeon RX 9060 XT 8G',  vram: 8,   type: 'amd', icon: '🔴', bandwidth: 320, memType: 'GDDR6', addedAt: '2026-10-02', },
   { id: 'rx7900xtx',   name: 'Radeon RX 7900 XTX',    vram: 24,  type: 'amd', icon: '🔴', bandwidth: 960, memType: 'GDDR6', },
   { id: 'rx7900xt',    name: 'Radeon RX 7900 XT',     vram: 20,  type: 'amd', icon: '🔴', bandwidth: 800, memType: 'GDDR6', },
   { id: 'rx7900gre',   name: 'Radeon RX 7900 GRE',    vram: 16,  type: 'amd', icon: '🔴', bandwidth: 576, memType: 'GDDR6', },
   { id: 'rx7800xt',    name: 'Radeon RX 7800 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 624, memType: 'GDDR6', },
   { id: 'rx7700xt',    name: 'Radeon RX 7700 XT',     vram: 12,  type: 'amd', icon: '🔴', bandwidth: 432, memType: 'GDDR6', },
-  { id: 'rx7600xt',    name: 'Radeon RX 7600 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 288, memType: 'GDDR6', },
+  { id: 'rx7600xt',    name: 'Radeon RX 7600 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 288, memType: 'GDDR6', addedAt: '2026-10-02', },
   { id: 'rx6900xt',    name: 'Radeon RX 6900 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 512, memType: 'GDDR6', },
   { id: 'rx6800xt',    name: 'Radeon RX 6800 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 512, memType: 'GDDR6', },
   { id: 'rx6700xt',    name: 'Radeon RX 6700 XT',     vram: 12,  type: 'amd', icon: '🔴', bandwidth: 384, memType: 'GDDR6', },
@@ -130,10 +136,10 @@ export const gpuDatabase: GPU[] = [
   // Intel Arc — capacity, bandwidth and memory type from intel.com's product
   // specification pages (checked 2026-10-03). The A770 also shipped as an 8 GB
   // card, hence the size in the name.
-  { id: 'arc-b580',    name: 'Arc B580 12G',          vram: 12,  type: 'intel', icon: '🔵', bandwidth: 456, memType: 'GDDR6', },
-  { id: 'arc-b570',    name: 'Arc B570 10G',          vram: 10,  type: 'intel', icon: '🔵', bandwidth: 380, memType: 'GDDR6', },
-  { id: 'arc-a770-16', name: 'Arc A770 16G',          vram: 16,  type: 'intel', icon: '🔵', bandwidth: 560, memType: 'GDDR6', },
-  { id: 'arc-a750',    name: 'Arc A750 8G',           vram: 8,   type: 'intel', icon: '🔵', bandwidth: 512, memType: 'GDDR6', },
+  { id: 'arc-b580',    name: 'Arc B580 12G',          vram: 12,  type: 'intel', icon: '🔵', bandwidth: 456, memType: 'GDDR6', addedAt: '2026-10-03', },
+  { id: 'arc-b570',    name: 'Arc B570 10G',          vram: 10,  type: 'intel', icon: '🔵', bandwidth: 380, memType: 'GDDR6', addedAt: '2026-10-03', },
+  { id: 'arc-a770-16', name: 'Arc A770 16G',          vram: 16,  type: 'intel', icon: '🔵', bandwidth: 560, memType: 'GDDR6', addedAt: '2026-10-03', },
+  { id: 'arc-a750',    name: 'Arc A750 8G',           vram: 8,   type: 'intel', icon: '🔵', bandwidth: 512, memType: 'GDDR6', addedAt: '2026-10-03', },
   { id: 'cpu-128',     name: '128 GB RAM (CPU)',       vram: 128, type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-64',      name: '64 GB RAM (CPU)',        vram: 64,  type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-32',      name: '32 GB RAM (CPU)',        vram: 32,  type: 'cpu', isCPU: true,      icon: '💻' },

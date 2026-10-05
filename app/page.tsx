@@ -50,9 +50,10 @@ export default function HomePage() {
 
           1. what is this, and what do I put in     — HeroSection
           2. what fits my card                      — HomeMatch
+          2b. what is new since I last looked       — WeeklyUpdates (models + hardware)
           3. I would rather just click something    — PopularStarts + JobPaths
           4. why should I believe these numbers     — StatsBar + MeasuredCases
-          5. is this still maintained               — WeeklyUpdates + TodayBoard
+          5. is this still maintained               — TodayBoard
           5b. the thing I actually came to ask     — HomeFaq
           6. something is wrong, who do I tell      — MaintainerNote
 
@@ -67,15 +68,19 @@ export default function HomePage() {
       <StatsBar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 space-y-6 pb-16">
+        {/* What is new comes straight after the picker (2026-10-05): it sat
+            fifth, several screens down on a phone, while being the reason a
+            returning reader comes back. */}
+        <div className="flex justify-end">
+          <DataFreshness />
+        </div>
+        <WeeklyUpdates />
+
         <PopularStarts />
         <JobPaths />
 
         <MeasuredCases />
 
-        <div className="flex justify-end">
-          <DataFreshness />
-        </div>
-        <WeeklyUpdates />
         <TodayBoard />
 
         <HomeFaq />

@@ -748,6 +748,10 @@ pair with a data-chosen redirect target, and the surviving page answers the merg
 own section — the query is real even when the comparison is not. Both are derived, so a model
 shipping both formats brings the page back with no code change.
 
+**A new GPU row carries `addedAt`** (2026-10-05, the day it ships, `YYYY-MM-DD`) — it is what puts new
+hardware into the homepage "Latest additions" beside new models (`latestEntries()`); a row without it
+never reaches the homepage. Back-fill only from `git log -S`, never from memory.
+
 **Adding a GPU costs one line and needs only its VRAM** — but a verified `bandwidth` is what makes
 its page differ from its same-capacity siblings. `GPU` carries `{ id, name, vram, type, bandwidth?, memType? }`
 and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —
@@ -979,6 +983,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-05 | **Homepage: latest additions under the picker, hardware included** — was fifth and models-only; `GPU.addedAt` + `latestEntries()` (same-day same-type rows collapse) |
 | 2026-10-05 | **DGX Spark 64G/128G (76) + guide (27)** — nvidia.com specs (273 GB/s both); new `nvidia-unified` type, tight band capped at 100% (no host RAM) so GPT-OSS 120B @64G is red; card-vs-card FAQ claimed "same models" whatever the counts (latent, all pages) |
 | 2026-10-05 | **+1 model (90): OLMo 3 7B** — OLMo-core arch (32 KV heads, 24 SWA + 8 full), 64K via YaRN, llama.cpp `olmo2` + swa pattern 4 → window 4608; OLMo 2 7B superseded (4K → 64K, same size); guide counts recomputed per card, not just the total |
 | 2026-10-04 | **Runtime versions re-checked** — llama.cpp b11390, Ollama v0.35.1 (v0.40.0 pre-release skipped), vLLM v0.30.0, ExLlamaV3 v1.5.4; ExLlamaV2 README still says archived (a WebFetch summary said otherwise — read the README) |

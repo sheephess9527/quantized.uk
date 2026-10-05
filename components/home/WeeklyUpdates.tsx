@@ -5,7 +5,9 @@ import { ArrowRight, Rss, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { isRecentModel, latestAdditions } from '@/lib/utils/model-meta';
+import { isRecentModel } from '@/lib/utils/model-meta';
+import { latestEntries, isRecentDate } from '@/lib/utils/latest-additions';
+import { gpuSlug } from '@/lib/utils/gpu-page';
 
 export default function WeeklyUpdates() {
   const { t, lang } = useLanguage();
@@ -13,7 +15,9 @@ export default function WeeklyUpdates() {
   // Newest first, and never empty: the 45-day window alone left two models
   // here, in file order, and would have shown nothing a month later under a
   // heading that still said "this week". The NEW badge keeps the window.
-  const recent = latestAdditions(models, 6);
+  // Hardware rides along since 2026-10-05: a new machine had no way onto the
+  // homepage, which is where a reader checking "did they add X yet" looks.
+  const recent = latestEntries(models, 6);
 
   return (
     <section className="glass rounded-2xl p-5 sm:p-6">
@@ -50,24 +54,43 @@ export default function WeeklyUpdates() {
 
       {recent.length > 0 && (
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
-          {recent.map(m => (
-            <li key={m.id}>
+          {recent.map(e => e.kind === 'model' ? (
+            <li key={e.model.id}>
               <Link
-                href={`/quant-hub/${m.id}/`}
+                href={`/quant-hub/${e.model.id}/`}
                 className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
               >
-                {isRecentModel(m) && (
+                {isRecentModel(e.model) && (
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
                     {t.hub.model.newBadge}
                   </span>
                 )}
-                <span className="text-sm text-slate-200 font-medium">{m.name}</span>
+                <span className="text-sm text-slate-200 font-medium">{e.model.name}</span>
                 <span className="block text-xs text-slate-600 font-mono mt-0.5">
                   {/* "added", not a bare date. `addedAt` is when this index
                       picked the model up, but printed next to a NEW badge a
                       bare date reads as the model's release date — and several
                       of these were released a year before we indexed them. */}
-                  {m.paramLabel} · {t.hub.model.addedOn.replace('{date}', m.addedAt ?? '')}
+                  {e.model.paramLabel} · {t.hub.model.addedOn.replace('{date}', e.date)}
+                </span>
+              </Link>
+            </li>
+          ) : (
+            <li key={`hw-${e.gpus[0].id}`}>
+              {/* A same-day batch links its first row; that page names and
+                  links its same-budget siblings. */}
+              <Link
+                href={`/gpu/${gpuSlug(e.gpus[0])}/`}
+                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+              >
+                {isRecentDate(e.date) && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
+                    {t.hub.model.newBadge}
+                  </span>
+                )}
+                <span className="text-sm text-slate-200 font-medium">{e.gpus.map(g => g.name).join(' · ')}</span>
+                <span className="block text-xs text-slate-600 font-mono mt-0.5">
+                  {w.hardware} · {Array.from(new Set(e.gpus.map(g => g.vram))).join(' / ')} GB · {t.hub.model.addedOn.replace('{date}', e.date)}
                 </span>
               </Link>
             </li>

@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    en: 'New models and new hardware now appear together near the top of the homepage. The "Latest additions" list sat several screens down and only listed models, so newly added machines such as the DGX Spark had no way onto the front page. It now sits right below the "what fits your card" picker.',
+    zh: '新模型和新硬件现在一起显示在首页靠上的位置。「最近收录」原来要往下翻好几屏才能看到，而且只列模型，像 DGX Spark 这样新加的硬件在首页上没有入口。现在它就放在「你的卡能跑什么」选择器下方。',
+  },
+  {
+    date: '2026-10-05',
     en: 'NVIDIA DGX Spark added, in its 64GB and 128GB versions. Both have the same chip and the same 273 GB/s memory, shared by the CPU, the GPU and the operating system, so the site judges fits against the whole pool and treats anything larger than it as not loading. At 4K context the 64GB model fits 82 of 90 models comfortably and the 128GB model 84. GPT-OSS 120B does not fit the 64GB model: its native build is about 66 GB. A new guide covers which version to buy, what each one runs and how to set it up. Card-versus-card answers no longer say two machines hold the same models when their counts differ.',
     zh: '新增 NVIDIA DGX Spark，包括 64GB 和 128GB 两个版本。两者芯片相同，内存带宽同为 273 GB/s，内存由 CPU、GPU 和操作系统共用，所以本站按整块内存判断能否装下，超出的一律视为无法加载。在 4K 上下文下，64GB 版可宽裕运行 90 个模型中的 82 个，128GB 版为 84 个。64GB 版装不下 GPT-OSS 120B：它的原生版本约 66 GB。新指南讲清楚该买哪一版、各能跑什么以及如何配置。两台设备的对比问答在装得下的模型数量不同时，不再声称它们装得下相同的模型。',
   },

@@ -65,13 +65,7 @@ export function isRecentModel(m: QuantModel, now = RECENCY_ANCHOR): boolean {
   return now - t <= RECENT_DAYS * 24 * 60 * 60 * 1000;
 }
 
-/** Newest additions first, by `addedAt`; models without one are excluded. */
-export function latestAdditions(list: QuantModel[], n: number): QuantModel[] {
-  return list
-    .filter(m => m.addedAt && !Number.isNaN(Date.parse(m.addedAt)))
-    .sort((a, b) => Date.parse(b.addedAt!) - Date.parse(a.addedAt!))
-    .slice(0, n);
-}
+/* `latestAdditions` moved to `lib/utils/latest-additions.ts` (models + hardware). */
 
 export function getModelById(models: QuantModel[], id: string | undefined): QuantModel | undefined {
   if (!id) return undefined;

@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-05 (c) — Homepage: latest additions moved up, hardware included
+
+`WeeklyUpdates` moved from fifth to directly under `HomeMatch`/`StatsBar` (before `PopularStarts`).
+It now lists models **and** GPU rows via `latestEntries()` (`lib/utils/latest-additions.ts`, replaces
+`latestAdditions` in `model-meta.ts`): `GPU.addedAt` is new and optional, filled for the 17 rows added
+2026-10-02…05 from `git log -S` on `gpus.ts` (older rows omit it). Same-day rows of one `type` collapse
+into one entry linking the first row's page; on a date tie hardware sorts first. NEW badge uses the
+same `RECENCY_ANCHOR` / 45-day window as models. Current six: DGX Spark ×2, OLMo 3 7B, Arc ×4,
+SmolLM3, ERNIE 4.5, RTX 5050 · 3060.
+
 ### 2026-10-05 (b) — NVIDIA DGX Spark 64G/128G (76 GPUs/machines) + guide (27 guides)
 
 New GPU type `'nvidia-unified'` (backend `cuda`), rows `dgx-spark-128` / `dgx-spark-64`. Sources:

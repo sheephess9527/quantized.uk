@@ -64,7 +64,8 @@ export const translations = {
       },
       weekly: {
         title: 'Latest additions',
-        subtitle: 'The newest models in the index · data last updated',
+        subtitle: 'The newest models and hardware in the index · data last updated',
+        hardware: 'Hardware',
         viewHub: 'Browse recent models',
         viewChangelog: 'Full changelog',
         rss: 'RSS',
@@ -1030,7 +1031,8 @@ export const translations = {
       },
       weekly: {
         title: '最近收录',
-        subtitle: '索引里最新加入的模型 · 数据更新于',
+        subtitle: '索引里最新加入的模型和硬件 · 数据更新于',
+        hardware: '硬件',
         viewHub: '浏览最近模型',
         viewChangelog: '完整更新日志',
         rss: 'RSS',
