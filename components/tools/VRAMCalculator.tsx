@@ -9,7 +9,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
@@ -609,7 +609,7 @@ export default function VRAMCalculator() {
                 {profileGpu && (() => {
                   const capacity = usableCapacityGB(profileGpu);
                   const formatOk = !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
-                  const v = getVerdict(result.totalGB, capacity);
+                  const v = getVerdict(result.totalGB, capacity, tightCeiling(profileGpu));
                   return (
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
                       <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -654,7 +654,7 @@ export default function VRAMCalculator() {
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
                   {gpuDatabase.map(gpu => {
                     const formatOk = !selectedQuantObj || formatAllowed(gpu, selectedQuantObj.format);
-                    const v = formatOk ? getVerdict(result.totalGB, usableCapacityGB(gpu)) : 'red';
+                    const v = formatOk ? getVerdict(result.totalGB, usableCapacityGB(gpu), tightCeiling(gpu)) : 'red';
                     const cfg = verdictConfig[v];
                     const pct = formatOk ? Math.min(100, (result.totalGB / usableCapacityGB(gpu)) * 100) : 100;
                     return (

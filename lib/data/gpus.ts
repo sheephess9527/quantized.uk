@@ -2,7 +2,7 @@ export interface GPU {
   id: string;
   name: string;
   vram: number;
-  type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'intel' | 'cpu';
+  type: 'nvidia-consumer' | 'nvidia-pro' | 'nvidia-unified' | 'apple' | 'amd' | 'intel' | 'cpu';
   isUnified?: boolean;
   isCPU?: boolean;
   icon: string;
@@ -65,6 +65,18 @@ export const gpuDatabase: GPU[] = [
   { id: 'l40s',        name: 'L40S 48G',              vram: 48,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 864, memType: 'GDDR6', },
   { id: 'a40',         name: 'A40 48G',               vram: 48,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 696, memType: 'GDDR6', },
   { id: 'h100-80',     name: 'H100 80G',              vram: 80,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 2000, memType: 'HBM2e', bandwidthNote: { en: 'PCIe figure. The SXM5 module carries HBM3 at 3,350 GB/s.', zh: 'PCIe 版数据。SXM5 模组为 HBM3，3,350 GB/s。' }, },
+  /*
+   * NVIDIA DGX Spark (GB10 Grace Blackwell), a desktop machine rather than a
+   * card: 128 GB of unified LPDDR5X at 273 GB/s on a 256-bit interface
+   * (nvidia.com product page). The 64 GB model was announced 2026-10-02 for
+   * sale from 2026-10-23 at $4,999 through six OEMs (nvidia.com); press
+   * coverage (The Register, HotHardware) reports the same 273 GB/s, the bus
+   * fully populated with lower-density packages. Not `isUnified`: that flag
+   * carries macOS's ~75% wired-memory cap, which has nothing to do with
+   * DGX OS. `tightCeiling()` instead stops the 'tight' band at 100%.
+   */
+  { id: 'dgx-spark-128', name: 'DGX Spark 128G',      vram: 128, type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: 'GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, },
+  { id: 'dgx-spark-64', name: 'DGX Spark 64G',        vram: 64,  type: 'nvidia-unified', icon: '🟩', bandwidth: 273, memType: 'Unified LPDDR5X', bandwidthNote: { en: 'Same 273 GB/s as the 128 GB model. One pool shared by the GB10\'s CPU and GPU and by DGX OS itself. NVIDIA publishes no fixed GPU share, so fits are judged against the whole pool — and nothing larger than it can load, because there is no separate system RAM to spill into.', zh: '带宽与 128 GB 版相同，均为 273 GB/s。GB10 的 CPU、GPU 和 DGX OS 本身共用这一块内存。NVIDIA 没有公布 GPU 可用的固定比例，所以本站按整块内存判定能否装下——超出它的模型一律装不下，因为没有另外的系统内存可以溢出。' }, },
   /*
    * Pascal-generation datacentre cards (2016), still traded second-hand for
    * their VRAM-per-dollar — a common budget home-lab pick, especially in the

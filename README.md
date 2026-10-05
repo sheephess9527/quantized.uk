@@ -419,6 +419,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-05 (b) — NVIDIA DGX Spark 64G/128G (76 GPUs/machines) + guide (27 guides)
+
+New GPU type `'nvidia-unified'` (backend `cuda`), rows `dgx-spark-128` / `dgx-spark-64`. Sources:
+nvidia.com product page (128 GB unified LPDDR5X, 273 GB/s, 256-bit; 20-core Arm CPU) and nvidia.com
+news (64 GB at $4,999 from Acer/ASUS/Dell/GIGABYTE/HP/MSI, on sale 2026-10-23); the 64 GB model's
+identical 273 GB/s from The Register / HotHardware (blogs.nvidia.com, docs.nvidia.com and the
+forums are blocked here). **Not `isUnified`** — that flag applies macOS's ~75% wired cap, which has
+no counterpart on DGX OS, and NVIDIA publishes no GPU-usable fraction (its known-issues page says
+`cudaMemGetInfo` under-reports allocatable memory, and `nvidia-smi` shows no memory-usage figure on
+the iGPU). So capacity is the nameplate, and the change is at the other end: `tightCeiling(gpu)`
+(`gpu-page.ts`) ends the 'tight' band at **100%** for this type instead of 105%, because there is no
+host RAM behind the pool to spill into. `getVerdict` gained an optional third argument; every call
+site that distinguishes yellow from red passes it. Effect: GPT-OSS 120B MXFP4 @4K (66.4 GB) is red on
+the 64 GB Spark (would have been "tight" at 104%), matching the press-reported failure.
+Fits @4K: 64G 82 comfortable / 83 tight, 128G 84 / 85 (RTX 5090: 74).
+GPU-page FAQ: the "can it run the next model up" yellow answer said "loads with nothing else
+running" — not on offer when the OS shares the pool; the pooled variant says "not reliably" and names
+the native build when it is over the pool. **Latent bug fixed for every page:** the
+card-versus-card FAQ opened "They hold the same models" whatever the two counts were (Spark 64 vs
+M1 Max 64 = 82 vs 76); it now says so only when the counts match and names the cause (macOS cap, or
+formats). Guide `dgx-spark-64gb-vs-128gb` (preset `dgx-spark-64` @8K; `guidesForGpu` scores the
+other Spark 6, so both pages link it): table from `calcVRAM`, 70B roofline ~7 tok/s, setup facts from
+Ollama `docs/gpu.mdx` (GB10 = CC 12.1), llama.cpp `ggml-cuda/CMakeLists.txt` (`121a-real` only with
+CUDA ≥ 12.9) and `docs/docker.md` (`:server-cuda13` is arm64; `:server-cuda` is CUDA 12.8.1), and the
+point that `--n-cpu-moe` saves nothing on a single pool. Not done: the CLI generator still emits
+`:server-cuda` for every CUDA backend — it runs on GB10 via PTX JIT but without native kernels; making
+the image follow the GPU needs the CLI to take a GPU, not a backend. `homePicks` unchanged for every
+existing GPU. Pages: 229 EN + 228 ZH.
+
 ### 2026-10-05 — +1 model (90): OLMo 3 7B; OLMo 2 7B superseded
 
 Row in `models-extra-12.ts`. Sources: AllenAI's OLMo-core `olmo3_7B` (= `olmo2_7B` = llama2_7B

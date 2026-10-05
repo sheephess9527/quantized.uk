@@ -8,9 +8,10 @@ import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { fitsOnGpu, gpuSlug } from '@/lib/utils/gpu-page';
 
-const TYPE_ORDER: GPU['type'][] = ['nvidia-consumer', 'nvidia-pro', 'amd', 'intel', 'apple', 'cpu'];
+const TYPE_ORDER: GPU['type'][] = ['nvidia-consumer', 'nvidia-unified', 'nvidia-pro', 'amd', 'intel', 'apple', 'cpu'];
 const TYPE_LABEL: Record<GPU['type'], { en: string; zh: string }> = {
   'nvidia-consumer': { en: 'NVIDIA consumer', zh: 'NVIDIA 消费级' },
+  'nvidia-unified': { en: 'NVIDIA DGX Spark (unified memory)', zh: 'NVIDIA DGX Spark（统一内存）' },
   'nvidia-pro': { en: 'NVIDIA data centre', zh: 'NVIDIA 数据中心' },
   amd: { en: 'AMD Radeon', zh: 'AMD Radeon' },
   intel: { en: 'Intel Arc', zh: 'Intel Arc' },

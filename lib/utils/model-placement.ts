@@ -3,7 +3,7 @@ import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { referenceQuant } from '@/lib/utils/quality';
 import { bySmallestCard } from '@/lib/utils/model-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { gpuSlug, GPU_PAGE_CONTEXT, formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
+import { gpuSlug, GPU_PAGE_CONTEXT, formatAllowed, usableCapacityGB, tightCeiling } from '@/lib/utils/gpu-page';
 import { BEST_TIERS, bestPage } from '@/lib/utils/best-page';
 import { formatById } from '@/lib/utils/format-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -84,7 +84,7 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
       gpu,
       totalGB,
       headroomGB: Math.round((capacity - totalGB) * 10) / 10,
-      verdict: getVerdict(totalGB, capacity),
+      verdict: getVerdict(totalGB, capacity, tightCeiling(gpu)),
     };
   });
 

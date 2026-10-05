@@ -2,7 +2,7 @@ import { models, QuantModel, QuantVariant } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
-import { usableCapacityGB, formatAllowed } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
 
@@ -43,7 +43,7 @@ export function getRecommendations(
         contextLength: contextLen,
         batchSize,
       });
-      const verdict = getVerdict(totalGB, capacity);
+      const verdict = getVerdict(totalGB, capacity, tightCeiling(gpu));
       if (verdict === 'red') continue;
       if (verdict === 'yellow' && !includeYellow) continue;
       results.push({ model, quant, totalGB, verdict });

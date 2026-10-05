@@ -117,9 +117,14 @@ function round(n: number, decimals = 2) {
   return Math.round(n * 10 ** decimals) / 10 ** decimals;
 }
 
-export function getVerdict(totalGB: number, gpuVram: number): 'green' | 'yellow' | 'red' {
+/**
+ * `tightCeiling` is where 'tight' ends. 1.05 assumes a discrete card with host
+ * RAM behind it to absorb a small overrun; a machine whose only memory is the
+ * pool being judged passes 1.0 (see `tightCeiling()` in `gpu-page.ts`).
+ */
+export function getVerdict(totalGB: number, gpuVram: number, tightCeiling = 1.05): 'green' | 'yellow' | 'red' {
   const ratio = totalGB / gpuVram;
   if (ratio <= 0.88) return 'green';
-  if (ratio <= 1.05) return 'yellow';
+  if (ratio <= tightCeiling) return 'yellow';
   return 'red';
 }

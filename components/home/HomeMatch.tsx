@@ -34,6 +34,7 @@ const GROUPS: { type: GPU['type']; label: string }[] = [
   { type: 'amd', label: 'AMD Radeon' },
   { type: 'intel', label: 'Intel Arc' },
   { type: 'apple', label: 'Apple Silicon' },
+  { type: 'nvidia-unified', label: 'NVIDIA DGX Spark' },
   { type: 'nvidia-pro', label: 'NVIDIA data centre' },
   { type: 'cpu', label: 'CPU / system RAM' },
 ];

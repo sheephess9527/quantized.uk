@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-03):**
+**Live snapshot (2026-10-05):**
 
 | Surface | Notes |
 |--------|--------|
 | Models | **90** in index (`models-extra` … `models-extra-12`) |
-| Cookbook | **26** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**74** GPUs/Macs + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 451 pages (226 EN + 225 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**76** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 457 pages (229 EN + 228 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -594,6 +594,14 @@ ROCm on RX 7600–7900 with a ROCm 7 driver, Vulkan (default-on) for the rest in
 5.1 aliases `curl` to `Invoke-WebRequest`; use `Invoke-RestMethod` or `curl.exe`. Nor `^` line continuations (cmd only; PowerShell's is a
 backtick) — when a block must work in both, write the command on one line.
 
+**DGX Spark is `type: 'nvidia-unified'` (backend `cuda`), never `isUnified`** (2026-10-05): `isUnified`
+means macOS's ~75% wired cap, which DGX OS does not have and NVIDIA gives no fraction for. Capacity is
+the nameplate; what changes is that nothing past **100%** loads — CPU, GPU and OS share the one pool,
+there is no host RAM to spill into — via `tightCeiling(gpu)`. Any new `getVerdict` call that can
+return yellow must pass `tightCeiling(gpu)` as its third argument. GB10 is arm64 and CC 12.1: llama.cpp
+needs CUDA ≥ 12.9 for native kernels (`:server-cuda13`, not `:server-cuda`), and `--n-cpu-moe` saves
+nothing there.
+
 **Intel Arc is `type: 'intel'` / backend `'sycl'`, GGUF only** (2026-10-03): llama.cpp SYCL lists A770/A750/B580
 as verified; Ollama runs Arc via Vulkan; vLLM XPU's quantized-format coverage on consumer Arc is unchecked,
 so `ALLOWED_FORMATS.sycl` stays `['GGUF']` until someone reads vLLM's XPU source. Intel containers pass
@@ -971,6 +979,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-05 | **DGX Spark 64G/128G (76) + guide (27)** — nvidia.com specs (273 GB/s both); new `nvidia-unified` type, tight band capped at 100% (no host RAM) so GPT-OSS 120B @64G is red; card-vs-card FAQ claimed "same models" whatever the counts (latent, all pages) |
 | 2026-10-05 | **+1 model (90): OLMo 3 7B** — OLMo-core arch (32 KV heads, 24 SWA + 8 full), 64K via YaRN, llama.cpp `olmo2` + swa pattern 4 → window 4608; OLMo 2 7B superseded (4K → 64K, same size); guide counts recomputed per card, not just the total |
 | 2026-10-04 | **Runtime versions re-checked** — llama.cpp b11390, Ollama v0.35.1 (v0.40.0 pre-release skipped), vLLM v0.30.0, ExLlamaV3 v1.5.4; ExLlamaV2 README still says archived (a WebFetch summary said otherwise — read the README) |
 | 2026-10-04 | **RTX 5090 guide (26)** — 32 GB fits 73 vs 71 models at 4K; the gain is long context on 27B–32B and the bandwidth ceiling, said plainly; Blackwell needs CUDA 12.8+. Only datacentre rows now lack a guide |

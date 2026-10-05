@@ -915,4 +915,99 @@ export const extraArticles2: Article[] = [
       },
     ],
   },
+  {
+    id: 'dgx-spark-64gb-vs-128gb',
+    gpuPreset: { gpuId: 'dgx-spark-64', ctx: 8192 },
+    relatedModelIds: ['gpt-oss-120b', 'gpt-oss-20b', 'llama-3.3-70b', 'glm-4.5-air'],
+    title: 'DGX Spark 64GB vs 128GB: What Each One Runs',
+    titleZh: 'DGX Spark 64GB 与 128GB：各自能跑什么',
+    description: 'Which models fit the 64GB and 128GB DGX Spark, from the calculator: GPT-OSS 120B needs the 128GB model, 70B dense fits both, and 273 GB/s sets the speed. Setup for Ollama and llama.cpp.',
+    descriptionZh: '64GB 和 128GB 两款 DGX Spark 各能装下哪些模型（数字来自计算器）：GPT-OSS 120B 需要 128GB 版，70B 稠密模型两款都能装，速度由 273 GB/s 决定。附 Ollama 与 llama.cpp 配置。',
+    category: 'edge',
+    difficulty: 'intermediate',
+    tags: ['DGX Spark', 'GB10', 'unified memory', '64GB', '128GB', 'GPT-OSS', 'Ollama', 'llama.cpp'],
+    publishedAt: '2026-10-05',
+    updatedAt: '2026-10-05',
+    // Written 2026-10-05, ahead of the 64GB model's 23 October sale date. Specs
+    // from nvidia.com (128GB LPDDR5X, 273 GB/s, 256-bit; 64GB at $4,999 from six
+    // OEMs); the 64GB model's identical bandwidth from press coverage. Sizes are
+    // calcVRAM on each model's own row. GB10 = compute capability 12.1 is from
+    // Ollama's docs/gpu.mdx; 121a-real needing CUDA 12.9+ is from llama.cpp's
+    // ggml-cuda CMakeLists; :server-cuda13 being an arm64 image from
+    // docs/docker.md. No `verifiedAt` — there is no Spark here.
+    verifiedStack: {
+      en: 'DGX OS (Ubuntu-based, arm64) · current Ollama, or llama.cpp built with GGML_CUDA=ON against CUDA 12.9+ · GGUF',
+      zh: 'DGX OS（基于 Ubuntu，arm64）· 新版 Ollama，或基于 CUDA 12.9+、以 GGML_CUDA=ON 编译的 llama.cpp · GGUF',
+    },
+    content: [
+      {
+        heading: 'The short answer',
+        headingZh: '简短的回答',
+        body: 'Both DGX Spark models use the same GB10 chip and the same 273 GB/s memory; the only difference that matters for local models is capacity. NVIDIA announced the 64GB model at $4,999, on sale from 23 October 2026 through Acer, ASUS, Dell, GIGABYTE, HP and MSI. At 4K context, 82 of the 90 models in this index fit the 64GB Spark comfortably and 84 fit the 128GB one — against 74 for a 32GB RTX 5090. The gap between the two Sparks is narrow but it sits exactly on the models people buy a Spark for: the 100B-class mixture-of-experts releases.',
+        bodyZh: '两款 DGX Spark 用的是同一颗 GB10 芯片、同样 273 GB/s 的内存；对本地模型而言，唯一要紧的差别是容量。NVIDIA 公布 64GB 版售价 4,999 美元，2026 年 10 月 23 日起通过宏碁、华硕、戴尔、技嘉、惠普和微星发售。在 4K 上下文下，本索引 90 个模型中有 82 个能宽裕装进 64GB 版，128GB 版是 84 个——32GB 的 RTX 5090 是 74 个。两款 Spark 的差距不大，但恰好落在人们买 Spark 的理由上：100B 级的混合专家（MoE）模型。',
+      },
+      {
+        heading: 'GPT-OSS 120B does not fit the 64GB model',
+        headingZh: '64GB 版装不下 GPT-OSS 120B',
+        body: 'GPT-OSS 120B at MXFP4 with an 8K context is about 66.5 GB — more than the whole machine has, and the CPU and DGX OS live in that same pool. The Q4_K_M conversions do not rescue it: GPT-OSS 120B at Q4_K_M with an 8K context is about 62.9 GB, 98% of the pool, which leaves the operating system nothing. On the 128GB model the native build is about half the memory. GLM-4.5-Air and Llama 4 Scout follow the same pattern at Q4_K_M; on 64GB they need their Q3_K_M builds. Note that this site treats anything over the pool as not loading at all: on a discrete card a small overrun can spill into system RAM, but a Spark has no system RAM besides this.',
+        bodyZh: 'GPT-OSS 120B 在 MXFP4、8K 上下文下约 66.5 GB——比整台机器的内存还多，而 CPU 和 DGX OS 也住在同一块内存里。换 Q4_K_M 转换版也救不回来：GPT-OSS 120B 在 Q4_K_M、8K 上下文下约 62.9 GB，占这块内存的 98%，操作系统就没有空间了。在 128GB 版上，原生版本只占约一半内存。GLM-4.5-Air 和 Llama 4 Scout 在 Q4_K_M 下也是同样的情况；在 64GB 上它们需要用 Q3_K_M。注意本站把超出这块内存的模型一律判为装不下：独立显卡的小幅超出可以溢出到系统内存，但 Spark 除了这块内存之外没有别的系统内存。',
+        code: {
+          lang: 'text',
+          content: 'GGUF                         8K        32K       128K     64GB   128GB\nGPT-OSS 20B      MXFP4      12.9 GB   13.5 GB   16.0 GB   ok     ok\nLlama 3.3 70B    Q4_K_M     47.5 GB   55.7 GB   88.7 GB   ok*    ok\nGLM-4.5-Air      Q3_K_M     55.2 GB   59.9 GB   78.9 GB   ok†    ok\nGLM-4.5-Air      Q4_K_M     68.7 GB   73.5 GB   92.5 GB   ✗      ok\nLlama 4 Scout    Q4_K_M     70.7 GB   72.0 GB   77.0 GB   ✗      ok\nGPT-OSS 120B     Q4_K_M     62.9 GB   63.8 GB   67.5 GB   ✗      ok\nGPT-OSS 120B     MXFP4      66.5 GB   67.5 GB   71.2 GB   ✗      ok\nQwen3 235B-A22B  Q3_K_M    120.4 GB  125.3 GB     —       ✗      ✗\n\nok = within 88% of the pool   * up to the 32K column   † 8K column only\n✗ = over 88%; past 100% it cannot load at all',
+        },
+      },
+      {
+        heading: 'What 64GB is good for',
+        headingZh: '64GB 适合跑什么',
+        body: 'The 64GB model is the dense-70B machine. Llama 3.3 70B at Q4_K_M with a 32K context is about 55.7 GB, inside the comfortable line, and no single consumer card holds it at all. GPT-OSS 20B at MXFP4 with a 128K context is about 16.0 GB, so it runs its full window with most of the pool to spare. GLM-4.5-Air at Q3_K_M with an 8K context is about 55.2 GB, which is the largest mixture-of-experts option, at a lower quant than you would choose with room to spare. If the plan is GPT-OSS 120B, GLM-4.5-Air at Q4_K_M or long context on 70B, buy the 128GB model.',
+        bodyZh: '64GB 版是跑 70B 稠密模型的机器。Llama 3.3 70B 在 Q4_K_M、32K 上下文下约 55.7 GB，在宽裕线以内，而任何单张消费级显卡都装不下它。GPT-OSS 20B 在 MXFP4、128K 上下文下约 16.0 GB，能跑满整个上下文窗口，大部分内存还空着。GLM-4.5-Air 在 Q3_K_M、8K 上下文下约 55.2 GB，是这里最大的 MoE 选项，只是量化档位比内存充裕时会选的低。如果打算跑 GPT-OSS 120B、Q4_K_M 的 GLM-4.5-Air，或者 70B 的长上下文，就买 128GB 版。',
+      },
+      {
+        heading: 'Speed: 273 GB/s is the ceiling for both',
+        headingZh: '速度：两款的上限都是 273 GB/s',
+        body: 'Generation reads the active weights once per token, so bandwidth divided by the bytes read is a hard ceiling. For a dense model that is the whole file: Llama 3.3 70B at Q4_K_M tops out around 7 tok/s on either Spark. That is the trade the machine makes — an RTX 5090 moves 1,792 GB/s, about 6.6× more, on anything it can hold. Mixture-of-experts models read only their active experts, which is why GPT-OSS and GLM-4.5-Air are the natural fit here. This site has no measured run on a Spark and publishes no tok/s figure for one; measure your own with llama-bench.',
+        bodyZh: '生成每个 token 都要把激活的权重读一遍，所以带宽除以读取的字节数就是硬上限。稠密模型要读整个文件：Llama 3.3 70B（Q4_K_M）在任一款 Spark 上的上限约 7 tok/s。这正是这台机器的取舍——对于它能装下的模型，RTX 5090 的 1,792 GB/s 约快 6.6 倍。混合专家模型只读取激活的专家，所以 GPT-OSS 和 GLM-4.5-Air 才是这台机器的天然搭档。本站没有 Spark 的实测记录，不公布它的 tok/s 数字；请用 llama-bench 自己测。',
+      },
+      {
+        heading: 'Setup: Ollama or llama.cpp',
+        headingZh: '配置：Ollama 或 llama.cpp',
+        body: 'The Spark is an Arm machine (arm64), so anything you install must have an arm64 build. Ollama\'s GPU documentation lists the GB10 (DGX Spark) as compute capability 12.1, and its standard Linux installer handles arm64. For llama.cpp, build with GGML_CUDA=ON: its CMake adds the GB10\'s native architecture only when the CUDA toolkit is 12.9 or newer. The prebuilt :server-cuda13 container image is published for arm64; the older :server-cuda image is built against CUDA 12.8 and lacks GB10 native kernels. Bind servers to 127.0.0.1 unless you mean to serve your network.',
+        bodyZh: 'Spark 是 Arm 架构（arm64）机器，装的任何软件都必须有 arm64 版本。Ollama 的 GPU 文档把 GB10（DGX Spark）列为计算能力 12.1，标准的 Linux 安装脚本支持 arm64。llama.cpp 要以 GGML_CUDA=ON 编译：它的 CMake 只有在 CUDA 工具包为 12.9 或更新时才加入 GB10 的原生架构。预编译的 :server-cuda13 容器镜像提供 arm64 版本；较旧的 :server-cuda 镜像基于 CUDA 12.8，不含 GB10 的原生内核。除非确实要对局域网提供服务，否则把服务绑定到 127.0.0.1。',
+        code: {
+          lang: 'bash',
+          content: '# Ollama\ncurl -fsSL https://ollama.com/install.sh | sh\nollama run gpt-oss:20b          # 64GB and 128GB\nollama run gpt-oss:120b         # 128GB only\n\n# llama.cpp, built on the Spark itself\nnvcc --version                  # 12.9 or newer for GB10 native kernels\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_CUDA=ON\ncmake --build build --config Release -j\n\n./build/bin/llama-server -hf ggml-org/gpt-oss-120b-GGUF --jinja \\\n  -ngl all -c 16384 --host 127.0.0.1 --port 8080   # 128GB model',
+        },
+      },
+      {
+        heading: 'Check it actually ran on the GPU',
+        headingZh: '确认它真的跑在 GPU 上',
+        body: 'Unified memory changes the usual checks. nvidia-smi lists processes but reports no memory-usage figure on this integrated GPU, so it cannot tell you whether a model fits. With Ollama, ollama ps shows the split in its PROCESSOR column — 100% GPU is what you want. With llama.cpp, the startup log should report every layer offloaded. One habit from discrete cards does not carry over: --n-cpu-moe keeps experts in system RAM to save VRAM, but on a Spark that is the same memory, so it saves nothing and only slows generation.',
+        bodyZh: '统一内存让常用的检查方法变了样。nvidia-smi 会列出进程，但在这颗集成 GPU 上不报告显存占用数字，所以它没法告诉你模型装不装得下。用 Ollama 时，ollama ps 的 PROCESSOR 列会显示分配情况——要看到 100% GPU。用 llama.cpp 时，启动日志应显示所有层都已卸载。独立显卡上的一个习惯在这里不适用：--n-cpu-moe 把专家留在系统内存里以节省显存，但在 Spark 上那是同一块内存，什么也省不下，只会拖慢生成。',
+        code: {
+          lang: 'text',
+          content: 'ollama ps\n  NAME            SIZE     PROCESSOR    CONTEXT\n  gpt-oss:20b     ...      100% GPU     ...\n\nllama.cpp log:\n  load_tensors: offloaded 37/37 layers to GPU\n\nFails to load on 64GB with a 100B-class model\n  → expected; see the table above (use Q3_K_M, or the 128GB model)\n\n"no kernel image is available"\n  → llama.cpp built against CUDA older than 12.9; rebuild, or use :server-cuda13',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can the 64GB DGX Spark run GPT-OSS 120B?',
+        qZh: '64GB 版 DGX Spark 能跑 GPT-OSS 120B 吗？',
+        a: 'No. This site sizes GPT-OSS 120B at MXFP4 with an 8K context at about 66.5 GB, more than the machine\'s 64 GB in total, and the Q4_K_M conversion at about 62.9 GB still leaves DGX OS — which shares the same memory — nothing to run in. GPT-OSS 20B fits easily, and the 128GB model runs the 120B with about half its memory to spare.',
+        aZh: '不能。本站估算 GPT-OSS 120B 在 MXFP4、8K 上下文下约 66.5 GB，比整台机器的 64 GB 还多；Q4_K_M 转换版约 62.9 GB，仍然没给共用同一块内存的 DGX OS 留下运行空间。GPT-OSS 20B 可以轻松装下，128GB 版跑 120B 也还剩约一半内存。',
+      },
+      {
+        q: 'Should I buy the 64GB or the 128GB DGX Spark?',
+        qZh: 'DGX Spark 买 64GB 还是 128GB？',
+        a: 'Decide by the largest model you want. At 4K context the 64GB model fits 82 of the 90 models in this index comfortably and the 128GB fits 84, with the same chip and the same 273 GB/s, so neither is faster. The ones only the 128GB holds are the 100B-class mixture-of-experts models at 4-bit — GPT-OSS 120B, GLM-4.5-Air and Llama 4 Scout at Q4_K_M — plus long context on 70B.',
+        aZh: '按你想跑的最大模型来决定。在 4K 上下文下，64GB 版能宽裕装下本索引 90 个模型中的 82 个，128GB 版是 84 个；两者芯片相同、带宽同为 273 GB/s，所以谁也不比谁快。只有 128GB 版装得下的，是 4-bit 的 100B 级混合专家模型——GPT-OSS 120B，以及 Q4_K_M 的 GLM-4.5-Air 和 Llama 4 Scout——再加上 70B 的长上下文。',
+      },
+      {
+        q: 'Is a DGX Spark faster than an RTX 5090 for local LLMs?',
+        qZh: '跑本地大模型，DGX Spark 比 RTX 5090 快吗？',
+        a: 'Not on any model both can hold. Token generation is bound by memory bandwidth, and the 5090 moves 1,792 GB/s against the Spark\'s 273, about 6.6× more. The Spark\'s advantage is capacity: 70B dense models and 100B-class mixture-of-experts models that no 32GB card holds at all.',
+        aZh: '在两者都装得下的模型上不快。token 生成受内存带宽限制，5090 是 1,792 GB/s，Spark 是 273 GB/s，相差约 6.6 倍。Spark 的优势在容量：70B 稠密模型和 100B 级混合专家模型，任何 32GB 显卡都完全装不下。',
+      },
+    ],
+  },
 ];

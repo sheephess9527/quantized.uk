@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    en: 'NVIDIA DGX Spark added, in its 64GB and 128GB versions. Both have the same chip and the same 273 GB/s memory, shared by the CPU, the GPU and the operating system, so the site judges fits against the whole pool and treats anything larger than it as not loading. At 4K context the 64GB model fits 82 of 90 models comfortably and the 128GB model 84. GPT-OSS 120B does not fit the 64GB model: its native build is about 66 GB. A new guide covers which version to buy, what each one runs and how to set it up. Card-versus-card answers no longer say two machines hold the same models when their counts differ.',
+    zh: '新增 NVIDIA DGX Spark，包括 64GB 和 128GB 两个版本。两者芯片相同，内存带宽同为 273 GB/s，内存由 CPU、GPU 和操作系统共用，所以本站按整块内存判断能否装下，超出的一律视为无法加载。在 4K 上下文下，64GB 版可宽裕运行 90 个模型中的 82 个，128GB 版为 84 个。64GB 版装不下 GPT-OSS 120B：它的原生版本约 66 GB。新指南讲清楚该买哪一版、各能跑什么以及如何配置。两台设备的对比问答在装得下的模型数量不同时，不再声称它们装得下相同的模型。',
+  },
+  {
+    date: '2026-10-05',
     en: 'OLMo 3 7B added, and OLMo 2 7B now points to it. Allen AI\'s fully open 7B model is published with its training data, code and checkpoints. It reads 64K tokens of context where OLMo 2 stopped at 4K, and needs the same memory at short context. Three of every four layers use a short sliding window, so at Q4_K_M it needs about 6.8 GB at 4K and 10.9 GB at 32K; without the window, 32K would take about 22 GB. Sizes are estimates, since no file size could be checked. Guide figures that count the models in the index were updated to the new total.',
     zh: '新增 OLMo 3 7B，OLMo 2 7B 现在指向它。这是 Allen AI 完全开源的 7B 模型，训练数据、代码和检查点一并公开。它的上下文达到 64K，而 OLMo 2 只有 4K；短上下文下的显存需求与 OLMo 2 相同。每四层中有三层使用短滑动窗口，所以 Q4_K_M 在 4K 下约需 6.8 GB，32K 下约 10.9 GB；如果没有滑动窗口，32K 需要约 22 GB。体积为估算值，因为未能核对到文件大小。各指南中统计索引模型数量的数字已更新为新的总数。',
   },

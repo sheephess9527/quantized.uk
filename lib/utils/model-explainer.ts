@@ -74,7 +74,7 @@ export function cardsFitting(totalGB: number, format: QuantVariant['format']) {
  * alone cannot say this — `'amd'` also covers the Instinct MI100.
  */
 function isRetailCard(g: GPU): boolean {
-  return g.type === 'nvidia-consumer' || g.type === 'apple' || g.type === 'intel' || /^Radeon RX/.test(g.name);
+  return g.type === 'nvidia-consumer' || g.type === 'nvidia-unified' || g.type === 'apple' || g.type === 'intel' || /^Radeon RX/.test(g.name);
 }
 
 /**

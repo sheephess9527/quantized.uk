@@ -2,10 +2,11 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, type GpuFit } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, tightCeiling, type GpuFit } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { isMoE } from '@/lib/utils/model-meta';
+import { referenceQuant, isNativeQuant } from '@/lib/utils/quality';
 
 /**
  * The decision summary and questions for one GPU landing page.
@@ -139,6 +140,21 @@ function ceilingText(gpu: GPU, fits: GpuFit[], total: number): { en: string; zh:
     return {
       en: `The GPU's share of unified memory, not the ${gpu.vram} GB on the box. macOS reserves part of the pool for the system and caps what a single process may wire down, so the practical budget is meaningfully below nameplate — the limit is adjustable (\`iogpu.wired_limit_mb\`) but it is not absent. Bandwidth is ${bw ? `${gbs(bw)} GB/s` : 'unlisted'}, which is the number that decides tok/s once a model fits.`,
       zh: `瓶颈是 GPU 能用到的那部分统一内存，而不是标称的 ${gpu.vram} GB。macOS 会为系统保留一部分，并限制单个进程可以锁定的内存量，因此实际预算明显低于标称值 —— 这个上限可以调整（\`iogpu.wired_limit_mb\`），但它确实存在。带宽为 ${bw ? `${gbs(bw)} GB/s` : '未列出'}，模型装下之后，决定 tok/s 的就是这个数字。`,
+    };
+  }
+
+  if (gpu.type === 'nvidia-unified') {
+    // The largest dense model on the list, at the quant the list picked for it —
+    // the case where 273 GB/s is felt, since MoE models read only their experts.
+    const dense = fits.filter(f => !isMoE(f.model)).sort((a, b) => b.model.params - a.model.params)[0];
+    const ceil = dense ? rooflineTokS(gpu, dense.model, dense.quant) : undefined;
+    const example = dense && ceil
+      ? { en: ` The largest dense model here, ${dense.model.name} at ${dense.quant.level}, has a ceiling of about ${ceil} tok/s on it; mixture-of-experts models read only their active experts per token and run far faster than their size suggests.`,
+          zh: `本页最大的稠密模型 ${dense.model.name}（${dense.quant.level}）在它上面的上限约为 ${ceil} tok/s；混合专家（MoE）模型每个 token 只读取激活的专家，实际速度远快于它的总参数量所暗示的。` }
+      : { en: '', zh: '' };
+    return {
+      en: `Bandwidth, and one pool. ${gpu.vram} GB holds models no single consumer card can, but every byte of it — CPU, GPU and DGX OS alike — comes from the same LPDDR5X at ${bw ? `${gbs(bw)} GB/s` : 'an unlisted bandwidth'}, a fraction of a discrete flagship's. There is no system RAM behind it to spill into, so this site treats anything larger than the pool as not loading at all.${example.en}`,
+      zh: `瓶颈是带宽，以及只有一块内存。${gpu.vram} GB 能装下任何单张消费级显卡都装不下的模型，但其中每一个字节——CPU、GPU 和 DGX OS 都一样——都来自同一组 ${bw ? `${gbs(bw)} GB/s` : '带宽未列出'}的 LPDDR5X，只有独显旗舰的几分之一。它后面没有可以溢出的系统内存，所以本站把超过这块内存的模型一律判为装不下。${example.zh}`,
     };
   }
 
@@ -285,7 +301,17 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
         .sort((a, b) => a.gb - b.gb);
       const best = sized.find(x => formatAllowed(gpu, x.q.format)) ?? sized[0];
       const capacity = usableCapacityGB(gpu);
-      const verdict = formatAllowed(gpu, best.q.format) ? getVerdict(best.gb, capacity) : 'red';
+      const verdict = formatAllowed(gpu, best.q.format) ? getVerdict(best.gb, capacity, tightCeiling(gpu)) : 'red';
+      // On a single shared pool (DGX Spark) "loads with nothing else running"
+      // is not on offer — the OS is in the pool. Name the release build too
+      // when it is the one readers will reach for and it is over the pool.
+      const pooled = gpu.type === 'nvidia-unified';
+      const rq = referenceQuant(nextUp.quants);
+      const rqGB = sized.find(x => x.q === rq)?.gb;
+      const refNote = pooled && rq !== best.q && isNativeQuant(rq) && rqGB !== undefined && rqGB > gpu.vram
+        ? { en: ` The native ${quantLevelKey(rq)} release is ${rqGB.toFixed(1)} GB, larger than the whole pool.`,
+            zh: `官方原生的 ${quantLevelKey(rq)} 版本约 ${rqGB.toFixed(1)} GB，比整块内存还大。` }
+        : { en: '', zh: '' };
       faqs.push({
         q: {
           en: `Can ${article(gpu.name)} ${gpu.name} run ${nextUp.name}?`,
@@ -296,6 +322,8 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
             ? `Not with the builds this index lists — ${nextUp.name} ships only formats this card cannot load (${Array.from(new Set(nextUp.quants.map(q => q.format))).join(', ')}), regardless of size.`
             : verdict === 'green'
               ? `Yes — at ${quantLevelKey(best.q)} it needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable.`
+              : verdict === 'yellow' && pooled
+                ? `Not reliably. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB — ${Math.round(best.gb / gpu.vram * 100)}% of the machine's ${gpu.vram} GB, and DGX OS runs from that same pool, so whether it loads depends on what the system itself is holding, with nothing left for a longer context.${refNote.en} The largest model this machine does clear is ${biggest.model.name}.`
               : verdict === 'yellow'
                 ? `Only just. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB against ${capacity.toFixed(1)} GB usable — that loads with nothing else running, with no margin for a longer context window. It is not on the list above, which requires a model to stay inside 88% of usable capacity.`
                 : `No. Its smallest build here, ${quantLevelKey(best.q)}, needs about ${best.gb.toFixed(1)} GB and this card has ${capacity.toFixed(1)} GB usable — short by ${(best.gb - capacity).toFixed(1)} GB before any context beyond 4K. The largest model this card does clear is ${biggest.model.name}.`,
@@ -303,6 +331,8 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
             ? `本索引列出的构建都跑不了 —— ${nextUp.name} 只提供这张卡无法加载的格式（${Array.from(new Set(nextUp.quants.map(q => q.format))).join('、')}），跟体积大小无关。`
             : verdict === 'green'
               ? `可以 —— 在 ${quantLevelKey(best.q)} 下约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB。`
+              : verdict === 'yellow' && pooled
+                ? `不可靠。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，占这台机器 ${gpu.vram} GB 的 ${Math.round(best.gb / gpu.vram * 100)}%，而 DGX OS 本身也跑在同一块内存里，能不能加载取决于系统自己占了多少，更长的上下文则完全没有余量。${refNote.zh}这台机器能从容运行的最大模型是 ${biggest.model.name}。`
               : verdict === 'yellow'
                 ? `勉强。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB —— 在没有其他程序占用时能加载，但没有任何余量留给更长的上下文。上面的清单里没有它，因为那份清单要求模型占用不超过可用显存的 88%。`
                 : `不能。它在本索引中最小的构建 ${quantLevelKey(best.q)} 约需 ${best.gb.toFixed(1)} GB，而这张卡可用约 ${capacity.toFixed(1)} GB —— 在 4K 之外的上下文还没算上之前就已经差了 ${(best.gb - capacity).toFixed(1)} GB。这张卡能从容运行的最大模型是 ${biggest.model.name}。`,
@@ -338,17 +368,33 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
   const rival = twin ?? siblings[0] ?? nearest;
   if (rival) {
     const rivalFits = fitsOnGpu(rival).length;
+    // "The same models" was printed whatever the counts said — a 64 GB DGX
+    // Spark against a 64 GB Mac fits 82 vs 76, because macOS keeps a quarter
+    // of the pool from the GPU. Say so only when it is true, and name the cause.
+    const sameSet = rivalFits === fits.length;
+    const capped = [gpu, rival].find(g => usableCapacityGB(g) < g.vram);
+    const whyDiffers = sameSet ? { en: '', zh: '' }
+      : capped && usableCapacityGB(gpu) !== usableCapacityGB(rival)
+        ? { en: ` — macOS keeps part of the ${capped.name}'s unified memory from the GPU, leaving about ${usableCapacityGB(capped).toFixed(0)} GB usable`,
+            zh: `——macOS 会从 ${capped.name} 的统一内存里留出一部分不给 GPU，可用约 ${usableCapacityGB(capped).toFixed(0)} GB` }
+        : gpu.vram !== rival.vram
+          ? { en: '', zh: '' }
+          : { en: ' — the cards load different formats', zh: '——两者能加载的格式不同' };
     faqs.push({
       q: {
         en: `${gpu.name} or ${rival.name} for local LLMs?`,
         zh: `本地跑大模型，${gpu.name} 还是 ${rival.name}？`,
       },
       a: {
-        en: `They hold the same models: ${gpu.vram} GB against ${rival.vram} GB fits ${fits.length} and ${rivalFits} of ${total} respectively at 4K. ${gpu.bandwidth && rival.bandwidth
-          ? `The difference is throughput — ${gbs(gpu.bandwidth)} GB/s against ${gbs(rival.bandwidth)} GB/s, a ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)}× gap in how fast the weights can be read, which is what token generation is bound by. The ${(rival.bandwidth > gpu.bandwidth ? rival : gpu).name} generates faster on any model both can hold.`
+        en: `${sameSet
+          ? `They hold the same models: ${gpu.vram} GB against ${rival.vram} GB fits ${fits.length} and ${rivalFits} of ${total} respectively at 4K.`
+          : `They do not hold the same set: ${gpu.name} fits ${fits.length} and ${rival.name} ${rivalFits} of ${total} at 4K${whyDiffers.en}.`} ${gpu.bandwidth && rival.bandwidth
+          ? `${sameSet ? 'The difference is throughput' : 'Speed is the other difference'} — ${gbs(gpu.bandwidth)} GB/s against ${gbs(rival.bandwidth)} GB/s, a ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)}× gap in how fast the weights can be read, which is what token generation is bound by. The ${(rival.bandwidth > gpu.bandwidth ? rival : gpu).name} generates faster on any model both can hold.`
           : `Bandwidth is not recorded for both cards here, so this page will not rank them on speed.`}`,
-        zh: `两张卡装得下的模型相同：${gpu.vram} GB 与 ${rival.vram} GB 在 4K 下分别可从容运行 ${total} 个中的 ${fits.length} 个与 ${rivalFits} 个。${gpu.bandwidth && rival.bandwidth
-          ? `差别在吞吐 —— ${gbs(gpu.bandwidth)} GB/s 对 ${gbs(rival.bandwidth)} GB/s，读取权重的速度相差 ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)} 倍，而 token 生成正是受此限制。两张卡都装得下的模型，${(rival.bandwidth > gpu.bandwidth ? rival : gpu).name} 生成更快。`
+        zh: `${sameSet
+          ? `两张卡装得下的模型相同：${gpu.vram} GB 与 ${rival.vram} GB 在 4K 下分别可从容运行 ${total} 个中的 ${fits.length} 个与 ${rivalFits} 个。`
+          : `两者装得下的模型并不相同：4K 下 ${gpu.name} 可从容运行 ${total} 个中的 ${fits.length} 个，${rival.name} 为 ${rivalFits} 个${whyDiffers.zh}。`}${gpu.bandwidth && rival.bandwidth
+          ? `${sameSet ? '差别在吞吐' : '另一个差别在吞吐'} —— ${gbs(gpu.bandwidth)} GB/s 对 ${gbs(rival.bandwidth)} GB/s，读取权重的速度相差 ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)} 倍，而 token 生成正是受此限制。两张卡都装得下的模型，${(rival.bandwidth > gpu.bandwidth ? rival : gpu).name} 生成更快。`
           : `本站没有同时记录两张卡的带宽，因此本页不就速度给出排序。`}`,
       },
     });

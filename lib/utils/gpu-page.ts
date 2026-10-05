@@ -33,7 +33,7 @@ export const GPU_PAGE_CONTEXT = 4096;
 export type Backend = 'cuda' | 'rocm' | 'sycl' | 'metal' | 'cpu';
 
 export function backendFor(gpu: GPU): Backend {
-  if (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro') return 'cuda';
+  if (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'nvidia-unified') return 'cuda';
   if (gpu.type === 'apple') return 'metal';
   if (gpu.type === 'amd') return 'rocm';
   if (gpu.type === 'intel') return 'sycl';
@@ -119,6 +119,17 @@ export function usableCapacityGB(gpu: GPU): number {
 }
 
 /**
+ * Where the 'tight' verdict ends for this machine. A discrete card keeps the
+ * calculator's 105%: a small overrun can go to host RAM. DGX Spark has no host
+ * RAM besides the pool being judged — CPU, GPU and DGX OS share it — so
+ * anything over 100% cannot load at all. (Macs keep 105%: their ceiling is
+ * already the ~75% wired cap, and Ollama splits past it onto the CPU.)
+ */
+export function tightCeiling(gpu: GPU): number {
+  return gpu.type === 'nvidia-unified' ? 1.0 : 1.05;
+}
+
+/**
  * The two questions a "how many models fit" number can answer. They give
  * different counts (51 vs 60 on a 4060 Ti 16G) and both are defensible — what
  * is not defensible is showing one number on one page and the other elsewhere
@@ -146,7 +157,7 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
         contextLength,
         batchSize: 1,
       });
-      return allowed.includes(getVerdict(totalGB, capacity));
+      return allowed.includes(getVerdict(totalGB, capacity, tightCeiling(gpu)));
     });
     if (fits) n += 1;
   }
@@ -248,7 +259,7 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] 
         contextLength,
         batchSize: 1,
       });
-      if (getVerdict(totalGB, capacity) !== 'green') continue;
+      if (getVerdict(totalGB, capacity, tightCeiling(gpu)) !== 'green') continue;
       // Lower perplexity loss wins; ties break toward the smaller footprint.
       if (!best || qualityRank(quant) < qualityRank(best.quant)) {
         best = { model, quant, totalGB, headroomGB: Math.round((capacity - totalGB) * 10) / 10 };

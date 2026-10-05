@@ -178,6 +178,8 @@ export function guidesForGpu(gpu: GPU, limit = 3): Article[] {
       const pb = backendFor(preset);
       if (pb !== backend) return { a, score: 0 };
       if (backend !== 'cuda') return { a, score: 6 };
+      // Both DGX Sparks share a chip and a bandwidth; a guide for one is a guide for both.
+      if (gpu.type === 'nvidia-unified' && preset.type === 'nvidia-unified') return { a, score: 6 };
       return { a, score: preset.vram === gpu.vram ? 3 : 0 };
     })
     .filter(x => x.score > 0)
