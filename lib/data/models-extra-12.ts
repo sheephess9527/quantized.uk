@@ -5,6 +5,7 @@ function hf(q: string) {
 }
 
 const ADDED = '2026-10-03';
+const ADDED_OLMO3 = '2026-10-05';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -63,6 +64,33 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 14.1, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 24.4, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // OLMo 3 7B. Architecture from AllenAI's own OLMo-core (`olmo3_7B` = `olmo2_7B` = llama2_7B
+    // shape: 32 layers, d_model 4096, 32 heads, no GQA → kvHeads 32, head_dim 128) with
+    // SlidingWindowAttentionConfig pattern [4096, 4096, 4096, -1] → 24 window layers + 8 full.
+    // The released config (via search, huggingface.co is blocked here) carries
+    // max_position_embeddings 65536 = YaRN factor 8 over an 8192 original, sliding_window 4096.
+    // llama.cpp loads it as `olmo2` with `load_swa_pattern(ml, 4)`; with swa_full off a window
+    // layer holds pad256(4096 + 512) = 4608 cells, the same rule as Gemma 2.
+    id: 'olmo-3-7b',
+    name: 'OLMo 3 7B Instruct',
+    family: 'Allen AI OLMo',
+    params: 7.3,
+    paramLabel: '7B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 65536,
+    arch: { layers: 32, attHeads: 32, kvHeads: 32, headDim: 128, attention: { fullLayers: 8, windowLayers: 24, windowTokens: 4608 } },
+    addedAt: ADDED_OLMO3,
+    description: {
+      en: 'Allen AI\'s fully open 7B model, released with its training data, code and intermediate checkpoints. Its predecessor stopped at a 4K context; OLMo 3 reaches 64K, extended from an 8K base by YaRN. Three of every four layers use a 4K sliding window, which is what makes that affordable. It still uses full multi-head attention with no shared KV heads, so long context costs more here than on most 7B–8B models. At Q4_K_M it needs about 6.8 GB at 4K context and 10.9 GB at 32K. Without the sliding window, 32K would need about 22 GB. Sizes use the calculator\'s generic rates, since no GGUF file size could be checked, and no per-level quality loss has been published.',
+      zh: 'Allen AI 完全开源的 7B 模型，训练数据、代码和中间检查点一并公开。上一代只有 4K 上下文，OLMo 3 达到 64K（由 8K 基础通过 YaRN 扩展而来）。每四层中有三层使用 4K 滑动窗口，这正是长上下文负担得起的原因。不过它仍是完整的多头注意力，没有共享 KV 头，所以长上下文的代价比大多数 7B–8B 模型高。Q4_K_M 在 4K 上下文下约需 6.8 GB，32K 下约 10.9 GB；如果没有滑动窗口，32K 需要约 22 GB。下方体积使用计算器的通用比特率，因为未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 6.8, hfSearchUrl: hf('Olmo-3-7B-Instruct GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.3, hfSearchUrl: hf('Olmo-3-7B-Instruct GGUF Q8_0'),  confidence: 'estimated' },
     ],
   },
 ];

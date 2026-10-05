@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-05 — +1 model (90): OLMo 3 7B; OLMo 2 7B superseded
+
+Row in `models-extra-12.ts`. Sources: AllenAI's OLMo-core `olmo3_7B` (= `olmo2_7B` = llama2_7B
+shape: 32 layers, d 4096, 32 heads, **no GQA → 32 KV heads**, head_dim 128; SWA pattern
+`[4096, 4096, 4096, -1]` → 24 window + 8 full layers); released config via web search (huggingface.co
+and allenai.org are blocked here): `max_position_embeddings` 65536 = YaRN ×8 over 8192,
+`sliding_window` 4096; llama.cpp loads it as `olmo2` with `load_swa_pattern(ml, 4)`, so
+`windowTokens` = pad256(4096 + 512) = 4608. Q4_K_M: 6.8 GB @4K, 7.6 @8K, 10.9 @32K, 15.3 @64K
+(all-full-attention would be 22.2 @32K, 39.8 @64K). `estimated`, no `pplLossPercent`.
+OLMo 2 7B → `supersededBy: 'olmo-3-7b'`: same arch, so same size at 4K, context 4K → 64K
+(`supersededDiffNote` context branch). `homePicks` over every GPU × use case: unchanged.
+`guideModelCountProblems` fired on 6 guides (27 phrases) as designed; every quoted fit count was
+recomputed (each comfortable count +1 — OLMo 3 clears every card ≥ 8 GB at 4K) rather than only the
+total bumped. todayFeed: OLMo 3 in, Qwen3-VL 30B-A3B (Aug) out.
+
 ### 2026-10-04 (d) — Runtime versions re-checked
 
 From each project's GitHub tags/releases page, read as a verbatim list: llama.cpp **b11390**

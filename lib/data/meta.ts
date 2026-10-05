@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-04';
+export const dataLastUpdated = '2026-10-05';
 
 export const dataSources = {
   models: {
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-05',
+    en: 'OLMo 3 7B added, and OLMo 2 7B now points to it. Allen AI\'s fully open 7B model is published with its training data, code and checkpoints. It reads 64K tokens of context where OLMo 2 stopped at 4K, and needs the same memory at short context. Three of every four layers use a short sliding window, so at Q4_K_M it needs about 6.8 GB at 4K and 10.9 GB at 32K; without the window, 32K would take about 22 GB. Sizes are estimates, since no file size could be checked. Guide figures that count the models in the index were updated to the new total.',
+    zh: '新增 OLMo 3 7B，OLMo 2 7B 现在指向它。这是 Allen AI 完全开源的 7B 模型，训练数据、代码和检查点一并公开。它的上下文达到 64K，而 OLMo 2 只有 4K；短上下文下的显存需求与 OLMo 2 相同。每四层中有三层使用短滑动窗口，所以 Q4_K_M 在 4K 下约需 6.8 GB，32K 下约 10.9 GB；如果没有滑动窗口，32K 需要约 22 GB。体积为估算值，因为未能核对到文件大小。各指南中统计索引模型数量的数字已更新为新的总数。',
+  },
   {
     date: '2026-10-04',
     en: 'Current runtime versions re-checked on the projects\' own release pages: llama.cpp b11390, Ollama v0.35.1, vLLM v0.30.0 (unchanged) and ExLlamaV3 v1.5.4. ExLlamaV2 is still at v0.3.2 from July 2025, and its README still says the project is archived. The FAQ also answers two new questions: which format runs on an Intel Arc card, and whether to choose NVIDIA, AMD or Intel — with the counts worked out from the index, including why a 16GB Arc card fits four fewer models than a 16GB NVIDIA card.',

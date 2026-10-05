@@ -268,6 +268,8 @@ export const extraModels2: QuantModel[] = [
     name: 'OLMo 2 7B Instruct',
     family: 'Allen AI OLMo',
     params: 7.3,
+    status: 'superseded',
+    supersededBy: 'olmo-3-7b',
     paramLabel: '7B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
