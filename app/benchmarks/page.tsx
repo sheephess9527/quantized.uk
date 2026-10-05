@@ -69,6 +69,9 @@ export default function BenchmarksPage() {
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
           creator: { '@type': 'Organization', name: 'quantized.uk', url: SITE_URL },
           variableMeasured: ['tokens per second', 'VRAM usage (GB)', 'perplexity retained (%)'],
+          // Chosen by the site owner 2026-10-05 (Search Console flagged the
+          // missing field); the terms page states the same in section 10.
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         }}
       />
       <Breadcrumbs
@@ -91,6 +94,16 @@ export default function BenchmarksPage() {
             .replace('{r}', String(TOTAL_RUNS))
             .replace('{c}', String(measuredCards().length))
             .replace('{m}', String(GPU_COUNT))}
+        </p>
+        <p className="text-xs text-slate-500 mt-2">
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            rel="license noopener"
+            target="_blank"
+            className="hover:text-slate-300 underline decoration-dotted underline-offset-2"
+          >
+            {t.bench.dataLicense}
+          </a>
         </p>
       </div>
 

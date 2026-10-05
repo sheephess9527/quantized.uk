@@ -222,6 +222,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   must default to **open**; a toggle to collapse it for a returning reader is fine, defaulting to
   collapsed is not. Check any new disclosure the same way as a lazy chart: read `out/**`, not the
   component source, and confirm the text is actually there before hydration.
+- **The site's own data is CC BY 4.0** (owner's choice, 2026-10-05; `/legal/` §10). The `/benchmarks/`
+  `Dataset` JSON-LD carries `license`; any new `Dataset` block must too, or Search Console flags it.
+  The licence covers this site's measurements and tables only — never imply it covers model weights.
 - **Structured data must describe the page that exists.** `ItemList` on the GPU pages claimed
   `numberOfItems: 73` while emitting 30. The postbuild gate now enforces this; the rules it applies:
   counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear
@@ -983,6 +986,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-05 | **Data licensed CC BY 4.0** — Search Console: `Dataset` missing `license`; owner chose CC BY; `/legal/` §10 + JSON-LD + visible note on `/benchmarks/` |
 | 2026-10-05 | **Homepage: latest additions under the picker, hardware included** — was fifth and models-only; `GPU.addedAt` + `latestEntries()` (same-day same-type rows collapse) |
 | 2026-10-05 | **DGX Spark 64G/128G (76) + guide (27)** — nvidia.com specs (273 GB/s both); new `nvidia-unified` type, tight band capped at 100% (no host RAM) so GPT-OSS 120B @64G is red; card-vs-card FAQ claimed "same models" whatever the counts (latent, all pages) |
 | 2026-10-05 | **+1 model (90): OLMo 3 7B** — OLMo-core arch (32 KV heads, 24 SWA + 8 full), 64K via YaRN, llama.cpp `olmo2` + swa pattern 4 → window 4608; OLMo 2 7B superseded (4K → 64K, same size); guide counts recomputed per card, not just the total |

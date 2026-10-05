@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-05 (e) — Data licensed CC BY 4.0 (Search Console: Dataset missing `license`)
+
+Search Console flagged the `/benchmarks/` `Dataset` JSON-LD (non-critical: field "license" missing).
+The site owner chose **CC BY 4.0**. The `Dataset` block now carries
+`license: https://creativecommons.org/licenses/by/4.0/`; `/legal/` gains section 10 "Data License"
+(EN+ZH; scope = the site's own measurements, VRAM figures and tables — not weights, model cards, HF
+counts or trademarks), old 10 → 11, page date 5 Oct 2026 and `LEGAL_LASTMOD` → 2026-10-05; the
+benchmarks page shows a visible `rel="license"` line under its coverage note.
+
 ### 2026-10-05 (d) — Latest additions: no doubled size label
 
 Model entries printed `paramLabel` under a name that already carried it ("SmolLM3 3B" / "3B · added

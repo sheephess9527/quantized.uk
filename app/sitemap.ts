@@ -31,7 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // data ship — they should not claim `siteDate` just because the site
   // rebuilt. Real last-touched dates (from `git log -1` on each source file);
   // bump the date here, not `siteDate`, when the page's own text changes.
-  const LEGAL_LASTMOD = new Date('2026-08-18');
+  const LEGAL_LASTMOD = new Date('2026-10-05');
   const PRIVACY_LASTMOD = new Date('2026-08-18');
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };

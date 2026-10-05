@@ -79,6 +79,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    en: 'The site\'s benchmark and sizing data is now licensed CC BY 4.0. You can copy and reuse it, including commercially, as long as you credit quantized.uk and link back. The terms page has a new section saying so; model weights and third-party names keep their own terms.',
+    zh: '本站的基准和显存数据现采用 CC BY 4.0 许可。可以复制和再利用，包括商业用途，只需注明出自 quantized.uk 并附上链接。条款页新增了相应一节；模型权重和第三方名称仍受各自条款约束。',
+  },
+  {
+    date: '2026-10-05',
     en: 'New models and new hardware now appear together near the top of the homepage. The "Latest additions" list sat several screens down and only listed models, so newly added machines such as the DGX Spark had no way onto the front page. It now sits right below the "what fits your card" picker.',
     zh: '新模型和新硬件现在一起显示在首页靠上的位置。「最近收录」原来要往下翻好几屏才能看到，而且只列模型，像 DGX Spark 这样新加的硬件在首页上没有入口。现在它就放在「你的卡能跑什么」选择器下方。',
   },
