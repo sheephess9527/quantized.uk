@@ -9,6 +9,16 @@ import { isRecentModel } from '@/lib/utils/model-meta';
 import { latestEntries, isRecentDate } from '@/lib/utils/latest-additions';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 
+/**
+ * Most names already carry the size ("SmolLM3 3B", "ERNIE 4.5 21B-A3B"), so
+ * printing `paramLabel` under them read "3B" twice. Only add it when the name
+ * does not already contain it as a whole token.
+ */
+function nameCarriesLabel(name: string, label: string): boolean {
+  const esc = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[\\s(-])${esc}($|[\\s)])`, 'i').test(name);
+}
+
 export default function WeeklyUpdates() {
   const { t, lang } = useLanguage();
   const w = t.home.weekly;
@@ -71,7 +81,7 @@ export default function WeeklyUpdates() {
                       picked the model up, but printed next to a NEW badge a
                       bare date reads as the model's release date — and several
                       of these were released a year before we indexed them. */}
-                  {e.model.paramLabel} · {t.hub.model.addedOn.replace('{date}', e.date)}
+                  {!nameCarriesLabel(e.model.name, e.model.paramLabel) && <>{e.model.paramLabel} · </>}{t.hub.model.addedOn.replace('{date}', e.date)}
                 </span>
               </Link>
             </li>
@@ -90,7 +100,7 @@ export default function WeeklyUpdates() {
                 )}
                 <span className="text-sm text-slate-200 font-medium">{e.gpus.map(g => g.name).join(' · ')}</span>
                 <span className="block text-xs text-slate-600 font-mono mt-0.5">
-                  {w.hardware} · {Array.from(new Set(e.gpus.map(g => g.vram))).join(' / ')} GB · {t.hub.model.addedOn.replace('{date}', e.date)}
+                  {w.hardware} · {e.gpus.every(g => g.name.includes(`${g.vram}G`)) ? '' : `${Array.from(new Set(e.gpus.map(g => g.vram))).join(' / ')} GB · `}{t.hub.model.addedOn.replace('{date}', e.date)}
                 </span>
               </Link>
             </li>

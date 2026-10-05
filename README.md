@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-05 (d) — Latest additions: no doubled size label
+
+Model entries printed `paramLabel` under a name that already carried it ("SmolLM3 3B" / "3B · added
+…"). `nameCarriesLabel()` in `WeeklyUpdates.tsx` drops it when the name contains the label as a whole
+token (space, `(` or `-` before it): 67 + the distill names of 90 skip it; names whose label differs
+(Mixtral 8x7B → "47B MoE", GPT-OSS 20B → "21B MoE") keep it. Hardware entries likewise drop the GB list when every name already ends in its capacity
+("DGX Spark 128G"). Display-only; no reader changelog entry.
+
 ### 2026-10-05 (c) — Homepage: latest additions moved up, hardware included
 
 `WeeklyUpdates` moved from fifth to directly under `HomeMatch`/`StatsBar` (before `PopularStarts`).
