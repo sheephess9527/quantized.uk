@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-05';
+export const dataLastUpdated = '2026-10-06';
 
 export const dataSources = {
   models: {
@@ -59,10 +59,10 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-04',
+  checkedAt: '2026-10-06',
   current: {
-    llamacpp: 'b11390',
-    vllm: 'v0.30.0',
+    llamacpp: 'b11434',
+    vllm: 'v0.31.0',
     ollama: 'v0.35.1',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-06',
+    en: 'vLLM v0.31.0 and llama.cpp b11434 are now the current runtime versions on the benchmarks page. Both were read from the projects\' own release pages; Ollama (v0.35.1) and ExLlamaV3 (v1.5.4) are unchanged. llama.cpp also cut a v0.6.0 release, its first numbered one in this index\'s records. No model or size on the site changes with this.',
+    zh: '基准测试页上的当前运行时版本更新为 vLLM v0.31.0 和 llama.cpp b11434，均取自各项目自己的发布页；Ollama（v0.35.1）和 ExLlamaV3（v1.5.4）未变。llama.cpp 还发布了 v0.6.0，这是本站记录中它的第一个带版本号的正式发布。网站上的模型和显存数字均不受影响。',
+  },
   {
     date: '2026-10-05',
     en: 'The site\'s benchmark and sizing data is now licensed CC BY 4.0. You can copy and reuse it, including commercially, as long as you credit quantized.uk and link back. The terms page has a new section saying so; model weights and third-party names keep their own terms.',

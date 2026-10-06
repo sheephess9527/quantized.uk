@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-06 — Daily patrol: runtime versions; no model or hardware added
+
+Runtime versions from each project's GitHub tags/releases page (verbatim lists): llama.cpp **b11434**
+(was b11390), vLLM **v0.31.0** (was v0.30.0; tag page: not pre-release, released 2026-10-05), Ollama
+v0.35.1 unchanged (**v0.40.0 still Pre-release**, skipped), ExLlamaV3 v1.5.4 unchanged. llama.cpp also
+tagged **v0.6.0** (2026-10-05) beside its `b` builds; its notes add a `/v1/systemone` server API for
+"decision models" — the class Strands Decider 2B belongs to. That model stays out of the index (no
+quantized builds, no text generation) until a GGUF and a runtime path exist; re-check then.
+Candidates seen and skipped: DeepSeek-V4.1-Flash (Sept 10; 552B+ MoE, new encoder-decoder design —
+sizing not derivable from a reachable config, and no constrained-hardware reader runs it), Mistral
+Medium 3.5 (April, 128B dense, not fresh), Reflection Beam (announced 2026-10-05; size, licence and
+weights not confirmable from any reachable source). The daily routine moved from a fresh session per
+run to this session (the fresh session had no repo attached; the 2026-10-06 run produced no commit).
+
 ### 2026-10-05 (e) — Data licensed CC BY 4.0 (Search Console: Dataset missing `license`)
 
 Search Console flagged the `/benchmarks/` `Dataset` JSON-LD (non-critical: field "license" missing).

@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-05):**
+**Live snapshot (2026-10-06):**
 
 | Surface | Notes |
 |--------|--------|
@@ -986,6 +986,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-06 | **Runtime versions** — llama.cpp b11434 (+ first `v0.6.0` release: `/v1/systemone` decision-model API), vLLM v0.31.0; Ollama/ExLlamaV3 unchanged. Patrol skipped DeepSeek-V4.1-Flash, Mistral Medium 3.5, Reflection Beam (see README) |
 | 2026-10-05 | **Data licensed CC BY 4.0** — Search Console: `Dataset` missing `license`; owner chose CC BY; `/legal/` §10 + JSON-LD + visible note on `/benchmarks/` |
 | 2026-10-05 | **Homepage: latest additions under the picker, hardware included** — was fifth and models-only; `GPU.addedAt` + `latestEntries()` (same-day same-type rows collapse) |
 | 2026-10-05 | **DGX Spark 64G/128G (76) + guide (27)** — nvidia.com specs (273 GB/s both); new `nvidia-unified` type, tight band capped at 100% (no host RAM) so GPT-OSS 120B @64G is red; card-vs-card FAQ claimed "same models" whatever the counts (latent, all pages) |
