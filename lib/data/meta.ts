@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-06';
+export const dataLastUpdated = '2026-10-07';
 
 export const dataSources = {
   models: {
@@ -59,11 +59,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-06',
+  checkedAt: '2026-10-07',
   current: {
-    llamacpp: 'b11434',
+    llamacpp: 'b11458',
     vllm: 'v0.31.0',
-    ollama: 'v0.35.1',
+    ollama: 'v0.40.0',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -77,6 +77,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-07',
+    en: 'Ollama v0.40.0 is now its latest release, and on Apple silicon it runs some model families on MLX by default. Ollama names Qwen3.8, Gemma 4, Qwen3.6 and Qwen3.5. This site sizes GGUF builds and Ollama has not published how large its MLX builds are, so the three Mac guides now say so. llama.cpp is at b11458; vLLM v0.31.0 and ExLlamaV3 v1.5.4 are unchanged.',
+    zh: 'Ollama v0.40.0 现已成为其最新正式版，在 Apple 芯片上会默认用 MLX 运行部分模型系列，Ollama 点名了 Qwen3.8、Gemma 4、Qwen3.6 和 Qwen3.5。本站计算的是 GGUF 版本的体积，而 Ollama 没有公布其 MLX 版本有多大，三篇 Mac 指南现已注明这一点。llama.cpp 更新到 b11458；vLLM v0.31.0 和 ExLlamaV3 v1.5.4 未变。',
+  },
   {
     date: '2026-10-06',
     en: 'vLLM v0.31.0 and llama.cpp b11434 are now the current runtime versions on the benchmarks page. Both were read from the projects\' own release pages; Ollama (v0.35.1) and ExLlamaV3 (v1.5.4) are unchanged. llama.cpp also cut a v0.6.0 release, its first numbered one in this index\'s records. No model or size on the site changes with this.',

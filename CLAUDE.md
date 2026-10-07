@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-06):**
+**Live snapshot (2026-10-07):**
 
 | Surface | Notes |
 |--------|--------|
@@ -586,7 +586,9 @@ successful CPU-only build; the old `LLAMA_CUDA` is mapped with a warning, `LLAMA
 **System Memory Fallback** silently spills VRAM into system RAM, turning an OOM into a mysteriously
 slow model; and `ollama ps`'s `PROCESSOR` column is the only usable GPU check on a Mac, where
 unified memory leaves no separate VRAM figure to watch — over Metal's budget Ollama **splits** the
-model (`metal_partial_offload` in `server/sched.go`, shown as `x%/y% CPU/GPU`), it does not refuse it. WSL2 (re-checked 2026-10-02 from Microsoft's
+model (`metal_partial_offload` in `server/sched.go`, shown as `x%/y% CPU/GPU`), it does not refuse it. **Since Ollama v0.40.0 (Latest from 2026-10-07) Apple Silicon runs MLX-supported
+architectures on MLX by default** (Qwen3.8, Gemma 4, Qwen3.6, Qwen3.5 per the release notes) — this site's
+GGUF sizes are then a guide, not exact, and Ollama publishes no MLX build sizes; do not invent one. WSL2 (re-checked 2026-10-02 from Microsoft's
 WSL docs, NVIDIA's CUDA-on-WSL guide and Ollama's `install.sh`): VM memory defaults to 50% of host
 RAM; `[boot] systemd` defaults **off**, and Ollama's installer then starts no service; `apt install
 cuda`/`cuda-drivers` installs a Linux driver over the passthrough stub (`cuda-toolkit-12-x` only);
@@ -986,6 +988,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-07 | **Ollama v0.40.0 → Latest; MLX default on Apple Silicon** — 3 Mac guides note GGUF sizes are a guide for Qwen3.8/Gemma 4/Qwen3.6/3.5 under MLX; llama.cpp b11458. Skipped Qwen3.8-Flash-Next (Aug, unverifiable layout) |
 | 2026-10-06 | **Runtime versions** — llama.cpp b11434 (+ first `v0.6.0` release: `/v1/systemone` decision-model API), vLLM v0.31.0; Ollama/ExLlamaV3 unchanged. Patrol skipped DeepSeek-V4.1-Flash, Mistral Medium 3.5, Reflection Beam (see README) |
 | 2026-10-05 | **Data licensed CC BY 4.0** — Search Console: `Dataset` missing `license`; owner chose CC BY; `/legal/` §10 + JSON-LD + visible note on `/benchmarks/` |
 | 2026-10-05 | **Homepage: latest additions under the picker, hardware included** — was fifth and models-only; `GPU.addedAt` + `latestEntries()` (same-day same-type rows collapse) |

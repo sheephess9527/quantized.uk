@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-07 — Daily patrol: Ollama v0.40.0 promoted; Mac guides note MLX default
+
+Ollama's release page now marks **v0.40.0** (tagged 2026-09-25) as **Latest** — it was Pre-release on
+2026-10-06 and skipped then. Its notes: on Apple Silicon "model architectures supported by the MLX
+runtime will automatically run on MLX", naming qwen3.8, gemma4, qwen3.6, qwen3.5 (plus decision and
+embedding models). The notes give no MLX build sizes, no opt-out and nothing about `ollama ps`; the
+docs (`gpu.mdx`, `macos.mdx`) still describe Metal only. So the three Mac guides
+(`mac-ollama-setup`, `mac-m3-pro-limits`, `m1-8gb-ollama-limits`) gain one sentence in their first
+section saying GGUF sizes are a guide, not exact, for those families under Ollama ≥ 0.40 — no MLX
+figure invented; `updatedAt` → 2026-10-07, no `verifiedAt`. `runtimeVersions`: ollama v0.40.0,
+llama.cpp b11458 (tags page; two `backup/…` branch tags above it ignored), vLLM v0.31.0 and
+ExLlamaV3 v1.5.4 unchanged. Candidates skipped: Qwen3.8-Flash-Next (released 2026-08-26, 180B on
+disk incl. 51B N-gram embeddings + MTP — a new layout no reachable config describes, and not fresh).
+
 ### 2026-10-06 — Daily patrol: runtime versions; no model or hardware added
 
 Runtime versions from each project's GitHub tags/releases page (verbatim lists): llama.cpp **b11434**

@@ -205,7 +205,7 @@ export const extraArticles: Article[] = [
     tags: ['Mac', 'M3 Pro', 'Apple Silicon', 'Ollama', 'Metal'],
     publishedAt: '2025-07-08',
     // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-07',
     // No `verifiedAt`: rewritten 2026-09-08 because the previous version told
     // 18GB readers a 14B "needs 36GB+" when this site's own calculator puts it
     // at 11.0 GB — a wrong answer in the discouraging direction. The figures
@@ -218,8 +218,8 @@ export const extraArticles: Article[] = [
       {
         heading: 'The number that actually limits you',
         headingZh: '真正限制你的那个数字',
-        body: 'Unified memory is shared with macOS and everything you have open, and Metal will not let a process wire down all of it — the default ceiling is roughly 75% of installed RAM. So an 18GB M3 Pro offers something like 13.5GB to a model, and a 36GB machine around 27GB. Every "will it fit" question on a Mac is against that number, not against the number on the box. It is adjustable with iogpu.wired_limit_mb, but raising it means macOS starts swapping instead of the model failing to load, which is worse.',
-        bodyZh: '统一内存要与 macOS 以及你打开的一切共享，而且 Metal 不允许单个进程锁定全部内存 —— 默认上限约为已装内存的 75%。所以 18GB 的 M3 Pro 大约能给模型 13.5GB，36GB 的机器约 27GB。Mac 上任何“装不装得下”的问题，比的都是这个数字，而不是机身标称的那个。它可以用 iogpu.wired_limit_mb 调整，但调高之后变成 macOS 开始换页、而不是模型加载失败，那更糟。',
+        body: 'Unified memory is shared with macOS and everything you have open, and Metal will not let a process wire down all of it — the default ceiling is roughly 75% of installed RAM. So an 18GB M3 Pro offers something like 13.5GB to a model, and a 36GB machine around 27GB. Every "will it fit" question on a Mac is against that number, not against the number on the box. It is adjustable with iogpu.wired_limit_mb, but raising it means macOS starts swapping instead of the model failing to load, which is worse. One change to know about: since Ollama v0.40.0 (now its latest release), architectures its MLX runtime supports run on MLX by default instead of llama.cpp — Ollama names Qwen3.8, Gemma 4, Qwen3.6 and Qwen3.5. The sizes on this site are for GGUF builds, and Ollama has not published how large its MLX builds are, so for those families read them as a guide rather than an exact figure.',
+        bodyZh: '统一内存要与 macOS 以及你打开的一切共享，而且 Metal 不允许单个进程锁定全部内存 —— 默认上限约为已装内存的 75%。所以 18GB 的 M3 Pro 大约能给模型 13.5GB，36GB 的机器约 27GB。Mac 上任何“装不装得下”的问题，比的都是这个数字，而不是机身标称的那个。它可以用 iogpu.wired_limit_mb 调整，但调高之后变成 macOS 开始换页、而不是模型加载失败，那更糟。需要知道的一个变化：从 Ollama v0.40.0（现为其最新正式版）起，MLX 运行时支持的架构在 Mac 上默认改用 MLX 而不是 llama.cpp 运行——Ollama 点名了 Qwen3.8、Gemma 4、Qwen3.6 和 Qwen3.5。本站的体积数字针对的是 GGUF 版本，而 Ollama 没有公布它的 MLX 版本有多大，所以对这几个系列，请把本站数字当作参考而非精确值。',
         code: {
           lang: 'bash',
           content: '# What Metal will currently wire down (0 = system default, ~75% of RAM)\nsysctl iogpu.wired_limit_mb\n\n# 18 GB machine → ≈ 13.5 GB usable\n# 36 GB machine → ≈ 27   GB usable',

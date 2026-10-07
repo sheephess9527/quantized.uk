@@ -87,14 +87,14 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'mac-ollama-setup': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-07',
     verifiedAt: undefined,
     content: [
       {
         heading: 'What you need first',
         headingZh: '开始之前',
-        body: 'macOS 14 or later on Apple silicon. Ollama’s macOS build uses Metal automatically — there is no CUDA-style toolkit to install and no flag to turn the GPU on. What you do need to understand is the memory model: the GPU and the CPU share one pool, so "VRAM" is a share of your total memory rather than a separate number.',
-        bodyZh: 'macOS 14 或更高版本，Apple 芯片。Ollama 的 macOS 版会自动使用 Metal —— 没有类似 CUDA 的工具链要装，也没有「开启 GPU」的开关。真正需要理解的是内存模型：GPU 和 CPU 共享同一块内存池，所以这里的「显存」是总内存的一部分，而不是一个独立的数字。',
+        body: 'macOS 14 or later on Apple silicon. Ollama’s macOS build uses Metal automatically — there is no CUDA-style toolkit to install and no flag to turn the GPU on. What you do need to understand is the memory model: the GPU and the CPU share one pool, so "VRAM" is a share of your total memory rather than a separate number. One change to know about: since Ollama v0.40.0 (now its latest release), architectures its MLX runtime supports run on MLX by default instead of llama.cpp — Ollama names Qwen3.8, Gemma 4, Qwen3.6 and Qwen3.5. The sizes on this site are for GGUF builds, and Ollama has not published how large its MLX builds are, so for those families read them as a guide rather than an exact figure.',
+        bodyZh: 'macOS 14 或更高版本，Apple 芯片。Ollama 的 macOS 版会自动使用 Metal —— 没有类似 CUDA 的工具链要装，也没有「开启 GPU」的开关。真正需要理解的是内存模型：GPU 和 CPU 共享同一块内存池，所以这里的「显存」是总内存的一部分，而不是一个独立的数字。需要知道的一个变化：从 Ollama v0.40.0（现为其最新正式版）起，MLX 运行时支持的架构在 Mac 上默认改用 MLX 而不是 llama.cpp 运行——Ollama 点名了 Qwen3.8、Gemma 4、Qwen3.6 和 Qwen3.5。本站的体积数字针对的是 GGUF 版本，而 Ollama 没有公布它的 MLX 版本有多大，所以对这几个系列，请把本站数字当作参考而非精确值。',
         code: { lang: 'bash', content: 'brew install ollama\nbrew services start ollama\n\n# Or download the app from ollama.com — same daemon, adds a menu bar item.\nollama --version' },
       },
       {
@@ -1000,7 +1000,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'm1-8gb-ollama-limits': {
-    updatedAt: '2026-10-02',
+    updatedAt: '2026-10-07',
     verifiedAt: undefined,
     verifiedStack: {
       en: 'M1/M2 8GB Mac · Ollama 0.6+ · GGUF Q4_K_M · 3B-class models · short context',
@@ -1010,8 +1010,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'What you need first',
         headingZh: '开始之前',
-        body: 'An M1 or M2 Mac with the base 8GB unified memory configuration, and a realistic expectation set before you start: this is the tightest capacity tier this site covers, and the honest goal is a genuinely usable 3B-class assistant, not a smaller version of what a 24GB card runs.',
-        bodyZh: '一台基础 8GB 统一内存配置的 M1 或 M2 Mac，以及在开始之前先建立一个现实的预期：这是本站覆盖的显存档位中最紧张的一档，诚实的目标是一个真正可用的 3B 级助手，而不是 24GB 显卡上跑的东西的缩小版。',
+        body: 'An M1 or M2 Mac with the base 8GB unified memory configuration, and a realistic expectation set before you start: this is the tightest capacity tier this site covers, and the honest goal is a genuinely usable 3B-class assistant, not a smaller version of what a 24GB card runs. One change to know about: since Ollama v0.40.0 (now its latest release), architectures its MLX runtime supports run on MLX by default instead of llama.cpp — Ollama names Qwen3.8, Gemma 4, Qwen3.6 and Qwen3.5. The sizes on this site are for GGUF builds, and Ollama has not published how large its MLX builds are, so for those families read them as a guide rather than an exact figure.',
+        bodyZh: '一台基础 8GB 统一内存配置的 M1 或 M2 Mac，以及在开始之前先建立一个现实的预期：这是本站覆盖的显存档位中最紧张的一档，诚实的目标是一个真正可用的 3B 级助手，而不是 24GB 显卡上跑的东西的缩小版。需要知道的一个变化：从 Ollama v0.40.0（现为其最新正式版）起，MLX 运行时支持的架构在 Mac 上默认改用 MLX 而不是 llama.cpp 运行——Ollama 点名了 Qwen3.8、Gemma 4、Qwen3.6 和 Qwen3.5。本站的体积数字针对的是 GGUF 版本，而 Ollama 没有公布它的 MLX 版本有多大，所以对这几个系列，请把本站数字当作参考而非精确值。',
         code: { lang: 'bash', content: 'brew install ollama\nollama --version' },
       },
       {
