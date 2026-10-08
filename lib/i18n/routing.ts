@@ -35,7 +35,13 @@ export function pathForLang(pathname: string, lang: Lang): string {
 
 /** The other language's URL for the same content — used by the toggle and hreflang. */
 export function mirrorPath(pathname: string): string {
-  return langFromPathname(pathname) === 'zh' ? toEnPath(pathname) : toZhPath(pathname);
+  const zh = langFromPathname(pathname) === 'zh';
+  // The exported 404 page renders with Next's internal `/_not-found` path, so
+  // its language switcher pointed at `/zh/_not-found/` — a dead link in the
+  // static HTML. A missing page has no mirror; send the reader to the other
+  // tree's home instead.
+  if (/^\/(_not-found|404)(\/|$)/.test(toEnPath(pathname))) return zh ? '/' : '/zh/';
+  return zh ? toEnPath(pathname) : toZhPath(pathname);
 }
 
 /**

@@ -3,7 +3,7 @@ import { assertDataConsistent } from '@/lib/data/validate';
 import { articleModifiedAt } from '@/lib/utils/article-dates';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
-import { dataLastUpdated } from '@/lib/data/meta';
+import { dataLastUpdated, runtimeVersions, sizingChangedAt } from '@/lib/data/meta';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -27,6 +27,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // published / updated / verified) for guides, and the site-wide data date only for pages driven by it.
   const siteDate = new Date(dataLastUpdated);
 
+  // Pages derived from the index change when the inventory or the sizing does,
+  // not on every data ship — see `sizingChangedAt`. Taking the latest of those
+  // keeps a runtime-version-only day from re-announcing every GPU page.
+  const latest = (ds: (string | undefined)[]) =>
+    new Date(ds.filter((d): d is string => !!d).sort().slice(-1)[0] ?? dataLastUpdated);
+  const inventoryDate = latest([sizingChangedAt, ...models.map(m => m.addedAt), ...gpuDatabase.map(g => g.addedAt)]);
+  const guidesDate = latest(articles.map(a => articleModifiedAt(a)));
+  const benchDate = latest([runtimeVersions.checkedAt]);
+
   // `/legal/` and `/privacy/` are hand-written pages that do not move with a
   // data ship — they should not claim `siteDate` just because the site
   // rebuilt. Real last-touched dates (from `git log -1` on each source file);
@@ -41,20 +50,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // at best, but a sitemap where every URL claims the same values is the same
   // "carries no information" problem as a uniform lastmod.
   const HUB_INDEX: Entry[] = [
-    { path: '/quant-hub/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
-    { path: '/gpu/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
-    { path: '/best/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/quant-hub/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/gpu/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/best/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
   ];
   const CONTENT_INDEX: Entry[] = [
-    { path: '/benchmarks/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/cookbook/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/faq/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/formats/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/vram-calc/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/cli-gen/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/format-wizard/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/compare/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/benchmarks/', lastModified: benchDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/cookbook/', lastModified: guidesDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/faq/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/formats/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/vram-calc/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/cli-gen/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/format-wizard/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/compare/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
   ];
 
   const entries: Entry[] = [
@@ -67,15 +76,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/privacy/', lastModified: PRIVACY_LASTMOD, changeFrequency: 'yearly', priority: 0.2 },
     ...models.map(m => ({
       path: `/quant-hub/${m.id}/`,
-      lastModified: m.addedAt ? new Date(m.addedAt) : siteDate,
+      // A model page changes when it is added or when the sizing behind it does;
+      // 63 rows predate `addedAt`, and falling back to `siteDate` re-announced them daily.
+      lastModified: latest([m.addedAt, sizingChangedAt]),
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     })),
-    // GPU landing pages: derived entirely from data that already existed, so
-    // they carry the site date rather than a date of their own.
+    // GPU landing pages: derived from the index, so they change with it.
     ...gpuDatabase.map(g => ({
       path: `/gpu/${gpuSlug(g)}/`,
-      lastModified: siteDate,
+      lastModified: inventoryDate,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     })),
@@ -84,19 +94,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // add one and list only the other — which is exactly what happened.
     ...BEST_TIERS.map(t => ({
       path: `/best/${t.slug}/`,
-      lastModified: siteDate,
+      lastModified: inventoryDate,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     })),
     ...FORMAT_PAGES.map(f => ({
       path: `/formats/${f.id}/`,
-      lastModified: siteDate,
+      lastModified: inventoryDate,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
     ...formatPairs.map(p => ({
       path: `/formats/${p.slug}/`,
-      lastModified: siteDate,
+      lastModified: inventoryDate,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),

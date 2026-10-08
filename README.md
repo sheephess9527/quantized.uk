@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-08 (b) — Optimisation pass: honest sitemap dates for derived pages; 404 language link
+
+Audit of the export (link graph excluding nav/footer, Playwright on 18 key pages at 1280 and 390 px,
+`indexnow --dry-run`). Clean: no content page under 3 inbound links, no console or hydration errors,
+no horizontal overflow. Found two faults:
+- **IndexNow announced 354 of 460 URLs every deploy.** GPU, `/best/`, format, tool, FAQ and hub-index
+  pages carried `dataLastUpdated`, and 63 model rows without `addedAt` fell back to it — so a daily
+  patrol that only bumped a runtime version re-submitted most of the site. They now take the latest of
+  every `addedAt` (models + GPUs) and a new `sizingChangedAt` in `meta.ts` (bump it only when sizing,
+  arch fields, fit rules or page-prose generators change; `dataProblems()` rejects it past
+  `dataLastUpdated`). Model pages use `max(addedAt, sizingChangedAt)`, `/cookbook/` the newest
+  `articleModifiedAt`, `/benchmarks/` `runtimeVersions.checkedAt`. Home, `/changelog/`, `/about/`
+  keep `dataLastUpdated` (their text does change). Perturbation: with today's two GPUs back-dated,
+  a runtime-only day selects **8** URLs instead of 354.
+- **404 language switcher linked `/zh/_not-found/`** (Next's internal path in the exported 404). 
+  `mirrorPath()` now maps `/_not-found` and `/404` to the other tree's home.
+
 ### 2026-10-08 — Daily patrol: +2 32 GB workstation cards (78); ExLlamaV3 v1.6.0
 
 `r9700` (Radeon AI PRO R9700 32G — amd.com product page: 32 GB GDDR6, 256-bit, 640 GB/s, RDNA 4) and

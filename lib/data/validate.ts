@@ -6,6 +6,7 @@ import { calcVRAM, quantBPW, quantGroups } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { isMoE } from '@/lib/utils/model-meta';
+import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -18,6 +19,8 @@ export function dataProblems(): string[] {
   const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
 
   dupes(models.map(m => m.id)).forEach(id => out.push(`duplicate model id: ${id}`));
+  // A sitemap date in the future of the data ship would be announced to IndexNow as a change tomorrow.
+  if (sizingChangedAt > dataLastUpdated) out.push(`sizingChangedAt ${sizingChangedAt} is later than dataLastUpdated ${dataLastUpdated}`);
   dupes(gpuDatabase.map(g => g.id)).forEach(id => out.push(`duplicate GPU id: ${id}`));
   dupes(gpuDatabase.map(gpuSlug)).forEach(s => out.push(`duplicate GPU slug: ${s}`));
   gpuDatabase.forEach(g => {

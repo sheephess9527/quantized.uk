@@ -6,6 +6,17 @@ export interface ChangelogEntry {
 
 export const dataLastUpdated = '2026-10-08';
 
+/**
+ * Last day the *sizing* behind derived pages changed without a model or GPU
+ * being added — an arch-field fix, a new fit rule, a change to the page-prose
+ * generators. Together with every `addedAt` it dates the GPU, `/best/`,
+ * format and tool pages in the sitemap (`app/sitemap.ts`). Before this they
+ * carried `dataLastUpdated`, so a daily patrol that only bumped a runtime
+ * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
+ * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
+ */
+export const sizingChangedAt = '2026-10-05';
+
 export const dataSources = {
   models: {
     en: 'Hugging Face model cards, community quant releases (bartowski, turboderp, unsloth, city96), WikiText-2 PPL benchmarks',
@@ -77,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-08',
+    en: 'The language switch on the "page not found" screen now takes you to the other language\'s home page. It used to point at a missing page of its own. Search engines are also now told only about pages whose content actually changed, rather than most of the site after every update.',
+    zh: '「页面不存在」页上的语言切换现在会带你去另一种语言的首页，之前它指向的也是一个不存在的页面。另外，现在只会把内容真正变化了的页面报给搜索引擎，而不是每次更新都把大半个网站报一遍。',
+  },
   {
     date: '2026-10-08',
     en: 'Two 32 GB workstation cards added: AMD\'s Radeon AI PRO R9700 and Intel\'s Arc Pro B70. Both carry the same memory as an RTX 5090 at a fraction of its bandwidth. The R9700 (640 GB/s) fits 74 of the 90 models comfortably at 4K and runs AWQ and GPTQ through vLLM on ROCm; the B70 (608 GB/s) fits 72 and, like every Arc card, runs GGUF only. Specs are from AMD\'s and Intel\'s own product pages. ExLlamaV3 is now at v1.6.0 and llama.cpp at b11480.',

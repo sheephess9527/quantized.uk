@@ -738,8 +738,11 @@ content that never varies per-request. Edit the file directly; there is no data 
 rebuilt.** Every URL sharing `dataLastUpdated` is the same "carries no information" fault as a
 uniform meta description — model pages use `addedAt`, guides use `articleModifiedAt()`,
 `/legal/`/`/privacy/` use their real last-edited date (hardcoded from `git log`, since they are
-hand-written and do not move with a data ship). Only pages actually driven by the data ship — GPU
-pages, format pages, index pages — get `dataLastUpdated` itself.
+hand-written and do not move with a data ship). Derived pages (GPU, `/best/`, format, tool, FAQ, hub
+index) take the latest `addedAt` across models + GPUs or **`sizingChangedAt`** (`meta.ts`) — bump that
+constant when sizing/arch/fit rules/prose generators change without an `addedAt`. Only home,
+`/changelog/` and `/about/` carry `dataLastUpdated` (2026-10-08: the old rule made IndexNow submit
+354 of 460 URLs on a runtime-version-only day; now 8).
 
 **Redirects live in `public/_redirects`, never in `next.config.js`.** `redirects()` needs a Next
 server and is **silently inert** in a static export — it looks done and does nothing. Cloudflare
@@ -989,6 +992,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-08 | **Optimisation pass** — sitemap lastmods for derived pages from `addedAt` + `sizingChangedAt` (IndexNow: 354 → 8 URLs on a runtime-only day); 404 language switch no longer links `/zh/_not-found/`. Audit otherwise clean (links, console, 390 px) |
 | 2026-10-08 | **+2 32 GB workstation cards (78): Radeon AI PRO R9700, Arc Pro B70** — vendor spec pages; R9700 in vLLM's ROCm list (AWQ/GPTQ ok); consumer filters exclude `Arc Pro`; ExLlamaV3 v1.6.0, llama.cpp b11480. Mistral Large 4 / Beam weights not out yet |
 | 2026-10-07 | **Ollama v0.40.0 → Latest; MLX default on Apple Silicon** — 3 Mac guides note GGUF sizes are a guide for Qwen3.8/Gemma 4/Qwen3.6/3.5 under MLX; llama.cpp b11458. Skipped Qwen3.8-Flash-Next (Aug, unverifiable layout) |
 | 2026-10-06 | **Runtime versions** — llama.cpp b11434 (+ first `v0.6.0` release: `/v1/systemone` decision-model API), vLLM v0.31.0; Ollama/ExLlamaV3 unchanged. Patrol skipped DeepSeek-V4.1-Flash, Mistral Medium 3.5, Reflection Beam (see README) |
