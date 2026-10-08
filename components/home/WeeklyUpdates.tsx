@@ -5,19 +5,9 @@ import { ArrowRight, Rss, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { isRecentModel } from '@/lib/utils/model-meta';
+import { isRecentModel, nameCarriesLabel } from '@/lib/utils/model-meta';
 import { latestEntries, isRecentDate } from '@/lib/utils/latest-additions';
 import { gpuSlug } from '@/lib/utils/gpu-page';
-
-/**
- * Most names already carry the size ("SmolLM3 3B", "ERNIE 4.5 21B-A3B"), so
- * printing `paramLabel` under them read "3B" twice. Only add it when the name
- * does not already contain it as a whole token.
- */
-function nameCarriesLabel(name: string, label: string): boolean {
-  const esc = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`(^|[\\s(-])${esc}($|[\\s)])`, 'i').test(name);
-}
 
 export default function WeeklyUpdates() {
   const { t, lang } = useLanguage();

@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-08 (c) — VRAM calculator pass (highest-traffic page)
+
+Operated `/tools/vram-calc/` (both languages, 1280/390 px) instead of reading it. Found and fixed:
+
+- **Reverse-mode "Calculate" links were dead.** Each row links to the same page with `?mode=forward&model=…`; `useUrlQuery()` reads the query once after mount, so a client-side navigation changed the address bar and nothing else. Now an `onClick` (`openForward`) switches the state directly (href kept for new-tab/modifier clicks), carries `&gpu=`, and makes the browsed card the profile card so the forward verdict judges the same card.
+- **Unknown `?gpu=` ids were kept** — reverse mode then printed "No models fit this GPU" about a card that does not exist. Ids not in `gpuDatabase` are ignored now.
+- **"Smallest card" was file order** (RTX 5080 named for 16 GB) and the summary counted the 4 CPU-only RAM rows as cards (82). Now `bySmallestCard` (RTX 4060 Ti 16G), `!isCPU`, `GPU_COUNT` (78); the show-all list says "78 cards + 4 CPU-only RAM sizes".
+- **No warning above a model's window** — `ctx > model.contextLength` now shows an amber note (en/zh).
+- **Custom models weren't shareable** — `params`/`layers`/`kv`/`hd` now written by `syncUrl` and read on load.
+- Dropdown printed "SmolLM3 3B (3B)" — `nameCarriesLabel()` moved to `lib/utils/model-meta.ts`, shared with `WeeklyUpdates`; sort chips gained `aria-pressed`; a missing perplexity read "PPL −—", now "PPL —".
+
+Checked and fine: no console errors or horizontal overflow at 390 px (forward, reverse, DGX Spark/R9700/B70 rows). First-load JS (253 kB) is the shared layout's data, the same order as every other page — not a calculator problem. No sizing number changed, so `sizingChangedAt` is not bumped.
+
 ### 2026-10-08 (b) — Optimisation pass: honest sitemap dates for derived pages; 404 language link
 
 Audit of the export (link graph excluding nav/footer, Playwright on 18 key pages at 1280 and 390 px,

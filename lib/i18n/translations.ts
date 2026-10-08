@@ -455,6 +455,7 @@ export const translations = {
       tokens: 'tokens',
       levelNotShipped: 'Estimate only — no {level} build of {model} is in this index, so the size below comes from the generic bits-per-weight table rather than a measured file.',
       levelNotShippedShips: 'Levels this model ships: {levels}',
+      ctxOverModel: '{model} attends to at most {max} tokens. At {ctx} the figure below prices a cache the model cannot use — pick a shorter context for a real answer.',
       title: 'VRAM / RAM Calculator',
       subtitle: 'Precise memory estimate for any model × quant × context combination',
       model: 'Model',
@@ -484,7 +485,7 @@ export const translations = {
       hwAdviceRed: 'Does not fit. Try a smaller quant level or a shorter context.',
       hwFormatMismatch: '{format} does not run on this card, whatever the size — pick a GGUF build instead, or a different card.',
       hwUsableOf: '{usable}G usable of {nameplate}G unified',
-      hwShowAll: 'All {total} cards',
+      hwShowAll: 'All {total} cards + {cpu} CPU-only RAM sizes',
       refTable: {
         title: 'Quick reference by model size',
         intro: 'The calculator\'s answer for every size class in this index, at each model\'s reference quant (its native build, else Q4_K_M) and batch 1 — the same arithmetic as the tool above, written out so it can be read without it. The 32K column counts only models whose own context window reaches 32K. The last column is the smallest card that holds every model in the class comfortably at 4K.',
@@ -1430,6 +1431,7 @@ export const translations = {
       tokens: '个 token',
       levelNotShipped: '仅为估算 —— 本索引中没有 {model} 的 {level} 版本，因此下面的体积来自通用 bits-per-weight 表，而不是实测文件。',
       levelNotShippedShips: '该模型实际提供的档位：{levels}',
+      ctxOverModel: '{model} 最多只能处理 {max} 个 token。按 {ctx} 计算，下面的数字包含了模型根本用不上的缓存——选一个更短的上下文才是真实答案。',
       title: '显存 / 内存计算器',
       subtitle: '精确计算任意模型 × 量化 × 上下文长度的内存需求',
       model: '模型',
@@ -1459,7 +1461,7 @@ export const translations = {
       hwAdviceRed: '装不下。请换更低的量化档位或更短的上下文。',
       hwFormatMismatch: '{format} 在这张卡上跑不了，跟体积大小无关——换成 GGUF 构建，或者换一张卡。',
       hwUsableOf: '{nameplate}G 统一内存中约 {usable}G 可用',
-      hwShowAll: '全部 {total} 张卡',
+      hwShowAll: '全部 {total} 张卡 + {cpu} 档纯 CPU 内存',
       refTable: {
         title: '按模型规模速查',
         intro: '本索引每个规模档位的计算结果，按各模型的基准量化（官方原生版本，否则 Q4_K_M）、batch 1 计算 —— 与上面的计算器是同一套算法，写成表格，不用它也能直接看。32K 一列只统计原生上下文窗口达到 32K 的模型。最后一列是 4K 上下文下能从容装下该档位全部模型的最小显卡。',

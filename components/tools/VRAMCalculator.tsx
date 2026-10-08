@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback, type MouseEvent } from 'react';
 import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft } from 'lucide-react';
@@ -17,6 +17,9 @@ import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
+import { nameCarriesLabel } from '@/lib/utils/model-meta';
+import { bySmallestCard } from '@/lib/utils/model-explainer';
+import { GPU_COUNT } from '@/lib/seo';
 
 type Mode = 'forward' | 'reverse';
 type VerdictColor = 'green' | 'yellow' | 'red';
@@ -86,11 +89,23 @@ export default function VRAMCalculator() {
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
     else if (config.contextLen) setContextLen(config.contextLen);
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
+    // A custom model is only shareable if its shape travels with the link —
+    // without these the recipient got the 7B / 32-layer defaults.
+    if (modelParam === 'custom') {
+      const p = searchParams.get('params'); if (p) setCustomParams(p);
+      const l = searchParams.get('layers'); if (l) setCustomLayers(l);
+      const kv = searchParams.get('kv'); if (kv) setCustomKvHeads(kv);
+      const hd = searchParams.get('hd'); if (hd) setCustomHeadDim(hd);
+    }
     // `gpu` has to reach the shared profile, not just local state: forward
     // mode has no GPU dropdown of its own — it judges the answer against the
     // card in the navbar profile — so a link carrying `?gpu=` used to land on
     // a page that computed a size and then declined to say whether it fit.
-    const gpuParam = searchParams.get('gpu');
+    // An id the database does not know (a typo, a renamed card) is ignored
+    // rather than kept: reverse mode used to answer "no models fit this GPU"
+    // about a card that does not exist.
+    const rawGpu = searchParams.get('gpu');
+    const gpuParam = rawGpu && gpuDatabase.some(g => g.id === rawGpu) ? rawGpu : null;
     if (gpuParam) {
       setSelectedGpuId(gpuParam);
       if (gpuParam !== config.gpuId) updateConfig({ gpuId: gpuParam });
@@ -116,6 +131,12 @@ export default function VRAMCalculator() {
     params.set('batch', String(batchSize));
     if (mode === 'forward') {
       if (selectedModelId) params.set('model', selectedModelId);
+      if (selectedModelId === 'custom') {
+        params.set('params', customParams);
+        params.set('layers', customLayers);
+        params.set('kv', customKvHeads);
+        params.set('hd', customHeadDim);
+      }
       params.set('quant', selectedQuant);
       // Forward mode judges the answer against the card in the shared profile,
       // and this rewrites the address bar on every render — so leaving `gpu`
@@ -130,7 +151,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -163,7 +184,32 @@ export default function VRAMCalculator() {
     setFormatGroup(findFormatGroup(next));
   }, [selectedQuant]);
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * The "Calculate" link on each reverse-mode row points at this same page.
+   * The query is read once, after mount, so a client-side navigation to it
+   * changed the address bar and nothing else — the reader stayed on the list.
+   * Switch the state directly instead; the href stays for new-tab clicks and
+   * for anything reading the markup. The card the reader was browsing becomes
+   * the profile card, or the forward verdict would judge a different one.
+   */
+  const openForward = (e: MouseEvent, modelId: string, level: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    setMode('forward');
+    setSelectedModelId(modelId);
+    setInvalidModelId(null);
+    setSelectedQuant(level);
+    setFormatGroup(findFormatGroup(level));
+    if (selectedGpuId && selectedGpuId !== profileGpuId) updateConfig({ gpuId: selectedGpuId });
+    rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
+
   const selectedModel = models.find(m => m.id === selectedModelId);
+  /** The window is longer than the model can attend to — the estimate prices
+      cache the model would never fill. */
+  const ctxOverModel = selectedModel !== undefined && contextLen > selectedModel.contextLength;
   /** True when the index has no file for the selected model at this level. */
   const levelNotShipped =
     selectedModel !== undefined &&
@@ -216,8 +262,11 @@ export default function VRAMCalculator() {
   // each card's usable capacity rather than its nameplate figure.
   const greenGpus = useMemo(
     () => gpuDatabase
-      .filter(g => (!selectedQuantObj || formatAllowed(g, selectedQuantObj.format)) && getVerdict(result.totalGB, usableCapacityGB(g)) === 'green')
-      .sort((a, b) => a.vram - b.vram),
+      // CPU-only RAM rows are not cards; "smallest" is a size, with retail
+      // cards ahead of datacentre ones at the same capacity (bySmallestCard) —
+      // sorting on vram alone named whichever 16 GB row came first in the file.
+      .filter(g => !g.isCPU && (!selectedQuantObj || formatAllowed(g, selectedQuantObj.format)) && getVerdict(result.totalGB, usableCapacityGB(g)) === 'green')
+      .sort(bySmallestCard),
     [result.totalGB, selectedQuantObj],
   );
   const smallestGreen = greenGpus[0];
@@ -253,7 +302,7 @@ export default function VRAMCalculator() {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={rootRef} className="space-y-6 scroll-mt-24">
       {/* Mode toggle + share */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex gap-2">
@@ -304,7 +353,9 @@ export default function VRAMCalculator() {
                     {groupedModels().map(group => (
                       <optgroup key={group.bucket} label={group.bucket}>
                         {group.models.map(m => (
-                          <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
+                          <option key={m.id} value={m.id}>
+                            {nameCarriesLabel(m.name, m.paramLabel) ? m.name : `${m.name} (${m.paramLabel})`}
+                          </option>
                         ))}
                       </optgroup>
                     ))}
@@ -406,6 +457,7 @@ export default function VRAMCalculator() {
                     <button
                       key={s.id}
                       onClick={() => setSortBy(s.id)}
+                      aria-pressed={sortBy === s.id}
                       className={cn(
                         'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
                         sortBy === s.id
@@ -518,6 +570,16 @@ export default function VRAMCalculator() {
               </p>
             </div>
           )}
+          {mode === 'forward' && showForwardResult && ctxOverModel && (
+            <div className="glass rounded-2xl p-4 border border-amber-500/20 mb-4">
+              <p className="text-xs text-amber-300/90 leading-relaxed">
+                {t.calc.ctxOverModel
+                  .replace('{model}', selectedModel!.name)
+                  .replace('{max}', selectedModel!.contextLength.toLocaleString('en-US'))
+                  .replace('{ctx}', contextLen.toLocaleString('en-US'))}
+              </p>
+            </div>
+          )}
           {mode === 'forward' && showForwardResult && (
             <div className="space-y-4">
               <div className="glass rounded-2xl p-5">
@@ -601,7 +663,7 @@ export default function VRAMCalculator() {
                     ? t.calc.hwSummaryNone
                     : t.calc.hwSummary
                         .replace('{green}', String(greenGpus.length))
-                        .replace('{total}', String(gpuDatabase.length))
+                        .replace('{total}', String(GPU_COUNT))
                         .replace('{smallest}', smallestGreen!.name)
                         .replace('{vram}', String(smallestGreen!.vram))}
                 </p>
@@ -649,7 +711,7 @@ export default function VRAMCalculator() {
 
                 <details className="group">
                   <summary className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer min-h-[44px] flex items-center">
-                    {t.calc.hwShowAll.replace('{total}', String(gpuDatabase.length))}
+                    {t.calc.hwShowAll.replace('{total}', String(GPU_COUNT)).replace('{cpu}', String(gpuDatabase.length - GPU_COUNT))}
                   </summary>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
                   {gpuDatabase.map(gpu => {
@@ -713,7 +775,7 @@ export default function VRAMCalculator() {
                           </div>
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
-                            <span>PPL −{formatLoss(quant)}</span>
+                            <span>PPL {quant.pplLossPercent === undefined ? formatLoss(quant) : `−${formatLoss(quant)}`}</span>
                             {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
                         </div>
@@ -725,7 +787,8 @@ export default function VRAMCalculator() {
                             {t.calc.viewModel}
                           </Link>
                           <Link
-                            href={`/tools/vram-calc/?mode=forward&model=${model.id}&quant=${encodeURIComponent(level)}&ctx=${contextLen}&batch=${batchSize}`}
+                            href={`/tools/vram-calc/?mode=forward&model=${model.id}&quant=${encodeURIComponent(level)}&ctx=${contextLen}&batch=${batchSize}${selectedGpuId ? `&gpu=${selectedGpuId}` : ''}`}
+                            onClick={e => openForward(e, model.id, level)}
                             className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
                           >
                             {t.hub.detail.calc}

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-08',
+    en: 'The memory calculator\'s "Calculate" links in GPU-to-models mode now work. Clicking one changed the address but left you on the list; it now opens that model on the card you were browsing. A link naming a card the site does not know no longer claims that nothing fits it. The calculator now warns when the context you picked is longer than the model can use, and shared links to a custom model keep its size and layers. "Smallest card" now means the smallest retail card, and CPU-only memory sizes are no longer counted as cards.',
+    zh: '内存计算器「GPU → 模型」模式里的「计算」链接现在能用了：以前点了只是地址变了，页面还停在列表上；现在会直接打开该模型，并按你正在看的那张卡给出结论。链接里带了一张本站不认识的卡时，不再谎称「没有模型装得下」。所选上下文超过模型本身上限时会给出提示；自定义模型的分享链接会带上参数量和层数。「最小的卡」现在指同容量里的零售卡，纯 CPU 内存档位也不再被算作显卡。',
+  },
+  {
+    date: '2026-10-08',
     en: 'The language switch on the "page not found" screen now takes you to the other language\'s home page. It used to point at a missing page of its own. Search engines are also now told only about pages whose content actually changed, rather than most of the site after every update.',
     zh: '「页面不存在」页上的语言切换现在会带你去另一种语言的首页，之前它指向的也是一个不存在的页面。另外，现在只会把内容真正变化了的页面报给搜索引擎，而不是每次更新都把大半个网站报一遍。',
   },

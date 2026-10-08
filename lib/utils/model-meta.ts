@@ -98,3 +98,13 @@ export function supersededDiffNote(legacy: QuantModel, successor: QuantModel, la
     ? '仍在持续获得新的社区量化构建，而这个型号已经没有了'
     : 'still gets new community quant builds, which this one no longer does';
 }
+
+/**
+ * Most names already carry the size ("SmolLM3 3B", "ERNIE 4.5 21B-A3B"), so
+ * printing `paramLabel` under them read "3B" twice. Only add it when the name
+ * does not already contain it as a whole token.
+ */
+export function nameCarriesLabel(name: string, label: string): boolean {
+  const esc = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[\\s(-])${esc}($|[\\s)])`, 'i').test(name);
+}

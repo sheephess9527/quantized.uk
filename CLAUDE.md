@@ -384,6 +384,12 @@ go through **`quantLevelKey()`** (`lib/utils/recommend.ts`) — passing `quant.l
 calculator miss the model's own `bpw`, silently fall back to the generic `?? 4.85`, and contradict
 the page that sent the reader there.
 
+**A link to the page you are already on does nothing here.** `useUrlQuery()` reads the query once,
+after mount, so a client-side navigation to the same route with a new query changes the address bar
+and no state — the calculator's reverse-mode "Calculate" links were dead for that reason
+(2026-10-08). Set the state in an `onClick` and keep the href for new-tab clicks. Ignore URL ids the
+data does not know (`?gpu=bogus` printed "nothing fits"), never keep them as state.
+
 **A URL param is only real if the mode that reads it exists.** `?gpu=` on the VRAM calculator set
 local state that only *reverse* mode renders; forward mode judges against the navbar hardware
 profile, so a shared link carrying a card produced a size with no verdict. When adding a param,
