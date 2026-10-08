@@ -26,6 +26,7 @@ export function getRecommendations(
   batchSize: number,
   sortBy: SortBy = 'quality',
   includeYellow = true,
+  kvBytesPerValue?: number,
 ): Recommendation[] {
   const results: Recommendation[] = [];
   const capacity = usableCapacityGB(gpu);
@@ -42,6 +43,7 @@ export function getRecommendations(
         bpw: quant.bpw,
         contextLength: contextLen,
         batchSize,
+        kvBytesPerValue,
       });
       const verdict = getVerdict(totalGB, capacity, tightCeiling(gpu));
       if (verdict === 'red') continue;

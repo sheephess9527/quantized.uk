@@ -7,6 +7,12 @@ export interface CalcInput {
   contextLength: number;
   batchSize: number;
   /**
+   * Bytes per cached K/V value. Omitted = 2 (f16), which is llama.cpp's and
+   * Ollama's default and what every other surface on the site assumes. See
+   * `KV_CACHE_TYPES` for the quantized options.
+   */
+  kvBytesPerValue?: number;
+  /**
    * Optional attention shape — see `ModelArch.attention`. Omitted means every
    * layer keeps a growing KV cache, which is what `layers` alone implies and
    * what every pre-2026 model in the index does.
@@ -71,8 +77,23 @@ export const quantGroups: Record<string, string[]> = {
   'Full': ['FP16', 'BF16', 'FP32'],
 };
 
+/**
+ * K/V cache storage types llama.cpp and Ollama accept (`-ctk`/`-ctv`,
+ * `OLLAMA_KV_CACHE_TYPE`). Sizes are ggml's block layouts: q8_0 stores 32
+ * values in 34 bytes, q4_0 in 18 (`ggml-common.h`). Both runtimes need Flash
+ * Attention for a quantized V cache — llama.cpp's `-fa auto` turns it on, and
+ * refuses if it has been forced off (`llama-context.cpp`, checked 2026-10-08).
+ */
+export const KV_CACHE_TYPES = {
+  f16: 2,
+  q8_0: 34 / 32,
+  q4_0: 18 / 32,
+} as const;
+export type KvCacheType = keyof typeof KV_CACHE_TYPES;
+
 export function calcVRAM(input: CalcInput): CalcResult {
   const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize, attention } = input;
+  const kvValueBytes = input.kvBytesPerValue ?? 2;
 
   // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
   const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * 1.02;
@@ -88,11 +109,11 @@ export function calcVRAM(input: CalcInput): CalcResult {
   // them full attention, kvHeads 4, headDim 256): this returns 0.50 / 2.00 /
   // 16.00 GB at 8K / 32K / 262K against community figures of 0.5 / 2.0 / 16.4.
   // Sizing all 64 layers instead gives 2.00 / 8.00 / 64.00 — wrong by 4×.
-  const perLayerPerToken = 2 * kvHeads * headDim * batchSize * 2;
+  const perLayerPerToken = 2 * kvHeads * headDim * batchSize * kvValueBytes;
   // Full-attention layers may use a different head layout (Gemma 4: fewer,
   // wider global heads); window layers always use `kvHeads` × `headDim`.
   const fullPerLayerPerToken =
-    2 * (attention?.fullKvHeads ?? kvHeads) * (attention?.fullHeadDim ?? headDim) * batchSize * 2;
+    2 * (attention?.fullKvHeads ?? kvHeads) * (attention?.fullHeadDim ?? headDim) * batchSize * kvValueBytes;
   const fullLayers = attention?.fullLayers ?? layers;
   const windowLayers = attention?.windowLayers ?? 0;
   const windowSpan = Math.min(contextLength, attention?.windowTokens ?? contextLength);

@@ -384,6 +384,14 @@ go through **`quantLevelKey()`** (`lib/utils/recommend.ts`) — passing `quant.l
 calculator miss the model's own `bpw`, silently fall back to the generic `?? 4.85`, and contradict
 the page that sent the reader there.
 
+**The calculator's follow-up answers live in `lib/utils/calc-insights.ts`** (levels table, longest
+context, speed ceiling) and may only call the shared sizing functions — never re-derive a threshold.
+Sweep them over every card × model after any sizing change (the 2026-10-08 sweep script checks the
+"Best fit" pick equals `fitsOnGpu`'s and each reach is maximal). **KV cache type** is `kvBytesPerValue`
+on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculator ever passes it.
+`rooflineTokS` lives in `lib/utils/roofline.ts` — import it from there in client code, or the GPU-page
+prose generator rides along into the bundle.
+
 **A link to the page you are already on does nothing here.** `useUrlQuery()` reads the query once,
 after mount, so a client-side navigation to the same route with a new query changes the address bar
 and no state — the calculator's reverse-mode "Calculate" links were dead for that reason

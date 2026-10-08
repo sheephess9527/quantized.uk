@@ -6,6 +6,8 @@ import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTE
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { isMoE } from '@/lib/utils/model-meta';
+import { rooflineTokS, weightsGB } from '@/lib/utils/roofline';
+export { rooflineTokS };
 import { referenceQuant, isNativeQuant } from '@/lib/utils/quality';
 
 /**
@@ -54,18 +56,6 @@ export interface GpuExplainer {
 /** Headroom rule for the "room to grow" pick: fits inside 60% of the card. */
 const GROW_FRACTION = 0.6;
 
-function weightsGB(model: QuantModel, quant: QuantVariant) {
-  return calcVRAM({
-    paramsB: model.params,
-    layers: model.arch.layers,
-    kvHeads: model.arch.kvHeads,
-    headDim: model.arch.headDim,
-    attention: model.arch.attention,
-    bpw: quant.bpw,
-    contextLength: GPU_PAGE_CONTEXT,
-    batchSize: 1,
-  }).modelWeightsGB;
-}
 
 /**
  * The 8B-class reference the roofline is quoted against.
@@ -91,22 +81,6 @@ export function rooflineReference(): { model: QuantModel; quant: QuantVariant } 
   return best;
 }
 
-/**
- * Memory-bandwidth ceiling on token generation, in tok/s.
- *
- * Dense models only. A mixture-of-experts model reads one router's worth of
- * experts per token, not the whole weight set, so this arithmetic does not
- * describe it — the index's own Qwen3 30B-A3B run measures 95 tok/s on a card
- * whose dense roofline for that file size is 57, which is correct behaviour for
- * an MoE and would look like a broken ceiling if quoted. `paramLabel` carries
- * the active count (`30B-A3B`), and nothing in the data model carries the
- * active parameter count as a number, so the honest move is to decline.
- */
-export function rooflineTokS(gpu: GPU, model: QuantModel, quant: QuantVariant): number | undefined {
-  if (!gpu.bandwidth) return undefined;
-  if (isMoE(model)) return undefined;
-  return Math.round(gpu.bandwidth / weightsGB(model, quant));
-}
 
 /** `1792` → `1,792`. */
 function gbs(n: number) {

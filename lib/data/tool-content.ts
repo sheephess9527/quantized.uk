@@ -36,8 +36,8 @@ export const vramCalcContent: ToolContent = {
     {
       heading: { en: 'How the estimate is calculated', zh: '这个估算是怎么算出来的' },
       body: {
-        en: 'Three terms are added. **Model weights** are `params × bpw ÷ 8`, plus 2% for embedding and norm tensors that most quantizers keep at higher precision. **KV cache** is `2 (K and V) × layers × kv_heads × head_dim × context × batch × 2 bytes`, the last factor being fp16 cache. **Activation buffer** is a flat 10% of the first two, covering the transient tensors an inference runtime allocates per forward pass. **Units:** every figure is computed and displayed in binary gigabytes (GiB, 1024³ bytes) but labelled "GB", matching how GPU vendors and `nvidia-smi` label VRAM. There is no conversion between the two anywhere in the tool. When you pick an indexed model the calculator uses that model\'s own measured bits-per-weight rather than the generic per-level table, because the two can differ sharply — GPT-OSS ships mostly-MXFP4 weights, so its Q8_0 is 5.10 bpw, not 8.5.',
-        zh: '三项相加。**模型权重** = `参数量 × bpw ÷ 8`，再加 2%，用于覆盖多数量化器保持较高精度的 embedding 与 norm 张量。**KV 缓存** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 2 字节`，最后一项是 fp16 缓存。**激活缓冲**取前两项之和的 10%，对应推理运行时每次前向分配的临时张量。**单位：**所有数字都以二进制 GB（GiB，1024³ 字节）计算并显示，但标注为 "GB" —— 与显卡厂商和 `nvidia-smi` 标注显存的方式一致。工具内部不存在两种单位之间的换算。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
+        en: 'Three terms are added. **Model weights** are `params × bpw ÷ 8`, plus 2% for embedding and norm tensors that most quantizers keep at higher precision. **KV cache** is `2 (K and V) × layers × kv_heads × head_dim × context × batch × bytes per value`: 2 for the default fp16 cache, and ggml\'s block sizes when you pick a quantized one — q8_0 stores 32 values in 34 bytes, q4_0 in 18. **Activation buffer** is a flat 10% of the first two, covering the transient tensors an inference runtime allocates per forward pass. **Units:** every figure is computed and displayed in binary gigabytes (GiB, 1024³ bytes) but labelled "GB", matching how GPU vendors and `nvidia-smi` label VRAM. There is no conversion between the two anywhere in the tool. When you pick an indexed model the calculator uses that model\'s own measured bits-per-weight rather than the generic per-level table, because the two can differ sharply — GPT-OSS ships mostly-MXFP4 weights, so its Q8_0 is 5.10 bpw, not 8.5.',
+        zh: '三项相加。**模型权重** = `参数量 × bpw ÷ 8`，再加 2%，用于覆盖多数量化器保持较高精度的 embedding 与 norm 张量。**KV 缓存** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 每个值的字节数`：默认 fp16 缓存为 2 字节；选择量化缓存时按 ggml 的块大小计算 —— q8_0 每 32 个值占 34 字节，q4_0 占 18 字节。**激活缓冲**取前两项之和的 10%，对应推理运行时每次前向分配的临时张量。**单位：**所有数字都以二进制 GB（GiB，1024³ 字节）计算并显示，但标注为 "GB" —— 与显卡厂商和 `nvidia-smi` 标注显存的方式一致。工具内部不存在两种单位之间的换算。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
       },
     },
     {
@@ -73,8 +73,15 @@ export const vramCalcContent: ToolContent = {
     {
       q: { en: 'Can I run a model that shows amber?', zh: '显示琥珀色的模型能跑吗？' },
       a: {
-        en: 'Often yes, with less context or a smaller batch — both shrink the KV cache directly. Lower the context slider and watch the total fall. If it is still amber at short context, the weights alone are the problem and you need a smaller quant level.',
-        zh: '通常可以，但要降低上下文或减小 batch —— 两者都直接压缩 KV 缓存。拉低上下文滑块，观察总量下降。如果短上下文下仍是琥珀色，那说明问题出在权重本身，需要换更低的量化档位。',
+        en: 'Often yes, with less context, a smaller batch or a quantized KV cache — all three shrink the cache directly. With your card chosen, the calculator prints the longest context that stays green and the longest that stays amber. If it is still amber at short context, the weights alone are the problem and you need a smaller quant level; the table of every level the model ships shows which one fits.',
+        zh: '通常可以，办法是降低上下文、减小 batch，或量化 KV 缓存 —— 三者都直接压缩缓存。选好你的显卡后，计算器会直接给出保持绿色的最长上下文和保持琥珀色的最长上下文。如果短上下文下仍是琥珀色，那说明问题出在权重本身，需要换更低的量化档位；「全部量化档位」表会告诉你哪一档装得下。',
+      },
+    },
+    {
+      q: { en: 'Should I quantize the KV cache?', zh: '要不要量化 KV 缓存？' },
+      a: {
+        en: 'At long context it is the cheapest memory you can win back. Llama 3.1 8B at Q4_K_M and 32K context is 9.49 GB with the default fp16 cache, 7.42 GB with q8_0 and 6.32 GB with q4_0 — the weights do not change, only the cache does. In llama.cpp pass `-ctk q8_0 -ctv q8_0`; a quantized V cache needs Flash Attention, which `-fa auto` turns on and which fails if forced off. In Ollama set `OLLAMA_KV_CACHE_TYPE=q8_0` with Flash Attention enabled. Ollama\'s own documentation describes q8_0 as usually unnoticeable and q4_0 as a small-to-medium precision loss that shows more at long context; this site has not measured either.',
+        zh: '长上下文下，这是最便宜的省显存手段。Llama 3.1 8B 在 Q4_K_M、32K 上下文时，默认 fp16 缓存为 9.49 GB，q8_0 为 7.42 GB，q4_0 为 6.32 GB —— 权重不变，变的只是缓存。llama.cpp 用 `-ctk q8_0 -ctv q8_0`；量化 V 缓存需要 Flash Attention，`-fa auto` 会自动开启，强制关闭则会报错。Ollama 在开启 Flash Attention 后设置 `OLLAMA_KV_CACHE_TYPE=q8_0`。按 Ollama 官方文档的说法，q8_0 通常察觉不到差别，q4_0 有小到中等的精度损失、长上下文时更明显；本站没有实测过两者。',
       },
     },
     {

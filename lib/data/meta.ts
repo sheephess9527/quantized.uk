@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-08',
+    en: 'The memory calculator now answers the next three questions, not just the first. With a model and your card chosen, it lists every quantization level that model ships, sized at your context, and marks the best-quality one that fits your card comfortably. It shows the longest context your card can hold, and the generation-speed ceiling your card\'s memory bandwidth allows. You can also store the KV cache as q8_0 or q4_0, the llama.cpp and Ollama settings that roughly halve or quarter it at long context, with the exact flags shown. You can now pick your card inside the calculator itself.',
+    zh: '内存计算器现在不止回答第一个问题，还会接着回答后面三个。选好模型和你的显卡后，它会列出该模型提供的全部量化档位（按你的上下文计算大小），并标出能从容装进你显卡的最高质量版本；给出这张卡最长能开多少上下文；以及按显存带宽算出的生成速度上限。KV 缓存现在可以选 q8_0 或 q4_0——这是 llama.cpp 和 Ollama 的设置，长上下文时大约能把缓存减半或减到四分之一，页面会给出具体参数。显卡也可以直接在计算器里选了。',
+  },
+  {
+    date: '2026-10-08',
     en: 'The memory calculator\'s "Calculate" links in GPU-to-models mode now work. Clicking one changed the address but left you on the list; it now opens that model on the card you were browsing. A link naming a card the site does not know no longer claims that nothing fits it. The calculator now warns when the context you picked is longer than the model can use, and shared links to a custom model keep its size and layers. "Smallest card" now means the smallest retail card, and CPU-only memory sizes are no longer counted as cards.',
     zh: '内存计算器「GPU → 模型」模式里的「计算」链接现在能用了：以前点了只是地址变了，页面还停在列表上；现在会直接打开该模型，并按你正在看的那张卡给出结论。链接里带了一张本站不认识的卡时，不再谎称「没有模型装得下」。所选上下文超过模型本身上限时会给出提示；自定义模型的分享链接会带上参数量和层数。「最小的卡」现在指同容量里的零售卡，纯 CPU 内存档位也不再被算作显卡。',
   },

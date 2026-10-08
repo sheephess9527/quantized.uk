@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-08 (d) — VRAM calculator, batch 1 of "best calculator on the web"
+
+The calculator answered one question (how big). It now answers the next three a reader asks, all from `lib/utils/calc-insights.ts` — one module built only on `calcVRAM` / `getVerdict` / `usableCapacityGB` / `tightCeiling` / `formatAllowed`, so nothing can disagree with a GPU page:
+
+- **Every level the model ships** (`levelTable`), sized at the reader's context/batch/KV type, verdict per row on their card (incl. "not on this backend"), clickable to select. "Best fit" = highest quality that is green — swept against `fitsOnGpu` at 4K: **82 cards × 90 models, 0 disagreements**.
+- **Longest context on this card** (`contextReach`): binary search over `calcVRAM` itself (1K steps, capped at the model's window) for comfortable and tight; a button jumps to the largest preset inside it. Sweep: **50,439 model × level × card × KV-type cases, 0 faults** (each result green/non-red at itself and not at +1K).
+- **Speed ceiling** on the reader's card (`speedCeiling` → `rooflineTokS`), dense models only, hidden when the model does not fit. `rooflineTokS`/`weightsGB` moved to `lib/utils/roofline.ts` so the calculator does not bundle the GPU-page prose generator (+13 kB → +3 kB first load); all 693 ceiling sentences on GPU pages byte-identical before/after.
+- **KV cache type** f16 / q8_0 / q4_0 (`KV_CACHE_TYPES` in `vram.ts`, `kvBytesPerValue` on `CalcInput`, default 2 bytes so every other surface is unchanged). Sizes from ggml's block layouts (`ggml-common.h`: q8_0 = 34 B / 32 values, q4_0 = 18 B). Flags from source: llama.cpp `-ctk/-ctv` (`common/arg.cpp`); a quantized V cache needs Flash Attention, which `-fa auto` enables and which errors if forced off (`llama-context.cpp`); Ollama `OLLAMA_KV_CACHE_TYPE` + Flash Attention (`docs/faq.mdx`, whose q8_0/q4_0 quality wording is quoted, not ours). Non-GGUF formats get a note that other runtimes' cache options are unchecked. URL param `cache`; reverse mode honours it.
+- **Card picker inside forward mode** (writes the shared profile) — the verdict used to need the navbar selector.
+- A link naming a model without a level now opens at `referenceQuant()` (GPT-OSS at MXFP4, as its page sizes it); `selectModel`'s fallback uses the same.
+- Tool explainer: KV formula states bytes per value; new FAQ "Should I quantize the KV cache?" (9.49 / 7.42 / 6.32 GB for Llama 3.1 8B Q4_K_M @32K, from `calcVRAM`). Sitemap gives `/tools/vram-calc/` its own edit date (`VRAM_CALC_EDITED`) instead of bumping `sizingChangedAt`.
+
+Not done yet (next batches): multi-GPU split, partial CPU offload, an MoE active-parameter speed bound, sizing any Hugging Face repo from its `config.json`.
+
 ### 2026-10-08 (c) — VRAM calculator pass (highest-traffic page)
 
 Operated `/tools/vram-calc/` (both languages, 1280/390 px) instead of reading it. Found and fixed:

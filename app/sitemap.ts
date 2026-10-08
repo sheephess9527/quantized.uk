@@ -42,6 +42,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // bump the date here, not `siteDate`, when the page's own text changes.
   const LEGAL_LASTMOD = new Date('2026-10-05');
   const PRIVACY_LASTMOD = new Date('2026-08-18');
+  // A tool page also changes when its own explainer/FAQ text does (in
+  // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the
+  // tool's date here when that text changes — not `sizingChangedAt`, which
+  // would re-announce every derived page.
+  const VRAM_CALC_EDITED = '2026-10-08';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
 
@@ -60,7 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/faq/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/formats/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/vram-calc/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/vram-calc/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), VRAM_CALC_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/cli-gen/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/format-wizard/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/compare/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },

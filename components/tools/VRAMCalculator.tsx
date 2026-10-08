@@ -7,17 +7,18 @@ import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRight
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
-import { quantBPW, quantGroups, calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
+import { levelTable, contextReach, speedCeiling } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
-import { bestQuant as pickBestQuant, formatLoss } from '@/lib/utils/quality';
+import { formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
-import { nameCarriesLabel } from '@/lib/utils/model-meta';
+import { nameCarriesLabel, isMoE } from '@/lib/utils/model-meta';
 import { bySmallestCard } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/seo';
 
@@ -41,7 +42,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 
 export default function VRAMCalculator() {
   const { t } = useLanguage();
-  const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig } = useHardwareProfile();
+  const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig, setGpuId } = useHardwareProfile();
   const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
@@ -50,6 +51,7 @@ export default function VRAMCalculator() {
   const [selectedQuant, setSelectedQuant] = useState('Q4_K_M');
   const [contextLen, setContextLen] = useState(4096);
   const [batchSize, setBatchSize] = useState(1);
+  const [kvType, setKvType] = useState<KvCacheType>('f16');
   const [formatGroup, setFormatGroup] = useState<keyof typeof quantGroups>('GGUF');
   const [customParams, setCustomParams] = useState('7');
   const [customLayers, setCustomLayers] = useState('32');
@@ -81,7 +83,12 @@ export default function VRAMCalculator() {
     } else if (config.modelId) {
       setSelectedModelId(config.modelId);
     }
-    const quantParam = searchParams.get('quant') || (modelParam ? '' : config.quantLevel);
+    // A link naming a model but no level (the homepage picks, model placement)
+    // opens at that model's reference level — GPT-OSS at its native MXFP4, as
+    // its own page sizes it — not at whatever the default state happened to be.
+    const linkedModel = modelParam ? models.find(md => md.id === modelParam) : undefined;
+    const quantParam = searchParams.get('quant')
+      || (linkedModel ? quantLevelKey(referenceQuant(linkedModel.quants)) : modelParam ? '' : config.quantLevel);
     if (quantParam) {
       setSelectedQuant(quantParam);
       setFormatGroup(findFormatGroup(quantParam));
@@ -89,6 +96,8 @@ export default function VRAMCalculator() {
     if (searchParams.get('ctx')) setContextLen(Number(searchParams.get('ctx')) || 4096);
     else if (config.contextLen) setContextLen(config.contextLen);
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
+    const cacheParam = searchParams.get('cache');
+    if (cacheParam === 'q8_0' || cacheParam === 'q4_0') setKvType(cacheParam);
     // A custom model is only shareable if its shape travels with the link —
     // without these the recipient got the 7B / 32-layer defaults.
     if (modelParam === 'custom') {
@@ -129,6 +138,7 @@ export default function VRAMCalculator() {
     params.set('mode', mode);
     params.set('ctx', String(contextLen));
     params.set('batch', String(batchSize));
+    if (kvType !== 'f16') params.set('cache', kvType);
     if (mode === 'forward') {
       if (selectedModelId) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
@@ -151,7 +161,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, kvType]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -175,11 +185,9 @@ export default function VRAMCalculator() {
     if (!model) return;
     const levels = model.quants.map(quantLevelKey);
     if (levels.includes(selectedQuant)) return;
-    // Prefer Q4_K_M — the level nearly every model ships and the one the rest
-    // of the site quotes — then whatever the model's best-quality quant is.
-    const next = levels.includes('Q4_K_M')
-      ? 'Q4_K_M'
-      : quantLevelKey(pickBestQuant(model.quants));
+    // The level the model page sizes it at (native build, else Q4_K_M, else
+    // best quality) — one rule for the whole site, `referenceQuant()`.
+    const next = quantLevelKey(referenceQuant(model.quants));
     setSelectedQuant(next);
     setFormatGroup(findFormatGroup(next));
   }, [selectedQuant]);
@@ -239,6 +247,7 @@ export default function VRAMCalculator() {
         bpw: own?.bpw ?? tableBpw,
         contextLength: contextLen,
         batchSize,
+        kvBytesPerValue: KV_CACHE_TYPES[kvType],
       };
     }
     const bpw = tableBpw;
@@ -250,8 +259,9 @@ export default function VRAMCalculator() {
       bpw,
       contextLength: contextLen,
       batchSize,
+      kvBytesPerValue: KV_CACHE_TYPES[kvType],
     };
-  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim]);
+  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, kvType]);
 
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
@@ -273,8 +283,25 @@ export default function VRAMCalculator() {
 
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow);
-  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType]);
+  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType]);
+
+  // Second-order answers for the reader's own card — see calc-insights.ts.
+  const levels = useMemo(
+    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType]) : [],
+    [selectedModel, profileGpu, contextLen, batchSize, kvType],
+  );
+  const reach = useMemo(() => {
+    if (!profileGpu) return undefined;
+    if (selectedQuantObj && !formatAllowed(profileGpu, selectedQuantObj.format)) return undefined;
+    const { bpw, contextLength: _ctx, ...shape } = calcInput;
+    // A custom model has no declared window; 128K is the generic ceiling.
+    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? 131072);
+  }, [calcInput, profileGpu, selectedModel, selectedQuantObj]);
+  /** Largest preset chip inside the reach, so "use it" lands on a round value. */
+  const reachPreset = reach
+    ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
+    : undefined;
 
   const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
   // No model selected means no result. Allowing `selectedModelId === ''` here
@@ -360,6 +387,27 @@ export default function VRAMCalculator() {
                       </optgroup>
                     ))}
                     <option value="custom">{t.calc.customLabel}</option>
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* The verdict needs a card, and the only place to set one used to
+                  be the navbar — readers who never found it got a size and no
+                  answer. This writes the same shared profile. */}
+              <div>
+                <label htmlFor="calc-card" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.yourCard}</label>
+                <div className="relative">
+                  <select
+                    id="calc-card"
+                    value={profileGpuId}
+                    onChange={e => setGpuId(e.target.value)}
+                    className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                  >
+                    <option value="">{t.calc.yourCardPlaceholder}</option>
+                    {gpuDatabase.map(g => (
+                      <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
+                    ))}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
@@ -518,6 +566,35 @@ export default function VRAMCalculator() {
           </div>
 
           <div>
+            <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.kvCacheType}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {(Object.keys(KV_CACHE_TYPES) as KvCacheType[]).map(k => (
+                <button
+                  key={k}
+                  onClick={() => setKvType(k)}
+                  aria-pressed={kvType === k}
+                  className={cn(
+                    'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
+                    kvType === k
+                      ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
+                      : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                  )}
+                >
+                  {k}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+              {kvType === 'f16' ? t.calc.kvF16Note : t.calc.kvQuantNote.split('{t}').join(kvType)}
+            </p>
+            {kvType !== 'f16' && mode === 'forward' && selectedQuantObj && selectedQuantObj.format !== 'GGUF' && (
+              <p className="text-xs text-amber-300/80 leading-relaxed mt-1">
+                {t.calc.kvNotGguf.replace('{format}', selectedQuantObj.format).replace('{t}', kvType)}
+              </p>
+            )}
+          </div>
+
+          <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-medium text-slate-400">{t.calc.batch}</label>
               <span className="font-mono text-xs text-violet-300">{batchSize}</span>
@@ -645,10 +722,70 @@ export default function VRAMCalculator() {
                         .replace('{ctx}', contextLen / 2 >= 1024 ? `${contextLen / 2048}K` : String(contextLen / 2))
                         .replace('{gb}', calcVRAM({ ...calcInput, contextLength: contextLen / 2 }).totalGB.toFixed(2))}
                     </p>
+                    {kvType === 'f16' && result.kvCacheGB >= 0.5 && (
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                        {t.calc.adviceKv.replace('{gb}', calcVRAM({ ...calcInput, kvBytesPerValue: KV_CACHE_TYPES.q8_0 }).totalGB.toFixed(2))}
+                      </p>
+                    )}
                     <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.adviceQuant}</p>
                   </div>
                 )}
               </div>
+
+              {selectedModel && levels.length > 1 && (
+                <div className="glass rounded-2xl p-5">
+                  <h3 className="text-sm font-semibold text-slate-300 mb-1">
+                    {t.calc.levelsTitle.replace('{model}', selectedModel.name)}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed mb-3">
+                    {(profileGpu ? t.calc.levelsIntro : t.calc.levelsNoCard).replace('{ctx}', contextLabel(contextLen))}
+                  </p>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-left text-slate-500 border-b border-white/[0.06]">
+                          <th scope="col" className="py-1.5 pr-2 font-medium">{t.calc.levelsColLevel}</th>
+                          <th scope="col" className="py-1.5 pr-2 font-medium text-right">{t.calc.levelsColSize}</th>
+                          <th scope="col" className="py-1.5 pr-2 font-medium text-right">{t.calc.levelsColLoss}</th>
+                          {profileGpu && <th scope="col" className="py-1.5 font-medium text-right">{t.calc.levelsColCard}</th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {levels.map(row => (
+                          <tr key={row.key} className={cn('border-b border-white/[0.03]', row.key === selectedQuant && 'bg-violet-500/[0.06]')}>
+                            <td className="py-1 pr-2">
+                              <button
+                                onClick={() => { setSelectedQuant(row.key); setFormatGroup(findFormatGroup(row.key)); }}
+                                aria-pressed={row.key === selectedQuant}
+                                className="font-mono text-left text-slate-300 hover:text-violet-300 min-h-[32px]"
+                              >
+                                {row.key}
+                              </button>
+                              {row.pick && (
+                                <span className="ml-1.5 badge text-[10px] bg-emerald-500/15 text-emerald-300 border-emerald-500/25">{t.calc.levelsBest}</span>
+                              )}
+                            </td>
+                            <td className="py-1 pr-2 text-right font-mono text-slate-300">{row.totalGB.toFixed(1)} GB</td>
+                            <td className="py-1 pr-2 text-right font-mono text-slate-500">{formatLoss(row.quant)}</td>
+                            {profileGpu && (
+                              <td className="py-1 text-right">
+                                {row.formatOk ? (
+                                  <span className={cn('inline-flex items-center gap-1', verdictConfig[row.verdict!].label)}>
+                                    <span className={cn('w-1.5 h-1.5 rounded-full', verdictConfig[row.verdict!].dot)} />
+                                    {row.verdict === 'green' ? t.calc.green : row.verdict === 'yellow' ? t.calc.yellow : t.calc.red}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-500">{t.calc.levelsNoRun}</span>
+                                )}
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               <div className="glass rounded-2xl p-5">
                 <h3 className="text-sm font-semibold text-slate-300 mb-3">{t.calc.hwTitle}</h3>
@@ -705,6 +842,46 @@ export default function VRAMCalculator() {
                               ? t.calc.hwAdviceYellow
                               : t.calc.hwAdviceRed}
                       </p>
+                      {reach && (
+                        <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                          <p className="text-xs font-medium text-slate-400">{t.calc.reachTitle}</p>
+                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                            {reach.tight === 0
+                              ? t.calc.reachNone
+                              : reach.comfortable === 0
+                                ? t.calc.reachNoneComfortable.replace('{tight}', contextLabel(reach.tight)).replace('{limit}', contextLabel(reach.limit))
+                                : reach.comfortable === reach.limit
+                                  ? t.calc.reachFull.replace('{limit}', contextLabel(reach.limit))
+                                  : t.calc.reachLine
+                                      .replace('{comfortable}', contextLabel(reach.comfortable))
+                                      .replace('{tight}', contextLabel(reach.tight))
+                                      .replace('{limit}', contextLabel(reach.limit))}
+                          </p>
+                          {reachPreset && reachPreset !== contextLen && (
+                            <button
+                              onClick={() => setContextLen(reachPreset)}
+                              className="mt-1 text-xs text-violet-400 hover:text-violet-300 min-h-[32px]"
+                            >
+                              {t.calc.reachApply.replace('{ctx}', contextLabel(reachPreset))} →
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {selectedModel && selectedQuantObj && formatOk && profileGpu.bandwidth && (() => {
+                        const n = speedCeiling(profileGpu, selectedModel, selectedQuantObj, v);
+                        if (n === undefined && v !== 'red' && isMoE(selectedModel)) {
+                          return <p className="text-xs text-slate-500 leading-relaxed mt-2">{t.calc.speedMoE}</p>;
+                        }
+                        if (n === undefined) return null;
+                        return (
+                          <p className="text-xs text-slate-500 leading-relaxed mt-2">
+                            {t.calc.speedLine
+                              .replace('{n}', String(n))
+                              .replace('{bw}', profileGpu.bandwidth.toLocaleString('en-US'))
+                              .replace('{gb}', (profileGpu.bandwidth / n).toFixed(1))}
+                          </p>
+                        );
+                      })()}
                     </div>
                   );
                 })()}
