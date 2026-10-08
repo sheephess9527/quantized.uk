@@ -391,6 +391,8 @@ Sweep them over every card × model after any sizing change (the 2026-10-08 swee
 on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculator ever passes it.
 **Multi-card capacity is `capacityGB(gpu, cards)`** (`gpu-page.ts`) — only `canStack()` types stack;
 the speed bound never grows with card count (llama.cpp's default layer split is pipeline parallel).
+**`rooflineTokS` mixes decimal GB/s with binary GiB of weights (~7% low) — leave it.** The owner
+decided on 2026-10-08 not to change it (it would move 693 GPU-page figures); do not "fix" it unasked.
 **Every MoE model needs an active-parameter count** — an `-A<n>B` label or `activeParams`, read via
 `activeParamsB()`; the build fails otherwise. `rooflineTokS` lives in `lib/utils/roofline.ts` — import it from there in client code, or the GPU-page
 prose generator rides along into the bundle.
