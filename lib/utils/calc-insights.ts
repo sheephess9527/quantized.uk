@@ -2,9 +2,11 @@ import type { QuantModel, QuantVariant } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict, type CalcInput } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, MAX_CARDS } from '@/lib/utils/gpu-page';
+export { canStack, capacityGB, MAX_CARDS };
 import { qualityRank } from '@/lib/utils/quality';
-import { rooflineTokS } from '@/lib/utils/roofline';
+import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
+import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 
 /**
  * The calculator's second-order answers — the questions a reader asks once
@@ -15,6 +17,10 @@ import { rooflineTokS } from '@/lib/utils/roofline';
  */
 
 export type Verdict = 'green' | 'yellow' | 'red';
+
+export function verdictOn(totalGB: number, gpu: GPU, cards = 1): Verdict {
+  return getVerdict(totalGB, capacityGB(gpu, cards), tightCeiling(gpu));
+}
 
 export interface LevelRow {
   quant: QuantVariant;
@@ -49,13 +55,14 @@ export function levelTable(
   contextLength: number,
   batchSize: number,
   kvBytesPerValue?: number,
+  cards = 1,
 ): LevelRow[] {
   const shape = modelShape(model, batchSize, kvBytesPerValue);
   const rows: LevelRow[] = model.quants.map(quant => {
     const { totalGB } = calcVRAM({ ...shape, bpw: quant.bpw, contextLength });
     const formatOk = !gpu || formatAllowed(gpu, quant.format);
     const verdict = gpu
-      ? formatOk ? getVerdict(totalGB, usableCapacityGB(gpu), tightCeiling(gpu)) : 'red'
+      ? formatOk ? verdictOn(totalGB, gpu, cards) : 'red'
       : undefined;
     return { quant, key: quantLevelKey(quant), totalGB, verdict, formatOk, pick: false };
   });
@@ -90,10 +97,9 @@ export function contextReach(
   bpw: number,
   gpu: GPU,
   limit: number,
+  cards = 1,
 ): ContextReach {
-  const capacity = usableCapacityGB(gpu);
-  const ceiling = tightCeiling(gpu);
-  const verdictAt = (ctx: number) => getVerdict(calcVRAM({ ...shape, bpw, contextLength: ctx }).totalGB, capacity, ceiling);
+  const verdictAt = (ctx: number) => verdictOn(calcVRAM({ ...shape, bpw, contextLength: ctx }).totalGB, gpu, cards);
   const longest = (ok: (v: Verdict) => boolean) => {
     const maxSteps = Math.floor(limit / STEP);
     if (maxSteps < 1 || !ok(verdictAt(STEP))) return 0;
@@ -112,14 +118,90 @@ export function contextReach(
   };
 }
 
+export interface SpeedBound {
+  tokS: number;
+  /** `moe`: computed over the active parameters only, and approximate. */
+  basis: 'dense' | 'moe';
+  activeB?: number;
+}
+
 /**
- * Token-generation upper bound on this card: bandwidth over weight bytes.
- * Undefined for MoE (only active experts are read — a dense ceiling would
- * understate it), for cards without a verified bandwidth, and whenever the
- * model does not fit, because then part of it runs from system RAM and the
- * card's bandwidth stops being the limit.
+ * Token-generation upper bound on this card: bandwidth over the weight bytes
+ * read per token. With several cards on the default layer split the cards
+ * take turns on each token (pipeline parallel), so the bound is still one
+ * card's bandwidth. Undefined for a card without a verified bandwidth, and
+ * whenever the model does not fit — then part of it runs from system RAM and
+ * `offloadPlan` is the estimate that applies.
  */
-export function speedCeiling(gpu: GPU, model: QuantModel, quant: QuantVariant, verdict: Verdict): number | undefined {
+export function speedCeiling(gpu: GPU, model: QuantModel, quant: QuantVariant, verdict: Verdict): SpeedBound | undefined {
   if (verdict === 'red' || !formatAllowed(gpu, quant.format)) return undefined;
-  return rooflineTokS(gpu, model, quant);
+  if (isMoE(model)) {
+    const tokS = moeRooflineTokS(gpu, model, quant);
+    return tokS === undefined ? undefined : { tokS, basis: 'moe', activeB: activeParamsB(model) };
+  }
+  const tokS = rooflineTokS(gpu, model, quant);
+  return tokS === undefined ? undefined : { tokS, basis: 'dense' };
+}
+
+/**
+ * Theoretical peak bandwidth of common desktop memory setups: transfer rate ×
+ * 8 bytes per channel × channels (DDR4-3200 dual = 3200 × 8 × 2 = 51.2 GB/s).
+ * Spec arithmetic, not a measurement — sustained reads land well below it.
+ */
+export const RAM_SETUPS = {
+  'ddr4-3200': { label: 'DDR4-3200 ×2', gbs: 51.2 },
+  'ddr5-5600': { label: 'DDR5-5600 ×2', gbs: 89.6 },
+  'ddr5-5600-x4': { label: 'DDR5-5600 ×4', gbs: 179.2 },
+} as const;
+export type RamSetup = keyof typeof RAM_SETUPS;
+
+/** llama.cpp's `--fit` leaves this much free per device (common.h). */
+const FIT_MARGIN_GB = 1;
+
+export interface OffloadPlan {
+  gpuLayers: number;
+  layers: number;
+  /** System RAM the CPU-side layers need (weights + their KV share). */
+  ramGB: number;
+  /** Approximate token-generation bound with this split, if knowable. */
+  tokS?: number;
+}
+
+/**
+ * What happens when it does not fit: llama.cpp/Ollama keep as many whole
+ * layers on the card as fit and run the rest from system RAM. Each layer is
+ * costed at an even share of the estimate (weights, cache and buffer alike),
+ * and the card keeps `--fit`'s 1 GiB free — the same rule `-ngl auto` uses.
+ * The speed bound adds the two halves' read times: the GPU's share of the
+ * weights over its bandwidth, the CPU's over the RAM's. For MoE only the
+ * active share is read. Undefined when nothing needs offloading, when the
+ * card is not discrete, or when the format has no layer offload here (only
+ * GGUF runtimes split this way).
+ */
+export function offloadPlan(
+  input: CalcInput,
+  result: { totalGB: number; modelWeightsGB: number },
+  gpu: GPU,
+  cards: number,
+  ram: RamSetup,
+  model?: QuantModel,
+  format?: string,
+): OffloadPlan | undefined {
+  if (!canStack(gpu) || (format && format !== 'GGUF')) return undefined;
+  const layers = input.layers;
+  const perLayer = result.totalGB / layers;
+  const n = canStack(gpu) ? Math.max(1, Math.min(MAX_CARDS, cards)) : 1;
+  const budget = n * (usableCapacityGB(gpu) - FIT_MARGIN_GB);
+  const gpuLayers = Math.max(0, Math.min(layers, Math.floor(budget / perLayer)));
+  if (gpuLayers >= layers) return undefined;
+  const ramGB = Math.round((layers - gpuLayers) * perLayer * 10) / 10;
+  let tokS: number | undefined;
+  if (gpu.bandwidth) {
+    const activeShare = model && isMoE(model) ? (activeParamsB(model) ?? model.params) / model.params : 1;
+    const read = result.modelWeightsGB * activeShare;
+    const gpuPart = read * (gpuLayers / layers);
+    const cpuPart = read - gpuPart;
+    tokS = Math.round(10 / (gpuPart / gpu.bandwidth + cpuPart / RAM_SETUPS[ram].gbs)) / 10;
+  }
+  return { gpuLayers, layers, ramGB, tokS };
 }

@@ -45,6 +45,18 @@ export function isMoE(m: Pick<QuantModel, 'paramLabel'>): boolean {
   return /-A\d|\bMoE\b/i.test(m.paramLabel);
 }
 
+/**
+ * Billions of parameters read per token. Dense models: all of them. MoE: the
+ * explicit `activeParams`, else the `-A3B` part of the label. Undefined only
+ * for an MoE model with neither — which `dataProblems()` rejects.
+ */
+export function activeParamsB(m: Pick<QuantModel, 'paramLabel' | 'params' | 'activeParams'>): number | undefined {
+  if (!isMoE(m)) return m.params;
+  if (m.activeParams !== undefined) return m.activeParams;
+  const hit = /-A(\d+(?:\.\d+)?)B/i.exec(m.paramLabel);
+  return hit ? Number(hit[1]) : undefined;
+}
+
 export function isSuperseded(m: QuantModel): boolean {
   return m.status === 'superseded';
 }

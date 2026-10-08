@@ -78,6 +78,13 @@ export const vramCalcContent: ToolContent = {
       },
     },
     {
+      q: { en: 'What if the model is bigger than my card?', zh: '模型比我的显卡还大怎么办？' },
+      a: {
+        en: 'Two ways, and the calculator sizes both. **Add a card:** llama.cpp\'s default split gives each card a slice of layers and that slice\'s KV cache, so memory adds up — Llama 3.3 70B at Q4_K_M and 8K context is 47.5 GB, out of reach for one RTX 3090 and a tight fit on two. The cards take turns on every token, so a second card buys room, not speed. **Spill to system RAM:** llama.cpp and Ollama keep as many whole layers on the GPU as fit and run the rest on the CPU. On one RTX 3090 that is about 38 of the 80 layers, with about 25 GB in system RAM, and the RAM half sets the pace — the bound is roughly 4 tok/s with dual-channel DDR5-5600. For a mixture-of-experts model, `--n-cpu-moe` moves only the expert weights, which usually costs far less speed.',
+        zh: '有两种办法，计算器两种都会算。**加一张卡：**llama.cpp 默认按层拆分，每张卡放一段层及其 KV 缓存，所以显存可以相加——Llama 3.3 70B 在 Q4_K_M、8K 上下文时为 47.5 GB，一张 RTX 3090 装不下，两张勉强装下。各卡轮流处理每个 token，所以第二张卡换来的是空间，不是速度。**溢出到系统内存：**llama.cpp 和 Ollama 会把放得下的整层留在 GPU 上，其余交给 CPU。单张 RTX 3090 大约能放下 80 层中的 38 层，约 25 GB 放在系统内存，而内存那一半决定速度——双通道 DDR5-5600 下上限约 4 tok/s。混合专家模型可以用 `--n-cpu-moe` 只搬走专家权重，速度损失通常小得多。',
+      },
+    },
+    {
       q: { en: 'Should I quantize the KV cache?', zh: '要不要量化 KV 缓存？' },
       a: {
         en: 'At long context it is the cheapest memory you can win back. Llama 3.1 8B at Q4_K_M and 32K context is 9.49 GB with the default fp16 cache, 7.42 GB with q8_0 and 6.32 GB with q4_0 — the weights do not change, only the cache does. In llama.cpp pass `-ctk q8_0 -ctv q8_0`; a quantized V cache needs Flash Attention, which `-fa auto` turns on and which fails if forced off. In Ollama set `OLLAMA_KV_CACHE_TYPE=q8_0` with Flash Attention enabled. Ollama\'s own documentation describes q8_0 as usually unnoticeable and q4_0 as a small-to-medium precision loss that shows more at long context; this site has not measured either.',

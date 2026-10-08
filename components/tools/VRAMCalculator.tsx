@@ -8,7 +8,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
-import { levelTable, contextReach, speedCeiling } from '@/lib/utils/calc-insights';
+import { levelTable, contextReach, speedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
@@ -52,6 +52,8 @@ export default function VRAMCalculator() {
   const [contextLen, setContextLen] = useState(4096);
   const [batchSize, setBatchSize] = useState(1);
   const [kvType, setKvType] = useState<KvCacheType>('f16');
+  const [cards, setCards] = useState(1);
+  const [ram, setRam] = useState<RamSetup>('ddr5-5600');
   const [formatGroup, setFormatGroup] = useState<keyof typeof quantGroups>('GGUF');
   const [customParams, setCustomParams] = useState('7');
   const [customLayers, setCustomLayers] = useState('32');
@@ -98,6 +100,10 @@ export default function VRAMCalculator() {
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
     const cacheParam = searchParams.get('cache');
     if (cacheParam === 'q8_0' || cacheParam === 'q4_0') setKvType(cacheParam);
+    const cardsParam = Number(searchParams.get('cards'));
+    if (Number.isInteger(cardsParam) && cardsParam >= 1 && cardsParam <= MAX_CARDS) setCards(cardsParam);
+    const ramParam = searchParams.get('ram');
+    if (ramParam && ramParam in RAM_SETUPS) setRam(ramParam as RamSetup);
     // A custom model is only shareable if its shape travels with the link —
     // without these the recipient got the 7B / 32-layer defaults.
     if (modelParam === 'custom') {
@@ -139,6 +145,8 @@ export default function VRAMCalculator() {
     params.set('ctx', String(contextLen));
     params.set('batch', String(batchSize));
     if (kvType !== 'f16') params.set('cache', kvType);
+    if (cards > 1) params.set('cards', String(cards));
+    if (ram !== 'ddr5-5600') params.set('ram', ram);
     if (mode === 'forward') {
       if (selectedModelId) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
@@ -161,7 +169,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, kvType]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, kvType, cards, ram]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -283,21 +291,24 @@ export default function VRAMCalculator() {
 
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType]);
-  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1);
+  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards]);
+
+  /** Cards actually counted: stacking only means something for discrete cards. */
+  const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
 
   // Second-order answers for the reader's own card — see calc-insights.ts.
   const levels = useMemo(
-    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType]) : [],
-    [selectedModel, profileGpu, contextLen, batchSize, kvType],
+    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType], profileCards) : [],
+    [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards],
   );
   const reach = useMemo(() => {
     if (!profileGpu) return undefined;
     if (selectedQuantObj && !formatAllowed(profileGpu, selectedQuantObj.format)) return undefined;
     const { bpw, contextLength: _ctx, ...shape } = calcInput;
     // A custom model has no declared window; 128K is the generic ceiling.
-    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? 131072);
-  }, [calcInput, profileGpu, selectedModel, selectedQuantObj]);
+    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? 131072, profileCards);
+  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards]);
   /** Largest preset chip inside the reach, so "use it" lands on a round value. */
   const reachPreset = reach
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
@@ -413,6 +424,30 @@ export default function VRAMCalculator() {
                 </div>
               </div>
 
+              {profileGpu && canStack(profileGpu) && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Array.from({ length: MAX_CARDS }, (_, i) => i + 1).map(n => (
+                      <button
+                        key={n}
+                        onClick={() => setCards(n)}
+                        aria-pressed={cards === n}
+                        className={cn(
+                          'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
+                          cards === n
+                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                        )}
+                      >
+                        {n}×
+                      </button>
+                    ))}
+                  </div>
+                  {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
+                </div>
+              )}
+
               {selectedModelId === 'custom' && (
                 <div className="glass rounded-xl p-4 space-y-3">
                   <p className="text-xs font-medium text-slate-400">{t.calc.customLabel}</p>
@@ -493,6 +528,30 @@ export default function VRAMCalculator() {
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
               </div>
+
+              {selectedGpu && canStack(selectedGpu) && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Array.from({ length: MAX_CARDS }, (_, i) => i + 1).map(n => (
+                      <button
+                        key={n}
+                        onClick={() => setCards(n)}
+                        aria-pressed={cards === n}
+                        className={cn(
+                          'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
+                          cards === n
+                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                        )}
+                      >
+                        {n}×
+                      </button>
+                    ))}
+                  </div>
+                  {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.sortBy}</label>
@@ -714,7 +773,7 @@ export default function VRAMCalculator() {
                     halving the context does not fix a card that cannot load
                     the format at any size. */}
                 {profileGpu && (!selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format)) &&
-                  getVerdict(result.totalGB, usableCapacityGB(profileGpu)) !== 'green' && contextLen > 512 && (
+                  getVerdict(result.totalGB, capacityGB(profileGpu, profileCards)) !== 'green' && contextLen > 512 && (
                   <div className="mt-4 pt-3 border-t border-white/[0.06]">
                     <p className="text-xs font-semibold text-slate-400 mb-1.5">{t.calc.adviceTitle}</p>
                     <p className="text-xs text-slate-500 leading-relaxed">
@@ -806,14 +865,14 @@ export default function VRAMCalculator() {
                 </p>
 
                 {profileGpu && (() => {
-                  const capacity = usableCapacityGB(profileGpu);
+                  const capacity = capacityGB(profileGpu, profileCards);
                   const formatOk = !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
                   const v = getVerdict(result.totalGB, capacity, tightCeiling(profileGpu));
                   return (
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
-                        <span className="text-xs text-slate-300 font-medium">{profileGpu.name}</span>
+                        <span className="text-xs text-slate-300 font-medium">{profileCards > 1 ? `${profileCards}× ` : ''}{profileGpu.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
@@ -868,18 +927,65 @@ export default function VRAMCalculator() {
                         </div>
                       )}
                       {selectedModel && selectedQuantObj && formatOk && profileGpu.bandwidth && (() => {
-                        const n = speedCeiling(profileGpu, selectedModel, selectedQuantObj, v);
-                        if (n === undefined && v !== 'red' && isMoE(selectedModel)) {
-                          return <p className="text-xs text-slate-500 leading-relaxed mt-2">{t.calc.speedMoE}</p>;
-                        }
-                        if (n === undefined) return null;
+                        const bound = speedCeiling(profileGpu, selectedModel, selectedQuantObj, v);
+                        if (!bound) return null;
+                        const text = bound.basis === 'moe'
+                          ? t.calc.speedMoELine
+                              .replace('{n}', String(bound.tokS))
+                              .replace('{active}', String(bound.activeB))
+                          : t.calc.speedLine
+                              .replace('{n}', String(bound.tokS))
+                              .replace('{bw}', profileGpu.bandwidth.toLocaleString('en-US'))
+                              .replace('{gb}', (profileGpu.bandwidth / bound.tokS).toFixed(1));
                         return (
                           <p className="text-xs text-slate-500 leading-relaxed mt-2">
-                            {t.calc.speedLine
-                              .replace('{n}', String(n))
-                              .replace('{bw}', profileGpu.bandwidth.toLocaleString('en-US'))
-                              .replace('{gb}', (profileGpu.bandwidth / n).toFixed(1))}
+                            {text}{profileCards > 1 && ` ${t.calc.speedMultiNote}`}
                           </p>
+                        );
+                      })()}
+                      {v === 'red' && formatOk && (() => {
+                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format);
+                        if (!plan) return null;
+                        return (
+                          <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                            <p className="text-xs font-medium text-slate-400">{t.calc.offloadTitle}</p>
+                            <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                              {(plan.gpuLayers === 0 ? t.calc.offloadNone : t.calc.offloadLine)
+                                .replace(/\{g\}/g, String(plan.gpuLayers))
+                                .replace('{l}', String(plan.layers))
+                                .replace('{ram}', plan.ramGB.toFixed(1))}
+                            </p>
+                            {plan.tokS !== undefined && (
+                              <>
+                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                  {(Object.keys(RAM_SETUPS) as RamSetup[]).map(k => (
+                                    <button
+                                      key={k}
+                                      onClick={() => setRam(k)}
+                                      aria-pressed={ram === k}
+                                      className={cn(
+                                        'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
+                                        ram === k
+                                          ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
+                                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                                      )}
+                                    >
+                                      {RAM_SETUPS[k].label}
+                                    </button>
+                                  ))}
+                                </div>
+                                <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                                  {t.calc.offloadSpeed
+                                    .replace('{n}', String(plan.tokS))
+                                    .replace('{ram}', RAM_SETUPS[ram].label)
+                                    .replace('{gbs}', String(RAM_SETUPS[ram].gbs))}
+                                </p>
+                              </>
+                            )}
+                            {selectedModel && isMoE(selectedModel) && (
+                              <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.offloadMoE}</p>
+                            )}
+                          </div>
                         );
                       })()}
                     </div>

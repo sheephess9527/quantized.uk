@@ -120,6 +120,28 @@ export function usableCapacityGB(gpu: GPU): number {
 }
 
 /**
+ * Discrete cards can be stacked; a Mac, a DGX Spark or a RAM row is one pool
+ * and a second one is a second machine, not more memory for this model.
+ */
+export function canStack(gpu: GPU): boolean {
+  return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
+}
+
+export const MAX_CARDS = 4;
+
+/**
+ * Usable memory across `cards` identical cards. llama.cpp's default split
+ * (`--split-mode layer`) places contiguous layer slices on each card,
+ * proportional to memory, and each card's slice carries its own KV cache
+ * (`docs/multi-gpu.md`) — so capacity adds. The verdict thresholds stay
+ * the single-card ones; their 12% green margin already exceeds the 1 GiB per
+ * device `--fit` keeps free for two to four cards.
+ */
+export function capacityGB(gpu: GPU, cards = 1): number {
+  return usableCapacityGB(gpu) * (canStack(gpu) ? Math.max(1, Math.min(MAX_CARDS, cards)) : 1);
+}
+
+/**
  * Where the 'tight' verdict ends for this machine. A discrete card keeps the
  * calculator's 105%: a small overrun can go to host RAM. DGX Spark has no host
  * RAM besides the pool being judged — CPU, GPU and DGX OS share it — so

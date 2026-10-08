@@ -55,6 +55,7 @@ export const extraModels5: QuantModel[] = [
     family: 'Mistral AI',
     params: 675.0,
     paramLabel: '675B MoE',
+    activeParams: 41,
     addedAt: '2026-06-26',
     categories: ['general', 'instruct', 'multimodal', 'code'],
     hardwareTags: ['pro-gpu'],

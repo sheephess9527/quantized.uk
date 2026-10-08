@@ -80,6 +80,12 @@ export interface QuantModel {
   family: string;
   params: number;
   paramLabel: string;
+  /**
+   * Active parameters per token, in billions — MoE models whose `paramLabel`
+   * does not carry it (`21B MoE`). Labels like `30B-A3B` are parsed instead;
+   * read it through `activeParamsB()`, never directly. Vendor-stated figure.
+   */
+  activeParams?: number;
   categories: string[];
   hardwareTags: string[];
   contextLength: number;

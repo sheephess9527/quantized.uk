@@ -212,6 +212,7 @@ export const extraModels: QuantModel[] = [
     status: 'superseded',
     supersededBy: 'qwen3-30b-a3b',
     paramLabel: '47B MoE',
+    activeParams: 12.9,
     categories: ['general', 'instruct'],
     hardwareTags: ['pro-gpu'],
     contextLength: 32768,

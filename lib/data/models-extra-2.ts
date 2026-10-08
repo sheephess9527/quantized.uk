@@ -478,6 +478,7 @@ export const extraModels2: QuantModel[] = [
     status: 'superseded',
     supersededBy: 'glm-4.5-air',
     paramLabel: '132B MoE',
+    activeParams: 36,
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 32768,

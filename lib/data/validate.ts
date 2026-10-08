@@ -5,7 +5,7 @@ import { hfRepoMap } from '@/lib/data/hf-repos';
 import { calcVRAM, quantBPW, quantGroups } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug } from '@/lib/utils/gpu-page';
-import { isMoE } from '@/lib/utils/model-meta';
+import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
 
 /**
@@ -19,6 +19,14 @@ export function dataProblems(): string[] {
   const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
 
   dupes(models.map(m => m.id)).forEach(id => out.push(`duplicate model id: ${id}`));
+  // The calculator's MoE speed ceiling and offload estimate read the active
+  // count; a MoE model without one would silently be treated as unknown.
+  for (const m of models) {
+    const active = activeParamsB(m);
+    if (active === undefined) out.push(`${m.id}: MoE with no active-parameter count (set activeParams or an -A<n>B label)`);
+    else if (active > m.params) out.push(`${m.id}: activeParams ${active} exceeds params ${m.params}`);
+    if (m.activeParams !== undefined && !isMoE(m)) out.push(`${m.id}: activeParams set on a model the label does not mark as MoE`);
+  }
   // A sitemap date in the future of the data ship would be announced to IndexNow as a change tomorrow.
   if (sizingChangedAt > dataLastUpdated) out.push(`sizingChangedAt ${sizingChangedAt} is later than dataLastUpdated ${dataLastUpdated}`);
   dupes(gpuDatabase.map(g => g.id)).forEach(id => out.push(`duplicate GPU id: ${id}`));

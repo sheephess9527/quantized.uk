@@ -389,7 +389,10 @@ context, speed ceiling) and may only call the shared sizing functions — never 
 Sweep them over every card × model after any sizing change (the 2026-10-08 sweep script checks the
 "Best fit" pick equals `fitsOnGpu`'s and each reach is maximal). **KV cache type** is `kvBytesPerValue`
 on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculator ever passes it.
-`rooflineTokS` lives in `lib/utils/roofline.ts` — import it from there in client code, or the GPU-page
+**Multi-card capacity is `capacityGB(gpu, cards)`** (`gpu-page.ts`) — only `canStack()` types stack;
+the speed bound never grows with card count (llama.cpp's default layer split is pipeline parallel).
+**Every MoE model needs an active-parameter count** — an `-A<n>B` label or `activeParams`, read via
+`activeParamsB()`; the build fails otherwise. `rooflineTokS` lives in `lib/utils/roofline.ts` — import it from there in client code, or the GPU-page
 prose generator rides along into the bundle.
 
 **A link to the page you are already on does nothing here.** `useUrlQuery()` reads the query once,

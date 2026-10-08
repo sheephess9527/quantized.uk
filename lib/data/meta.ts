@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-08',
+    en: 'The memory calculator now handles models bigger than your card. Choose two to four identical cards and it sizes them together, as llama.cpp splits a model by default. It also says plainly that extra cards add room, not speed. When a model still does not fit, it estimates how many layers stay on the GPU, how much system RAM the rest needs, and the speed ceiling for three common memory setups. Mixture-of-experts models now get an approximate speed ceiling too, counted over the parameters each token actually uses.',
+    zh: '内存计算器现在能处理比你显卡还大的模型。可以选 2 到 4 张同型号显卡，按 llama.cpp 默认的拆分方式合并计算，并明确告诉你：多卡换来的是空间，不是速度。模型仍然装不下时，它会估算 GPU 上能留多少层、其余部分需要多少系统内存，以及三种常见内存配置下的速度上限。混合专家模型现在也有近似的速度上限，只按每个 token 实际激活的参数计算。',
+  },
+  {
+    date: '2026-10-08',
     en: 'The memory calculator now answers the next three questions, not just the first. With a model and your card chosen, it lists every quantization level that model ships, sized at your context, and marks the best-quality one that fits your card comfortably. It shows the longest context your card can hold, and the generation-speed ceiling your card\'s memory bandwidth allows. You can also store the KV cache as q8_0 or q4_0, the llama.cpp and Ollama settings that roughly halve or quarter it at long context, with the exact flags shown. You can now pick your card inside the calculator itself.',
     zh: '内存计算器现在不止回答第一个问题，还会接着回答后面三个。选好模型和你的显卡后，它会列出该模型提供的全部量化档位（按你的上下文计算大小），并标出能从容装进你显卡的最高质量版本；给出这张卡最长能开多少上下文；以及按显存带宽算出的生成速度上限。KV 缓存现在可以选 q8_0 或 q4_0——这是 llama.cpp 和 Ollama 的设置，长上下文时大约能把缓存减半或减到四分之一，页面会给出具体参数。显卡也可以直接在计算器里选了。',
   },

@@ -2,7 +2,7 @@ import { models, QuantModel, QuantVariant } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
-import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
+import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
 
@@ -27,9 +27,10 @@ export function getRecommendations(
   sortBy: SortBy = 'quality',
   includeYellow = true,
   kvBytesPerValue?: number,
+  cards = 1,
 ): Recommendation[] {
   const results: Recommendation[] = [];
-  const capacity = usableCapacityGB(gpu);
+  const capacity = capacityGB(gpu, cards);
 
   for (const model of models) {
     for (const quant of model.quants) {
