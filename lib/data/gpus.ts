@@ -132,6 +132,9 @@ export const gpuDatabase: GPU[] = [
   { id: 'rx6800xt',    name: 'Radeon RX 6800 XT',     vram: 16,  type: 'amd', icon: '🔴', bandwidth: 512, memType: 'GDDR6', },
   { id: 'rx6700xt',    name: 'Radeon RX 6700 XT',     vram: 12,  type: 'amd', icon: '🔴', bandwidth: 384, memType: 'GDDR6', },
   { id: 'w7900',       name: 'Radeon PRO W7900 48G',  vram: 48,  type: 'amd', icon: '🔴', bandwidth: 864, memType: 'GDDR6 ECC', },
+  // amd.com product page (2026-10-08): 32 GB GDDR6, 256-bit, 640 GB/s peak, RDNA 4 (gfx1201 — the
+  // RX 9070 XT's chip; vLLM's platforms/rocm.py names it, ROCm's support table lists it).
+  { id: 'r9700',       name: 'Radeon AI PRO R9700 32G', vram: 32, type: 'amd', icon: '🔴', bandwidth: 640, memType: 'GDDR6', addedAt: '2026-10-08', },
   { id: 'mi100',       name: 'Instinct MI100 32G',    vram: 32,  type: 'amd', icon: '🔴', bandwidth: 1228, memType: 'HBM2', },
   // Intel Arc — capacity, bandwidth and memory type from intel.com's product
   // specification pages (checked 2026-10-03). The A770 also shipped as an 8 GB
@@ -140,6 +143,9 @@ export const gpuDatabase: GPU[] = [
   { id: 'arc-b570',    name: 'Arc B570 10G',          vram: 10,  type: 'intel', icon: '🔵', bandwidth: 380, memType: 'GDDR6', addedAt: '2026-10-03', },
   { id: 'arc-a770-16', name: 'Arc A770 16G',          vram: 16,  type: 'intel', icon: '🔵', bandwidth: 560, memType: 'GDDR6', addedAt: '2026-10-03', },
   { id: 'arc-a750',    name: 'Arc A750 8G',           vram: 8,   type: 'intel', icon: '🔵', bandwidth: 512, memType: 'GDDR6', addedAt: '2026-10-03', },
+  // intel.com spec page + datasheet (2026-10-08): 32 GB GDDR6, 256-bit, 608 GB/s. A workstation card —
+  // consumer/retail filters exclude "Arc Pro" by name, as they exclude Radeon PRO.
+  { id: 'arc-pro-b70', name: 'Arc Pro B70 32G',       vram: 32,  type: 'intel', icon: '🔵', bandwidth: 608, memType: 'GDDR6', addedAt: '2026-10-08', },
   { id: 'cpu-128',     name: '128 GB RAM (CPU)',       vram: 128, type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-64',      name: '64 GB RAM (CPU)',        vram: 64,  type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-32',      name: '32 GB RAM (CPU)',        vram: 32,  type: 'cpu', isCPU: true,      icon: '💻' },

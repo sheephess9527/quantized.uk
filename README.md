@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-08 — Daily patrol: +2 32 GB workstation cards (78); ExLlamaV3 v1.6.0
+
+`r9700` (Radeon AI PRO R9700 32G — amd.com product page: 32 GB GDDR6, 256-bit, 640 GB/s, RDNA 4) and
+`arc-pro-b70` (Arc Pro B70 32G — intel.com spec page + datasheet: 32 GB GDDR6, 256-bit, 608 GB/s),
+both `addedAt: '2026-10-08'`. R9700 is gfx1201 (the RX 9070 XT's chip); vLLM's `platforms/rocm.py`
+names it (`0x7551: AMD_Radeon_R9700`) and ROCm's system-requirements table lists it, so
+`vllmRocmSupported()` gains `R9700` → AWQ/GPTQ allowed. Fits @4K comfortable/tight: R9700 74/75,
+B70 72/75 (AWQ-only fits lost on SYCL), RTX 5090 74/75 for reference. "Consumer/retail" filters in
+`faq.ts` and `model-explainer.ts` now exclude `Arc Pro` by name (as `/^Radeon RX/` already excludes
+Radeon PRO), so the vendor FAQ still names the A770 as Intel's largest retail card; the Arc FAQ
+wording became "the largest consumer one". `guidesForGpu` gives R9700 the AMD guide, B70 the Arc
+guide. GPU-page `<title>`s (EN + `/zh` mirror) now go through `fitTitle()` — the R9700's was 62 wide;
+short names keep the ` | quantized.uk` suffix (the zh template gains a space before `|`). Arc Pro B65 (same 32 GB / 608 GB/s, fewer cores) not added — identical fit list, no new page
+content. Runtime: llama.cpp b11480, ExLlamaV3 **v1.6.0** (2026-10-07, Latest; "preliminary ROCm
+support (ROCm 10 only, gfx1100+)" — EXL3 still untracked), Ollama v0.40.1-rc0 is Pre-release (kept
+v0.40.0), vLLM v0.31.0 unchanged. No new model weights in the window: Mistral Large 4 (announced
+10-06, ~1T, weights due 10-27) and Reflection Beam (501B, weights "later this month") are API-only
+so far — re-check when weights land.
+
 ### 2026-10-07 — Daily patrol: Ollama v0.40.0 promoted; Mac guides note MLX default
 
 Ollama's release page now marks **v0.40.0** (tagged 2026-09-25) as **Latest** — it was Pre-release on

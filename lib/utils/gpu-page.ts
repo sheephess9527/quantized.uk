@@ -82,7 +82,8 @@ const VLLM_ONLY_ON_ROCM: ReadonlyArray<string> = ['AWQ', 'GPTQ'];
  */
 export function vllmRocmSupported(gpuName?: string): boolean {
   if (!gpuName) return true;
-  return /RX 9\d{3}|RX 7(900|800|700)|W7900|MI[23]\d{2}/.test(gpuName);
+  // R9700 added 2026-10-08: listed by name in vLLM's platforms/rocm.py (gfx1201, as RX 9070 XT).
+  return /RX 9\d{3}|RX 7(900|800|700)|W7900|R9700|MI[23]\d{2}/.test(gpuName);
 }
 
 /**

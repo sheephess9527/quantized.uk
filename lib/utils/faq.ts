@@ -91,7 +91,7 @@ export function faqGroups(): FaqGroup[] {
   const small70 = [...b70.model.quants].sort((a, b) => a.bpw - b.bpw)[0];
   const s70small = size(b70.model, small70.bpw, CTX);
   const cards70 = gpuDatabase.filter(g => getVerdict(s70.totalGB, usableCapacityGB(g)) === 'green');
-  const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || g.type === 'intel' || /^Radeon RX/.test(g.name));
+  const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || (g.type === 'intel' && !/Arc Pro/.test(g.name)) || /^Radeon RX/.test(g.name));
 
   const card8 = gpuDatabase.find(g => g.id === 'rtx4060')!;
   const card16 = gpuDatabase.find(g => g.id === 'rtx4060ti16')!;
@@ -109,7 +109,7 @@ export function faqGroups(): FaqGroup[] {
   // Instinct MI100, and picking by capacity handed a workstation card back as
   // the answer to "what should I buy".
   const isConsumer = (g: (typeof gpuDatabase)[number]) =>
-    g.type === 'nvidia-consumer' || g.type === 'intel' || /^Radeon RX/.test(g.name);
+    g.type === 'nvidia-consumer' || (g.type === 'intel' && !/Arc Pro/.test(g.name)) || /^Radeon RX/.test(g.name);
   const biggestConsumer = gpuDatabase
     .filter(isConsumer)
     .sort((a, b) => b.vram - a.vram || (b.bandwidth ?? 0) - (a.bandwidth ?? 0))[0];
@@ -122,7 +122,7 @@ export function faqGroups(): FaqGroup[] {
   const vendorTop = {
     nvidia: largest(g => g.type === 'nvidia-consumer'),
     amd: largest(g => /^Radeon RX/.test(g.name)),
-    intel: largest(g => g.type === 'intel'),
+    intel: largest(g => g.type === 'intel' && !/Arc Pro/.test(g.name)),
   };
   const formatsOn = (g: (typeof gpuDatabase)[number], sep = ', ') =>
     SHIPPED_FORMATS.filter(f => (ALLOWED_FORMATS[backendFor(g)] as ReadonlyArray<string>).includes(f)).join(sep);
@@ -360,8 +360,8 @@ export function faqGroups(): FaqGroup[] {
           id: 'intel-format',
           q: { en: 'Which format runs on an Intel Arc card?', zh: 'Intel Arc 显卡能用哪种格式？' },
           a: {
-            en: `GGUF. llama.cpp runs it on Arc through its SYCL backend, whose documentation lists the A770, A750 and B580 as verified, and Ollama runs it through Vulkan with no build step. This site recommends nothing else on Arc: EXL2 is CUDA-only, and which quantized formats vLLM's Intel backend serves on consumer Arc cards has not been checked here. The index has ${intelCards.length} Arc cards; the largest, the ${vendorTop.intel.name}, fits ${countModelsFitting(vendorTop.intel, 'comfortable')} of the ${total} models comfortably at 4K context.`,
-            zh: `GGUF。llama.cpp 通过 SYCL 后端在 Arc 上运行它（文档把 A770、A750、B580 列为已验证），Ollama 则通过 Vulkan 运行，无需编译。本站在 Arc 上不推荐其他格式：EXL2 只支持 CUDA，而 vLLM 的英特尔后端在消费级 Arc 上支持哪些量化格式，本站尚未核实。本索引收录了 ${intelCards.length} 张 Arc 显卡，其中最大的 ${vendorTop.intel.name} 能在 4K 上下文下从容运行 ${total} 个模型中的 ${countModelsFitting(vendorTop.intel, 'comfortable')} 个。`,
+            en: `GGUF. llama.cpp runs it on Arc through its SYCL backend, whose documentation lists the A770, A750 and B580 as verified, and Ollama runs it through Vulkan with no build step. This site recommends nothing else on Arc: EXL2 is CUDA-only, and which quantized formats vLLM's Intel backend serves on consumer Arc cards has not been checked here. The index has ${intelCards.length} Arc cards; the largest consumer one, the ${vendorTop.intel.name}, fits ${countModelsFitting(vendorTop.intel, 'comfortable')} of the ${total} models comfortably at 4K context.`,
+            zh: `GGUF。llama.cpp 通过 SYCL 后端在 Arc 上运行它（文档把 A770、A750、B580 列为已验证），Ollama 则通过 Vulkan 运行，无需编译。本站在 Arc 上不推荐其他格式：EXL2 只支持 CUDA，而 vLLM 的英特尔后端在消费级 Arc 上支持哪些量化格式，本站尚未核实。本索引收录了 ${intelCards.length} 张 Arc 显卡，其中最大的消费级卡 ${vendorTop.intel.name} 能在 4K 上下文下从容运行 ${total} 个模型中的 ${countModelsFitting(vendorTop.intel, 'comfortable')} 个。`,
           },
           link: { href: '/cookbook/intel-arc-llamacpp/', label: { en: 'Intel Arc, step by step', zh: 'Intel Arc 实操' } },
         },

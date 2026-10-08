@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-07):**
+**Live snapshot (2026-10-08):**
 
 | Surface | Notes |
 |--------|--------|
@@ -30,8 +30,8 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**76** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4, Intel Arc, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 457 pages (229 EN + 228 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 461 pages (231 EN + 230 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -723,7 +723,8 @@ the rows actually rendered (an `ItemList`, a "show all N" list).
 
 **"Consumer GPU" is not `type`.** `type: 'amd'` also covers the Radeon PRO W7900 and Instinct MI100,
 so "the largest consumer card" returned a workstation card. Filter on the name (`/^Radeon RX/`)
-alongside `nvidia-consumer` when the question is "what should I buy".
+alongside `nvidia-consumer` when the question is "what should I buy". Same for Intel: `type: 'intel'` includes the Arc Pro B70
+workstation card (2026-10-08) — consumer/retail filters exclude `/Arc Pro/` by name.
 
 **Adding a route means touching three places** — the route, its `/zh` mirror, and `app/sitemap.ts`.
 `/tools/` and `/changelog/` shipped as pages and sat outside the sitemap until `/faq/` was added.
@@ -988,6 +989,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-08 | **+2 32 GB workstation cards (78): Radeon AI PRO R9700, Arc Pro B70** — vendor spec pages; R9700 in vLLM's ROCm list (AWQ/GPTQ ok); consumer filters exclude `Arc Pro`; ExLlamaV3 v1.6.0, llama.cpp b11480. Mistral Large 4 / Beam weights not out yet |
 | 2026-10-07 | **Ollama v0.40.0 → Latest; MLX default on Apple Silicon** — 3 Mac guides note GGUF sizes are a guide for Qwen3.8/Gemma 4/Qwen3.6/3.5 under MLX; llama.cpp b11458. Skipped Qwen3.8-Flash-Next (Aug, unverifiable layout) |
 | 2026-10-06 | **Runtime versions** — llama.cpp b11434 (+ first `v0.6.0` release: `/v1/systemone` decision-model API), vLLM v0.31.0; Ollama/ExLlamaV3 unchanged. Patrol skipped DeepSeek-V4.1-Flash, Mistral Medium 3.5, Reflection Beam (see README) |
 | 2026-10-05 | **Data licensed CC BY 4.0** — Search Console: `Dataset` missing `license`; owner chose CC BY; `/legal/` §10 + JSON-LD + visible note on `/benchmarks/` |

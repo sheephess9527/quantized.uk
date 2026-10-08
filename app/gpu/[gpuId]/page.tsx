@@ -3,7 +3,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import GpuPageContent from '@/components/gpu/GpuPageContent';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { countModelsFitting, fitsOnGpu, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 
@@ -17,7 +17,8 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   const path = `/gpu/${params.gpuId}`;
   const url = canonical(path);
   const count = fitsOnGpu(gpu).length;
-  const title = `${gpu.name} — what LLMs can it run? | quantized.uk`;
+  // fitTitle drops the brand suffix for long card names (Radeon AI PRO R9700 32G was 62 wide).
+  const title = fitTitle(`${gpu.name} — what LLMs can it run?`);
   const description = gpuPageDescription(gpu, 'en');
   const comfortableCount = countModelsFitting(gpu, 'comfortable');
   const ogAlt = `${gpu.name}: ${gpu.vram}GB VRAM, ${comfortableCount} models fit comfortably | quantized.uk`;
