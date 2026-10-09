@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-08';
+export const dataLastUpdated = '2026-10-09';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-08',
+  checkedAt: '2026-10-09',
   current: {
-    llamacpp: 'b11480',
+    llamacpp: 'b11514',
     vllm: 'v0.31.0',
-    ollama: 'v0.40.0',
+    ollama: 'v0.40.1',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-09',
+    en: 'Muse Glimmer 30B added: Meta\'s first open-weight model since Llama 4, built to run on a single card. It is a dense 28B text model that also reads images, released in August under Apache 2.0. Long context is unusually cheap on it: at Q4_K_M it needs about 17.7 GB at 4K and only 19.4 GB at its full 128K window, comfortable on a 24 GB card either way. Sizes come from the published GGUF files. The vision encoder loads on top and is not included. llama.cpp is now at b11514 and Ollama at v0.40.1.',
+    zh: '新增 Muse Glimmer 30B：Meta 自 Llama 4 以来第一个开放权重模型，目标是单卡运行。它是 28B 的稠密文本模型，也能读图，8 月以 Apache 2.0 发布。它的长上下文格外便宜：Q4_K_M 在 4K 下约需 17.7 GB，用满 128K 窗口也只要 19.4 GB，两种情况在 24 GB 显卡上都很宽裕。体积按已公布的 GGUF 文件计算，视觉编码器另外占用、不含在内。llama.cpp 更新到 b11514，Ollama 更新到 v0.40.1。',
+  },
   {
     date: '2026-10-08',
     en: 'The memory calculator now handles models bigger than your card. Choose two to four identical cards and it sizes them together, as llama.cpp splits a model by default. It also says plainly that extra cards add room, not speed. When a model still does not fit, it estimates how many layers stay on the GPU, how much system RAM the rest needs, and the speed ceiling for three common memory setups. Mixture-of-experts models now get an approximate speed ceiling too, counted over the parameters each token actually uses.',

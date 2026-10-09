@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-08):**
+**Live snapshot (2026-10-09):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **90** in index (`models-extra` … `models-extra-12`) |
+| Models | **91** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 461 pages (231 EN + 230 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 463 pages (232 EN + 231 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1011,6 +1011,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-09 | **+1 model (91): Muse Glimmer 30B** (Meta, Aug, Apache 2.0) — 27.85B incl. llama.cpp's attention gate (Meta: "28B decoder"); 13 full + 39 SWA (2560 cells); bpw from file sizes (Q8_0 → 8.50); CLI placeholder (filenames not derivable); llama.cpp b11514, Ollama v0.40.1 |
 | 2026-10-08 | **Optimisation pass** — sitemap lastmods for derived pages from `addedAt` + `sizingChangedAt` (IndexNow: 354 → 8 URLs on a runtime-only day); 404 language switch no longer links `/zh/_not-found/`. Audit otherwise clean (links, console, 390 px) |
 | 2026-10-08 | **+2 32 GB workstation cards (78): Radeon AI PRO R9700, Arc Pro B70** — vendor spec pages; R9700 in vLLM's ROCm list (AWQ/GPTQ ok); consumer filters exclude `Arc Pro`; ExLlamaV3 v1.6.0, llama.cpp b11480. Mistral Large 4 / Beam weights not out yet |
 | 2026-10-07 | **Ollama v0.40.0 → Latest; MLX default on Apple Silicon** — 3 Mac guides note GGUF sizes are a guide for Qwen3.8/Gemma 4/Qwen3.6/3.5 under MLX; llama.cpp b11458. Skipped Qwen3.8-Flash-Next (Aug, unverifiable layout) |

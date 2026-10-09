@@ -6,6 +6,7 @@ function hf(q: string) {
 
 const ADDED = '2026-10-03';
 const ADDED_OLMO3 = '2026-10-05';
+const ADDED_GLIMMER = '2026-10-09';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -91,6 +92,41 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 6.8, hfSearchUrl: hf('Olmo-3-7B-Instruct GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.3, hfSearchUrl: hf('Olmo-3-7B-Instruct GGUF Q8_0'),  confidence: 'estimated' },
+    ],
+  },
+  {
+    // Muse Glimmer (Meta, released 2026-08-10, Apache 2.0). Text decoder from transformers
+    // `models/muse_glimmer/configuration_muse_glimmer.py`: 52 layers, hidden 6656, 32 heads, 2 KV
+    // heads × head_dim 128, intermediate 19968, vocab 202048, untied embeddings, 131072 positions,
+    // sliding_window 2048, every 4th layer full attention (NoPE) → 13 full + 39 window layers.
+    // llama.cpp `src/models/muse-glimmer.cpp` adds a per-layer attention output gate
+    // (n_embd × n_head·head_dim) the config does not show; with it the decoder is 27.85B, matching
+    // Meta's "28B text decoder". Loaded with `load_swa_pattern(ml, 4)` and the iSWA cache, so a
+    // window layer holds pad256(2048 + 512) = 2560 cells. File sizes (search; huggingface.co is
+    // blocked here): Q4_K_M is Meta's official `meta-models/Muse-Glimmer-30B-GGUF` build,
+    // 16,756,683,904 B → 4.81 bpw (bartowski's own Q4_K_M recipe is 17.31 GB, 4.97); bartowski
+    // Q5_K_M 20.11 / Q6_K 23.41 / Q8_0 29.61 GB → 5.78 / 6.72 / 8.50 bpw (Q8_0 on 8.50 confirms
+    // the parameter count). The
+    // ~1.8B vision encoder ships as a separate mmproj file and is not in `params`.
+    id: 'muse-glimmer-30b',
+    name: 'Muse Glimmer 30B',
+    family: 'Meta Muse',
+    params: 27.85,
+    paramLabel: '30B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac'],
+    contextLength: 131072,
+    arch: { layers: 52, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 13, windowLayers: 39, windowTokens: 2560 } },
+    addedAt: ADDED_GLIMMER,
+    description: {
+      en: 'Meta\'s first open-weight model since Llama 4, released in August under Apache 2.0 and built to run on one card. It is a dense model: a 28B text decoder that reads images through a separate vision encoder and answers in text. Three of every four layers use a 2K sliding window and the rest share just 2 KV heads, so long context is unusually cheap. At Q4_K_M it needs about 17.7 GB at 4K context and only 19.4 GB at its full 128K window, comfortable on a 24 GB card either way. Q5_K_M is tight on 24 GB, and Q8_0 wants a 32 GB card. The vision encoder (about 1.4 GB as a GGUF mmproj file) and Meta\'s optional speculative-decoding drafter load on top and are not included. Sizes come from the published GGUF file sizes; the Q4_K_M row is Meta\'s own official build. Meta\'s benchmark claims are its own, and no per-level quality loss has been published.',
+      zh: 'Meta 自 Llama 4 以来第一个开放权重模型，8 月以 Apache 2.0 发布，目标就是单卡运行。它是稠密模型：28B 的文本解码器，通过单独的视觉编码器读取图像，输出文本。每四层中有三层使用 2K 滑动窗口，其余层只有 2 个 KV 头，所以长上下文格外便宜。Q4_K_M 在 4K 上下文下约需 17.7 GB，用满 128K 窗口也只要 19.4 GB，两种情况在 24 GB 显卡上都很宽裕。Q5_K_M 在 24 GB 上偏紧，Q8_0 需要 32 GB 显卡。视觉编码器（GGUF mmproj 文件约 1.4 GB）和 Meta 可选的投机解码草稿模型会额外占用显存，不含在上述数字内。体积按已公布的 GGUF 文件大小计算，Q4_K_M 一行是 Meta 官方发布的版本。基准成绩是 Meta 自己报的，各档位的质量损失也未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.81, vramGB: 17.7, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.78, vramGB: 21.2, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.72, vramGB: 24.6, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q6_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 31.1, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];
