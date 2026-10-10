@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-09';
+export const dataLastUpdated = '2026-10-10';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-09',
+  checkedAt: '2026-10-10',
   current: {
-    llamacpp: 'b11514',
+    llamacpp: 'b11539',
     vllm: 'v0.31.0',
-    ollama: 'v0.40.1',
+    ollama: 'v0.40.2',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-10',
+    en: 'Ollama v0.40.2 upgrades older downloaded models the first time you run them. It keeps the original file as a backup, so those models take extra disk space until a later release removes the backups. Worth knowing on a small SSD or a base-model Mac. Runtime versions now read Ollama v0.40.2 and llama.cpp b11539.',
+    zh: 'Ollama v0.40.2 会在你首次运行旧模型时在后台升级它，并把原文件留作备份，所以这些模型暂时会多占磁盘空间，直到后续版本自动清理备份。SSD 小的电脑或基础款 Mac 值得留意。运行时版本已更新为 Ollama v0.40.2、llama.cpp b11539。',
+  },
   {
     date: '2026-10-09',
     en: 'Muse Glimmer 30B added: Meta\'s first open-weight model since Llama 4, built to run on a single card. It is a dense 28B text model that also reads images, released in August under Apache 2.0. Long context is unusually cheap on it: at Q4_K_M it needs about 17.7 GB at 4K and only 19.4 GB at its full 128K window, comfortable on a 24 GB card either way. Sizes come from the published GGUF files. The vision encoder loads on top and is not included. llama.cpp is now at b11514 and Ollama at v0.40.1.',

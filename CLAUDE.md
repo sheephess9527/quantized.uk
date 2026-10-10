@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-09):**
+**Live snapshot (2026-10-10):**
 
 | Surface | Notes |
 |--------|--------|
@@ -1011,6 +1011,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-10 | **Runtime versions** — llama.cpp b11539, Ollama v0.40.2 (Latest; background model upgrade keeps a backup copy → extra disk, noted for readers). No model added: EmbeddingGemma 2 out of scope, Mistral Large 4 / Beam weights pending |
 | 2026-10-09 | **+1 model (91): Muse Glimmer 30B** (Meta, Aug, Apache 2.0) — 27.85B incl. llama.cpp's attention gate (Meta: "28B decoder"); 13 full + 39 SWA (2560 cells); bpw from file sizes (Q8_0 → 8.50); CLI placeholder (filenames not derivable); llama.cpp b11514, Ollama v0.40.1 |
 | 2026-10-08 | **Optimisation pass** — sitemap lastmods for derived pages from `addedAt` + `sizingChangedAt` (IndexNow: 354 → 8 URLs on a runtime-only day); 404 language switch no longer links `/zh/_not-found/`. Audit otherwise clean (links, console, 390 px) |
 | 2026-10-08 | **+2 32 GB workstation cards (78): Radeon AI PRO R9700, Arc Pro B70** — vendor spec pages; R9700 in vLLM's ROCm list (AWQ/GPTQ ok); consumer filters exclude `Arc Pro`; ExLlamaV3 v1.6.0, llama.cpp b11480. Mistral Large 4 / Beam weights not out yet |
