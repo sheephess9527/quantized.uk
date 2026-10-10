@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **91** in index (`models-extra` … `models-extra-12`) |
+| Models | **92** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 463 pages (232 EN + 231 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 465 pages (233 EN + 232 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -897,6 +897,13 @@ one — summing to less than `layers` is correct, not a bug. Per-layer embedding
 `LLM_TENSOR_LAYER_INPUT` and stay in system RAM under llama.cpp; `params` still counts them (it is
 the total), and the description states the VRAM that saves on a discrete card.
 
+**A lazily-read lookup table is not VRAM, so it is not in `params`.** Qwen3.8-Flash-Next's 51B n-gram
+table is loaded by llama.cpp as `per_layer_tok_embd` with `TENSOR_READ_LAZY` (host/mmap, can stay on
+SSD); counting it would size the model ~30 GB above what any card holds. `params` there is the 125B
+trunk and the description says where the table lives and that downloads include it. This is the one
+exception to "params is the total" — Gemma's small PLE tables are still counted (conservative).
+Check `src/models/<arch>.cpp` for `TENSOR_READ_LAZY` / LAYER_INPUT before excluding anything.
+
 **`arch` is not decoration** — `layers` / `kvHeads` / `headDim` feed the VRAM calculator's KV-cache
 math. Check them against the real `config.json` before shipping a model; GPT-OSS's `headDim: 64`
 (vs the usual 128) halves its KV footprint and a copy-pasted 128 would silently overstate it.
@@ -1011,6 +1018,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-10 | **+1 model (92): Qwen3.8-Flash-Next** (reader suggestion) — llama.cpp `qwen4exp` merged 08-27 (10-07 skip missed the arch name); 12 attention layers + indexer cache (`fullHeadDim` 320); 51B lazy n-gram table excluded from `params`; generic bpw, `estimated`; Q4_K_M 79 GB → 128 GB Macs / Spark 128G |
 | 2026-10-10 | **Runtime versions** — llama.cpp b11539, Ollama v0.40.2 (Latest; background model upgrade keeps a backup copy → extra disk, noted for readers). No model added: EmbeddingGemma 2 out of scope, Mistral Large 4 / Beam weights pending |
 | 2026-10-09 | **+1 model (91): Muse Glimmer 30B** (Meta, Aug, Apache 2.0) — 27.85B incl. llama.cpp's attention gate (Meta: "28B decoder"); 13 full + 39 SWA (2560 cells); bpw from file sizes (Q8_0 → 8.50); CLI placeholder (filenames not derivable); llama.cpp b11514, Ollama v0.40.1 |
 | 2026-10-08 | **Optimisation pass** — sitemap lastmods for derived pages from `addedAt` + `sizingChangedAt` (IndexNow: 354 → 8 URLs on a runtime-only day); 404 language switch no longer links `/zh/_not-found/`. Audit otherwise clean (links, console, 390 px) |

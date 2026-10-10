@@ -419,6 +419,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-10 (b) — +1 model (92): Qwen3.8-Flash-Next (reader suggestion; skipped 10-07, re-checked)
+
+- Skipped on 10-07 as "a layout no reachable config describes". Re-check found llama.cpp **does** support it — `qwen4exp`, PR #27742 merged 2026-08-27 (the earlier search looked for "qwen3.8"/"ngram" and missed the arch name). Official `config.json` (via search): 48 layers, hidden 2560, 24 heads / 2 KV × 256, `full_attention_interval` 4 → 12 attention + 36 Gated DeltaNet layers, 512 experts top-10 + 1 shared, 262144 positions, QSA indexer (4 × 128, 1 key head, budget 2048, ratio 4). Expert width 640 from a GGUF card (AtomicChat), not the official file — the trunk then counts ~124.4B against the stated 125B / 6B active.
+- `src/models/qwen4exp.cpp`: memory is `llama_memory_hybrid_idx` — full KV on the 12 attention layers (QSA selects, it does not compress) + an indexer cache of raw|pooled key (2 × 128) per token per layer; encoded as `fullHeadDim: 320` (2048 + 512 bytes per layer per token), real head dim 256 in `headDim`. The 51B n-gram (PLE) table is `per_layer_tok_embd` with `TENSOR_READ_LAZY` (LAYER_INPUT → host/mmap), never VRAM, so **`params` = 125, excluding the table and the 4B MTP head** (separate GGUF) — a deliberate exception to "params is the total", recorded in CLAUDE.md. GGUFs bundle the table, so no file size isolates the trunk: generic 4.85 / 8.5 bpw, `estimated`. Q4_K_M 79.3 GB @4K, 87.4 GB @256K → comfortable on 128 GB Macs and the DGX Spark 128G (9 machines), nothing ≤ 32 GB.
+- Guides: only DGX Spark 128G's count moved (85 → 86); Spark guide gains a table row (79.4 / 80.2 / 83.3 GB from `calcVRAM`), the "only the 128GB holds" FAQ names it, `relatedModelIds` + `updatedAt` 2026-10-10. CLI maps the original repo (Unsloth ships UD-* tiers only) → placeholder. Model meta description first sentence shortened (167 → within 160).
+
 ### 2026-10-10 — Daily patrol: runtime versions only (llama.cpp b11539, Ollama v0.40.2)
 
 - Ollama **v0.40.2** is now Latest (was Pre-release yesterday). Release notes: models downloaded with earlier versions are upgraded in the background on first run, with the original kept as a backup until a future release removes it; no new models listed. Reader changelog notes the disk-space consequence. llama.cpp **b11539**; vLLM v0.31.0 and ExLlamaV3 v1.6.0 unchanged. Derived pages untouched (`sizingChangedAt` not bumped).

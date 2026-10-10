@@ -7,6 +7,7 @@ function hf(q: string) {
 const ADDED = '2026-10-03';
 const ADDED_OLMO3 = '2026-10-05';
 const ADDED_GLIMMER = '2026-10-09';
+const ADDED_QWEN38_FLASH = '2026-10-10';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -127,6 +128,42 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.78, vramGB: 21.2, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q5_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.72, vramGB: 24.6, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q6_K'),   confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 31.1, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.8-Flash-Next (Qwen, released 2026-08-26; preview of the Qwen4 architecture). Official
+    // config.json text_config (via search — huggingface.co is blocked here): 48 layers, hidden 2560,
+    // 24 heads, 2 KV heads × head_dim 256, full_attention_interval 4 (12 full-attention layers, 36
+    // Gated DeltaNet layers with a fixed recurrent state), 512 experts / 10 routed + 1 shared,
+    // 262144 positions; QSA on the full layers (indexer 4 heads × 128, 1 key head, budget 2048,
+    // compress ratio 4). Expert width 640 is from a GGUF card (AtomicChat), not the official file;
+    // with it the trunk counts ~124.4B, matching the stated "125B total / 6B active".
+    // llama.cpp: `qwen4exp` (PR #27742, merged 2026-08-27), `src/models/qwen4exp.cpp`. Its memory
+    // is `llama_memory_hybrid_idx`: full KV on the 12 attention layers (QSA reads it sparsely, it does
+    // not shrink it) plus an indexer cache of raw + pooled key (2 × 128 values) per token per layer.
+    // Encoded as fullHeadDim 320: (2·2·256·2 + 2·128·2) bytes ÷ (2·2·2) — 256 is the real head dim.
+    // `params` deliberately EXCLUDES the 51B n-gram (PLE) table and the 4B MTP head: llama.cpp loads
+    // the table as `per_layer_tok_embd` with TENSOR_READ_LAZY (LAYER_INPUT, host/mmap — never VRAM),
+    // and MTP ships as a separate GGUF. GGUF files bundle the table, so no file size isolates the
+    // trunk's bpw: generic rates, `estimated`. Width 640 is not a multiple of 256, so ffn_down_exps
+    // falls back to another type in k-quants — real files can differ by a few percent.
+    id: 'qwen3-8-flash-next',
+    name: 'Qwen3.8-Flash-Next',
+    family: 'Qwen3.8',
+    params: 125,
+    paramLabel: '125B-A6B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 48, attHeads: 24, kvHeads: 2, headDim: 256, attention: { fullLayers: 12, windowLayers: 0, fullHeadDim: 320 } },
+    addedAt: ADDED_QWEN38_FLASH,
+    description: {
+      en: 'Qwen\'s preview of its next architecture: a 125B mixture-of-experts model with about 6B parameters active per token. Released in August, it also carries a 51B n-gram lookup table. llama.cpp reads that table lazily from RAM or disk, so it never needs VRAM. It does need disk space and is bundled inside the GGUF files, which is why they are far larger than the sizes below. Only 12 of its 48 layers keep a growing KV cache, so even the full 256K window adds about 7.5 GB. At Q4_K_M it needs about 79 GB at 4K context and 87 GB at 256K, comfortable on a 128 GB Mac or DGX Spark. A single 24 or 32 GB card runs it only with experts offloaded to system RAM. llama.cpp supports it as `qwen4exp`. Sizes use the calculator\'s generic rates, since no file size isolates the model from the table, and no per-level quality loss has been published.',
+      zh: 'Qwen 下一代架构的预览版，8 月发布：125B 的混合专家模型，每个 token 约激活 6B 参数，另带一张 51B 的 n-gram 查找表。llama.cpp 从内存或磁盘按需读取这张表，它从不占用显存，但要占磁盘空间，而且打包在 GGUF 文件里，所以文件比下面的数字大得多。48 层中只有 12 层保留会增长的 KV 缓存，即使用满 256K 窗口也只多约 7.5 GB。Q4_K_M 在 4K 上下文下约需 79 GB，256K 下约 87 GB，128 GB 的 Mac 或 DGX Spark 能从容运行。单张 24 或 32 GB 显卡只有把专家卸载到系统内存才能跑。llama.cpp 以 `qwen4exp` 架构支持它。下方体积使用计算器的通用比特率（没有哪个文件大小能把模型本身和查找表分开），各档位的质量损失也未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 79.3, hfSearchUrl: hf('Qwen3.8-Flash-Next GGUF'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 138.9, hfSearchUrl: hf('Qwen3.8-Flash-Next GGUF Q8_0'), confidence: 'estimated' },
     ],
   },
 ];

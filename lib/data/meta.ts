@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-10',
+    en: 'Qwen3.8-Flash-Next added: a 125B mixture-of-experts model with about 6B parameters active per token, and a preview of Qwen\'s next architecture. At Q4_K_M it needs about 79 GB at 4K context and only 87 GB at its full 256K window, so a 128 GB Mac or DGX Spark runs it comfortably. Its extra 51B n-gram table is read from RAM or disk, never from VRAM. The table is bundled in the download, so expect files much larger than these sizes. Sizes are estimates.',
+    zh: '新增 Qwen3.8-Flash-Next：125B 的混合专家模型，每个 token 约激活 6B 参数，是 Qwen 下一代架构的预览版。Q4_K_M 在 4K 上下文下约需 79 GB，用满 256K 窗口也只要 87 GB，128 GB 的 Mac 或 DGX Spark 能从容运行。它额外的 51B n-gram 查找表从内存或磁盘读取，不占显存；这张表打包在下载文件里，所以文件会比这些数字大得多。体积为估算值。',
+  },
+  {
+    date: '2026-10-10',
     en: 'Ollama v0.40.2 upgrades older downloaded models the first time you run them. It keeps the original file as a backup, so those models take extra disk space until a later release removes the backups. Worth knowing on a small SSD or a base-model Mac. Runtime versions now read Ollama v0.40.2 and llama.cpp b11539.',
     zh: 'Ollama v0.40.2 会在你首次运行旧模型时在后台升级它，并把原文件留作备份，所以这些模型暂时会多占磁盘空间，直到后续版本自动清理备份。SSD 小的电脑或基础款 Mac 值得留意。运行时版本已更新为 Ollama v0.40.2、llama.cpp b11539。',
   },
