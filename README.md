@@ -419,6 +419,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-11 (b) — Daily patrol: llama.cpp b11552, ExLlamaV3 v1.6.1
+
+- Tags/releases pages: llama.cpp **b11552**; ExLlamaV3 **v1.6.1** (Latest, 2026-10-10 — EXL3 still untracked, 0 models); Ollama v0.40.2 and vLLM v0.31.0 unchanged. No open-weight LLM release in the window (HF blog 10-09/10 posts are non-model; October tracker lists only 10-01–03 small specialised models, already assessed). Mistral Large 4 (10-27) and Reflection Beam weights still pending.
+
 ### 2026-10-11 — +3 small Qwen3.5 (98): 4B, 2B, 0.8B (owner OK'd the follow-up)
 
 - Configs (via search): 4B — 32 layers (8 × [3 DeltaNet + 1 gated attention]), hidden 2560, inter 9216, 16 heads / 4 KV × 256, tied; 2B — from `Qwen3.5-2B-Base` (same architecture as instruct): 24 layers (6 full), hidden 2048, inter 6144, 8 heads / 2 KV × 256, tied; 0.8B — unsloth re-upload + community copy: 24 layers, hidden 1024, inter 3584, 2 KV × 256.

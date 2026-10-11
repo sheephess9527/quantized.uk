@@ -1023,6 +1023,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-11 | **Runtime versions** — llama.cpp b11552, ExLlamaV3 v1.6.1; no model in the window |
 | 2026-10-11 | **+3 small Qwen3.5 (98): 4B, 2B, 0.8B** — 4B/2B params + bpw from bartowski files, 0.8B generic `estimated`; every card's count +3; Qwen3 4B/1.7B not superseded yet (would move homepage picks + 3 guides) |
 | 2026-10-10 | **Gap audit: +3 Qwen (95)** — Qwen3.6 35B-A3B (23.4 GB @4K: *tight* on 24 GB, guides omit the buffer), Qwen3.6 27B, Qwen3.5 9B; params from Q8_0 file sizes, interval-4 hybrid layout as Qwen3.8 27B; 11 guide counts re-run per card |
 | 2026-10-10 | **+1 model (92): Qwen3.8-Flash-Next** (reader suggestion) — llama.cpp `qwen4exp` merged 08-27 (10-07 skip missed the arch name); 12 attention layers + indexer cache (`fullHeadDim` 320); 51B lazy n-gram table excluded from `params`; generic bpw, `estimated`; Q4_K_M 79 GB → 128 GB Macs / Spark 128G |
