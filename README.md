@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-11 — +3 small Qwen3.5 (98): 4B, 2B, 0.8B (owner OK'd the follow-up)
+
+- Configs (via search): 4B — 32 layers (8 × [3 DeltaNet + 1 gated attention]), hidden 2560, inter 9216, 16 heads / 4 KV × 256, tied; 2B — from `Qwen3.5-2B-Base` (same architecture as instruct): 24 layers (6 full), hidden 2048, inter 6144, 8 heads / 2 KV × 256, tied; 0.8B — unsloth re-upload + community copy: 24 layers, hidden 1024, inter 3584, 2 KV × 256.
+- Params from bartowski Q8_0: 4B 4.62 GB → 4.35B, 2B 2.08 GB → 1.96B; Q4_K_M bpw 5.54 / 5.71 (tied 248K vocab is a large share of a small model, kept wide). 0.8B: no file size reachable → vendor 0.8 + generic 4.85 / 8.5, `estimated`.
+- Sizes @Q4_K_M 4K / 32K / 256K: 4B 3.3 / 4.3 / 12.0 GB; 2B 1.5 / 1.9 / 4.8; 0.8B 0.6 / 0.9 / 3.8. All original repos mapped (bartowski filenames for these sizes unconfirmed) → CLI placeholder.
+- Every card's comfortable count +3 (RX 7900 XTX 78, 16 GB 60, 12 GB 53 / tight 55, B580 53, A770 56, B570 45, A750 38, RTX 5090 81, RTX 4090 78, M3 Max 48G 81, Spark 89 / 92); AWQ 53. `relatedModelIds`: 4B + 2B → M1 8 GB, CPU and VPS guides.
+- Not done: superseding Qwen3 4B / 1.7B with these — it would move homepage picks and three guides that name Qwen3 4B; left for a deliberate quarterly pass.
+
 ### 2026-10-10 (c) — Gap audit: +3 Qwen models (95) — Qwen3.6 35B-A3B, Qwen3.6 27B, Qwen3.5 9B
 
 - Prompted by "what else popular did we miss". Index vs 2026 buying guides, HF trending and Ollama's popularity notes: the whole Qwen3.5/3.6 generation was absent, though three Mac guides already named Qwen3.6/3.5 (Ollama's MLX list). Qwen3.8's lineup is only 27B, Flash-Next and a 2.4T flagship, so nothing newer covers these sizes.

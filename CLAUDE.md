@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-10):**
+**Live snapshot (2026-10-11):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **95** in index (`models-extra` … `models-extra-12`) |
+| Models | **98** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 471 pages (236 EN + 235 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 477 pages (239 EN + 238 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1023,6 +1023,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-11 | **+3 small Qwen3.5 (98): 4B, 2B, 0.8B** — 4B/2B params + bpw from bartowski files, 0.8B generic `estimated`; every card's count +3; Qwen3 4B/1.7B not superseded yet (would move homepage picks + 3 guides) |
 | 2026-10-10 | **Gap audit: +3 Qwen (95)** — Qwen3.6 35B-A3B (23.4 GB @4K: *tight* on 24 GB, guides omit the buffer), Qwen3.6 27B, Qwen3.5 9B; params from Q8_0 file sizes, interval-4 hybrid layout as Qwen3.8 27B; 11 guide counts re-run per card |
 | 2026-10-10 | **+1 model (92): Qwen3.8-Flash-Next** (reader suggestion) — llama.cpp `qwen4exp` merged 08-27 (10-07 skip missed the arch name); 12 attention layers + indexer cache (`fullHeadDim` 320); 51B lazy n-gram table excluded from `params`; generic bpw, `estimated`; Q4_K_M 79 GB → 128 GB Macs / Spark 128G |
 | 2026-10-10 | **Runtime versions** — llama.cpp b11539, Ollama v0.40.2 (Latest; background model upgrade keeps a backup copy → extra disk, noted for readers). No model added: EmbeddingGemma 2 out of scope, Mistral Large 4 / Beam weights pending |

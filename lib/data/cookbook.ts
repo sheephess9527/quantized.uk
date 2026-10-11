@@ -65,7 +65,7 @@ const baseArticles: Article[] = [
   {
     id: 'llama-vps-llamacpp',
     gpuPreset: { gpuId: 'cpu-16', ctx: 4096 },
-    relatedModelIds: ['llama-3.1-8b'],
+    relatedModelIds: ['llama-3.1-8b', 'qwen3-5-4b', 'qwen3-5-2b'],
     title: 'Run Llama 3.1 8B on a €20/month VPS',
     titleZh: '在 €20/月 VPS 上运行 Llama 3.1 8B',
     description: 'A complete guide to running a private LLM API on a budget Linux VPS using llama.cpp server mode.',

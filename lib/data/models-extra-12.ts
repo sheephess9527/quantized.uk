@@ -9,6 +9,7 @@ const ADDED_OLMO3 = '2026-10-05';
 const ADDED_GLIMMER = '2026-10-09';
 const ADDED_QWEN38_FLASH = '2026-10-10';
 const ADDED_QWEN36 = '2026-10-10';
+const ADDED_QWEN35_SMALL = '2026-10-11';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -243,6 +244,79 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.35, vramGB: 6.6,  hfSearchUrl: hf('Qwen3.5-9B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.4, hfSearchUrl: hf('Qwen3.5-9B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.5-4B. Official config.json + model card (via search): 32 layers = 8 × (3 Gated DeltaNet + 1
+    // gated attention), hidden 2560, intermediate 9216, 16 heads / 4 KV heads × 256, tied embeddings,
+    // vocab 248320. Params from bartowski's Q8_0 (4.62 GB ÷ 8.5 → 4.35B); Q4_K_M 3.01 GB → 5.54 bpw
+    // (the tied 248K-token vocabulary is ~0.64B of a small model, kept wide). Context 262144 as the
+    // Qwen3.5 family config. llama.cpp `qwen35`. Original repo mapped (GGUF filename unconfirmed).
+    id: 'qwen3-5-4b',
+    name: 'Qwen3.5 4B',
+    family: 'Alibaba Qwen3.5',
+    params: 4.35,
+    paramLabel: '4B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: { layers: 32, attHeads: 16, kvHeads: 4, headDim: 256, attention: { fullLayers: 8, note: { en: '8 of 32 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '32 层中有 8 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN35_SMALL,
+    description: {
+      en: 'The 4B size of Qwen3.5, for 4 to 8 GB cards, base-model Macs and CPU-only machines. Only 8 of its 32 layers keep a growing KV cache. At Q4_K_M it needs about 3.3 GB at 4K context and 4.3 GB at 32K, so a 6 GB card is enough for long chats; its full 256K window needs about 12 GB. Reasoning is off by default on the small Qwen3.5 sizes, and it reads images through a separate vision encoder. Sizes come from the published GGUF file sizes, and no per-level quality loss has been published.',
+      zh: 'Qwen3.5 的 4B 尺寸，适合 4 到 8 GB 显卡、基础款 Mac 和纯 CPU 机器。32 层中只有 8 层保留会增长的 KV 缓存。Q4_K_M 在 4K 上下文下约需 3.3 GB，32K 下约 4.3 GB，所以 6 GB 显卡就够长对话使用；用满 256K 窗口约需 12 GB。Qwen3.5 的小尺寸默认关闭推理模式；它通过单独的视觉编码器读取图像。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.54, vramGB: 3.3, hfSearchUrl: hf('Qwen3.5-4B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 5.0, hfSearchUrl: hf('Qwen3.5-4B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.5-2B. Official config.json of Qwen3.5-2B-Base (the instruct release shares the
+    // architecture): 24 layers (6 full attention), hidden 2048, intermediate 6144, 8 heads / 2 KV
+    // heads × 256, tied embeddings. Params from bartowski's Q8_0 (2.08 GB → 1.96B); Q4_K_M 1.40 GB →
+    // 5.71 bpw. Original repo mapped (GGUF filename unconfirmed).
+    id: 'qwen3-5-2b',
+    name: 'Qwen3.5 2B',
+    family: 'Alibaba Qwen3.5',
+    params: 1.96,
+    paramLabel: '2B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: { layers: 24, attHeads: 8, kvHeads: 2, headDim: 256, attention: { fullLayers: 6, note: { en: '6 of 24 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '24 层中有 6 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN35_SMALL,
+    description: {
+      en: 'The 2B size of Qwen3.5, small enough for almost anything: old cards, base-model Macs, mini PCs and CPU-only servers. Only 6 of its 24 layers keep a growing KV cache, with 2 KV heads each. At Q4_K_M it needs about 1.5 GB at 4K context, 1.9 GB at 32K and 4.8 GB at its full 256K window. Even Q8_0 stays around 2.2 GB at 4K. Reasoning is off by default on the small Qwen3.5 sizes. Sizes come from the published GGUF file sizes, and no per-level quality loss has been published.',
+      zh: 'Qwen3.5 的 2B 尺寸，几乎什么硬件都能跑：老显卡、基础款 Mac、迷你主机和纯 CPU 服务器。24 层中只有 6 层保留会增长的 KV 缓存，每层只有 2 个 KV 头。Q4_K_M 在 4K 上下文下约需 1.5 GB，32K 下约 1.9 GB，用满 256K 窗口约 4.8 GB；即使 Q8_0，4K 下也只要约 2.2 GB。Qwen3.5 的小尺寸默认关闭推理模式。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.71, vramGB: 1.5, hfSearchUrl: hf('Qwen3.5-2B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, vramGB: 2.2, hfSearchUrl: hf('Qwen3.5-2B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.5-0.8B. Config (unsloth re-upload + a community copy of the official file, via search):
+    // 24 layers, hidden 1024, intermediate 3584, 2 KV heads × 256 — the Qwen3.5 interval-4 pattern
+    // gives 6 full-attention layers. No GGUF file size was reachable, so `params` is the vendor's
+    // 0.8 and the bpw are the calculator's generic rates.
+    id: 'qwen3-5-0.8b',
+    name: 'Qwen3.5 0.8B',
+    family: 'Alibaba Qwen3.5',
+    params: 0.8,
+    paramLabel: '0.8B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: { layers: 24, attHeads: 8, kvHeads: 2, headDim: 256, attention: { fullLayers: 6, note: { en: '6 of 24 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '24 层中有 6 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN35_SMALL,
+    description: {
+      en: 'The smallest Qwen3.5, for phones, single-board computers and as a fast draft or routing model next to a bigger one. At Q4_K_M it needs about 0.6 GB at 4K context and under 1 GB at 32K. Its full 256K window needs about 3.8 GB, almost all of it cache, so very long contexts cost more than the weights here. Sizes use the calculator\'s generic rates, since no GGUF file size could be checked, and no per-level quality loss has been published.',
+      zh: '最小的 Qwen3.5，适合手机、单板电脑，或者在大模型旁边当快速草稿/路由模型。Q4_K_M 在 4K 上下文下约需 0.6 GB，32K 下不到 1 GB。用满 256K 窗口约需 3.8 GB，几乎全是缓存，所以在这里超长上下文比权重本身更占内存。下方体积使用计算器的通用比特率，因为未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 0.6, hfSearchUrl: hf('Qwen3.5-0.8B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 0.9, hfSearchUrl: hf('Qwen3.5-0.8B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

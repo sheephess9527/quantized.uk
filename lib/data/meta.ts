@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-10';
+export const dataLastUpdated = '2026-10-11';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-11',
+    en: 'The small Qwen3.5 sizes are in: 4B, 2B and 0.8B, for 4 to 8 GB cards, base-model Macs, mini PCs and CPU-only machines. At Q4_K_M with 4K context they need about 3.3 GB, 1.5 GB and 0.6 GB. Even their full 256K window stays near 12 GB, 4.8 GB and 3.8 GB, because only a quarter of their layers keep a KV cache. The 0.8B sizes are estimates; the 4B and 2B come from published files.',
+    zh: 'Qwen3.5 的小尺寸已收录：4B、2B 和 0.8B，适合 4 到 8 GB 显卡、基础款 Mac、迷你主机和纯 CPU 机器。Q4_K_M、4K 上下文下分别约需 3.3 GB、1.5 GB 和 0.6 GB；即使用满 256K 窗口也分别只要约 12 GB、4.8 GB 和 3.8 GB，因为只有四分之一的层保留 KV 缓存。0.8B 的体积为估算，4B 和 2B 按已公布的文件计算。',
+  },
   {
     date: '2026-10-10',
     en: 'Three of the most-used Qwen models were missing and are now in: Qwen3.6 35B-A3B, Qwen3.6 27B and Qwen3.5 9B. Qwen3.6 35B-A3B needs about 23.4 GB at Q4_K_M with 4K context, tight on a 24 GB card and comfortable on 32 GB. Qwen3.6 27B needs 19.1 GB, comfortable on 24 GB. Qwen3.5 9B needs 6.6 GB, comfortable on an 8 GB card, and its full 256K window fits in about 15 GB. All three keep a KV cache on only a quarter of their layers, so long context is cheap. Sizes come from the published GGUF files.',
