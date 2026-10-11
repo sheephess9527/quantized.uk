@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-10 (c) — Gap audit: +3 Qwen models (95) — Qwen3.6 35B-A3B, Qwen3.6 27B, Qwen3.5 9B
+
+- Prompted by "what else popular did we miss". Index vs 2026 buying guides, HF trending and Ollama's popularity notes: the whole Qwen3.5/3.6 generation was absent, though three Mac guides already named Qwen3.6/3.5 (Ollama's MLX list). Qwen3.8's lineup is only 27B, Flash-Next and a 2.4T flagship, so nothing newer covers these sizes.
+- Configs (official `config.json` via search): 3.6-35B-A3B 40 layers / 2 KV × 256 / interval 4 (10 full) / 256 experts top-8 + shared; 3.6-27B 64 layers / hidden 5120 / inter 17408 / 4 KV × 256 / 16 full (= Qwen3.8 27B's measured layout); 3.5-9B 32 layers / hidden 4096 / inter 12288 / 4 KV × 256 / 8 full, untied, vocab 248320. llama.cpp `qwen35` / `qwen35moe`. Params from bartowski Q8_0 sizes at 8.5 bpw (37.81 / 29.12 / 9.80 GB → 35.59 / 27.41 / 9.22B — 9B also matches config arithmetic ~9.2B); bpw from the other files (35B Q4_K_M 5.01; 27B Q4_K_M/Q5_K_M 5.25/6.12; 9B Q4_K_M 5.35). 35B-A3B's 262K window is from the 3.5 config and a 3.6 draft model, not seen in the 3.6 main file.
+- Verdicts: 35B-A3B Q4_K_M 23.4 GB @4K = 97% of 24 GB → **tight** (guides calling it the 24 GB pick omit the buffer — said on the page); 27B 19.1 / 21.0 GB @4K/32K comfortable on 24 GB; 9B 6.6 GB comfortable on 8 GB, 15.2 GB at 256K.
+- Qwen3.6 27B not superseded by Qwen3.8 27B (same window and size → generic reason only). CLI: bartowski repos for the two 3.6 models (filename prefix `Qwen_Qwen3.6-…` seen in file URLs, which `ggufBase` derives); 9B maps the original repo (filename unconfirmed) → placeholder.
+- Guide counts re-run per card: RX 7900 XTX 73→75, 16 GB 56→57, 12 GB 49→50 (tight 51→52), Arc B580 49→50 / A770 52→53 / B570 41→42 / A750 34→35, RTX 5090 75→78, RTX 4090 73→75, M3 Max 48G 75→78, Spark 64/128 83→86 / 86→89; AWQ 53. `relatedModelIds`: 9B → 8 GB + 12 GB guides; Qwen3.6 → RTX 5090 guide.
+- Still not in, with reasons: Qwen3.5 4B/2B/0.8B, 27B, 35B-A3B, 122B-A10B (next batch — the 3.6 builds cover 27B/35B), LFM2-VL 3B (edge VLM, unchecked), DeepSeek-V4.1-Flash and GLM-5.3-Flash (8-GPU class), Xing4.0 29B-A4B / Kolibri-1 (provenance unclear).
+
 ### 2026-10-10 (b) — +1 model (92): Qwen3.8-Flash-Next (reader suggestion; skipped 10-07, re-checked)
 
 - Skipped on 10-07 as "a layout no reachable config describes". Re-check found llama.cpp **does** support it — `qwen4exp`, PR #27742 merged 2026-08-27 (the earlier search looked for "qwen3.8"/"ngram" and missed the arch name). Official `config.json` (via search): 48 layers, hidden 2560, 24 heads / 2 KV × 256, `full_attention_interval` 4 → 12 attention + 36 Gated DeltaNet layers, 512 experts top-10 + 1 shared, 262144 positions, QSA indexer (4 × 128, 1 key head, budget 2048, ratio 4). Expert width 640 from a GGUF card (AtomicChat), not the official file — the trunk then counts ~124.4B against the stated 125B / 6B active.

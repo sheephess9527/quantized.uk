@@ -8,6 +8,7 @@ const ADDED = '2026-10-03';
 const ADDED_OLMO3 = '2026-10-05';
 const ADDED_GLIMMER = '2026-10-09';
 const ADDED_QWEN38_FLASH = '2026-10-10';
+const ADDED_QWEN36 = '2026-10-10';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -164,6 +165,84 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 79.3, hfSearchUrl: hf('Qwen3.8-Flash-Next GGUF'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 138.9, hfSearchUrl: hf('Qwen3.8-Flash-Next GGUF Q8_0'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.6-35B-A3B. Official config.json (via search; huggingface.co is blocked here): 40 layers,
+    // hidden 2048, 16 heads / 2 KV heads × head_dim 256, full_attention_interval 4 (10 full-attention
+    // + 30 Gated DeltaNet layers — the shape already validated on Qwen3.8 27B), 256 experts / 8 routed
+    // + 1 shared, 262144 positions (Qwen3.5 config + a Qwen3.6 draft model; not seen in the 3.6 main
+    // file). llama.cpp arch `qwen35moe`. Parameter count from bartowski's Q8_0 (37.81 GB ÷ 8.5 bpw =
+    // 35.59B, matching the name); Q4_K_M 22.29 GB → 5.01 bpw. The vision encoder is a separate mmproj.
+    id: 'qwen3-6-35b-a3b',
+    name: 'Qwen3.6 35B-A3B',
+    family: 'Alibaba Qwen3.6',
+    params: 35.59,
+    paramLabel: '35B-A3B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN36,
+    description: {
+      en: 'One of the most recommended models for a 24 GB card this year: 35.6B parameters, about 3B active per token, so it reads per token about as much as a 3B model. Only 10 of its 40 layers keep a growing KV cache, so context is cheap: at Q4_K_M it needs about 23.4 GB at 4K and 24.0 GB at 32K. On this site\'s rule that is tight on a 24 GB card, not comfortable, because it counts a working buffer most guides leave out. A 32 GB card, or a 48 GB Mac through the GPU\'s share of unified memory, has real room. It reads images through a separate vision encoder. Sizes come from the published GGUF file sizes, and no per-level quality loss has been published.',
+      zh: '今年被推荐最多的 24 GB 显卡模型之一：总参数 35.6B，每个 token 约激活 3B，每个 token 读取的数据量和 3B 模型差不多。40 层中只有 10 层保留会增长的 KV 缓存，所以上下文很便宜：Q4_K_M 在 4K 下约需 23.4 GB，32K 下约 24.0 GB。按本站的规则，这在 24 GB 显卡上属于「勉强」而不是「宽裕」，因为本站计入了多数指南忽略的运行缓冲；32 GB 显卡，或 48 GB 的 Mac（靠 GPU 可用的那部分统一内存）才有真正的余量。它通过单独的视觉编码器读取图像。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.01, vramGB: 23.4, hfSearchUrl: hf('Qwen3.6-35B-A3B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 39.6, hfSearchUrl: hf('Qwen3.6-35B-A3B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.6-27B. Official config.json / model card (via search): 64 layers, hidden 5120, intermediate
+    // 17408, 24 heads / 4 KV heads × 256, full_attention_interval 4 (16 full + 48 Gated DeltaNet) —
+    // the same layout as Qwen3.8 27B, whose cache sizing matched measurements at 8K/32K/262K. llama.cpp
+    // `qwen35`. Params from bartowski's Q8_0 (29.12 GB → 27.41B); Q4_K_M 17.98 / Q5_K_M 20.97 GB →
+    // 5.25 / 6.12 bpw (unsloth's builds are smaller: 16.8 / 19.5 / 28.6 GB). Not superseded by Qwen3.8
+    // 27B: same window, same size — supersededDiffNote() would only have its generic line.
+    id: 'qwen3-6-27b',
+    name: 'Qwen3.6 27B',
+    family: 'Alibaba Qwen3.6',
+    params: 27.41,
+    paramLabel: '27B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 64, attHeads: 24, kvHeads: 4, headDim: 256, attention: { fullLayers: 16, note: { en: '16 of 64 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '64 层中有 16 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN36,
+    description: {
+      en: 'The dense model of the Qwen3.6 generation and a popular local coding model. It has the same layout as Qwen3.8 27B, the newer release: only 16 of its 64 layers keep a growing KV cache. At Q4_K_M it needs about 19.1 GB at 4K context and 21.0 GB at 32K, comfortable on a 24 GB card either way. Q5_K_M is tight on 24 GB, and a 16 GB card cannot hold it at any level listed here. Sizes come from bartowski\'s published GGUF files; Unsloth\'s builds of the same levels are about 1 GB smaller. No per-level quality loss has been published.',
+      zh: 'Qwen3.6 这一代的稠密模型，也是很受欢迎的本地写代码模型。它和更新的 Qwen3.8 27B 结构相同：64 层中只有 16 层保留会增长的 KV 缓存。Q4_K_M 在 4K 上下文下约需 19.1 GB，32K 下约 21.0 GB，两种情况在 24 GB 显卡上都很宽裕。Q5_K_M 在 24 GB 上偏紧；16 GB 显卡在这里列出的任何档位都装不下。体积按 bartowski 发布的 GGUF 文件计算，Unsloth 的同档位文件约小 1 GB。各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.25, vramGB: 19.1, hfSearchUrl: hf('Qwen3.6-27B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.12, vramGB: 22.2, hfSearchUrl: hf('Qwen3.6-27B GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 30.7, hfSearchUrl: hf('Qwen3.6-27B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Qwen3.5-9B. Official config.json text_config (via search): 32 layers, hidden 4096, intermediate
+    // 12288, 16 heads / 4 KV heads × 256, full_attention_interval 4 (8 full + 24 Gated DeltaNet),
+    // untied embeddings, vocab 248320, plus an MTP layer. Params from bartowski's Q8_0 (9.80 GB →
+    // 9.22B; the config arithmetic gives ~9.2B, the large vocabulary is ~2B of it); Q4_K_M 6.17 GB →
+    // 5.35 bpw. Context 262144 from the Qwen3.5 config. llama.cpp `qwen35`.
+    id: 'qwen3-5-9b',
+    name: 'Qwen3.5 9B',
+    family: 'Alibaba Qwen3.5',
+    params: 9.22,
+    paramLabel: '9B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: { layers: 32, attHeads: 16, kvHeads: 4, headDim: 256, attention: { fullLayers: 8, note: { en: '8 of 32 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '32 层中有 8 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_QWEN36,
+    description: {
+      en: 'The newest small Qwen and a common pick for 8 to 16 GB cards. Only 8 of its 32 layers keep a growing KV cache, so it can use a long context on modest hardware. At Q4_K_M it needs about 6.6 GB at 4K and 7.5 GB at 32K, comfortable on an 8 GB card. Its full 256K window needs about 15.2 GB. Q8_0 needs about 10.4 GB, comfortable from 12 GB up. Reasoning is off by default on the small Qwen3.5 sizes, and it reads images through a separate vision encoder. Sizes come from the published GGUF file sizes, and no per-level quality loss has been published.',
+      zh: 'Qwen 最新的小尺寸模型，8 到 16 GB 显卡的常见选择。32 层中只有 8 层保留会增长的 KV 缓存，所以在普通硬件上也能用长上下文。Q4_K_M 在 4K 下约需 6.6 GB，32K 下约 7.5 GB，8 GB 显卡就能从容运行；用满 256K 窗口约需 15.2 GB。Q8_0 约需 10.4 GB，12 GB 起就很宽裕。Qwen3.5 的小尺寸默认关闭推理模式；它通过单独的视觉编码器读取图像。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.35, vramGB: 6.6,  hfSearchUrl: hf('Qwen3.5-9B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.4, hfSearchUrl: hf('Qwen3.5-9B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

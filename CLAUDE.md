@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **92** in index (`models-extra` … `models-extra-12`) |
+| Models | **95** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 465 pages (233 EN + 232 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 471 pages (236 EN + 235 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -407,6 +407,11 @@ data does not know (`?gpu=bogus` printed "nothing fits"), never keep them as sta
 local state that only *reverse* mode renders; forward mode judges against the navbar hardware
 profile, so a shared link carrying a card produced a size with no verdict. When adding a param,
 follow it to the component that actually reads it in the mode the link opens.
+
+**A periodic gap audit beats waiting for news.** The daily patrol only looks at the last ~7 days, so a
+whole generation can slip past it — Qwen3.5/3.6 (the most-recommended 8–24 GB models of 2026) were
+absent until 2026-10-10 while three Mac guides already named them. Compare the index against current
+buying guides and HF trending, not only against release feeds.
 
 **Adding models**
 
@@ -1018,6 +1023,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-10 | **Gap audit: +3 Qwen (95)** — Qwen3.6 35B-A3B (23.4 GB @4K: *tight* on 24 GB, guides omit the buffer), Qwen3.6 27B, Qwen3.5 9B; params from Q8_0 file sizes, interval-4 hybrid layout as Qwen3.8 27B; 11 guide counts re-run per card |
 | 2026-10-10 | **+1 model (92): Qwen3.8-Flash-Next** (reader suggestion) — llama.cpp `qwen4exp` merged 08-27 (10-07 skip missed the arch name); 12 attention layers + indexer cache (`fullHeadDim` 320); 51B lazy n-gram table excluded from `params`; generic bpw, `estimated`; Q4_K_M 79 GB → 128 GB Macs / Spark 128G |
 | 2026-10-10 | **Runtime versions** — llama.cpp b11539, Ollama v0.40.2 (Latest; background model upgrade keeps a backup copy → extra disk, noted for readers). No model added: EmbeddingGemma 2 out of scope, Mistral Large 4 / Beam weights pending |
 | 2026-10-09 | **+1 model (91): Muse Glimmer 30B** (Meta, Aug, Apache 2.0) — 27.85B incl. llama.cpp's attention gate (Meta: "28B decoder"); 13 full + 39 SWA (2560 cells); bpw from file sizes (Q8_0 → 8.50); CLI placeholder (filenames not derivable); llama.cpp b11514, Ollama v0.40.1 |

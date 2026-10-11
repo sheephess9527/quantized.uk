@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-10',
+    en: 'Three of the most-used Qwen models were missing and are now in: Qwen3.6 35B-A3B, Qwen3.6 27B and Qwen3.5 9B. Qwen3.6 35B-A3B needs about 23.4 GB at Q4_K_M with 4K context, tight on a 24 GB card and comfortable on 32 GB. Qwen3.6 27B needs 19.1 GB, comfortable on 24 GB. Qwen3.5 9B needs 6.6 GB, comfortable on an 8 GB card, and its full 256K window fits in about 15 GB. All three keep a KV cache on only a quarter of their layers, so long context is cheap. Sizes come from the published GGUF files.',
+    zh: '补上了三个被漏掉的常用 Qwen 模型：Qwen3.6 35B-A3B、Qwen3.6 27B 和 Qwen3.5 9B。Qwen3.6 35B-A3B 在 Q4_K_M、4K 上下文下约需 23.4 GB，24 GB 显卡上偏紧，32 GB 上宽裕；Qwen3.6 27B 约需 19.1 GB，24 GB 上宽裕；Qwen3.5 9B 约需 6.6 GB，8 GB 显卡就能从容运行，用满 256K 窗口也只要约 15 GB。三者都只在四分之一的层保留 KV 缓存，所以长上下文很便宜。体积按已公布的 GGUF 文件计算。',
+  },
+  {
+    date: '2026-10-10',
     en: 'Qwen3.8-Flash-Next added: a 125B mixture-of-experts model with about 6B parameters active per token, and a preview of Qwen\'s next architecture. At Q4_K_M it needs about 79 GB at 4K context and only 87 GB at its full 256K window, so a 128 GB Mac or DGX Spark runs it comfortably. Its extra 51B n-gram table is read from RAM or disk, never from VRAM. The table is bundled in the download, so expect files much larger than these sizes. Sizes are estimates.',
     zh: '新增 Qwen3.8-Flash-Next：125B 的混合专家模型，每个 token 约激活 6B 参数，是 Qwen 下一代架构的预览版。Q4_K_M 在 4K 上下文下约需 79 GB，用满 256K 窗口也只要 87 GB，128 GB 的 Mac 或 DGX Spark 能从容运行。它额外的 51B n-gram 查找表从内存或磁盘读取，不占显存；这张表打包在下载文件里，所以文件会比这些数字大得多。体积为估算值。',
   },
