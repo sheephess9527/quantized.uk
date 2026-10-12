@@ -1009,7 +1009,7 @@ components/home/JobPaths.tsx
 
 ## Deploy footguns (full list in README §6)
 
-Cloudflare **Pages** not Workers · output dir `out` not `.next` · Next.js ≥ 14.2.35 ·
+Cloudflare **Pages** not Workers · output dir `out` not `.next` · `www` → apex is a dashboard Redirect Rule (2026-10-12), not `_redirects` (it cannot match on host) · Next.js ≥ 14.2.35 ·
 if a deploy command is forced, use `true` (not `done`). · No required env vars for build
 (optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` defaults to `quantized.uk` in code).
 
