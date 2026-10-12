@@ -23,7 +23,7 @@ export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
     Object.entries(v).reduce((acc, [k, val]) => acc.replaceAll(`{${k}}`, String(val)), s);
 
   const rows: { label: string; a: string; b: string }[] = [
-    { label: c.rowHardware, a: a.hardwareReq, b: b.hardwareReq },
+    { label: c.rowHardware, a: a.hardwareReq[lang], b: b.hardwareReq[lang] },
     { label: c.rowFramework, a: a.framework, b: b.framework },
     { label: c.rowBestFor, a: a.bestFor[lang], b: b.bestFor[lang] },
     { label: c.rowIndexed, a: `${countA} / ${models.length}`, b: `${countB} / ${models.length}` },

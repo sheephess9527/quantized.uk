@@ -178,14 +178,28 @@ export function fitDescription(text: string, lang: 'en' | 'zh'): string {
 }
 
 /**
- * Appends a computed fact to a description too short to say much — only
- * while the result stays inside the budget. Seed-OSS 36B's page otherwise
- * advertised itself with 37 characters.
+ * Below this width a description is "too short" (Bing Webmaster flagged it on
+ * 2026-10-12, mostly Chinese pages: 79 CJK characters is 158 width but only 79
+ * characters, and a two-sentence zh description often stopped at 30–60).
  */
-export function padDescription(base: string, extra: string, lang: 'en' | 'zh'): string {
-  if (displayWidth(base) >= 100) return base;
-  const joined = lang === 'zh' ? base + extra : `${base} ${extra}`;
-  return displayWidth(joined) <= DESCRIPTION_BUDGET ? joined : base;
+export const DESCRIPTION_FLOOR = 140;
+
+/**
+ * Appends computed facts to a short description, in order, while the result
+ * stays inside the budget and until it reaches the floor. An array entry is a
+ * set of alternatives, longest first — the first that fits is used. Facts only:
+ * every extra a caller passes is derived from the data, never filler.
+ */
+export function extendDescription(base: string, extras: (string | string[])[], lang: 'en' | 'zh'): string {
+  let out = base;
+  for (const extra of extras) {
+    if (displayWidth(out) >= DESCRIPTION_FLOOR) break;
+    for (const option of Array.isArray(extra) ? extra : [extra]) {
+      const joined = lang === 'zh' ? out + option : `${out} ${option}`;
+      if (displayWidth(joined) <= DESCRIPTION_BUDGET) { out = joined; break; }
+    }
+  }
+  return out;
 }
 
 export function modelPageDescription(description: string, isLegacy: boolean, lang: 'en' | 'zh' = 'en'): string {

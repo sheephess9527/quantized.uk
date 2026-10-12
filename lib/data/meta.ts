@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-12',
+    en: 'Search results now describe each page properly. Bing flagged many of this site\'s snippets as too short, mostly on Chinese pages. Model, GPU and guide pages now add the facts the page itself states: the size at 4K, the smallest card that runs it, and the cards and models a guide covers. The Chinese format pages also stop showing hardware requirements in English.',
+    zh: '搜索结果里的页面摘要现在完整了。Bing 提示本站很多摘要太短，主要是中文页面。模型、显卡和指南页的摘要现在会补上页面本身给出的事实：4K 下的体积、能运行它的最小显卡、指南涉及的显卡和模型。中文格式页的硬件要求也不再显示英文。',
+  },
+  {
+    date: '2026-10-12',
     en: 'MiMo-V2.6-Pro is in the index, the open-weight model readers asked about most. Xiaomi\'s 1-trillion-parameter MoE (about 42B active, MIT licence) ships already 4-bit, and even so it needs about 604 GB at 4K context. That is more than any single machine listed here: a 512 GB Mac Studio gives its GPU about 384 GB, and four 80 GB cards hold 320 GB. Its page and the calculator now say so plainly; an 8 × 80 GB server is about the smallest that holds it.',
     zh: 'MiMo-V2.6-Pro 已收录，这是读者问得最多的开源模型。小米的 1 万亿参数 MoE（每 token 激活约 42B，MIT 许可）发布时就是 4 比特，即便如此，4K 上下文也约需 604 GB，超过这里列出的任何一台单机：512 GB 的 Mac Studio 给 GPU 的约 384 GB，四张 80 GB 显卡合计 320 GB。它的页面和计算器现在会直接说明这一点；8 张 80 GB 的服务器大约是能装下它的最小配置。',
   },

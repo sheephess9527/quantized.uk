@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import GpuPage from '../../../gpu/[gpuId]/page';
+import { gpuMetaDescription } from '@/lib/utils/meta-description';
 import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { countModelsFitting, fitsOnGpu, gpuBySlug, gpuPageDescription } from '@/lib/utils/gpu-page';
 
@@ -17,7 +18,7 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   const url = canonical(path);
   const count = fitsOnGpu(gpu).length;
   const title = fitTitle(`${gpu.name} 能跑哪些大模型？`);
-  const description = gpuPageDescription(gpu, 'zh');
+  const description = gpuMetaDescription(gpu, 'zh');
   const comfortableCount = countModelsFitting(gpu, 'comfortable');
   const ogAlt = `${gpu.name}：${gpu.vram}GB 显存，${comfortableCount} 个模型可从容运行 | quantized.uk`;
   return {

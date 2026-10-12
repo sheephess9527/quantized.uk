@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Privacy Policy | quantized.uk',
-  description: 'How quantized.uk handles analytics, local storage, cookies, and third-party services.',
+  description: 'How quantized.uk handles analytics, local storage, cookies, and third-party services: which analytics run and what stays in your browser.',
   path: '/privacy',
 });
 

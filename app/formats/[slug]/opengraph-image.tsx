@@ -17,7 +17,7 @@ export default function Image({ params }: { params: { slug: string } }) {
     return renderOgImage({
       eyebrow: 'Format',
       title: `${single.name} explained`,
-      stats: [`${single.framework} · ${single.hardwareReq}`],
+      stats: [`${single.framework} · ${single.hardwareReq.en}`],
       footer: `${owning} models ship in this format`,
     });
   }

@@ -17,7 +17,7 @@ export default function Image({ params }: { params: { slug: string } }) {
     return renderOgImage({
       eyebrow: '格式',
       title: `${single.name} 详解`,
-      stats: [`${single.framework} · ${single.hardwareReq}`],
+      stats: [`${single.framework} · ${single.hardwareReq.zh}`],
       footer: `${owning} 个模型支持此格式`,
     });
   }

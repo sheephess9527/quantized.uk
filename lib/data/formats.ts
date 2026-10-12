@@ -21,7 +21,7 @@ export interface QuantFormat {
   description: { en: string; zh: string };
   strengths: { en: string[]; zh: string[] };
   weaknesses: { en: string[]; zh: string[] };
-  hardwareReq: string;
+  hardwareReq: { en: string; zh: string };
   bestFor: { en: string; zh: string };
   framework: string;
 }
@@ -43,7 +43,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Any hardware', 'CPU+GPU hybrid', 'Huge ecosystem', 'Beginner-friendly'], zh: ['兼容任意硬件', 'CPU+GPU 混合推理', '生态最完善', '上手极简'] },
     weaknesses: { en: ['Slower than GPU-native', 'Not ideal for high concurrency'], zh: ['慢于 GPU 原生格式', '高并发场景非最优'] },
-    hardwareReq: 'Any — CPU / NVIDIA / AMD / Apple',
+    hardwareReq: { en: 'Any — CPU / NVIDIA / AMD / Apple', zh: '任意硬件 —— CPU / NVIDIA / AMD / Apple' },
     bestFor: { en: 'Local / edge deployment', zh: '本地 / 端侧部署' },
     framework: 'llama.cpp · Ollama',
   },
@@ -63,7 +63,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Smaller than GGUF Q4_K_M on every paired model here', 'Served by vLLM with continuous batching', 'Measured 218 tok/s (Llama 3.1 8B, RTX 4090, vLLM)'], zh: ['在本站每个可配对模型上都比 GGUF Q4_K_M 小', '由 vLLM 以连续批处理方式提供服务', '实测 218 tok/s（Llama 3.1 8B，RTX 4090，vLLM）'] },
     weaknesses: { en: ['Higher published loss than Q4_K_M on every paired model here', 'GPU only — no CPU or Apple path', 'AutoAWQ deprecated (llm-compressor replaces it)'], zh: ['在本站每个可配对模型上公布的损失都高于 Q4_K_M', '只能用 GPU —— 没有 CPU 或 Apple 路径', 'AutoAWQ 已弃用（由 llm-compressor 接替）'] },
-    hardwareReq: 'NVIDIA GPU (CUDA 11.8+) or AMD via vLLM ROCm',
+    hardwareReq: { en: 'NVIDIA GPU (CUDA 11.8+) or AMD via vLLM ROCm', zh: 'NVIDIA 显卡（CUDA 11.8+），或通过 vLLM ROCm 使用 AMD' },
     bestFor: { en: 'High-throughput API server', zh: '高吞吐 API 服务端' },
     framework: 'vLLM · AutoAWQ · TGI',
   },
@@ -83,7 +83,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Fastest single-GPU format measured here', 'High accuracy per bit', 'Ultra-low 2bpw option'], zh: ['本站实测单卡最快的格式', '每比特精度高', '超低 2bpw 选项'] },
     weaknesses: { en: ['NVIDIA only', 'Runtime archived — no maintained API server', 'Steeper learning curve'], zh: ['仅限 NVIDIA', '运行时已归档 —— 没有仍在维护的 API 服务端', '学习曲线较陡'] },
-    hardwareReq: 'NVIDIA GPU (Ampere+ recommended)',
+    hardwareReq: { en: 'NVIDIA GPU (Ampere+ recommended)', zh: 'NVIDIA 显卡（推荐 Ampere 及更新架构）' },
     bestFor: { en: 'Local single-GPU chat on NVIDIA', zh: 'NVIDIA 单卡本地对话' },
     // TabbyAPI dropped EXL2 for EXL3 (pyproject depends on exllamav3 only), so it
     // is no longer a reader of this format — and guide matching splits on '·'.
@@ -105,7 +105,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['Wide compatibility', 'Mature ecosystem', 'Works with HF transformers'], zh: ['框架兼容性广', '生态成熟', '支持 HF Transformers'] },
     weaknesses: { en: ['Slow quantization process', 'AutoGPTQ unmaintained (GPTQModel replaces it)'], zh: ['量化过程较慢', 'AutoGPTQ 已停止维护（由 GPTQModel 接替）'] },
-    hardwareReq: 'NVIDIA GPU (CUDA) or AMD via vLLM ROCm',
+    hardwareReq: { en: 'NVIDIA GPU (CUDA) or AMD via vLLM ROCm', zh: 'NVIDIA 显卡（CUDA），或通过 vLLM ROCm 使用 AMD' },
     bestFor: { en: 'Legacy server deployment', zh: '既有服务端部署' },
     framework: 'GPTQModel · vLLM · TGI',
   },
@@ -125,7 +125,7 @@ export const quantFormats: QuantFormat[] = [
     },
     strengths: { en: ['No calibration data', 'Fast quantization', 'Aimed at 2–4-bit compression'], zh: ['无需校准数据', '量化速度快', '面向 2–4 bit 压缩'] },
     weaknesses: { en: ['Smaller ecosystem', 'Fewer model releases'], zh: ['生态相对较小', '可用模型较少'] },
-    hardwareReq: 'NVIDIA GPU, AMD ROCm',
+    hardwareReq: { en: 'NVIDIA GPU, AMD ROCm', zh: 'NVIDIA 显卡、AMD ROCm' },
     bestFor: { en: 'Research · extreme compression', zh: '研究 · 极端压缩' },
     framework: 'HQQ · bitsandbytes',
   },

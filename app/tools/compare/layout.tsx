@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
   title: 'LLM Model Comparison Tool | quantized.uk',
-  description: 'Side-by-side comparison of quantized LLMs — VRAM, speed, quality, and GPU fit.',
+  description: 'Compare two quantized LLMs side by side — VRAM at your context, quality loss, speed and GPU fit, each row labelled estimated, published or spec.',
   path: '/tools/compare',
 });
 

@@ -7,7 +7,7 @@ export function generateMetadata(): Metadata {
   const path = '/zh/faq';
   const url = canonical(path);
   const title = '本地大模型常见问题 —— 显存、量化与能不能跑 | quantized.uk';
-  const description = `下载 20GB 模型前该问清的事：要多少显存、Q4 掉多少点、运行时能读哪种格式 —— 由 ${models.length} 个模型实算。`;
+  const description = `下载 20GB 模型前该问清的事：要多少显存、Q4 掉多少点、运行时能读哪种格式 —— 由 ${models.length} 个模型实算，和显存计算器用的是同一套公式。`;
   return {
     title,
     description,

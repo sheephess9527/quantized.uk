@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
   title: '大模型 CLI 命令生成器 | quantized.uk',
-  description: '一键生成 llama.cpp / Ollama / vLLM / ExLlamaV2 的可运行命令，覆盖 Linux、Mac、Docker 与 Compose。',
+  description: '一键生成 llama.cpp / Ollama / vLLM / ExLlamaV2 的可运行命令，覆盖 Linux、Mac、Docker 与 Compose；镜像和编译参数跟着你的显卡走。',
   path: '/zh/tools/cli-gen',
 });
 

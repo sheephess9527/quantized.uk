@@ -160,8 +160,8 @@ export function formatPage(format: QuantFormat): {
   sections.push({
     heading: { en: 'What reads it', zh: '什么运行时能读它' },
     body: {
-      en: `${format.framework}. Hardware: ${format.hardwareReq}. Best suited to: ${format.bestFor.en}. Where it is strong: ${format.strengths.en.join('; ')}. Where it is not: ${format.weaknesses.en.join('; ')}.`,
-      zh: `${format.framework}。硬件要求：${format.hardwareReq}。最擅长的场景：${format.bestFor.zh}。强项：${format.strengths.zh.join('；')}。短板：${format.weaknesses.zh.join('；')}。`,
+      en: `${format.framework}. Hardware: ${format.hardwareReq.en}. Best suited to: ${format.bestFor.en}. Where it is strong: ${format.strengths.en.join('; ')}. Where it is not: ${format.weaknesses.en.join('; ')}.`,
+      zh: `${format.framework}。硬件要求：${format.hardwareReq.zh}。最擅长的场景：${format.bestFor.zh}。强项：${format.strengths.zh.join('；')}。短板：${format.weaknesses.zh.join('；')}。`,
     },
   });
 
@@ -202,8 +202,8 @@ export function formatPage(format: QuantFormat): {
   faqs.push({
     q: { en: `What is ${format.name}?`, zh: `${format.name} 是什么？` },
     a: {
-      en: `${format.description.en} It is read by ${format.framework}, needs ${format.hardwareReq}, and ${owning.length} of the ${total} models in this index ship in it.`,
-      zh: `${format.description.zh} 它由 ${format.framework} 读取，硬件要求为 ${format.hardwareReq}，本索引 ${total} 个模型中有 ${owning.length} 个提供该格式。`,
+      en: `${format.description.en} It is read by ${format.framework}, needs ${format.hardwareReq.en}, and ${owning.length} of the ${total} models in this index ship in it.`,
+      zh: `${format.description.zh} 它由 ${format.framework} 读取，硬件要求为 ${format.hardwareReq.zh}，本索引 ${total} 个模型中有 ${owning.length} 个提供该格式。`,
     },
   });
 

@@ -855,6 +855,11 @@ therefore gone — there is nothing left to refresh by hand.
 `DESCRIPTION_BUDGET` in `lib/seo.ts`). `pageMetadata()` fits by whole sentences automatically; a
 hand-rolled `generateMetadata` must call `fitDescription` itself, and a one-sentence template the
 fitter cannot shorten has to be written short. Measure `out/**` after any template change.
+**It has a floor too: under 100 width fails the build** (Bing flagged "too short", 2026-10-12 — a
+79-character Chinese description is 158 width but reads as short by character count). Model, GPU
+and guide descriptions come from `lib/utils/meta-description.ts`, which lengthens with
+`extendDescription()` using facts the page itself states — never filler; extend a hand-written
+one by writing a second true sentence, checked against the page.
 
 **A derived page's meta description must vary as much as the page does.** The GPU template
 interpolated only `gpu.vram`, so 36 of 43 pages shared nine descriptions. `gpuPageDescription()`
@@ -1023,6 +1028,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-12 | **Meta descriptions lengthened** — Bing "too short": `/zh` median 79 → 101 chars via `extendDescription` + `meta-description.ts` (derived facts only); postbuild fails under 100 width; `formats.ts` `hardwareReq` was English on `/zh` → `{ en, zh }`. `www` 200-not-301 is a dashboard fix |
 | 2026-10-12 | **+1 model (99): MiMo-V2.6-Pro** (owner request) — 1.02T-A42B, native MXFP4 (4.52 bpw from AesSedai's GGUF), 604 GB @4K fits no row (largest: 384 usable Mac / 320 on 4 × H100); 10 full + 60 SWA (768 cells), headDim 160 = mean of 192/128; no counts moved |
 | 2026-10-12 | **Runtime versions** — Ollama v0.40.3, llama.cpp b11559; Kolibri-1 skipped (no llama.cpp arch) |
 | 2026-10-11 | **Runtime versions** — llama.cpp b11552, ExLlamaV3 v1.6.1; no model in the window |

@@ -201,11 +201,15 @@ if (existsSync(redirectsFile)) {
 // A results page shows ~160 characters of width (a CJK character is two).
 // 104 pages were over it before `fitDescription` (lib/seo.ts); a template that
 // grows past it again, or two pages sharing one description, fails here.
+// Too short fails too: Bing Webmaster flagged "many pages" on 2026-10-12 —
+// mostly /zh pages, whose 30–80 CJK characters read as short by character
+// count. Under 100 width fails; extend with facts (`extendDescription`).
 {
   const decode = s => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   const width = s => [...s].reduce((w, ch) => w + (ch.codePointAt(0) >= 0x2e80 ? 2 : 1), 0);
   const seen = new Map();
   const over = [];
+  const under = [];
   const missing = [];
   for (const file of allFiles) {
     if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
@@ -214,12 +218,14 @@ if (existsSync(redirectsFile)) {
     if (!m) { missing.push(page); continue; }
     const d = decode(m[1]);
     if (width(d) > 160) over.push(`${width(d)}  ${page}`);
+    if (width(d) < 100) under.push(`${width(d)}  ${page}`);
     seen.set(d, [...(seen.get(d) ?? []), page]);
   }
   const dupes = [...seen.values()].filter(p => p.length > 1);
-  if (over.length || dupes.length || missing.length) {
+  if (over.length || under.length || dupes.length || missing.length) {
     console.error('localize-export: meta descriptions out of budget:');
     for (const o of over.slice(0, 15)) console.error('  over 160 width: ' + o);
+    for (const o of under.slice(0, 15)) console.error('  under 100 width: ' + o);
     for (const p of dupes.slice(0, 10)) console.error('  shared by: ' + p.join(', '));
     for (const p of missing.slice(0, 10)) console.error('  missing: ' + p);
     console.error('Fit it with `fitDescription` (lib/seo.ts) or shorten the template.');

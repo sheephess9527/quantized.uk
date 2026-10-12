@@ -13,7 +13,7 @@ const rows = formatOverview();
 const count = (name: string) => rows.find(r => r.format.name === name)?.modelCount ?? 0;
 
 export default function FormatIndexView() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const c = t.formatCompare;
 
   return (
@@ -61,7 +61,7 @@ export default function FormatIndexView() {
                     )}
                   </td>
                   <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.framework}</td>
-                  <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.hardwareReq}</td>
+                  <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.hardwareReq[lang]}</td>
                   <td className="py-3 pr-3 text-right font-mono text-slate-300">
                     {r.modelCount}<span className="text-slate-500"> / {r.totalModels}</span>
                   </td>

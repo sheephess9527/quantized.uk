@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-12 (c) — Meta descriptions lengthened (Bing "too short"); format `hardwareReq` bilingual
+
+- Bing Webmaster (owner screenshot): "many pages' meta descriptions are too short". Measured `out/**`: `/zh` median **79 characters** (all 239 under 120 width-equivalent of English, 85 under 70 chars, shortest 24 — `/zh/legal/`), because the 160-width budget counts CJK double and the zh templates were written to one sentence. EN median 127 chars, 13 under 100.
+- `extendDescription(base, extras, lang)` (`lib/seo.ts`, replaces `padDescription`) appends computed facts in order while ≤160 width and until 140 (`DESCRIPTION_FLOOR`); an array entry is longest-first alternatives. `lib/utils/meta-description.ts` builds the three derived sets from the same functions the pages render: models (size at reference quant/4K, smallest comfortable card via `cardsFitting`, native context), GPUs (tight-only count, bandwidth), guides (`gpuPreset` card, up to 3 `relatedModelIds` names, `verifiedStack`, FAQ count). Hand-written static descriptions lengthened (zh about/legal/privacy/tools/gpu index/changelog/faq/best; en compare/privacy) — legal text checked against the page ("均为近似值").
+- Result: `/zh` median 101 chars, min 102 width; EN min 106 width (404 excluded). Postbuild now also **fails under 100 width** (proven: a 6-width `/zh/legal/` description fails).
+- Found on the way: `formats.ts` `hardwareReq` was English-only and printed on `/zh/formats/*` (description, page body, compare table, OG image) — now `{ en, zh }`. zh GPU description lacked a space after names that carry their size ("RTX 3080 10G在").
+- Not done here (dashboard/owner): `www` serves 200 rather than a 301 to the apex (canonical tags already point at the apex; a Cloudflare redirect rule is the fix — `_redirects` cannot match on host). `index.txt` requests are Next's client-navigation payloads that `LocalLink` prefetches in readers' browsers, not a text mirror being scraped — no change.
+
 ### 2026-10-12 (b) — +1 model (99): MiMo-V2.6-Pro (owner request)
 
 - Sources (huggingface.co blocked; via search + GitHub): -RL `config.json` — 70 layers, 128 heads / 8 KV, `sliding_window` 128, `swa_head_dim` 192; model card QK 192 / V 128. 10 global + 60 SWA layers from secondary write-ups (the `hybrid_layer_pattern` array was truncated in every copy reached) — encoded as `fullLayers 10 / windowLayers 60 / windowTokens 768` (`mimo2` is `LLAMA_SWA_TYPE_STANDARD` → pad256(128+512)), `headDim 160` = mean of 192/128 (exact K+V bytes).

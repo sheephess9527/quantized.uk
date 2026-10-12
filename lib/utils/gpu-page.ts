@@ -244,7 +244,7 @@ export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const enCap = statesSize ? '' : ` (${gpu.vram}GB)`;
   const zhCap = statesSize ? '' : `（${gpu.vram}GB）`;
   return lang === 'zh'
-    ? `${gpu.name}${zhCap}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`
+    ? `${gpu.name}${zhCap || ' '}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`
     : `${gpu.name}${enCap} runs ${fits.length} of ${total} quantized LLMs comfortably at 4K context. Largest: ${top.model.name} at ${level}, about ${size}GB.`;
 }
 

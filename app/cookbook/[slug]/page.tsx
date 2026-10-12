@@ -5,6 +5,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { fitDescription, articlePageTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage } from '@/lib/seo';
 import { articleEntities } from '@/lib/utils/article-entities';
 import { readingMinutes } from '@/lib/utils/reading-time';
+import { articleMetaDescription } from '@/lib/utils/meta-description';
 import type { Metadata } from 'next';
 
 const DIFFICULTY_LABEL: Record<string, string> = {
@@ -25,12 +26,12 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const ogAlt = `${article.title}: ${DIFFICULTY_LABEL[article.difficulty]}, ${readingMinutes(article, 'en')} min read | quantized.uk`;
   return {
     title: articlePageTitle(article),
-    description: fitDescription(article.description, 'en'),
+    description: articleMetaDescription(article, 'en'),
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: article.title,
-      description: fitDescription(article.description, 'en'),
+      description: articleMetaDescription(article, 'en'),
       url,
       type: 'article',
       images: [pageOgImage(path, ogAlt)],

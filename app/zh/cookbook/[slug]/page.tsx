@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { articles } from '@/lib/data/cookbook';
 import { fitTitle, fitDescription, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { readingMinutes } from '@/lib/utils/reading-time';
+import { articleMetaDescription } from '@/lib/utils/meta-description';
 import CookbookArticlePage from '../../../cookbook/[slug]/page';
 
 export { generateStaticParams } from '../../../cookbook/[slug]/page';
@@ -25,12 +26,12 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   const ogAlt = `${article.titleZh}：${DIFFICULTY_LABEL[article.difficulty]}，${readingMinutes(article, 'zh')} 分钟阅读 | quantized.uk`;
   return {
     title: fitTitle(article.titleZh),
-    description: fitDescription(article.descriptionZh, 'zh'),
+    description: articleMetaDescription(article, 'zh'),
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
     openGraph: {
       title: article.titleZh,
-      description: fitDescription(article.descriptionZh, 'zh'),
+      description: articleMetaDescription(article, 'zh'),
       url,
       siteName: SITE_NAME,
       type: 'article',
