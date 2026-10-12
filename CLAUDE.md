@@ -21,7 +21,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-11):**
+**Live snapshot (2026-10-12):**
 
 | Surface | Notes |
 |--------|--------|
@@ -1023,6 +1023,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-12 | **Runtime versions** — Ollama v0.40.3, llama.cpp b11559; Kolibri-1 skipped (no llama.cpp arch) |
 | 2026-10-11 | **Runtime versions** — llama.cpp b11552, ExLlamaV3 v1.6.1; no model in the window |
 | 2026-10-11 | **+3 small Qwen3.5 (98): 4B, 2B, 0.8B** — 4B/2B params + bpw from bartowski files, 0.8B generic `estimated`; every card's count +3; Qwen3 4B/1.7B not superseded yet (would move homepage picks + 3 guides) |
 | 2026-10-10 | **Gap audit: +3 Qwen (95)** — Qwen3.6 35B-A3B (23.4 GB @4K: *tight* on 24 GB, guides omit the buffer), Qwen3.6 27B, Qwen3.5 9B; params from Q8_0 file sizes, interval-4 hybrid layout as Qwen3.8 27B; 11 guide counts re-run per card |

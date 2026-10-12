@@ -419,6 +419,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-12 — Daily patrol: Ollama v0.40.3, llama.cpp b11559
+
+- Tags/releases pages: Ollama **v0.40.3** (Latest, 10-11 — `ollama launch` warning fixes; background upgrades paused for *embedding* models only, so the v0.40.2 backup/extra-disk note still holds for chat models); llama.cpp **b11559**; vLLM v0.31.0 and ExLlamaV3 v1.6.1 unchanged.
+- Skipped: Aleph Alpha Kolibri-1 (10-03, reported 78.1B / 3.46B-active MoE, FP8, Apache 2.0) — only secondary coverage reachable, and `src/llama-arch.cpp` on master has no Kolibri/Aleph arch, so no GGUF path for this site's readers; MiMo-V2.6-Pro (leaderboard mention, flagship-class); Mistral Large 4 (10-27) and Reflection Beam weights still pending.
+
 ### 2026-10-11 (b) — Daily patrol: llama.cpp b11552, ExLlamaV3 v1.6.1
 
 - Tags/releases pages: llama.cpp **b11552**; ExLlamaV3 **v1.6.1** (Latest, 2026-10-10 — EXL3 still untracked, 0 models); Ollama v0.40.2 and vLLM v0.31.0 unchanged. No open-weight LLM release in the window (HF blog 10-09/10 posts are non-model; October tracker lists only 10-01–03 small specialised models, already assessed). Mistral Large 4 (10-27) and Reflection Beam weights still pending.

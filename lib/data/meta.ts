@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-11';
+export const dataLastUpdated = '2026-10-12';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-11',
+  checkedAt: '2026-10-12',
   current: {
-    llamacpp: 'b11552',
+    llamacpp: 'b11559',
     vllm: 'v0.31.0',
-    ollama: 'v0.40.2',
+    ollama: 'v0.40.3',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-12',
+    en: 'Runtime versions re-checked: Ollama is at v0.40.3 and llama.cpp at b11559. This Ollama release pauses the background upgrade for embedding models only; chat models still get upgraded in the background. vLLM (v0.31.0) and ExLlamaV3 (v1.6.1) are unchanged, and no new open-weight model this week runs in llama.cpp yet.',
+    zh: '重新核对了运行时版本：Ollama 更新到 v0.40.3，llama.cpp 更新到 b11559。这个 Ollama 版本只暂停了嵌入模型的后台升级，对话模型仍会在后台升级。vLLM（v0.31.0）和 ExLlamaV3（v1.6.1）没有变化；本周的新开源模型都还不能在 llama.cpp 里运行。',
+  },
   {
     date: '2026-10-11',
     en: 'Runtime versions re-checked: llama.cpp is at b11552 and ExLlamaV3 at v1.6.1. Ollama (v0.40.2) and vLLM (v0.31.0) are unchanged. No new open-weight model this week fits this site\'s hardware yet.',
