@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-12 (b) — +1 model (99): MiMo-V2.6-Pro (owner request)
+
+- Sources (huggingface.co blocked; via search + GitHub): -RL `config.json` — 70 layers, 128 heads / 8 KV, `sliding_window` 128, `swa_head_dim` 192; model card QK 192 / V 128. 10 global + 60 SWA layers from secondary write-ups (the `hybrid_layer_pattern` array was truncated in every copy reached) — encoded as `fullLayers 10 / windowLayers 60 / windowTokens 768` (`mimo2` is `LLAMA_SWA_TYPE_STANDARD` → pad256(128+512)), `headDim 160` = mean of 192/128 (exact K+V bytes).
+- llama.cpp: arch `mimo2` exists on master; V2.6 conversion merged 2026-09-22 (PR #29257, merge `bfd73a8`, no runtime change needed; MXFP4 experts repacked). ggml-org, AesSedai and kernelpool publish MXFP4 GGUFs.
+- `params` 1022 from AesSedai's RL GGUF (537.99 GiB @ stated 4.52 bpw); kernelpool's repack is 557.1 GB (~4.36 bpw) — the larger file is used. One quant row (MXFP4, `pplLossPercent 0.0` as native weights, `estimated`); no Q4_K_M row, since that would be a re-quant nobody verified here. Context 1M = vendor figure as reported (no `max_position_embeddings` reachable).
+- Fit: 603.8 GB @4K (weights 548.5 + 10% overhead), +50 GB cache at 1M. Fits **no** row: Mac Studio 512G → 384 usable, 4 × H100 80G → 320. Every per-card comfortable/tight count unchanged; guide totals 98 → 99. CLI maps the original repo (split-file names not derivable → placeholder). No speed figure.
+- Model-page prose: the generated "which quantization" FAQ and "which build" section said "All 1 levels…" / "lowest loss" for a one-level model; both now branch on a single level (also fixes Qwen3.8 27B, the other one-row model).
+
 ### 2026-10-12 — Daily patrol: Ollama v0.40.3, llama.cpp b11559
 
 - Tags/releases pages: Ollama **v0.40.3** (Latest, 10-11 — `ollama launch` warning fixes; background upgrades paused for *embedding* models only, so the v0.40.2 backup/extra-disk note still holds for chat models); llama.cpp **b11559**; vLLM v0.31.0 and ExLlamaV3 v1.6.1 unchanged.

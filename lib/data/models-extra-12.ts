@@ -10,6 +10,7 @@ const ADDED_GLIMMER = '2026-10-09';
 const ADDED_QWEN38_FLASH = '2026-10-10';
 const ADDED_QWEN36 = '2026-10-10';
 const ADDED_QWEN35_SMALL = '2026-10-11';
+const ADDED_MIMO26 = '2026-10-12';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -317,6 +318,36 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 0.6, hfSearchUrl: hf('Qwen3.5-0.8B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 0.9, hfSearchUrl: hf('Qwen3.5-0.8B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Xiaomi MiMo-V2.6-Pro (weights 2026-09-21/22, MIT). config.json of the -RL checkpoint (via search;
+    // huggingface.co is blocked here): 70 layers, 128 heads / 8 KV heads, sliding_window 128, QK head
+    // dim 192 / V head dim 128 (model card). 10 global + 60 SWA layers per secondary write-ups (the
+    // hybrid_layer_pattern array itself was truncated in every copy reached) — the 6:1 shape of the
+    // V2 family. `headDim: 160` = (192 + 128) / 2, which gives the exact K+V bytes per token. SWA
+    // cells: llama.cpp `mimo2` is LLAMA_SWA_TYPE_STANDARD → pad256(128 + 512) = 768, as GPT-OSS.
+    // Arch `mimo2` in llama.cpp; conversion for V2.6 merged 2026-09-22 (PR #29257, "runtime changes
+    // weren't necessary"); experts ship as MXFP4 and are repacked, not requantized. Params from
+    // AesSedai's RL GGUF: 537.99 GiB at a stated 4.52 bpw → 1.022T (vendor: 1.02T / ~42B active).
+    // kernelpool's repack is smaller (557.1 GB ≈ 4.36 bpw); the larger file is used. Context 1M is
+    // the vendor's figure as reported; no max_position_embeddings value was reachable.
+    id: 'mimo-v2-6-pro',
+    name: 'MiMo-V2.6-Pro',
+    family: 'Xiaomi MiMo',
+    params: 1022,
+    paramLabel: '1T-A42B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 70, attHeads: 128, kvHeads: 8, headDim: 160, attention: { fullLayers: 10, windowLayers: 60, windowTokens: 768, note: { en: '10 of 70 layers use full attention; the other 60 use a 128-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 768), so only one layer in seven grows a cache with context. Keys are 192 wide and values 128, sized here as their 160 average.', zh: '70 层中 10 层是全注意力，其余 60 层使用 128 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 768），所以每七层只有一层的缓存随上下文增长。键宽 192、值宽 128，这里按平均 160 计算。' } } },
+    addedAt: ADDED_MIMO26,
+    description: {
+      en: 'Xiaomi\'s open-weight flagship, near the top of the open-model rankings this autumn. It has about 1.02 trillion parameters, roughly 42B of them active per token, and ships under the MIT licence. The released weights are already 4-bit (MXFP4 experts), and the GGUF builds repack them rather than quantize again. At that level it needs about 604 GB at 4K context, more than any single machine in this index. The largest Mac Studio gives its GPU about 384 GB, and four 80 GB H100s hold 320 GB. Eight 80 GB cards (640 GB) are about the smallest server that holds it, and even that is tight on this site\'s rule. It is listed so the calculator can say so. Only 10 of its 70 layers keep a growing cache, so even 1M tokens adds only about 50 GB. llama.cpp runs it as `mimo2`, and vision loads through a separate encoder. Sizes come from a published GGUF file; no per-level quality loss has been published.',
+      zh: '小米的开放权重旗舰，今年秋天位列开源模型排行榜前列：约 1.02 万亿参数，每个 token 激活约 42B，MIT 许可。发布的权重本身就是 4 比特（专家层为 MXFP4），GGUF 版本只是重新打包、没有再次量化。在这个档位下 4K 上下文约需 604 GB，超过本索引里任何一台单机：最大的 Mac Studio 给 GPU 的约 384 GB，四张 80 GB 的 H100 合计 320 GB。八张 80 GB 显卡（640 GB）大约是能装下它的最小服务器，按本站规则也只算「勉强」。收录它是为了让计算器能把这一点说清楚。70 层中只有 10 层保留会增长的缓存，所以即使 100 万 token 也只多约 50 GB。llama.cpp 以 `mimo2` 架构运行它，视觉通过单独的编码器加载。体积按已公布的 GGUF 文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.52, vramGB: 603.8, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Pro GGUF MXFP4'), confidence: 'estimated' },
     ],
   },
 ];

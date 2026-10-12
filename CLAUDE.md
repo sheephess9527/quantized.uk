@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **98** in index (`models-extra` … `models-extra-12`) |
+| Models | **99** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 477 pages (239 EN + 238 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 479 pages (240 EN + 239 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1023,6 +1023,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-12 | **+1 model (99): MiMo-V2.6-Pro** (owner request) — 1.02T-A42B, native MXFP4 (4.52 bpw from AesSedai's GGUF), 604 GB @4K fits no row (largest: 384 usable Mac / 320 on 4 × H100); 10 full + 60 SWA (768 cells), headDim 160 = mean of 192/128; no counts moved |
 | 2026-10-12 | **Runtime versions** — Ollama v0.40.3, llama.cpp b11559; Kolibri-1 skipped (no llama.cpp arch) |
 | 2026-10-11 | **Runtime versions** — llama.cpp b11552, ExLlamaV3 v1.6.1; no model in the window |
 | 2026-10-11 | **+3 small Qwen3.5 (98): 4B, 2B, 0.8B** — 4B/2B params + bpw from bartowski files, 0.8B generic `estimated`; every card's count +3; Qwen3 4B/1.7B not superseded yet (would move homepage picks + 3 guides) |
