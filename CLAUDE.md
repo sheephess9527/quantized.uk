@@ -397,7 +397,9 @@ on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculat
 header comment; change one only with a new source, never to match a vendor's table (Unsloth's
 lower QLoRA minimums come from their offloading, and the page says so). A total missing a term
 (unknown vocab) is a floor: print it as "≥" and give no verdict.
-**Multi-card capacity is `capacityGB(gpu, cards)`** (`gpu-page.ts`) — only `canStack()` types stack;
+**Multi-card capacity is `capacityGB(gpu, cards, extra)`** (`gpu-page.ts`) — `extra` is mixed cards on the
+same backend; pass it through every insight (`levelTable`, `contextReach`, `offloadPlan`,
+`rigSpeedCeiling`) or the panels disagree. Only `canStack()` types stack;
 the speed bound never grows with card count (llama.cpp's default layer split is pipeline parallel).
 **`rooflineTokS` mixes decimal GB/s with binary GiB of weights (~7% low) — leave it.** The owner
 decided on 2026-10-08 not to change it (it would move 693 GPU-page figures); do not "fix" it unasked.
@@ -1044,6 +1046,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator: mixed cards + serving + download** — `capacityGB(gpu, cards, extra)`, same-backend extras, speed 1/Σ(share/tokS); concurrent full-length requests at vLLM's 0.9 (floor); file size params × bpw / 8 |
 | 2026-10-13 | **Calculator: fine-tune mode** — QLoRA 4.127-bit base + 16-bit embeddings, LoRA fp32 adapters, full FT 18 B/param, activations 34·s·b·h (2·s·b·h with checkpointing), logits 10 B × tokens × vocab; LoRA within ~10% of Unsloth's published figures, QLoRA above their minimums (said on page); no vocab → "≥" and no verdict |
 | 2026-10-13 | **Calculator: Hugging Face import** — paste a repo/link (GGUF → base model config); MLA, hybrid linear, sliding-window shapes parsed and checked identical to 7 index entries; share links carry numbers, not a re-fetch; live CORS unverified from here |
 | 2026-10-13 | **Calculator usability** — shared model search (zh aliases, multi-word), one-tap starts (`homePicks` for the card / newest 24 GB-green), `POPULAR_GPU_IDS` shared with the homepage, vendor-grouped card lists, mobile sticky result bar |

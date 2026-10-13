@@ -2,8 +2,8 @@ import type { QuantModel, QuantVariant } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict, type CalcInput } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, MAX_CARDS } from '@/lib/utils/gpu-page';
-export { canStack, capacityGB, MAX_CARDS };
+import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, rigDevices, MAX_CARDS } from '@/lib/utils/gpu-page';
+export { canStack, capacityGB, rigDevices, MAX_CARDS };
 import { qualityRank } from '@/lib/utils/quality';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
@@ -18,8 +18,13 @@ import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 
 export type Verdict = 'green' | 'yellow' | 'red';
 
-export function verdictOn(totalGB: number, gpu: GPU, cards = 1): Verdict {
-  return getVerdict(totalGB, capacityGB(gpu, cards), tightCeiling(gpu));
+export function verdictOn(totalGB: number, gpu: GPU, cards = 1, extra: GPU[] = []): Verdict {
+  return getVerdict(totalGB, capacityGB(gpu, cards, extra), tightCeiling(gpu));
+}
+
+/** A format has to load on every device of a rig, not just the first. */
+export function rigFormatAllowed(gpu: GPU, extra: GPU[], format: Parameters<typeof formatAllowed>[1]): boolean {
+  return formatAllowed(gpu, format) && extra.every(g => formatAllowed(g, format));
 }
 
 export interface LevelRow {
@@ -56,13 +61,14 @@ export function levelTable(
   batchSize: number,
   kvBytesPerValue?: number,
   cards = 1,
+  extra: GPU[] = [],
 ): LevelRow[] {
   const shape = modelShape(model, batchSize, kvBytesPerValue);
   const rows: LevelRow[] = model.quants.map(quant => {
     const { totalGB } = calcVRAM({ ...shape, bpw: quant.bpw, contextLength });
-    const formatOk = !gpu || formatAllowed(gpu, quant.format);
+    const formatOk = !gpu || rigFormatAllowed(gpu, extra, quant.format);
     const verdict = gpu
-      ? formatOk ? verdictOn(totalGB, gpu, cards) : 'red'
+      ? formatOk ? verdictOn(totalGB, gpu, cards, extra) : 'red'
       : undefined;
     return { quant, key: quantLevelKey(quant), totalGB, verdict, formatOk, pick: false };
   });
@@ -98,8 +104,9 @@ export function contextReach(
   gpu: GPU,
   limit: number,
   cards = 1,
+  extra: GPU[] = [],
 ): ContextReach {
-  const verdictAt = (ctx: number) => verdictOn(calcVRAM({ ...shape, bpw, contextLength: ctx }).totalGB, gpu, cards);
+  const verdictAt = (ctx: number) => verdictOn(calcVRAM({ ...shape, bpw, contextLength: ctx }).totalGB, gpu, cards, extra);
   const longest = (ok: (v: Verdict) => boolean) => {
     const maxSteps = Math.floor(limit / STEP);
     if (maxSteps < 1 || !ok(verdictAt(STEP))) return 0;
@@ -141,6 +148,54 @@ export function speedCeiling(gpu: GPU, model: QuantModel, quant: QuantVariant, v
   }
   const tokS = rooflineTokS(gpu, model, quant);
   return tokS === undefined ? undefined : { tokS, basis: 'dense' };
+}
+
+/**
+ * The same bound for a rig of different cards. On the layer split each card
+ * holds a share of the weights proportional to its memory and the cards take
+ * turns on every token, so the read times add: 1 / Σ(share_i / tokS_i). For
+ * identical cards that is one card's figure, as above. Undefined if any card
+ * lacks a verified bandwidth.
+ */
+export function rigSpeedCeiling(
+  gpu: GPU, cards: number, extra: GPU[], model: QuantModel, quant: QuantVariant, verdict: Verdict,
+): SpeedBound | undefined {
+  const first = speedCeiling(gpu, model, quant, verdict);
+  if (!first || extra.length === 0) return first;
+  const devices = rigDevices(gpu, cards, extra);
+  const total = devices.reduce((s, g) => s + usableCapacityGB(g), 0);
+  let time = 0;
+  for (const g of devices) {
+    const b = speedCeiling(g, model, quant, verdict);
+    if (!b) return undefined;
+    time += usableCapacityGB(g) / total / b.tokS;
+  }
+  return { ...first, tokS: Math.round(10 / time) / 10 };
+}
+
+/** vLLM's default `--gpu-memory-utilization`: the share of each card it claims. */
+export const VLLM_MEMORY_UTILIZATION = 0.9;
+
+export interface ServingRow {
+  ctx: number;
+  /** Sequences of this length whose KV cache fits at once. */
+  users: number;
+}
+
+/**
+ * How many requests of a given length can be in flight at once: what the
+ * server claims of the rig, less the weights, divided by one request's cache.
+ * The 10% working buffer is applied to both, as everywhere else on the site.
+ * A full-length figure is a floor: paged caches (vLLM, llama-server slots)
+ * only hold the tokens a request has actually used.
+ */
+export function servingCapacity(shape: Shape, bpw: number, capacity: number, contexts: number[]): ServingRow[] {
+  return contexts.map(ctx => {
+    const one = calcVRAM({ ...shape, batchSize: 1, bpw, contextLength: ctx });
+    const free = capacity * VLLM_MEMORY_UTILIZATION - one.modelWeightsGB * 1.1;
+    const perUser = one.kvCacheGB * 1.1;
+    return { ctx, users: free > 0 && perUser > 0 ? Math.floor(free / perUser) : 0 };
+  });
 }
 
 /**
@@ -186,22 +241,26 @@ export function offloadPlan(
   ram: RamSetup,
   model?: QuantModel,
   format?: string,
+  extra: GPU[] = [],
 ): OffloadPlan | undefined {
   if (!canStack(gpu) || (format && format !== 'GGUF')) return undefined;
   const layers = input.layers;
   const perLayer = result.totalGB / layers;
-  const n = canStack(gpu) ? Math.max(1, Math.min(MAX_CARDS, cards)) : 1;
-  const budget = n * (usableCapacityGB(gpu) - FIT_MARGIN_GB);
+  const devices = rigDevices(gpu, cards, extra);
+  const budget = devices.reduce((s, g) => s + usableCapacityGB(g) - FIT_MARGIN_GB, 0);
   const gpuLayers = Math.max(0, Math.min(layers, Math.floor(budget / perLayer)));
   if (gpuLayers >= layers) return undefined;
   const ramGB = Math.round((layers - gpuLayers) * perLayer * 10) / 10;
   let tokS: number | undefined;
-  if (gpu.bandwidth) {
+  if (devices.every(g => g.bandwidth)) {
     const activeShare = model && isMoE(model) ? (activeParamsB(model) ?? model.params) / model.params : 1;
     const read = result.modelWeightsGB * activeShare;
     const gpuPart = read * (gpuLayers / layers);
     const cpuPart = read - gpuPart;
-    tokS = Math.round(10 / (gpuPart / gpu.bandwidth + cpuPart / RAM_SETUPS[ram].gbs)) / 10;
+    // The GPU share is itself split by memory across the cards.
+    const total = devices.reduce((s, g) => s + usableCapacityGB(g), 0);
+    const gpuTime = devices.reduce((s, g) => s + (gpuPart * usableCapacityGB(g)) / total / g.bandwidth!, 0);
+    tokS = Math.round(10 / (gpuTime + cpuPart / RAM_SETUPS[ram].gbs)) / 10;
   }
   return { gpuLayers, layers, ramGB, tokS };
 }

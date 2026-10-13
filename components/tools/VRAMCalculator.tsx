@@ -8,9 +8,9 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
-import { levelTable, contextReach, speedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, type RamSetup } from '@/lib/utils/calc-insights';
+import { levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling, backendFor } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
@@ -106,6 +106,8 @@ export default function VRAMCalculator() {
   const [batchSize, setBatchSize] = useState(1);
   const [kvType, setKvType] = useState<KvCacheType>('f16');
   const [cards, setCards] = useState(1);
+  /** Further cards of other models in the same machine (a 3060 beside a 3090). */
+  const [extraIds, setExtraIds] = useState<string[]>([]);
   const [ram, setRam] = useState<RamSetup>('ddr5-5600');
   const [formatGroup, setFormatGroup] = useState<keyof typeof quantGroups>('GGUF');
   const [customParams, setCustomParams] = useState('7');
@@ -177,6 +179,8 @@ export default function VRAMCalculator() {
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
     const cacheParam = searchParams.get('cache');
     if (cacheParam === 'q8_0' || cacheParam === 'q4_0') setKvType(cacheParam);
+    const extraParam = searchParams.get('extra');
+    if (extraParam) setExtraIds(extraParam.split(',').filter(id => gpuDatabase.some(g => g.id === id)).slice(0, MAX_CARDS - 1));
     const cardsParam = Number(searchParams.get('cards'));
     if (Number.isInteger(cardsParam) && cardsParam >= 1 && cardsParam <= MAX_CARDS) setCards(cardsParam);
     const ramParam = searchParams.get('ram');
@@ -239,6 +243,7 @@ export default function VRAMCalculator() {
     params.set('batch', String(batchSize));
     if (kvType !== 'f16') params.set('cache', kvType);
     if (cards > 1) params.set('cards', String(cards));
+    if (extraIds.length) params.set('extra', extraIds.join(','));
     if (ram !== 'ddr5-5600') params.set('ram', ram);
     if (mode === 'finetune') {
       params.set('ft', ftMethod);
@@ -279,7 +284,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -522,20 +527,34 @@ export default function VRAMCalculator() {
 
   /** Cards actually counted: stacking only means something for discrete cards. */
   const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
+  // Extra cards only count beside a discrete card on the same backend — one
+  // llama.cpp/vLLM build drives them all — and the rig stays within MAX_CARDS.
+  const profileExtras = useMemo(() => {
+    if (!profileGpu || !canStack(profileGpu)) return [];
+    return extraIds
+      .map(id => gpuDatabase.find(g => g.id === id))
+      .filter((g): g is GPU => !!g && canStack(g) && backendFor(g) === backendFor(profileGpu))
+      .slice(0, Math.max(0, MAX_CARDS - profileCards));
+  }, [extraIds, profileGpu, profileCards]);
+  const rigLabel = profileGpu
+    ? [`${profileCards > 1 ? `${profileCards}× ` : ''}${profileGpu.name}`, ...profileExtras.map(g => g.name)].join(' + ')
+    : '';
+  const rigCapacity = profileGpu ? capacityGB(profileGpu, profileCards, profileExtras) : 0;
+  const multiDevice = profileCards > 1 || profileExtras.length > 0;
 
   // Second-order answers for the reader's own card — see calc-insights.ts.
   const levels = useMemo(
-    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType], profileCards) : [],
-    [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards],
+    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType], profileCards, profileExtras) : [],
+    [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards, profileExtras],
   );
   const reach = useMemo(() => {
     if (!profileGpu) return undefined;
-    if (selectedQuantObj && !formatAllowed(profileGpu, selectedQuantObj.format)) return undefined;
+    if (selectedQuantObj && !rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) return undefined;
     const { bpw, contextLength: _ctx, ...shape } = calcInput;
     // A hand-typed model has no declared window; 128K is the generic ceiling.
     // An imported one carries its trained context.
-    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? customCtx ?? 131072, profileCards);
-  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards, customCtx]);
+    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? customCtx ?? 131072, profileCards, profileExtras);
+  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards, profileExtras, customCtx]);
   /** Largest preset chip inside the reach, so "use it" lands on a round value. */
   const reachPreset = reach
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
@@ -761,7 +780,7 @@ export default function VRAMCalculator() {
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {Array.from({ length: MAX_CARDS }, (_, i) => i + 1).map(n => (
+                    {Array.from({ length: MAX_CARDS - profileExtras.length }, (_, i) => i + 1).map(n => (
                       <button
                         key={n}
                         onClick={() => setCards(n)}
@@ -778,6 +797,40 @@ export default function VRAMCalculator() {
                     ))}
                   </div>
                   {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
+                  {/* A second, different card in the same machine — the most
+                      common hobbyist rig, which the identical-card count could
+                      not describe. Same backend only: one build drives them. */}
+                  {profileExtras.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {profileExtras.map((g, i) => (
+                        <button
+                          key={`${g.id}-${i}`}
+                          onClick={() => setExtraIds(ids => ids.filter((_, j) => j !== i))}
+                          aria-label={t.calc.extraCardRemove.replace('{gpu}', g.name)}
+                          className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-violet-500/15 text-violet-200 border-violet-500/30"
+                        >
+                          + {g.name} <span aria-hidden="true">×</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {profileCards + profileExtras.length < MAX_CARDS && (
+                    <div className="relative mt-2">
+                      <select
+                        aria-label={t.calc.extraCardAdd}
+                        value=""
+                        onChange={e => { const id = e.target.value; if (id) setExtraIds(ids => [...ids, id]); }}
+                        className="w-full appearance-none bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-violet-500/50"
+                      >
+                        <option value="">+ {t.calc.extraCardAdd}</option>
+                        {gpuDatabase
+                          .filter(g => canStack(g) && backendFor(g) === backendFor(profileGpu))
+                          .map(g => <option key={g.id} value={g.id}>{g.name} ({g.vram} GB)</option>)}
+                      </select>
+                      <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    </div>
+                  )}
+                  {profileExtras.length > 0 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.extraCardNote}</p>}
                 </div>
               )}
 
@@ -1334,6 +1387,12 @@ export default function VRAMCalculator() {
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
+                {/* The file is params × bits: for a row whose bpw was derived
+                    from a published file, this is that file's size. */}
+                <p className="text-xs text-slate-500 mt-1.5">
+                  {t.calc.download.replace('{gb}', ((calcInput.paramsB * calcInput.bpw) / 8).toFixed(1))}{' '}
+                  <span className="text-slate-600">{t.calc.downloadOllama}</span>
+                </p>
 
                 {/* The path the task book asks for: a reader who has an answer
                     here should not have to re-enter it in the next tool. The
@@ -1361,8 +1420,8 @@ export default function VRAMCalculator() {
                     Format mismatches get their own message below instead —
                     halving the context does not fix a card that cannot load
                     the format at any size. */}
-                {profileGpu && (!selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format)) &&
-                  getVerdict(result.totalGB, capacityGB(profileGpu, profileCards)) !== 'green' && contextLen > 512 && (
+                {profileGpu && (!selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) &&
+                  getVerdict(result.totalGB, rigCapacity) !== 'green' && contextLen > 512 && (
                   <div className="mt-4 pt-3 border-t border-white/[0.06]">
                     <p className="text-xs font-semibold text-slate-400 mb-1.5">{t.calc.adviceTitle}</p>
                     <p className="text-xs text-slate-500 leading-relaxed">
@@ -1454,14 +1513,14 @@ export default function VRAMCalculator() {
                 </p>
 
                 {profileGpu && (() => {
-                  const capacity = capacityGB(profileGpu, profileCards);
-                  const formatOk = !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
+                  const capacity = rigCapacity;
+                  const formatOk = !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
                   const v = getVerdict(result.totalGB, capacity, tightCeiling(profileGpu));
                   return (
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
-                        <span className="text-xs text-slate-300 font-medium">{profileCards > 1 ? `${profileCards}× ` : ''}{profileGpu.name}</span>
+                        <span className="text-xs text-slate-300 font-medium">{rigLabel}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
@@ -1516,7 +1575,7 @@ export default function VRAMCalculator() {
                         </div>
                       )}
                       {selectedModel && selectedQuantObj && formatOk && profileGpu.bandwidth && (() => {
-                        const bound = speedCeiling(profileGpu, selectedModel, selectedQuantObj, v);
+                        const bound = rigSpeedCeiling(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, v);
                         if (!bound) return null;
                         const text = bound.basis === 'moe'
                           ? t.calc.speedMoELine
@@ -1528,12 +1587,40 @@ export default function VRAMCalculator() {
                               .replace('{gb}', (profileGpu.bandwidth / bound.tokS).toFixed(1));
                         return (
                           <p className="text-xs text-slate-500 leading-relaxed mt-2">
-                            {text}{profileCards > 1 && ` ${t.calc.speedMultiNote}`}
+                            {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
                           </p>
                         );
                       })()}
+                      {v !== 'red' && formatOk && (() => {
+                        // vLLM splits a mixed rig evenly, so the smallest card bounds every card.
+                        const devices = rigDevices(profileGpu, profileCards, profileExtras);
+                        const servCap = profileExtras.length
+                          ? devices.length * Math.min(...devices.map(usableCapacityGB))
+                          : capacity;
+                        const { bpw: shapeBpw, contextLength: _ctx, ...shape } = calcInput;
+                        const limit = selectedModel?.contextLength ?? customCtx ?? 131072;
+                        const rows = servingCapacity(shape, shapeBpw, servCap, [4096, 8192, 32768].filter(c => c <= limit));
+                        if (rows.length === 0) return null;
+                        return (
+                          <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                            <p className="text-xs font-medium text-slate-400">{t.calc.servingTitle}</p>
+                            <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                              {t.calc.servingIntro.replace('{util}', String(Math.round(VLLM_MEMORY_UTILIZATION * 100)))}
+                            </p>
+                            <div className="grid grid-cols-3 gap-1.5 mt-2">
+                              {rows.map(r => (
+                                <div key={r.ctx} className="rounded-lg border border-white/[0.06] px-2 py-1.5 text-center">
+                                  <p className="text-[11px] text-slate-500">{t.calc.servingRow.replace('{ctx}', contextLabel(r.ctx))}</p>
+                                  <p className="font-mono text-sm text-slate-200">{r.users > 0 ? t.calc.servingUsers.replace('{n}', String(r.users)) : t.calc.servingNone}</p>
+                                </div>
+                              ))}
+                            </div>
+                            <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{t.calc.servingNote}</p>
+                          </div>
+                        );
+                      })()}
                       {v === 'red' && formatOk && (() => {
-                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format);
+                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras);
                         if (!plan) return null;
                         return (
                           <div className="mt-3 pt-2 border-t border-white/[0.05]">
@@ -1769,8 +1856,8 @@ export default function VRAMCalculator() {
       {/* Keeps the pinned bar from covering the end of the page. */}
       {showForwardResult && <div className="h-16 lg:hidden" aria-hidden="true" />}
       {showForwardResult && !resultsInView && (() => {
-        const capacity = profileGpu ? capacityGB(profileGpu, profileCards) : 0;
-        const formatOk = !profileGpu || !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
+        const capacity = rigCapacity;
+        const formatOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
         const v = profileGpu ? (formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(profileGpu)) : 'red') : null;
         return (
           <div
@@ -1786,7 +1873,7 @@ export default function VRAMCalculator() {
                   <span className="font-mono font-semibold">{result.totalGB.toFixed(1)} {t.calc.gbUnit}</span>
                   {v ? (
                     <span className={cn('ml-2 text-xs', verdictConfig[v].label)}>
-                      {v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} · {profileGpu!.name}
+                      {v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} · {rigLabel}
                     </span>
                   ) : (
                     <span className="ml-2 text-xs text-slate-500">{t.calc.stickyNoCard}</span>

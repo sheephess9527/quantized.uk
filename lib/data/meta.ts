@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-13',
+    en: 'The calculator handles mixed-card machines, tells you how many people a setup can serve, and shows the download size. Add a second, different card (a 3060 beside a 3090) and the memory adds up the way llama.cpp and Ollama split layers, with the speed bound following the slower card. Each verdict now also counts how many full-length requests fit at once at 4K, 8K and 32K, using vLLM\'s default memory share.',
+    zh: '计算器现在支持混搭显卡、多人同时使用估算，并显示下载大小。再加一张不同型号的卡（比如 3090 旁边插一张 3060），显存按 llama.cpp 和 Ollama 的按层拆分方式相加，速度上限会跟着较慢的那张卡走。每个结果还会给出按 vLLM 默认显存占比，4K、8K、32K 上下文下能同时容纳几个满长度请求。',
+  },
+  {
+    date: '2026-10-13',
     en: 'The calculator now estimates fine-tuning memory. Pick QLoRA, LoRA or a full fine-tune, the LoRA rank, sequence length, batch and gradient checkpointing, and it adds up the base weights, the trainable adapters with their optimizer state, activations and the loss, and compares all three methods on your card. It describes a standard transformers + PEFT run; Unsloth and similar trainers publish lower minimums.',
     zh: '计算器现在可以估算微调显存。选择 QLoRA、LoRA 或全参数微调，设好 LoRA 秩、序列长度、批大小和梯度检查点，它会把基座权重、可训练适配器及其优化器状态、激活值和损失计算加起来，并在你的显卡上对比三种方法。估算对应标准的 transformers + PEFT 训练；Unsloth 等工具公布的最低显存更低。',
   },

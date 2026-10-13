@@ -419,6 +419,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (e) — Calculator: mixed cards, serving capacity, download size
+
+- **Mixed cards**: `capacityGB(gpu, cards, extra)` + `rigDevices()` (`gpu-page.ts`); `verdictOn`/`levelTable`/`contextReach`/`offloadPlan` take `extra` (default `[]` → identical-card results unchanged, checked). Extra cards must `canStack` and share `backendFor` with the primary; rig ≤ `MAX_CARDS`. Format must load on every device (`rigFormatAllowed`). Speed: `rigSpeedCeiling` = 1 / Σ(share_i / tokS_i) with shares ∝ usable memory (llama.cpp layer split, cards take turns) — 2 × 3090 stays 23 tok/s for Llama 3.3 70B Q4_K_M, 3090 + 3060 gives 15.1. Offload uses the summed `--fit` budget and splits the GPU read time by share. Page says vLLM's tensor parallel splits evenly (smallest card limits). URL `extra=id,id`.
+- **Serving capacity** (`servingCapacity`): (rig × 0.9 vLLM default `--gpu-memory-utilization` − weights × 1.1) ÷ (one request's KV at 4K/8K/32K × 1.1), capped at the model's window; labelled a floor (paged caches hold used tokens only). Mixed rigs use the even split (smallest card × count). Llama 3.1 8B Q4_K_M on a 4090: 30 / 15 / 3.
+- **Download size**: params × bpw / 8 (equals the published file for file-derived bpw rows; Llama 3.3 70B Q4_K_M 42.8 GB vs bartowski 42.5), plus the Ollama v0.40.2 backup-copy note (from its release notes, checked 2026-10-10).
+
 ### 2026-10-13 (d) — Calculator: fine-tune mode (QLoRA / LoRA / full)
 
 - `lib/utils/finetune.ts`, constants and sources: full FT mixed-precision AdamW **18 B/param** (6 weights + 8 Adam + 4 fp32 grads; 8-bit Adam → 12) — transformers `docs/source/en/model_memory_anatomy.md`; QLoRA base **4.127 bits** (NF4 4 + 0.5 bits block-64 constants − 0.373 saved by double quantization; QLoRA paper §3, via search — arxiv is blocked here), with embeddings and the output head 16-bit (`nn.Embedding` is not Linear; transformers `quantizers/base.py` `get_keys_to_not_convert` keeps the output embedding); LoRA adapters fp32 16 B/param, PEFT `all-linear` r·(in+out) per matrix, MLP width from config or derived from the parameter count; activations **34·s·b·h per layer** (Korthikanti et al., as in EleutherAI `cookbook/calc/calc_transformer_mem.py`, fused attention → no s² term), with checkpointing 2·s·b·h per layer + one recomputed layer; logits **10 B × tokens × vocab** (bf16 head output + `logits.float()` in transformers `loss/loss_utils.py` + fp32 grad); 10% buffer.

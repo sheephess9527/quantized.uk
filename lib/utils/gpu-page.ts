@@ -137,8 +137,19 @@ export const MAX_CARDS = 4;
  * the single-card ones; their 12% green margin already exceeds the 1 GiB per
  * device `--fit` keeps free for two to four cards.
  */
-export function capacityGB(gpu: GPU, cards = 1): number {
-  return usableCapacityGB(gpu) * (canStack(gpu) ? Math.max(1, Math.min(MAX_CARDS, cards)) : 1);
+export function capacityGB(gpu: GPU, cards = 1, extra: GPU[] = []): number {
+  if (!canStack(gpu)) return usableCapacityGB(gpu);
+  const same = usableCapacityGB(gpu) * Math.max(1, Math.min(MAX_CARDS, cards));
+  // Mixed cards (a 3090 beside a 3060): llama.cpp's layer split is
+  // proportional to each device's memory, so capacity still adds.
+  return same + extra.filter(canStack).reduce((sum, g) => sum + usableCapacityGB(g), 0);
+}
+
+/** Every device in a rig, the primary card repeated `cards` times. */
+export function rigDevices(gpu: GPU, cards = 1, extra: GPU[] = []): GPU[] {
+  if (!canStack(gpu)) return [gpu];
+  const n = Math.max(1, Math.min(MAX_CARDS, cards));
+  return [...Array.from({ length: n }, () => gpu), ...extra.filter(canStack)];
 }
 
 /**
