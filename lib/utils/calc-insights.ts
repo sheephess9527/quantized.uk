@@ -41,8 +41,9 @@ export interface LevelRow {
 
 type Shape = Omit<CalcInput, 'bpw' | 'contextLength'>;
 
-export function modelShape(model: QuantModel, batchSize: number, kvBytesPerValue?: number): Shape {
+export function modelShape(model: QuantModel, batchSize: number, kvBytesPerValue?: number, extraGB?: number): Shape {
   return {
+    extraGB,
     paramsB: model.params,
     layers: model.arch.layers,
     kvHeads: model.arch.kvHeads,
@@ -62,8 +63,9 @@ export function levelTable(
   kvBytesPerValue?: number,
   cards = 1,
   extra: GPU[] = [],
+  extraGB?: number,
 ): LevelRow[] {
-  const shape = modelShape(model, batchSize, kvBytesPerValue);
+  const shape = modelShape(model, batchSize, kvBytesPerValue, extraGB);
   const rows: LevelRow[] = model.quants.map(quant => {
     const { totalGB } = calcVRAM({ ...shape, bpw: quant.bpw, contextLength });
     const formatOk = !gpu || rigFormatAllowed(gpu, extra, quant.format);
@@ -192,7 +194,7 @@ export interface ServingRow {
 export function servingCapacity(shape: Shape, bpw: number, capacity: number, contexts: number[]): ServingRow[] {
   return contexts.map(ctx => {
     const one = calcVRAM({ ...shape, batchSize: 1, bpw, contextLength: ctx });
-    const free = capacity * VLLM_MEMORY_UTILIZATION - one.modelWeightsGB * 1.1;
+    const free = capacity * VLLM_MEMORY_UTILIZATION - (one.modelWeightsGB + (one.extraGB ?? 0)) * 1.1;
     const perUser = one.kvCacheGB * 1.1;
     return { ctx, users: free > 0 && perUser > 0 ? Math.floor(free / perUser) : 0 };
   });

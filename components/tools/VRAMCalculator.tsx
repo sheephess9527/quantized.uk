@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback, type MouseEvent } from 'react';
 import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
-import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench } from 'lucide-react';
+import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
@@ -21,7 +21,7 @@ import { trackEvent } from '@/lib/analytics';
 import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/utils/model-meta';
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
-import { importFromHub, parseRepoInput, type ImportedShape } from '@/lib/utils/hf-import';
+import { importFromHub, parseRepoInput, mmprojFromHub, type ImportedShape } from '@/lib/utils/hf-import';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import type { ModelArch } from '@/lib/data/types';
 import { rigPrefillSeconds } from '@/lib/utils/prefill';
@@ -144,6 +144,25 @@ export default function VRAMCalculator() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
   const [modelQuery, setModelQuery] = useState('');
+  /** A multimodal model's vision encoder, in GB — entered or read, never assumed. */
+  const [mmprojGB, setMmprojGB] = useState('');
+  const [mmprojFile, setMmprojFile] = useState('');
+  const [mmprojState, setMmprojState] = useState<'idle' | 'loading' | 'failed'>('idle');
+  /** A frozen result to compare the live one against. */
+  const [pinned, setPinned] = useState<{ desc: string; totalGB: number; verdict?: VerdictColor; capacity?: number } | null>(null);
+  /** Rigs the reader saved, kept in this browser only. */
+  const [savedRigs, setSavedRigs] = useState<{ gpuId: string; cards: number; extra: string[] }[]>([]);
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem('qz-rigs');
+      if (raw) setSavedRigs((JSON.parse(raw) as { gpuId: string; cards: number; extra: string[] }[])
+        .filter(r => gpuDatabase.some(g => g.id === r.gpuId)).slice(0, 5));
+    } catch { /* storage unavailable: the feature simply starts empty */ }
+  }, []);
+  const storeRigs = (next: { gpuId: string; cards: number; extra: string[] }[]) => {
+    setSavedRigs(next);
+    try { window.localStorage.setItem('qz-rigs', JSON.stringify(next)); } catch { /* not persisted */ }
+  };
 
   // Precedence: URL > stored config > default. A shared link has to win over
   // whatever the recipient happens to have saved, or the link shows something
@@ -193,6 +212,7 @@ export default function VRAMCalculator() {
     const sq = Number(searchParams.get('seq')); if (sq >= 256 && sq <= 131072) setFtSeq(sq);
     const mb = Number(searchParams.get('mb')); if (mb >= 1 && mb <= 64) setFtBatch(mb);
     if (searchParams.get('gc') === '0') setFtCkpt(false);
+    const mm = Number(searchParams.get('mmproj')); if (mm > 0 && mm < 50) setMmprojGB(String(mm));
     const hid = searchParams.get('hidden'); if (hid && Number(hid) > 0) setFtHidden(hid);
     const voc = searchParams.get('vocab'); if (voc && Number(voc) > 0) setFtVocab(voc);
     // A custom model is only shareable if its shape travels with the link —
@@ -257,6 +277,7 @@ export default function VRAMCalculator() {
       if (ftHidden) params.set('hidden', ftHidden);
       if (ftVocab) params.set('vocab', ftVocab);
     }
+    if (mode === 'forward' && Number(mmprojGB) > 0) params.set('mmproj', mmprojGB);
     if (mode === 'forward' || mode === 'finetune') {
       if (selectedModelId) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
@@ -286,7 +307,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -308,6 +329,9 @@ export default function VRAMCalculator() {
     setInvalidModelId(null);
     setFtHidden('');
     setFtVocab('');
+    setMmprojGB('');
+    setMmprojFile('');
+    setMmprojState('idle');
     const model = models.find(m => m.id === id);
     if (!model) return;
     const levels = model.quants.map(quantLevelKey);
@@ -375,6 +399,7 @@ export default function VRAMCalculator() {
         contextLength: contextLen,
         batchSize,
         kvBytesPerValue: KV_CACHE_TYPES[kvType],
+        extraGB: Number(mmprojGB) > 0 ? Number(mmprojGB) : undefined,
       };
     }
     const bpw = tableBpw;
@@ -388,8 +413,9 @@ export default function VRAMCalculator() {
       contextLength: contextLen,
       batchSize,
       kvBytesPerValue: KV_CACHE_TYPES[kvType],
+      extraGB: Number(mmprojGB) > 0 ? Number(mmprojGB) : undefined,
     };
-  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, customAttention, kvType]);
+  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, customAttention, kvType, mmprojGB]);
 
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
@@ -546,8 +572,8 @@ export default function VRAMCalculator() {
 
   // Second-order answers for the reader's own card — see calc-insights.ts.
   const levels = useMemo(
-    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType], profileCards, profileExtras) : [],
-    [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards, profileExtras],
+    () => selectedModel ? levelTable(selectedModel, profileGpu ?? undefined, contextLen, batchSize, KV_CACHE_TYPES[kvType], profileCards, profileExtras, Number(mmprojGB) > 0 ? Number(mmprojGB) : undefined) : [],
+    [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards, profileExtras, mmprojGB],
   );
   const reach = useMemo(() => {
     if (!profileGpu) return undefined;
@@ -836,6 +862,46 @@ export default function VRAMCalculator() {
                 </div>
               )}
 
+              {mode === 'forward' && (profileGpu || savedRigs.length > 0) && (() => {
+                const nameOf = (r: { gpuId: string; cards: number; extra: string[] }) => {
+                  const g = gpuDatabase.find(x => x.id === r.gpuId);
+                  return [`${r.cards > 1 ? `${r.cards}× ` : ''}${g?.name ?? r.gpuId}`, ...r.extra.map(id => gpuDatabase.find(x => x.id === id)?.name ?? id)].join(' + ');
+                };
+                const current = profileGpu ? { gpuId: profileGpu.id, cards: profileCards, extra: profileExtras.map(g => g.id) } : null;
+                const same = (a: { gpuId: string; cards: number; extra: string[] }, b: typeof a) => a.gpuId === b.gpuId && a.cards === b.cards && a.extra.join() === b.extra.join();
+                return (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {savedRigs.length > 0 && <span className="text-[11px] text-slate-600">{t.calc.rigSaved}</span>}
+                    {savedRigs.map((r, i) => (
+                      <span key={i} className="inline-flex items-center rounded-lg border border-white/[0.08] text-xs">
+                        <button
+                          onClick={() => { setGpuId(r.gpuId); setCards(r.cards); setExtraIds(r.extra); }}
+                          aria-pressed={!!current && same(current, r)}
+                          className={cn('px-2.5 py-1 min-h-[36px] sm:min-h-0', current && same(current, r) ? 'text-violet-200' : 'text-slate-300 hover:text-violet-200')}
+                        >
+                          {nameOf(r)}
+                        </button>
+                        <button
+                          onClick={() => storeRigs(savedRigs.filter((_, j) => j !== i))}
+                          aria-label={t.calc.rigRemove.replace('{rig}', nameOf(r))}
+                          className="px-2 py-1 text-slate-600 hover:text-slate-300 border-l border-white/[0.06]"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {current && !savedRigs.some(r => same(r, current)) && (
+                      <button
+                        onClick={() => storeRigs([...savedRigs, current].slice(-5))}
+                        className="px-2.5 py-1 min-h-[36px] sm:min-h-0 rounded-lg text-xs text-violet-300 border border-dashed border-violet-500/30 hover:text-violet-200"
+                      >
+                        + {t.calc.rigSave}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
+
               {selectedModelId === 'custom' && (
                 <div className="glass rounded-xl p-4 space-y-3">
                   <div>
@@ -939,6 +1005,50 @@ export default function VRAMCalculator() {
                 </div>
               )}
 
+              {mode === 'forward' && (selectedModel?.categories.includes('multimodal') || selectedModelId === 'custom') && (() => {
+                const repo = selectedModel ? hfRepoMap[selectedModel.id] : undefined;
+                const gguf = !!repo && /-GGUF$/i.test(repo);
+                return (
+                  <div>
+                    <label htmlFor="calc-mmproj" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.mmprojLabel}</label>
+                    <div className="flex gap-2">
+                      <input
+                        id="calc-mmproj"
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={mmprojGB}
+                        onChange={e => { setMmprojGB(e.target.value); setMmprojFile(''); }}
+                        placeholder={t.calc.mmprojPlaceholder}
+                        className="w-32 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
+                      />
+                      {gguf && (
+                        <button
+                          type="button"
+                          disabled={mmprojState === 'loading'}
+                          onClick={async () => {
+                            setMmprojState('loading');
+                            const r = await mmprojFromHub(repo!);
+                            if (!r) { setMmprojState('failed'); return; }
+                            setMmprojState('idle');
+                            setMmprojGB(r.gb.toFixed(2));
+                            setMmprojFile(r.file);
+                          }}
+                          className="px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
+                        >
+                          {mmprojState === 'loading' ? t.calc.hfLoading : t.calc.mmprojRead}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
+                      {mmprojFile && Number(mmprojGB) > 0
+                        ? t.calc.mmprojFound.replace('{file}', mmprojFile).replace('{gb}', Number(mmprojGB).toFixed(2))
+                        : Number(mmprojGB) > 0 ? '' : `${t.calc.mmprojNone}${gguf ? '' : ` ${t.calc.mmprojManual}`}`}
+                    </p>
+                    {mmprojState === 'failed' && <p className="text-xs text-amber-300 mt-1">{t.calc.mmprojFailed}</p>}
+                  </div>
+                );
+              })()}
               {mode === 'forward' && (
                 <>
               <div>
@@ -1369,6 +1479,7 @@ export default function VRAMCalculator() {
                     { icon: Cpu,         label: t.calc.modelWeights, value: result.modelWeightsGB, color: 'text-violet-400' },
                     { icon: MemoryStick, label: t.calc.kvCache,      value: result.kvCacheGB,      color: 'text-cyan-400'   },
                     { icon: Zap,         label: t.calc.activations,  value: result.activationsGB,  color: 'text-orange-400' },
+                    ...(result.extraGB ? [{ icon: ImageIcon, label: t.calc.mmprojRow, value: result.extraGB, color: 'text-pink-400' }] : []),
                   ].map(({ icon: Icon, label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
                       <Icon size={13} className={color} />
@@ -1389,10 +1500,44 @@ export default function VRAMCalculator() {
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
+                {(() => {
+                  const desc = `${selectedModel ? selectedModel.name : customRepo || t.calc.customLabel} · ${selectedQuant} · ${contextLabel(contextLen)}${kvType !== 'f16' ? ` · KV ${kvType}` : ''}${batchSize > 1 ? ` · ×${batchSize}` : ''}${profileGpu ? ` · ${rigLabel}` : ''}`;
+                  const fmtOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
+                  const nowVerdict: VerdictColor | undefined = profileGpu ? (fmtOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red') : undefined;
+                  const line = (label: string, d: string, gb: number, v?: VerdictColor, cap?: number) => (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="w-10 shrink-0 text-slate-500">{label}</span>
+                      <span className="flex-1 min-w-0 truncate text-slate-400">{d}</span>
+                      <span className="font-mono text-slate-200">{gb.toFixed(1)} {t.calc.gbUnit}{cap ? ` / ${cap.toFixed(0)}` : ''}</span>
+                      {v && <span className={cn('w-2 h-2 rounded-full shrink-0', verdictConfig[v].dot)} aria-label={v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} />}
+                    </div>
+                  );
+                  return pinned ? (
+                    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-medium text-slate-400">{t.calc.pinTitle}</p>
+                        <button onClick={() => setPinned(null)} className="text-[11px] text-slate-500 hover:text-slate-300">{t.calc.pinClear}</button>
+                      </div>
+                      {line('A', pinned.desc, pinned.totalGB, pinned.verdict, pinned.capacity)}
+                      {line(t.calc.pinNow, desc, result.totalGB, nowVerdict, profileGpu ? rigCapacity : undefined)}
+                      <p className={cn('text-xs font-mono', result.totalGB > pinned.totalGB ? 'text-amber-300/90' : 'text-emerald-300/90')}>
+                        {result.totalGB >= pinned.totalGB ? '+' : ''}{(result.totalGB - pinned.totalGB).toFixed(2)} {t.calc.gbUnit}
+                      </p>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setPinned({ desc, totalGB: result.totalGB, verdict: nowVerdict, capacity: profileGpu ? rigCapacity : undefined })}
+                      className="mt-2 text-xs text-violet-300 hover:text-violet-200 min-h-[32px]"
+                    >
+                      {t.calc.pinA} →
+                    </button>
+                  );
+                })()}
                 {/* The file is params × bits: for a row whose bpw was derived
                     from a published file, this is that file's size. */}
                 <p className="text-xs text-slate-500 mt-1.5">
                   {t.calc.download.replace('{gb}', ((calcInput.paramsB * calcInput.bpw) / 8).toFixed(1))}{' '}
+                  {result.extraGB ? `${t.calc.mmprojDownload.replace('{gb}', result.extraGB.toFixed(2))} ` : ''}
                   <span className="text-slate-600">{t.calc.downloadOllama}</span>
                 </p>
 

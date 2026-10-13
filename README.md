@@ -419,6 +419,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (g) — Calculator: vision encoder, A/B pin, saved machines
+
+- **Vision encoder**: `CalcInput.extraGB` (fixed extra weights, inside the 10% buffer; `CalcResult.extraGB` only when given) threaded through `modelShape`/`levelTable` and `servingCapacity`. Shown for multimodal entries and custom models; empty = not counted, said so. "Read from GGUF repo" (only when the model's `hfRepoMap` repo ends in `-GGUF`) calls `mmprojFromHub` → `/api/models/{repo}?blobs=true`, picks the `mmproj*.gguf` f16 file (then bf16, then smallest). No per-model sizes typed — they were not verifiable here. URL `mmproj=`; download line adds it.
+- **A/B pin**: snapshot of description + total + verdict + rig capacity; live delta shown. Not persisted.
+- **Saved machines**: up to 5 rigs (`gpuId`, `cards`, `extra`) in `localStorage` key `qz-rigs`, read after mount (no hydration mismatch), every access in try/catch; unknown GPU ids dropped on read.
+- Browser-tested at 390 px zh with a mocked file listing (Gemma 3 12B: 8.79 → 9.67 GB with the 0.80 GB f16 mmproj).
+
 ### 2026-10-13 (f) — Calculator: time to first token (prompt processing)
 
 - Data: `lib/data/prefill.ts` — llama-bench `pp512`, Llama 2 7B Q4_0, full offload, no FA, from llama.cpp's own scoreboards: CUDA #15013, ROCm #15021, Vulkan #10879 (Intel Arc only — no SYCL board), Apple #4167 (Q4_0 column, build 8e672ef / Nov 2023; lower-core variant at each Mac row's bandwidth). Each set read twice; ± figures matched. 59 rows; cards without a scoreboard row (RTX 5060/5050/4070-family/4060/3080 Ti/3070-family, L40S, A100 40G, RX 7700 XT/6700 XT, M5 Macs) get **no** figure — nothing borrowed across chips, except where the row names the chip without its memory size (4060 Ti, 5060 Ti, 9060 XT, DGX Spark), noted per row. Odd community orderings (RX 7900 GRE < 7800 XT, Arc B580 < B570) kept as reported. `validate.ts` now fails on a prefill row for an unknown GPU id.

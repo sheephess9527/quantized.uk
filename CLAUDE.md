@@ -1050,6 +1050,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator: vision encoder + A/B pin + saved machines** — `CalcInput.extraGB` (entered or read from a GGUF repo's file list, never typed per model), pin-and-compare, `qz-rigs` in localStorage |
 | 2026-10-13 | **Calculator: time to first token** — llama.cpp community `pp512` boards (#15013 CUDA, #15021 ROCm, #10879 Vulkan/Arc, #4167 Apple) for 59 rows, scaled by FLOPs/token; no row → no figure; mmproj sizes not verifiable here, not shipped |
 | 2026-10-13 | **Calculator: mixed cards + serving + download** — `capacityGB(gpu, cards, extra)`, same-backend extras, speed 1/Σ(share/tokS); concurrent full-length requests at vLLM's 0.9 (floor); file size params × bpw / 8 |
 | 2026-10-13 | **Calculator: fine-tune mode** — QLoRA 4.127-bit base + 16-bit embeddings, LoRA fp32 adapters, full FT 18 B/param, activations 34·s·b·h (2·s·b·h with checkpointing), logits 10 B × tokens × vocab; LoRA within ~10% of Unsloth's published figures, QLoRA above their minimums (said on page); no vocab → "≥" and no verdict |

@@ -209,3 +209,27 @@ export async function importFromHub(input: string, fetchImpl: typeof fetch = fet
     return { ok: false, error: 'network' };
   }
 }
+
+/**
+ * A GGUF repo's vision encoder: the `mmproj` file and its size, from the Hub's
+ * file listing. Prefers the f16 build (what llama.cpp's docs load), then bf16,
+ * then the smallest. Undefined when the repo lists no mmproj file or the Hub
+ * cannot be reached — the reader then enters it by hand.
+ */
+export async function mmprojFromHub(repo: string, fetchImpl: typeof fetch = fetch): Promise<{ file: string; gb: number } | undefined> {
+  try {
+    const res = await fetchImpl(`${HUB}/api/models/${repo}?blobs=true`, { headers: { Accept: 'application/json' } });
+    if (!res.ok) return undefined;
+    const info = (await res.json()) as Json;
+    const files = (Array.isArray(info.siblings) ? info.siblings : [])
+      .map(f => f as Json)
+      .filter(f => typeof f.rfilename === 'string' && /mmproj/i.test(f.rfilename as string) && /\.gguf$/i.test(f.rfilename as string) && num(f.size));
+    if (files.length === 0) return undefined;
+    const pick = files.find(f => /f16/i.test(f.rfilename as string) && !/bf16/i.test(f.rfilename as string))
+      ?? files.find(f => /bf16/i.test(f.rfilename as string))
+      ?? [...files].sort((a, b) => (num(a.size) ?? 0) - (num(b.size) ?? 0))[0];
+    return { file: pick.rfilename as string, gb: (num(pick.size) ?? 0) / 1024 ** 3 };
+  } catch {
+    return undefined;
+  }
+}

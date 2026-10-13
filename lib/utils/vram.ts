@@ -13,6 +13,12 @@ export interface CalcInput {
    */
   kvBytesPerValue?: number;
   /**
+   * Fixed extra weights loaded beside the model — a multimodal model's vision
+   * encoder (`mmproj` file). Never defaulted: the reader supplies it or reads
+   * it from the GGUF repo, and it is 0 otherwise.
+   */
+  extraGB?: number;
+  /**
    * Optional attention shape — see `ModelArch.attention`. Omitted means every
    * layer keeps a growing KV cache, which is what `layers` alone implies and
    * what every pre-2026 model in the index does.
@@ -30,6 +36,8 @@ export interface CalcResult {
   modelWeightsGB: number;
   kvCacheGB: number;
   activationsGB: number;
+  /** Present only when `extraGB` was given. */
+  extraGB?: number;
   totalGB: number;
 }
 
@@ -121,15 +129,18 @@ export function calcVRAM(input: CalcInput): CalcResult {
     fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
   const kvCacheGB = kvBytes / (1024 ** 3);
 
-  // Activation buffer: ~10% of (weights + kvcache)
-  const activationsGB = (modelWeightsGB + kvCacheGB) * 0.10;
+  const extraGB = Math.max(0, input.extraGB ?? 0);
 
-  const totalGB = modelWeightsGB + kvCacheGB + activationsGB;
+  // Activation buffer: ~10% of (weights + kvcache [+ any encoder])
+  const activationsGB = (modelWeightsGB + kvCacheGB + extraGB) * 0.10;
+
+  const totalGB = modelWeightsGB + kvCacheGB + extraGB + activationsGB;
 
   return {
     modelWeightsGB: round(modelWeightsGB),
     kvCacheGB: round(kvCacheGB),
     activationsGB: round(activationsGB),
+    ...(extraGB > 0 ? { extraGB: round(extraGB) } : {}),
     totalGB: round(totalGB),
   };
 }

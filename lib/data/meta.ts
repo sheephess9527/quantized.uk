@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-13',
+    en: 'Three more calculator conveniences. Multimodal models can now include their vision encoder: enter its size, or read it from the model\'s GGUF repo with one click. You can pin a result as A and change settings to see the difference, and save the machines you use so one tap brings back the card or cards you have.',
+    zh: '计算器又多了三个便利功能。多模态模型现在可以把视觉编码器算进去：手动填写大小，或一键从模型的 GGUF 仓库读取。可以把一个结果固定为 A，改设置后直接看差多少；还可以保存常用的机器，点一下就能切回你那一张或几张卡。',
+  },
+  {
+    date: '2026-10-13',
     en: 'The calculator now estimates how long a long prompt takes before the first word appears. For 59 cards and Macs it starts from each one\'s measured prompt speed on llama.cpp\'s community scoreboards and scales it to the chosen model and context. A Mac M3 Pro reads an 8K prompt to Llama 3.1 8B in about 41 seconds, an RTX 4090 reads a 32K one in about 5. Cards without a published run get no figure.',
     zh: '计算器现在会估算长提示词要等多久才出第一个字。对 59 张显卡和 Mac，它以 llama.cpp 社区跑分里各自实测的提示词处理速度为起点，按所选模型和上下文换算。例如 Mac M3 Pro 给 Llama 3.1 8B 读入 8K 提示词约 41 秒，RTX 4090 读入 32K 约 5 秒。没有公开跑分的卡不给数字。',
   },
