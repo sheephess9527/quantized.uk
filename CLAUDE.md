@@ -113,6 +113,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
   (`export const dynamic = 'force-static'`) e.g. `app/feed.xml/route.ts` for RSS.
+  **The one runtime network call** is the calculator's Hugging Face import (`lib/utils/hf-import.ts`),
+  made by the reader's browser on click, never at build or on load. Every failure path must degrade to
+  "enter by hand"; a field the config does not carry stays empty — never filled with a plausible
+  default. Test parser changes against index models' own `arch` (they must come out identical).
 - **Data-driven:** add content in `lib/data/*.ts` (satisfy `lib/data/types.ts`).
 - **`Array.from(new Set(...))`**, never `[...new Set(...)]` (bundler target won't down-level it).
 - **Fonts via `next/font` only** (self-hosted; Tailwind reads `--font-inter`/`--font-mono`).
@@ -1036,6 +1040,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator: Hugging Face import** — paste a repo/link (GGUF → base model config); MLA, hybrid linear, sliding-window shapes parsed and checked identical to 7 index entries; share links carry numbers, not a re-fetch; live CORS unverified from here |
 | 2026-10-13 | **Calculator usability** — shared model search (zh aliases, multi-word), one-tap starts (`homePicks` for the card / newest 24 GB-green), `POPULAR_GPU_IDS` shared with the homepage, vendor-grouped card lists, mobile sticky result bar |
 | 2026-10-13 | **+1 model (100): Mellum2.1 12B-A2.5B** — JetBrains coding MoE; transformers + llama.cpp `mellum` (21 SWA + 7 full, 1536 cells); bpw from JetBrains' GGUFs; 8.6 GB @4K → 10/12 GB cards; 4060 Ti guide counts were 10 stale (ungated phrasing), 3 zh counts disagreed with en; llama.cpp b11577 |
 | 2026-10-12 | **Meta descriptions lengthened** — Bing "too short": `/zh` median 79 → 101 chars via `extendDescription` + `meta-description.ts` (derived facts only); postbuild fails under 100 width; `formats.ts` `hardwareReq` was English on `/zh` → `{ en, zh }`. `www` 200-not-301 is a dashboard fix |

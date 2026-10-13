@@ -419,6 +419,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (c) — Calculator: import any Hugging Face repo
+
+- `lib/utils/hf-import.ts`: `parseRepoInput` (org/name, hf.co / huggingface.co URLs incl. `/tree/main`, `hf download …` lines), `shapeFromConfig` (layers / KV heads / head dim, nested `text_config`-style configs, MLA → `kvHeads 1, headDim (kv_lora_rank + rope)/2`, `layer_types` full/sliding/linear counts, `full_attention_interval`, Gemma-3-style `sliding_window_pattern`, windows sized at llama.cpp's `pad256(window + 512)`; a `sliding_window` with no per-layer pattern is **not** applied and says so — upper bound; MoE expert counts reported), `importFromHub` (`/api/models/{repo}` → `safetensors.total` or `gguf.total` for params; `resolve/main/config.json`; a GGUF repo with no config falls back to `cardData.base_model`; gated → note, never a guess).
+- **Validated offline** against the index's own hand-checked arch fields: Llama 3.1 8B, GPT-OSS 20B (12 + 12 / 768), Gemma 3 27B (10 + 52 / 1536), DeepSeek V3 (MLA 1 × 288), Qwen3.6 27B (16 full, linear rest), Mellum2.1 (7 + 21 / 1536), Qwen2.5 7B (`use_sliding_window: false` ignored) — all identical. Mocked-fetch tests cover GGUF→base, gated, 404, network failure.
+- UI: "import" link under the model search (a pasted HF URL in the search box imports directly); import box in the custom panel; notes in the reader's language; "this model is in the index" chip via a reverse `hfRepoMap` lookup; editing layers by hand drops the imported attention shape. Share links carry the imported shape as numbers (`full`, `win`, `wt`, `mctx`, `repo`) — no re-fetch, so a link shows what the sender saw. Browser-tested with intercepted Hub responses (390 px, zh).
+- **Not verified live**: this environment cannot reach huggingface.co, so real CORS/response shapes were not exercised. Hub files are fetched cross-origin by transformers.js in browsers, and every failure path degrades to "enter by hand"; still, check one ungated repo (e.g. `Qwen/Qwen3-8B`) and one GGUF repo on the live site after deploy.
+
 ### 2026-10-13 (b) — Calculator: search, one-tap starts, grouped card list, mobile result bar
 
 - Traffic context: the calculator is the top page (zh ahead of en in browser page loads). It opened on two empty dropdowns — 100 models in one `<select>`, 82 cards ungrouped — and on a phone the answer sat ~1,500 px below the controls, so every context/level change hid it.

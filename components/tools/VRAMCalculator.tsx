@@ -21,6 +21,9 @@ import { trackEvent } from '@/lib/analytics';
 import { nameCarriesLabel, isMoE, isSuperseded } from '@/lib/utils/model-meta';
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
+import { importFromHub, parseRepoInput, type ImportedShape } from '@/lib/utils/hf-import';
+import { hfRepoMap } from '@/lib/data/hf-repos';
+import type { ModelArch } from '@/lib/data/types';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/seo';
 
@@ -60,6 +63,13 @@ const NEWEST_MODELS = [...models]
   .slice(0, 4);
 
 const SEARCH_LIMIT = 8;
+
+/** Index entry whose Hub repo is `repo` (either the repo read or the base it named). */
+function indexedModelFor(shape: ImportedShape) {
+  const wanted = [shape.repo, shape.configRepo].filter(Boolean).map(r => r!.toLowerCase());
+  const id = Object.entries(hfRepoMap).find(([, r]) => wanted.includes(r.toLowerCase()))?.[0];
+  return id ? models.find(m => m.id === id) : undefined;
+}
 
 /** Both card pickers (forward verdict, reverse lookup) list the same groups. */
 function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number]['key']) => string) {
@@ -101,6 +111,17 @@ export default function VRAMCalculator() {
   const [customLayers, setCustomLayers] = useState('32');
   const [customKvHeads, setCustomKvHeads] = useState('8');
   const [customHeadDim, setCustomHeadDim] = useState('128');
+  // A Hugging Face import fills the four fields above and, when the config says
+  // so, the attention shape and trained window that a hand-typed model lacks.
+  const [customAttention, setCustomAttention] = useState<ModelArch['attention']>(undefined);
+  const [customCtx, setCustomCtx] = useState<number | undefined>(undefined);
+  const [customRepo, setCustomRepo] = useState('');
+  const [hfInput, setHfInput] = useState('');
+  const [hfBusy, setHfBusy] = useState(false);
+  const [hfError, setHfError] = useState<'badInput' | 'notFound' | 'network' | null>(null);
+  const [hfShape, setHfShape] = useState<ImportedShape | null>(null);
+  const [hfEdited, setHfEdited] = useState(false);
+  const hfInputRef = useRef<HTMLInputElement>(null);
   const [selectedGpuId, setSelectedGpuId] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
@@ -154,6 +175,14 @@ export default function VRAMCalculator() {
       const l = searchParams.get('layers'); if (l) setCustomLayers(l);
       const kv = searchParams.get('kv'); if (kv) setCustomKvHeads(kv);
       const hd = searchParams.get('hd'); if (hd) setCustomHeadDim(hd);
+      // An imported shape travels as numbers, never as a re-fetch: the
+      // recipient sees what the sender saw even if the repo has changed.
+      const full = Number(searchParams.get('full'));
+      const win = Number(searchParams.get('win'));
+      const wt = Number(searchParams.get('wt'));
+      if (full > 0 || win > 0) setCustomAttention({ fullLayers: full || 0, ...(win > 0 && wt > 0 ? { windowLayers: win, windowTokens: wt } : {}) });
+      const mctx = Number(searchParams.get('mctx')); if (mctx > 0) setCustomCtx(mctx);
+      const repo = searchParams.get('repo'); if (repo && /^[\w.-]+\/[\w.-]+$/.test(repo)) setCustomRepo(repo);
     }
     // `gpu` has to reach the shared profile, not just local state: forward
     // mode has no GPU dropdown of its own — it judges the answer against the
@@ -197,6 +226,13 @@ export default function VRAMCalculator() {
         params.set('layers', customLayers);
         params.set('kv', customKvHeads);
         params.set('hd', customHeadDim);
+        if (customAttention?.fullLayers !== undefined) params.set('full', String(customAttention.fullLayers));
+        if (customAttention?.windowLayers) {
+          params.set('win', String(customAttention.windowLayers));
+          params.set('wt', String(customAttention.windowTokens ?? 0));
+        }
+        if (customCtx) params.set('mctx', String(customCtx));
+        if (customRepo) params.set('repo', customRepo);
       }
       params.set('quant', selectedQuant);
       // Forward mode judges the answer against the card in the shared profile,
@@ -212,7 +248,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, kvType, cards, ram]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, ram]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -307,12 +343,13 @@ export default function VRAMCalculator() {
       layers: parseInt(customLayers) || 32,
       kvHeads: parseInt(customKvHeads) || 8,
       headDim: parseInt(customHeadDim) || 128,
+      attention: customAttention,
       bpw,
       contextLength: contextLen,
       batchSize,
       kvBytesPerValue: KV_CACHE_TYPES[kvType],
     };
-  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, kvType]);
+  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, customAttention, kvType]);
 
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
@@ -354,6 +391,44 @@ export default function VRAMCalculator() {
     setModelQuery('');
   };
 
+  const runImport = async (raw?: string) => {
+    const input = raw ?? hfInput;
+    if (raw !== undefined) setHfInput(raw);
+    setSelectedModelId('custom');
+    setInvalidModelId(null);
+    setHfBusy(true);
+    setHfError(null);
+    const r = await importFromHub(input);
+    setHfBusy(false);
+    if (!r.ok) {
+      setHfError(r.error);
+      setHfShape(null);
+      return;
+    }
+    const sh = r.shape;
+    setHfShape(sh);
+    setHfEdited(false);
+    setModelQuery('');
+    if (sh.paramsB) setCustomParams(String(+sh.paramsB.toFixed(2)));
+    if (sh.layers) setCustomLayers(String(sh.layers));
+    if (sh.kvHeads) setCustomKvHeads(String(sh.kvHeads));
+    if (sh.headDim) setCustomHeadDim(String(sh.headDim));
+    // The attention shape belongs to the layer count it was read with; without
+    // a readable config there is no shape, and a stale one must not linger.
+    setCustomAttention(sh.layers ? sh.attention : undefined);
+    setCustomCtx(sh.contextLength);
+    setCustomRepo(sh.repo);
+    trackEvent('HF Import');
+  };
+  const openImport = () => {
+    setSelectedModelId('custom');
+    setInvalidModelId(null);
+    const pasted = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
+    if (pasted) { void runImport(pasted); return; }
+    setTimeout(() => hfInputRef.current?.focus(), 0);
+  };
+  const pastedRepo = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
+
   /** Cards actually counted: stacking only means something for discrete cards. */
   const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
 
@@ -366,9 +441,10 @@ export default function VRAMCalculator() {
     if (!profileGpu) return undefined;
     if (selectedQuantObj && !formatAllowed(profileGpu, selectedQuantObj.format)) return undefined;
     const { bpw, contextLength: _ctx, ...shape } = calcInput;
-    // A custom model has no declared window; 128K is the generic ceiling.
-    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? 131072, profileCards);
-  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards]);
+    // A hand-typed model has no declared window; 128K is the generic ceiling.
+    // An imported one carries its trained context.
+    return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? customCtx ?? 131072, profileCards);
+  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards, customCtx]);
   /** Largest preset chip inside the reach, so "use it" lands on a round value. */
   const reachPreset = reach
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
@@ -546,6 +622,13 @@ export default function VRAMCalculator() {
                     </div>
                   </div>
                 )}
+                <button
+                  type="button"
+                  onClick={openImport}
+                  className="mt-2 inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 text-xs text-violet-300 hover:text-violet-200"
+                >
+                  {pastedRepo ? `${t.calc.hfLabel}: ${pastedRepo}` : t.calc.hfOpen} →
+                </button>
               </div>
 
               {/* The verdict needs a card, and the only place to set one used to
@@ -609,11 +692,90 @@ export default function VRAMCalculator() {
 
               {selectedModelId === 'custom' && (
                 <div className="glass rounded-xl p-4 space-y-3">
+                  <div>
+                    <label htmlFor="calc-hf" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.hfLabel}</label>
+                    <form onSubmit={e => { e.preventDefault(); void runImport(); }} className="flex gap-2">
+                      <input
+                        id="calc-hf"
+                        ref={hfInputRef}
+                        value={hfInput}
+                        onChange={e => setHfInput(e.target.value)}
+                        placeholder={t.calc.hfPlaceholder}
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
+                      />
+                      <button
+                        type="submit"
+                        disabled={hfBusy || !hfInput.trim()}
+                        className="shrink-0 px-3 py-2 rounded-lg text-xs font-medium text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
+                      >
+                        {hfBusy ? t.calc.hfLoading : t.calc.hfButton}
+                      </button>
+                    </form>
+                    <p className="text-[11px] text-slate-600 mt-1">{t.calc.hfPrivacy}</p>
+                    {hfError && (
+                      <p className="text-xs text-amber-300 mt-2" role="alert">
+                        {hfError === 'badInput' ? t.calc.hfErrBadInput : hfError === 'notFound' ? t.calc.hfErrNotFound : t.calc.hfErrNetwork}
+                      </p>
+                    )}
+                    {hfShape && !hfError && (() => {
+                      const sh = hfShape;
+                      const indexed = indexedModelFor(sh);
+                      const notes = sh.notes.map(n => {
+                        switch (n) {
+                          case 'gated': return t.calc.hfNoteGated;
+                          case 'noConfig': return t.calc.hfNoteNoConfig;
+                          case 'viaBase': return t.calc.hfNoteViaBase.replace('{base}', sh.configRepo ?? '');
+                          case 'noParams': return t.calc.hfNoteNoParams;
+                          case 'mla': return t.calc.hfNoteMla;
+                          case 'linear': return t.calc.hfNoteLinear.replace('{full}', String(sh.attention?.fullLayers ?? 0));
+                          case 'window': return t.calc.hfNoteWindow
+                            .replace('{win}', String(sh.attention?.windowLayers ?? 0))
+                            .replace('{cells}', (sh.attention?.windowTokens ?? 0).toLocaleString('en-US'));
+                          case 'windowIgnored': return t.calc.hfNoteWindowIgnored;
+                          case 'moe': return t.calc.hfNoteMoe
+                            .replace('{experts}', String(sh.experts ?? ''))
+                            .replace('{active}', sh.expertsPerToken ? t.calc.hfNoteMoeActive.replace('{n}', String(sh.expertsPerToken)) : '');
+                        }
+                      });
+                      return (
+                        <div className="mt-2 space-y-1.5">
+                          {sh.layers && (
+                            <p className="text-xs text-emerald-300/90">
+                              {t.calc.hfDone
+                                .replace('{repo}', sh.repo)
+                                .replace('{layers}', String(sh.layers))
+                                .replace('{kv}', String(sh.kvHeads ?? '?'))
+                                .replace('{hd}', String(sh.headDim ?? '?'))
+                                .replace('{params}', sh.paramsB ? t.calc.hfParams.replace('{p}', String(+sh.paramsB.toFixed(2))) : '')}
+                              {sh.contextLength ? ` ${t.calc.hfMaxCtx.replace('{ctx}', contextLabel(sh.contextLength))}` : ''}
+                              {hfEdited ? ` · ${t.calc.hfEdited}` : ''}
+                            </p>
+                          )}
+                          {notes.map((n, i) => (
+                            <p key={i} className="text-[11px] text-slate-500 leading-relaxed">{n}</p>
+                          ))}
+                          {indexed && (
+                            <button
+                              type="button"
+                              onClick={() => chooseModel(indexed.id)}
+                              className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-violet-200 border-violet-500/30 bg-violet-500/10"
+                            >
+                              {t.calc.hfInIndex.replace('{name}', indexed.name)}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                   <p className="text-xs font-medium text-slate-400">{t.calc.customLabel}</p>
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { label: t.calc.customParams,  value: customParams,  setter: setCustomParams },
-                      { label: t.calc.customLayers,  value: customLayers,  setter: setCustomLayers },
+                      // The attention shape was read for this layer count; a new
+                      // count by hand invalidates it.
+                      { label: t.calc.customLayers,  value: customLayers,  setter: (v: string) => { setCustomLayers(v); setCustomAttention(undefined); } },
                       { label: t.calc.customKvHeads, value: customKvHeads, setter: setCustomKvHeads },
                       { label: t.calc.customHeadDim, value: customHeadDim, setter: setCustomHeadDim },
                     ].map(({ label, value, setter }) => (
@@ -622,7 +784,7 @@ export default function VRAMCalculator() {
                         <input
                           type="number"
                           value={value}
-                          onChange={e => setter(e.target.value)}
+                          onChange={e => { setter(e.target.value); if (hfShape) setHfEdited(true); }}
                           className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-violet-500/40"
                         />
                       </div>
@@ -1286,7 +1448,7 @@ export default function VRAMCalculator() {
             <div className="flex items-center gap-3 max-w-7xl mx-auto">
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] text-slate-500 truncate">
-                  {selectedModel ? selectedModel.name : t.calc.customLabel} · {selectedQuant} · {contextLabel(contextLen)}
+                  {selectedModel ? selectedModel.name : customRepo || t.calc.customLabel} · {selectedQuant} · {contextLabel(contextLen)}
                 </p>
                 <p className="text-sm text-slate-200 truncate">
                   <span className="font-mono font-semibold">{result.totalGB.toFixed(1)} {t.calc.gbUnit}</span>

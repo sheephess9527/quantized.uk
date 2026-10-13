@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-13',
+    en: 'The VRAM calculator can now size any model on Hugging Face. Paste a repo name or link, including a GGUF repo, and it reads the model\'s own config: layers, KV heads, sliding-window and hybrid attention, and the parameter count. Your browser asks Hugging Face directly. If the model is already in this index, it offers the indexed entry, whose sizes come from real files.',
+    zh: '显存计算器现在可以估算 Hugging Face 上的任意模型。粘贴仓库名或链接（GGUF 仓库也行），它会读取模型自己的配置：层数、KV 头、滑动窗口和混合注意力，以及参数量。由你的浏览器直接请求 Hugging Face。如果本站已收录该模型，它会推荐收录版本，那里的体积按实际文件计算。',
+  },
+  {
+    date: '2026-10-13',
     en: 'The VRAM calculator is quicker to use. You can now search for a model by name, size or task, in English or Chinese ("qwen 27b", "千问", "coding"), and pick a common card with one tap. Once you name your card, it suggests the same three models the homepage would. The card list is grouped by vendor, and on a phone a bar at the bottom keeps the total and the verdict in view while you change settings.',
     zh: '显存计算器更好用了。现在可以按名称、大小或用途搜索模型，中英文都行（"qwen 27b"、"千问"、"写代码"），常见显卡一键就能选。选好显卡后，它会推荐和首页相同的三个模型。显卡列表按厂商分组；在手机上，调整设置时底部会一直显示总显存和能否装下。',
   },
