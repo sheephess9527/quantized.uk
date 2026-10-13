@@ -419,6 +419,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (h) — Calculator quality pass
+
+- 390 px overflow check (iframe method) across forward / mixed rig / multimodal / reverse / fine-tune / MLA / imported custom: 0 elements past the viewport without a scroll container. First Load JS for the page 271 → 290 kB over the day's additions (CLI generator is 274).
+- Serving capacity now uses **0.85**, the `--gpu-memory-utilization` in this site's own generated vLLM commands (`lib/utils/cli.ts`), instead of vLLM's 0.9 default — the page's "how close to reality" section already told readers 0.85, and the two numbers sat on the same page. 8B Q4_K_M on a 4090: 27 / 13 / 3.
+- Tool-page copy: summary and both meta descriptions name the new capabilities; new explainer section "What else it answers" (with the sources for each); the formula section's activation buffer now covers the vision encoder.
+
 ### 2026-10-13 (g) — Calculator: vision encoder, A/B pin, saved machines
 
 - **Vision encoder**: `CalcInput.extraGB` (fixed extra weights, inside the 10% buffer; `CalcResult.extraGB` only when given) threaded through `modelShape`/`levelTable` and `servingCapacity`. Shown for multimodal entries and custom models; empty = not counted, said so. "Read from GGUF repo" (only when the model's `hfRepoMap` repo ends in `-GGUF`) calls `mmprojFromHub` → `/api/models/{repo}?blobs=true`, picks the `mmproj*.gguf` f16 file (then bf16, then smallest). No per-model sizes typed — they were not verifiable here. URL `mmproj=`; download line adds it.
@@ -436,7 +442,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-10-13 (e) — Calculator: mixed cards, serving capacity, download size
 
 - **Mixed cards**: `capacityGB(gpu, cards, extra)` + `rigDevices()` (`gpu-page.ts`); `verdictOn`/`levelTable`/`contextReach`/`offloadPlan` take `extra` (default `[]` → identical-card results unchanged, checked). Extra cards must `canStack` and share `backendFor` with the primary; rig ≤ `MAX_CARDS`. Format must load on every device (`rigFormatAllowed`). Speed: `rigSpeedCeiling` = 1 / Σ(share_i / tokS_i) with shares ∝ usable memory (llama.cpp layer split, cards take turns) — 2 × 3090 stays 23 tok/s for Llama 3.3 70B Q4_K_M, 3090 + 3060 gives 15.1. Offload uses the summed `--fit` budget and splits the GPU read time by share. Page says vLLM's tensor parallel splits evenly (smallest card limits). URL `extra=id,id`.
-- **Serving capacity** (`servingCapacity`): (rig × 0.9 vLLM default `--gpu-memory-utilization` − weights × 1.1) ÷ (one request's KV at 4K/8K/32K × 1.1), capped at the model's window; labelled a floor (paged caches hold used tokens only). Mixed rigs use the even split (smallest card × count). Llama 3.1 8B Q4_K_M on a 4090: 30 / 15 / 3.
+- **Serving capacity** (`servingCapacity`): (rig × 0.85 — the `--gpu-memory-utilization` this site's generated vLLM commands pass, changed from vLLM's 0.9 default the same day so the count matches the copied command — − weights × 1.1) ÷ (one request's KV at 4K/8K/32K × 1.1), capped at the model's window; labelled a floor (paged caches hold used tokens only). Mixed rigs use the even split (smallest card × count). Llama 3.1 8B Q4_K_M on a 4090: 27 / 13 / 3.
 - **Download size**: params × bpw / 8 (equals the published file for file-derived bpw rows; Llama 3.3 70B Q4_K_M 42.8 GB vs bartowski 42.5), plus the Ollama v0.40.2 backup-copy note (from its release notes, checked 2026-10-10).
 
 ### 2026-10-13 (d) — Calculator: fine-tune mode (QLoRA / LoRA / full)

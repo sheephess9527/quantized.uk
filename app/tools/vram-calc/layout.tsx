@@ -4,7 +4,7 @@ import { pageMetadata } from '@/lib/seo';
 export const metadata: Metadata = pageMetadata({
   title: 'VRAM / RAM Calculator for LLMs | quantized.uk',
   description:
-    'Calculate LLM memory for any model, quant format, and context length. Forward and reverse GPU lookup with shareable URLs.',
+    'LLM VRAM calculator: any model or Hugging Face repo, mixed GPUs, speed, time to first token, serving capacity and QLoRA/LoRA fine-tuning memory.',
   path: '/tools/vram-calc',
 });
 

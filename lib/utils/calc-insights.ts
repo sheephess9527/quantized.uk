@@ -175,8 +175,12 @@ export function rigSpeedCeiling(
   return { ...first, tokS: Math.round(10 / time) / 10 };
 }
 
-/** vLLM's default `--gpu-memory-utilization`: the share of each card it claims. */
-export const VLLM_MEMORY_UTILIZATION = 0.9;
+/**
+ * The share of each card the server claims — the `--gpu-memory-utilization`
+ * this site's own generated vLLM commands pass (`lib/utils/cli.ts`), so the
+ * count matches the command a reader copies.
+ */
+export const VLLM_MEMORY_UTILIZATION = 0.85;
 
 export interface ServingRow {
   ctx: number;

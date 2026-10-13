@@ -100,8 +100,8 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-10-13',
-    en: 'The calculator handles mixed-card machines, tells you how many people a setup can serve, and shows the download size. Add a second, different card (a 3060 beside a 3090) and the memory adds up the way llama.cpp and Ollama split layers, with the speed bound following the slower card. Each verdict now also counts how many full-length requests fit at once at 4K, 8K and 32K, using vLLM\'s default memory share.',
-    zh: '计算器现在支持混搭显卡、多人同时使用估算，并显示下载大小。再加一张不同型号的卡（比如 3090 旁边插一张 3060），显存按 llama.cpp 和 Ollama 的按层拆分方式相加，速度上限会跟着较慢的那张卡走。每个结果还会给出按 vLLM 默认显存占比，4K、8K、32K 上下文下能同时容纳几个满长度请求。',
+    en: 'The calculator handles mixed-card machines, tells you how many people a setup can serve, and shows the download size. Add a second, different card (a 3060 beside a 3090) and the memory adds up the way llama.cpp and Ollama split layers, with the speed bound following the slower card. Each verdict now also counts how many full-length requests fit at once at 4K, 8K and 32K, at the memory share this site\'s vLLM commands use.',
+    zh: '计算器现在支持混搭显卡、多人同时使用估算，并显示下载大小。再加一张不同型号的卡（比如 3090 旁边插一张 3060），显存按 llama.cpp 和 Ollama 的按层拆分方式相加，速度上限会跟着较慢的那张卡走。每个结果还会按本站 vLLM 命令使用的显存占比，给出 4K、8K、32K 上下文下能同时容纳几个满长度请求。',
   },
   {
     date: '2026-10-13',
