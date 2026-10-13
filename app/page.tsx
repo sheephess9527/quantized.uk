@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   // has asked "what fits your hardware" since the homepage was restructured;
   // the title now says the same thing.
   title: `What LLM fits my GPU? — ${MODEL_COUNT}-model VRAM index | quantized.uk`,
-  description: `Pick your graphics card and see which of ${MODEL_COUNT} quantized LLMs actually fit it — at which quant level, with how much VRAM to spare, and the command to run each one.`,
+  description: `Pick your graphics card and see which of ${MODEL_COUNT} quantized LLMs actually fit it — at which quant level, with how much VRAM spare, and the command to run each.`,
   alternates: { canonical: canonical('/'), languages: languageAlternates('/'), ...feedAlternates('/') },
   robots: defaultRobots,
   openGraph: {

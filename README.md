@@ -419,6 +419,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 — Daily patrol: +1 model (100): Mellum2.1 12B-A2.5B Thinking; llama.cpp b11577
+
+- Source chain: transformers `models/mellum/configuration_mellum.py` (28 layers, hidden 2304, 32 heads / 4 KV × 128, sliding_window 1024, 64 experts / 8 routed, 131072 positions); llama.cpp `src/models/mellum.cpp` (arch `mellum`, `LLM_TYPE_12B_A2_5B` at 28 layers, `load_swa_pattern(ml, 4)` → 21 SWA + 7 full, standard SWA → 1536 cells). Config arithmetic 12.14B / ~2.4B active; JetBrains' GGUF repo BF16 24.3 GB → 12.15B, Q8_0 12.9 GB → 8.49 bpw, Q4_K_M 8.1 GB → 5.33 bpw (bartowski's is 8.82 GB). Released 2026-10-08, Apache 2.0. The repo's MXFP4_MOE build (7.0 GB) is omitted — `referenceQuant()` would treat an MXFP4 row as native. KL divergence published, not perplexity → no `pplLossPercent`. CLI placeholder (GGUF filenames unconfirmed).
+- Sizes: Q4_K_M 8.6 GB @4K, 9.0 @32K, 10.5 @128K; Q8_0 13.6 @4K. Comfortable on 10/12 GB, not 8 GB. Every ≥10 GB card's count +1. Added to the 12 GB guide's `relatedModelIds`.
+- Guide counts re-run per card, and several **pre-existing** errors fixed while doing it: the RTX 4060 Ti 16G guide said 51 comfortable / 60 loadable and its FAQ 52 (actual 60/70 before today, 61/71 now) — these sentences don't use the "N of the M models" form, so `guideModelCountProblems()` never saw them; zh text disagreed with en in three places (7900 XTX FAQ "56" vs 60 for 16 GB cards, 12 GB guide "能加载的共 51 个" vs 55, 16 GB-vs-12 GB FAQ "49" vs 53). The 4060 Ti FAQ's "slowest 16GB card" is a tie with the RX 7600 XT (288 GB/s) — now says so.
+- Runtimes: llama.cpp b11577; Ollama v0.40.4 is a pre-release (skipped, v0.40.3 stays); vLLM v0.31.0, ExLlamaV3 v1.6.1 unchanged.
+
 ### 2026-10-12 (c) — Meta descriptions lengthened (Bing "too short"); format `hardwareReq` bilingual
 
 - Bing Webmaster (owner screenshot): "many pages' meta descriptions are too short". Measured `out/**`: `/zh` median **79 characters** (all 239 under 120 width-equivalent of English, 85 under 70 chars, shortest 24 — `/zh/legal/`), because the 160-width budget counts CJK double and the zh templates were written to one sentence. EN median 127 chars, 13 under 100.

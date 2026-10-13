@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-12):**
+**Live snapshot (2026-10-13):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **99** in index (`models-extra` … `models-extra-12`) |
+| Models | **100** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 479 pages (240 EN + 239 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 481 pages (241 EN + 240 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -423,7 +423,9 @@ buying guides and HF trending, not only against release feeds.
 5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
 6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`. **Guides are the
    exception**: their prose counts are typed, and `guideModelCountProblems()` fails the build until
-   every "N of the M models" names the new total — then re-run the fit count N it quotes.
+   every "N of the M models" names the new total — then re-run the fit count N it quotes. **The gate
+   only sees that one phrasing** — "51 of the models … and 60 load at all" (4060 Ti guide) drifted
+   by 10 unseen, and zh sentences had their own wrong numbers; grep for any count near a card name.
 
 **Superseding models** — set `status: 'superseded'` + `supersededBy`; do **not** delete (keeps
 links/SEO). Card + detail show amber "Prefer {name}", with a reason from `supersededDiffNote()`
@@ -1028,6 +1030,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **+1 model (100): Mellum2.1 12B-A2.5B** — JetBrains coding MoE; transformers + llama.cpp `mellum` (21 SWA + 7 full, 1536 cells); bpw from JetBrains' GGUFs; 8.6 GB @4K → 10/12 GB cards; 4060 Ti guide counts were 10 stale (ungated phrasing), 3 zh counts disagreed with en; llama.cpp b11577 |
 | 2026-10-12 | **Meta descriptions lengthened** — Bing "too short": `/zh` median 79 → 101 chars via `extendDescription` + `meta-description.ts` (derived facts only); postbuild fails under 100 width; `formats.ts` `hardwareReq` was English on `/zh` → `{ en, zh }`. `www` 200-not-301 is a dashboard fix |
 | 2026-10-12 | **+1 model (99): MiMo-V2.6-Pro** (owner request) — 1.02T-A42B, native MXFP4 (4.52 bpw from AesSedai's GGUF), 604 GB @4K fits no row (largest: 384 usable Mac / 320 on 4 × H100); 10 full + 60 SWA (768 cells), headDim 160 = mean of 192/128; no counts moved |
 | 2026-10-12 | **Runtime versions** — Ollama v0.40.3, llama.cpp b11559; Kolibri-1 skipped (no llama.cpp arch) |

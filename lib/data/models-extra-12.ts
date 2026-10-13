@@ -11,6 +11,7 @@ const ADDED_QWEN38_FLASH = '2026-10-10';
 const ADDED_QWEN36 = '2026-10-10';
 const ADDED_QWEN35_SMALL = '2026-10-11';
 const ADDED_MIMO26 = '2026-10-12';
+const ADDED_MELLUM21 = '2026-10-13';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -348,6 +349,36 @@ export const extraModels12: QuantModel[] = [
     },
     quants: [
       { format: 'GGUF', level: 'MXFP4', bpw: 4.52, vramGB: 603.8, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Pro GGUF MXFP4'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // JetBrains Mellum2.1 12B-A2.5B Thinking (2026-10-08, Apache 2.0). transformers
+    // `models/mellum/configuration_mellum.py` defaults: 28 layers, hidden 2304, 32 heads / 4 KV × 128,
+    // sliding_window 1024, 64 experts / 8 routed (moe_intermediate 896), vocab 98304, 131072 positions.
+    // llama.cpp `src/models/mellum.cpp` (arch `mellum`, LLM_TYPE_12B_A2_5B for 28 layers) uses
+    // load_swa_pattern(ml, 4) → 3 SWA + 1 full per 4 layers = 21 + 7; standard SWA →
+    // pad256(1024 + 512) = 1536 cells, as Gemma 3. Params from JetBrains' own GGUF repo: BF16 24.3 GB →
+    // 12.15B (config arithmetic gives 12.14B); Q8_0 12.9 GB → 8.49 bpw; Q4_K_M 8.1 GB → 5.33 bpw
+    // (bartowski's Q4_K_M is 8.82 GB). The repo's MXFP4_MOE build (7.0 GB) is left out: it is not the
+    // released format, and an MXFP4 row would be read as native. JetBrains publishes KL divergence,
+    // not perplexity, so no pplLossPercent. CLI maps the original repo (GGUF filenames unconfirmed).
+    id: 'mellum2-1-12b-a2-5b',
+    name: 'Mellum2.1 12B-A2.5B Thinking',
+    family: 'JetBrains Mellum',
+    params: 12.15,
+    paramLabel: '12B-A2.5B',
+    categories: ['code', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac'],
+    contextLength: 131072,
+    arch: { layers: 28, attHeads: 32, kvHeads: 4, headDim: 128, attention: { fullLayers: 7, windowLayers: 21, windowTokens: 1536, note: { en: '21 of 28 layers use a 1,024-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1,536); only every fourth layer grows a cache with context.', zh: '28 层中 21 层使用 1,024 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1,536），只有每四层中的一层缓存随上下文增长。' } } },
+    addedAt: ADDED_MELLUM21,
+    description: {
+      en: 'JetBrains\' open coding model for agents and fast sub-agents, released in October under Apache 2.0. It is a 12B mixture-of-experts model with about 2.5B parameters active per token, so it generates at roughly the speed of a 3B model. At Q4_K_M it needs about 8.6 GB at 4K context and 10.5 GB even at its full 128K window, because only 7 of its 28 layers keep a growing cache. That is comfortable on a 10 or 12 GB card; an 8 GB card cannot hold it. Q8_0 fits a 16 GB card. llama.cpp supports it as `mellum`. Sizes come from JetBrains\' own GGUF files; JetBrains publishes KL divergence rather than perplexity, so no quality-loss figure is shown.',
+      zh: 'JetBrains 面向编程智能体和快速子智能体的开源代码模型，10 月以 Apache 2.0 发布。它是 12B 的混合专家模型，每个 token 约激活 2.5B 参数，生成速度大致相当于 3B 模型。Q4_K_M 在 4K 上下文下约需 8.6 GB，用满 128K 窗口也只要 10.5 GB，因为 28 层中只有 7 层保留会增长的缓存。10 GB 或 12 GB 显卡可以从容运行，8 GB 显卡装不下；Q8_0 适合 16 GB 显卡。llama.cpp 以 `mellum` 架构支持它。体积按 JetBrains 官方 GGUF 文件计算；官方公布的是 KL 散度而不是困惑度，所以不显示质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.33, vramGB: 8.6,  hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, vramGB: 13.6, hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];
