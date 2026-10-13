@@ -547,6 +547,12 @@ the English one. A static export cannot return pre-filtered HTML per query — o
 every query string — so the form plus `useUrlQuery()` is the whole mechanism; do not accept a task
 asking for server-rendered filtered markup here.
 
+**One model matcher: `lib/utils/model-search.ts`** — the Hub filter and the calculator search both use
+`modelMatchesQuery()`; extend its alias map (Chinese words included) rather than adding a second
+matcher. A one-character query word must be a whole word of the name, and loose (punctuation-free)
+matching starts at 4 characters — both rules exist because shorter matches hit every Q4 build or
+crossed a dash ("27b" ⊂ "wizardlm-2 7b").
+
 **The words readers type are not the values the data uses.** Hub search matched name/family/id only,
 so "coding", "vision", "gguf" and "7b" each returned zero of 81. It now searches size, categories,
 hardware tags, formats and levels, strips punctuation, and keeps a small alias map
@@ -1030,6 +1036,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator usability** — shared model search (zh aliases, multi-word), one-tap starts (`homePicks` for the card / newest 24 GB-green), `POPULAR_GPU_IDS` shared with the homepage, vendor-grouped card lists, mobile sticky result bar |
 | 2026-10-13 | **+1 model (100): Mellum2.1 12B-A2.5B** — JetBrains coding MoE; transformers + llama.cpp `mellum` (21 SWA + 7 full, 1536 cells); bpw from JetBrains' GGUFs; 8.6 GB @4K → 10/12 GB cards; 4060 Ti guide counts were 10 stale (ungated phrasing), 3 zh counts disagreed with en; llama.cpp b11577 |
 | 2026-10-12 | **Meta descriptions lengthened** — Bing "too short": `/zh` median 79 → 101 chars via `extendDescription` + `meta-description.ts` (derived facts only); postbuild fails under 100 width; `formats.ts` `hardwareReq` was English on `/zh` → `{ en, zh }`. `www` 200-not-301 is a dashboard fix |
 | 2026-10-12 | **+1 model (99): MiMo-V2.6-Pro** (owner request) — 1.02T-A42B, native MXFP4 (4.52 bpw from AesSedai's GGUF), 604 GB @4K fits no row (largest: 384 usable Mac / 320 on 4 × H100); 10 full + 60 SWA (768 cells), headDim 160 = mean of 192/128; no counts moved |

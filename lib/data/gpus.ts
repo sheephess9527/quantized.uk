@@ -151,3 +151,13 @@ export const gpuDatabase: GPU[] = [
   { id: 'cpu-32',      name: '32 GB RAM (CPU)',        vram: 32,  type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-16',      name: '16 GB RAM (CPU)',        vram: 16,  type: 'cpu', isCPU: true,      icon: '💻' },
 ];
+
+/**
+ * The cards offered as one-tap starts on the homepage and in the calculator —
+ * mixed generations, weighted towards constrained and non-NVIDIA setups (see
+ * `PopularStarts`). One list so the two surfaces cannot drift apart.
+ */
+export const POPULAR_GPU_IDS = [
+  'rtx5060ti16', 'rtx4060ti', 'rtx4060ti16', 'rtx5070',
+  'rtx3090', 'rtx4090', 'rtx5090', 'rx9070xt', 'm4-pro-24', 'cpu-32',
+];

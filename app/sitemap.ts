@@ -46,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the
   // tool's date here when that text changes — not `sizingChangedAt`, which
   // would re-announce every derived page.
-  const VRAM_CALC_EDITED = '2026-10-08';
+  const VRAM_CALC_EDITED = '2026-10-13';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
 

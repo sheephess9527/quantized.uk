@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (b) — Calculator: search, one-tap starts, grouped card list, mobile result bar
+
+- Traffic context: the calculator is the top page (zh ahead of en in browser page loads). It opened on two empty dropdowns — 100 models in one `<select>`, 82 cards ungrouped — and on a phone the answer sat ~1,500 px below the controls, so every context/level change hid it.
+- **Model search** (`lib/utils/model-search.ts`, now also the Hub's matcher): name/family/id/size/categories/tags/formats/levels + alias map, extended with Chinese task and vendor words (千问/通义→qwen, 写代码/编程→code, 视觉/图像→multimodal, 小米→mimo, 谷歌→gemma …). Multi-word queries pass when every word matches ("qwen 27b" → Qwen3.6 27B, Qwen3.8 27B); a one-character word must be a whole word of the name ("gemma 4" no longer matches every Q4 build); punctuation-free matching only from 4 characters and keeps CJK (the old `[^a-z0-9]` strip turned "千问 27b" into "27b", which also matched "WizardLM-2 7B"). Ranked: whole-word name hit, then loose name hit, then tag-only; legacy last; newer first. Native `<select>` kept for keyboard/screen readers.
+- **One-tap starts**: with a card set, chips are `homePicks(card, 'chat')` — the homepage/`/best/` ranking, so the surfaces cannot disagree; without one, the 4 newest non-legacy models that are green on a 24 GB card at 4K (MiMo-V2.6-Pro was otherwise the first suggestion). Popular cards come from `POPULAR_GPU_IDS`, moved to `lib/data/gpus.ts` and shared with the homepage's `PopularStarts`. Chips render in the static HTML.
+- **Card lists grouped** by vendor line (`<optgroup>`; forward + reverse). Model/reverse-card `<label>`s now have `htmlFor`.
+- **Mobile result bar**: `lg:hidden`, fixed bottom with `env(safe-area-inset-bottom)`, shown while the results panel is off-screen (IntersectionObserver), total + verdict for the profile card + a "Details" jump. Spacer keeps it off the footer. Verified at 390 px: no horizontal scroll, bar disappears once results are in view.
+- `VRAM_CALC_EDITED` → 2026-10-13.
+
 ### 2026-10-13 — Daily patrol: +1 model (100): Mellum2.1 12B-A2.5B Thinking; llama.cpp b11577
 
 - Source chain: transformers `models/mellum/configuration_mellum.py` (28 layers, hidden 2304, 32 heads / 4 KV × 128, sliding_window 1024, 64 experts / 8 routed, 131072 positions); llama.cpp `src/models/mellum.cpp` (arch `mellum`, `LLM_TYPE_12B_A2_5B` at 28 layers, `load_swa_pattern(ml, 4)` → 21 SWA + 7 full, standard SWA → 1536 cells). Config arithmetic 12.14B / ~2.4B active; JetBrains' GGUF repo BF16 24.3 GB → 12.15B, Q8_0 12.9 GB → 8.49 bpw, Q4_K_M 8.1 GB → 5.33 bpw (bartowski's is 8.82 GB). Released 2026-10-08, Apache 2.0. The repo's MXFP4_MOE build (7.0 GB) is omitted — `referenceQuant()` would treat an MXFP4 row as native. KL divergence published, not perplexity → no `pplLossPercent`. CLI placeholder (GGUF filenames unconfirmed).

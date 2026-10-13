@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils/cn';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { trackEvent } from '@/lib/analytics';
 import DataFreshness from '@/components/home/DataFreshness';
+import { modelMatchesQuery } from '@/lib/utils/model-search';
 
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
@@ -92,46 +93,9 @@ export default function QuantHubContent() {
       if (filters.showLegacy !== 'show' && isSuperseded(m)) return false;
       if (gpuFilterModelIds && !gpuFilterModelIds.has(m.id)) return false;
       if (filters.search) {
-        // Name, family and id only meant "gguf", "awq", "7b" and "coding" all
-        // returned nothing — reasonable things to type into a box that offers
-        // to search a quantization index. Punctuation is stripped so "qwen3.8"
-        // and "qwen 3 8" both reach `qwen3-8`.
-        const q = filters.search.toLowerCase().trim();
-        const loose = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const qLoose = loose(q);
-        const haystack = [
-          m.name,
-          m.family,
-          m.id,
-          m.paramLabel,
-          ...m.categories,
-          ...m.hardwareTags,
-          ...m.quants.map(v => v.format),
-          ...m.quants.map(v => v.level),
-        ];
-        // The words people type are not the values the data uses: a reader
-        // searching a quantization index types "coding" and "vision", while
-        // `categories` holds `code` and `multimodal`. Without this, "coding"
-        // returned zero of the 81 models — the box looked broken on a query
-        // the placeholder invites.
-        const ALIASES: Record<string, string[]> = {
-          coding: ['code'],
-          coder: ['code'],
-          programming: ['code'],
-          vision: ['multimodal'],
-          image: ['multimodal'],
-          chat: ['general', 'instruct'],
-          apple: ['mac'],
-          nvidia: ['consumer-gpu'],
-          cpu: ['cpu-vps'],
-        };
-        const expanded = [q, ...(ALIASES[q] ?? [])];
-        const hit = expanded.some(
-          term =>
-            haystack.some(h => h.toLowerCase().includes(term)) ||
-            (loose(term).length >= 3 && haystack.some(h => loose(h).includes(loose(term)))),
-        );
-        if (!hit) return false;
+        // Name, family, id, size, categories, tags, formats and levels, plus
+        // the alias map — one matcher shared with the calculator's search.
+        if (!modelMatchesQuery(m, filters.search)) return false;
       }
       if (filters.paramRange && !matchesParamRange(m.params, filters.paramRange as ParamRange)) return false;
       if (filters.recency === 'recent' && !isRecentModel(m)) return false;

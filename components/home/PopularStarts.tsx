@@ -4,7 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/seo';
 import { ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, POPULAR_GPU_IDS } from '@/lib/data/gpus';
 import { countModelsFitting, gpuSlug } from '@/lib/utils/gpu-page';
 
 /**
@@ -22,10 +22,6 @@ import { countModelsFitting, gpuSlug } from '@/lib/utils/gpu-page';
  * `comfortable` rule, the same one the GPU landing pages print, so the number
  * here and the number there cannot disagree.
  */
-const POPULAR_GPU_IDS = [
-  'rtx5060ti16', 'rtx4060ti', 'rtx4060ti16', 'rtx5070',
-  'rtx3090', 'rtx4090', 'rtx5090', 'rx9070xt', 'm4-pro-24', 'cpu-32',
-];
 
 const popular = POPULAR_GPU_IDS.map(id => {
   const gpu = gpuDatabase.find(g => g.id === id)!;

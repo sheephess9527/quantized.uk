@@ -3,10 +3,10 @@
 import { useState, useMemo, useEffect, useRef, useCallback, type MouseEvent } from 'react';
 import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
-import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft } from 'lucide-react';
+import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import { levelTable, contextReach, speedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
@@ -18,8 +18,10 @@ import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
-import { nameCarriesLabel, isMoE } from '@/lib/utils/model-meta';
-import { bySmallestCard } from '@/lib/utils/model-explainer';
+import { nameCarriesLabel, isMoE, isSuperseded } from '@/lib/utils/model-meta';
+import { homePicks } from '@/lib/utils/home-picks';
+import { searchModels } from '@/lib/utils/model-search';
+import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/seo';
 
 type Mode = 'forward' | 'reverse';
@@ -32,6 +34,46 @@ const verdictConfig: Record<VerdictColor, { bar: string; label: string; dot: str
 };
 
 const CONTEXT_PRESETS = [512, 2048, 4096, 8192, 16384, 32768, 65536, 131072];
+
+/** The card list grouped the way a reader looks for their card — by vendor line. */
+const GPU_GROUPS: { types: GPU['type'][]; key: 'gpuGroupNvidia' | 'gpuGroupPro' | 'gpuGroupUnified' | 'gpuGroupAmd' | 'gpuGroupIntel' | 'gpuGroupApple' | 'gpuGroupCpu' }[] = [
+  { types: ['nvidia-consumer'], key: 'gpuGroupNvidia' },
+  { types: ['nvidia-pro'], key: 'gpuGroupPro' },
+  { types: ['nvidia-unified'], key: 'gpuGroupUnified' },
+  { types: ['amd'], key: 'gpuGroupAmd' },
+  { types: ['intel'], key: 'gpuGroupIntel' },
+  { types: ['apple'], key: 'gpuGroupApple' },
+  { types: ['cpu'], key: 'gpuGroupCpu' },
+];
+
+const POPULAR_GPUS = POPULAR_GPU_IDS
+  .map(id => gpuDatabase.find(g => g.id === id))
+  .filter((g): g is GPU => !!g);
+
+/** Before the reader names a card there is nothing to rank against, so the
+ *  suggestions are simply the newest entries — never a quality claim — limited
+ *  to ones a single 24 GB card holds comfortably at 4K, or a 1T model that fits
+ *  nothing would be the first thing offered. */
+const NEWEST_MODELS = [...models]
+  .filter(m => !isSuperseded(m) && getVerdict(sizeAt(m, referenceQuant(m.quants).bpw, 4096).totalGB, 24) === 'green')
+  .sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''))
+  .slice(0, 4);
+
+const SEARCH_LIMIT = 8;
+
+/** Both card pickers (forward verdict, reverse lookup) list the same groups. */
+function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number]['key']) => string) {
+  return GPU_GROUPS.map(group => {
+    const rows = gpuDatabase.filter(g => group.types.includes(g.type));
+    return rows.length === 0 ? null : (
+      <optgroup key={group.key} label={label(group.key)}>
+        {rows.map(g => (
+          <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
+        ))}
+      </optgroup>
+    );
+  });
+}
 
 function findFormatGroup(quant: string): keyof typeof quantGroups {
   for (const [group, levels] of Object.entries(quantGroups)) {
@@ -64,6 +106,7 @@ export default function VRAMCalculator() {
   const [includeYellow, setIncludeYellow] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
+  const [modelQuery, setModelQuery] = useState('');
 
   // Precedence: URL > stored config > default. A shared link has to win over
   // whatever the recipient happens to have saved, or the link shows something
@@ -294,6 +337,23 @@ export default function VRAMCalculator() {
     return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1);
   }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards]);
 
+  // One-tap starts. With a card named, the suggestions are the homepage's own
+  // picks for it (`homePicks`, the same ranking behind `/best/`), so the
+  // calculator and the front page cannot recommend different things.
+  const cardPicks = useMemo(() => (profileGpu ? homePicks(profileGpu, 'chat') : []), [profileGpu]);
+  const searchHits = useMemo(
+    () => (modelQuery.trim() ? searchModels(models, modelQuery, SEARCH_LIMIT) : []),
+    [modelQuery],
+  );
+  const chooseModel = (id: string, level?: string) => {
+    selectModel(id);
+    if (level) {
+      setSelectedQuant(level);
+      setFormatGroup(findFormatGroup(level));
+    }
+    setModelQuery('');
+  };
+
   /** Cards actually counted: stacking only means something for discrete cards. */
   const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
 
@@ -323,6 +383,19 @@ export default function VRAMCalculator() {
     selectedModelId === 'custom' || !!selectedModel
   );
   const showReverseResult = mode === 'reverse' && selectedGpuId !== '';
+
+  // On a phone the answer sits below a long column of controls, so every
+  // change to the context or the level hid it. A bar pinned to the bottom
+  // repeats the total and the verdict while the result panel is off-screen.
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const [resultsInView, setResultsInView] = useState(false);
+  useEffect(() => {
+    const el = resultsRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([entry]) => setResultsInView(entry.isIntersecting), { rootMargin: '0px 0px -30% 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const copyShareLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -380,9 +453,10 @@ export default function VRAMCalculator() {
           {mode === 'forward' ? (
             <>
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.model}</label>
+                <label htmlFor="calc-model" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.model}</label>
                 <div className="relative">
                   <select
+                    id="calc-model"
                     value={selectedModelId}
                     onChange={e => selectModel(e.target.value)}
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
@@ -401,6 +475,77 @@ export default function VRAMCalculator() {
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
+
+                {/* A 100-entry dropdown is slow to scan on a phone, and the
+                    names readers type ("千问", "qwen 27b", "coding") are not
+                    always the names in the list. The native select stays for
+                    keyboard and screen-reader use; this sits beside it. */}
+                <div className="relative mt-2">
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                  <input
+                    type="search"
+                    value={modelQuery}
+                    onChange={e => setModelQuery(e.target.value)}
+                    aria-label={t.calc.searchLabel}
+                    placeholder={t.calc.searchPlaceholder}
+                    className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                  />
+                </div>
+                {modelQuery.trim() ? (
+                  searchHits.length === 0 ? (
+                    <p className="text-xs text-slate-500 mt-2">{t.calc.searchNone.replace('{q}', modelQuery.trim())}</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {searchHits.map(m => (
+                        <button
+                          key={m.id}
+                          onClick={() => chooseModel(m.id)}
+                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                        >
+                          {nameCarriesLabel(m.name, m.paramLabel) ? m.name : `${m.name} (${m.paramLabel})`}
+                        </button>
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-slate-600 mb-1.5">
+                      {profileGpu && cardPicks.length > 0 ? t.calc.suggestForCard.replace('{gpu}', profileGpu.name) : t.calc.suggestNewest}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {profileGpu && cardPicks.length > 0
+                        ? cardPicks.map(pick => (
+                            <button
+                              key={pick.model.id}
+                              onClick={() => chooseModel(pick.model.id, quantLevelKey(pick.quant))}
+                              aria-pressed={selectedModelId === pick.model.id}
+                              title={pick.kind === 'capable' ? t.home.match.kindCapable : pick.kind === 'headroom' ? t.home.match.kindHeadroom : t.home.match.kindFastest}
+                              className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', selectedModelId === pick.model.id
+                                ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                                : 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                            >
+                              <span className="text-slate-500 mr-1">
+                                {pick.kind === 'capable' ? t.home.match.kindCapable : pick.kind === 'headroom' ? t.home.match.kindHeadroom : t.home.match.kindFastest}
+                                {' · '}
+                              </span>
+                              {pick.model.name}
+                            </button>
+                          ))
+                        : NEWEST_MODELS.map(m => (
+                            <button
+                              key={m.id}
+                              onClick={() => chooseModel(m.id)}
+                              aria-pressed={selectedModelId === m.id}
+                              className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', selectedModelId === m.id
+                                ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                                : 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                            >
+                              {m.name}
+                            </button>
+                          ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* The verdict needs a card, and the only place to set one used to
@@ -416,12 +561,26 @@ export default function VRAMCalculator() {
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.yourCardPlaceholder}</option>
-                    {gpuDatabase.map(g => (
-                      <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
-                    ))}
+                    {gpuOptgroups(k => t.calc[k])}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
+                {!profileGpu && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-slate-600 mb-1.5">{t.calc.popularCards}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {POPULAR_GPUS.map(g => (
+                        <button
+                          key={g.id}
+                          onClick={() => setGpuId(g.id)}
+                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                        >
+                          {g.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {profileGpu && canStack(profileGpu) && (
@@ -513,20 +672,35 @@ export default function VRAMCalculator() {
           ) : (
             <>
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.selectGpu}</label>
+                <label htmlFor="calc-reverse-card" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.selectGpu}</label>
                 <div className="relative">
                   <select
+                    id="calc-reverse-card"
                     value={selectedGpuId}
                     onChange={e => setSelectedGpuId(e.target.value)}
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.selectGpuPlaceholder}</option>
-                    {gpuDatabase.map(g => (
-                      <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
-                    ))}
+                    {gpuOptgroups(k => t.calc[k])}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
+                {!selectedGpu && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-slate-600 mb-1.5">{t.calc.popularCards}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {POPULAR_GPUS.map(g => (
+                        <button
+                          key={g.id}
+                          onClick={() => setSelectedGpuId(g.id)}
+                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
+                        >
+                          {g.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {selectedGpu && canStack(selectedGpu) && (
@@ -672,7 +846,7 @@ export default function VRAMCalculator() {
         </div>
 
         {/* Right: Results */}
-        <div>
+        <div ref={resultsRef} id="calc-result" className="scroll-mt-24">
           {(invalidModelId || modelLookupFailed) && (
             <div className="glass rounded-2xl p-5 border border-amber-500/20 mb-4">
               <p className="text-sm text-amber-300">
@@ -1097,6 +1271,46 @@ export default function VRAMCalculator() {
           )}
         </div>
       </div>
+
+      {/* Keeps the pinned bar from covering the end of the page. */}
+      {showForwardResult && <div className="h-16 lg:hidden" aria-hidden="true" />}
+      {showForwardResult && !resultsInView && (() => {
+        const capacity = profileGpu ? capacityGB(profileGpu, profileCards) : 0;
+        const formatOk = !profileGpu || !selectedQuantObj || formatAllowed(profileGpu, selectedQuantObj.format);
+        const v = profileGpu ? (formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(profileGpu)) : 'red') : null;
+        return (
+          <div
+            className="fixed inset-x-0 bottom-0 z-40 lg:hidden border-t border-white/[0.08] bg-[#0a0a0f]/95 backdrop-blur px-4 pt-2.5"
+            style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom))' }}
+          >
+            <div className="flex items-center gap-3 max-w-7xl mx-auto">
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-slate-500 truncate">
+                  {selectedModel ? selectedModel.name : t.calc.customLabel} · {selectedQuant} · {contextLabel(contextLen)}
+                </p>
+                <p className="text-sm text-slate-200 truncate">
+                  <span className="font-mono font-semibold">{result.totalGB.toFixed(1)} {t.calc.gbUnit}</span>
+                  {v ? (
+                    <span className={cn('ml-2 text-xs', verdictConfig[v].label)}>
+                      {v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} · {profileGpu!.name}
+                    </span>
+                  ) : (
+                    <span className="ml-2 text-xs text-slate-500">{t.calc.stickyNoCard}</span>
+                  )}
+                </p>
+              </div>
+              <a
+                href="#calc-result"
+                onClick={e => { e.preventDefault(); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                className="shrink-0 inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30"
+              >
+                {t.calc.stickyDetails}
+                <ChevronDown size={12} />
+              </a>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

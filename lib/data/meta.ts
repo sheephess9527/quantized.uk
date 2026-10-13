@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-13',
+    en: 'The VRAM calculator is quicker to use. You can now search for a model by name, size or task, in English or Chinese ("qwen 27b", "千问", "coding"), and pick a common card with one tap. Once you name your card, it suggests the same three models the homepage would. The card list is grouped by vendor, and on a phone a bar at the bottom keeps the total and the verdict in view while you change settings.',
+    zh: '显存计算器更好用了。现在可以按名称、大小或用途搜索模型，中英文都行（"qwen 27b"、"千问"、"写代码"），常见显卡一键就能选。选好显卡后，它会推荐和首页相同的三个模型。显卡列表按厂商分组；在手机上，调整设置时底部会一直显示总显存和能否装下。',
+  },
+  {
+    date: '2026-10-13',
     en: 'Mellum2.1 from JetBrains is in the index: an open coding model for 10 and 12 GB cards. It is a 12B mixture-of-experts model with about 2.5B active per token, under Apache 2.0. At Q4_K_M it needs about 8.6 GB at 4K context and 10.5 GB at its full 128K window, so it runs comfortably on a 10 or 12 GB card but not on 8 GB. Several guides\' model counts were also corrected, including the RTX 4060 Ti 16G guide, which had fallen well behind.',
     zh: 'JetBrains 的 Mellum2.1 已收录：适合 10 GB 和 12 GB 显卡的开源代码模型。它是 12B 的混合专家模型，每个 token 约激活 2.5B，Apache 2.0 许可。Q4_K_M 在 4K 上下文下约需 8.6 GB，用满 128K 窗口约 10.5 GB，所以 10 GB 或 12 GB 显卡能从容运行，8 GB 不行。几篇指南里的模型数量也一并更正了，其中 RTX 4060 Ti 16G 指南落后得最多。',
   },
