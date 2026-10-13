@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback, type MouseEvent } from 'react';
 import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
-import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search } from 'lucide-react';
+import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
@@ -24,10 +24,11 @@ import { searchModels } from '@/lib/utils/model-search';
 import { importFromHub, parseRepoInput, type ImportedShape } from '@/lib/utils/hf-import';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import type { ModelArch } from '@/lib/data/types';
+import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/seo';
 
-type Mode = 'forward' | 'reverse';
+type Mode = 'forward' | 'reverse' | 'finetune';
 type VerdictColor = 'green' | 'yellow' | 'red';
 
 const verdictConfig: Record<VerdictColor, { bar: string; label: string; dot: string }> = {
@@ -122,6 +123,17 @@ export default function VRAMCalculator() {
   const [hfShape, setHfShape] = useState<ImportedShape | null>(null);
   const [hfEdited, setHfEdited] = useState(false);
   const hfInputRef = useRef<HTMLInputElement>(null);
+  // Fine-tune mode.
+  const [ftMethod, setFtMethod] = useState<FtMethod>('qlora');
+  const [ftOpt, setFtOpt] = useState<FtOptimizer>('adamw');
+  const [ftRank, setFtRank] = useState(16);
+  const [ftSeq, setFtSeq] = useState(2048);
+  const [ftBatch, setFtBatch] = useState(1);
+  const [ftCkpt, setFtCkpt] = useState(true);
+  const [ftHidden, setFtHidden] = useState('');
+  const [ftVocab, setFtVocab] = useState('');
+  /** Per index model: config read from the Hub for the fields inference never needed. */
+  const [ftHub, setFtHub] = useState<Record<string, ImportedShape | 'loading' | 'failed'>>({});
   const [selectedGpuId, setSelectedGpuId] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
@@ -135,7 +147,8 @@ export default function VRAMCalculator() {
   // fallback is not missed on first paint.
   useEffect(() => {
     if (urlInitialized.current || !searchParams || !configReady) return;
-    const m = searchParams.get('mode') === 'reverse' ? 'reverse' : 'forward';
+    const modeParam = searchParams.get('mode');
+    const m: Mode = modeParam === 'reverse' || modeParam === 'finetune' ? modeParam : 'forward';
     setMode(m);
     const modelParam = searchParams.get('model');
     if (modelParam) {
@@ -168,6 +181,14 @@ export default function VRAMCalculator() {
     if (Number.isInteger(cardsParam) && cardsParam >= 1 && cardsParam <= MAX_CARDS) setCards(cardsParam);
     const ramParam = searchParams.get('ram');
     if (ramParam && ramParam in RAM_SETUPS) setRam(ramParam as RamSetup);
+    const ftm = searchParams.get('ft'); if (ftm === 'qlora' || ftm === 'lora' || ftm === 'full') setFtMethod(ftm);
+    if (searchParams.get('opt') === 'adamw8bit') setFtOpt('adamw8bit');
+    const rk = Number(searchParams.get('r')); if ([8, 16, 32, 64, 128].includes(rk)) setFtRank(rk);
+    const sq = Number(searchParams.get('seq')); if (sq >= 256 && sq <= 131072) setFtSeq(sq);
+    const mb = Number(searchParams.get('mb')); if (mb >= 1 && mb <= 64) setFtBatch(mb);
+    if (searchParams.get('gc') === '0') setFtCkpt(false);
+    const hid = searchParams.get('hidden'); if (hid && Number(hid) > 0) setFtHidden(hid);
+    const voc = searchParams.get('vocab'); if (voc && Number(voc) > 0) setFtVocab(voc);
     // A custom model is only shareable if its shape travels with the link —
     // without these the recipient got the 7B / 32-layer defaults.
     if (modelParam === 'custom') {
@@ -219,7 +240,17 @@ export default function VRAMCalculator() {
     if (kvType !== 'f16') params.set('cache', kvType);
     if (cards > 1) params.set('cards', String(cards));
     if (ram !== 'ddr5-5600') params.set('ram', ram);
-    if (mode === 'forward') {
+    if (mode === 'finetune') {
+      params.set('ft', ftMethod);
+      if (ftOpt !== 'adamw') params.set('opt', ftOpt);
+      if (ftMethod !== 'full') params.set('r', String(ftRank));
+      params.set('seq', String(ftSeq));
+      params.set('mb', String(ftBatch));
+      if (!ftCkpt) params.set('gc', '0');
+      if (ftHidden) params.set('hidden', ftHidden);
+      if (ftVocab) params.set('vocab', ftVocab);
+    }
+    if (mode === 'forward' || mode === 'finetune') {
       if (selectedModelId) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
         params.set('params', customParams);
@@ -248,7 +279,7 @@ export default function VRAMCalculator() {
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, ram]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -268,6 +299,8 @@ export default function VRAMCalculator() {
   const selectModel = useCallback((id: string) => {
     setSelectedModelId(id);
     setInvalidModelId(null);
+    setFtHidden('');
+    setFtVocab('');
     const model = models.find(m => m.id === id);
     if (!model) return;
     const levels = model.quants.map(quantLevelKey);
@@ -429,6 +462,64 @@ export default function VRAMCalculator() {
   };
   const pastedRepo = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
 
+  // ── Fine-tune mode ──────────────────────────────────────────────────────
+  // Inference sizing never needed the model width or the vocabulary; fine-
+  // tuning does (activations, logits, embeddings kept 16-bit under QLoRA).
+  // An imported config supplies them; an index model can read its own on
+  // request; otherwise the width falls back to heads × head size, labelled.
+  const ftHubEntry = selectedModel ? ftHub[selectedModel.id] : undefined;
+  const ftHubShape: ImportedShape | undefined = selectedModel
+    ? (typeof ftHubEntry === 'object' ? ftHubEntry : undefined)
+    : selectedModelId === 'custom' ? hfShape ?? undefined : undefined;
+  // MLA entries store a compressed cache shape (e.g. 1 × 288), which says
+  // nothing about the model width — no fallback for those.
+  const ftIsMla = !!selectedModel && selectedModel.arch.kvHeads === 1 && ![64, 80, 96, 128, 256].includes(selectedModel.arch.headDim);
+  const ftHiddenGuess = selectedModel && !ftIsMla ? selectedModel.arch.attHeads * selectedModel.arch.headDim : undefined;
+  const ftHiddenSource: 'manual' | 'config' | 'heads' | 'missing' =
+    Number(ftHidden) > 0 ? 'manual' : ftHubShape?.hidden ? 'config' : ftHiddenGuess ? 'heads' : 'missing';
+  const ftVocabValue = Number(ftVocab) || ftHubShape?.vocab;
+  const ftShape: FtShape | null = useMemo(() => {
+    const hidden = Number(ftHidden) || ftHubShape?.hidden || ftHiddenGuess;
+    if (!hidden) return null;
+    if (selectedModel) {
+      const a = selectedModel.arch;
+      return {
+        paramsB: selectedModel.params,
+        layers: a.layers,
+        hidden,
+        qDim: ftIsMla ? hidden : a.attHeads * a.headDim,
+        kvDim: ftIsMla ? hidden : a.kvHeads * a.headDim,
+        intermediate: ftHubShape?.intermediate,
+        vocab: ftVocabValue,
+        tiedEmbeddings: ftHubShape?.tiedEmbeddings,
+      };
+    }
+    if (selectedModelId !== 'custom') return null;
+    return {
+      paramsB: parseFloat(customParams) || 7,
+      layers: parseInt(customLayers) || 32,
+      hidden,
+      qDim: hidden,
+      kvDim: (parseInt(customKvHeads) || 8) * (parseInt(customHeadDim) || 128),
+      intermediate: ftHubShape?.intermediate,
+      vocab: ftVocabValue,
+      tiedEmbeddings: ftHubShape?.tiedEmbeddings,
+    };
+  }, [selectedModel, selectedModelId, ftHidden, ftHubShape, ftHiddenGuess, ftIsMla, ftVocabValue, customParams, customLayers, customKvHeads, customHeadDim]);
+  const ftRun = (method: FtMethod) => ftShape
+    ? finetuneMemory({ shape: ftShape, method, optimizer: ftOpt, rank: ftRank, seqLen: ftSeq, batch: ftBatch, checkpointing: ftCkpt })
+    : null;
+  const ftResult = ftRun(ftMethod);
+  const readFtHub = async () => {
+    if (!selectedModel) return;
+    const id = selectedModel.id;
+    const repo = hfRepoMap[id];
+    if (!repo) { setFtHub(h => ({ ...h, [id]: 'failed' })); return; }
+    setFtHub(h => ({ ...h, [id]: 'loading' }));
+    const r = await importFromHub(repo);
+    setFtHub(h => ({ ...h, [id]: r.ok && (r.shape.hidden || r.shape.vocab) ? r.shape : 'failed' }));
+  };
+
   /** Cards actually counted: stacking only means something for discrete cards. */
   const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
 
@@ -492,8 +583,8 @@ export default function VRAMCalculator() {
     <div ref={rootRef} className="space-y-6 scroll-mt-24">
       {/* Mode toggle + share */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex gap-2">
-          {(['forward', 'reverse'] as Mode[]).map(m => (
+        <div className="flex flex-wrap gap-2">
+          {(['forward', 'reverse', 'finetune'] as Mode[]).map(m => (
             <button
               key={m}
               onClick={() => setMode(m)}
@@ -505,8 +596,8 @@ export default function VRAMCalculator() {
                   : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
               )}
             >
-              {m === 'forward' ? <Calculator size={14} /> : <ArrowRightLeft size={14} />}
-              {m === 'forward' ? t.calc.modeForward : t.calc.modeReverse}
+              {m === 'forward' ? <Calculator size={14} /> : m === 'reverse' ? <ArrowRightLeft size={14} /> : <Wrench size={14} />}
+              {m === 'forward' ? t.calc.modeForward : m === 'reverse' ? t.calc.modeReverse : t.calc.modeFinetune}
             </button>
           ))}
         </div>
@@ -520,13 +611,13 @@ export default function VRAMCalculator() {
       </div>
 
       <p className="text-sm text-slate-500 -mt-2">
-        {mode === 'forward' ? t.calc.modeForwardDesc : t.calc.modeReverseDesc}
+        {mode === 'forward' ? t.calc.modeForwardDesc : mode === 'reverse' ? t.calc.modeReverseDesc : t.calc.modeFinetuneDesc}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Inputs */}
         <div className="space-y-4">
-          {mode === 'forward' ? (
+          {mode !== 'reverse' ? (
             <>
               <div>
                 <label htmlFor="calc-model" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.model}</label>
@@ -666,7 +757,7 @@ export default function VRAMCalculator() {
                 )}
               </div>
 
-              {profileGpu && canStack(profileGpu) && (
+              {mode === 'forward' && profileGpu && canStack(profileGpu) && (
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -793,6 +884,8 @@ export default function VRAMCalculator() {
                 </div>
               )}
 
+              {mode === 'forward' && (
+                <>
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.quant}</label>
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -830,6 +923,162 @@ export default function VRAMCalculator() {
                   ))}
                 </div>
               </div>
+                </>
+              )}
+              {mode === 'finetune' && (
+                <>
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftMethod}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([['qlora', t.calc.ftQlora], ['lora', t.calc.ftLora], ['full', t.calc.ftFull]] as [FtMethod, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtMethod(v)}
+                        aria-pressed={ftMethod === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftMethod === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {ftMethod !== 'full' && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftRank}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([8, 16, 32, 64, 128].map(n => [n, String(n)]) as [number, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtRank(v)}
+                        aria-pressed={ftRank === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftRank === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                )}
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftOptimizer}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([['adamw', t.calc.ftAdamw], ['adamw8bit', t.calc.ftAdamw8]] as [FtOptimizer, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtOpt(v)}
+                        aria-pressed={ftOpt === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftOpt === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftSeq}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([512, 1024, 2048, 4096, 8192, 16384, 32768].map(n => [n, contextLabel(n)]) as [number, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtSeq(v)}
+                        aria-pressed={ftSeq === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftSeq === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftBatch}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([1, 2, 4, 8, 16].map(n => [n, String(n)]) as [number, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtBatch(v)}
+                        aria-pressed={ftBatch === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftBatch === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.ftCkpt}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([[true, t.calc.ftOn], [false, t.calc.ftOff]] as [boolean, string][]).map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setFtCkpt(v)}
+                        aria-pressed={ftCkpt === v}
+                        className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftCkpt === v
+                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {(selectedModel || selectedModelId === 'custom') && (
+                  <div className="glass rounded-xl p-4 space-y-3">
+                    <p className="text-xs font-medium text-slate-400">{t.calc.ftShapeTitle}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="ft-hidden" className="block text-xs text-slate-500 mb-1">{t.calc.ftHidden}</label>
+                        <input
+                          id="ft-hidden"
+                          type="number"
+                          value={ftHidden}
+                          placeholder={String(ftHubShape?.hidden ?? ftHiddenGuess ?? '')}
+                          onChange={e => setFtHidden(e.target.value)}
+                          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-violet-500/40"
+                        />
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          {ftHiddenSource === 'config' ? t.calc.ftFromConfig : ftHiddenSource === 'heads' ? t.calc.ftFromHeads : ftHiddenSource === 'missing' ? t.calc.ftMissing : ''}
+                        </p>
+                      </div>
+                      <div>
+                        <label htmlFor="ft-vocab" className="block text-xs text-slate-500 mb-1">{t.calc.ftVocab}</label>
+                        <input
+                          id="ft-vocab"
+                          type="number"
+                          value={ftVocab}
+                          placeholder={ftHubShape?.vocab ? String(ftHubShape.vocab) : ''}
+                          onChange={e => setFtVocab(e.target.value)}
+                          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-violet-500/40"
+                        />
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          {ftVocab ? '' : ftHubShape?.vocab ? t.calc.ftFromConfig : t.calc.ftMissing}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedModel && !(ftHubShape?.hidden && ftHubShape?.vocab) && (
+                      <button
+                        type="button"
+                        onClick={() => void readFtHub()}
+                        disabled={ftHubEntry === 'loading'}
+                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-violet-200 border-violet-500/30 bg-violet-500/10 disabled:opacity-50"
+                      >
+                        {ftHubEntry === 'loading' ? t.calc.hfLoading : t.calc.ftReadHub}
+                      </button>
+                    )}
+                    {ftHubEntry === 'failed' && <p className="text-xs text-amber-300">{t.calc.ftReadFailed}</p>}
+                  </div>
+                )}
+                </>
+              )}
             </>
           ) : (
             <>
@@ -926,6 +1175,8 @@ export default function VRAMCalculator() {
             </>
           )}
 
+          {mode !== 'finetune' && (
+          <>
           {/* Shared: context + batch */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
@@ -1005,6 +1256,8 @@ export default function VRAMCalculator() {
               <span>1</span><span>4</span><span>8</span><span>16</span>
             </div>
           </div>
+          </>
+          )}
         </div>
 
         {/* Right: Results */}
@@ -1421,12 +1674,91 @@ export default function VRAMCalculator() {
             </div>
           )}
 
-          {((mode === 'forward' && !showForwardResult) || (mode === 'reverse' && !showReverseResult)) && (
+          {mode === 'finetune' && ftResult && ftShape && !invalidModelId && !modelLookupFailed && (() => {
+            const cap = profileGpu ? usableCapacityGB(profileGpu) : undefined;
+            // Without the vocabulary the logits term is missing, so the total is a
+            // floor — a verdict on a floor would call a card big enough that isn't.
+            const partial = ftResult.logitsGB === undefined;
+            const verdictFor = (gb: number) => (profileGpu && cap && !partial ? getVerdict(gb, cap, tightCeiling(profileGpu)) : undefined);
+            const v = verdictFor(ftResult.totalGB);
+            const pct = (ftResult.trainableParams / (ftShape.paramsB * 1e9)) * 100;
+            const fmtCount = (n: number) => (n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : `${(n / 1e6).toFixed(1)}M`);
+            const rows: [string, number | undefined, string][] = [
+              [t.calc.ftBase, ftResult.baseGB, 'bg-violet-400'],
+              [t.calc.ftTrainable, ftResult.trainableGB, 'bg-emerald-400'],
+              [t.calc.ftActivations, ftResult.activationsGB, 'bg-cyan-400'],
+              [t.calc.ftLogits, ftResult.logitsGB, 'bg-pink-400'],
+              [t.calc.ftOverhead, ftResult.overheadGB, 'bg-orange-400'],
+            ];
+            return (
+              <div className="space-y-4">
+                <div className="glass rounded-2xl p-5">
+                  <h3 className="text-sm font-semibold text-slate-300 mb-4">{t.calc.ftResults}</h3>
+                  <div className="space-y-3">
+                    {rows.map(([label, value, color]) => (
+                      <div key={label} className="flex items-center gap-3">
+                        <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', color)} />
+                        <span className="text-xs text-slate-400 flex-1">{label}</span>
+                        <span className="font-mono text-sm text-slate-200">
+                          {value === undefined ? '—' : value.toFixed(2)} <span className="text-xs text-slate-600">{t.calc.gbUnit}</span>
+                        </span>
+                      </div>
+                    ))}
+                    <div className="pt-3 border-t border-white/[0.06] flex items-center gap-3">
+                      <Calculator size={13} className="text-slate-400" />
+                      <span className="text-xs font-semibold text-slate-300 flex-1">{t.calc.total}</span>
+                      <span className="font-mono text-lg font-bold text-slate-100">
+                        {partial ? '≥ ' : ''}{ftResult.totalGB.toFixed(1)} <span className="text-xs text-slate-500">{t.calc.gbUnit}</span>
+                      </span>
+                    </div>
+                    {v && profileGpu && cap && (
+                      <p className={cn('text-xs', verdictConfig[v].label)}>
+                        {v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} · {t.calc.ftOnCard.replace('{gpu}', profileGpu.name)} ({ftResult.totalGB.toFixed(1)} / {cap.toFixed(1)} {t.calc.gbUnit})
+                      </p>
+                    )}
+                    {ftMethod !== 'full' && (
+                      <p className="text-xs text-slate-500">
+                        {t.calc.ftTrainableCount.replace('{n}', fmtCount(ftResult.trainableParams)).replace('{pct}', `${pct < 0.1 ? pct.toFixed(2) : pct.toFixed(1)}%`)}
+                      </p>
+                    )}
+                    {partial && <p className="text-xs text-amber-300/90">{t.calc.ftNoVocab} {profileGpu ? t.calc.ftNoVerdict : ''}</p>}
+                  </div>
+                </div>
+
+                <div className="glass rounded-2xl p-5">
+                  <h3 className="text-sm font-semibold text-slate-300 mb-3">{t.calc.ftCompare}</h3>
+                  <div className="space-y-2">
+                    {(['qlora', 'lora', 'full'] as FtMethod[]).map(m => {
+                      const r = ftRun(m)!;
+                      const mv = verdictFor(r.totalGB);
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => setFtMethod(m)}
+                          aria-pressed={ftMethod === m}
+                          className={cn('w-full flex items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors',
+                            ftMethod === m ? 'border-violet-500/30 bg-violet-500/10' : 'border-white/[0.06] hover:border-white/10')}
+                        >
+                          <span className="text-xs text-slate-300 flex-1">{m === 'qlora' ? t.calc.ftQlora : m === 'lora' ? t.calc.ftLora : t.calc.ftFull}</span>
+                          <span className="font-mono text-sm text-slate-200">{partial ? '≥ ' : ''}{r.totalGB.toFixed(1)} {t.calc.gbUnit}</span>
+                          {mv && <span className={cn('w-2 h-2 rounded-full', verdictConfig[mv].dot)} aria-label={mv === 'green' ? t.calc.green : mv === 'yellow' ? t.calc.yellow : t.calc.red} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed mt-3">{t.calc.ftSingleCard}</p>
+                  <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{t.calc.ftAssumptions}</p>
+                </div>
+              </div>
+            );
+          })()}
+
+          {((mode === 'forward' && !showForwardResult) || (mode === 'reverse' && !showReverseResult) || (mode === 'finetune' && !(ftResult && ftShape))) && (
             <div className="glass rounded-2xl p-8 flex items-center justify-center h-full min-h-48">
               <div className="text-center">
                 <Calculator size={32} className="text-slate-700 mx-auto mb-3" />
                 <p className="text-sm text-slate-600">
-                  {mode === 'forward' ? t.calc.pickModel : t.calc.selectGpuPlaceholder}
+                  {mode === 'forward' ? t.calc.pickModel : mode === 'reverse' ? t.calc.selectGpuPlaceholder : (selectedModel || selectedModelId === 'custom') ? t.calc.ftNeedHidden : t.calc.ftPickModel}
                 </p>
               </div>
             </div>

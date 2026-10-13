@@ -393,6 +393,10 @@ context, speed ceiling) and may only call the shared sizing functions — never 
 Sweep them over every card × model after any sizing change (the 2026-10-08 sweep script checks the
 "Best fit" pick equals `fitsOnGpu`'s and each reach is maximal). **KV cache type** is `kvBytesPerValue`
 on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculator ever passes it.
+**Fine-tune memory is `lib/utils/finetune.ts`** — every constant there names its source in the
+header comment; change one only with a new source, never to match a vendor's table (Unsloth's
+lower QLoRA minimums come from their offloading, and the page says so). A total missing a term
+(unknown vocab) is a floor: print it as "≥" and give no verdict.
 **Multi-card capacity is `capacityGB(gpu, cards)`** (`gpu-page.ts`) — only `canStack()` types stack;
 the speed bound never grows with card count (llama.cpp's default layer split is pipeline parallel).
 **`rooflineTokS` mixes decimal GB/s with binary GiB of weights (~7% low) — leave it.** The owner
@@ -1040,6 +1044,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator: fine-tune mode** — QLoRA 4.127-bit base + 16-bit embeddings, LoRA fp32 adapters, full FT 18 B/param, activations 34·s·b·h (2·s·b·h with checkpointing), logits 10 B × tokens × vocab; LoRA within ~10% of Unsloth's published figures, QLoRA above their minimums (said on page); no vocab → "≥" and no verdict |
 | 2026-10-13 | **Calculator: Hugging Face import** — paste a repo/link (GGUF → base model config); MLA, hybrid linear, sliding-window shapes parsed and checked identical to 7 index entries; share links carry numbers, not a re-fetch; live CORS unverified from here |
 | 2026-10-13 | **Calculator usability** — shared model search (zh aliases, multi-word), one-tap starts (`homePicks` for the card / newest 24 GB-green), `POPULAR_GPU_IDS` shared with the homepage, vendor-grouped card lists, mobile sticky result bar |
 | 2026-10-13 | **+1 model (100): Mellum2.1 12B-A2.5B** — JetBrains coding MoE; transformers + llama.cpp `mellum` (21 SWA + 7 full, 1536 cells); bpw from JetBrains' GGUFs; 8.6 GB @4K → 10/12 GB cards; 4060 Ti guide counts were 10 stale (ungated phrasing), 3 zh counts disagreed with en; llama.cpp b11577 |

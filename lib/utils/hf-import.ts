@@ -20,6 +20,12 @@ export interface ImportedShape {
   contextLength?: number;
   experts?: number;
   expertsPerToken?: number;
+  /** Fine-tuning needs these; inference sizing does not. */
+  hidden?: number;
+  vocab?: number;
+  /** MLP width per layer, summed over routed and shared experts. */
+  intermediate?: number;
+  tiedEmbeddings?: boolean;
   /** The repo whose config.json was read — differs from `repo` for a GGUF repo naming its base. */
   configRepo?: string;
   notes: ImportNote[];
@@ -121,7 +127,19 @@ export function shapeFromConfig(cfg: Json): Omit<ImportedShape, 'repo' | 'params
   const expertsPerToken = num(c.num_experts_per_tok) ?? num(c.moe_topk) ?? num(c.num_selected_experts);
   if (experts && experts > 1) notes.push('moe');
 
+  const moeWidth = num(c.moe_intermediate_size);
+  const sharedWidth = num(c.shared_expert_intermediate_size) ?? (num(c.n_shared_experts) && moeWidth ? num(c.n_shared_experts)! * moeWidth : undefined);
+  const intermediate = experts && experts > 1 && moeWidth
+    ? moeWidth * experts + (sharedWidth ?? 0)
+    : num(c.intermediate_size) ?? num(c.ffn_hidden_size) ?? num(c.n_inner);
+  const tied = typeof c.tie_word_embeddings === 'boolean' ? c.tie_word_embeddings
+    : typeof cfg.tie_word_embeddings === 'boolean' ? (cfg.tie_word_embeddings as boolean) : undefined;
+
   return {
+    hidden,
+    vocab: num(c.vocab_size) ?? num(cfg.vocab_size) ?? num(c.padded_vocab_size),
+    intermediate,
+    tiedEmbeddings: tied,
     layers,
     kvHeads: kvHeads ? Math.round(kvHeads) : undefined,
     headDim: headDim ? Math.round(headDim) : undefined,

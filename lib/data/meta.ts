@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-13',
+    en: 'The calculator now estimates fine-tuning memory. Pick QLoRA, LoRA or a full fine-tune, the LoRA rank, sequence length, batch and gradient checkpointing, and it adds up the base weights, the trainable adapters with their optimizer state, activations and the loss, and compares all three methods on your card. It describes a standard transformers + PEFT run; Unsloth and similar trainers publish lower minimums.',
+    zh: '计算器现在可以估算微调显存。选择 QLoRA、LoRA 或全参数微调，设好 LoRA 秩、序列长度、批大小和梯度检查点，它会把基座权重、可训练适配器及其优化器状态、激活值和损失计算加起来，并在你的显卡上对比三种方法。估算对应标准的 transformers + PEFT 训练；Unsloth 等工具公布的最低显存更低。',
+  },
+  {
+    date: '2026-10-13',
     en: 'The VRAM calculator can now size any model on Hugging Face. Paste a repo name or link, including a GGUF repo, and it reads the model\'s own config: layers, KV heads, sliding-window and hybrid attention, and the parameter count. Your browser asks Hugging Face directly. If the model is already in this index, it offers the indexed entry, whose sizes come from real files.',
     zh: '显存计算器现在可以估算 Hugging Face 上的任意模型。粘贴仓库名或链接（GGUF 仓库也行），它会读取模型自己的配置：层数、KV 头、滑动窗口和混合注意力，以及参数量。由你的浏览器直接请求 Hugging Face。如果本站已收录该模型，它会推荐收录版本，那里的体积按实际文件计算。',
   },

@@ -105,6 +105,13 @@ export const vramCalcContent: ToolContent = {
         zh: '显存数字是计算得出，不是实测。模型索引中每个量化档位的 `vramGB` 与速度值都带有可信度标记 —— 实测、估算或社区数据；基准页面记录了实测数据背后的硬件与框架版本。',
       },
     },
+    {
+      q: { en: 'How much memory does LoRA or QLoRA fine-tuning need?', zh: 'LoRA 或 QLoRA 微调需要多少显存？' },
+      a: {
+        en: 'Fine-tune mode adds five parts. The base weights: 16-bit for LoRA, 4-bit NF4 for QLoRA (about 4.1 bits per weight with double quantization), with the embeddings and output head kept 16-bit. The adapters, trained in fp32 with their gradients and AdamW state, at 16 bytes per adapter parameter. Activations, which grow with sequence length and batch; gradient checkpointing keeps only each layer\'s input. The output logits, held in fp32 for the loss, which grow with the vocabulary. And a 10% working buffer. A full fine-tune instead keeps 18 bytes for every parameter of the model. The estimate describes a standard transformers + PEFT run; Unsloth and similar trainers offload and chunk parts of this and publish lower minimums.',
+        zh: '微调模式把五部分加起来。基座权重：LoRA 是 16 位，QLoRA 是 4 位 NF4（双重量化后约每参数 4.1 位），词嵌入和输出层保持 16 位。适配器：以 fp32 训练，连同梯度和 AdamW 状态每个适配器参数 16 字节。激活值：随序列长度和批大小增长，开启梯度检查点后只保留每层的输入。输出层 logits：为计算损失以 fp32 保存，随词表大小增长。最后是 10% 的运行缓冲。全参数微调则是模型每个参数 18 字节。这个估算对应标准的 transformers + PEFT 训练；Unsloth 等工具会把其中一部分转存或分块计算，公布的最低显存更低。',
+      },
+    },
   ],
 };
 
