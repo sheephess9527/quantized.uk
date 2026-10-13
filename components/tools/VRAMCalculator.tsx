@@ -10,7 +10,7 @@ import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import { levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling, backendFor } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
@@ -1772,8 +1772,11 @@ export default function VRAMCalculator() {
                       })()}
                       {v !== 'red' && formatOk && (() => {
                         // vLLM splits a mixed rig evenly, so the smallest card bounds every card.
+                        // llama-server (the only server off CUDA and vLLM-listed ROCm) splits by memory instead.
+                        const be = backendFor(profileGpu);
+                        const vllmRuns = be === 'cuda' || (be === 'rocm' && vllmRocmSupported(profileGpu.name));
                         const devices = rigDevices(profileGpu, profileCards, profileExtras);
-                        const servCap = profileExtras.length
+                        const servCap = vllmRuns && profileExtras.length
                           ? devices.length * Math.min(...devices.map(usableCapacityGB))
                           : capacity;
                         const { bpw: shapeBpw, contextLength: _ctx, ...shape } = calcInput;
@@ -1784,7 +1787,7 @@ export default function VRAMCalculator() {
                           <div className="mt-3 pt-2 border-t border-white/[0.05]">
                             <p className="text-xs font-medium text-slate-400">{t.calc.servingTitle}</p>
                             <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
-                              {t.calc.servingIntro.replace('{util}', String(Math.round(VLLM_MEMORY_UTILIZATION * 100)))}
+                              {(vllmRuns ? t.calc.servingIntro : t.calc.servingIntroLocal).replace('{util}', String(Math.round(VLLM_MEMORY_UTILIZATION * 100)))}
                             </p>
                             <div className="grid grid-cols-3 gap-1.5 mt-2">
                               {rows.map(r => (
@@ -1794,7 +1797,7 @@ export default function VRAMCalculator() {
                                 </div>
                               ))}
                             </div>
-                            <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{t.calc.servingNote}</p>
+                            <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{t.calc.servingNote}{vllmRuns && profileExtras.length ? ` ${t.calc.servingNoteMixed}` : ''}</p>
                           </div>
                         );
                       })()}

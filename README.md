@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (i) — Re-check pass
+
+- Full re-run: build + postbuild gates clean; the seven browser flows (search, HF import, fine-tune,
+  mixed rig, prefill, mmproj/A-B/saved rigs, 390 px overflow on 7 URLs) pass; `/zh` calculator text
+  scanned in six states — only model/card names in English. Changelog figures recomputed and
+  unchanged (prefill 4.9 s / 40.7 s, serving 27/13/3, Mellum 8.59 / 10.45 GB).
+- **Serving block named vLLM on hardware vLLM does not run on** (Mac, CPU, Intel Arc, ROCm cards off
+  vLLM's list). It now says the server there is llama-server with `--parallel` slots, uses the
+  memory-proportional capacity rather than vLLM's even split, and the mixed-card sentence appears
+  only when extra cards are present.
+- Mellum changelog line said "comfortably on a 10 or 12 GB card" next to its 128K figure; at 128K a
+  10 GB card is `tight` (10.45 GB). Reworded: 12 GB even at 128K, 10 GB at shorter contexts.
+
 ### 2026-10-13 (h) — Calculator quality pass
 
 - 390 px overflow check (iframe method) across forward / mixed rig / multimodal / reverse / fine-tune / MLA / imported custom: 0 elements past the viewport without a scroll container. First Load JS for the page 271 → 290 kB over the day's additions (CLI generator is 274).
