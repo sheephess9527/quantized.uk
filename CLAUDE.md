@@ -393,6 +393,10 @@ context, speed ceiling) and may only call the shared sizing functions — never 
 Sweep them over every card × model after any sizing change (the 2026-10-08 sweep script checks the
 "Best fit" pick equals `fitsOnGpu`'s and each reach is maximal). **KV cache type** is `kvBytesPerValue`
 on `CalcInput`; omitted = fp16 everywhere else on the site, so only the calculator ever passes it.
+**Prompt-processing speeds are community measurements (`lib/data/prefill.ts`)** — llama.cpp's own
+scoreboards, one row per card, keyed by GPU id (the build fails on an unknown id). Add a card only
+from a scoreboard row; never borrow a sibling's figure unless the row names the chip without its
+memory size, and keep odd orderings as reported.
 **Fine-tune memory is `lib/utils/finetune.ts`** — every constant there names its source in the
 header comment; change one only with a new source, never to match a vendor's table (Unsloth's
 lower QLoRA minimums come from their offloading, and the page says so). A total missing a term
@@ -1046,6 +1050,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-13 | **Calculator: time to first token** — llama.cpp community `pp512` boards (#15013 CUDA, #15021 ROCm, #10879 Vulkan/Arc, #4167 Apple) for 63 rows, scaled by FLOPs/token; no row → no figure; mmproj sizes not verifiable here, not shipped |
 | 2026-10-13 | **Calculator: mixed cards + serving + download** — `capacityGB(gpu, cards, extra)`, same-backend extras, speed 1/Σ(share/tokS); concurrent full-length requests at vLLM's 0.9 (floor); file size params × bpw / 8 |
 | 2026-10-13 | **Calculator: fine-tune mode** — QLoRA 4.127-bit base + 16-bit embeddings, LoRA fp32 adapters, full FT 18 B/param, activations 34·s·b·h (2·s·b·h with checkpointing), logits 10 B × tokens × vocab; LoRA within ~10% of Unsloth's published figures, QLoRA above their minimums (said on page); no vocab → "≥" and no verdict |
 | 2026-10-13 | **Calculator: Hugging Face import** — paste a repo/link (GGUF → base model config); MLA, hybrid linear, sliding-window shapes parsed and checked identical to 7 index entries; share links carry numbers, not a re-fetch; live CORS unverified from here |

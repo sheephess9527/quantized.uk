@@ -419,6 +419,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-13 (f) — Calculator: time to first token (prompt processing)
+
+- Data: `lib/data/prefill.ts` — llama-bench `pp512`, Llama 2 7B Q4_0, full offload, no FA, from llama.cpp's own scoreboards: CUDA #15013, ROCm #15021, Vulkan #10879 (Intel Arc only — no SYCL board), Apple #4167 (Q4_0 column, build 8e672ef / Nov 2023; lower-core variant at each Mac row's bandwidth). Each set read twice; ± figures matched. 63 rows; cards without a scoreboard row (RTX 5060/5050/4070-family/4060/3080 Ti/3070-family, L40S, A100 40G, RX 7700 XT/6700 XT, M5 Macs) get **no** figure — nothing borrowed across chips, except where the row names the chip without its memory size (4060 Ti, 5060 Ti, 9060 XT, DGX Spark), noted per row. Odd community orderings (RX 7900 GRE < 7800 XT, Arc B580 < B570) kept as reported. `validate.ts` now fails on a prefill row for an unknown GPU id.
+- Model: `lib/utils/prefill.ts` — rate = card pp512 × FLOPs(7B, 512) / FLOPs(model, N), FLOPs/token = 2 × active params + 4 × qDim × (full layers × N/2 + window layers × min(N/2, window)); mixed rigs add per-card time by memory share. MoE flagged as optimistic (routing). Shown under the verdict for the chosen context, with backend + discussion number.
+- Checks: Llama 3.1 8B — 4090 @32K 4.9 s; M3 Pro @8K 40.7 s. Qwen3.6 27B on a 4090 @128K 64.7 s.
+- Vision encoders (mmproj) **not added**: per-model file sizes are only on Hugging Face file listings (unreachable here); search turned up a figure for Gemma 3 (858 MB f16) and little else among the 23 multimodal entries. Not shipped rather than typed.
+
 ### 2026-10-13 (e) — Calculator: mixed cards, serving capacity, download size
 
 - **Mixed cards**: `capacityGB(gpu, cards, extra)` + `rigDevices()` (`gpu-page.ts`); `verdictOn`/`levelTable`/`contextReach`/`offloadPlan` take `extra` (default `[]` → identical-card results unchanged, checked). Extra cards must `canStack` and share `backendFor` with the primary; rig ≤ `MAX_CARDS`. Format must load on every device (`rigFormatAllowed`). Speed: `rigSpeedCeiling` = 1 / Σ(share_i / tokS_i) with shares ∝ usable memory (llama.cpp layer split, cards take turns) — 2 × 3090 stays 23 tok/s for Llama 3.3 70B Q4_K_M, 3090 + 3060 gives 15.1. Offload uses the summed `--fit` budget and splits the GPU read time by share. Page says vLLM's tensor parallel splits evenly (smallest card limits). URL `extra=id,id`.

@@ -7,6 +7,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
+import { prefillData } from '@/lib/data/prefill';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -19,6 +20,9 @@ export function dataProblems(): string[] {
   const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
 
   dupes(models.map(m => m.id)).forEach(id => out.push(`duplicate model id: ${id}`));
+  // Prompt-processing rows are keyed by GPU id; a renamed card would silently lose its figure.
+  const gpuIds = new Set(gpuDatabase.map(g => g.id));
+  for (const id of Object.keys(prefillData)) if (!gpuIds.has(id)) out.push(`prefill row for unknown GPU id: ${id}`);
   // The calculator's MoE speed ceiling and offload estimate read the active
   // count; a MoE model without one would silently be treated as unknown.
   for (const m of models) {

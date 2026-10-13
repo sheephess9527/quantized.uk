@@ -18,12 +18,14 @@ import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
-import { nameCarriesLabel, isMoE, isSuperseded } from '@/lib/utils/model-meta';
+import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/utils/model-meta';
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
 import { importFromHub, parseRepoInput, type ImportedShape } from '@/lib/utils/hf-import';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import type { ModelArch } from '@/lib/data/types';
+import { rigPrefillSeconds } from '@/lib/utils/prefill';
+import { prefillData } from '@/lib/data/prefill';
 import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/seo';
@@ -1589,6 +1591,38 @@ export default function VRAMCalculator() {
                           <p className="text-xs text-slate-500 leading-relaxed mt-2">
                             {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
                           </p>
+                        );
+                      })()}
+                      {v !== 'red' && formatOk && (() => {
+                        // Time to first token for a prompt the length of the chosen context.
+                        const devices = rigDevices(profileGpu, profileCards, profileExtras);
+                        const shape = selectedModel
+                          ? {
+                              activeParamsB: activeParamsB(selectedModel) ?? selectedModel.params,
+                              layers: selectedModel.arch.layers,
+                              qDim: selectedModel.arch.attHeads * selectedModel.arch.headDim,
+                              attention: selectedModel.arch.attention,
+                            }
+                          : hfShape?.hidden
+                            ? { activeParamsB: parseFloat(customParams) || 7, layers: parseInt(customLayers) || 32, qDim: hfShape.hidden, attention: customAttention }
+                            : undefined;
+                        if (!shape) return null;
+                        const secs = rigPrefillSeconds(devices, shape, contextLen);
+                        if (secs === undefined) return null;
+                        const fmt = secs < 1 ? t.calc.secUnder1
+                          : secs < 60 ? t.calc.secN.replace('{n}', secs < 10 ? secs.toFixed(1) : String(Math.round(secs)))
+                          : t.calc.minSec.replace('{m}', String(Math.floor(secs / 60))).replace('{s}', String(Math.round(secs % 60)));
+                        const row = prefillData[profileGpu.id];
+                        return (
+                          <div className="mt-2">
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                              {t.calc.prefillLine.replace('{ctx}', contextLabel(contextLen)).replace('{t}', fmt)}
+                            </p>
+                            <p className="text-[11px] text-slate-600 leading-relaxed mt-0.5">
+                              {t.calc.prefillNote.replace('{backend}', row?.backend ?? '').replace('{src}', String(row?.source ?? ''))}
+                              {selectedModel && isMoE(selectedModel) ? ` ${t.calc.prefillMoe}` : ''}
+                            </p>
+                          </div>
                         );
                       })()}
                       {v !== 'red' && formatOk && (() => {
