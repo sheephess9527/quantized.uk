@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **101** in index (`models-extra` … `models-extra-12`) |
+| Models | **102** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1050,6 +1050,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |
 | 2026-10-14 | **+1 model (101): Granite 4.2 8B** — gap audit (Aug release, dense `granite` arch); shape from IBM's card, 8.79B reconciled with the Hub's 9B; Q4_K_M 4.87 bpw from a published file's byte count, Q8_0 generic; 6.3 GB @4K → every ≥8 GB card +1; Intel Arc guide's zh counts were stale (52/41/34 vs 57/46/38); llama.cpp b11609 |
 | 2026-10-13 | **Calculator: vision encoder + A/B pin + saved machines** — `CalcInput.extraGB` (entered or read from a GGUF repo's file list, never typed per model), pin-and-compare, `qz-rigs` in localStorage |
 | 2026-10-13 | **Calculator: time to first token** — llama.cpp community `pp512` boards (#15013 CUDA, #15021 ROCm, #10879 Vulkan/Arc, #4167 Apple) for 59 rows, scaled by FLOPs/token; no row → no figure; mmproj sizes not verifiable here, not shipped |

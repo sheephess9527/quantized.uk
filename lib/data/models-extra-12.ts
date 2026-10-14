@@ -13,6 +13,7 @@ const ADDED_QWEN35_SMALL = '2026-10-11';
 const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
+const ADDED_LFM25 = '2026-10-14';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -405,6 +406,37 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.87, vramGB: 6.3,  hfSearchUrl: hf('granite-4.2-8b GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.5, hfSearchUrl: hf('granite-4.2-8b GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Liquid AI LFM2.5-24B-A2B (2026-10-12, LFM Open License v1.0 — free below $10M annual revenue).
+    // Official config.json (read 2026-10-14 from huggingface.co): Lfm2MoeForCausalLM, llama.cpp
+    // `lfm2moe`; 40 layers, layer_types = 10 `full_attention` (GQA) + 30 `conv` (double-gated short
+    // convolution, conv_L_cache 3 — a fixed 3-token state that does not grow with context); hidden
+    // 2048, 32 heads / 8 KV heads → head_dim 64; 64 experts top-4 (moe_intermediate 1536), first 2
+    // layers dense (intermediate 11776); vocab 128000, tied; max_position_embeddings 131072.
+    // params = the Hub's safetensors total, 23,971,585,280. Active 2.45B is the model card's figure
+    // (the release name rounds it to A2B, hence the explicit `activeParams`).
+    // Q4_K_M / Q8_0 bpw from LiquidAI's own GGUF repo: 14,526,258,464 / 25,493,732,640 bytes →
+    // 4.85 / 8.51. Liquid publishes no perplexity by quantization level, so no pplLossPercent.
+    id: 'lfm2-5-24b-a2b',
+    name: 'LFM2.5 24B-A2B',
+    family: 'Liquid AI LFM2.5',
+    params: 23.97,
+    paramLabel: '24B-A2B',
+    activeParams: 2.45,
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 131072,
+    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 64, attention: { fullLayers: 10, note: { en: '10 of 40 layers are full (GQA) attention; the other 30 are short gated convolution blocks that keep a fixed 3-token state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中只有 10 层是全注意力（GQA），其余 30 层是带门控的短卷积块，只保留固定的 3 个 token 状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_LFM25,
+    description: {
+      en: 'Liquid AI\'s largest LFM2.5 model, released in October: a 24B mixture-of-experts reasoning model with about 2.45B parameters active per token. It is built for on-device agents and tool calling, and always thinks before it answers. Only 10 of its 40 layers keep a growing KV cache, so long context is cheap: at Q4_K_M it needs about 15.3 GB at 4K, 15.9 GB at 32K and 17.9 GB across the whole 128K window. That is tight on a 16 GB card and comfortable on 24 GB at any context; Q8_0 (about 26.7 GB) needs a 32 GB card. Text only. Sizes come from Liquid\'s own GGUF files, and no per-level quality loss has been published.',
+      zh: 'Liquid AI 在 10 月发布的 LFM2.5 系列中最大的模型：24B 混合专家推理模型，每个 token 约激活 2.45B 参数，面向端侧智能体和工具调用，回答前总会先思考。40 层中只有 10 层保留会增长的 KV 缓存，所以长上下文很便宜：Q4_K_M 在 4K 下约需 15.3 GB，32K 约 15.9 GB，用满 128K 窗口约 17.9 GB。在 16 GB 显卡上偏紧，24 GB 显卡在任何上下文下都很宽裕；Q8_0（约 26.7 GB）需要 32 GB 显卡。仅支持文本。体积按 Liquid 官方发布的 GGUF 文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

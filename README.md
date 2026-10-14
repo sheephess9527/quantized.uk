@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-14 (ii) — +1 model (102): LFM2.5 24B-A2B
+
+- **Patrol follow-up:** Liquid AI released **LFM2.5-24B-A2B** on 2026-10-12 (LFM Open License v1.0 —
+  free below $10M annual revenue). Not one of the "decision" models the morning patrol ruled out.
+- **Shape read from the official `config.json`** (huggingface.co, 2026-10-14): `Lfm2MoeForCausalLM`
+  (llama.cpp `lfm2moe`), 40 layers whose `layer_types` are 10 `full_attention` (GQA) + 30 `conv`
+  (double-gated short convolution, `conv_L_cache` 3 — fixed state, not a growing cache); hidden 2048,
+  32 heads / 8 KV heads → head_dim 64; 64 experts top-4 (`moe_intermediate_size` 1536), first 2 layers
+  dense; vocab 128000, tied; `max_position_embeddings` 131072. Sized with `attention.fullLayers: 10`.
+- `params` 23.97 = the Hub's safetensors total (23,971,585,280). Active 2.45B is the model card's figure;
+  the label `24B-A2B` would parse as 2, so `activeParams` is set explicitly.
+- Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF repo byte counts (14,526,258,464 / 25,493,732,640).
+  Both `estimated`; no perplexity published, so no loss figure.
+- Sizes: Q4_K_M 15.27 GB @4K, 15.87 @32K, 17.93 @128K; Q8_0 26.73 @4K. Green on every ≥ 20 GB card and
+  24 GB+ Macs, amber (tight) on 16 GB. Guide counts re-run with `countModelsFitting()`: RTX 5090 83 → 84,
+  4090 / 7900 XTX 80 → 81, M3 Max 48G 83 → 84, DGX Spark 64 / 128 91 / 94 → 92 / 95; 4060 Ti 16G
+  "load at all" 72 → 73; 12 GB and 16 GB comfortable counts unchanged; every "of the 101" → "of the 102".
+- Added to the homepage feed; HF stats map to `LiquidAI/LFM2.5-24B-A2B-GGUF`.
+
 ### 2026-10-14 — +1 model (101): Granite 4.2 8B; llama.cpp b11609
 
 - **Patrol window (10-07 → 10-14):** no new open-weight model worth adding. Beam (Reflection) and
