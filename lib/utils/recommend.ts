@@ -3,6 +3,7 @@ import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
+import { measuredSpeed } from '@/lib/utils/measured-speed';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
 
@@ -28,6 +29,12 @@ export function getRecommendations(
   includeYellow = true,
   kvBytesPerValue?: number,
   cards = 1,
+  /**
+   * One row per model: its best-quality level that fits, a green fit preferred
+   * over a tight one. Answers "what can I run" instead of listing every level
+   * (Grok Bot, 2026-10-14).
+   */
+  bestPerModel = false,
 ): Recommendation[] {
   const results: Recommendation[] = [];
   const capacity = capacityGB(gpu, cards);
@@ -53,9 +60,38 @@ export function getRecommendations(
     }
   }
 
-  return results.sort((a, b) => {
-    if (sortBy === 'quality') return qualityRank(a.quant) - qualityRank(b.quant);
-    if (sortBy === 'speed') return (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0);
+  let rows = results;
+  if (bestPerModel) {
+    const best = new Map<string, Recommendation>();
+    for (const r of results) {
+      const cur = best.get(r.model.id);
+      const better = !cur
+        || (r.verdict === 'green' && cur.verdict !== 'green')
+        || (r.verdict === cur.verdict && qualityRank(r.quant) < qualityRank(cur.quant));
+      if (better) best.set(r.model.id, r);
+    }
+    rows = Array.from(best.values());
+  }
+
+  // Speed sort used the RTX 4090 figure whatever card was picked. It now ranks
+  // by this card's calibrated estimate (`measuredSpeed`: dense GGUF on a card
+  // with a llama.cpp scoreboard row); rows without one follow, by the old figure.
+  const speedOf = (r: Recommendation) => (cards === 1 ? measuredSpeed(gpu, r.model, r.quant)?.tokS : undefined);
+  return rows.sort((a, b) => {
+    if (sortBy === 'quality') {
+      // In the one-per-model view the bigger model is the stronger answer.
+      if (bestPerModel && a.model.params !== b.model.params) return b.model.params - a.model.params;
+      return qualityRank(a.quant) - qualityRank(b.quant);
+    }
+    if (sortBy === 'speed') {
+      const sa = speedOf(a), sb = speedOf(b);
+      if (sa !== undefined || sb !== undefined) {
+        if (sa === undefined) return 1;
+        if (sb === undefined) return -1;
+        if (sa !== sb) return sb - sa;
+      }
+      return (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0);
+    }
     return a.totalGB - b.totalGB;
   });
 }
