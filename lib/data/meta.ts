@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-14',
+    en: 'The calculator now estimates generation speed from each card\'s own measured llama.cpp run, gives copy-ready llama.cpp, Ollama and vLLM commands for the result, and saves the result as an image. The speed estimate is shown for dense 7B–33B models, the range it was checked against; "I have this card" mode lists one best level per model by default and sorts by speed on the card you picked.',
+    zh: '计算器现在会按每张卡自己在 llama.cpp 上的实测速度估算生成速度，为结果给出可直接复制的 llama.cpp、Ollama 和 vLLM 命令，还能把结果保存为图片。速度估算只对 7B–33B 的稠密模型显示，这是它经过核对的范围；「我有这张卡」模式默认每个模型只列最佳档位，并按你所选显卡的速度排序。',
+  },
+  {
+    date: '2026-10-14',
     en: 'Liquid AI\'s LFM2.5 24B-A2B is in the index: a 24B mixture-of-experts reasoning model with about 2.45B parameters active per token, built for on-device agents. Only 10 of its 40 layers keep a growing KV cache, so at Q4_K_M it needs about 15.3 GB at 4K context and still only 17.9 GB across its full 128K window: tight on a 16 GB card, comfortable on 24 GB at any context.',
     zh: 'Liquid AI 的 LFM2.5 24B-A2B 已收录：24B 混合专家推理模型，每个 token 约激活 2.45B 参数，面向端侧智能体。40 层中只有 10 层保留会增长的 KV 缓存，所以 Q4_K_M 在 4K 上下文下约需 15.3 GB，用满 128K 窗口也只需约 17.9 GB：16 GB 显卡偏紧，24 GB 显卡在任何上下文下都很宽裕。',
   },

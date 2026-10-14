@@ -419,6 +419,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-14 (iii) — Review of the Grok calculator PRs (#4–#7)
+
+Tested the merged calculator work (measured speed, launch commands, reverse-mode reach, share card)
+on the export in a headless browser plus the existing seven flows; build, postbuild gates and
+`scripts/check-measured-speed.ts` pass. The `tg128` column was spot-checked against the scoreboards
+(#15013: 4090 186.21, 5090 290.02, 3060 75.57, 3090 158.16, 4060 Ti 63.86, A100 190.88, P100 58.35,
+Spark 57.21; #4167: M1 14.19, M3 Pro 30.65, M3 Max 66.31, M4 Max 83.06, M2 Ultra 88.64 — all exact)
+and every row sits under its card's bandwidth ceiling. The share card writes a real 1200×630 PNG.
+LFM2.5's bpw reconcile with its stated byte counts (4.848 / 8.509). Four faults fixed:
+
+- **Calibrated speed extrapolated far outside its check set.** The linear bytes scaling printed
+  ~1,381 tok/s for Qwen2.5 0.5B on a 4090 (and 835 for a 0.8B) with a "likely" range attached, while
+  the 9 check rows are dense 7.6B–32.8B. `measuredSpeed` now declines outside `CALIBRATED_PARAMS_B`
+  (7–33B), like it already did for MoE.
+- **Speed sort put every row without a calibrated figure below the slowest row with one** — the
+  30B-A3B MoE models (95 tok/s measured) sorted under dense 32B (36). It now ranks every row by the
+  card's bandwidth ceiling (`rooflineTokS`, MoE via `moeRooflineTokS`): identical order among dense
+  rows (the estimate is a constant × that ceiling on one card), and every row has a key. Known
+  limit: the MoE bound over-ranks MoE a little (30B-A3B lands just above the 8B dense rows; measured
+  95 vs 146).
+- **`?all=1` was read but never written** — `syncUrl` dropped it on the next render, so the "every
+  level" view could not be shared or survive a reload. Now written (and in the dependency list).
+- **vLLM tab on hardware vLLM does not run** — Intel Arc, CPU rows and off-list Radeon cards got a
+  vLLM AWQ command with a caveat. The tab now follows `formatAllowed()`, the site-wide rule, and is
+  hidden when the answer is a CPU/GPU split (vLLM does not offload layers).
+
+Not changed: command comments inside generated scripts are English in both trees — that is
+`generateCLI`'s existing behaviour, not a regression from these PRs.
+
 ### 2026-10-14 (ii) — +1 model (102): LFM2.5 24B-A2B
 
 - **Patrol follow-up:** Liquid AI released **LFM2.5-24B-A2B** on 2026-10-12 (LFM Open License v1.0 —

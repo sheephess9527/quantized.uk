@@ -34,6 +34,15 @@ export const REF_WEIGHTS_GB = (REF_FILE_BYTES / 1024 ** 3) * 1.02;
 /** Measured ÷ predicted, min and max over the dense check set. */
 export const CALIBRATION_ERROR = { low: 0.99, high: 1.31, n: 9 };
 
+/**
+ * The parameter range the check set covers (dense 7.6B–32.8B). Outside it the
+ * linear bytes scaling is untested and goes wrong at the small end: a 0.5B
+ * model's file is 7× smaller than the reference, but per-token overhead does
+ * not shrink with it, so the scaling printed ~1,380 tok/s for Qwen2.5 0.5B on
+ * an RTX 4090. Those rows get no calibrated figure, the same as MoE.
+ */
+export const CALIBRATED_PARAMS_B = { min: 7, max: 33 };
+
 export interface MeasuredSpeed {
   tokS: number;
   low: number;
@@ -45,6 +54,7 @@ export function measuredSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant):
   const row = prefillData[gpu.id];
   if (!row || quant.format !== 'GGUF') return undefined;
   if (isMoE(model)) return undefined;
+  if (model.params < CALIBRATED_PARAMS_B.min || model.params > CALIBRATED_PARAMS_B.max) return undefined;
   const readGB = weightsGB(model, quant);
   if (!(readGB > 0)) return undefined;
   const raw = (row.tg128 * REF_WEIGHTS_GB) / readGB;

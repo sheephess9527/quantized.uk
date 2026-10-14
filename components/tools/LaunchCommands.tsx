@@ -13,7 +13,7 @@ import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { generateCLI, type Framework } from '@/lib/utils/cli';
-import { backendFor } from '@/lib/utils/gpu-page';
+import { backendFor, formatAllowed } from '@/lib/utils/gpu-page';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
 
@@ -36,10 +36,12 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       out.push({ fw: 'llamacpp', label: 'llama.cpp', level: gguf.level });
       out.push({ fw: 'ollama', label: 'Ollama', level: gguf.level });
     }
-    // vLLM needs CUDA or a listed ROCm card; `generateCLI` prints the caveat itself.
-    if (vl && gpu?.type !== 'apple') out.push({ fw: 'vllm', label: 'vLLM', level: `${vl.format} ${vl.level}` });
+    // vLLM only where the card's backend runs that format (CUDA, or a ROCm card
+    // on vLLM's list) — the same rule as every recommendation on the site — and
+    // not when the answer is a CPU/GPU split, which vLLM does not do.
+    if (vl && (!gpu || formatAllowed(gpu, vl.format)) && gpuLayers === undefined) out.push({ fw: 'vllm', label: 'vLLM', level: `${vl.format} ${vl.level}` });
     return out;
-  }, [model, quant, gpu]);
+  }, [model, quant, gpu, gpuLayers]);
   const [fw, setFw] = useState<Framework | null>(null);
   const [copied, setCopied] = useState(false);
   const active = levels.find(l => l.fw === fw) ?? levels[0];

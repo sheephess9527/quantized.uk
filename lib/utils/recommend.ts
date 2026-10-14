@@ -3,7 +3,7 @@ import type { GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
-import { measuredSpeed } from '@/lib/utils/measured-speed';
+import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
 
@@ -73,10 +73,14 @@ export function getRecommendations(
     rows = Array.from(best.values());
   }
 
-  // Speed sort used the RTX 4090 figure whatever card was picked. It now ranks
-  // by this card's calibrated estimate (`measuredSpeed`: dense GGUF on a card
-  // with a llama.cpp scoreboard row); rows without one follow, by the old figure.
-  const speedOf = (r: Recommendation) => (cards === 1 ? measuredSpeed(gpu, r.model, r.quant)?.tokS : undefined);
+  // Speed sort used the RTX 4090 figure whatever card was picked. It ranks by
+  // the picked card's bandwidth ceiling instead — over every row, dense and MoE
+  // (the active-parameter bound) alike. On one card the calibrated estimate is
+  // a constant × the dense ceiling, so the order among dense rows is the same;
+  // ranking by the estimate alone left every row without one (MoE, models
+  // outside its range) below the slowest row that had one. A card with no
+  // stated bandwidth falls back to the RTX 4090 figure.
+  const speedOf = (r: Recommendation) => rooflineTokS(gpu, r.model, r.quant) ?? moeRooflineTokS(gpu, r.model, r.quant);
   return rows.sort((a, b) => {
     if (sortBy === 'quality') {
       // In the one-per-model view the bigger model is the stronger answer.
@@ -85,11 +89,7 @@ export function getRecommendations(
     }
     if (sortBy === 'speed') {
       const sa = speedOf(a), sb = speedOf(b);
-      if (sa !== undefined || sb !== undefined) {
-        if (sa === undefined) return 1;
-        if (sb === undefined) return -1;
-        if (sa !== sb) return sb - sa;
-      }
+      if (sa !== undefined && sb !== undefined && sa !== sb) return sb - sa;
       return (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0);
     }
     return a.totalGB - b.totalGB;
