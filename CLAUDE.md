@@ -1046,6 +1046,21 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 (use `headless_shell`, not `chrome --headless`, or the PNG gets a black bottom band). The card's
 format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was removed 2026-10-03.
 
+## Grok Bot change log (read before editing)
+
+The owner also runs **Grok Bot**, a second agent that can open PRs here and change
+the site's Cloudflare account. Every change it makes, merged or not, is listed below
+so Claude knows what it did and does not undo or duplicate it. Grok Bot commits are
+authored as `sheephess9527 <sheephess9527@users.noreply.github.com>` (Claude's are
+`Claude`). Grok Bot never pushes to `main`; it opens draft PRs for the owner to merge.
+Newest first. Times are CST (UTC+8).
+
+| When (CST) | Where | Change | Status |
+|------------|-------|--------|--------|
+| 2026-10-14 10:18 | PR #2, branch `model-tracker/2026-10-14` | +1 model (102): LFM2.5 24B-A2B (Liquid AI, 10-12). `models-extra-12.ts`, `models.ts`, `hf-repos.mjs`, `meta.ts`, guide counts in `cookbook-extra-2.ts` / `cookbook-rewrites.ts`, CLAUDE.md surface count + Recent ships row, README §9 entry. Details in README §9 "2026-10-14 (ii)". | Draft, unmerged |
+| 2026-10-11 16:18 | Cloudflare DNS (all 18 zones incl. quantized.uk) | Added CNAME `ebc5ce3f6be75133297487ea1658d368.<zone>` → `verify.bing.com`, DNS only, comment "Bing Webmaster verification". Needed for Bing Webmaster site ownership; do not delete. No other record, rule or Pages setting was changed. | Live |
+| 2026-10-08 | Cloudflare WAF | Drafted a scanner-block custom rule; **nothing applied**. All zones still have 0 custom rules. | Not applied |
+
 ## Recent ships (summary for context)
 
 | When | Commit theme |
