@@ -12,6 +12,7 @@ const ADDED_QWEN36 = '2026-10-10';
 const ADDED_QWEN35_SMALL = '2026-10-11';
 const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
+const ADDED_GRANITE42 = '2026-10-14';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -379,6 +380,31 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.33, vramGB: 8.6,  hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, vramGB: 13.6, hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Granite 4.2 is dense (GraniteForCausalLM, llama.cpp `granite`), unlike Granite 4.0's
+    // hybrid Mamba models. Shape from IBM's model card: 40 layers, 32 heads, 8 KV heads × 128,
+    // embedding 4096, MLP 12800, 128K. 8.79B = that shape with a 100,352 vocab and untied
+    // embeddings — what the Hub's "9B" and the 4.1 8B's 8.8B both reconcile with.
+    // Q4_K_M bpw from a published file: 5,347,917,888 bytes → 4.87. Q8_0 at the format's 8.5.
+    id: 'granite-4.2-8b',
+    name: 'Granite 4.2 8B',
+    family: 'IBM Granite',
+    params: 8.79,
+    paramLabel: '8B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_GRANITE42,
+    description: {
+      en: 'IBM\'s dense 8B reasoning model from the Granite 4.2 family (3B, 8B, 30B), released in August under Apache 2.0. Thinking is on by default; a non-thinking and a low-effort mode are chosen through the chat template. Unlike Granite 4.0\'s hybrid models it is a plain transformer, so llama.cpp runs it as `granite` and every one of its 40 layers keeps a full cache: about 6.3 GB at Q4_K_M with a 4K context, 11.1 GB at 32K and 27.6 GB across the whole 128K window. That makes it an 8 GB card model at short contexts and a 16 GB one for long documents. The Q4_K_M size comes from a published GGUF file; IBM publishes no perplexity by quantization level, so no quality-loss figure is shown.',
+      zh: 'IBM Granite 4.2 系列（3B、8B、30B）中的 8B 稠密推理模型，8 月以 Apache 2.0 发布。默认开启思考，可通过聊天模板切换为不思考或低强度模式。它不是 Granite 4.0 那种混合架构，而是普通 Transformer，llama.cpp 以 `granite` 架构运行，40 层全部保留完整缓存：Q4_K_M 在 4K 上下文下约 6.3 GB，32K 约 11.1 GB，用满 128K 窗口约 27.6 GB。所以短上下文用 8 GB 显卡就够，处理长文档需要 16 GB。Q4_K_M 体积按已发布的 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.87, vramGB: 6.3,  hfSearchUrl: hf('granite-4.2-8b GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.5, hfSearchUrl: hf('granite-4.2-8b GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

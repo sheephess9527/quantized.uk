@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-13):**
+**Live snapshot (2026-10-14):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **100** in index (`models-extra` … `models-extra-12`) |
+| Models | **101** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 481 pages (241 EN + 240 ZH), hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 483 pages (242 EN + 241 ZH), hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1050,6 +1050,7 @@ format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was remo
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-14 | **+1 model (101): Granite 4.2 8B** — gap audit (Aug release, dense `granite` arch); shape from IBM's card, 8.79B reconciled with the Hub's 9B; Q4_K_M 4.87 bpw from a published file's byte count, Q8_0 generic; 6.3 GB @4K → every ≥8 GB card +1; Intel Arc guide's zh counts were stale (52/41/34 vs 57/46/38); llama.cpp b11609 |
 | 2026-10-13 | **Calculator: vision encoder + A/B pin + saved machines** — `CalcInput.extraGB` (entered or read from a GGUF repo's file list, never typed per model), pin-and-compare, `qz-rigs` in localStorage |
 | 2026-10-13 | **Calculator: time to first token** — llama.cpp community `pp512` boards (#15013 CUDA, #15021 ROCm, #10879 Vulkan/Arc, #4167 Apple) for 59 rows, scaled by FLOPs/token; no row → no figure; mmproj sizes not verifiable here, not shipped |
 | 2026-10-13 | **Calculator: mixed cards + serving + download** — `capacityGB(gpu, cards, extra)`, same-backend extras, speed 1/Σ(share/tokS); concurrent full-length requests at 0.85 — the share this site's vLLM commands pass (floor); file size params × bpw / 8 |

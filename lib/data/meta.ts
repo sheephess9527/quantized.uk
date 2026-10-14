@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-13';
+export const dataLastUpdated = '2026-10-14';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-13',
+  checkedAt: '2026-10-14',
   current: {
-    llamacpp: 'b11577',
+    llamacpp: 'b11609',
     vllm: 'v0.31.0',
     ollama: 'v0.40.3',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-14',
+    en: 'IBM\'s Granite 4.2 8B is in the index: a dense reasoning model under Apache 2.0 with a 128K window. At Q4_K_M it needs about 6.3 GB at 4K context, so it runs comfortably on an 8 GB card, and about 11.1 GB at 32K, which takes a 16 GB card for long documents. Thinking is on by default and can be turned off through the chat template.',
+    zh: 'IBM 的 Granite 4.2 8B 已收录：Apache 2.0 许可的稠密推理模型，128K 上下文。Q4_K_M 在 4K 上下文下约需 6.3 GB，8 GB 显卡可以从容运行；32K 约需 11.1 GB，处理长文档需要 16 GB 显卡。默认开启思考，可通过聊天模板关闭。',
+  },
   {
     date: '2026-10-13',
     en: 'Three more calculator conveniences. Multimodal models can now include their vision encoder: enter its size, or read it from the model\'s GGUF repo with one click. You can pin a result as A and change settings to see the difference, and save the machines you use so one tap brings back the card or cards you have.',

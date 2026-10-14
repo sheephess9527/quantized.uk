@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-14 — +1 model (101): Granite 4.2 8B; llama.cpp b11609
+
+- **Patrol window (10-07 → 10-14):** no new open-weight model worth adding. Beam (Reflection) and
+  Mistral Large 4 still have no downloadable weights (both promised for October); Kolibri-1 still
+  needs a patched llama.cpp; Liquid's decision models are out of scope. Runtime: llama.cpp b11609
+  (tags page, verbatim); Ollama v0.40.3 still Latest (v0.40.4 is a pre-release, skipped); vLLM v0.31.0
+  and ExLlamaV3 1.6.1 unchanged.
+- **Gap audit pick: IBM Granite 4.2 8B** (Aug 2026, Apache 2.0). Dense `GraniteForCausalLM`, which
+  llama.cpp runs as `granite` (unlike Granite 4.0's hybrid Mamba). Shape from IBM's model card table:
+  40 layers, 32 heads, 8 KV × 128, embedding 4096, MLP 12800, 131072 context. `params` 8.79 = that
+  shape with a 100,352 vocab and untied embeddings; it reconciles with the Hub's "9B" and the 4.1 8B's
+  8.8B, while tied embeddings (8.38) would not. The vocab is from a secondary page, so this is a
+  reconciliation, not a read of `config.json` (huggingface.co is blocked here).
+- Q4_K_M bpw 4.87 from a published file's exact byte count (5,347,917,888); other uploads run 5.10 GiB
+  (official) to 5.54 GB (bartowski) — 4.98–5.04 bpw, so the row may read ~0.1 GB low. Q8_0 at the
+  format's 8.5. Both `estimated`; no perplexity published, so no loss figure.
+- Sizes: Q4_K_M 6.28 GB @4K (green on every 8 GB discrete card, yellow on 8 GB Macs), 11.09 @32K,
+  27.59 @128K (full attention on all 40 layers). Every card ≥ 8 GB gains one comfortable fit; guide
+  counts re-run (`delta` sweep over all 82 rows) and bumped. **The Intel Arc guide's zh FAQ still
+  quoted 52 / 41 / 34 for A770 / B570 / A750 while the en said 57 / 46 / 38** — both now 58 / 47 / 39.
+- Not superseding Granite 3.1 8B: same context (128K) and same level count, so `supersededDiffNote()`
+  would only have its generic line.
+- Wired into the 8 GB starter guide's `relatedModelIds` and the homepage feed.
+
 ### 2026-10-13 (i) — Re-check pass
 
 - Full re-run: build + postbuild gates clean; the seven browser flows (search, HF import, fine-tune,

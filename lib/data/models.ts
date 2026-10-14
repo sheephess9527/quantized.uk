@@ -264,6 +264,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 16, type: 'new', modelId: 'granite-4.2-8b', level: 'Q4_K_M', note: { en: 'dense, thinking by default', zh: '稠密模型，默认思考' }, quantizer: 'ibm-granite' },
   { id: 15, type: 'new', modelId: 'olmo-3-7b', level: 'Q4_K_M', note: { en: 'fully open, 64K window', zh: '完全开源，64K 上下文' }, quantizer: 'allenai' },
   { id: 13, type: 'new', modelId: 'ernie-4.5-21b-a3b', level: 'Q4_K_M', note: { en: '3B active, 128K window', zh: '激活 3B，128K 上下文' }, quantizer: 'baidu' },
   { id: 14, type: 'new', modelId: 'smollm3-3b', level: 'Q4_K_M', note: { en: 'training data published', zh: '训练数据公开' }, quantizer: 'HuggingFaceTB' },
