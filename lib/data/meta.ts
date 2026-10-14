@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-14',
+    en: 'Liquid AI\'s LFM2.5 24B-A2B is in the index: a 24B mixture-of-experts reasoning model with about 2.45B parameters active per token, built for on-device agents. Only 10 of its 40 layers keep a growing KV cache, so at Q4_K_M it needs about 15.3 GB at 4K context and still only 17.9 GB across its full 128K window: tight on a 16 GB card, comfortable on 24 GB at any context.',
+    zh: 'Liquid AI 的 LFM2.5 24B-A2B 已收录：24B 混合专家推理模型，每个 token 约激活 2.45B 参数，面向端侧智能体。40 层中只有 10 层保留会增长的 KV 缓存，所以 Q4_K_M 在 4K 上下文下约需 15.3 GB，用满 128K 窗口也只需约 17.9 GB：16 GB 显卡偏紧，24 GB 显卡在任何上下文下都很宽裕。',
+  },
+  {
+    date: '2026-10-14',
     en: 'IBM\'s Granite 4.2 8B is in the index: a dense reasoning model under Apache 2.0 with a 128K window. At Q4_K_M it needs about 6.3 GB at 4K context, so it runs comfortably on an 8 GB card, and about 11.1 GB at 32K, which takes a 16 GB card for long documents. Thinking is on by default and can be turned off through the chat template.',
     zh: 'IBM 的 Granite 4.2 8B 已收录：Apache 2.0 许可的稠密推理模型，128K 上下文。Q4_K_M 在 4K 上下文下约需 6.3 GB，8 GB 显卡可以从容运行；32K 约需 11.1 GB，处理长文档需要 16 GB 显卡。默认开启思考，可通过聊天模板关闭。',
   },

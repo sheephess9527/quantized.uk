@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **101** in index (`models-extra` … `models-extra-12`) |
+| Models | **102** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1046,10 +1046,26 @@ After changing model-count copy in `og.svg`, re-render PNG via README §10 so sh
 (use `headless_shell`, not `chrome --headless`, or the PNG gets a black bottom band). The card's
 format badges follow `SHIPPED_FORMATS` like the hero — HQQ (0 models) was removed 2026-10-03.
 
+## Grok Bot change log (read before editing)
+
+The owner also runs **Grok Bot**, a second agent that can open PRs here and change
+the site's Cloudflare account. Every change it makes, merged or not, is listed below
+so Claude knows what it did and does not undo or duplicate it. Grok Bot commits are
+authored as `sheephess9527 <sheephess9527@users.noreply.github.com>` (Claude's are
+`Claude`). Grok Bot never pushes to `main`; it opens draft PRs for the owner to merge.
+Newest first. Times are CST (UTC+8).
+
+| When (CST) | Where | Change | Status |
+|------------|-------|--------|--------|
+| 2026-10-14 10:18 | PR #2, branch `model-tracker/2026-10-14` | +1 model (102): LFM2.5 24B-A2B (Liquid AI, 10-12). `models-extra-12.ts`, `models.ts`, `hf-repos.mjs`, `meta.ts`, guide counts in `cookbook-extra-2.ts` / `cookbook-rewrites.ts`, CLAUDE.md surface count + Recent ships row, README §9 entry. Details in README §9 "2026-10-14 (ii)". | Draft, unmerged |
+| 2026-10-11 16:18 | Cloudflare DNS (all 18 zones incl. quantized.uk) | Added CNAME `ebc5ce3f6be75133297487ea1658d368.<zone>` → `verify.bing.com`, DNS only, comment "Bing Webmaster verification". Needed for Bing Webmaster site ownership; do not delete. No other record, rule or Pages setting was changed. | Live |
+| 2026-10-08 | Cloudflare WAF | Drafted a scanner-block custom rule; **nothing applied**. All zones still have 0 custom rules. | Not applied |
+
 ## Recent ships (summary for context)
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |
 | 2026-10-14 | **+1 model (101): Granite 4.2 8B** — gap audit (Aug release, dense `granite` arch); shape from IBM's card, 8.79B reconciled with the Hub's 9B; Q4_K_M 4.87 bpw from a published file's byte count, Q8_0 generic; 6.3 GB @4K → every ≥8 GB card +1; Intel Arc guide's zh counts were stale (52/41/34 vs 57/46/38); llama.cpp b11609 |
 | 2026-10-13 | **Calculator: vision encoder + A/B pin + saved machines** — `CalcInput.extraGB` (entered or read from a GGUF repo's file list, never typed per model), pin-and-compare, `qz-rigs` in localStorage |
 | 2026-10-13 | **Calculator: time to first token** — llama.cpp community `pp512` boards (#15013 CUDA, #15021 ROCm, #10879 Vulkan/Arc, #4167 Apple) for 59 rows, scaled by FLOPs/token; no row → no figure; mmproj sizes not verifiable here, not shipped |

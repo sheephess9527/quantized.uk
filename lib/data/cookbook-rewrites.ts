@@ -34,8 +34,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The honest summary of this card',
         headingZh: '关于这张卡的实话',
-        body: 'Capacity is generous and bandwidth is not. 62 of the models in this index fit it comfortably at 4K context and 72 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
-        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 62 个模型能在 4K 上下文下从容装进这张卡，72 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
+        body: 'Capacity is generous and bandwidth is not. 62 of the models in this index fit it comfortably at 4K context and 73 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
+        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 62 个模型能在 4K 上下文下从容装进这张卡，73 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
         heading: 'The three worth starting with',
@@ -100,8 +100,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Pull a model and run it',
         headingZh: '拉一个模型跑起来',
-        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 83 of the 101 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
-        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 101 个模型中的 83 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
+        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 84 of the 102 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
+        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 102 个模型中的 84 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
         code: { lang: 'bash', content: 'ollama pull llama3.1:8b\nollama run llama3.1:8b "Summarise the difference between Q4_K_M and Q5_K_M."' },
       },
       {
@@ -136,8 +136,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Does a Mac’s unified memory count as VRAM for Ollama?',
         qZh: 'Mac 的统一内存对 Ollama 来说算显存吗？',
-        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 83 of the 101 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
-        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 101 个模型中有 83 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
+        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 84 of the 102 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
+        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 102 个模型中有 84 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
       },
       {
         q: 'How do I tell whether Ollama used the GPU on a Mac?',
@@ -490,8 +490,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is AWQ the right format for serving?',
         qZh: '做服务端该用 AWQ 吗？',
-        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 101 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
-        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 101 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
+        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 102 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
+        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 102 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
       },
     ],
   },
