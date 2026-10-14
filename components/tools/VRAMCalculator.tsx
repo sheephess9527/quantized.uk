@@ -9,7 +9,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
-import { levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
+import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
@@ -142,6 +142,7 @@ export default function VRAMCalculator() {
   const [selectedGpuId, setSelectedGpuId] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
+  const [bestPerModel, setBestPerModel] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
   const [modelQuery, setModelQuery] = useState('');
@@ -249,6 +250,7 @@ export default function VRAMCalculator() {
       setSortBy(searchParams.get('sort') as SortBy);
     }
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
+    if (searchParams.get('all') === '1') setBestPerModel(false);
     urlInitialized.current = true;
   }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
@@ -438,8 +440,8 @@ export default function VRAMCalculator() {
 
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1);
-  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel);
+  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards, bestPerModel]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -1338,6 +1340,15 @@ export default function VRAMCalculator() {
                 />
                 <span className="text-xs text-slate-400">{t.calc.includeYellow}</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={bestPerModel}
+                  onChange={e => setBestPerModel(e.target.checked)}
+                  className="accent-violet-500"
+                />
+                <span className="text-xs text-slate-400">{t.calc.bestPerModel}</span>
+              </label>
             </>
           )}
 
@@ -1931,6 +1942,11 @@ export default function VRAMCalculator() {
                           </div>
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
+                            {(() => {
+                              const r = contextReach(modelShape(model, batchSize, KV_CACHE_TYPES[kvType]), quant.bpw, selectedGpu!, model.contextLength, canStack(selectedGpu!) ? cards : 1);
+                              const best = r.comfortable || r.tight;
+                              return best ? <span>{t.calc.reverseMaxCtx.replace('{ctx}', contextLabel(best))}</span> : null;
+                            })()}
                             <span>PPL {quant.pplLossPercent === undefined ? formatLoss(quant) : `−${formatLoss(quant)}`}</span>
                             {(() => {
                               const sp = verdict !== 'red' && !(canStack(selectedGpu!) && cards > 1) ? measuredSpeed(selectedGpu!, model, quant) : undefined;
