@@ -8,6 +8,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
+import LaunchCommands from '@/components/tools/LaunchCommands';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
@@ -1557,6 +1558,15 @@ export default function VRAMCalculator() {
                     here should not have to re-enter it in the next tool. The
                     shared config already carries model/quant/context, so these
                     links only need to name the destination. */}
+                {selectedModel && selectedQuantObj && (
+                  <LaunchCommands
+                    model={selectedModel}
+                    quant={selectedQuantObj}
+                    contextLen={contextLen}
+                    gpu={profileGpu ?? undefined}
+                    gpuLayers={profileGpu && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format) ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras)?.gpuLayers : undefined}
+                  />
+                )}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
                     <Link
