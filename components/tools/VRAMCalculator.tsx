@@ -8,6 +8,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
+import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
@@ -1732,10 +1733,24 @@ export default function VRAMCalculator() {
                               .replace('{n}', String(bound.tokS))
                               .replace('{bw}', profileGpu.bandwidth.toLocaleString('en-US'))
                               .replace('{gb}', (profileGpu.bandwidth / bound.tokS).toFixed(1));
+                        const cal = !multiDevice && v !== 'red' ? measuredSpeed(profileGpu, selectedModel, selectedQuantObj) : undefined;
                         return (
-                          <p className="text-xs text-slate-500 leading-relaxed mt-2">
-                            {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
-                          </p>
+                          <>
+                            {cal && (
+                              <p className="text-xs text-emerald-300/90 leading-relaxed mt-2" data-testid="measured-speed">
+                                {t.calc.measuredLine
+                                  .replace('{n}', String(cal.tokS))
+                                  .replace('{low}', String(cal.low))
+                                  .replace('{high}', String(cal.high))
+                                  .replace('{tg}', String(cal.row.tg128))
+                                  .replace('{src}', String(cal.row.source))
+                                  .replace('{k}', String(CALIBRATION_ERROR.n))}
+                              </p>
+                            )}
+                            <p className="text-xs text-slate-500 leading-relaxed mt-2">
+                              {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
+                            </p>
+                          </>
                         );
                       })()}
                       {v !== 'red' && formatOk && (() => {
@@ -1917,6 +1932,10 @@ export default function VRAMCalculator() {
                           <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} GB</span>
                             <span>PPL {quant.pplLossPercent === undefined ? formatLoss(quant) : `−${formatLoss(quant)}`}</span>
+                            {(() => {
+                              const sp = verdict !== 'red' && !(canStack(selectedGpu!) && cards > 1) ? measuredSpeed(selectedGpu!, model, quant) : undefined;
+                              return sp ? <span className="text-emerald-300/80">{t.calc.reverseSpeed.replace('{n}', String(sp.tokS))}</span> : null;
+                            })()}
                             {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
                         </div>

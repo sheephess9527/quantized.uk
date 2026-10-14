@@ -1057,6 +1057,7 @@ Newest first. Times are CST (UTC+8).
 
 | When (CST) | Where | Change | Status |
 |------------|-------|--------|--------|
+| 2026-10-14 | PR (branch `grokbot/calc-measured-speed`) | Calculator: generation speed calibrated on each card's measured llama.cpp `tg128` (same scoreboard rows as `prefill.ts`, new `tg128` field on all 59 rows), scaled by weight bytes vs Llama 2 7B Q4_0 (3,825,807,040 B). New `lib/utils/measured-speed.ts`; dense GGUF single-card only (MoE declined: 0.24× on the two MoE check rows). Range 0.99–1.31× from 9 dense `matrixData` rows, enforced by `npx tsx scripts/check-measured-speed.ts`. Shown green under the roofline line in forward mode and as '~n tok/s est.' on reverse rows. | Merged |
 | 2026-10-14 10:45 | PR #3, branch `grokbot/changelog` | Added this "Grok Bot change log" section to CLAUDE.md (docs only). | Merged |
 | 2026-10-14 10:18 | PR #2, branch `model-tracker/2026-10-14` | +1 model (102): LFM2.5 24B-A2B (Liquid AI, 10-12). `models-extra-12.ts`, `models.ts`, `hf-repos.mjs`, `meta.ts`, guide counts in `cookbook-extra-2.ts` / `cookbook-rewrites.ts`, CLAUDE.md surface count + Recent ships row, README §9 entry. Details in README §9 "2026-10-14 (ii)". | Merged 2026-10-14 10:35 |
 | 2026-10-11 16:18 | Cloudflare DNS (all 18 zones incl. quantized.uk) | Added CNAME `ebc5ce3f6be75133297487ea1658d368.<zone>` → `verify.bing.com`, DNS only, comment "Bing Webmaster verification". Needed for Bing Webmaster site ownership; do not delete. No other record, rule or Pages setting was changed. | Live |
