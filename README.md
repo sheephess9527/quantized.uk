@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-15 — Runtime versions; no model
+
+- llama.cpp b11632 (tags page, verbatim), Ollama v0.40.4 (Latest; v0.40.5-rc0 is a pre-release,
+  skipped), ExLlamaV3 1.6.2 (Latest), vLLM v0.31.0 unchanged. Ollama v0.40.4 notes: decision models via
+  `ollama run`, reuse of verified manifests/loaded models, MLX-runner fixes.
+- No model: no open-weight release on 10-13/10-14 found; Mistral Large 4 and Reflection Beam still
+  have no weights on Hugging Face (both promised for end of October). Granite 4.2 30B considered for
+  the gap audit and held back — its per-size layer count is not in any reachable source.
+- No commits from Grok Bot since the 10-14 review.
+
 ### 2026-10-14 (iii) — Review of the Grok calculator PRs (#4–#7)
 
 Tested the merged calculator work (measured speed, launch commands, reverse-mode reach, share card)

@@ -1075,6 +1075,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |
 | 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |
 | 2026-10-14 | **Review of Grok calculator PRs #4–#7** — tg128 spot-checked exact; calibrated speed limited to dense 7–33B (printed 1,381 tok/s for a 0.5B); speed sort by bandwidth ceiling for all rows (MoE sorted under 32B); `?all=1` now written by `syncUrl`; vLLM launch tab follows `formatAllowed()` |
 | 2026-10-14 | **+1 model (101): Granite 4.2 8B** — gap audit (Aug release, dense `granite` arch); shape from IBM's card, 8.79B reconciled with the Hub's 9B; Q4_K_M 4.87 bpw from a published file's byte count, Q8_0 generic; 6.3 GB @4K → every ≥8 GB card +1; Intel Arc guide's zh counts were stale (52/41/34 vs 57/46/38); llama.cpp b11609 |
