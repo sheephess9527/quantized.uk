@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **102** in index (`models-extra` … `models-extra-12`) |
+| Models | **103** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1062,6 +1062,7 @@ Newest first. Times are CST (UTC+8).
 
 | When (CST) | Where | Change | Status |
 |------------|-------|--------|--------|
+| 2026-10-15 10:30 | Draft PR, branch `model-tracker/2026-10-15` | +1 model (103): Ling-3.1-flash (inclusionAI, weights 10-13; the 10-15 patrol missed it). `models-extra-12.ts`, `models.ts` feed, `hf-repos.mjs`, `meta.ts` changelog, "of the 102" → "of the 103" in `cookbook-extra-2.ts` / `cookbook-rewrites.ts` (no comfortable count moved; only M5 Ultra 512 tight 101 → 102, not quoted in any guide), CLAUDE.md surface count + Recent ships row, README §9 entry. Details in README §9 "2026-10-15 (ii)". | Draft, not merged |
 | 2026-10-14 | PR #7, branch `grokbot/calc-share-card` | Calculator: 'Save result as image' (new `components/tools/ShareCard.tsx`) draws a 1200×630 PNG on a client-side canvas — model, level, context, total/weights/KV, card + verdict, calibrated speed when available, 'estimate' label, bilingual. No server image endpoint (zero Cloudflare requests). | Merged |
 | 2026-10-14 | PR #6, branch `grokbot/calc-launch-commands` | Calculator: inline copy-ready launch commands (new `components/tools/LaunchCommands.tsx`) under the forward result — llama.cpp / Ollama for the GGUF level, vLLM for the model's AWQ/GPTQ level (hidden on Macs). All text from `generateCLI` (no second generator); `-ngl` follows `offloadPlan` when the model spills to RAM. The cli-gen link stays for Docker/API-key options. | Merged |
 | 2026-10-14 | PR #5, branch `grokbot/calc-reverse-reach` | Calculator reverse mode ('I have this card'): one row per model by default (best-quality level that fits, green over tight; `?all=1` or the checkbox shows every level), quality sort ranks larger models first in that view, each row shows its longest context via `contextReach`. `getRecommendations` speed sort now uses the picked card's calibrated `measuredSpeed` (was always the RTX 4090 figure) — also affects the Hub's use of it. | Merged |
@@ -1075,6 +1076,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-15 (ii) | **+1 model (103): Ling-3.1-flash** — inclusionAI (Ant Group), weights 10-13, MIT; shape from the official `config.json` (`bailing_hybrid`, llama.cpp `bailingmoe3`): 72 layers = 63 KDA + 9 gated MLA, MLA sized as DeepSeek-V3 (kvHeads 1 × headDim 288, `fullLayers: 9`); context 262144 (config; card's 1M has no scaling recipe); params = GGUF tensor total 563.95B (Hub 572.12B includes MTP); Q4_K_M 5.03 / Q8_0 8.52 bpw from AtomicChat's AD GGUF byte counts; 370.6 GB @4K → tight on M5 Ultra 512 only, red elsewhere; guide totals 102 → 103 |
 | 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |
 | 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |
 | 2026-10-14 | **Review of Grok calculator PRs #4–#7** — tg128 spot-checked exact; calibrated speed limited to dense 7–33B (printed 1,381 tok/s for a 0.5B); speed sort by bandwidth ceiling for all rows (MoE sorted under 32B); `?all=1` now written by `syncUrl`; vLLM launch tab follows `formatAllowed()` |

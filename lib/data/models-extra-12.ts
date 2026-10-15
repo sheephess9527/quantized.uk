@@ -14,6 +14,7 @@ const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
 const ADDED_LFM25 = '2026-10-14';
+const ADDED_LING31 = '2026-10-15';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -437,6 +438,40 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // inclusionAI Ling-3.1-flash (Ant Group, weights 2026-10-13, MIT). Official config.json (read
+    // 2026-10-15 from huggingface.co): BailingMoeV3ForCausalLM / model_type bailing_hybrid (llama.cpp
+    // `bailingmoe3`, b11571+ per AtomicChat's GGUF card); 72 layers = 63 KDA (Kimi Delta Attention,
+    // linear, fixed-size state) + 9 gated MLA, one MLA layer per layer_group_size 8 (layers 7, 15 … 71
+    // carry g_proj) — the card's "63 KDA + 9 Gated MLA (7:1)"; hidden 4096, 64 heads; MLA kv_lora_rank
+    // 512 + qk_rope_head_dim 64 → kvHeads 1 × headDim 288 as for DeepSeek-V3 / Kimi Linear (AtomicChat:
+    // "about 10 KB per token" = 9 × 576 × 2 B). 512 experts top-8 + 1 shared, first 4 layers dense;
+    // vocab 157184; max_position_embeddings 262144 with rope_scaling null (the card says "1M-token
+    // context window" but gives no scaling recipe; the GGUF's context_length is also 262144).
+    // params = the GGUF's own tensor total, 563,946,483,520 (the Hub's safetensors total, 572.12B,
+    // includes the MTP layer 72 that the GGUF drops; card: 560B total / 25B active). bpw from
+    // AtomicChat's "AD" (dynamic) GGUF repo byte counts: AD-Q4_K_M 354,394,733,920 / AD-Q8_0
+    // 600,847,449,760 → 5.03 / 8.52 (experts at the named type, attention/shared/router ≥ q8_0).
+    // AtomicChat publishes KL divergence, not perplexity, so no pplLossPercent.
+    id: 'ling-3.1-flash',
+    name: 'Ling-3.1-flash',
+    family: 'inclusionAI Ling',
+    params: 563.95,
+    paramLabel: '560B-A25B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 72, attHeads: 64, kvHeads: 1, headDim: 288, attention: { fullLayers: 9, note: { en: '9 of 72 layers keep an MLA cache (one in every eight); the other 63 are Kimi Delta Attention, a linear layer with a fixed-size state, so the cache grows by only about 10 KB per token.', zh: '72 层中只有 9 层保留 MLA 缓存（每八层一层）；其余 63 层是 Kimi Delta Attention 线性层，只有固定大小的状态，所以每个 token 只让缓存增长约 10 KB。' } } },
+    addedAt: ADDED_LING31,
+    description: {
+      en: 'inclusionAI\'s Ling-3.1-flash (Ant Group), released in October under MIT: a 560B mixture-of-experts reasoning model with 25B parameters active per token. It is aimed at agents, coding and long office tasks. Only 9 of its 72 layers keep a growing cache, and those store MLA\'s compressed vectors, so even its full 256K window adds only about 3 GB: the weights decide where it runs. At Q4_K_M it needs about 371 GB at 4K context, more than any single GPU in this index. The 512 GB Mac Studio gives its GPU about 384 GB, which holds it only tightly on this site\'s rule; on servers the vendor\'s reference setup is eight H200s or four GB300s running FP8. Q8_0 needs about 628 GB. The vendor quotes a 1M-token window, but the released config sets 262,144 positions with no scaling, so that is the limit used here. llama.cpp runs it as `bailingmoe3` from build b11571. Sizes come from a published GGUF file, whose maker reports KL divergence rather than perplexity, so no quality-loss figure is shown.',
+      zh: 'inclusionAI（蚂蚁集团）的 Ling-3.1-flash，10 月以 MIT 许可发布：560B 混合专家推理模型，每个 token 激活 25B 参数。它面向智能体、编程和长时间的办公任务。72 层中只有 9 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 256K 窗口，缓存也只多约 3 GB——决定它能在什么硬件上跑的是权重。Q4_K_M 在 4K 上下文下约需 371 GB，超过本索引里任何一张单卡。512 GB 的 Mac Studio 能分给 GPU 约 384 GB，按本站规则只能算「勉强」装下；服务器上，官方的参考配置是 8 张 H200 或 4 张 GB300 跑 FP8。Q8_0 约需 628 GB。官方称上下文窗口为 100 万 token，但发布的 config 设定为 262,144 个位置且没有缩放配置，所以这里按这个上限计算。llama.cpp 从 b11571 版起以 `bailingmoe3` 架构运行它。体积按已公布的 GGUF 文件计算，制作者给出的是 KL 散度而非困惑度，所以不显示质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.03, vramGB: 370.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 627.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

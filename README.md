@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-15 (ii) — +1 model (103): Ling-3.1-flash
+
+- **Model tracker (Grok Bot), draft PR:** inclusionAI (Ant Group) released **Ling-3.1-flash** weights on
+  2026-10-13 (MIT). The morning patrol's "no open-weight release on 10-13/10-14" missed it; it is
+  datacenter-sized, listed like MiMo-V2.6-Pro / DeepSeek-V3 so the calculator can say where it runs.
+- **Shape read from the official `config.json`** (huggingface.co, 2026-10-15): `BailingMoeV3ForCausalLM`,
+  `model_type` `bailing_hybrid` (llama.cpp `bailingmoe3`, b11571+ per AtomicChat's GGUF card). 72 layers:
+  63 KDA (Kimi Delta Attention, fixed-size recurrent state) + 9 gated MLA, one per `layer_group_size` 8
+  (layers 7, 15 … 71 carry `g_proj`) — the card's "63 KDA + 9 Gated MLA (7:1)". Hidden 4096, 64 heads;
+  MLA `kv_lora_rank` 512 + `qk_rope_head_dim` 64 → `kvHeads 1 × headDim 288` as for DeepSeek-V3 / Kimi
+  Linear, `attention.fullLayers: 9` (≈ 10 KB/token, matching AtomicChat's "about 10 KB per token").
+  512 experts top-8 + 1 shared, first 4 layers dense; vocab 157184.
+- **Context 262144** = `max_position_embeddings`, `rope_scaling: null`, and the GGUF's `context_length`.
+  The card says "1M-token context window" without a scaling recipe; the description says so.
+- `params` 563.95 = the GGUF's own tensor total (563,946,483,520). The Hub's safetensors total
+  (572,120,680,768) includes the MTP layer 72, which the GGUF does not carry; card: 560B / 25B active.
+- Q4_K_M 5.03 / Q8_0 8.52 bpw from AtomicChat's "AD" (dynamic) GGUF byte counts (354,394,733,920 /
+  600,847,449,760); experts at the named type, attention/shared expert/router at q8_0 or higher. Both
+  `estimated`; AtomicChat publishes KL divergence (0.01114 / 0.00503), not perplexity → no loss figure.
+- Sizes: Q4_K_M 370.6 GB @4K, 370.9 @32K, 373.3 @256K; Q8_0 627.6 @4K. Red on every card in the index;
+  tight (amber) on the M5 Ultra 512 (384 GB usable). Guide counts re-run with `countModelsFitting()`: no
+  comfortable count moved; M5 Ultra 512 tight 101 → 102 (not quoted in any guide); every "of the 102" →
+  "of the 103". Added to the homepage feed; HF stats map to `AtomicChat/Ling-3.1-flash-GGUF`.
+
 ### 2026-10-15 — Runtime versions; no model
 
 - llama.cpp b11632 (tags page, verbatim), Ollama v0.40.4 (Latest; v0.40.5-rc0 is a pre-release,

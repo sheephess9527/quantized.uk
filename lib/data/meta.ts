@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-15',
+    en: 'inclusionAI\'s Ling-3.1-flash is in the index: a 560B mixture-of-experts reasoning model (25B active per token, MIT) for agents and coding. Only 9 of its 72 layers keep a growing cache, so context is cheap, but the weights alone put it out of reach of any single GPU: about 371 GB at Q4_K_M, which a 512 GB Mac Studio holds only tightly. It is listed so the calculator can say so.',
+    zh: 'inclusionAI 的 Ling-3.1-flash 已收录：560B 混合专家推理模型（每个 token 激活 25B，MIT 许可），面向智能体和编程。72 层中只有 9 层保留会增长的缓存，所以上下文很便宜，但光是权重就超出任何单张显卡：Q4_K_M 约 371 GB，512 GB 的 Mac Studio 也只能勉强装下。收录它是为了让计算器能把这一点说清楚。',
+  },
+  {
+    date: '2026-10-15',
     en: 'Runtime versions re-checked: llama.cpp is at b11632, Ollama at v0.40.4 and ExLlamaV3 at v1.6.2; vLLM (v0.31.0) is unchanged. This Ollama release can run decision models from the terminal and reuses loaded models for faster starts. No new open-weight model this week was one that fits local hardware and had weights out.',
     zh: '重新核对了运行时版本：llama.cpp 更新到 b11632，Ollama 更新到 v0.40.4，ExLlamaV3 更新到 v1.6.2；vLLM（v0.31.0）没有变化。这个 Ollama 版本可以在终端里直接运行决策模型，并复用已加载的模型以加快启动。本周没有既已放出权重、又适合本地硬件的新开源模型。',
   },
