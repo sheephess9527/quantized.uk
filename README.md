@@ -419,6 +419,34 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-16 (ii) — +1 model (103): Muse Spark Open 816B-A42B
+
+Re-verified on the owner's request after the morning patrol wrongly skipped it "for size".
+- **Shape, primary:** transformers `models/muse_spark/configuration_muse_spark.py` (defaults
+  documented against `meta-models/Muse-Spark-Open-816B-A42B`, the only checkpoint): 62 layers, 8192
+  hidden, 128 heads, 16 KV × 64, vocab 202,048 untied, 256 experts / 8 at a 4096 latent width,
+  `sliding_window` 2048, full attention (NoPE) on every 4th layer counted back from the last →
+  16 full + 46 sliding, 1,048,576 positions. llama.cpp `src/models/muse-spark.cpp`: iSWA cache,
+  `LLAMA_SWA_TYPE_STANDARD` → 2560 cells per window layer (as Muse Glimmer).
+- **Params reconcile two ways:** that shape is 815.8B (Meta: 816B); llama.cpp also loads a per-layer
+  `attn_gate` (8192 × 8192 × 62 = 4.16B) → 820.0B, the figure ggml-org's GGUF shows. `params` = 820.
+- **bpw from ggml-org's GGUF card** (search snippet; huggingface.co blocked): Q2_K 304 GB, Q4_K_S
+  470 GB, Q8_0 872 GB, BF16 1.64 TB → 2.97 / 4.59 / 8.51 / 16.0. Q8_0 and BF16 on 8.5 / 16 confirm
+  the count and decimal units; the Q2_K's 2.97 matches its stated mixed recipe (expert gate/up Q2_K,
+  down Q3_K, latent/gate Q8_0 → computed 3.02). All `estimated`.
+- **Sizes:** Q2_K 318.9 GB @4K, 327.4 @128K, 389 @1M (KV 0.7 / 8.5 / 64.5 GB). Green on the Mac M5
+  Ultra 512G row (384 GiB usable), yellow on 4 × H100; Q4_K_S/Q8_0 fit nothing. No single-card count
+  moves, so guide prose changed only its "N of the 102" totals (22 strings).
+- CLI repo maps the original weights (split GGUF filenames not read) → command placeholder, like Glimmer.
+- Model-page prose sized it at its Q8_0 reference (912 GB) and said "no card clears that … multi-GPU or
+  CPU-offload", contradicting its own description. `modelExplainer()` now adds, only when nothing
+  clears the reference level, the largest shipped level that does fit a card (here Q2_K on the 512 GB
+  Mac), in section 1 and the single-GPU FAQ. Swept all 103 models: this is the only page that changes.
+- **Still held: Nemotron 3.5 Super VL 120B-A12B.** Neither transformers nor llama.cpp's converter fixes
+  its layer layout (it reads `NemotronHForCausalLM` hybrid patterns from the checkpoint config); the
+  Nemotron 3 Super tech report's 88 layers / 8 attention / 2 KV × 128 belong to the predecessor and no
+  source says 3.5 VL keeps them; Q4-class sizes conflict (LM Studio ~70 GB vs Unsloth UD-Q4_K_XL 86.9 GB).
+
 ### 2026-10-16 — Runtime versions; llama-server default port is now 9931
 
 - llama.cpp b11671 + release v0.7.0 (Latest). Verbatim from the release notes: "Server now listens on
@@ -439,7 +467,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   512G row (384 GiB usable) and sits near the 4 × H100 limit; ggml-org ships Q2_K / Q4_K_S / Q8_0
   GGUFs (arch `muse-spark`) and llama.cpp supports it. MiMo-V2.6-Pro (1T) is already indexed, so size
   was never the bar. The real blocker is the same as Bolt's: layer/KV layout only from secondary
-  write-ups (62 layers, 128 Q / 16 KV heads) and no reachable file listing. Next patrol retries.
+  write-ups (62 layers, 128 Q / 16 KV heads) and no reachable file listing. Added later the same day — see (ii) above.
 
 ### 2026-10-15 — Runtime versions; no model
 

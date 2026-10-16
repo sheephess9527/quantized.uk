@@ -102,6 +102,23 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
   const smallest = fits[0];
   const tier = smallest ? fits.filter(g => g.vram === smallest.vram) : [];
   const spare = smallest ? usableCapacityGB(smallest) - at4k.totalGB : 0;
+  // When nothing clears the reference level, the honest next sentence is the
+  // largest shipped level that does fit somewhere — Muse Spark Open's Q8_0
+  // reference fits no row while its Q2_K fits a 512 GB Mac.
+  const smaller = smallest ? undefined : [...model.quants]
+    .filter(q => q !== ref && q.bpw < ref.bpw)
+    .sort((a, b) => b.bpw - a.bpw)
+    .map(q => {
+      const size = sizeAt(model, q.bpw, REF_CONTEXT).totalGB;
+      return { q, size, card: cardsFitting(size, q.format)[0] };
+    })
+    .find(x => x.card);
+  const smallerEn = smaller
+    ? `Its smaller ${quantLevelKey(smaller.q)} build needs about ${smaller.size.toFixed(1)} GB, which the ${smaller.card!.name} clears comfortably. `
+    : '';
+  const smallerZh = smaller
+    ? `更小的 ${quantLevelKey(smaller.q)} 版本约需 ${smaller.size.toFixed(1)} GB，${smaller.card!.name} 可以宽裕运行。`
+    : '';
   const native = isNativeQuant(ref);
   const formats = Array.from(new Set(model.quants.map(q => q.format)));
   const levels = model.quants.map(quantLevelKey);
@@ -134,7 +151,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
               ? `The smallest cards in this index that clear that comfortably are ${smallest.vram} GB ones — ${tier.length} of them, from the ${smallest.name} up — `
               : `The smallest card in this index that clears that comfortably is the ${smallest.name} at ${smallest.vram} GB, `) +
             `and ${fits.length} of the ${GPU_ROWS} cards here do. `
-          : `No card in this index clears that comfortably, so it is a multi-GPU or CPU-offload proposition. `) +
+          : `No card in this index clears that comfortably at ${refKey}, so at that level it is a multi-GPU or CPU-offload proposition. ` + smallerEn) +
         `These are calculated figures, not measurements: the estimate stops counting a card as comfortable at 88% of its VRAM, ` +
         `which is roughly the room a desktop session needs.`,
       zh:
@@ -147,7 +164,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
               ? `本索引中能宽裕跑它的最小规格是 ${smallest.vram} GB 显卡 —— 共 ${tier.length} 张，${smallest.name} 起步；`
               : `本索引中能宽裕跑它的最小显卡是 ${smallest.vram} GB 的 ${smallest.name}，`) +
             `${GPU_ROWS} 张卡中有 ${fits.length} 张可以。`
-          : `本索引中没有任何单卡能宽裕运行它，因此需要多卡或 CPU 卸载。`) +
+          : `在 ${refKey} 下，本索引中没有任何单卡能宽裕运行它，这个档位需要多卡或 CPU 卸载。` + smallerZh) +
         `这些是计算值而非实测值：估算把「宽裕」的界线画在显存的 88%，大致就是桌面环境需要留出的余量。`,
     },
   });
@@ -254,13 +271,13 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             `${spare.toFixed(1)} GB spare on a ${smallest.name}` +
             (tier.length > 1 ? `, or on any of the other ${smallest.vram} GB cards here (${tier.length} in all). That is the smallest size in this index that clears it comfortably; ` : `. That is the smallest card in this index that clears it comfortably; `) +
             `${fits.length} of ${GPU_ROWS} do.`
-          : `Not comfortably on any single card in this index at ${refKey}. It needs about ${at4k.totalGB.toFixed(1)} GB, which means splitting across GPUs or offloading layers to system RAM.`,
+          : `Not comfortably on any single card in this index at ${refKey}. It needs about ${at4k.totalGB.toFixed(1)} GB, which means splitting across GPUs or offloading layers to system RAM.` + (smallerEn ? ` ${smallerEn.trim()}` : ''),
         zh: smallest
           ? `可以 —— 在 ${refKey}、${contextLabel(REF_CONTEXT)} 上下文下约需 ${at4k.totalGB.toFixed(1)} GB，` +
             `在 ${smallest.name} 上还剩 ${spare.toFixed(1)} GB` +
             (tier.length > 1 ? `，本索引中 ${tier.length} 张 ${smallest.vram} GB 显卡都一样。这是能宽裕跑它的最小规格；` : `。这是本索引中能宽裕跑它的最小显卡；`) +
             `${GPU_ROWS} 张中有 ${fits.length} 张可以。`
-          : `在 ${refKey} 下，本索引中没有单卡能宽裕运行它。它约需 ${at4k.totalGB.toFixed(1)} GB，意味着要多卡拆分或把部分层卸载到系统内存。`,
+          : `在 ${refKey} 下，本索引中没有单卡能宽裕运行它。它约需 ${at4k.totalGB.toFixed(1)} GB，意味着要多卡拆分或把部分层卸载到系统内存。` + smallerZh,
       },
     },
     {

@@ -13,6 +13,7 @@ const ADDED_QWEN35_SMALL = '2026-10-11';
 const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
+const ADDED_MUSE_SPARK = '2026-10-16';
 const ADDED_LFM25 = '2026-10-14';
 
 /**
@@ -437,6 +438,42 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Meta Muse Spark Open (released 2026-10-15, Muse Model License). Shape from transformers'
+    // `models/muse_spark/configuration_muse_spark.py`, whose defaults are documented against this one
+    // checkpoint (`meta-models/Muse-Spark-Open-816B-A42B`): 62 layers, hidden 8192, 128 heads, 16 KV
+    // heads × head_dim 64, vocab 202,048 untied, 256 experts / 8 routed at a 4096 latent width,
+    // sliding_window 2048, every 4th layer counted back from the last is full attention (NoPE) →
+    // 16 full + 46 sliding, 1,048,576 positions. llama.cpp `muse-spark` (`src/models/muse-spark.cpp`):
+    // iSWA cache, LLAMA_SWA_TYPE_STANDARD → a window layer holds pad256(2048 + 512) = 2560 cells.
+    // That shape counts 815.8B (Meta: 816B); llama.cpp also loads a per-layer attention gate
+    // (8192 × 8192 × 62 = 4.16B), giving the 820B the ggml-org GGUF reports — `params` is what loads.
+    // bpw from ggml-org's own GGUF card (via search; huggingface.co is blocked here): Q2_K 304 GB,
+    // Q4_K_S 470 GB, Q8_0 872 GB, BF16 1.64 TB → 2.97 / 4.59 / 8.51 / 16.0 (Q8_0 and BF16 landing on
+    // 8.5 / 16 confirm the count and that the units are decimal GB). The Q2_K is ggml-org's mixed
+    // recipe (expert gate/up Q2_K, down Q3_K, latent projections and attention gate Q8_0), which is
+    // why it reads 2.97 rather than Q2_K's nominal 2.63. Vision/audio encoders ship as separate
+    // mmproj files (2.2–4.1 GB) and are not in `params`.
+    id: 'muse-spark-open-816b-a42b',
+    name: 'Muse Spark Open 816B-A42B',
+    family: 'Meta Muse',
+    params: 820.0,
+    paramLabel: '816B-A42B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 62, attHeads: 128, kvHeads: 16, headDim: 64, attention: { fullLayers: 16, windowLayers: 46, windowTokens: 2560, note: { en: '46 of 62 layers use a 2,048-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 2,560); only the 16 full-attention layers grow a cache with context.', zh: '62 层中 46 层使用 2,048 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 2,560），只有 16 层全注意力层的缓存随上下文增长。' } } },
+    addedAt: ADDED_MUSE_SPARK,
+    description: {
+      en: 'Meta\'s largest open-weight model, released in October under the Muse Model License. It is an 816B mixture-of-experts model with about 42B parameters active per token, built for coding and agent work, with image and audio input. It is a single-machine model only at its smallest build. At Q2_K (ggml-org\'s 304 GB file) it needs about 319 GB at 4K context and still only 327 GB at 128K, because just 16 of its 62 layers keep a growing cache — comfortable on a 512 GB Mac Studio and tight across four 80 GB H100s. The full 1M window brings it to about 389 GB. Q4_K_S (470 GB) and Q8_0 (872 GB) fit no single machine in this index. The vision and audio encoders ship as separate files of 2–4 GB and are not included. Sizes come from the published GGUF files; Meta\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'Meta 目前最大的开放权重模型，10 月以 Muse Model License 发布：816B 混合专家模型，每个 token 约激活 42B 参数，面向编程和智能体任务，支持图像和音频输入。只有最小的量化版本能在单台机器上运行。Q2_K（ggml-org 发布的 304 GB 文件）在 4K 上下文下约需 319 GB，到 128K 也只要 327 GB，因为 62 层中只有 16 层的缓存会随上下文增长——512 GB 的 Mac Studio 可以从容运行，四张 80 GB 的 H100 则偏紧。用满 100 万上下文约需 389 GB。Q4_K_S（470 GB）和 Q8_0（872 GB）在本站收录的任何单台机器上都装不下。视觉和音频编码器是另外 2–4 GB 的文件，未计入。体积按已发布的 GGUF 文件计算；基准成绩是 Meta 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

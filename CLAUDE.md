@@ -21,11 +21,11 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-10-14):**
+**Live snapshot (2026-10-16):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **102** in index (`models-extra` … `models-extra-12`) |
+| Models | **103** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1077,6 +1077,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-16 (ii) | **+1 model (103): Muse Spark Open 816B-A42B** — shape from transformers' `configuration_muse_spark.py` (62 L, 16 full + 46 SWA @2560 cells, 16 KV × 64); 815.8B + llama.cpp `attn_gate` 4.16B = 820B (GGUF figure); bpw from ggml-org file sizes (Q2_K 2.97, Q8_0 8.51); Q2_K 319 GB @4K → 512 GB Mac only. The morning's "too big" skip was wrong — size is never the bar (MiMo is indexed). Nemotron 3.5 Super VL still unverifiable |
 | 2026-10-16 | **Runtime versions + llama-server default port 9931** — llama.cpp b11671 / v0.7.0, Ollama v0.40.5; all site commands already pass `--port`; Nemotron 3.5 Bolt 74B-A9B held back (Puzzle block layout only in its HF config, unreachable) |
 | 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |
 | 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |

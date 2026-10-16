@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-16',
+    en: 'Meta\'s Muse Spark Open is in the index: an 816B mixture-of-experts model with about 42B parameters active per token and image and audio input. Its smallest build, the 304 GB Q2_K, needs about 319 GB at 4K context and 327 GB at 128K, so it runs on a 512 GB Mac Studio and, tightly, across four 80 GB H100s. Larger builds fit no single machine here.',
+    zh: 'Meta 的 Muse Spark Open 已收录：816B 混合专家模型，每个 token 约激活 42B 参数，支持图像和音频输入。最小的 304 GB Q2_K 版本在 4K 上下文下约需 319 GB，128K 约 327 GB，所以 512 GB 的 Mac Studio 能跑，四张 80 GB H100 也能勉强装下。更大的版本在本站收录的任何单台机器上都装不下。',
+  },
+  {
+    date: '2026-10-16',
     en: 'llama.cpp\'s server now listens on port 9931 by default instead of 8080. Its v0.7.0 release (build b11671) changed the default; every llama-server command on this site already sets --port explicitly, so they keep working as written, but a server started without --port will no longer answer on 8080. Ollama is at v0.40.5; vLLM and ExLlamaV3 are unchanged.',
     zh: 'llama.cpp 的服务端现在默认监听 9931 端口，不再是 8080。这是它 v0.7.0 版本（构建 b11671）改的默认值；本站所有 llama-server 命令都显式写了 --port，照抄仍然可用，但不带 --port 启动的服务不会再在 8080 上响应。Ollama 更新到 v0.40.5；vLLM 和 ExLlamaV3 没有变化。',
   },
