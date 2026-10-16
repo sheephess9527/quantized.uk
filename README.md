@@ -441,7 +441,8 @@ Re-verified on the owner's request after the morning patrol wrongly skipped it "
 - Model-page prose sized it at its Q8_0 reference (912 GB) and said "no card clears that … multi-GPU or
   CPU-offload", contradicting its own description. `modelExplainer()` now adds, only when nothing
   clears the reference level, the largest shipped level that does fit a card (here Q2_K on the 512 GB
-  Mac), in section 1 and the single-GPU FAQ. Swept all 103 models: this is the only page that changes.
+  Mac), in section 1, the single-GPU FAQ and the "which quantization" FAQ (which had called the
+  unrunnable Q8_0 "the level most people run"). Swept all 103 models: this is the only page that changes.
 - **Still held: Nemotron 3.5 Super VL 120B-A12B.** Neither transformers nor llama.cpp's converter fixes
   its layer layout (it reads `NemotronHForCausalLM` hybrid patterns from the checkpoint config); the
   Nemotron 3 Super tech report's 88 layers / 8 attention / 2 KV × 128 belong to the predecessor and no
