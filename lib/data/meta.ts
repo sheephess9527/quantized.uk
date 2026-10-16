@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-16',
+    en: 'NVIDIA\'s Nemotron 3.5 Bolt and Super VL are in the index. Bolt is a 74B mixture-of-experts model built to fit a 24 GB card: NVIDIA\'s 2-bit file needs about 23.1 GB at 4K and 24.1 GB at 128K, tight on 24 GB and comfortable on 32 GB. Super VL is the 120B vision-language model it was compressed from; at Q4_0 it needs about 75 GB, comfortable on a 128 GB Mac or a DGX Spark 128G. Both keep a growing cache on only 8 of 88 layers, so long context is cheap.',
+    zh: 'NVIDIA 的 Nemotron 3.5 Bolt 和 Super VL 已收录。Bolt 是为 24 GB 显卡打造的 74B 混合专家模型：NVIDIA 官方 2-bit 文件在 4K 下约需 23.1 GB，128K 约 24.1 GB，24 GB 显卡偏紧，32 GB 从容。Super VL 是它压缩前的 120B 视觉语言模型，Q4_0 约需 75 GB，128 GB 的 Mac 或 DGX Spark 128G 可以从容运行。两者 88 层中只有 8 层的缓存会随上下文增长，所以长上下文很便宜。',
+  },
+  {
+    date: '2026-10-16',
     en: 'Meta\'s Muse Spark Open is in the index: an 816B mixture-of-experts model with about 42B parameters active per token and image and audio input. Its smallest build, the 304 GB Q2_K, needs about 319 GB at 4K context and 327 GB at 128K, so it runs on a 512 GB Mac Studio and, tightly, across four 80 GB H100s. Larger builds fit no single machine here.',
     zh: 'Meta 的 Muse Spark Open 已收录：816B 混合专家模型，每个 token 约激活 42B 参数，支持图像和音频输入。最小的 304 GB Q2_K 版本在 4K 上下文下约需 319 GB，128K 约 327 GB，所以 512 GB 的 Mac Studio 能跑，四张 80 GB H100 也能勉强装下。更大的版本在本站收录的任何单台机器上都装不下。',
   },

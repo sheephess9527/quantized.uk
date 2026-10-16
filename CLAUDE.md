@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **103** in index (`models-extra` … `models-extra-12`) |
+| Models | **105** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -603,7 +603,7 @@ is always the target's own name — never "here" or "this page".
 
 **A model page sizes the model as released.** `referenceQuant()` (`lib/utils/quality.ts`) is the
 only place that picks the level a model page is sized at — native (`MXFP4`) first, then GGUF
-Q4_K_M. Do not re-type `quants.find(q => q.level === 'Q4_K_M')` in a new model-page component; that
+Q4_K_M, then Q4_K_S / Q4_0 (2026-10-16), and only then the highest-quality build. Do not re-type `quants.find(q => q.level === 'Q4_K_M')` in a new model-page component; that
 copy existed four times and GPT-OSS pages described MXFP4 while sizing Q4_K_M. **"Smallest card"
 means a size, not a database position**: sort with `bySmallestCard` (nameplate VRAM, retail first,
 lowest bandwidth), say how many cards share it, and never let a CPU/RAM row stand in for a card.
@@ -1077,6 +1077,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-16 (iii) | **+2 models (105): Nemotron 3.5 Bolt 74B-A9B + Super VL 120B-A12B** — owner pasted the HF configs + byte counts (HF blocked here); 88 L = 40 mamba / 40 moe / 8 attn, 2 KV × 128; counts reconcile (120.67 vs 120.76B BF16 file; Bolt 74.04B, recipe predicts its 22.0 GB file within 1%); Bolt 23.1 GB @4K is *tight* on 24 GB; `IQ2_XXS` added to the calculator tables. **When HF is blocked, ask the owner for config.json + file byte counts** |
 | 2026-10-16 (ii) | **+1 model (103): Muse Spark Open 816B-A42B** — shape from transformers' `configuration_muse_spark.py` (62 L, 16 full + 46 SWA @2560 cells, 16 KV × 64); 815.8B + llama.cpp `attn_gate` 4.16B = 820B (GGUF figure); bpw from ggml-org file sizes (Q2_K 2.97, Q8_0 8.51); Q2_K 319 GB @4K → 512 GB Mac only. The morning's "too big" skip was wrong — size is never the bar (MiMo is indexed). Nemotron 3.5 Super VL still unverifiable |
 | 2026-10-16 | **Runtime versions + llama-server default port 9931** — llama.cpp b11671 / v0.7.0, Ollama v0.40.5; all site commands already pass `--port`; Nemotron 3.5 Bolt 74B-A9B held back (Puzzle block layout only in its HF config, unreachable) |
 | 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |

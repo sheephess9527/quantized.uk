@@ -419,6 +419,34 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-16 (iii) — +2 models (105): Nemotron 3.5 Bolt 74B-A9B, Super VL 120B-A12B
+
+Unblocked by the owner, who read huggingface.co (blocked here) and pasted both official BF16
+`config.json` files plus GGUF tree-API byte counts (CDN `Content-Length` spot-checked on their side).
+- **Super VL** (`NemotronHForCausalLM`): 88 layers = 40 mamba / 40 moe / 8 attention, 2 KV × 128,
+  512 experts × 2688 at a 1024 latent, 22 per token, 1 shared 5376, vocab 131072 untied, 1M context.
+  Counted from the config: 120.67B total / 12.2B active; ggml-org BF16 GGUF 241,518,661,568 B =
+  120.76B (`params`). ggml-org Q4_0 71,803,752,384 B → 4.76 bpw; Q8_0 128,472,993,728 B → 8.51 (on 8.5).
+  Q4_0 75.1 GB @4K / 83.9 GB @1M → green on 128 GB Macs + Spark 128G, yellow on one 80 GB card.
+- **Bolt** (`NemotronHPuzzleForCausalLM`, per-block `block_configs`): same 88-layer pattern and
+  attention shape, 240–496 experts of width 1536–2560, 9 per token, 262144 context. Counted:
+  74.04B / 9.05B active (card: 74B / 9B). Only build: NVIDIA's native 2-bit (modelopt mixed: experts
+  + shared IQ2_XXS 2.0625, latent Q8_0), 22,018,326,528 B in both NVIDIA's 24GB GGUF and unsloth's
+  IQ2_XXS → 2.38 bpw; the recipe predicts 21.77 GB (within 1%). 23.05 GB @4K = 96% of 24 GB →
+  **tight**, not the comfortable fit NVIDIA's "24GB" name suggests; green from 32 GB / 48 GB Macs.
+  No `pplLossPercent`: a BF16 Bolt exists, so the 2-bit is a quantization with no published loss
+  (the 0.0 convention is only for models released *only* as quantized weights).
+- Mamba-2 state (~4 MiB × 40 layers, fp32, ~0.17 GB) is fixed and left inside the 10% buffer, as for
+  the other hybrids. Vision mmproj files are separate (0.97–1.73 GB).
+- `IQ2_XXS` (2.06) added to `quantBPW` + `quantGroups` so the calculator can select it.
+- `hfRepoMap` points at repos whose filenames were read (unsloth Bolt `…-IQ2_XXS.gguf`, ggml-org
+  Super `…-Q4_0.gguf` / `…-Q8_0.gguf`), so `<repo>-<level>.gguf` gives real commands, not placeholders.
+- `referenceQuant()` now tries Q4_K_S then Q4_0 after Q4_K_M, before `bestQuant`: Super VL (Q4_0 +
+  Q8_0 only) was sized at Q8_0 and its page named a 256 GB Mac as the smallest machine. Swept all 105
+  models: only Super VL and Muse Spark Open (now Q4_K_S, with the Q2_K fallback sentence) change.
+- Guide counts re-run with a before/after sweep: 5090 84→85, Spark 64/128 92→93 / 95→97, M3 Max 48
+  84→85; ≤ 24 GB comfortable counts unchanged (Bolt is tight there). Totals 103 → 105.
+
 ### 2026-10-16 (ii) — +1 model (103): Muse Spark Open 816B-A42B
 
 Re-verified on the owner's request after the morning patrol wrongly skipped it "for size".
@@ -443,7 +471,7 @@ Re-verified on the owner's request after the morning patrol wrongly skipped it "
   clears the reference level, the largest shipped level that does fit a card (here Q2_K on the 512 GB
   Mac), in section 1, the single-GPU FAQ and the "which quantization" FAQ (which had called the
   unrunnable Q8_0 "the level most people run"). Swept all 103 models: this is the only page that changes.
-- **Still held: Nemotron 3.5 Super VL 120B-A12B.** Neither transformers nor llama.cpp's converter fixes
+- **(Superseded by (iii): added once the owner supplied the config.) Still held then: Nemotron 3.5 Super VL 120B-A12B.** Neither transformers nor llama.cpp's converter fixes
   its layer layout (it reads `NemotronHForCausalLM` hybrid patterns from the checkpoint config); the
   Nemotron 3 Super tech report's 88 layers / 8 attention / 2 KV × 128 belong to the predecessor and no
   source says 3.5 VL keeps them; Q4-class sizes conflict (LM Studio ~70 GB vs Unsloth UD-Q4_K_XL 86.9 GB).

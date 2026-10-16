@@ -14,6 +14,7 @@ const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
 const ADDED_MUSE_SPARK = '2026-10-16';
+const ADDED_NEMOTRON35 = '2026-10-16';
 const ADDED_LFM25 = '2026-10-14';
 
 /**
@@ -474,6 +475,67 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
       { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Bolt 74B-A9B (released 2026-10-15). Shape from the official BF16 repo's
+    // config.json (nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-BF16, read from huggingface.co by the
+    // owner and pasted here 2026-10-16): NemotronHPuzzleForCausalLM, hidden 4096, 88 blocks =
+    // 40 mamba + 40 moe + 8 attention (layers 7, 16, 25, 36, 47, 58, 69, 78), 32 heads / 2 KV × 128,
+    // vocab 131072 untied, 262144 positions; per-block MoE from `block_configs` (240–496 routed
+    // experts of width 1536–2560 at a 1024 latent, 9 per token, 1 shared expert 5376). Counted from
+    // that config: 74.04B total, 9.05B active (card: 74B / 9B). Mamba-2 state (128 heads × 64 ×
+    // state 128, fp32, ~4 MiB a layer, ~0.17 GB in all) does not grow with context; calcVRAM leaves
+    // it inside the 10% buffer, as for the other hybrid entries. The only build is NVIDIA's native
+    // 2-bit one (modelopt MIXED_PRECISION: experts + shared expert IQ2_XXS at 2.0625, latent
+    // projections Q8_0): 22,018,326,528 B in both the official 24GB GGUF and unsloth's IQ2_XXS file
+    // → 2.38 bpw; that recipe predicts 21.77 GB, within ~1%. The vision encoder ships separately
+    // (mmproj 1,733,692,736 B). llama.cpp v0.7.0 lists the arch; Ollama v0.40.5 ships it.
+    id: 'nemotron-3.5-bolt-74b-a9b',
+    name: 'Nemotron 3.5 Bolt 74B-A9B',
+    family: 'NVIDIA Nemotron',
+    params: 74.04,
+    paramLabel: '74B-A9B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers with a growing KV cache (2 KV heads × 128); 40 are Mamba-2 layers with a fixed recurrent state and 40 are mixture-of-experts layers that cache nothing per token.', zh: '88 层中只有 8 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；40 层是状态大小固定的 Mamba-2 层，另 40 层是不缓存任何内容的混合专家层。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Bolt is a 74B mixture-of-experts model with about 9B parameters active per token, built to fit a 24 GB card. It is compressed from Nemotron 3.5 Super VL and ships in one build, NVIDIA\'s own native 2-bit file of 22.0 GB. Only 8 of its 88 layers keep a growing cache, so context costs little: about 23.1 GB at 4K, 24.1 GB at 128K and 25.2 GB at its full 256K window. That is the 24 GB NVIDIA designed for, but over this site\'s comfortable line, so a 24 GB card reads as tight; a 32 GB card or a 48 GB Mac runs it comfortably. The image encoder is a separate 1.7 GB file. NVIDIA\'s benchmark claims are its own, and no quality loss for the 2-bit build has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Bolt 是 74B 混合专家模型，每个 token 约激活 9B 参数，目标是装进 24 GB 显卡。它由 Nemotron 3.5 Super VL 压缩而来，只有一个版本，即 NVIDIA 官方原生 2-bit 文件，22.0 GB。88 层中只有 8 层的缓存随上下文增长，所以上下文很便宜：4K 约 23.1 GB，128K 约 24.1 GB，用满 256K 约 25.2 GB。这正是 NVIDIA 设计的 24 GB，但超过了本站的宽裕线，所以 24 GB 显卡判定为偏紧；32 GB 显卡或 48 GB 的 Mac 可以从容运行。图像编码器是另外 1.7 GB 的文件。基准成绩是 NVIDIA 自己报的，2-bit 版本的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Super VL 120B-A12B (released 2026-10-15). Shape from the official BF16
+    // repo's config.json (nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16, pasted by the owner
+    // 2026-10-16): NemotronHForCausalLM, hidden 4096, 88 layers = 40 mamba + 40 moe + 8 attention,
+    // 32 heads / 2 KV × 128, 512 routed experts of width 2688 at a 1024 latent, 22 per token, 1 shared
+    // expert 5376, vocab 131072 untied, 1,048,576 positions; one MTP layer ships as a separate GGUF.
+    // Counted from that config: 120.67B total, 12.2B active; ggml-org's BF16 GGUF is
+    // 241,518,661,568 B = 120.76B, which is `params` (what loads). bpw from ggml-org's single files:
+    // Q4_0 71,803,752,384 B → 4.76, Q8_0 128,472,993,728 B → 8.51 (on 8.5: the count holds). Vision
+    // mmproj Q8_0 966,925,568 B / BF16 1,733,696,768 B, separate. Mamba state as Bolt's (~0.17 GB).
+    id: 'nemotron-3.5-super-vl-120b-a12b',
+    name: 'Nemotron 3.5 Super VL 120B-A12B',
+    family: 'NVIDIA Nemotron',
+    params: 120.76,
+    paramLabel: '120B-A12B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers with a growing KV cache (2 KV heads × 128); 40 are Mamba-2 layers with a fixed recurrent state and 40 are mixture-of-experts layers that cache nothing per token.', zh: '88 层中只有 8 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；40 层是状态大小固定的 Mamba-2 层，另 40 层是不缓存任何内容的混合专家层。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Super VL is a 120B mixture-of-experts vision-language model with about 12B parameters active per token. It is built for coding, tool use and document work, with a context window of up to 1M tokens. Only 8 of its 88 layers keep a growing cache, so even the full window is cheap: at Q4_0 (ggml-org\'s 71.8 GB file) it needs about 75 GB at 4K and 84 GB at 1M. That runs comfortably on a 128 GB Mac or a DGX Spark 128G, and tightly on one 80 GB card. Q8_0 (128 GB) wants a 256 GB Mac. The vision encoder is a separate 1–1.7 GB file. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Super VL 是 120B 混合专家视觉语言模型，每个 token 约激活 12B 参数，面向编程、工具调用和文档处理，上下文最长 100 万 token。88 层中只有 8 层的缓存随上下文增长，所以即使用满窗口也不贵：Q4_0（ggml-org 发布的 71.8 GB 文件）在 4K 下约需 75 GB，100 万上下文约 84 GB。128 GB 的 Mac 或 DGX Spark 128G 可以从容运行，单张 80 GB 显卡偏紧。Q8_0（128 GB）需要 256 GB 的 Mac。视觉编码器是另外 1–1.7 GB 的文件。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.76, vramGB: 75.1,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated' },
     ],
   },
 ];
