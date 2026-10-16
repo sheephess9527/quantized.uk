@@ -707,6 +707,8 @@ needs a `.gguf` extension or it writes the legacy format. `-t` unset already mea
 line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); HIP builds use
 `HIPCXX=… -DGPU_TARGETS=gfx…` and require ROCm ≥ 6.1; the repo and images live under `ggml-org`;
 **`ghcr.io/ggml-org/llama.cpp:server` is CPU-only** — GPU commands need `:server-cuda` / `:server-rocm`.
+**Since v0.7.0 (2026-10-15) `llama-server` defaults to port 9931, not 8080** (Docker images keep 8080
+inside the container) — every command here must keep passing `--port` explicitly; never write "8080 by default".
 
 **Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
 projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
@@ -1075,6 +1077,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-16 | **Runtime versions + llama-server default port 9931** — llama.cpp b11671 / v0.7.0, Ollama v0.40.5; all site commands already pass `--port`; Nemotron 3.5 Bolt 74B-A9B held back (Puzzle block layout only in its HF config, unreachable) |
 | 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |
 | 2026-10-14 (ii) | **+1 model (102): LFM2.5 24B-A2B** — Liquid AI, released 10-12; shape read from the official `config.json` (40 layers = 10 `full_attention` + 30 `conv`, 8 KV × 64, 131072); params = Hub safetensors total 23.97B, 2.45B active from the card (explicit `activeParams`, label rounds to A2B); Q4_K_M 4.85 / Q8_0 8.51 bpw from Liquid's own GGUF byte counts; 15.3 GB @4K → green on ≥ 20 GB discrete / 24 GB Macs, amber on 16 GB; guide counts re-run (24/32 GB, 48 GB Mac, DGX Spark +1; 16 GB tight 72 → 73) |
 | 2026-10-14 | **Review of Grok calculator PRs #4–#7** — tg128 spot-checked exact; calibrated speed limited to dense 7–33B (printed 1,381 tok/s for a 0.5B); speed sort by bandwidth ceiling for all rows (MoE sorted under 32B); `?all=1` now written by `syncUrl`; vLLM launch tab follows `formatAllowed()` |

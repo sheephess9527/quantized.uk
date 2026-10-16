@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-16 — Runtime versions; llama-server default port is now 9931
+
+- llama.cpp b11671 + release v0.7.0 (Latest). Verbatim from the release notes: "Server now listens on
+  port 9931 by default instead of 8080" and "default listening port changed to 9931 (Docker images
+  keep 8080 inside the container)". Scanned every `llama-server` block in the guides and the CLI
+  generator: all pass `--port` explicitly, and no prose claims 8080 is the default — nothing to
+  change beyond telling readers. Also new: `--moe-cache-mib` (GPU cache for host-offloaded experts).
+- Ollama v0.40.5 (Latest; adds Nemotron 3.5 Super / Bolt). vLLM v0.31.0, ExLlamaV3 1.6.2 unchanged.
+- **Held back: NVIDIA Nemotron 3.5 Bolt 74B-A9B** (10-15, built for 24 GB cards, llama.cpp v0.7.0
+  supports it). Its block layout is a heterogeneous "Puzzle" `block_configs` in the checkpoint's own
+  `config.json` (llama.cpp's `NemotronHPuzzleModel` reads it; nothing in the converter fixes the
+  counts), and huggingface.co, unsloth.ai, lmstudio.ai, nvidia.com and the NVIDIA forums were all
+  unreachable from here today. The only layer count found (8 attention of 88 blocks, ~8 KB/token)
+  comes from a third-party calculator — not a source this site sizes from. Nemotron 3.5 Super VL
+  120B-A12B and Meta's Muse Spark Open 816B-A42B (10-15) skipped for the same reason / size.
+
 ### 2026-10-15 — Runtime versions; no model
 
 - llama.cpp b11632 (tags page, verbatim), Ollama v0.40.4 (Latest; v0.40.5-rc0 is a pre-release,

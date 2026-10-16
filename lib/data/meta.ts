@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-15';
+export const dataLastUpdated = '2026-10-16';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-15',
+  checkedAt: '2026-10-16',
   current: {
-    llamacpp: 'b11632',
+    llamacpp: 'b11671',
     vllm: 'v0.31.0',
-    ollama: 'v0.40.4',
+    ollama: 'v0.40.5',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-16',
+    en: 'llama.cpp\'s server now listens on port 9931 by default instead of 8080. Its v0.7.0 release (build b11671) changed the default; every llama-server command on this site already sets --port explicitly, so they keep working as written, but a server started without --port will no longer answer on 8080. Ollama is at v0.40.5; vLLM and ExLlamaV3 are unchanged.',
+    zh: 'llama.cpp 的服务端现在默认监听 9931 端口，不再是 8080。这是它 v0.7.0 版本（构建 b11671）改的默认值；本站所有 llama-server 命令都显式写了 --port，照抄仍然可用，但不带 --port 启动的服务不会再在 8080 上响应。Ollama 更新到 v0.40.5；vLLM 和 ExLlamaV3 没有变化。',
+  },
   {
     date: '2026-10-15',
     en: 'Runtime versions re-checked: llama.cpp is at b11632, Ollama at v0.40.4 and ExLlamaV3 at v1.6.2; vLLM (v0.31.0) is unchanged. This Ollama release can run decision models from the terminal and reuses loaded models for faster starts. No new open-weight model this week was one that fits local hardware and had weights out.',
