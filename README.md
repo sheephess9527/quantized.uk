@@ -433,7 +433,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   counts), and huggingface.co, unsloth.ai, lmstudio.ai, nvidia.com and the NVIDIA forums were all
   unreachable from here today. The only layer count found (8 attention of 88 blocks, ~8 KB/token)
   comes from a third-party calculator — not a source this site sizes from. Nemotron 3.5 Super VL
-  120B-A12B and Meta's Muse Spark Open 816B-A42B (10-15) skipped for the same reason / size.
+  120B-A12B and Meta's Muse Spark Open 816B-A42B (10-15) held back for the same reason.
+  **Correction (same day): Muse Spark Open was first logged here as skipped "for size" — wrong.** At
+  Q2_K (2.63 bpw) its weights are ~250 GiB, ~275 GiB with the buffer, which fits the Mac M5 Ultra
+  512G row (384 GiB usable) and sits near the 4 × H100 limit; ggml-org ships Q2_K / Q4_K_S / Q8_0
+  GGUFs (arch `muse-spark`) and llama.cpp supports it. MiMo-V2.6-Pro (1T) is already indexed, so size
+  was never the bar. The real blocker is the same as Bolt's: layer/KV layout only from secondary
+  write-ups (62 layers, 128 Q / 16 KV heads) and no reachable file listing. Next patrol retries.
 
 ### 2026-10-15 — Runtime versions; no model
 
