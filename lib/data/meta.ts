@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-16',
+    en: 'Nemotron 3.5 Lightning and the rest of IBM\'s Granite 4.2 family are in the index. Lightning is a 30B mixture-of-experts model with about 3B parameters active per token; only 6 of its 52 layers keep a growing cache, so at Q4_0 it needs about 19.8 GB at 4K and still only 20.6 GB at 128K, comfortable on a 24 GB card. Granite 4.2 30B is a dense model that needs about 19.6 GB at 4K, comfortable on 24 GB at short contexts. Granite 4.2 3B needs 2.7 GB and runs on any card here.',
+    zh: 'Nemotron 3.5 Lightning 和 IBM Granite 4.2 系列的其余两个尺寸已收录。Lightning 是 30B 混合专家模型，每个 token 约激活 3B 参数；52 层中只有 6 层的缓存随上下文增长，所以 Q4_0 在 4K 下约需 19.8 GB，到 128K 也只要 20.6 GB，24 GB 显卡可以从容运行。Granite 4.2 30B 是稠密模型，4K 下约需 19.6 GB，24 GB 显卡在短上下文下从容运行。Granite 4.2 3B 只要 2.7 GB，本站收录的任何显卡都能跑。',
+  },
+  {
+    date: '2026-10-16',
     en: 'NVIDIA\'s Nemotron 3.5 Bolt and Super VL are in the index. Bolt is a 74B mixture-of-experts model built to fit a 24 GB card: NVIDIA\'s 2-bit file needs about 23.1 GB at 4K and 24.1 GB at 128K, tight on 24 GB and comfortable on 32 GB. Super VL is the 120B vision-language model it was compressed from; at Q4_0 it needs about 75 GB, comfortable on a 128 GB Mac or a DGX Spark 128G. Both keep a growing cache on only 8 of 88 layers, so long context is cheap.',
     zh: 'NVIDIA 的 Nemotron 3.5 Bolt 和 Super VL 已收录。Bolt 是为 24 GB 显卡打造的 74B 混合专家模型：NVIDIA 官方 2-bit 文件在 4K 下约需 23.1 GB，128K 约 24.1 GB，24 GB 显卡偏紧，32 GB 从容。Super VL 是它压缩前的 120B 视觉语言模型，Q4_0 约需 75 GB，128 GB 的 Mac 或 DGX Spark 128G 可以从容运行。两者 88 层中只有 8 层的缓存会随上下文增长，所以长上下文很便宜。',
   },

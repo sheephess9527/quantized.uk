@@ -120,6 +120,10 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
     ? `更小的 ${quantLevelKey(smaller.q)} 版本约需 ${smaller.size.toFixed(1)} GB，${smaller.card!.name} 可以宽裕运行。`
     : '';
   const native = isNativeQuant(ref);
+  // Q4_K_M (or a native build) is what people run; a Q4_0 / Q4_K_S reference is only the 4-bit build that exists.
+  const commonRef = native || ref.level === 'Q4_K_M';
+  const refRoleEn = commonRef ? `${refKey} is the level most people run` : `${refKey} is the 4-bit build this page is sized at`;
+  const refRoleZh = commonRef ? `${refKey} 是多数人使用的档位` : `${refKey} 是本页计算体积所用的 4-bit 版本`;
   const formats = Array.from(new Set(model.quants.map(q => q.format)));
   const levels = model.quants.map(quantLevelKey);
   const best = bestQuant(model.quants);
@@ -290,16 +294,16 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
           (levels.length === 1
             ? `${levels[0]} is the only level in the index for this model, so there is nothing to choose between here.`
             : (best.pplLossPercent !== undefined
-              ? `${quantLevelKey(best)} has the lowest published quality loss (${best.pplLossPercent.toFixed(1)}%), and ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : `${refKey} is the level most people run`}. `
-              : `No published quality comparison exists for this model, so pick by footprint: ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : `${refKey} is the level most people run`}, and a higher bits-per-weight level is more faithful. `) +
+              ? `${quantLevelKey(best)} has the lowest published quality loss (${best.pplLossPercent.toFixed(1)}%), and ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : refRoleEn}. `
+              : `No published quality comparison exists for this model, so pick by footprint: ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : refRoleEn}, and a higher bits-per-weight level is more faithful. `) +
               `All ${levels.length} levels in the index are ${levels.join(', ')}.`) +
           (moe ? ` Note this is a mixture-of-experts model — all parameters must be resident even though only a fraction are active per token, so the memory cost follows the total, not the active count.` : ''),
         zh:
           (levels.length === 1
             ? `本索引只收录了这个模型的 ${levels[0]} 一个档位，这里没有可选的。`
             : (best.pplLossPercent !== undefined
-              ? `${quantLevelKey(best)} 的公开质量损失最低（${best.pplLossPercent.toFixed(1)}%），而 ${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : `${refKey} 是多数人实际使用的档位`}。`
-              : `该模型没有公开的质量对比数据，所以按体积来选：${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : `${refKey} 是多数人使用的档位`}，bits-per-weight 越高越忠实。`) +
+              ? `${quantLevelKey(best)} 的公开质量损失最低（${best.pplLossPercent.toFixed(1)}%），而 ${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : refRoleZh}。`
+              : `该模型没有公开的质量对比数据，所以按体积来选：${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : refRoleZh}，bits-per-weight 越高越忠实。`) +
               `索引中的 ${levels.length} 个档位是 ${levels.join('、')}。`) +
           (moe ? ` 注意这是 MoE 模型 —— 尽管每个 token 只激活一部分参数，全部参数仍需驻留显存，因此显存开销按总参数量算，而不是激活参数量。` : ''),
       },

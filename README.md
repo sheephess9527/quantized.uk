@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-16 (iv) — +3 models (108): Granite 4.2 30B, Granite 4.2 3B, Nemotron 3.5 Lightning 30B-A3B
+
+The owner pasted the official `config.json`s and HF tree-API byte sizes for the candidates the patrols
+had held back (huggingface.co is blocked here).
+
+- **Granite 4.2 30B / 3B**: dense `GraniteForCausalLM`, no `layer_types`. The 30B has 64 layers, 32/8 heads × 128 and SwiGLU 32768. The 3B has 40 layers, 40/8 heads × 64 and SwiGLU 8192. Both use a 100352 vocab, untied. Counted from config: 29.277B / 3.660B, against IBM's BF16 GGUFs at 29.279B / 3.662B. bpw comes from IBM's own GGUF repo:
+  - 30B: Q4_K_M 4.84, Q5_K_M 5.68, Q6_K 6.56, Q8_0 8.50.
+  - 3B: Q4_K_M 4.90, Q5_K_M 5.71, Q8_0 8.50.
+
+  30B Q4_K_M is 19.6 GB at 4K: comfortable on 24 GB to 8K, tight at 16K. 3B Q4_K_M is 2.7 GB. `hfRepoMap` points at IBM's `-GGUF` repos, whose filenames match what the CLI builds.
+- **Nemotron 3.5 Lightning 30B-A3B**: `nemotron_h`, text only. 52 layers = 23 mamba + 23 moe + 6 attention, 2 KV × 128; 128 experts top-6 plus one shared expert. Counted 31.58B total / ~3.2B active, against ggml-org's BF16 GGUF at 31.59B. Q4_0 4.79 / Q8_0 8.51 bpw. Q4_0 is 19.8 GB at 4K and 20.6 GB at 128K: comfortable on 24 GB, tight only at the full 256K. The MTP draft file ships separately and is not in `params`.
+- **Kolibri-1 still skipped**: only a community GGUF exists, and it needs a patched llama.cpp (`kolibri1`).
+- **Guide counts**: cards with ≥24 GB gain 3 and smaller cards gain 1; the RX 7900 XT gains 1 comfortable / 3 tight. Updated: 7900 XTX 84, 16 GB 63, 12 GB 56/58, B580 56, A770 59 / B570 48 / A750 40, 4060 Ti 63/74, 5090 88 vs 4090 84, Spark 96/100, M3 Max 48 88.
+- **Fixed in passing**:
+  - The quantize guide said every GGUF model ships Q4_K_M; that has been false since MiMo, and is now 103 of 108.
+  - The calculator's size-class intro now names the 4-bit fallback `referenceQuant` already used.
+  - `todayFeed` had two entries with `id: 17`, which collided as React keys.
+  - Model-page FAQ called a Q4_0 / Q4_K_S reference "the level most people run". That wording is now kept for Q4_K_M or native builds; otherwise it says the page is sized at that 4-bit build. Affects Super VL and Lightning.
+
 ### 2026-10-16 (iii) — +2 models (105): Nemotron 3.5 Bolt 74B-A9B, Super VL 120B-A12B
 
 Unblocked by the owner, who read huggingface.co (blocked here) and pasted both official BF16
