@@ -419,6 +419,39 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-16 (iii) — +2 models (105): NVIDIA Nemotron 3.5 Bolt 74B-A9B, Nemotron 3.5 Super VL 120B-A12B
+
+Grok Bot model tracker (draft PR, branch `model-tracker/2026-10-16`). Both were held in (ii) and the
+morning patrol only because their checkpoint `config.json` was unreachable; huggingface.co is
+reachable from Grok Bot's machine, so the shapes below are read from the files themselves.
+- **Bolt shape, primary:** `nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-BF16/config.json` — `llm_config`
+  `NemotronHPuzzleForCausalLM`, `layers_block_type` 88 = 40 `mamba` + 40 `moe` + 8 `attention`,
+  hidden 4096, 32 heads, `num_key_value_heads` 2, `head_dim` 128, `max_position_embeddings` 262144;
+  Puzzle `block_configs` vary experts / widths per MoE layer at top-9. Cross-check: GGUF header of
+  unsloth's IQ2_XXS (byte-identical size to NVIDIA's own 24GB GGUF, 22,018,326,528 B) —
+  `nemotron_h_moe`, block_count 88, context_length 262144, key/value_length 128. `fullLayers: 8`.
+- **Super VL shape, primary:** `nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16/config.json` —
+  `NemotronHForCausalLM`, same 88 = 40 / 40 / 8 split, 2 KV × 128, 512 experts top-22, one MTP layer,
+  1048576 positions. ggml-org's Q8_0 GGUF header: `head_count_kv` 2 on layers 7, 16, 25, 36, 47, 58,
+  69, 78 and 0 on the other 80. So the Nemotron 3 Super layout does carry over.
+- **Params** = GGUF tensor totals (header parsed over HTTP range reads): Bolt 74,042,720,848, Super
+  120,668,707,840 (vision encoder and MTP head ship as separate files; the Hub safetensors totals
+  74.89B / 124.45B include them). Mamba-2 states are fixed-size (< 0.2 GB) and not counted.
+- **bpw from file listings:** Bolt IQ2_XXS 22,018,326,528 B → 2.38 (its only GGUF; BF16 is for
+  fine-tuning). Super Q4_K_M (lmstudio-community, split) 70,103,292,320 B → 4.65; Q8_0 (ggml-org)
+  128,472,993,728 B → 8.52. The "LM Studio ~70 GB vs Unsloth UD-Q4_K_XL 86.9 GB" conflict noted in
+  (ii) is two recipes, not a discrepancy. All `estimated`.
+- **Sizes:** Bolt 23.05 GB @4K, 25.2 @256K → tight on 24 GB (4090, 3090, 7900 XTX, P40, M5 32G),
+  green on 5090 and up. Super Q4_K_M 73.3 @4K / 82.1 @1M → green on 128 GB Macs / DGX Spark 128 /
+  CPU 128, tight on A100-80 / H100-80 / M2 Max 96; Q8_0 134.3 → green on M5 Ultra 256/512 only.
+- **New level:** `IQ2_XXS` (2.06, ggml's 2.0625-bit block) in `quantBPW` and first in
+  `quantGroups.GGUF`, so the calculator can select Bolt's build.
+- **CLI repos:** Bolt → `unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF` (filename
+  `<repo>-IQ2_XXS.gguf` matches the generator); Super → original weights (placeholder), since LM
+  Studio's Q4_K_M is split and ggml-org has no Q4_K_M.
+- **Guide counts:** totals 103 → 105; 4K comfortable: RTX 5090 84 → 85, M3 Max 48G 84 → 85, DGX Spark
+  64 92 → 93, DGX Spark 128 95 → 97 (other quoted counts unchanged). Feed ids 19/20 (18 is PR #8's).
+
 ### 2026-10-16 (ii) — +1 model (103): Muse Spark Open 816B-A42B
 
 Re-verified on the owner's request after the morning patrol wrongly skipped it "for size".

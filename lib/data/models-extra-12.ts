@@ -15,6 +15,7 @@ const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
 const ADDED_MUSE_SPARK = '2026-10-16';
 const ADDED_LFM25 = '2026-10-14';
+const ADDED_NEMOTRON35 = '2026-10-16';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -474,6 +475,70 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
       { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Bolt 74B-A9B (weights public 2026-10-15, OpenMDW-1.1). Official config.json
+    // of nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-BF16 (read 2026-10-16 from huggingface.co):
+    // NemotronH_Omni_Reasoning_V3 wrapping llm_config NemotronHPuzzleForCausalLM — 88 blocks,
+    // layers_block_type = 40 mamba + 40 moe + 8 attention; hidden 4096, 32 heads, num_key_value_heads
+    // 2, head_dim 128, max_position_embeddings 262144; Puzzle block_configs vary experts / widths per
+    // MoE layer, top-9. Cross-checked against the GGUF header of unsloth's IQ2_XXS file (byte-identical
+    // size to NVIDIA's own 24GB GGUF, 22,018,326,528 B): nemotron_h_moe, block_count 88,
+    // context_length 262144, key/value_length 128. Mamba-2 layers keep a fixed-size state (40 × 128
+    // heads × 64 × 128 — under 0.2 GB), not counted, like other linear layers here.
+    // params = that GGUF's tensor total, 74,042,720,848 (Hub safetensors 74.89B includes the vision
+    // encoder, which ships as a separate 1.73 GB mmproj file). bpw = 22,018,326,528 × 8 / 74.04e9 =
+    // 2.38 (experts IQ2_XXS, Mamba NVFP4, embeddings/output Q8_0 per the card). No other GGUF level
+    // exists: the BF16 checkpoint is published for fine-tuning only.
+    id: 'nemotron-3.5-bolt-74b-a9b',
+    name: 'Nemotron 3.5 Bolt 74B-A9B',
+    family: 'NVIDIA Nemotron',
+    params: 74.04,
+    paramLabel: '74B-A9B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers that keep a growing cache; 40 are Mamba-2 layers with a fixed-size state and 40 are mixture-of-experts feed-forward blocks, so the cache grows by only about 8 KB per token.', zh: '88 层中只有 8 层是会让缓存增长的注意力层；40 层是只有固定大小状态的 Mamba-2 层，另外 40 层是混合专家前馈块，所以每个 token 只让缓存增长约 8 KB。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Bolt, released in October under the OpenMDW license, is a 74B mixture-of-experts vision-language model with 9B active parameters. NVIDIA compressed it from Nemotron 3.5 Super and ships it for local use only as a native 2-bit build (IQ2_XXS experts, trained for that precision) sized for a 24 GB card. Only 8 of its 88 layers keep a growing cache, so context is cheap: the 22.0 GB file needs about 23.1 GB at 4K context and 25.2 GB at its full 256K window on this site\'s rule, which adds a 10% working buffer. That is tight on 24 GB cards such as the RTX 4090, 3090 and RX 7900 XTX, and comfortable on a 32 GB RTX 5090, 36 GB Macs and anything larger. The 1.7 GB vision encoder ships as a separate file and is not included. There is no 4-bit or 8-bit GGUF: the full-precision checkpoint is published for fine-tuning. NVIDIA\'s benchmarks are its own and no perplexity has been published for the 2-bit build.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Bolt，10 月以 OpenMDW 许可发布：74B 混合专家视觉语言模型，每个 token 激活 9B 参数。NVIDIA 从 Nemotron 3.5 Super 压缩而来，面向本地使用只发布原生 2-bit 版本（专家层为 IQ2_XXS，并针对这个精度做过训练），目标是装进 24 GB 显卡。88 层中只有 8 层保留会增长的缓存，所以上下文很便宜：22.0 GB 的文件在 4K 上下文下约需 23.1 GB，用满 256K 窗口约 25.2 GB（本站规则另加 10% 运行缓冲）。在 RTX 4090、3090、RX 7900 XTX 这类 24 GB 显卡上属于「勉强」，在 32 GB 的 RTX 5090、36 GB 的 Mac 及更大的设备上可以从容运行。1.7 GB 的视觉编码器是单独的文件，未计入。没有 4-bit 或 8-bit 的 GGUF：全精度检查点是给微调用的。基准成绩是 NVIDIA 自己报的，2-bit 版本的困惑度未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.05, hfSearchUrl: hf('Nemotron-3.5-Bolt-74B-A9B GGUF IQ2_XXS'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Super VL 120B-A12B (weights public 2026-10-15, OpenMDW-1.1). Official
+    // config.json of nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16 (read 2026-10-16 from
+    // huggingface.co): llm_config NemotronHForCausalLM — 88 layers, layers_block_type = 40 mamba +
+    // 40 moe + 8 attention, hidden 4096, 32 heads, num_key_value_heads 2, head_dim 128, 512 experts
+    // top-22 + 1 shared at latent 1024, one MTP layer, max_position_embeddings 1048576. So the
+    // Nemotron 3 Super layout carries over (README §9 2026-10-16 held this for want of exactly that
+    // file). ggml-org's Q8_0 GGUF header agrees: block_count 88, context_length 1048576,
+    // head_count_kv 2 on layers 7, 16, 25, 36, 47, 58, 69, 78 and 0 elsewhere.
+    // params = ggml-org GGUF tensor total, 120,668,707,840 (MTP head and mmproj ship as separate files;
+    // Hub safetensors 124.45B includes both). bpw from file listings: lmstudio-community Q4_K_M
+    // 70,103,292,320 B → 4.65; ggml-org Q8_0 128,472,993,728 B → 8.52. Unsloth's UD-Q4_K_XL (86.9 GB)
+    // is a different recipe (wider attention/shared tensors), not a conflict with LM Studio's Q4_K_M.
+    id: 'nemotron-3.5-super-vl-120b-a12b',
+    name: 'Nemotron 3.5 Super VL 120B-A12B',
+    family: 'NVIDIA Nemotron',
+    params: 120.67,
+    paramLabel: '120B-A12B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['pro-gpu', 'mac'],
+    contextLength: 1048576,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers that keep a growing cache; 40 are Mamba-2 layers with a fixed-size state and 40 are mixture-of-experts blocks, so even the full 1M-token window adds only about 8 GB.', zh: '88 层中只有 8 层是会让缓存增长的注意力层；40 层是只有固定大小状态的 Mamba-2 层，另外 40 层是混合专家块，所以即使用满 100 万 token 窗口，缓存也只多约 8 GB。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Super VL, released in October under the OpenMDW license, is a 120B mixture-of-experts vision-language model with 12B active parameters. It takes text, images and video, is built for agent work, and supports a 1M-token window. Only 8 of its 88 layers keep a growing cache, so the full window adds only about 8 GB: at Q4_K_M (LM Studio\'s 70.1 GB file) it needs about 73 GB at 4K context and 82 GB at 1M. That is comfortable on 128 GB Macs, DGX Spark and larger Mac Studios, and tight on a single 80 GB A100 or H100. Q8_0 (ggml-org\'s 128.5 GB file) needs about 134 GB, which only the 256 GB and 512 GB Mac Studios hold comfortably. The multi-token-prediction head used for speculative decoding and the 1.7 GB vision encoder ship as separate files and are not included. Sizes come from the published GGUF files; NVIDIA\'s benchmarks are its own and no per-level quality loss has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Super VL，10 月以 OpenMDW 许可发布：120B 混合专家视觉语言模型，每个 token 激活 12B 参数。它接受文本、图像和视频输入，面向智能体任务，支持 100 万 token 上下文。88 层中只有 8 层保留会增长的缓存，所以用满窗口也只多约 8 GB：Q4_K_M（LM Studio 发布的 70.1 GB 文件）在 4K 上下文下约需 73 GB，100 万上下文约 82 GB。128 GB 的 Mac、DGX Spark 和更大的 Mac Studio 可以从容运行，单张 80 GB 的 A100 或 H100 则偏紧。Q8_0（ggml-org 发布的 128.5 GB 文件）约需 134 GB，只有 256 GB 和 512 GB 的 Mac Studio 能从容装下。用于投机解码的多 token 预测头和 1.7 GB 的视觉编码器是单独的文件，未计入。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.65, vramGB: 73.33, hfSearchUrl: hf('Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 134.32, hfSearchUrl: hf('Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

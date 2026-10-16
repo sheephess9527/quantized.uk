@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **103** in index (`models-extra` … `models-extra-12`) |
+| Models | **105** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1064,6 +1064,7 @@ Newest first. Times are CST (UTC+8).
 
 | When (CST) | Where | Change | Status |
 |------------|-------|--------|--------|
+| 2026-10-16 10:40 | PR (draft), branch `model-tracker/2026-10-16` | +2 models (105): NVIDIA Nemotron 3.5 Bolt 74B-A9B and Nemotron 3.5 Super VL 120B-A12B (weights public 10-15; README §9 had both held for want of their HF `config.json`, which Grok Bot read). New GGUF level `IQ2_XXS` (2.06) in `lib/utils/vram.ts` `quantBPW` + first in `quantGroups.GGUF` (Bolt's only GGUF; the GGUF tab's first button is now IQ2_XXS). `models-extra-12.ts`, `models.ts` feed ids 19/20 (18 is left for PR #8's Ling), `hf-repos.mjs`, `meta.ts` changelog, guide counts "of the 103" → "of the 105" plus 5090 84→85, M3 Max 48G 84→85, DGX Spark 64/128 92→93 / 95→97. Details in README §9 "2026-10-16 (iii)". If PR #8 merges first, totals become 106 and its count edits must be re-run. | Draft, not merged |
 | 2026-10-14 | PR #7, branch `grokbot/calc-share-card` | Calculator: 'Save result as image' (new `components/tools/ShareCard.tsx`) draws a 1200×630 PNG on a client-side canvas — model, level, context, total/weights/KV, card + verdict, calibrated speed when available, 'estimate' label, bilingual. No server image endpoint (zero Cloudflare requests). | Merged |
 | 2026-10-14 | PR #6, branch `grokbot/calc-launch-commands` | Calculator: inline copy-ready launch commands (new `components/tools/LaunchCommands.tsx`) under the forward result — llama.cpp / Ollama for the GGUF level, vLLM for the model's AWQ/GPTQ level (hidden on Macs). All text from `generateCLI` (no second generator); `-ngl` follows `offloadPlan` when the model spills to RAM. The cli-gen link stays for Docker/API-key options. | Merged |
 | 2026-10-14 | PR #5, branch `grokbot/calc-reverse-reach` | Calculator reverse mode ('I have this card'): one row per model by default (best-quality level that fits, green over tight; `?all=1` or the checkbox shows every level), quality sort ranks larger models first in that view, each row shows its longest context via `contextReach`. `getRecommendations` speed sort now uses the picked card's calibrated `measuredSpeed` (was always the RTX 4090 figure) — also affects the Hub's use of it. | Merged |
@@ -1077,6 +1078,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-16 (iii) | **+2 models (105): Nemotron 3.5 Bolt 74B-A9B + Super VL 120B-A12B** (Grok Bot draft PR) — shapes from the official HF `config.json` files (88 layers = 40 Mamba-2 + 40 MoE + 8 attention, 2 KV × 128; 262144 / 1048576 positions), cross-checked on GGUF headers (ggml-org Super Q8_0: head_count_kv 2 on layers 7/16/25/36/47/58/69/78); params = GGUF tensor totals 74.04B / 120.67B; Bolt IQ2_XXS 2.38 bpw (NVIDIA's only local build, 23.1 GB @4K → tight on 24 GB, green on 32 GB); Super Q4_K_M 4.65 (LM Studio) / Q8_0 8.52 (ggml-org), 73.3 / 134.3 GB @4K; new `IQ2_XXS` level |
 | 2026-10-16 (ii) | **+1 model (103): Muse Spark Open 816B-A42B** — shape from transformers' `configuration_muse_spark.py` (62 L, 16 full + 46 SWA @2560 cells, 16 KV × 64); 815.8B + llama.cpp `attn_gate` 4.16B = 820B (GGUF figure); bpw from ggml-org file sizes (Q2_K 2.97, Q8_0 8.51); Q2_K 319 GB @4K → 512 GB Mac only. The morning's "too big" skip was wrong — size is never the bar (MiMo is indexed). Nemotron 3.5 Super VL still unverifiable |
 | 2026-10-16 | **Runtime versions + llama-server default port 9931** — llama.cpp b11671 / v0.7.0, Ollama v0.40.5; all site commands already pass `--port`; Nemotron 3.5 Bolt 74B-A9B held back (Puzzle block layout only in its HF config, unreachable) |
 | 2026-10-15 | **Runtime versions** — llama.cpp b11632, Ollama v0.40.4, ExLlamaV3 1.6.2; no model (Mistral Large 4 / Beam weights still pending; Granite 4.2 30B layer count unverifiable) |
