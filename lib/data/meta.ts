@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-16';
+export const dataLastUpdated = '2026-10-17';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-16',
+  checkedAt: '2026-10-17',
   current: {
-    llamacpp: 'b11671',
+    llamacpp: 'b11703',
     vllm: 'v0.31.0',
     ollama: 'v0.40.5',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-17',
+    en: 'Runtime versions re-checked: llama.cpp is at b11703; Ollama (v0.40.5), vLLM (v0.31.0) and ExLlamaV3 (v1.6.2) are unchanged. No open-weight model released in the last few days is missing from the index.',
+    zh: '重新核对了运行时版本：llama.cpp 更新到 b11703；Ollama（v0.40.5）、vLLM（v0.31.0）和 ExLlamaV3（v1.6.2）没有变化。最近几天发布的开源权重模型，本站都已收录。',
+  },
   {
     date: '2026-10-16',
     en: 'Nemotron 3.5 Lightning and the rest of IBM\'s Granite 4.2 family are in the index. Lightning is a 30B mixture-of-experts model with about 3B parameters active per token; only 6 of its 52 layers keep a growing cache, so at Q4_0 it needs about 19.8 GB at 4K and still only 20.6 GB at 128K, comfortable on a 24 GB card. Granite 4.2 30B is a dense model that needs about 19.6 GB at 4K, comfortable on 24 GB at short contexts. Granite 4.2 3B needs 2.7 GB and runs on any card here.',

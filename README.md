@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-17 — Runtime versions (daily patrol)
+
+- llama.cpp b11703 (verbatim tag list; v0.7.0 is still the Latest release). Ollama is still v0.40.5 Latest; v0.40.6-rc1 is a pre-release and was skipped. vLLM v0.31.0 and ExLlamaV3 1.6.2 are unchanged.
+- No model added. Every open-weight release from the last ~7 days is already indexed: Muse Spark Open, Mellum2.1, the Nemotron 3.5 family and Granite 4.2.
+  - Kolibri-1 is still waiting for a ggml-org or bartowski GGUF.
+  - Still pending: Mistral Large 4 and Reflection Beam (weights not out), and Nemotron 3.5 Bolt E4B (due 10-23).
+- No new consumer card found.
+
 ### 2026-10-16 (iv) — +3 models (108): Granite 4.2 30B, Granite 4.2 3B, Nemotron 3.5 Lightning 30B-A3B
 
 The owner pasted the official `config.json`s and HF tree-API byte sizes for the candidates the patrols
