@@ -102,7 +102,28 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
   const smallest = fits[0];
   const tier = smallest ? fits.filter(g => g.vram === smallest.vram) : [];
   const spare = smallest ? usableCapacityGB(smallest) - at4k.totalGB : 0;
+  // When nothing clears the reference level, the honest next sentence is the
+  // largest shipped level that does fit somewhere — Muse Spark Open's Q8_0
+  // reference fits no row while its Q2_K fits a 512 GB Mac.
+  const smaller = smallest ? undefined : [...model.quants]
+    .filter(q => q !== ref && q.bpw < ref.bpw)
+    .sort((a, b) => b.bpw - a.bpw)
+    .map(q => {
+      const size = sizeAt(model, q.bpw, REF_CONTEXT).totalGB;
+      return { q, size, card: cardsFitting(size, q.format)[0] };
+    })
+    .find(x => x.card);
+  const smallerEn = smaller
+    ? `Its smaller ${quantLevelKey(smaller.q)} build needs about ${smaller.size.toFixed(1)} GB, which the ${smaller.card!.name} clears comfortably. `
+    : '';
+  const smallerZh = smaller
+    ? `更小的 ${quantLevelKey(smaller.q)} 版本约需 ${smaller.size.toFixed(1)} GB，${smaller.card!.name} 可以宽裕运行。`
+    : '';
   const native = isNativeQuant(ref);
+  // Q4_K_M (or a native build) is what people run; a Q4_0 / Q4_K_S reference is only the 4-bit build that exists.
+  const commonRef = native || ref.level === 'Q4_K_M';
+  const refRoleEn = commonRef ? `${refKey} is the level most people run` : `${refKey} is the 4-bit build this page is sized at`;
+  const refRoleZh = commonRef ? `${refKey} 是多数人使用的档位` : `${refKey} 是本页计算体积所用的 4-bit 版本`;
   const formats = Array.from(new Set(model.quants.map(q => q.format)));
   const levels = model.quants.map(quantLevelKey);
   const best = bestQuant(model.quants);
@@ -134,7 +155,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
               ? `The smallest cards in this index that clear that comfortably are ${smallest.vram} GB ones — ${tier.length} of them, from the ${smallest.name} up — `
               : `The smallest card in this index that clears that comfortably is the ${smallest.name} at ${smallest.vram} GB, `) +
             `and ${fits.length} of the ${GPU_ROWS} cards here do. `
-          : `No card in this index clears that comfortably, so it is a multi-GPU or CPU-offload proposition. `) +
+          : `No card in this index clears that comfortably at ${refKey}, so at that level it is a multi-GPU or CPU-offload proposition. ` + smallerEn) +
         `These are calculated figures, not measurements: the estimate stops counting a card as comfortable at 88% of its VRAM, ` +
         `which is roughly the room a desktop session needs.`,
       zh:
@@ -147,7 +168,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
               ? `本索引中能宽裕跑它的最小规格是 ${smallest.vram} GB 显卡 —— 共 ${tier.length} 张，${smallest.name} 起步；`
               : `本索引中能宽裕跑它的最小显卡是 ${smallest.vram} GB 的 ${smallest.name}，`) +
             `${GPU_ROWS} 张卡中有 ${fits.length} 张可以。`
-          : `本索引中没有任何单卡能宽裕运行它，因此需要多卡或 CPU 卸载。`) +
+          : `在 ${refKey} 下，本索引中没有任何单卡能宽裕运行它，这个档位需要多卡或 CPU 卸载。` + smallerZh) +
         `这些是计算值而非实测值：估算把「宽裕」的界线画在显存的 88%，大致就是桌面环境需要留出的余量。`,
     },
   });
@@ -254,13 +275,13 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             `${spare.toFixed(1)} GB spare on a ${smallest.name}` +
             (tier.length > 1 ? `, or on any of the other ${smallest.vram} GB cards here (${tier.length} in all). That is the smallest size in this index that clears it comfortably; ` : `. That is the smallest card in this index that clears it comfortably; `) +
             `${fits.length} of ${GPU_ROWS} do.`
-          : `Not comfortably on any single card in this index at ${refKey}. It needs about ${at4k.totalGB.toFixed(1)} GB, which means splitting across GPUs or offloading layers to system RAM.`,
+          : `Not comfortably on any single card in this index at ${refKey}. It needs about ${at4k.totalGB.toFixed(1)} GB, which means splitting across GPUs or offloading layers to system RAM.` + (smallerEn ? ` ${smallerEn.trim()}` : ''),
         zh: smallest
           ? `可以 —— 在 ${refKey}、${contextLabel(REF_CONTEXT)} 上下文下约需 ${at4k.totalGB.toFixed(1)} GB，` +
             `在 ${smallest.name} 上还剩 ${spare.toFixed(1)} GB` +
             (tier.length > 1 ? `，本索引中 ${tier.length} 张 ${smallest.vram} GB 显卡都一样。这是能宽裕跑它的最小规格；` : `。这是本索引中能宽裕跑它的最小显卡；`) +
             `${GPU_ROWS} 张中有 ${fits.length} 张可以。`
-          : `在 ${refKey} 下，本索引中没有单卡能宽裕运行它。它约需 ${at4k.totalGB.toFixed(1)} GB，意味着要多卡拆分或把部分层卸载到系统内存。`,
+          : `在 ${refKey} 下，本索引中没有单卡能宽裕运行它。它约需 ${at4k.totalGB.toFixed(1)} GB，意味着要多卡拆分或把部分层卸载到系统内存。` + smallerZh,
       },
     },
     {
@@ -273,16 +294,16 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
           (levels.length === 1
             ? `${levels[0]} is the only level in the index for this model, so there is nothing to choose between here.`
             : (best.pplLossPercent !== undefined
-              ? `${quantLevelKey(best)} has the lowest published quality loss (${best.pplLossPercent.toFixed(1)}%), and ${refKey} is the level most people run. `
-              : `No published quality comparison exists for this model, so pick by footprint: ${refKey} is the level most people run, and a higher bits-per-weight level is more faithful. `) +
+              ? `${quantLevelKey(best)} has the lowest published quality loss (${best.pplLossPercent.toFixed(1)}%), and ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : refRoleEn}. `
+              : `No published quality comparison exists for this model, so pick by footprint: ${smaller ? `${quantLevelKey(smaller.q)} is the largest level here that fits a single machine in this index` : refRoleEn}, and a higher bits-per-weight level is more faithful. `) +
               `All ${levels.length} levels in the index are ${levels.join(', ')}.`) +
           (moe ? ` Note this is a mixture-of-experts model — all parameters must be resident even though only a fraction are active per token, so the memory cost follows the total, not the active count.` : ''),
         zh:
           (levels.length === 1
             ? `本索引只收录了这个模型的 ${levels[0]} 一个档位，这里没有可选的。`
             : (best.pplLossPercent !== undefined
-              ? `${quantLevelKey(best)} 的公开质量损失最低（${best.pplLossPercent.toFixed(1)}%），而 ${refKey} 是多数人实际使用的档位。`
-              : `该模型没有公开的质量对比数据，所以按体积来选：${refKey} 是多数人使用的档位，bits-per-weight 越高越忠实。`) +
+              ? `${quantLevelKey(best)} 的公开质量损失最低（${best.pplLossPercent.toFixed(1)}%），而 ${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : refRoleZh}。`
+              : `该模型没有公开的质量对比数据，所以按体积来选：${smaller ? `${quantLevelKey(smaller.q)} 是能在本站单台机器上运行的最大档位` : refRoleZh}，bits-per-weight 越高越忠实。`) +
               `索引中的 ${levels.length} 个档位是 ${levels.join('、')}。`) +
           (moe ? ` 注意这是 MoE 模型 —— 尽管每个 token 只激活一部分参数，全部参数仍需驻留显存，因此显存开销按总参数量算，而不是激活参数量。` : ''),
       },

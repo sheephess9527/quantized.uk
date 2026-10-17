@@ -419,7 +419,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-10-15 (ii) — +1 model (103): Ling-3.1-flash
+### 2026-10-17 (ii) — +1 model (109): Ling-3.1-flash (PR #8, updated onto main)
 
 - **Model tracker (Grok Bot), draft PR:** inclusionAI (Ant Group) released **Ling-3.1-flash** weights on
   2026-10-13 (MIT). The morning patrol's "no open-weight release on 10-13/10-14" missed it; it is
@@ -439,9 +439,120 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   600,847,449,760); experts at the named type, attention/shared expert/router at q8_0 or higher. Both
   `estimated`; AtomicChat publishes KL divergence (0.01114 / 0.00503), not perplexity → no loss figure.
 - Sizes: Q4_K_M 370.6 GB @4K, 370.9 @32K, 373.3 @256K; Q8_0 627.6 @4K. Red on every card in the index;
-  tight (amber) on the M5 Ultra 512 (384 GB usable). Guide counts re-run with `countModelsFitting()`: no
-  comfortable count moved; M5 Ultra 512 tight 101 → 102 (not quoted in any guide); every "of the 102" →
-  "of the 103". Added to the homepage feed; HF stats map to `AtomicChat/Ling-3.1-flash-GGUF`.
+  tight (amber) on the M5 Ultra 512 (384 GB usable). Guide counts re-run with `countModelsFitting()` on
+  top of main (108 → 109): no comfortable count moved; M5 Ultra 512 tight 107 → 108 (not quoted in any
+  guide); every "of the 108" → "of the 109"; Q4_K_M coverage "103 of the 108" → "104 of the 109" (AWQ
+  53 and the 79-model loss median unchanged). Added to the homepage feed (`todayFeed` id 20; id 18 was
+  taken by Nemotron Bolt on main); `addedAt` / changelog date 2026-10-17, the day it ships. HF stats map
+  to `AtomicChat/Ling-3.1-flash-GGUF`.
+- **Duplicate check before merge (owner request):** no Ling / inclusionAI / bailing model on main or the
+  live site under any id or name; not in PR #9 or #10.
+
+### 2026-10-17 — Runtime versions (daily patrol)
+
+- llama.cpp b11703 (verbatim tag list; v0.7.0 is still the Latest release). Ollama is still v0.40.5 Latest; v0.40.6-rc1 is a pre-release and was skipped. vLLM v0.31.0 and ExLlamaV3 1.6.2 are unchanged.
+- No model added. Every open-weight release from the last ~7 days is already indexed: Muse Spark Open, Mellum2.1, the Nemotron 3.5 family and Granite 4.2.
+  - Kolibri-1 is still waiting for a ggml-org or bartowski GGUF.
+  - Still pending: Mistral Large 4 and Reflection Beam (weights not out), and Nemotron 3.5 Bolt E4B (due 10-23).
+- No new consumer card found.
+
+### 2026-10-16 (iv) — +3 models (108): Granite 4.2 30B, Granite 4.2 3B, Nemotron 3.5 Lightning 30B-A3B
+
+The owner pasted the official `config.json`s and HF tree-API byte sizes for the candidates the patrols
+had held back (huggingface.co is blocked here).
+
+- **Granite 4.2 30B / 3B**: dense `GraniteForCausalLM`, no `layer_types`. The 30B has 64 layers, 32/8 heads × 128 and SwiGLU 32768. The 3B has 40 layers, 40/8 heads × 64 and SwiGLU 8192. Both use a 100352 vocab, untied. Counted from config: 29.277B / 3.660B, against IBM's BF16 GGUFs at 29.279B / 3.662B. bpw comes from IBM's own GGUF repo:
+  - 30B: Q4_K_M 4.84, Q5_K_M 5.68, Q6_K 6.56, Q8_0 8.50.
+  - 3B: Q4_K_M 4.90, Q5_K_M 5.71, Q8_0 8.50.
+
+  30B Q4_K_M is 19.6 GB at 4K: comfortable on 24 GB to 8K, tight at 16K. 3B Q4_K_M is 2.7 GB. `hfRepoMap` points at IBM's `-GGUF` repos, whose filenames match what the CLI builds.
+- **Nemotron 3.5 Lightning 30B-A3B**: `nemotron_h`, text only. 52 layers = 23 mamba + 23 moe + 6 attention, 2 KV × 128; 128 experts top-6 plus one shared expert. Counted 31.58B total / ~3.2B active, against ggml-org's BF16 GGUF at 31.59B. Q4_0 4.79 / Q8_0 8.51 bpw. Q4_0 is 19.8 GB at 4K and 20.6 GB at 128K: comfortable on 24 GB, tight only at the full 256K. The MTP draft file ships separately and is not in `params`.
+- **Kolibri-1 still skipped**: only a community GGUF exists, and it needs a patched llama.cpp (`kolibri1`).
+- **Guide counts**: cards with ≥24 GB gain 3 and smaller cards gain 1; the RX 7900 XT gains 1 comfortable / 3 tight. Updated: 7900 XTX 84, 16 GB 63, 12 GB 56/58, B580 56, A770 59 / B570 48 / A750 40, 4060 Ti 63/74, 5090 88 vs 4090 84, Spark 96/100, M3 Max 48 88.
+- **Fixed in passing**:
+  - The quantize guide said every GGUF model ships Q4_K_M; that has been false since MiMo, and is now 103 of 108.
+  - The calculator's size-class intro now names the 4-bit fallback `referenceQuant` already used.
+  - `todayFeed` had two entries with `id: 17`, which collided as React keys.
+  - Model-page FAQ called a Q4_0 / Q4_K_S reference "the level most people run". That wording is now kept for Q4_K_M or native builds; otherwise it says the page is sized at that 4-bit build. Affects Super VL and Lightning.
+
+### 2026-10-16 (iii) — +2 models (105): Nemotron 3.5 Bolt 74B-A9B, Super VL 120B-A12B
+
+Unblocked by the owner, who read huggingface.co (blocked here) and pasted both official BF16
+`config.json` files plus GGUF tree-API byte counts (CDN `Content-Length` spot-checked on their side).
+- **Super VL** (`NemotronHForCausalLM`): 88 layers = 40 mamba / 40 moe / 8 attention, 2 KV × 128,
+  512 experts × 2688 at a 1024 latent, 22 per token, 1 shared 5376, vocab 131072 untied, 1M context.
+  Counted from the config: 120.67B total / 12.2B active; ggml-org BF16 GGUF 241,518,661,568 B =
+  120.76B (`params`). ggml-org Q4_0 71,803,752,384 B → 4.76 bpw; Q8_0 128,472,993,728 B → 8.51 (on 8.5).
+  Q4_0 75.1 GB @4K / 83.9 GB @1M → green on 128 GB Macs + Spark 128G, yellow on one 80 GB card.
+- **Bolt** (`NemotronHPuzzleForCausalLM`, per-block `block_configs`): same 88-layer pattern and
+  attention shape, 240–496 experts of width 1536–2560, 9 per token, 262144 context. Counted:
+  74.04B / 9.05B active (card: 74B / 9B). Only build: NVIDIA's native 2-bit (modelopt mixed: experts
+  + shared IQ2_XXS 2.0625, latent Q8_0), 22,018,326,528 B in both NVIDIA's 24GB GGUF and unsloth's
+  IQ2_XXS → 2.38 bpw; the recipe predicts 21.77 GB (within 1%). 23.05 GB @4K = 96% of 24 GB →
+  **tight**, not the comfortable fit NVIDIA's "24GB" name suggests; green from 32 GB / 48 GB Macs.
+  No `pplLossPercent`: a BF16 Bolt exists, so the 2-bit is a quantization with no published loss
+  (the 0.0 convention is only for models released *only* as quantized weights).
+- Mamba-2 state (~4 MiB × 40 layers, fp32, ~0.17 GB) is fixed and left inside the 10% buffer, as for
+  the other hybrids. Vision mmproj files are separate (0.97–1.73 GB).
+- `IQ2_XXS` (2.06) added to `quantBPW` + `quantGroups` so the calculator can select it.
+- `hfRepoMap` points at repos whose filenames were read (unsloth Bolt `…-IQ2_XXS.gguf`, ggml-org
+  Super `…-Q4_0.gguf` / `…-Q8_0.gguf`), so `<repo>-<level>.gguf` gives real commands, not placeholders.
+- `referenceQuant()` now tries Q4_K_S then Q4_0 after Q4_K_M, before `bestQuant`: Super VL (Q4_0 +
+  Q8_0 only) was sized at Q8_0 and its page named a 256 GB Mac as the smallest machine. Swept all 105
+  models: only Super VL and Muse Spark Open (now Q4_K_S, with the Q2_K fallback sentence) change.
+- Guide counts re-run with a before/after sweep: 5090 84→85, Spark 64/128 92→93 / 95→97, M3 Max 48
+  84→85; ≤ 24 GB comfortable counts unchanged (Bolt is tight there). Totals 103 → 105.
+
+### 2026-10-16 (ii) — +1 model (103): Muse Spark Open 816B-A42B
+
+Re-verified on the owner's request after the morning patrol wrongly skipped it "for size".
+- **Shape, primary:** transformers `models/muse_spark/configuration_muse_spark.py` (defaults
+  documented against `meta-models/Muse-Spark-Open-816B-A42B`, the only checkpoint): 62 layers, 8192
+  hidden, 128 heads, 16 KV × 64, vocab 202,048 untied, 256 experts / 8 at a 4096 latent width,
+  `sliding_window` 2048, full attention (NoPE) on every 4th layer counted back from the last →
+  16 full + 46 sliding, 1,048,576 positions. llama.cpp `src/models/muse-spark.cpp`: iSWA cache,
+  `LLAMA_SWA_TYPE_STANDARD` → 2560 cells per window layer (as Muse Glimmer).
+- **Params reconcile two ways:** that shape is 815.8B (Meta: 816B); llama.cpp also loads a per-layer
+  `attn_gate` (8192 × 8192 × 62 = 4.16B) → 820.0B, the figure ggml-org's GGUF shows. `params` = 820.
+- **bpw from ggml-org's GGUF card** (search snippet; huggingface.co blocked): Q2_K 304 GB, Q4_K_S
+  470 GB, Q8_0 872 GB, BF16 1.64 TB → 2.97 / 4.59 / 8.51 / 16.0. Q8_0 and BF16 on 8.5 / 16 confirm
+  the count and decimal units; the Q2_K's 2.97 matches its stated mixed recipe (expert gate/up Q2_K,
+  down Q3_K, latent/gate Q8_0 → computed 3.02). All `estimated`.
+- **Sizes:** Q2_K 318.9 GB @4K, 327.4 @128K, 389 @1M (KV 0.7 / 8.5 / 64.5 GB). Green on the Mac M5
+  Ultra 512G row (384 GiB usable), yellow on 4 × H100; Q4_K_S/Q8_0 fit nothing. No single-card count
+  moves, so guide prose changed only its "N of the 102" totals (22 strings).
+- CLI repo maps the original weights (split GGUF filenames not read) → command placeholder, like Glimmer.
+- Model-page prose sized it at its Q8_0 reference (912 GB) and said "no card clears that … multi-GPU or
+  CPU-offload", contradicting its own description. `modelExplainer()` now adds, only when nothing
+  clears the reference level, the largest shipped level that does fit a card (here Q2_K on the 512 GB
+  Mac), in section 1, the single-GPU FAQ and the "which quantization" FAQ (which had called the
+  unrunnable Q8_0 "the level most people run"). Swept all 103 models: this is the only page that changes.
+- **(Superseded by (iii): added once the owner supplied the config.) Still held then: Nemotron 3.5 Super VL 120B-A12B.** Neither transformers nor llama.cpp's converter fixes
+  its layer layout (it reads `NemotronHForCausalLM` hybrid patterns from the checkpoint config); the
+  Nemotron 3 Super tech report's 88 layers / 8 attention / 2 KV × 128 belong to the predecessor and no
+  source says 3.5 VL keeps them; Q4-class sizes conflict (LM Studio ~70 GB vs Unsloth UD-Q4_K_XL 86.9 GB).
+
+### 2026-10-16 — Runtime versions; llama-server default port is now 9931
+
+- llama.cpp b11671 + release v0.7.0 (Latest). Verbatim from the release notes: "Server now listens on
+  port 9931 by default instead of 8080" and "default listening port changed to 9931 (Docker images
+  keep 8080 inside the container)". Scanned every `llama-server` block in the guides and the CLI
+  generator: all pass `--port` explicitly, and no prose claims 8080 is the default — nothing to
+  change beyond telling readers. Also new: `--moe-cache-mib` (GPU cache for host-offloaded experts).
+- Ollama v0.40.5 (Latest; adds Nemotron 3.5 Super / Bolt). vLLM v0.31.0, ExLlamaV3 1.6.2 unchanged.
+- **Held back: NVIDIA Nemotron 3.5 Bolt 74B-A9B** (10-15, built for 24 GB cards, llama.cpp v0.7.0
+  supports it). Its block layout is a heterogeneous "Puzzle" `block_configs` in the checkpoint's own
+  `config.json` (llama.cpp's `NemotronHPuzzleModel` reads it; nothing in the converter fixes the
+  counts), and huggingface.co, unsloth.ai, lmstudio.ai, nvidia.com and the NVIDIA forums were all
+  unreachable from here today. The only layer count found (8 attention of 88 blocks, ~8 KB/token)
+  comes from a third-party calculator — not a source this site sizes from. Nemotron 3.5 Super VL
+  120B-A12B and Meta's Muse Spark Open 816B-A42B (10-15) held back for the same reason.
+  **Correction (same day): Muse Spark Open was first logged here as skipped "for size" — wrong.** At
+  Q2_K (2.63 bpw) its weights are ~250 GiB, ~275 GiB with the buffer, which fits the Mac M5 Ultra
+  512G row (384 GiB usable) and sits near the 4 × H100 limit; ggml-org ships Q2_K / Q4_K_S / Q8_0
+  GGUFs (arch `muse-spark`) and llama.cpp supports it. MiMo-V2.6-Pro (1T) is already indexed, so size
+  was never the bar. The real blocker is the same as Bolt's: layer/KV layout only from secondary
+  write-ups (62 layers, 128 Q / 16 KV heads) and no reachable file listing. Added later the same day — see (ii) above.
 
 ### 2026-10-15 — Runtime versions; no model
 

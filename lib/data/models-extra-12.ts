@@ -13,8 +13,12 @@ const ADDED_QWEN35_SMALL = '2026-10-11';
 const ADDED_MIMO26 = '2026-10-12';
 const ADDED_MELLUM21 = '2026-10-13';
 const ADDED_GRANITE42 = '2026-10-14';
+const ADDED_MUSE_SPARK = '2026-10-16';
+const ADDED_NEMOTRON35 = '2026-10-16';
+const ADDED_GRANITE42_MORE = '2026-10-16';
+const ADDED_LIGHTNING = '2026-10-16';
 const ADDED_LFM25 = '2026-10-14';
-const ADDED_LING31 = '2026-10-15';
+const ADDED_LING31 = '2026-10-17';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -410,6 +414,62 @@ export const extraModels12: QuantModel[] = [
     ],
   },
   {
+    // Granite 4.2 30B (IBM, model card dated 2026-08-25, Apache 2.0). Official config.json
+    // (ibm-granite/granite-4.2-30b, pasted by the owner 2026-10-16 — huggingface.co is blocked here):
+    // GraniteForCausalLM, 64 layers, hidden 4096, 32 heads / 8 KV × 128, SwiGLU 32768, vocab 100352
+    // untied, 131072 positions; no layer_types, so every layer keeps a full cache. Counted from that
+    // shape: 29.277B; IBM's BF16 GGUF is 58,558,182,336 B = 29.28B. bpw from IBM's own GGUF repo:
+    // Q4_K_M 17,721,455,328 → 4.84, Q5_K_M 20,775,957,216 → 5.68, Q6_K 24,021,365,472 → 6.56,
+    // Q8_0 31,111,705,312 → 8.50 (on 8.5: the count holds). The config's rope_theta is 5e7, the card
+    // says 1e7 — irrelevant to sizing.
+    id: 'granite-4.2-30b',
+    name: 'Granite 4.2 30B',
+    family: 'IBM Granite',
+    params: 29.28,
+    paramLabel: '30B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 131072,
+    arch: { layers: 64, attHeads: 32, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_GRANITE42_MORE,
+    description: {
+      en: 'The largest model in IBM\'s Granite 4.2 family, released in August under Apache 2.0. Like the 8B it is a plain dense transformer rather than Granite 4.0\'s hybrid design, so all 64 layers keep a full cache and context is not cheap: at Q4_K_M it needs about 19.6 GB at 4K, 27.3 GB at 32K and 53.7 GB across the whole 128K window. A 24 GB card runs it comfortably up to 8K and tightly at 16K; 32K needs a 32 GB card, and the full window an 80 GB card or a 96 GB Mac. Q8_0 (about 33.6 GB at 4K) wants a 48 GB card or a 64 GB Mac. Sizes come from IBM\'s own GGUF files; IBM publishes no perplexity by quantization level, so no quality-loss figure is shown.',
+      zh: 'IBM Granite 4.2 系列中最大的模型，8 月以 Apache 2.0 发布。和 8B 一样是普通的稠密 Transformer，不是 Granite 4.0 的混合架构，64 层全部保留完整缓存，所以上下文并不便宜：Q4_K_M 在 4K 下约需 19.6 GB，32K 约 27.3 GB，用满 128K 窗口约 53.7 GB。24 GB 显卡到 8K 都很宽裕，16K 偏紧；32K 需要 32 GB 显卡，用满窗口需要 80 GB 显卡或 96 GB 的 Mac。Q8_0（4K 下约 33.6 GB）需要 48 GB 显卡或 64 GB 的 Mac。体积按 IBM 官方 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.84, vramGB: 19.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 22.8, hfSearchUrl: hf('granite-4.2-30b GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 26.2, hfSearchUrl: hf('granite-4.2-30b GGUF Q6_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 33.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Granite 4.2 3B. Official config.json (ibm-granite/granite-4.2-3b, pasted by the owner
+    // 2026-10-16): GraniteForCausalLM, 40 layers, hidden 2560, 40 heads / 8 KV → head_dim 64, SwiGLU
+    // 8192, vocab 100352 untied, 131072 positions, no layer_types. Counted: 3.660B; IBM's BF16 GGUF
+    // 7,323,461,152 B = 3.66B. bpw from IBM's GGUF repo: Q4_K_M 2,244,011,552 → 4.90, Q5_K_M
+    // 2,613,634,592 → 5.71, Q8_0 3,892,651,552 → 8.50.
+    id: 'granite-4.2-3b',
+    name: 'Granite 4.2 3B',
+    family: 'IBM Granite',
+    params: 3.66,
+    paramLabel: '3B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: { layers: 40, attHeads: 40, kvHeads: 8, headDim: 64 },
+    addedAt: ADDED_GRANITE42_MORE,
+    description: {
+      en: 'The smallest model in IBM\'s Granite 4.2 family, released in August under Apache 2.0: a dense 3.7B transformer for laptops, small cards and CPU servers. At Q4_K_M it needs about 2.7 GB at 4K context, 5.1 GB at 32K and 13.3 GB across the whole 128K window, so an 8 GB card runs it comfortably up to 32K and tightly at 64K. Q8_0 is only 4.4 GB at 4K, small enough that there is little reason to go lower on a GPU. Sizes come from IBM\'s own GGUF files; IBM publishes no perplexity by quantization level, so no quality-loss figure is shown.',
+      zh: 'IBM Granite 4.2 系列中最小的模型，8 月以 Apache 2.0 发布：3.7B 稠密 Transformer，面向笔记本、小显存显卡和 CPU 服务器。Q4_K_M 在 4K 上下文下约需 2.7 GB，32K 约 5.1 GB，用满 128K 窗口约 13.3 GB，所以 8 GB 显卡到 32K 都很宽裕，64K 偏紧。Q8_0 在 4K 下也只要 4.4 GB，在显卡上几乎没有理由再往下压。体积按 IBM 官方 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.9,  vramGB: 2.7, hfSearchUrl: hf('granite-4.2-3b GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, vramGB: 3.1, hfSearchUrl: hf('granite-4.2-3b GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 4.4, hfSearchUrl: hf('granite-4.2-3b GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
     // Liquid AI LFM2.5-24B-A2B (2026-10-12, LFM Open License v1.0 — free below $10M annual revenue).
     // Official config.json (read 2026-10-14 from huggingface.co): Lfm2MoeForCausalLM, llama.cpp
     // `lfm2moe`; 40 layers, layer_types = 10 `full_attention` (GQA) + 30 `conv` (double-gated short
@@ -438,6 +498,132 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Meta Muse Spark Open (released 2026-10-15, Muse Model License). Shape from transformers'
+    // `models/muse_spark/configuration_muse_spark.py`, whose defaults are documented against this one
+    // checkpoint (`meta-models/Muse-Spark-Open-816B-A42B`): 62 layers, hidden 8192, 128 heads, 16 KV
+    // heads × head_dim 64, vocab 202,048 untied, 256 experts / 8 routed at a 4096 latent width,
+    // sliding_window 2048, every 4th layer counted back from the last is full attention (NoPE) →
+    // 16 full + 46 sliding, 1,048,576 positions. llama.cpp `muse-spark` (`src/models/muse-spark.cpp`):
+    // iSWA cache, LLAMA_SWA_TYPE_STANDARD → a window layer holds pad256(2048 + 512) = 2560 cells.
+    // That shape counts 815.8B (Meta: 816B); llama.cpp also loads a per-layer attention gate
+    // (8192 × 8192 × 62 = 4.16B), giving the 820B the ggml-org GGUF reports — `params` is what loads.
+    // bpw from ggml-org's own GGUF card (via search; huggingface.co is blocked here): Q2_K 304 GB,
+    // Q4_K_S 470 GB, Q8_0 872 GB, BF16 1.64 TB → 2.97 / 4.59 / 8.51 / 16.0 (Q8_0 and BF16 landing on
+    // 8.5 / 16 confirm the count and that the units are decimal GB). The Q2_K is ggml-org's mixed
+    // recipe (expert gate/up Q2_K, down Q3_K, latent projections and attention gate Q8_0), which is
+    // why it reads 2.97 rather than Q2_K's nominal 2.63. Vision/audio encoders ship as separate
+    // mmproj files (2.2–4.1 GB) and are not in `params`.
+    id: 'muse-spark-open-816b-a42b',
+    name: 'Muse Spark Open 816B-A42B',
+    family: 'Meta Muse',
+    params: 820.0,
+    paramLabel: '816B-A42B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 62, attHeads: 128, kvHeads: 16, headDim: 64, attention: { fullLayers: 16, windowLayers: 46, windowTokens: 2560, note: { en: '46 of 62 layers use a 2,048-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 2,560); only the 16 full-attention layers grow a cache with context.', zh: '62 层中 46 层使用 2,048 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 2,560），只有 16 层全注意力层的缓存随上下文增长。' } } },
+    addedAt: ADDED_MUSE_SPARK,
+    description: {
+      en: 'Meta\'s largest open-weight model, released in October under the Muse Model License. It is an 816B mixture-of-experts model with about 42B parameters active per token, built for coding and agent work, with image and audio input. It is a single-machine model only at its smallest build. At Q2_K (ggml-org\'s 304 GB file) it needs about 319 GB at 4K context and still only 327 GB at 128K, because just 16 of its 62 layers keep a growing cache — comfortable on a 512 GB Mac Studio and tight across four 80 GB H100s. The full 1M window brings it to about 389 GB. Q4_K_S (470 GB) and Q8_0 (872 GB) fit no single machine in this index. The vision and audio encoders ship as separate files of 2–4 GB and are not included. Sizes come from the published GGUF files; Meta\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'Meta 目前最大的开放权重模型，10 月以 Muse Model License 发布：816B 混合专家模型，每个 token 约激活 42B 参数，面向编程和智能体任务，支持图像和音频输入。只有最小的量化版本能在单台机器上运行。Q2_K（ggml-org 发布的 304 GB 文件）在 4K 上下文下约需 319 GB，到 128K 也只要 327 GB，因为 62 层中只有 16 层的缓存会随上下文增长——512 GB 的 Mac Studio 可以从容运行，四张 80 GB 的 H100 则偏紧。用满 100 万上下文约需 389 GB。Q4_K_S（470 GB）和 Q8_0（872 GB）在本站收录的任何单台机器上都装不下。视觉和音频编码器是另外 2–4 GB 的文件，未计入。体积按已发布的 GGUF 文件计算；基准成绩是 Meta 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Bolt 74B-A9B (released 2026-10-15). Shape from the official BF16 repo's
+    // config.json (nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-BF16, read from huggingface.co by the
+    // owner and pasted here 2026-10-16): NemotronHPuzzleForCausalLM, hidden 4096, 88 blocks =
+    // 40 mamba + 40 moe + 8 attention (layers 7, 16, 25, 36, 47, 58, 69, 78), 32 heads / 2 KV × 128,
+    // vocab 131072 untied, 262144 positions; per-block MoE from `block_configs` (240–496 routed
+    // experts of width 1536–2560 at a 1024 latent, 9 per token, 1 shared expert 5376). Counted from
+    // that config: 74.04B total, 9.05B active (card: 74B / 9B). Mamba-2 state (128 heads × 64 ×
+    // state 128, fp32, ~4 MiB a layer, ~0.17 GB in all) does not grow with context; calcVRAM leaves
+    // it inside the 10% buffer, as for the other hybrid entries. The only build is NVIDIA's native
+    // 2-bit one (modelopt MIXED_PRECISION: experts + shared expert IQ2_XXS at 2.0625, latent
+    // projections Q8_0): 22,018,326,528 B in both the official 24GB GGUF and unsloth's IQ2_XXS file
+    // → 2.38 bpw; that recipe predicts 21.77 GB, within ~1%. The vision encoder ships separately
+    // (mmproj 1,733,692,736 B). llama.cpp v0.7.0 lists the arch; Ollama v0.40.5 ships it.
+    id: 'nemotron-3.5-bolt-74b-a9b',
+    name: 'Nemotron 3.5 Bolt 74B-A9B',
+    family: 'NVIDIA Nemotron',
+    params: 74.04,
+    paramLabel: '74B-A9B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers with a growing KV cache (2 KV heads × 128); 40 are Mamba-2 layers with a fixed recurrent state and 40 are mixture-of-experts layers that cache nothing per token.', zh: '88 层中只有 8 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；40 层是状态大小固定的 Mamba-2 层，另 40 层是不缓存任何内容的混合专家层。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Bolt is a 74B mixture-of-experts model with about 9B parameters active per token, built to fit a 24 GB card. It is compressed from Nemotron 3.5 Super VL and ships in one build, NVIDIA\'s own native 2-bit file of 22.0 GB. Only 8 of its 88 layers keep a growing cache, so context costs little: about 23.1 GB at 4K, 24.1 GB at 128K and 25.2 GB at its full 256K window. That is the 24 GB NVIDIA designed for, but over this site\'s comfortable line, so a 24 GB card reads as tight; a 32 GB card or a 48 GB Mac runs it comfortably. The image encoder is a separate 1.7 GB file. NVIDIA\'s benchmark claims are its own, and no quality loss for the 2-bit build has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Bolt 是 74B 混合专家模型，每个 token 约激活 9B 参数，目标是装进 24 GB 显卡。它由 Nemotron 3.5 Super VL 压缩而来，只有一个版本，即 NVIDIA 官方原生 2-bit 文件，22.0 GB。88 层中只有 8 层的缓存随上下文增长，所以上下文很便宜：4K 约 23.1 GB，128K 约 24.1 GB，用满 256K 约 25.2 GB。这正是 NVIDIA 设计的 24 GB，但超过了本站的宽裕线，所以 24 GB 显卡判定为偏紧；32 GB 显卡或 48 GB 的 Mac 可以从容运行。图像编码器是另外 1.7 GB 的文件。基准成绩是 NVIDIA 自己报的，2-bit 版本的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Super VL 120B-A12B (released 2026-10-15). Shape from the official BF16
+    // repo's config.json (nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16, pasted by the owner
+    // 2026-10-16): NemotronHForCausalLM, hidden 4096, 88 layers = 40 mamba + 40 moe + 8 attention,
+    // 32 heads / 2 KV × 128, 512 routed experts of width 2688 at a 1024 latent, 22 per token, 1 shared
+    // expert 5376, vocab 131072 untied, 1,048,576 positions; one MTP layer ships as a separate GGUF.
+    // Counted from that config: 120.67B total, 12.2B active; ggml-org's BF16 GGUF is
+    // 241,518,661,568 B = 120.76B, which is `params` (what loads). bpw from ggml-org's single files:
+    // Q4_0 71,803,752,384 B → 4.76, Q8_0 128,472,993,728 B → 8.51 (on 8.5: the count holds). Vision
+    // mmproj Q8_0 966,925,568 B / BF16 1,733,696,768 B, separate. Mamba state as Bolt's (~0.17 GB).
+    id: 'nemotron-3.5-super-vl-120b-a12b',
+    name: 'Nemotron 3.5 Super VL 120B-A12B',
+    family: 'NVIDIA Nemotron',
+    params: 120.76,
+    paramLabel: '120B-A12B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers with a growing KV cache (2 KV heads × 128); 40 are Mamba-2 layers with a fixed recurrent state and 40 are mixture-of-experts layers that cache nothing per token.', zh: '88 层中只有 8 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；40 层是状态大小固定的 Mamba-2 层，另 40 层是不缓存任何内容的混合专家层。' } } },
+    addedAt: ADDED_NEMOTRON35,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Super VL is a 120B mixture-of-experts vision-language model with about 12B parameters active per token. It is built for coding, tool use and document work, with a context window of up to 1M tokens. Only 8 of its 88 layers keep a growing cache, so even the full window is cheap: at Q4_0 (ggml-org\'s 71.8 GB file) it needs about 75 GB at 4K and 84 GB at 1M. That runs comfortably on a 128 GB Mac or a DGX Spark 128G, and tightly on one 80 GB card. Q8_0 (128 GB) wants a 256 GB Mac. The vision encoder is a separate 1–1.7 GB file. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Super VL 是 120B 混合专家视觉语言模型，每个 token 约激活 12B 参数，面向编程、工具调用和文档处理，上下文最长 100 万 token。88 层中只有 8 层的缓存随上下文增长，所以即使用满窗口也不贵：Q4_0（ggml-org 发布的 71.8 GB 文件）在 4K 下约需 75 GB，100 万上下文约 84 GB。128 GB 的 Mac 或 DGX Spark 128G 可以从容运行，单张 80 GB 显卡偏紧。Q8_0（128 GB）需要 256 GB 的 Mac。视觉编码器是另外 1–1.7 GB 的文件。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.76, vramGB: 75.1,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Lightning 30B-A3B. Official config.json
+    // (nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16, pasted by the owner 2026-10-16):
+    // NemotronHForCausalLM, text only, hidden 2688, 52 layers = 23 mamba + 23 moe + 6 attention,
+    // 32 heads / 2 KV × 128, 128 routed experts (relu2, width 1856) top-6 + 1 shared (3712), no latent,
+    // vocab 131072 untied, 262144 positions. Counted: 31.58B total, ~3.2B active (incl. lm_head);
+    // ggml-org's BF16 GGUF 63,181,504,576 B = 31.59B, which is `params`. bpw from ggml-org's single
+    // files: Q4_0 18,898,091,584 → 4.79, Q8_0 33,585,495,616 → 8.51. Its one MTP layer is a separate
+    // optional file (mtp-…-Q4_0 1,155,907,520 B) for speculative decoding, not in `params`. Mamba-2
+    // state (64 heads × 64 × 128, fp32, ~2 MiB a layer) is fixed and left inside the buffer.
+    id: 'nemotron-3.5-lightning-30b-a3b',
+    name: 'Nemotron 3.5 Lightning 30B-A3B',
+    family: 'NVIDIA Nemotron',
+    params: 31.59,
+    paramLabel: '30B-A3B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 52, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 6, note: { en: 'Only 6 of 52 layers are attention layers with a growing KV cache (2 KV heads × 128); 23 are Mamba-2 layers with a fixed recurrent state and 23 are mixture-of-experts layers that cache nothing per token.', zh: '52 层中只有 6 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；23 层是状态大小固定的 Mamba-2 层，另 23 层是不缓存任何内容的混合专家层。' } } },
+    addedAt: ADDED_LIGHTNING,
+    description: {
+      en: 'The small member of NVIDIA\'s Nemotron 3.5 family: a 30B text-only mixture-of-experts model with about 3B parameters active per token. It generates at roughly the speed of a 3B model. Only 6 of its 52 layers keep a growing cache, which makes long context almost free: at Q4_0 (ggml-org\'s 18.9 GB file) it needs about 19.8 GB at 4K, 20.6 GB at 128K and 21.4 GB at its full 256K window. That is comfortable on a 24 GB card up to 128K and tight only at the full window; a 16 GB card cannot hold it. Q8_0 (about 35 GB) wants a 48 GB card or a 64 GB Mac. An optional 1.2 GB draft file for speculative decoding ships separately. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'NVIDIA Nemotron 3.5 系列中的小尺寸成员：30B 纯文本混合专家模型，每个 token 约激活 3B 参数，生成速度大致相当于 3B 模型。52 层中只有 6 层的缓存随上下文增长，所以长上下文几乎不占额外显存：Q4_0（ggml-org 发布的 18.9 GB 文件）在 4K 下约需 19.8 GB，128K 约 20.6 GB，用满 256K 约 21.4 GB。24 GB 显卡到 128K 都很宽裕，只有用满窗口时偏紧；16 GB 显卡装不下。Q8_0（约 35 GB）需要 48 GB 显卡或 64 GB 的 Mac。另有一个可选的 1.2 GB 草稿文件用于投机解码，单独下载。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.79, vramGB: 19.8, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q4_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 35.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q8_0'), confidence: 'estimated' },
     ],
   },
   {

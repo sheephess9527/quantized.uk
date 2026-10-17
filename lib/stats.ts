@@ -21,7 +21,7 @@ export function getSiteStats() {
   // anything about quantization — and it sat on the homepage next to three
   // honest inventory counts.
   //
-  // Q4_K_M instead: every one of the 79 models ships it, it is the level most
+  // Q4_K_M instead: almost every model ships it (not the native-only builds), it is the level most
   // readers actually run, and a median is robust to the tail. `q4Range` is
   // exposed so the figure can be shown with its spread rather than alone.
   const q4Losses = models

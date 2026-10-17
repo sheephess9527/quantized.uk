@@ -583,7 +583,7 @@ export const translations = {
       offloadMoE: 'For a mixture-of-experts model, llama.cpp\'s --n-cpu-moe N keeps only the expert weights of N layers on the CPU and everything else on the GPU — usually faster than moving whole layers.',
       refTable: {
         title: 'Quick reference by model size',
-        intro: 'The calculator\'s answer for every size class in this index, at each model\'s reference quant (its native build, else Q4_K_M) and batch 1 — the same arithmetic as the tool above, written out so it can be read without it. The 32K column counts only models whose own context window reaches 32K. The last column is the smallest card that holds every model in the class comfortably at 4K.',
+        intro: 'The calculator\'s answer for every size class in this index, at each model\'s reference quant (its native build, else Q4_K_M, else its nearest 4-bit build) and batch 1 — the same arithmetic as the tool above, written out so it can be read without it. The 32K column counts only models whose own context window reaches 32K. The last column is the smallest card that holds every model in the class comfortably at 4K.',
         colClass: 'Size class',
         colModels: 'Models',
         col4k: 'At 4K context',
@@ -1719,7 +1719,7 @@ export const translations = {
       offloadMoE: '对混合专家模型，llama.cpp 的 --n-cpu-moe N 只把 N 层的专家权重放在 CPU、其余都留在 GPU——通常比整层搬走更快。',
       refTable: {
         title: '按模型规模速查',
-        intro: '本索引每个规模档位的计算结果，按各模型的基准量化（官方原生版本，否则 Q4_K_M）、batch 1 计算 —— 与上面的计算器是同一套算法，写成表格，不用它也能直接看。32K 一列只统计原生上下文窗口达到 32K 的模型。最后一列是 4K 上下文下能从容装下该档位全部模型的最小显卡。',
+        intro: '本索引每个规模档位的计算结果，按各模型的基准量化（官方原生版本，否则 Q4_K_M，再否则最接近的 4-bit 版本）、batch 1 计算 —— 与上面的计算器是同一套算法，写成表格，不用它也能直接看。32K 一列只统计原生上下文窗口达到 32K 的模型。最后一列是 4K 上下文下能从容装下该档位全部模型的最小显卡。',
         colClass: '规模档位',
         colModels: '模型数',
         col4k: '4K 上下文',

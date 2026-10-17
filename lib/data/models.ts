@@ -264,8 +264,10 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
-  { id: 18, type: 'new', modelId: 'ling-3.1-flash', level: 'Q4_K_M', note: { en: '560B, 25B active, 9 of 72 layers cache', zh: '560B，激活 25B，72 层中仅 9 层缓存' }, quantizer: 'AtomicChat' },
+  { id: 20, type: 'new', modelId: 'ling-3.1-flash', level: 'Q4_K_M', note: { en: '560B, 25B active, 9 of 72 layers cache', zh: '560B，激活 25B，72 层中仅 9 层缓存' }, quantizer: 'AtomicChat' },
   { id: 17, type: 'new', modelId: 'lfm2-5-24b-a2b', level: 'Q4_K_M', note: { en: '2.45B active, 128K window', zh: '激活 2.45B，128K 上下文' }, quantizer: 'LiquidAI' },
+  { id: 19, type: 'new', modelId: 'nemotron-3.5-lightning-30b-a3b', level: 'Q4_0', note: { en: '3B active, 256K on 24 GB', zh: '激活 3B，24 GB 跑 256K' }, quantizer: 'ggml-org' },
+  { id: 18, type: 'new', modelId: 'nemotron-3.5-bolt-74b-a9b', level: 'IQ2_XXS', note: { en: '74B built for 24 GB', zh: '为 24 GB 打造的 74B' }, quantizer: 'nvidia' },
   { id: 16, type: 'new', modelId: 'granite-4.2-8b', level: 'Q4_K_M', note: { en: 'dense, thinking by default', zh: '稠密模型，默认思考' }, quantizer: 'ibm-granite' },
   { id: 15, type: 'new', modelId: 'olmo-3-7b', level: 'Q4_K_M', note: { en: 'fully open, 64K window', zh: '完全开源，64K 上下文' }, quantizer: 'allenai' },
   { id: 13, type: 'new', modelId: 'ernie-4.5-21b-a3b', level: 'Q4_K_M', note: { en: '3B active, 128K window', zh: '激活 3B，128K 上下文' }, quantizer: 'baidu' },

@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-15';
+export const dataLastUpdated = '2026-10-17';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-15',
+  checkedAt: '2026-10-17',
   current: {
-    llamacpp: 'b11632',
+    llamacpp: 'b11703',
     vllm: 'v0.31.0',
-    ollama: 'v0.40.4',
+    ollama: 'v0.40.5',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -89,9 +89,34 @@ export const runtimeVersions = {
 
 export const changelog: ChangelogEntry[] = [
   {
-    date: '2026-10-15',
+    date: '2026-10-17',
     en: 'inclusionAI\'s Ling-3.1-flash is in the index: a 560B mixture-of-experts reasoning model (25B active per token, MIT) for agents and coding. Only 9 of its 72 layers keep a growing cache, so context is cheap, but the weights alone put it out of reach of any single GPU: about 371 GB at Q4_K_M, which a 512 GB Mac Studio holds only tightly. It is listed so the calculator can say so.',
     zh: 'inclusionAI 的 Ling-3.1-flash 已收录：560B 混合专家推理模型（每个 token 激活 25B，MIT 许可），面向智能体和编程。72 层中只有 9 层保留会增长的缓存，所以上下文很便宜，但光是权重就超出任何单张显卡：Q4_K_M 约 371 GB，512 GB 的 Mac Studio 也只能勉强装下。收录它是为了让计算器能把这一点说清楚。',
+  },
+  {
+    date: '2026-10-17',
+    en: 'Runtime versions re-checked: llama.cpp is at b11703; Ollama (v0.40.5), vLLM (v0.31.0) and ExLlamaV3 (v1.6.2) are unchanged. No open-weight model released in the last few days is missing from the index.',
+    zh: '重新核对了运行时版本：llama.cpp 更新到 b11703；Ollama（v0.40.5）、vLLM（v0.31.0）和 ExLlamaV3（v1.6.2）没有变化。最近几天发布的开源权重模型，本站都已收录。',
+  },
+  {
+    date: '2026-10-16',
+    en: 'Nemotron 3.5 Lightning and the rest of IBM\'s Granite 4.2 family are in the index. Lightning is a 30B mixture-of-experts model with about 3B parameters active per token; only 6 of its 52 layers keep a growing cache, so at Q4_0 it needs about 19.8 GB at 4K and still only 20.6 GB at 128K, comfortable on a 24 GB card. Granite 4.2 30B is a dense model that needs about 19.6 GB at 4K, comfortable on 24 GB at short contexts. Granite 4.2 3B needs 2.7 GB and runs on any card here.',
+    zh: 'Nemotron 3.5 Lightning 和 IBM Granite 4.2 系列的其余两个尺寸已收录。Lightning 是 30B 混合专家模型，每个 token 约激活 3B 参数；52 层中只有 6 层的缓存随上下文增长，所以 Q4_0 在 4K 下约需 19.8 GB，到 128K 也只要 20.6 GB，24 GB 显卡可以从容运行。Granite 4.2 30B 是稠密模型，4K 下约需 19.6 GB，24 GB 显卡在短上下文下从容运行。Granite 4.2 3B 只要 2.7 GB，本站收录的任何显卡都能跑。',
+  },
+  {
+    date: '2026-10-16',
+    en: 'NVIDIA\'s Nemotron 3.5 Bolt and Super VL are in the index. Bolt is a 74B mixture-of-experts model built to fit a 24 GB card: NVIDIA\'s 2-bit file needs about 23.1 GB at 4K and 24.1 GB at 128K, tight on 24 GB and comfortable on 32 GB. Super VL is the 120B vision-language model it was compressed from; at Q4_0 it needs about 75 GB, comfortable on a 128 GB Mac or a DGX Spark 128G. Both keep a growing cache on only 8 of 88 layers, so long context is cheap.',
+    zh: 'NVIDIA 的 Nemotron 3.5 Bolt 和 Super VL 已收录。Bolt 是为 24 GB 显卡打造的 74B 混合专家模型：NVIDIA 官方 2-bit 文件在 4K 下约需 23.1 GB，128K 约 24.1 GB，24 GB 显卡偏紧，32 GB 从容。Super VL 是它压缩前的 120B 视觉语言模型，Q4_0 约需 75 GB，128 GB 的 Mac 或 DGX Spark 128G 可以从容运行。两者 88 层中只有 8 层的缓存会随上下文增长，所以长上下文很便宜。',
+  },
+  {
+    date: '2026-10-16',
+    en: 'Meta\'s Muse Spark Open is in the index: an 816B mixture-of-experts model with about 42B parameters active per token and image and audio input. Its smallest build, the 304 GB Q2_K, needs about 319 GB at 4K context and 327 GB at 128K, so it runs on a 512 GB Mac Studio and, tightly, across four 80 GB H100s. Larger builds fit no single machine here.',
+    zh: 'Meta 的 Muse Spark Open 已收录：816B 混合专家模型，每个 token 约激活 42B 参数，支持图像和音频输入。最小的 304 GB Q2_K 版本在 4K 上下文下约需 319 GB，128K 约 327 GB，所以 512 GB 的 Mac Studio 能跑，四张 80 GB H100 也能勉强装下。更大的版本在本站收录的任何单台机器上都装不下。',
+  },
+  {
+    date: '2026-10-16',
+    en: 'llama.cpp\'s server now listens on port 9931 by default instead of 8080. Its v0.7.0 release (build b11671) changed the default; every llama-server command on this site already sets --port explicitly, so they keep working as written, but a server started without --port will no longer answer on 8080. Ollama is at v0.40.5; vLLM and ExLlamaV3 are unchanged.',
+    zh: 'llama.cpp 的服务端现在默认监听 9931 端口，不再是 8080。这是它 v0.7.0 版本（构建 b11671）改的默认值；本站所有 llama-server 命令都显式写了 --port，照抄仍然可用，但不带 --port 启动的服务不会再在 8080 上响应。Ollama 更新到 v0.40.5；vLLM 和 ExLlamaV3 没有变化。',
   },
   {
     date: '2026-10-15',

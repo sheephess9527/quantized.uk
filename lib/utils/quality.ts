@@ -45,6 +45,11 @@ export function referenceQuant(quants: QuantVariant[]): QuantVariant {
   return (
     quants.find(isNativeQuant) ??
     quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ??
+    // Another 4-bit GGUF before the highest-quality build: a model shipping Q4_0 and Q8_0 only
+    // (Nemotron 3.5 Super VL) was otherwise sized at Q8_0, and its page named a 256 GB Mac as the
+    // smallest machine when Q4_0 runs on 128 GB.
+    quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_S') ??
+    quants.find(q => q.format === 'GGUF' && q.level === 'Q4_0') ??
     bestQuant(quants)
   );
 }
