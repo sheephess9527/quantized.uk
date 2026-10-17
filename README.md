@@ -419,6 +419,31 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-17 (iv) — Calculator check; split-file download commands
+
+The owner asked for a check of the calculator. Results:
+
+- **Sweep:** 82,012 card × model × level × card-count cases through `levelTable` / `contextReach` / `offloadPlan` / `speedCeiling`, 0 faults. `check-measured-speed` still passes (9 rows, 0.99–1.31×).
+- **Browser:** the browser scripts (forward / reverse / fine-tune / HF import / mixed rig / prefill / pin / launch / share card) all pass, with no console errors and a 390 px width.
+- **Newest models in forward mode:** chips, sizes and download figures match their model pages for all eight: Ling, Beam, Lightning, Bolt, Granite 30B / 3B, Super VL and Muse. Bolt on a 24 GB card gets `-ngl 87`, which is correct: launch commands keep llama.cpp's 1 GiB-per-card margin, and 23.1 GB is over 24 − 1.
+
+**Real bug: big builds downloaded nothing.** The llama.cpp command asked `hf download --include` for the exact `<repo>-<level>.gguf`. That is right for single files. Past ~50 GB, though, bartowski and unsloth split builds into `…-00001-of-0000N.gguf` parts, usually in a per-level folder, so the include matched nothing and `hf download` exited 0 having fetched nothing (llama.cpp then failed on a missing `-m`). The existing "point -m at the first shard" note could not help, because there was nothing to point at. The search-result evidence is that >50 GB builds are split; ggml-org, on the other hand, ships 70–130 GB single files (the owner's Super VL listing).
+
+The fix in `lib/utils/cli.ts`:
+- New `SHARD_GB = 48` and `ggufFileGB(model, level)`, which is params × bpw / 8, the calculator's download figure.
+- Above the threshold, the download includes `*<base>-<level>*.gguf`, which matches a single file or its parts in any folder.
+- `-m` resolves the first part with `find … | sort | head -1`, natively and (host-side) for Docker. Compose cannot run a shell, so it gets a visible `<first part: …-00001-of-NNNNN.gguf, or the single file>` placeholder.
+- Smaller builds keep the exact filename.
+- Affected: 11 mapped models at their larger levels (Llama 3.1 405B / 70B Q5_K_M, Llama 3.3 70B Q5_K_M, Qwen2.5 72B Q5_K_M, Llama 3.2 90B Vision, DBRX, Llama 4 Scout / Maverick, Qwen3 235B, Super VL, Ling).
+
+**Ling-3.1-flash** now maps to its original weights (`inclusionAI/Ling-3.1-flash`). AtomicChat's files are named `AD-<level>` (Grok's own entry says so), so `<repo>-<level>` produced a filename that does not exist. The command now shows the placeholder and the "replace the repo and filename" note, as Beam and Muse already do.
+
+**Not changed, unverified from here:**
+- Qwen's official GGUF repos (`Qwen/Qwen2.5-*-GGUF`) are believed to use lowercase filenames, which a case-sensitive `--include` would miss.
+- Whether Ollama's `hf.co/` pull handles split GGUFs.
+
+Both need a real file listing; huggingface.co is blocked here.
+
 ### 2026-10-17 (iii) — +1 model (110): Beam 1.0 501B-A23B (Grok Bot model tracker, PR #10, updated onto main after #8)
 
 Reflection AI published Beam's weights on 2026-10-16 under Apache 2.0 (waitlist-only when announced

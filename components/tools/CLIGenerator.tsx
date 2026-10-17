@@ -5,7 +5,7 @@ import { Terminal, Copy, Check, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { models } from '@/lib/data/models';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { generateCLI, Framework, Env } from '@/lib/utils/cli';
+import { generateCLI, ggufFileGB, Framework, Env } from '@/lib/utils/cli';
 import { cn } from '@/lib/utils/cn';
 import RunFeedback from '@/components/feedback/RunFeedback';
 import { groupedModels } from '@/lib/utils/model-groups';
@@ -112,6 +112,7 @@ export default function CLIGenerator() {
       modelName: selectedModel?.name ?? modelId,
       hfRepo: hfRepoMap[modelId as keyof typeof hfRepoMap],
       quantLevel,
+      fileGB: selectedModel ? ggufFileGB(selectedModel, quantLevel) : undefined,
       gpuLayers,
       contextLen,
       threads,

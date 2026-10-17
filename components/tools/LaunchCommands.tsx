@@ -12,7 +12,7 @@ import { Copy, Check } from 'lucide-react';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { generateCLI, type Framework } from '@/lib/utils/cli';
+import { generateCLI, ggufFileGB, type Framework } from '@/lib/utils/cli';
 import { backendFor, formatAllowed } from '@/lib/utils/gpu-page';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
@@ -54,6 +54,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       modelName: model.name,
       hfRepo: hfRepoMap[model.id as keyof typeof hfRepoMap],
       quantLevel: active.level,
+      fileGB: ggufFileGB(model, active.level),
       gpuLayers: gpuLayers ?? 99,
       contextLen,
       threads: 8,

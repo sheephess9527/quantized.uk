@@ -19,6 +19,12 @@ export interface CLIOptions {
    * the repo, not the filename, and not an Ollama tag.
    */
   hfRepo?: string;
+  /**
+   * Size of the selected GGUF file in GB (`ggufFileGB()`). Past `SHARD_GB` a build is usually
+   * published in parts (`…-00001-of-00005.gguf`, often in a per-level folder), so the
+   * exact single filename downloads nothing; the command then matches the parts instead.
+   */
+  fileGB?: number;
   gpuLayers: number;
   contextLen: number;
   threads: number;
@@ -58,6 +64,19 @@ function ggufRepoId(hfRepo?: string): string | undefined {
 /** `bartowski/Meta-Llama-3.1-8B-Instruct-GGUF` → `Meta-Llama-3.1-8B-Instruct`. */
 function ggufBase(hfRepo: string): string {
   return (hfRepo.split('/')[1] ?? hfRepo).replace(/-GGUF$/i, '');
+}
+
+/**
+ * Hugging Face's per-file limit has long been 50 GB, and bartowski/unsloth split anything near
+ * it into parts; ggml-org also publishes 70–130 GB single files. Above this the command matches
+ * either layout rather than assuming one.
+ */
+export const SHARD_GB = 48;
+
+/** File size of a model's GGUF build at `level`, params × bpw / 8 (the calculator's download figure). */
+export function ggufFileGB(model: { params: number; quants: { format: string; level: string; bpw: number }[] }, level: string): number | undefined {
+  const q = model.quants.find(x => x.format === 'GGUF' && x.level === level);
+  return q ? (model.params * q.bpw) / 8 : undefined;
 }
 
 type Backend = NonNullable<CLIOptions['backend']>;
@@ -250,6 +269,15 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     ? `${ggufBase(hfRepo)}-${quantLevel}.gguf`
     : `${modelName.replace(/[^a-zA-Z0-9._-]/g, '-')}-${quantLevel}.gguf`;
   const repoId = hfRepo ?? '<hf-gguf-repo-id>';
+  // A build past SHARD_GB may be one file or several parts in a folder, depending on the
+  // publisher: download by pattern and let the shell find the first part (llama.cpp loads the
+  // rest from it). Compose cannot run a shell, so it gets a visible placeholder instead.
+  const sharded = !!hfRepo && (opts.fileGB ?? 0) > SHARD_GB;
+  const filePattern = modelFile.replace(/\.gguf$/, '*.gguf');
+  const findFirst = (dir: string) => `$(find ${dir} -name '${filePattern}' | sort | head -1)`;
+  const hostModelPath = sharded ? `"${findFirst('./models')}"` : `./models/${modelFile}`;
+  const containerModelPath = sharded ? `"/models/$(cd models && find . -name '${filePattern}' | sort | head -1)"` : `/models/${modelFile}`;
+  const composeModelPath = sharded ? `/models/<first part: ${modelFile.replace(/\.gguf$/, '')}-00001-of-NNNNN.gguf, or the single file>` : `/models/${modelFile}`;
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
 
   // Loopback by default. `--host 0.0.0.0` publishes an unauthenticated
@@ -261,7 +289,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   // here is `127.0.0.1:` — see `exposureNote`.
   const serverCmd = [
     `./build/bin/llama-server \\`,
-    `  -m ./models/${modelFile} \\`,
+    `  -m ${hostModelPath} \\`,
     `  --host 127.0.0.1 --port ${port} \\`,
     `  -ngl ${gpuLayers} \\`,
     `  -c ${contextLen} \\`,
@@ -275,7 +303,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
       `  -p 127.0.0.1:${port}:${port} \\`,
       `  -v $(pwd)/models:/models \\`,
       `  ghcr.io/ggml-org/llama.cpp:${llamaImageTag(backend)} \\`,
-      `  -m /models/${modelFile} \\`,
+      `  -m ${containerModelPath} \\`,
       `  --host 0.0.0.0 --port ${port} \\`,
       `  -ngl ${gpuLayers} \\`,
       `  -c ${contextLen}${apiKey ? ` \\\n  --api-key "${apiKey}"` : ''}`,
@@ -296,7 +324,7 @@ services:
     volumes:
       - ./models:/models
     command: >
-      -m /models/${modelFile}
+      -m ${composeModelPath}
       --host 0.0.0.0
       --port ${port}
       -ngl ${gpuLayers}
@@ -312,7 +340,7 @@ services:
   const downloadCmd = [
     `# Download the model (installs the hf CLI the next line needs)`,
     `pip install -U huggingface_hub`,
-    `hf download ${repoId} --include "${modelFile}" --local-dir ./models`,
+    `hf download ${repoId} --include "${sharded ? `*${filePattern}` : modelFile}" --local-dir ./models`,
   ].join('\n');
   const installCmd = env === 'mac'
     ? `# Prerequisites: Xcode command line tools, Homebrew, Python 3\n# Install on macOS\nbrew install cmake git\ngit clone https://github.com/ggml-org/llama.cpp && cd llama.cpp\ncmake -B build -DGGML_METAL=ON\ncmake --build build --config Release -j${coreCount(env)}\n\n${downloadCmd}\n\n# Run`

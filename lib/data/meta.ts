@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-17',
+    en: 'Download commands for very large models now work when the file is split into parts. Builds over about 48 GB are often published as several files in a folder, and the command used to ask for one exact filename that did not exist, so it downloaded nothing. It now fetches every part and points llama.cpp at the first one. Ling-3.1-flash, whose files use their own naming, now shows a placeholder to fill in instead of a wrong name.',
+    zh: '超大模型的下载命令现在能处理分卷文件了。约 48 GB 以上的版本常常拆成多个文件放在一个文件夹里，以前的命令只请求一个并不存在的完整文件名，结果什么都没下载。现在会下载全部分卷，并让 llama.cpp 指向第一个分卷。Ling-3.1-flash 的文件另有命名方式，现在显示需要填写的占位符，而不是一个错误的文件名。',
+  },
+  {
+    date: '2026-10-17',
     en: 'Reflection AI\'s Beam is in the index. It is a 501B mixture-of-experts model with about 23B parameters active per token, released with open weights under Apache 2.0. Only 9 of its 52 layers keep a growing cache, so at Q2_K it needs about 191 GB at 4K and 230 GB across its full 1M window: comfortable on a 512 GB Mac Studio, and tight on a 256 GB one up to 128K.',
     zh: 'Reflection AI 的 Beam 已收录。它是 501B 混合专家模型，每个 token 约激活 23B 参数，以 Apache 2.0 开放权重发布。52 层中只有 9 层的缓存随上下文增长，所以 Q2_K 在 4K 下约需 191 GB，用满 100 万上下文约 230 GB：512 GB 的 Mac Studio 可以从容运行，256 GB 的到 128K 为止偏紧。',
   },

@@ -275,6 +275,8 @@ failure mode for a copy-paste command. Every CLI note goes through `L(lang, en, 
 framework × env × backend × lang combinations after touching `lib/utils/cli.ts`, and check notes
 are in the reader's language.
 
+**A GGUF build past `SHARD_GB` (48 GB) is matched, not named** (2026-10-17): bartowski/unsloth split such files into `…-00001-of-N` parts in a folder while ggml-org ships one file, so `generateCLI` gets `fileGB` (`ggufFileGB()`) and switches to an include pattern + `find` for `-m`; an exact name for a split build downloads nothing and exits 0. A repo whose filenames are not `<repo>-<level>` (AtomicChat's `AD-` prefix) maps to the original weights so the CLI shows a placeholder.
+
 **Identifiers vs display names (CLI generator)** — `model.name` is for humans. Commands need real
 identifiers: pass `hfRepo` from `hfRepoMap`, and gate it through `ggufRepoId()` before using it in
 a GGUF command — **14 of 79 entries map the original weights, not a GGUF conversion**, because
@@ -1082,6 +1084,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-17 (iv) | **Calculator check + split-file downloads** — 82,012-case sweep 0 faults, 8 newest models checked in the UI; llama.cpp download for builds > 48 GB asked for one exact filename that sharded repos do not have (fetched nothing) → pattern + `find`; Ling's AtomicChat repo (`AD-` names) → placeholder |
 | 2026-10-17 (iii) | **+1 model (110): Beam 1.0 501B-A23B** (Grok Bot PR #10, updated onto main after #8) — official config: 52 L, 9 full (NoPE) + 43 SWA-512 (iSWA → 1024 cells), 8 KV × 128, 256 experts top-8, 3 dense lead layers, attention gate; 501,267,612,352 params = safetensors total = unsloth BF16 GGUF tensor sum; Q2_K 2.91 (DevQuasar) → 190.9 GB @4K / 230 GB @1M, Q8_0 8.50 (unsloth); no plain 4-bit file (unsloth UD-* only), so no Q4 level |
 | 2026-10-17 (ii) | **+1 model (109): Ling-3.1-flash** (Grok Bot PR #8, updated onto main) — inclusionAI (Ant Group), weights 10-13, MIT; shape from the official `config.json` (`bailing_hybrid`, llama.cpp `bailingmoe3`): 72 layers = 63 KDA + 9 gated MLA, MLA sized as DeepSeek-V3 (kvHeads 1 × headDim 288, `fullLayers: 9`); context 262144 (config; card's 1M has no scaling recipe); params = GGUF tensor total 563.95B (Hub 572.12B includes MTP); Q4_K_M 5.03 / Q8_0 8.52 bpw from AtomicChat's AD GGUF byte counts; 370.6 GB @4K → tight on M5 Ultra 512 only, red elsewhere; guide denominators 108 → 109 (counts re-run, none moved) |
 | 2026-10-17 | **Runtime versions** — llama.cpp b11703; Ollama v0.40.6-rc1 skipped (pre-release); no model in the window (all already indexed) |
