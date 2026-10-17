@@ -419,7 +419,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-10-17 (ii) — +1 model (109): Beam 1.0 501B-A23B (Grok Bot model tracker, draft PR)
+### 2026-10-17 (iii) — +1 model (110): Beam 1.0 501B-A23B (Grok Bot model tracker, PR #10, updated onto main after #8)
 
 Reflection AI published Beam's weights on 2026-10-16 under Apache 2.0 (waitlist-only when announced
 10-05), so the morning patrol's "weights not out" was already stale. Read directly from huggingface.co:
@@ -439,11 +439,43 @@ Reflection AI published Beam's weights on 2026-10-16 under Apache 2.0 (waitlist-
 - **No 4-bit level**: unsloth ships only UD-* tiers (UD-Q4_K_XL 306,533,349,412 B → 4.89, ≈321 GB @4K),
   which is not Q4_K_M, so it is mentioned in the description and not filed as a level.
 - `hfRepoMap` points at the original weights: every Beam GGUF is a multi-part file in a per-level folder.
-- **Guide counts**: only the M5 Ultras change (512G 104→105 comfortable, 256G 101→102 tight), which no
-  guide quotes; denominators 108 → 109, and "ships Q4_K_M" is now 103 of 109.
+- **Guide counts** (re-run with `countModelsFitting()` on top of main incl. Ling-3.1-flash, 109 → 110):
+  only the M5 Ultras change (512G 104→105 comfortable / 108→109 tight, 256G 101→102 tight), which no
+  guide quotes; denominators 109 → 110, and "ships Q4_K_M" is now 104 of 110 (Beam ships Q2_K / Q8_0).
+  Homepage feed `todayFeed` id 21 (20 = Ling). Duplicate check before merge (owner request): no Beam /
+  Reflection AI model on main or the live site under any id, name or HF repo; not in PR #8 or #9.
 - Seen and held back: NVIDIA Nemotron-Labs Dory1.0-4B (10-16, looped nGPT; llama.cpp support is still
   an open PR, ggml-org/llama.cpp#30306), Tencent Hy-Memory-30B-A3B (10-15, a memory-writer model,
   community GGUFs only).
+
+### 2026-10-17 (ii) — +1 model (109): Ling-3.1-flash (PR #8, updated onto main)
+
+- **Model tracker (Grok Bot), draft PR:** inclusionAI (Ant Group) released **Ling-3.1-flash** weights on
+  2026-10-13 (MIT). The morning patrol's "no open-weight release on 10-13/10-14" missed it; it is
+  datacenter-sized, listed like MiMo-V2.6-Pro / DeepSeek-V3 so the calculator can say where it runs.
+- **Shape read from the official `config.json`** (huggingface.co, 2026-10-15): `BailingMoeV3ForCausalLM`,
+  `model_type` `bailing_hybrid` (llama.cpp `bailingmoe3`, b11571+ per AtomicChat's GGUF card). 72 layers:
+  63 KDA (Kimi Delta Attention, fixed-size recurrent state) + 9 gated MLA, one per `layer_group_size` 8
+  (layers 7, 15 … 71 carry `g_proj`) — the card's "63 KDA + 9 Gated MLA (7:1)". Hidden 4096, 64 heads;
+  MLA `kv_lora_rank` 512 + `qk_rope_head_dim` 64 → `kvHeads 1 × headDim 288` as for DeepSeek-V3 / Kimi
+  Linear, `attention.fullLayers: 9` (≈ 10 KB/token, matching AtomicChat's "about 10 KB per token").
+  512 experts top-8 + 1 shared, first 4 layers dense; vocab 157184.
+- **Context 262144** = `max_position_embeddings`, `rope_scaling: null`, and the GGUF's `context_length`.
+  The card says "1M-token context window" without a scaling recipe; the description says so.
+- `params` 563.95 = the GGUF's own tensor total (563,946,483,520). The Hub's safetensors total
+  (572,120,680,768) includes the MTP layer 72, which the GGUF does not carry; card: 560B / 25B active.
+- Q4_K_M 5.03 / Q8_0 8.52 bpw from AtomicChat's "AD" (dynamic) GGUF byte counts (354,394,733,920 /
+  600,847,449,760); experts at the named type, attention/shared expert/router at q8_0 or higher. Both
+  `estimated`; AtomicChat publishes KL divergence (0.01114 / 0.00503), not perplexity → no loss figure.
+- Sizes: Q4_K_M 370.6 GB @4K, 370.9 @32K, 373.3 @256K; Q8_0 627.6 @4K. Red on every card in the index;
+  tight (amber) on the M5 Ultra 512 (384 GB usable). Guide counts re-run with `countModelsFitting()` on
+  top of main (108 → 109): no comfortable count moved; M5 Ultra 512 tight 107 → 108 (not quoted in any
+  guide); every "of the 108" → "of the 109"; Q4_K_M coverage "103 of the 108" → "104 of the 109" (AWQ
+  53 and the 79-model loss median unchanged). Added to the homepage feed (`todayFeed` id 20; id 18 was
+  taken by Nemotron Bolt on main); `addedAt` / changelog date 2026-10-17, the day it ships. HF stats map
+  to `AtomicChat/Ling-3.1-flash-GGUF`.
+- **Duplicate check before merge (owner request):** no Ling / inclusionAI / bailing model on main or the
+  live site under any id or name; not in PR #9 or #10.
 
 ### 2026-10-17 — Runtime versions (daily patrol)
 
