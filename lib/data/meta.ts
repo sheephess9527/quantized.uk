@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-17',
+    en: 'Reflection AI\'s Beam is in the index. It is a 501B mixture-of-experts model with about 23B parameters active per token, released with open weights under Apache 2.0. Only 9 of its 52 layers keep a growing cache, so at Q2_K it needs about 191 GB at 4K and 230 GB across its full 1M window: comfortable on a 512 GB Mac Studio, and tight on a 256 GB one up to 128K.',
+    zh: 'Reflection AI 的 Beam 已收录。它是 501B 混合专家模型，每个 token 约激活 23B 参数，以 Apache 2.0 开放权重发布。52 层中只有 9 层的缓存随上下文增长，所以 Q2_K 在 4K 下约需 191 GB，用满 100 万上下文约 230 GB：512 GB 的 Mac Studio 可以从容运行，256 GB 的到 128K 为止偏紧。',
+  },
+  {
+    date: '2026-10-17',
     en: 'Runtime versions re-checked: llama.cpp is at b11703; Ollama (v0.40.5), vLLM (v0.31.0) and ExLlamaV3 (v1.6.2) are unchanged. No open-weight model released in the last few days is missing from the index.',
     zh: '重新核对了运行时版本：llama.cpp 更新到 b11703；Ollama（v0.40.5）、vLLM（v0.31.0）和 ExLlamaV3（v1.6.2）没有变化。最近几天发布的开源权重模型，本站都已收录。',
   },

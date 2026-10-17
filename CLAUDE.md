@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **108** in index (`models-extra` … `models-extra-12`) |
+| Models | **109** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1064,6 +1064,7 @@ Newest first. Times are CST (UTC+8).
 
 | When (CST) | Where | Change | Status |
 |------------|-------|--------|--------|
+| 2026-10-17 10:30 | PR #10, branch `model-tracker/2026-10-17` | +1 model (109): Beam 1.0 501B-A23B (Reflection AI, open weights 10-16, Apache 2.0). `models-extra-12.ts`, `models.ts` (`todayFeed` id 20), `hf-repos.mjs`, `meta.ts` changelog, guide denominators 108→109 in `cookbook-extra-2.ts` / `cookbook-rewrites.ts` (no card's fit count changed except the M5 Ultras, which no guide quotes), this file, README §9 "2026-10-17 (ii)". Note: the 10-17 runtime patrol listed Beam weights as "not out"; they went public 10-16. | Draft |
 | 2026-10-14 | PR #7, branch `grokbot/calc-share-card` | Calculator: 'Save result as image' (new `components/tools/ShareCard.tsx`) draws a 1200×630 PNG on a client-side canvas — model, level, context, total/weights/KV, card + verdict, calibrated speed when available, 'estimate' label, bilingual. No server image endpoint (zero Cloudflare requests). | Merged |
 | 2026-10-14 | PR #6, branch `grokbot/calc-launch-commands` | Calculator: inline copy-ready launch commands (new `components/tools/LaunchCommands.tsx`) under the forward result — llama.cpp / Ollama for the GGUF level, vLLM for the model's AWQ/GPTQ level (hidden on Macs). All text from `generateCLI` (no second generator); `-ngl` follows `offloadPlan` when the model spills to RAM. The cli-gen link stays for Docker/API-key options. | Merged |
 | 2026-10-14 | PR #5, branch `grokbot/calc-reverse-reach` | Calculator reverse mode ('I have this card'): one row per model by default (best-quality level that fits, green over tight; `?all=1` or the checkbox shows every level), quality sort ranks larger models first in that view, each row shows its longest context via `contextReach`. `getRecommendations` speed sort now uses the picked card's calibrated `measuredSpeed` (was always the RTX 4090 figure) — also affects the Hub's use of it. | Merged |
@@ -1077,6 +1078,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-17 (ii) | **+1 model (109): Beam 1.0 501B-A23B** (Grok Bot draft PR) — official config: 52 L, 9 full (NoPE) + 43 SWA-512 (iSWA → 1024 cells), 8 KV × 128, 256 experts top-8, 3 dense lead layers, attention gate; 501,267,612,352 params = safetensors total = unsloth BF16 GGUF tensor sum; Q2_K 2.91 (DevQuasar) → 190.9 GB @4K / 230 GB @1M, Q8_0 8.50 (unsloth); no plain 4-bit file (unsloth UD-* only), so no Q4 level |
 | 2026-10-17 | **Runtime versions** — llama.cpp b11703; Ollama v0.40.6-rc1 skipped (pre-release); no model in the window (all already indexed) |
 | 2026-10-16 (iv) | **+3 models (108): Granite 4.2 30B / 3B, Nemotron 3.5 Lightning 30B-A3B** — from owner-pasted configs + byte counts; all three reconcile with their BF16 GGUFs within 0.1%; Lightning Q4_0 19.8 GB @4K → 20.6 @128K (6 of 52 layers cache); quantize guide's "every GGUF model ships Q4_K_M" was false (103/108); duplicate `todayFeed` id fixed |
 | 2026-10-16 (iii) | **+2 models (105): Nemotron 3.5 Bolt 74B-A9B + Super VL 120B-A12B** — owner pasted the HF configs + byte counts (HF blocked here); 88 L = 40 mamba / 40 moe / 8 attn, 2 KV × 128; counts reconcile (120.67 vs 120.76B BF16 file; Bolt 74.04B, recipe predicts its 22.0 GB file within 1%); Bolt 23.1 GB @4K is *tight* on 24 GB; `IQ2_XXS` added to the calculator tables. **When HF is blocked, ask the owner for config.json + file byte counts** |
