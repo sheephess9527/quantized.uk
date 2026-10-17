@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-17',
+    en: 'Reflection AI\'s Beam is in the index. It is a 501B mixture-of-experts model with about 23B parameters active per token, released with open weights under Apache 2.0. Only 9 of its 52 layers keep a growing cache, so at Q2_K it needs about 191 GB at 4K and 230 GB across its full 1M window: comfortable on a 512 GB Mac Studio, and tight on a 256 GB one up to 128K.',
+    zh: 'Reflection AI 的 Beam 已收录。它是 501B 混合专家模型，每个 token 约激活 23B 参数，以 Apache 2.0 开放权重发布。52 层中只有 9 层的缓存随上下文增长，所以 Q2_K 在 4K 下约需 191 GB，用满 100 万上下文约 230 GB：512 GB 的 Mac Studio 可以从容运行，256 GB 的到 128K 为止偏紧。',
+  },
+  {
+    date: '2026-10-17',
     en: 'inclusionAI\'s Ling-3.1-flash is in the index: a 560B mixture-of-experts reasoning model (25B active per token, MIT) for agents and coding. Only 9 of its 72 layers keep a growing cache, so context is cheap, but the weights alone put it out of reach of any single GPU: about 371 GB at Q4_K_M, which a 512 GB Mac Studio holds only tightly. It is listed so the calculator can say so.',
     zh: 'inclusionAI 的 Ling-3.1-flash 已收录：560B 混合专家推理模型（每个 token 激活 25B，MIT 许可），面向智能体和编程。72 层中只有 9 层保留会增长的缓存，所以上下文很便宜，但光是权重就超出任何单张显卡：Q4_K_M 约 371 GB，512 GB 的 Mac Studio 也只能勉强装下。收录它是为了让计算器能把这一点说清楚。',
   },

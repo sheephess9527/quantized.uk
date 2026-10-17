@@ -17,6 +17,7 @@ const ADDED_MUSE_SPARK = '2026-10-16';
 const ADDED_NEMOTRON35 = '2026-10-16';
 const ADDED_GRANITE42_MORE = '2026-10-16';
 const ADDED_LIGHTNING = '2026-10-16';
+const ADDED_BEAM = '2026-10-17';
 const ADDED_LFM25 = '2026-10-14';
 const ADDED_LING31 = '2026-10-17';
 
@@ -658,6 +659,42 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.03, vramGB: 370.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 627.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Reflection AI Beam 1.0 501B-A23B (open weights released 2026-10-16, Apache 2.0; announced
+    // waitlist-only 10-05). Official config.json (reflection/Beam-1.0-501B-A23B, read from
+    // huggingface.co 2026-10-17): BeamForCausalLM, hidden 5120, 52 layers, 48 heads / 8 KV × 128,
+    // layer_types = every 6th layer full attention (5, 11, …, 47) plus the last (51) → 9 full + 43
+    // sliding, sliding_window 512, full layers NoPE; first 3 layers dense (SwiGLU 20480), the other
+    // 49 MoE with 256 experts of width 2560, 8 per token (8 groups, top-4), no shared expert; vocab
+    // 151936 untied; 1,048,576 positions. Every layer also carries a 5120 × 6144 attention gate.
+    // Counted from that config: ~501.3B total, ~22.7B active (card: 501B / 23B). `params` =
+    // 501,267,612,352, the Hub's safetensors total, matched exactly by summing the tensor headers of
+    // unsloth's 23-part BF16 GGUF. llama.cpp `beam` (src/models/beam.cpp, on master): iSWA cache,
+    // LLAMA_SWA_TYPE_STANDARD → a window layer holds pad256(512 + 512) = 1024 cells (the Muse Spark
+    // rule). bpw from published file bytes: DevQuasar Q2_K (14 parts) 182,067,737,056 B → 2.91;
+    // unsloth Q8_0 (13 parts) 532,794,735,998 B → 8.50 (on 8.5: the count holds). No plain 4-bit
+    // file exists yet — unsloth ships only UD-* tiers (UD-Q4_K_XL 306,533,349,412 B → 4.89), so it
+    // is described in prose rather than filed as a level it is not. Reflection also ships FP8 /
+    // NVFP4 safetensors and a DFlash2 draft model; neither is a GGUF level here.
+    id: 'beam-1.0-501b-a23b',
+    name: 'Beam 1.0 501B-A23B',
+    family: 'Reflection Beam',
+    params: 501.27,
+    paramLabel: '501B-A23B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 52, attHeads: 48, kvHeads: 8, headDim: 128, attention: { fullLayers: 9, windowLayers: 43, windowTokens: 1024, note: { en: '43 of 52 layers use a 512-token sliding window (llama.cpp keeps the window plus one 512-token batch, 1,024 cells); only the 9 full-attention layers grow a cache with context.', zh: '52 层中 43 层使用 512 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，共 1,024 个位置），只有 9 层全注意力层的缓存随上下文增长。' } } },
+    addedAt: ADDED_BEAM,
+    description: {
+      en: 'Reflection AI\'s first open-weight model, released in October under Apache 2.0. It is a 501B text-only mixture-of-experts model with about 23B parameters active per token, built for coding and agent work, with a 1M-token window. Only 9 of its 52 layers keep a growing cache, so context costs little: at Q2_K (DevQuasar\'s 182 GB file) it needs about 191 GB at 4K, 196 GB at 128K and 230 GB across the full 1M window. That is comfortable on a 512 GB Mac Studio at any context and tight on a 256 GB one up to 128K. Unsloth\'s dynamic 4-bit UD-Q4_K_XL file (307 GB) works out to about 321 GB at 4K, which still fits the 512 GB Mac; Q8_0 (533 GB) fits no single machine in this index. Sizes come from the published GGUF files; Reflection\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'Reflection AI 的首个开放权重模型，10 月以 Apache 2.0 发布：501B 纯文本混合专家模型，每个 token 约激活 23B 参数，面向编程和智能体任务。上下文窗口 100 万 token；52 层中只有 9 层的缓存随上下文增长，所以上下文很便宜：Q2_K（DevQuasar 发布的 182 GB 文件）在 4K 下约需 191 GB，128K 约 196 GB，用满 100 万上下文约 230 GB。512 GB 的 Mac Studio 在任何上下文下都能从容运行，256 GB 的到 128K 为止偏紧。Unsloth 的动态 4-bit 文件 UD-Q4_K_XL（307 GB）在 4K 下约需 321 GB，512 GB 的 Mac 仍然装得下；Q8_0（533 GB）在本站收录的任何单台机器上都装不下。体积按已发布的 GGUF 文件计算；基准成绩是 Reflection 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q2_K', bpw: 2.91, vramGB: 190.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q2_K'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.50, vramGB: 556.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q8_0'), confidence: 'estimated' },
     ],
   },
 ];

@@ -419,6 +419,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-17 (iii) — +1 model (110): Beam 1.0 501B-A23B (Grok Bot model tracker, PR #10, updated onto main after #8)
+
+Reflection AI published Beam's weights on 2026-10-16 under Apache 2.0 (waitlist-only when announced
+10-05), so the morning patrol's "weights not out" was already stale. Read directly from huggingface.co:
+
+- **Shape** (official `config.json`, `BeamForCausalLM`): hidden 5120, 52 layers, 48 heads / 8 KV × 128;
+  `layer_types` makes every 6th layer full attention plus the last one → 9 full (NoPE) + 43 sliding,
+  window 512; 3 leading dense layers (SwiGLU 20480), then 49 MoE layers with 256 experts of width 2560,
+  8 per token (8 groups, top-4), no shared expert; per-layer attention gate (5120 × 6144); vocab 151936
+  untied; 1,048,576 positions. Counted ≈501.3B / ≈22.7B active (card: 501B / 23B).
+- **params** 501,267,612,352 = the Hub's safetensors total, and exactly the sum of the tensor headers
+  in unsloth's 23-part BF16 GGUF.
+- **Cache**: llama.cpp `beam` is on master (`src/models/beam.cpp`, iSWA, `LLAMA_SWA_TYPE_STANDARD`), so a
+  window layer holds pad256(512 + 512) = 1024 cells, as for Muse Spark.
+- **bpw** from file bytes: DevQuasar Q2_K (14 parts) 182,067,737,056 B → 2.91; unsloth Q8_0 (13 parts)
+  532,794,735,998 B → 8.50 (on 8.5, so the count holds). Q2_K 190.9 GB @4K, 195.7 @128K, 230.3 @1M:
+  green on the M5 Ultra 512G at every context, yellow on the 256G to 128K. Q8_0 556.9 GB fits nothing.
+- **No 4-bit level**: unsloth ships only UD-* tiers (UD-Q4_K_XL 306,533,349,412 B → 4.89, ≈321 GB @4K),
+  which is not Q4_K_M, so it is mentioned in the description and not filed as a level.
+- `hfRepoMap` points at the original weights: every Beam GGUF is a multi-part file in a per-level folder.
+- **Guide counts** (re-run with `countModelsFitting()` on top of main incl. Ling-3.1-flash, 109 → 110):
+  only the M5 Ultras change (512G 104→105 comfortable / 108→109 tight, 256G 101→102 tight), which no
+  guide quotes; denominators 109 → 110, and "ships Q4_K_M" is now 104 of 110 (Beam ships Q2_K / Q8_0).
+  Homepage feed `todayFeed` id 21 (20 = Ling). Duplicate check before merge (owner request): no Beam /
+  Reflection AI model on main or the live site under any id, name or HF repo; not in PR #8 or #9.
+- Seen and held back: NVIDIA Nemotron-Labs Dory1.0-4B (10-16, looped nGPT; llama.cpp support is still
+  an open PR, ggml-org/llama.cpp#30306), Tencent Hy-Memory-30B-A3B (10-15, a memory-writer model,
+  community GGUFs only).
+
 ### 2026-10-17 (ii) — +1 model (109): Ling-3.1-flash (PR #8, updated onto main)
 
 - **Model tracker (Grok Bot), draft PR:** inclusionAI (Ant Group) released **Ling-3.1-flash** weights on

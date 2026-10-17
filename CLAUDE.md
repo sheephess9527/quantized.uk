@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **109** in index (`models-extra` … `models-extra-12`) |
+| Models | **110** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1064,6 +1064,8 @@ Newest first. Times are CST (UTC+8).
 
 | When (CST) | Where | Change | Status |
 |------------|-------|--------|--------|
+| 2026-10-17 11:50 | PR #10 → main (squash) | Duplicate check vs main (after #8) + live site: Beam 1.0 501B-A23B new (no Reflection/Beam id, name or HF repo). Branch updated by merging main (no force push): Beam now model 110, `todayFeed` id 20 → 21 (20 = Ling), README §9 heading (ii) → (iii), denominators 109 → 110, Q4_K_M "104 of the 110"; fit counts re-run with `countModelsFitting()` (only M5 Ultras move, unquoted). `tsc` + `npm run build` green. | Merged |
+| 2026-10-17 10:30 | PR #10, branch `model-tracker/2026-10-17` | +1 model (109): Beam 1.0 501B-A23B (Reflection AI, open weights 10-16, Apache 2.0). `models-extra-12.ts`, `models.ts` (`todayFeed` id 20), `hf-repos.mjs`, `meta.ts` changelog, guide denominators 108→109 in `cookbook-extra-2.ts` / `cookbook-rewrites.ts` (no card's fit count changed except the M5 Ultras, which no guide quotes), this file, README §9 "2026-10-17 (iii)". Note: the 10-17 runtime patrol listed Beam weights as "not out"; they went public 10-16. | Merged (see 11:50 row) |
 | 2026-10-17 11:35 | PR #8 → main (squash) | Owner asked to merge #8/#9/#10 only if not duplicates. Duplicate check vs main + live site (ids, names, family, HF repo): Ling-3.1-flash new. Branch updated by merging main (no force push): conflicts resolved, `todayFeed` id 18 → 20 (18 = Nemotron Bolt on main), `addedAt`/changelog date → 2026-10-17, guide denominators 108 → 109 and Q4_K_M "104 of the 109" re-run with `countModelsFitting()` (no comfortable count moved). `tsc` + `npm run build` green. | Merged |
 | 2026-10-17 11:35 | PR #9 (draft), branch `model-tracker/2026-10-16` | Not merged: duplicate. Both models (Nemotron 3.5 Bolt 74B-A9B, Super VL 120B-A12B, same ids) and the IQ2_XXS level already reached main via Claude commit `ccf2f4c` (10-16) and are live. Left open for the owner to close. | Not merged (duplicate) |
 | 2026-10-15 10:30 | PR #8 (draft), branch `model-tracker/2026-10-15` | +1 model (103): Ling-3.1-flash (inclusionAI, weights 10-13; the 10-15 patrol missed it). `models-extra-12.ts`, `models.ts` feed, `hf-repos.mjs`, `meta.ts` changelog, "of the 102" → "of the 103" in `cookbook-extra-2.ts` / `cookbook-rewrites.ts` (no comfortable count moved; only M5 Ultra 512 tight 101 → 102, not quoted in any guide), CLAUDE.md surface count + Recent ships row, README §9 entry. Details in README §9 "2026-10-15 (ii)". | Merged (see 2026-10-17 row) |
@@ -1080,6 +1082,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-17 (iii) | **+1 model (110): Beam 1.0 501B-A23B** (Grok Bot PR #10, updated onto main after #8) — official config: 52 L, 9 full (NoPE) + 43 SWA-512 (iSWA → 1024 cells), 8 KV × 128, 256 experts top-8, 3 dense lead layers, attention gate; 501,267,612,352 params = safetensors total = unsloth BF16 GGUF tensor sum; Q2_K 2.91 (DevQuasar) → 190.9 GB @4K / 230 GB @1M, Q8_0 8.50 (unsloth); no plain 4-bit file (unsloth UD-* only), so no Q4 level |
 | 2026-10-17 (ii) | **+1 model (109): Ling-3.1-flash** (Grok Bot PR #8, updated onto main) — inclusionAI (Ant Group), weights 10-13, MIT; shape from the official `config.json` (`bailing_hybrid`, llama.cpp `bailingmoe3`): 72 layers = 63 KDA + 9 gated MLA, MLA sized as DeepSeek-V3 (kvHeads 1 × headDim 288, `fullLayers: 9`); context 262144 (config; card's 1M has no scaling recipe); params = GGUF tensor total 563.95B (Hub 572.12B includes MTP); Q4_K_M 5.03 / Q8_0 8.52 bpw from AtomicChat's AD GGUF byte counts; 370.6 GB @4K → tight on M5 Ultra 512 only, red elsewhere; guide denominators 108 → 109 (counts re-run, none moved) |
 | 2026-10-17 | **Runtime versions** — llama.cpp b11703; Ollama v0.40.6-rc1 skipped (pre-release); no model in the window (all already indexed) |
 | 2026-10-16 (iv) | **+3 models (108): Granite 4.2 30B / 3B, Nemotron 3.5 Lightning 30B-A3B** — from owner-pasted configs + byte counts; all three reconcile with their BF16 GGUFs within 0.1%; Lightning Q4_0 19.8 GB @4K → 20.6 @128K (6 of 52 layers cache); quantize guide's "every GGUF model ships Q4_K_M" was false (103/108); duplicate `todayFeed` id fixed |
