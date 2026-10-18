@@ -2,10 +2,10 @@
 
 import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/seo';
-import { Calculator, Terminal, Wand2, GitCompareArrows, Cpu, Layers } from 'lucide-react';
+import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge, Cpu, Layers } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import { vramCalcContent, cliGenContent, formatWizardContent, compareContent } from '@/lib/data/tool-content';
+import { vramCalcContent, cliGenContent, formatWizardContent, compareContent, feelContent } from '@/lib/data/tool-content';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -24,6 +24,7 @@ const tools = [
   { href: '/tools/cli-gen/',       icon: Terminal,          accent: 'text-cyan-300',    content: cliGenContent,       key: 'cliGen' as const },
   { href: '/tools/format-wizard/', icon: Wand2,             accent: 'text-orange-300',  content: formatWizardContent, key: 'formatWizard' as const },
   { href: '/tools/compare/',       icon: GitCompareArrows,  accent: 'text-emerald-300', content: compareContent,      key: 'modelCompare' as const },
+  { href: '/tools/feel/',          icon: Gauge,             accent: 'text-amber-300',   content: feelContent,         key: 'feelSpeed' as const },
 ];
 
 export default function ToolIndexView() {

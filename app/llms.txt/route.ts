@@ -51,6 +51,7 @@ export function GET() {
 - GPU index: ${SITE_URL}/gpu/
 - Tools: ${SITE_URL}/tools/
 - VRAM calculator: ${SITE_URL}/tools/vram-calc/
+- Feel the speed: ${SITE_URL}/tools/feel/
 - Format comparisons: ${SITE_URL}/formats/
 - Cookbook: ${SITE_URL}/cookbook/
 - Benchmarks: ${SITE_URL}/benchmarks/

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import { Calculator, Terminal, Wand2, GitCompareArrows } from 'lucide-react';
+import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 
 export default function QuickAccess() {
@@ -51,6 +51,17 @@ export default function QuickAccess() {
       desc: t.home.quickAccess.compareDesc,
       accent: '#22c55e',
       accentText: '#22c55e',
+    },
+    {
+      href: '/tools/feel/',
+      icon: Gauge,
+      iconColor: 'text-amber-400',
+      glowClass: 'group-hover:glow-cyan',
+      borderHover: 'group-hover:border-amber-500/30',
+      title: t.home.quickAccess.feelTitle,
+      desc: t.home.quickAccess.feelDesc,
+      accent: '#f59e0b',
+      accentText: '#fbbf24',
     },
   ];
 

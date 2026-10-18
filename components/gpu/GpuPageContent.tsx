@@ -1,7 +1,6 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -13,6 +12,8 @@ import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
 import { guidesForGpu } from '@/lib/utils/guide-references';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import { speedQuote, type SpeedQuote } from '@/lib/utils/speed-label';
+import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 
 /**
@@ -153,9 +154,8 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
                         <td className="py-2.5 px-3 font-mono text-xs text-cyan-300">{quantLevelKey(fit.quant)}</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-300">{fit.totalGB} GB</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-emerald-400">+{fit.headroomGB} GB</td>
-                        <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-500">
-                          {fit.quant.speedRTX4090 ?? '—'}
-                          {fit.quant.speedRTX4090 != null && <ConfidenceTag modelId={fit.model.id} quant={fit.quant} />}
+                        <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-400">
+                          <SpeedCell gpu={gpu} model={fit.model} quant={fit.quant} labels={t.speed} />
                         </td>
                       </tr>
                     ))}
@@ -183,6 +183,12 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
             {g.openCalc} <ArrowRight size={14} />
           </Link>
           <Link
+            href={`/tools/feel/?left=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+          >
+            {g.feelSpeed} <ArrowRight size={14} />
+          </Link>
+          <Link
             href="/quant-hub/"
             className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-300"
           >
@@ -203,7 +209,6 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
           <>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">
               {fill(g.measuredBody, { count: measured.length, gpu: gpu.name })}
-              {gpu.id !== 'rtx4090' && <> {g.speedColumnNote}</>}
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[440px]">
@@ -229,7 +234,7 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
             </div>
           </>
         ) : (
-          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}{gpu.id !== 'rtx4090' && <> {g.speedColumnNote}</>}</p>
+          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}</p>
         )}
       </section>
 
@@ -328,4 +333,32 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
       </div>
     </div>
   );
+}
+
+function SpeedCell({
+  gpu,
+  model,
+  quant,
+  labels,
+}: {
+  gpu: GPU;
+  model: QuantModel;
+  quant: QuantVariant;
+  labels: { measured: string; derived: string; ceiling: string; ref4090: string };
+}) {
+  const quote: SpeedQuote = speedQuote(gpu, model, quant, GPU_PAGE_CONTEXT);
+  const tag = 'block text-[10px] font-sans uppercase tracking-wider text-slate-600';
+  if (quote.source === 'measured' && quote.point) {
+    return <>{quote.point}<span className={tag}>{labels.measured}</span></>;
+  }
+  if (quote.source === 'derived' && quote.low && quote.high) {
+    return <>{quote.low}–{quote.high}<span className={tag}>{labels.derived}</span></>;
+  }
+  if (quote.source === 'ceiling' && quote.point) {
+    return <>≤{quote.point}<span className={tag}>{labels.ceiling}</span></>;
+  }
+  if (quote.source === 'other-card' && quote.point) {
+    return <>{quote.point}<span className={tag}>{labels.ref4090}</span></>;
+  }
+  return <>—</>;
 }

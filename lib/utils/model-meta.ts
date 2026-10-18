@@ -30,8 +30,11 @@ const MEASURED_MODEL_IDS = new Set([
 /** Consider "recent" if added within this many days. */
 export const RECENT_DAYS = 45;
 
-export function quantConfidence(modelId: string, q: QuantVariant): QuantConfidence {
+export function quantConfidence(modelId: string, q: QuantVariant, gpuId?: string): QuantConfidence {
   if (q.confidence) return q.confidence;
+  // `speedRTX4090` is a figure from that card. A page about a different GPU
+  // must not inherit the measured tag just because the model is in the set.
+  if (gpuId && gpuId !== 'rtx4090') return 'estimated';
   if (MEASURED_MODEL_IDS.has(modelId) && q.speedRTX4090 != null) return 'measured';
   return 'estimated';
 }

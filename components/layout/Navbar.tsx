@@ -26,7 +26,8 @@ const toolLinks = (t: ReturnType<typeof useLanguage>['t']) => [
   { href: '/tools/vram-calc/',     label: t.nav.vramCalc },
   { href: '/tools/cli-gen/',       label: t.nav.cliGen },
   { href: '/tools/format-wizard/', label: t.nav.formatWizard },
-  { href: '/tools/compare/',    label: t.nav.modelCompare },
+  { href: '/tools/compare/',       label: t.nav.modelCompare },
+  { href: '/tools/feel/',          label: t.nav.feelSpeed },
   { href: '/formats/',             label: t.nav.formats },
 ];
 

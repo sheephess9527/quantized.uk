@@ -69,6 +69,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/tools/cli-gen/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/format-wizard/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/compare/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/feel/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-10-18']), changeFrequency: 'monthly', priority: 0.7 },
   ];
 
   const entries: Entry[] = [

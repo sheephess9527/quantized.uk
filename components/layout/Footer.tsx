@@ -35,6 +35,7 @@ export default function Footer() {
         { label: t.nav.cliGen,       href: '/tools/cli-gen/' },
         { label: t.nav.formatWizard, href: '/tools/format-wizard/' },
         { label: t.nav.modelCompare, href: '/tools/compare/' },
+        { label: t.nav.feelSpeed,    href: '/tools/feel/' },
       ],
     },
     {

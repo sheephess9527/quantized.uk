@@ -287,3 +287,42 @@ export const compareContent: ToolContent = {
     },
   ],
 };
+
+export const feelContent: ToolContent = {
+  summary: {
+    en: 'Stream one sentence at a card\'s measured or scaled token rate, side by side with another card. Bandwidth ceilings are labelled and are not played back as a speed.',
+    zh: '按一张卡的实测或缩放后的 token 速度把一句话流出来，并和另一张卡并排。带宽天花板只标注，不拿来当速度播放。',
+  },
+  sections: [
+    {
+      heading: { en: 'What is allowed to move the text', zh: '什么情况下才会播字' },
+      body: {
+        en: 'Three labels, and only the first two stream. **Measured** is a row in this site\'s benchmark matrix for that exact card, model and quant (prompt 128, generation 128, one sequence). **Derived** is a range: the card\'s own Llama 2 7B Q4_0 generation speed, scaled by how many bytes this quant reads per token, with the checked error 0.99–1.31. Text streams at the low end of that range. **Ceiling** is memory bandwidth divided by the bytes read per token — for a mixture-of-experts model, only the active parameters, not the whole file. It is an upper bound. Similar MoE models measured on an RTX 4090 landed near a quarter of that bound, so a ceiling never streams.',
+        zh: '三种标签，只有前两种会播字。**实测**是本站基准表里同一张卡、同一个模型、同一档量化的一行（提示 128，生成 128，单条）。**推算**是一个范围：用这张卡自己的 Llama 2 7B Q4_0 生成速度，按这一档每个 token 要读的字节数缩放，误差范围是已核对的 0.99–1.31。字按范围的低端流出。**天花板**是显存带宽除以每个 token 读取的字节数——混合专家模型只算激活参数，不算整个文件。它是上界。同类模型在 RTX 4090 上的实测大约只有这个上界的四分之一，所以天花板从不播字。',
+      },
+    },
+    {
+      heading: { en: 'Context changes the wait, not the range', zh: '上下文改变的是等待，不是那个范围' },
+      body: {
+        en: 'Generation rate stays put when you change context, because decode is bound by reading the weights. What changes is the KV cache and the time to first token, which is this card\'s measured Llama 2 7B prompt speed scaled by the model\'s compute. A card with no published prefill row shows no wait. If the estimate exceeds the memory this machine can use — about 75% of unified memory on a Mac, the whole pool on a discrete card — streaming stops. Partial offload to system RAM is not modelled here.',
+        zh: '改上下文时，生成速度的范围不变，因为解码的瓶颈是把权重读一遍。变的是 KV 缓存和首 token 时间：用这张卡实测的 Llama 2 7B 提示词速度，按该模型的计算量缩放。没有公开预填充跑分的卡不显示等待。如果估算超过这台机器能用的内存——Mac 统一内存大约 75%，独显则是整块显存——就停止播字。这一版不模拟溢出到系统内存之后的速度。',
+      },
+    },
+  ],
+  faqs: [
+    {
+      q: { en: 'Why does a 30B mixture-of-experts model not play on a 24 GB card?', zh: '为什么 30B 的混合专家模型在 24 GB 卡上不播字？' },
+      a: {
+        en: 'Unless that exact card has a measured row, the only number we will stand behind is the bandwidth ceiling on the active parameters. Playing that number would look several times too fast. The RTX 4090 row for Qwen3 30B-A3B Q4_K_M is a real measurement, so that one card does stream.',
+        zh: '除非这张卡自己有一行实测，否则我们只给出按激活参数算出的带宽天花板。拿那个数字去播，会比真实速度快好几倍。RTX 4090 上 Qwen3 30B-A3B Q4_K_M 有实测，所以那一张卡会播。',
+      },
+    },
+    {
+      q: { en: 'Can I share what I am looking at?', zh: '可以分享当前看到的组合吗？' },
+      a: {
+        en: 'Yes. Both cards, the model, the quant and the context length are in the URL.',
+        zh: '可以。两张卡、模型、量化档位和上下文长度都在 URL 里。',
+      },
+    },
+  ],
+};

@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-17';
+export const dataLastUpdated = '2026-10-18';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -15,7 +15,7 @@ export const dataLastUpdated = '2026-10-17';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-10-05';
+export const sizingChangedAt = '2026-10-18';
 
 export const dataSources = {
   models: {
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-18',
+    en: 'GPU pages no longer print an RTX 4090 speed as if it were measured on the card you opened. The column is now that card\'s own figure: a measured run, a range scaled from its Llama 2 7B benchmark, or a bandwidth ceiling. Mixture-of-experts ceilings use the active parameters, not the whole file. A new tool at /tools/feel/ streams a sentence at that rate for two cards side by side, and refuses to stream a ceiling.',
+    zh: '显卡页不再把 RTX 4090 的速度印成你打开的这张卡自己的实测。这一列现在是这张卡自己的数字：实测、按它的 Llama 2 7B 跑分缩放出来的范围，或带宽天花板。混合专家模型的天花板按激活参数计算，不是整个文件。新工具 /tools/feel/ 把一句话按这个速度在两张卡上并排流出，并且拒绝拿天花板来播。',
+  },
   {
     date: '2026-10-17',
     en: 'Download commands for very large models now work when the file is split into parts. Builds over about 48 GB are often published as several files in a folder, and the command used to ask for one exact filename that did not exist, so it downloaded nothing. It now fetches every part and points llama.cpp at the first one. Ling-3.1-flash, whose files use their own naming, now shows a placeholder to fill in instead of a wrong name.',
