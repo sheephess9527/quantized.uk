@@ -418,6 +418,8 @@ decided on 2026-10-08 not to change it (it would move 693 GPU-page figures); do 
 `activeParamsB()`; the build fails otherwise. `rooflineTokS` lives in `lib/utils/roofline.ts` — import it from there in client code, or the GPU-page
 prose generator rides along into the bundle.
 
+**A link into `/tools/feel/` is offered only when it can play.** Build it with `feelHref()` and gate it with `playablePick()` / `streamTokS()` (`lib/utils/speed-label.ts`): a side that would only show a bandwidth ceiling streams nothing, so no link is shown rather than an empty comparison (2026-10-18).
+
 **A link to the page you are already on does nothing here.** `useUrlQuery()` reads the query once,
 after mount, so a client-side navigation to the same route with a new query changes the address bar
 and no state — the calculator's reverse-mode "Calculate" links were dead for that reason
@@ -1084,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-18 (ii) | **Speed player wired in** — calculator result → `/tools/feel/` with model/quant/card/ctx; GPU pages: same-budget and step-up side-by-side links on the largest model that streams on both cards; no link when either side only has a ceiling |
 | 2026-10-18 | **Runtime versions + feel-page build fix** — llama.cpp b11716, Ollama v0.40.6 (q2_0 GGUF type), ExLlamaV3 1.6.3; owner commit 3d7bcc9 failed the 100-width description floor on `/zh/tools/feel/` (fixed; EN route given its own metadata); Granite Switch 4.1 skipped (adapter bundle, no GGUF) |
 | 2026-10-17 (iv) | **Calculator check + split-file downloads** — 82,012-case sweep 0 faults, 8 newest models checked in the UI; llama.cpp download for builds > 48 GB asked for one exact filename that sharded repos do not have (fetched nothing) → pattern + `find`; Ling's AtomicChat repo (`AD-` names) → placeholder |
 | 2026-10-17 (iii) | **+1 model (110): Beam 1.0 501B-A23B** (Grok Bot PR #10, updated onto main after #8) — official config: 52 L, 9 full (NoPE) + 43 SWA-512 (iSWA → 1024 cells), 8 KV × 128, 256 experts top-8, 3 dense lead layers, attention gate; 501,267,612,352 params = safetensors total = unsloth BF16 GGUF tensor sum; Q2_K 2.91 (DevQuasar) → 190.9 GB @4K / 230 GB @1M, Q8_0 8.50 (unsloth); no plain 4-bit file (unsloth UD-* only), so no Q4 level |

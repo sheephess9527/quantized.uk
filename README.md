@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 (ii) — Speed player wired into the calculator and GPU pages
+
+Owner asked to take two ideas from llmspeed.dev, which pitches itself as "test local LLM speed before buying" (the site itself is unreachable from here; known only from third-party write-ups).
+
+- **Calculator.** Each forward result gets a link to `/tools/feel/` carrying `model`, `quant` (`FORMAT:LEVEL`, the key SpeedFeel reads), `left` (the reader's card) and `ctx`. The calculator context is snapped down to the tool's 128 / 4K / 32K by `feelContext()`. The link appears only when `streamTokS(speedQuote(...))` is defined on the reader's card; with no card picked it opens on the tool's defaults. On an RTX 4090 the right-hand card is the RTX 5090, because the tool's default right card is the 4090 itself.
+- **GPU pages, same-budget block.** Up to three "{card} vs {sibling} ({model})" links.
+- **GPU pages, step-up block.** One link: this card vs `nextStepUp()`'s card.
+- **Model choice.** `playablePick(cards, fits, 4096)` takes the largest comfortably-fitting model on this page that streams on both cards. If none does (no tg128 row and no matrix measurement on one side), no link: a comparison of two bandwidth ceilings has nothing to play, and the tool deliberately does not animate a ceiling.
+- **New helpers** in `lib/utils/speed-label.ts`: `feelContext`, `playablePick`, `feelHref`.
+
 ### 2026-10-18 — Runtime versions (daily patrol, run at 09:12 at the owner's request)
 
 - **llama.cpp b11716**, from the verbatim tag list.

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-18',
+    en: 'You can now hear a speed before you buy. The calculator links each result to the speed player with the same model, level, context and card, and GPU pages offer side-by-side playback against same-budget cards and against the next card up, on the largest model this card runs comfortably. A link only appears when both cards have a measured or calibrated speed to play.',
+    zh: '现在可以在买之前先"听"速度了。计算器的每个结果都能直接跳到速度播放页，带上同样的模型、档位、上下文和显卡；显卡页也能和同显存档位的卡、以及升级一档的卡并排播放，用的是这张卡能从容运行的最大模型。只有两张卡都有实测或校准过的速度时才会出现这个链接。',
+  },
+  {
+    date: '2026-10-18',
     en: 'Runtime versions re-checked: llama.cpp is at b11716, Ollama at v0.40.6 and ExLlamaV3 at v1.6.3; vLLM (v0.31.0) is unchanged. This Ollama release reads GGUF files that use the new Q2_0 type. No new open-weight model this week was missing from the index.',
     zh: '重新核对了运行时版本：llama.cpp 更新到 b11716，Ollama 更新到 v0.40.6，ExLlamaV3 更新到 v1.6.3；vLLM（v0.31.0）没有变化。这个 Ollama 版本能读取使用新 Q2_0 类型的 GGUF 文件。本周没有本站漏收的新开源权重模型。',
   },

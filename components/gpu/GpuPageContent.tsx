@@ -12,7 +12,7 @@ import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
 import { guidesForGpu } from '@/lib/utils/guide-references';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { speedQuote, type SpeedQuote } from '@/lib/utils/speed-label';
+import { speedQuote, playablePick, feelHref, type SpeedQuote } from '@/lib/utils/speed-label';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 
@@ -30,6 +30,13 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
   const groups = groupFitsByBucket(fits);
   const step = nextStepUp(gpu, fits.length);
   const siblings = sameBudgetCards(gpu);
+  // Side-by-side speed links, offered only where the tool can stream something on both cards:
+  // the largest model this card fits comfortably that has a measured or calibrated rate on each.
+  const feelSiblings = siblings
+    .map(sib => ({ sib, pick: playablePick([gpu, sib], fits, GPU_PAGE_CONTEXT) }))
+    .filter((x): x is { sib: typeof x.sib; pick: NonNullable<typeof x.pick> } => !!x.pick)
+    .slice(0, 3);
+  const stepPick = step ? playablePick([gpu, step.gpu], fits, GPU_PAGE_CONTEXT) : undefined;
   const guides = guidesForGpu(gpu);
   // The system-RAM entry at this same capacity, if one exists.
   const ramTwin = gpu.isCPU ? undefined : gpuDatabase.find(o => o.isCPU && o.vram === gpu.vram);
@@ -279,6 +286,19 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
               </li>
             ))}
           </ul>
+          {feelSiblings.length > 0 && (
+            <p className="text-sm text-slate-500 leading-relaxed mt-3">
+              {g.sameBudgetFeel}{' '}
+              {feelSiblings.map(({ sib, pick }, i) => (
+                <span key={sib.id}>
+                  {i > 0 && ' · '}
+                  <Link href={feelHref(gpu, sib, pick, GPU_PAGE_CONTEXT)} className="text-violet-400 hover:text-violet-300">
+                    {fill(g.feelVs, { a: gpu.name, b: sib.name, model: pick.model.name })}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          )}
         </section>
       )}
 
@@ -307,6 +327,14 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
               {step.gpu.name} →
             </Link>
           </p>
+          {stepPick && (
+            <p className="text-sm text-slate-500 leading-relaxed mt-2">
+              {g.stepUpFeel}{' '}
+              <Link href={feelHref(gpu, step.gpu, stepPick, GPU_PAGE_CONTEXT)} className="text-violet-400 hover:text-violet-300">
+                {fill(g.feelVs, { a: gpu.name, b: step.gpu.name, model: stepPick.model.name })} →
+              </Link>
+            </p>
+          )}
         </section>
       )}
 

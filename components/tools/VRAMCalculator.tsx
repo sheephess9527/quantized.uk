@@ -10,6 +10,7 @@ import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
+import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
@@ -1591,6 +1592,22 @@ export default function VRAMCalculator() {
                 )}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
+                    {selectedQuantObj && (() => {
+                      // Offered only when the speed tool can stream this model on the reader's card
+                      // (a measured or calibrated rate); with no card picked it opens on the defaults.
+                      const pick = { model: selectedModel, quant: selectedQuantObj };
+                      const ctx = feelContext(contextLen);
+                      if (profileGpu && streamTokS(speedQuote(profileGpu, selectedModel, selectedQuantObj, ctx)) === undefined) return null;
+                      const right = profileGpu?.id === 'rtx4090' ? gpuDatabase.find(g => g.id === 'rtx5090') : undefined;
+                      return (
+                        <Link
+                          href={feelHref(profileGpu ?? undefined, right, pick, ctx)}
+                          className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+                        >
+                          {profileGpu ? t.calc.feelThis.replace('{card}', profileGpu.name) : t.calc.feelThisNoCard} →
+                        </Link>
+                      );
+                    })()}
                     <Link
                       href={`/tools/cli-gen/?model=${selectedModel.id}`}
                       className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"

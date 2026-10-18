@@ -6,7 +6,7 @@ import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { weightsGB, rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
 import { measuredSpeed } from '@/lib/utils/measured-speed';
 import { prefillSeconds, type PrefillShape } from '@/lib/utils/prefill';
-import { activeParamsB, isMoE } from '@/lib/utils/model-meta';
+import { activeParamsB, isMoE, isSuperseded } from '@/lib/utils/model-meta';
 
 /**
  * One speed figure, labelled by where it came from. The GPU pages and the
@@ -147,4 +147,33 @@ export function streamTokS(quote: SpeedQuote): number | undefined {
   if (quote.source === 'measured' && quote.point) return quote.point;
   if (quote.source === 'derived' && quote.low) return quote.low;
   return undefined;
+}
+
+export interface FeelPick { model: QuantModel; quant: QuantVariant }
+
+/** Nearest speed-tool context at or below a calculator context (the tool offers three). */
+export function feelContext(contextLength: number): SpeedContext {
+  let best: SpeedContext = SPEED_CONTEXTS[0];
+  for (const c of SPEED_CONTEXTS) if (c <= contextLength) best = c;
+  return best;
+}
+
+/**
+ * The first candidate that actually streams on every card given. A link into the speed tool is
+ * only offered when it can play something on both sides; a comparison that would show two
+ * bandwidth ceilings has nothing to play and is not linked.
+ */
+export function playablePick(cards: GPU[], candidates: FeelPick[], contextLength: number): FeelPick | undefined {
+  // A superseded model is never the one a page puts forward (the homePicks rule).
+  return candidates.find(c => !isSuperseded(c.model) && cards.every(g => streamTokS(speedQuote(g, c.model, c.quant, contextLength)) !== undefined));
+}
+
+/** `/tools/feel/` link carrying the cards, model, quant and context — the params SpeedFeel reads. */
+export function feelHref(left: GPU | undefined, right: GPU | undefined, pick: FeelPick | undefined, ctx: SpeedContext): string {
+  const p = new URLSearchParams();
+  if (left) p.set('left', left.id);
+  if (right) p.set('right', right.id);
+  if (pick) { p.set('model', pick.model.id); p.set('quant', `${pick.quant.format}:${pick.quant.level}`); }
+  p.set('ctx', String(ctx));
+  return `/tools/feel/?${p.toString()}`;
 }
