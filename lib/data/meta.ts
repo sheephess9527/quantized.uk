@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-18',
+    en: 'The Muse Spark Open page now states its licence terms. Meta\'s repository is gated, products built on it must show "Built with Muse Spark Open", and large companies need a separate agreement to offer it as an API.',
+    zh: 'Muse Spark Open 页面现在写明了它的许可证条款：Meta 的仓库需要申请访问，基于它的产品须注明"Built with Muse Spark Open"，大公司要把它作为 API 提供须另签协议。',
+  },
+  {
+    date: '2026-10-18',
     en: 'Nous Hermes 3 Llama 3.1 8B no longer shows speeds measured on Llama 3.1 8B. The two share a name fragment, and this site has never run Hermes 3; its GPU-page speeds now come from each card\'s calibrated range like any other unmeasured model.',
     zh: 'Nous Hermes 3 Llama 3.1 8B 不再显示 Llama 3.1 8B 的实测速度。两者名字里有相同的片段，但本站从未实测过 Hermes 3；它在显卡页上的速度现在和其他未实测的模型一样，按每张卡的校准范围给出。',
   },

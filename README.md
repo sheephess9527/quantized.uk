@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 (vi) — Muse Spark Open: licence terms on the model page
+
+The owner forwarded a video summary (Skill MD). Checked against the index, its specs all agree: 816B / 256 experts / 8 active (~42B), 1M context, Muse Model License. Its "700 GB for NVFP4" is the NVFP4 checkpoint (~493 GB per The New Stack) plus inference workspace. That is a format this index does not track; the page sizes ggml-org's Q2_K GGUF, which needs ~319 GB at 4K and runs on one 512 GB Mac Studio.
+
+Added to both descriptions, the three licence terms that multiple write-ups agree on (The New Stack, noze.it, orcarouter):
+- the Hub repo is gated;
+- products must show "Built with Muse Spark Open";
+- companies with >$20M annual revenue need a separate agreement with Meta to offer it as a service.
+
+Not added: the video's "18+ and identity verification" (no second source); benchmark figures and API-provider lists (outside the index).
+
 ### 2026-10-18 (v) — DeepSeek-V4.1-Flash-1017 checked and held back (docs only)
 
 DeepSeek released V4.1-Flash-1017 on 10-17 (MIT, `deepseek-ai/DeepSeek-V4.1-Flash-1017`). The owner pulled the HF data, since huggingface.co is blocked here: the full `config.json`, `model.safetensors.index.json` and the API dtype breakdown, captured 2026-10-18 11:56 UTC. It is held back for three independent reasons. The earlier skips (10-06, 10-10: "config unreachable") no longer apply; these do.
