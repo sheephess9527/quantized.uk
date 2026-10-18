@@ -419,6 +419,26 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 (v) — DeepSeek-V4.1-Flash-1017 checked and held back (docs only)
+
+DeepSeek released V4.1-Flash-1017 on 10-17 (MIT, `deepseek-ai/DeepSeek-V4.1-Flash-1017`). The owner pulled the HF data, since huggingface.co is blocked here: the full `config.json`, `model.safetensors.index.json` and the API dtype breakdown, captured 2026-10-18 11:56 UTC. It is held back for three independent reasons. The earlier skips (10-06, 10-10: "config unreachable") no longer apply; these do.
+
+**Re-check condition:** a GGUF exists *and* llama.cpp ships `deepseek_v41`. The config is already in hand, so only the GGUF file listing (paths + byte sizes) is needed then.
+
+1. **No runtime.** `model_type` is `deepseek_v41` (`DeepseekV41ForCausalLM`), a new architecture, not the `deepseek4` that llama.cpp supports.
+   - `convert_hf_to_gguf.py` only knows `DeepseekV4ForCausalLM`.
+   - `src/models/deepseek4.cpp` throws on any compression ratio other than 0 / 4 / 128, while V4.1's `compress_ratios` use 0 / 1 / 2: 2 on layers 2–19, 1 on layers 20–39, 0 on layers 0–1 and the last three entries.
+   - V4.1 also adds cross-layer KV sharing (`kv_source_layer_ids` 2/8/14/20), two engram lookup tables (`engram_num_embeddings` 384,006,168 / 384,016,682, layers 1 and 14) and three DSpark draft layers. All of these change memory sizing and none are in llama.cpp.
+2. **No GGUF.** ggml-org and bartowski have only V4-Flash / V4-Flash-0731. `unsloth/DeepSeek-V4.1-Flash-1017-GGUF` exists but is empty (`usedStorage` 0, only README + .gitattributes; README: "WIP - quants and implementation will be posted soon").
+3. **Sizes do not reconcile.** The API dtype counts (BF16 1.98B, F32 0.04B, F8_E4M3 204.0B, I8 557.2B; total 763.2B) come to ~765 GB, while `total_size` is 510.3 GB. The quant config says FP8 with `expert_dtype: fp4`, so the I8 count may be packed FP4 or may include the engram tables. Which it is decides both `params` and what is VRAM (cf. the lazily-read Qwen3.8-Flash-Next table), so nothing is entered until it is known.
+
+Shape recorded for that day:
+- 40 layers, hidden 5120, 64 heads, one shared KV head × 512 (rope 64), q_lora 1280, o_lora 1024 × 8 groups.
+- 384 routed experts of 2304, 6 per token + 1 shared.
+- sliding window 128; indexer 32 × 128, top-k 512.
+- vocab 129280, 1,048,576 positions (YaRN ×16 over 65536).
+- A vision tower: 32 layers, hidden 1024.
+
 ### 2026-10-18 (iv) — Measured speeds matched to the wrong model
 
 `speedQuote()` matched matrix rows to models with a substring test (`stripped.includes(row)`). As a result "Nous Hermes 3 Llama 3.1 8B" took all five Llama 3.1 8B runs as **measured**: RTX 4090 GGUF 148 / EXL2 235, RTX 3090 EXL2 175, M3 Max 68, M2 Ultra 90. That is a different fine-tune that was never run here — the "match model before attributing a figure" rule.

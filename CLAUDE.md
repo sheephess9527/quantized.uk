@@ -1086,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-18 (v) | **DeepSeek-V4.1-Flash-1017 held back** — owner-pulled config: new `deepseek_v41` arch (compress ratios 0/1/2, cross-layer KV, engram tables, DSpark) that llama.cpp cannot load; no GGUF (unsloth repo empty, WIP); dtype counts ~765 GB vs `total_size` 510 GB. Re-check when a GGUF + llama.cpp `deepseek_v41` both exist |
 | 2026-10-18 (iv) | **Re-check: measured speeds on the wrong model** — `speedQuote` substring match gave Nous Hermes 3 five Llama 3.1 8B runs as "measured"; exact name + alias table; sweeps, 390 px, browser regression clean |
 | 2026-10-18 (iii) | **`/tools/feel/` prerenders** — `SpeedFeel` used `useSearchParams()` (tool shipped as "Loading..."); now `useUrlQuery()`, URL sync waits for the arriving query |
 | 2026-10-18 (ii) | **Speed player wired in** — calculator result → `/tools/feel/` with model/quant/card/ctx; GPU pages: same-budget and step-up side-by-side links on the largest model that streams on both cards; no link when either side only has a ceiling |
