@@ -753,7 +753,7 @@ figure) and was sized at a quarter of its real weights.
 it is measured — 73 of 83 models' speeds were never run here. A new surface that prints a speed adds
 the tag; a comparison names a faster side only when both figures are measured.
 
-**Quote only throughput this index measured — and from the right row.** `docker-ollama-gpu` cited
+**Quote only throughput this index measured — and from the right row.** `speedQuote()` matches a matrix row by exact normalised name (or `ROW_ALIASES`), never by substring — a substring match handed Llama 3.1 8B's runs to Nous Hermes 3 (2026-10-18). `docker-ollama-gpu` cited
 the RTX 4090's 218 tok/s as "measured in Ollama at Q4_K_M"; it is the vLLM AWQ row (llama.cpp
 Q4_K_M is 148). Match model + hardware + framework + quant before attributing a figure.
  `rtx4090-vllm-api` claimed "~1400 tok/s (batch=8)",
@@ -1086,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-18 (iv) | **Re-check: measured speeds on the wrong model** — `speedQuote` substring match gave Nous Hermes 3 five Llama 3.1 8B runs as "measured"; exact name + alias table; sweeps, 390 px, browser regression clean |
 | 2026-10-18 (iii) | **`/tools/feel/` prerenders** — `SpeedFeel` used `useSearchParams()` (tool shipped as "Loading..."); now `useUrlQuery()`, URL sync waits for the arriving query |
 | 2026-10-18 (ii) | **Speed player wired in** — calculator result → `/tools/feel/` with model/quant/card/ctx; GPU pages: same-budget and step-up side-by-side links on the largest model that streams on both cards; no link when either side only has a ceiling |
 | 2026-10-18 | **Runtime versions + feel-page build fix** — llama.cpp b11716, Ollama v0.40.6 (q2_0 GGUF type), ExLlamaV3 1.6.3; owner commit 3d7bcc9 failed the 100-width description floor on `/zh/tools/feel/` (fixed; EN route given its own metadata); Granite Switch 4.1 skipped (adapter bundle, no GGUF) |

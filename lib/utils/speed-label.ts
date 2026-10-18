@@ -48,13 +48,22 @@ export interface SpeedQuote {
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
+/**
+ * Matrix rows name models by a short display name, not an id. A substring test attributed the
+ * Llama 3.1 8B runs to "Nous Hermes 3 Llama 3.1 8B" (a different model nobody here measured), so
+ * a row now matches only the same name with a trailing "Instruct" dropped, or a listed alias for
+ * a row whose name is abbreviated.
+ */
+const ROW_ALIASES: Record<string, string> = {
+  r1distillllama8b: 'deepseekr1distillllama8b',
+};
+
 function sameModel(modelName: string, rowModel: string): boolean {
-  const a = norm(modelName);
   const b = norm(rowModel);
   if (!b) return false;
-  if (a === b) return true;
-  const stripped = a.replace(/instruct$/, '');
-  return stripped === b || stripped.includes(b);
+  const target = ROW_ALIASES[b] ?? b;
+  const a = norm(modelName);
+  return a === target || a.replace(/instruct$/, '') === target;
 }
 
 function sameQuant(rowQuant: string, quant: QuantVariant): boolean {

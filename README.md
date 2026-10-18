@@ -419,6 +419,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 (iv) — Measured speeds matched to the wrong model
+
+`speedQuote()` matched matrix rows to models with a substring test (`stripped.includes(row)`). As a result "Nous Hermes 3 Llama 3.1 8B" took all five Llama 3.1 8B runs as **measured**: RTX 4090 GGUF 148 / EXL2 235, RTX 3090 EXL2 175, M3 Max 68, M2 Ultra 90. That is a different fine-tune that was never run here — the "match model before attributing a figure" rule.
+
+A row now matches only the same normalised name, with a trailing "Instruct" dropped, or an entry in `ROW_ALIASES`. The table's one abbreviated row, `R1-Distill-Llama-8B` → DeepSeek-R1-Distill-Llama-8B, is listed there. Swept every card × model × level: the 15 remaining measured attributions are exactly the matrix rows. Hermes 3 falls back to the calibrated range or the ceiling. Calculator sweep (82,012 cases) and `check-measured-speed` unchanged.
+
 ### 2026-10-18 (iii) — `/tools/feel/` prerenders its tool
 
 `SpeedFeel` read its URL with `useSearchParams()`, so in the static export the whole tool was its Suspense fallback ("Loading...") until the bundle ran — the CLAUDE.md `useSearchParams()` rule. It now uses `useUrlQuery()`: state starts on the defaults (RTX 4060 Ti 16G vs RTX 4090, Llama 3.1 8B Q4_K_M, 128), the query is applied after mount with unknown ids ignored, and the address-bar sync waits until the arriving query has been read (otherwise the defaults would overwrite an incoming link). URL sync is `history.replaceState`, like the calculator and compare tool, instead of `router.replace`. The page's `<Suspense>` wrapper is gone.

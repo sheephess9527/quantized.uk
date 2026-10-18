@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-18',
+    en: 'Nous Hermes 3 Llama 3.1 8B no longer shows speeds measured on Llama 3.1 8B. The two share a name fragment, and this site has never run Hermes 3; its GPU-page speeds now come from each card\'s calibrated range like any other unmeasured model.',
+    zh: 'Nous Hermes 3 Llama 3.1 8B 不再显示 Llama 3.1 8B 的实测速度。两者名字里有相同的片段，但本站从未实测过 Hermes 3；它在显卡页上的速度现在和其他未实测的模型一样，按每张卡的校准范围给出。',
+  },
+  {
+    date: '2026-10-18',
     en: 'You can now hear a speed before you buy. The calculator links each result to the speed player with the same model, level, context and card, and GPU pages offer side-by-side playback against same-budget cards and against the next card up, on the largest model this card runs comfortably. A link only appears when both cards have a measured or calibrated speed to play.',
     zh: '现在可以在买之前先"听"速度了。计算器的每个结果都能直接跳到速度播放页，带上同样的模型、档位、上下文和显卡；显卡页也能和同显存档位的卡、以及升级一档的卡并排播放，用的是这张卡能从容运行的最大模型。只有两张卡都有实测或校准过的速度时才会出现这个链接。',
   },
