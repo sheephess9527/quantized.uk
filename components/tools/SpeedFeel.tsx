@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useLanguage } from '@/lib/i18n/context';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
@@ -126,38 +126,56 @@ function note(quote: SpeedQuote, f: ReturnType<typeof useLanguage>['t']['feel'],
 export default function SpeedFeel() {
   const { t } = useLanguage();
   const f = t.feel;
-  const router = useRouter();
-  const params = useSearchParams();
+  // `useSearchParams()` would ship this whole tool as its Suspense fallback in the static export;
+  // the query is read after mount instead, so the page prerenders on the defaults (CLAUDE.md).
+  const params = useUrlQuery();
 
-  const initialModel = models.find(m => m.id === params.get('model')) ?? models.find(m => m.id === DEFAULT_MODEL) ?? models[0];
-  const initialQuant = initialModel.quants.find(q => quantKey(q) === params.get('quant')) ?? initialModel.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? initialModel.quants[0];
-  const initialCtx = Number(params.get('ctx'));
-  const ctx0 = (SPEED_CONTEXTS as readonly number[]).includes(initialCtx) ? initialCtx as SpeedContext : 128;
+  const defaultModel = models.find(m => m.id === DEFAULT_MODEL) ?? models[0];
+  const defaultQuant = (m: QuantModel) => m.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? m.quants[0];
 
-  const [leftId, setLeftId] = useState(gpuDatabase.some(g => g.id === params.get('left')) ? params.get('left')! : DEFAULT_LEFT);
-  const [rightId, setRightId] = useState(gpuDatabase.some(g => g.id === params.get('right')) ? params.get('right')! : DEFAULT_RIGHT);
-  const [modelId, setModelId] = useState(initialModel.id);
-  const [quantId, setQuantId] = useState(quantKey(initialQuant));
-  const [ctx, setCtx] = useState<SpeedContext>(ctx0);
+  const [leftId, setLeftId] = useState(DEFAULT_LEFT);
+  const [rightId, setRightId] = useState(DEFAULT_RIGHT);
+  const [modelId, setModelId] = useState(defaultModel.id);
+  const [quantId, setQuantId] = useState(quantKey(defaultQuant(defaultModel)));
+  const [ctx, setCtx] = useState<SpeedContext>(128);
   const [running, setRunning] = useState(false);
 
-  const model = models.find(m => m.id === modelId) ?? initialModel;
+  // Apply the query once it is readable. Ids the data does not know are ignored, never kept.
+  useEffect(() => {
+    if (!params) return;
+    const l = params.get('left');
+    const r = params.get('right');
+    if (l && gpuDatabase.some(g => g.id === l)) setLeftId(l);
+    if (r && gpuDatabase.some(g => g.id === r)) setRightId(r);
+    const m = models.find(x => x.id === params.get('model'));
+    if (m) {
+      setModelId(m.id);
+      const q = m.quants.find(x => quantKey(x) === params.get('quant')) ?? defaultQuant(m);
+      setQuantId(quantKey(q));
+    }
+    const c = Number(params.get('ctx'));
+    if ((SPEED_CONTEXTS as readonly number[]).includes(c)) setCtx(c as SpeedContext);
+  }, [params]);
+
+  const model = models.find(m => m.id === modelId) ?? defaultModel;
   const quant = model.quants.find(q => quantKey(q) === quantId) ?? model.quants[0];
   const left = gpuDatabase.find(g => g.id === leftId) ?? gpuDatabase[0];
   const right = gpuDatabase.find(g => g.id === rightId) ?? gpuDatabase[0];
 
+  // Keep the address bar shareable — but only after the arriving query has been read, or the
+  // defaults would overwrite the link the reader came in on.
   useEffect(() => {
-    const q = new URLSearchParams({
+    if (!params) return;
+    const next = new URLSearchParams({
       left: left.id,
       right: right.id,
       model: model.id,
       quant: quantKey(quant),
       ctx: String(ctx),
-    });
-    const next = q.toString();
-    if (params.toString() === next) return;
-    router.replace(`?${next}`, { scroll: false });
-  }, [left.id, right.id, model.id, quant, ctx, router, params]);
+    }).toString();
+    if (window.location.search.slice(1) === next) return;
+    window.history.replaceState(null, '', `${window.location.pathname}?${next}`);
+  }, [left.id, right.id, model.id, quant, ctx, params]);
 
   const select = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200';
 

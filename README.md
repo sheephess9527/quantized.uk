@@ -419,6 +419,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 (iii) — `/tools/feel/` prerenders its tool
+
+`SpeedFeel` read its URL with `useSearchParams()`, so in the static export the whole tool was its Suspense fallback ("Loading...") until the bundle ran — the CLAUDE.md `useSearchParams()` rule. It now uses `useUrlQuery()`: state starts on the defaults (RTX 4060 Ti 16G vs RTX 4090, Llama 3.1 8B Q4_K_M, 128), the query is applied after mount with unknown ids ignored, and the address-bar sync waits until the arriving query has been read (otherwise the defaults would overwrite an incoming link). URL sync is `history.replaceState`, like the calculator and compare tool, instead of `router.replace`. The page's `<Suspense>` wrapper is gone.
+
 ### 2026-10-18 (ii) — Speed player wired into the calculator and GPU pages
 
 Owner asked to take two ideas from llmspeed.dev, which pitches itself as "test local LLM speed before buying" (the site itself is unreachable from here; known only from third-party write-ups).

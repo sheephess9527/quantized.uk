@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import SpeedFeel from '@/components/tools/SpeedFeel';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -26,9 +25,7 @@ export default function FeelPage() {
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.feel.title}</h1>
         <p className="text-slate-400 max-w-2xl">{t.feel.subtitle}</p>
       </div>
-      <Suspense fallback={<div className="glass rounded-2xl p-8 text-center text-slate-600 text-sm">Loading...</div>}>
-        <SpeedFeel />
-      </Suspense>
+      <SpeedFeel />
       <ToolExplainer content={feelContent} toolName={t.feel.title} path="/tools/feel/" />
     </div>
   );

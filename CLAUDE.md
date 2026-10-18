@@ -1086,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-18 (iii) | **`/tools/feel/` prerenders** — `SpeedFeel` used `useSearchParams()` (tool shipped as "Loading..."); now `useUrlQuery()`, URL sync waits for the arriving query |
 | 2026-10-18 (ii) | **Speed player wired in** — calculator result → `/tools/feel/` with model/quant/card/ctx; GPU pages: same-budget and step-up side-by-side links on the largest model that streams on both cards; no link when either side only has a ceiling |
 | 2026-10-18 | **Runtime versions + feel-page build fix** — llama.cpp b11716, Ollama v0.40.6 (q2_0 GGUF type), ExLlamaV3 1.6.3; owner commit 3d7bcc9 failed the 100-width description floor on `/zh/tools/feel/` (fixed; EN route given its own metadata); Granite Switch 4.1 skipped (adapter bundle, no GGUF) |
 | 2026-10-17 (iv) | **Calculator check + split-file downloads** — 82,012-case sweep 0 faults, 8 newest models checked in the UI; llama.cpp download for builds > 48 GB asked for one exact filename that sharded repos do not have (fetched nothing) → pattern + `find`; Ling's AtomicChat repo (`AD-` names) → placeholder |
