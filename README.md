@@ -419,6 +419,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-18 — Runtime versions (daily patrol, run at 09:12 at the owner's request)
+
+- **llama.cpp b11716**, from the verbatim tag list.
+- **Ollama v0.40.6**, now Latest. Its notes: Windows orphaned-runner fix, and the `q2_0` GGUF tensor/file type; v0.40.7-rc0 is a pre-release and was skipped.
+- **ExLlamaV3 1.6.3**, Latest on the releases page.
+- **vLLM v0.31.0**, unchanged.
+- **No model added.** The only new candidate, IBM's **Granite Switch 4.1** (10-15: Granite 4.1 8B/30B base + Decision/Guardian aLoRA + Granite Speech encoder behind one endpoint), lists transformers + vLLM and no GGUF, and the index already carries the newer Granite 4.2. Still pending: Mistral Large 4 (weights promised by month end) and Nemotron 3.5 Bolt E4B (due 10-23).
+- **Build fix.** Owner commit `3d7bcc9` (per-card speed column, `/tools/feel/`) was pushed straight to main, and its build fails the postbuild description floor. The `/zh/tools/feel/` meta description is 90 width against the 100 minimum, so that deploy cannot have gone out. The Chinese description is now extended with what the tool actually does, side by side at each card's rate (the tool's own summary). The English route had no metadata at all (a client page) and inherited the site-wide default description; it now gets a `layout.tsx` with its own title and description, the same pattern as `/tools/vram-calc/`.
+
 ### 2026-10-17 (iv) — Calculator check; split-file download commands
 
 The owner asked for a check of the calculator. Results:
