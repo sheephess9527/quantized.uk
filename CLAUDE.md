@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **110** in index (`models-extra` … `models-extra-12`) |
+| Models | **111** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1086,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-19 | **+1 model (111): Gemma 4 12B** (gap audit — June release missed by the 7-day patrol) — shape from transformers' conversion script `_VARIANTS` (config defaults are a smaller reference checkpoint): 48 L = 40 SWA (8 KV × 256, 1536 cells) + 8 global (1 KV × 512), 11.95B counted; llama.cpp converts it as `gemma4`; generic bpw, `estimated`; Q4 8.6 GB @32K → green ≥ 10 GB; guide counts +1 per green card; llama.cpp b11721, vLLM v0.32.0 (Python ≥ 3.11, CORS default none) |
 | 2026-10-18 (vi) | **Muse Spark Open licence terms** — gated repo, "Built with Muse Spark Open" attribution, $20M MaaS threshold added to the description (3 write-ups agree); video's specs matched the index; its 700 GB = NVFP4 + workspace, not a contradiction |
 | 2026-10-18 (v) | **DeepSeek-V4.1-Flash-1017 held back** — owner-pulled config: new `deepseek_v41` arch (compress ratios 0/1/2, cross-layer KV, engram tables, DSpark) that llama.cpp cannot load; no GGUF (unsloth repo empty, WIP); dtype counts ~765 GB vs `total_size` 510 GB. Re-check when a GGUF + llama.cpp `deepseek_v41` both exist |
 | 2026-10-18 (iv) | **Re-check: measured speeds on the wrong model** — `speedQuote` substring match gave Nous Hermes 3 five Llama 3.1 8B runs as "measured"; exact name + alias table; sweeps, 390 px, browser regression clean |

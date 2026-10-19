@@ -20,6 +20,7 @@ const ADDED_LIGHTNING = '2026-10-16';
 const ADDED_BEAM = '2026-10-17';
 const ADDED_LFM25 = '2026-10-14';
 const ADDED_LING31 = '2026-10-17';
+const ADDED_GEMMA4_12B = '2026-10-19';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -695,6 +696,54 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q2_K', bpw: 2.91, vramGB: 190.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q2_K'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.50, vramGB: 556.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q8_0'), confidence: 'estimated' },
+    ],
+  },
+  {
+    // Gemma 4 12B Unified (Google, 2026-06-03, Apache 2.0) — a gap-audit find, missed by every
+    // daily patrol because it shipped in June. Shape from transformers
+    // `models/gemma4_unified/convert_gemma4_unified_weights.py` `_VARIANTS["gemma-4-12b"]` (the
+    // configuration file's defaults describe a smaller reference checkpoint): hidden 3840,
+    // intermediate 4 × 3840, 48 layers = (5 sliding + 1 full) × 8, 16 heads, 8 KV × 256 on the
+    // sliding layers, 1 global KV head × 512 on the full ones (`attention_k_eq_v`), window 1024,
+    // tied 262,144 vocab. Counted from those: 1.007B embedding + 40 × 224.1M + 8 × 241.8M =
+    // 11.91B decoder, + ~0.04B patch/audio embedders = 11.95B, the published figure.
+    // llama.cpp: `conversion/gemma.py` registers Gemma4UnifiedForConditionalGeneration as the
+    // `gemma4` arch; `src/models/gemma4.cpp` uses K as V when there is no v_proj but still caches
+    // both, so the full layers are sized as K + V like the 31B. Window cells pad256(1024 + 512).
+    // No GGUF byte count reachable (huggingface.co blocked) → generic bpw, `estimated`.
+    id: 'gemma-4-12b',
+    name: 'Gemma 4 12B IT',
+    family: 'Google Gemma 4',
+    params: 11.95,
+    paramLabel: '12B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac'],
+    contextLength: 262144,
+    arch: {
+      layers: 48,
+      attHeads: 16,
+      kvHeads: 8,
+      headDim: 256,
+      attention: {
+        fullLayers: 8,
+        windowLayers: 40,
+        windowTokens: 1536,
+        fullKvHeads: 1,
+        fullHeadDim: 512,
+        note: {
+          en: '8 of 48 layers are global (1 KV head × 512) and grow with context; the other 40 use a 1,024-token sliding window (8 KV heads × 256).',
+          zh: '48 层中 8 层为全局注意力（1 个 KV 头 × 512 维），缓存随上下文增长；其余 40 层是 1024 token 滑动窗口（8 个 KV 头 × 256 维）。',
+        },
+      },
+    },
+    addedAt: ADDED_GEMMA4_12B,
+    description: {
+      en: 'Google\'s mid-sized Gemma 4, released in June: a dense 12B with a 256K window. It takes text, images and audio without separate encoders — the raw inputs go straight into the one decoder. Only 8 of its 48 layers cache the full context, each with a single wide KV head, so the cache stays small: about 1 GB at 32K and 4.5 GB at the full 256K. At Q4 that is about 8.6 GB at 32K and 10.3 GB at 128K, both comfortable on a 12 GB card; a 16 GB card holds the whole window comfortably, and an 8 GB card is tight even at 4K. Sizes use the calculator\'s generic rates — no GGUF file size could be checked, and no per-level quality loss has been published.',
+      zh: 'Google 6 月发布的中等尺寸 Gemma 4：12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器，原始输入直接进入同一个解码器。48 层中只有 8 层缓存完整上下文，每层只有一个宽 KV 头，所以缓存很小：32K 约 1 GB，用满 256K 也只要约 4.5 GB。Q4 下 32K 约 8.6 GB、128K 约 10.3 GB，12 GB 显卡都很从容；16 GB 显卡能从容加载完整窗口，8 GB 显卡即使 4K 也偏紧。下方体积使用计算器通用比特率——未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 7.2,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];

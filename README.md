@@ -419,6 +419,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-19 — +1 model (111): Gemma 4 12B (gap audit) · llama.cpp b11721 · vLLM v0.32.0
+
+- **Gemma 4 12B Unified** (Google, released 2026-06-03, Apache 2.0) was never indexed: every daily
+  patrol looks back ~7 days and it shipped in June. Found by the gap audit against current buying
+  guides (it is the "runs on 16 GB" Gemma 4 most of them recommend).
+- **Shape** from transformers `models/gemma4_unified/convert_gemma4_unified_weights.py`
+  `_VARIANTS["gemma-4-12b"]` — the configuration file's defaults (hidden 2304, 30 layers) describe a
+  small reference checkpoint, not the 12B. Hidden 3840, intermediate 15360, 48 layers =
+  `["sliding_attention"] * 5 + ["full_attention"]` × 8, 16 heads, 8 KV × 256 on the sliding layers,
+  `num_global_key_value_heads=1` × `global_head_dim` 512 on the full layers (`attention_k_eq_v`),
+  window 1024 → 1536 cells (pad256(1024 + 512)), tied 262,144 vocab, `max_position_embeddings`
+  262144.
+- **Params 11.95B**, counted: embedding 1.007B + 40 sliding layers × 224.1M + 8 full × 241.8M =
+  11.91B, plus ~0.04B of patch / audio embedders (no separate encoders — that is the "Unified") =
+  the published 11.95B.
+- **llama.cpp path checked in source:** `conversion/gemma.py` registers
+  `Gemma4UnifiedForConditionalGeneration` as the existing `gemma4` arch; `src/models/gemma4.cpp`
+  reuses K as V when a layer has no `v_proj` but still writes both to the cache, so the full layers
+  are sized K + V, the same as the 31B. A community GGUF repo (unsloth) exists per search; no file
+  byte count was reachable (huggingface.co blocked), so both rows use the generic bpw, `estimated`.
+- **Sizes (`calcVRAM`, Q4_K_M):** 8.15 GB @4K, 8.64 @32K, 10.29 @128K, 12.49 @256K — green on every
+  ≥ 10 GB discrete card and ≥ 16 GB Mac, tight (not comfortable) on 8 GB cards, red on 8 GB Macs;
+  12 GB tight only at the full window. Q8_0 13.85 @4K (16 GB green at 4K, tight from 32K).
+- **Guide counts re-run with `countModelsFitting()`:** every green card's comfortable count +1 and
+  its tight count +1; 8 GB cards' tight count +1 only (no guide quotes it). Updated: RX 7900 XTX
+  84 → 85, 16 GB 63 → 64 (and 74 → 75 load), 12 GB / B580 56 → 57 (58 → 59 load), A770 59 → 60,
+  B570 48 → 49, RTX 5090 88 → 89, RTX 4090 84 → 85, DGX Spark 96 → 97 / 100 → 101, M3 Max 48G
+  88 → 89; Q4_K_M "104 of the 110" → "105 of the 111"; AWQ 53 and EXL2 21 unchanged.
+- **Runtimes:** llama.cpp b11721 (verbatim tag list); vLLM v0.32.0 (Latest, 10-18): "Python 3.10 is
+  no longer supported; the minimum is Python 3.11" — every install snippet here already creates a
+  3.12 venv; "Default CORS origins changed from `*` to none; set `--allowed-origins` for browser
+  clients" — no command on this site depends on browser CORS. Ollama v0.40.7-rc0 skipped
+  (pre-release); ExLlamaV3 still 1.6.3.
+- **Not added:** Cohere North Mini Code (June, 30B-A3B coding MoE, Apache 2.0) — the other gap-audit
+  find; its architecture and llama.cpp support are not checked yet, next patrol.
+
 ### 2026-10-18 (vi) — Muse Spark Open: licence terms on the model page
 
 The owner forwarded a video summary (Skill MD). Checked against the index, its specs all agree: 816B / 256 experts / 8 active (~42B), 1M context, Muse Model License. Its "700 GB for NVFP4" is the NVFP4 checkpoint (~493 GB per The New Stack) plus inference workspace. That is a format this index does not track; the page sizes ggml-org's Q2_K GGUF, which needs ~319 GB at 4K and runs on one 512 GB Mac Studio.

@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-18';
+export const dataLastUpdated = '2026-10-19';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,10 +70,10 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-18',
+  checkedAt: '2026-10-19',
   current: {
-    llamacpp: 'b11716',
-    vllm: 'v0.31.0',
+    llamacpp: 'b11721',
+    vllm: 'v0.32.0',
     ollama: 'v0.40.6',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
@@ -88,6 +88,16 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-19',
+    en: 'Added Gemma 4 12B, Google\'s mid-sized Gemma 4 from June that we had missed. It is a dense 12B with a 256K window that reads text, images and audio without separate encoders; only 8 of its 48 layers keep a growing cache, so at Q4 it needs about 8.6 GB at 32K, comfortable on a 12 GB card, and a 16 GB card holds the whole window. Sizes are estimates until a GGUF file size can be checked.',
+    zh: '新增 Gemma 4 12B——Google 6 月发布、本站此前漏收的中等尺寸 Gemma 4。它是 12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器；48 层中只有 8 层的缓存随上下文增长，所以 Q4 下 32K 约 8.6 GB，12 GB 显卡很从容，16 GB 显卡能加载完整窗口。在核对到 GGUF 文件大小之前，体积为估算值。',
+  },
+  {
+    date: '2026-10-19',
+    en: 'Runtime versions updated: llama.cpp b11721 and vLLM v0.32.0. vLLM now needs Python 3.11 or newer (the install commands here already create a 3.12 environment) and no longer allows browser requests from other origins unless you pass --allowed-origins.',
+    zh: '运行时版本更新：llama.cpp b11721、vLLM v0.32.0。vLLM 现在要求 Python 3.11 及以上（本站的安装命令本来就建 3.12 环境），并且默认不再允许其他来源的浏览器请求，除非传 --allowed-origins。',
+  },
   {
     date: '2026-10-18',
     en: 'The Muse Spark Open page now states its licence terms. Meta\'s repository is gated, products built on it must show "Built with Muse Spark Open", and large companies need a separate agreement to offer it as an API.',
