@@ -83,7 +83,7 @@ export default function ModelCard({ model, lang }: Props) {
       </div>
 
       {/* Stats row — one configuration, named directly above it. */}
-      <p className="text-[10px] text-slate-600 font-mono -mb-2">
+      <p className="text-[11px] text-slate-500 font-mono -mb-2">
         {t.hub.model.refConfig
           .replace('{level}', refQuant.format === 'GGUF' ? refQuant.level : `${refQuant.format} ${refQuant.level}`)}
       </p>
@@ -125,8 +125,9 @@ export default function ModelCard({ model, lang }: Props) {
         </div>
       </div>
 
-      {/* Hardware tags */}
-      <div className="flex flex-wrap gap-1.5">
+      {/* Hardware tags — near-identical on most cards, so hidden in the phone
+          list where every card stacks; the Hub's hardware filter carries them. */}
+      <div className="hidden sm:flex flex-wrap gap-1.5">
         {model.hardwareTags.map(hw => (
           <span key={hw} className={cn('badge text-xs', hwColors[hw] ?? 'bg-slate-500/10 text-slate-400 border-slate-500/20')}>
             {t.hub.hardware[hw as keyof typeof t.hub.hardware] ?? hw}

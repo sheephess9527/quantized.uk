@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-19 (iii) — `/zh` Hub filters navigated to the English Hub
+
+- **Bug (reader-reported, confirmed in a browser):** `QuantHubContent`'s `syncUrl` and `clearAll`
+  called `router.replace('/quant-hub/?…')`. On `/zh/quant-hub/` that is a client navigation to the
+  English route, and since language comes from the URL, any GPU chip, size, category or format
+  filter flipped the page to English. The postbuild leak gate cannot see it — it reads hrefs in the
+  exported HTML, and this is a runtime `router` call. Now both go through `localizeHref(…, lang)`.
+  Re-tested: zh chip click → `/zh/quant-hub/?gpu=rtx4090`, `lang="zh-Hans"`; clear → `/zh/quant-hub/`;
+  English unchanged. The other address-bar writers (calculator, compare, feel) already use
+  `window.location.pathname`.
+- **Model cards:** the speed box label is now `tok/s · 4090` (it is `speedRTX4090`; the only basis
+  was a 10 px line above the stats, easy to read as the reader's own card). That line is now 11 px
+  `slate-500`. Hardware tags are `hidden sm:flex` — near-identical on most cards; card height at
+  390 px 369 → ~333.
+- Not done from the same report: it described an existing "fits perfectly · N GB left" badge on
+  Hub cards that appears only with `?gpu=` — no such badge exists in `ModelCard` or the exported
+  HTML (checked with and without `?gpu=`). Its stacked-bar and mobile sticky-bar items were already
+  shipped (10-19 (ii), 10-13).
+
 ### 2026-10-19 (ii) — Calculator: stacked memory bar
 
 - New `components/tools/VramStackBar.tsx` under the forward result's breakdown rows: weights | KV |

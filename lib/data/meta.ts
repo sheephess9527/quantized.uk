@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-19',
+    en: 'Filtering the Chinese model library no longer drops you into the English one. Picking a card, a size or a format on the Chinese Hub used to switch the whole page to English; it now stays in Chinese. Model cards also label their speed as an RTX 4090 figure right under the number, and on phones they skip the hardware tags to keep the list shorter.',
+    zh: '在中文模型库里筛选不会再跳到英文版了。以前在中文模型库点显卡、尺寸或格式筛选，整页会切成英文；现在会留在中文页。模型卡片的速度数字下方也直接标明是 RTX 4090 的数据；手机上卡片不再显示硬件标签，列表更短。',
+  },
+  {
+    date: '2026-10-19',
     en: 'The memory calculator now draws its estimate as one bar across your card. Weights, KV cache and the working buffer each get a segment, the rest of the card shows as free space, and a dashed line marks where the verdict turns amber, so you can watch a longer context eat into the card. Anything past the card is hatched and labelled as spilling to system RAM or as not fitting.',
     zh: '显存计算器现在把估算画成一根铺满你显卡的条：模型权重、KV 缓存和激活缓冲各占一段，剩下的是空闲，虚线标出判定变黄的位置，拉长上下文时能直接看到它吃掉多少显存。超出显卡的部分用斜纹标出，并注明是溢出到系统内存还是装不下。',
   },

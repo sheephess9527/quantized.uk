@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link2, FileDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { localizeHref } from '@/lib/i18n/routing';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
@@ -61,8 +62,10 @@ export default function QuantHubContent() {
   const syncUrl = useCallback((gpu: string | null, f: HubFilters) => {
     if (!hydrated.current) return;
     const qs = buildHubSearchParams(gpu, f).toString();
-    router.replace(qs ? `/quant-hub/?${qs}` : '/quant-hub/', { scroll: false });
-  }, [router]);
+    // Through localizeHref: a bare '/quant-hub/' here moved every Chinese reader
+    // to the English Hub the moment they touched a filter.
+    router.replace(localizeHref(qs ? `/quant-hub/?${qs}` : '/quant-hub/', lang), { scroll: false });
+  }, [router, lang]);
 
   const handleGpuSelect = useCallback((id: string | null) => {
     setGpuFilterId(id);
@@ -171,7 +174,7 @@ export default function QuantHubContent() {
   const clearAll = () => {
     setFilters(EMPTY_HUB_FILTERS);
     setGpuFilterId(null);
-    router.replace('/quant-hub/', { scroll: false });
+    router.replace(localizeHref('/quant-hub/', lang), { scroll: false });
   };
 
   return (

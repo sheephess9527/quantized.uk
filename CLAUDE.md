@@ -93,6 +93,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
     just the page that owns it — `GuideReferences` printed `a.title` for linked guides and the
     Chinese tree showed English guide titles for months; the leak gate cannot catch it (the href is
     correctly `/zh/…`). Scan `out/zh/**` text nodes for English after touching shared components.
+  - **`router.replace` / `router.push` with a hand-written path needs `localizeHref(path, lang)`** —
+    the leak gate reads exported hrefs only, so a runtime navigation to `/quant-hub/?…` sent every
+    Chinese Hub reader to English on their first filter click (2026-10-19). Address-bar rewrites that
+    keep the page should use `window.location.pathname`, as the calculator does.
   - **Never compare a raw `usePathname()` against an English href** — it is `/zh/...` for half the
     site. Run it through `toEnPath()` first (this silently killed every nav highlight in the
     Chinese tree).
@@ -1086,6 +1090,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-19 (iii) | **`/zh` Hub filters jumped to English** — `router.replace('/quant-hub/?…')` (runtime, invisible to the leak gate) → `localizeHref`; card speed labelled `tok/s · 4090`; hardware tags hidden on phones |
 | 2026-10-19 (ii) | **Calculator stacked bar** — weights/KV/activations/free scaled to `capacityGB()`, tick at 88%, overflow amber "spills" up to `tightCeiling(gpu)` else red; no card / blocked format → composition only |
 | 2026-10-19 | **+1 model (111): Gemma 4 12B** (gap audit — June release missed by the 7-day patrol) — shape from transformers' conversion script `_VARIANTS` (config defaults are a smaller reference checkpoint): 48 L = 40 SWA (8 KV × 256, 1536 cells) + 8 global (1 KV × 512), 11.95B counted; llama.cpp converts it as `gemma4`; generic bpw, `estimated`; Q4 8.6 GB @32K → green ≥ 10 GB; guide counts +1 per green card; llama.cpp b11721, vLLM v0.32.0 (Python ≥ 3.11, CORS default none) |
 | 2026-10-18 (vi) | **Muse Spark Open licence terms** — gated repo, "Built with Muse Spark Open" attribution, $20M MaaS threshold added to the description (3 write-ups agree); video's specs matched the index; its 700 GB = NVFP4 + workspace, not a contradiction |
