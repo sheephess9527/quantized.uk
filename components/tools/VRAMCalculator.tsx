@@ -5,6 +5,7 @@ import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
@@ -1515,6 +1516,15 @@ export default function VRAMCalculator() {
                     </div>
                   </div>
                 </div>
+                <VramStackBar
+                  weightsGB={result.modelWeightsGB}
+                  kvGB={result.kvCacheGB}
+                  activationsGB={result.activationsGB}
+                  extraGB={result.extraGB}
+                  capacityGB={profileGpu && (!selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) ? rigCapacity : undefined}
+                  tightCeiling={profileGpu ? tightCeiling(profileGpu) : undefined}
+                  formatBlocked={!!profileGpu && !!selectedQuantObj && !rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)}
+                />
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
                 {(() => {
                   const desc = `${selectedModel ? selectedModel.name : customRepo || t.calc.customLabel} · ${selectedQuant} · ${contextLabel(contextLen)}${kvType !== 'f16' ? ` · KV ${kvType}` : ''}${batchSize > 1 ? ` · ×${batchSize}` : ''}${profileGpu ? ` · ${rigLabel}` : ''}`;

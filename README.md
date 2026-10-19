@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-19 (ii) — Calculator: stacked memory bar
+
+- New `components/tools/VramStackBar.tsx` under the forward result's breakdown rows: weights | KV |
+  activations (| vision encoder) | free, scaled to `capacityGB(gpu, cards, extra)` — the same rig
+  capacity the verdict uses (Macs at their 75% usable figure). Colours match the rows' icons, so the
+  rows are the legend. Dashed tick at 88% = `getVerdict`'s green bound; overflow past the card is
+  hatched, amber and worded as a spill to system RAM while total / capacity ≤ `tightCeiling(gpu)`,
+  red and "over" beyond it (DGX Spark / Macs pass 1.0, so they never "spill").
+- No card → composition only, scaled to the total, no "free" claim; a card whose backend cannot load
+  the format (`rigFormatAllowed`) → composition only and says so, instead of a capacity it cannot use.
+- `role="img"` + an `aria-label` listing every segment and the summary sentence. Checked in a browser:
+  6 cases (green, tight-spill, red, Mac zh, no card, AWQ on a Mac), 390 px iframe scrollWidth 390,
+  no console errors. Prompted by an outside suggestion list; the other items were already shipped
+  or conflict with existing rules (no GitHub benchmark intake, no "sweet spot" badge, no service
+  worker caching changing data).
+
 ### 2026-10-19 — +1 model (111): Gemma 4 12B (gap audit) · llama.cpp b11721 · vLLM v0.32.0
 
 - **Gemma 4 12B Unified** (Google, released 2026-06-03, Apache 2.0) was never indexed: every daily

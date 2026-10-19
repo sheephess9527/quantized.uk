@@ -1086,6 +1086,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-19 (ii) | **Calculator stacked bar** — weights/KV/activations/free scaled to `capacityGB()`, tick at 88%, overflow amber "spills" up to `tightCeiling(gpu)` else red; no card / blocked format → composition only |
 | 2026-10-19 | **+1 model (111): Gemma 4 12B** (gap audit — June release missed by the 7-day patrol) — shape from transformers' conversion script `_VARIANTS` (config defaults are a smaller reference checkpoint): 48 L = 40 SWA (8 KV × 256, 1536 cells) + 8 global (1 KV × 512), 11.95B counted; llama.cpp converts it as `gemma4`; generic bpw, `estimated`; Q4 8.6 GB @32K → green ≥ 10 GB; guide counts +1 per green card; llama.cpp b11721, vLLM v0.32.0 (Python ≥ 3.11, CORS default none) |
 | 2026-10-18 (vi) | **Muse Spark Open licence terms** — gated repo, "Built with Muse Spark Open" attribution, $20M MaaS threshold added to the description (3 write-ups agree); video's specs matched the index; its 700 GB = NVFP4 + workspace, not a contradiction |
 | 2026-10-18 (v) | **DeepSeek-V4.1-Flash-1017 held back** — owner-pulled config: new `deepseek_v41` arch (compress ratios 0/1/2, cross-layer KV, engram tables, DSpark) that llama.cpp cannot load; no GGUF (unsloth repo empty, WIP); dtype counts ~765 GB vs `total_size` 510 GB. Re-check when a GGUF + llama.cpp `deepseek_v41` both exist |

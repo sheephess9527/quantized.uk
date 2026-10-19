@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-19',
+    en: 'The memory calculator now draws its estimate as one bar across your card. Weights, KV cache and the working buffer each get a segment, the rest of the card shows as free space, and a dashed line marks where the verdict turns amber, so you can watch a longer context eat into the card. Anything past the card is hatched and labelled as spilling to system RAM or as not fitting.',
+    zh: '显存计算器现在把估算画成一根铺满你显卡的条：模型权重、KV 缓存和激活缓冲各占一段，剩下的是空闲，虚线标出判定变黄的位置，拉长上下文时能直接看到它吃掉多少显存。超出显卡的部分用斜纹标出，并注明是溢出到系统内存还是装不下。',
+  },
+  {
+    date: '2026-10-19',
     en: 'Added Gemma 4 12B, Google\'s mid-sized Gemma 4 from June that we had missed. It is a dense 12B with a 256K window that reads text, images and audio without separate encoders; only 8 of its 48 layers keep a growing cache, so at Q4 it needs about 8.6 GB at 32K, comfortable on a 12 GB card, and a 16 GB card holds the whole window. Sizes are estimates until a GGUF file size can be checked.',
     zh: '新增 Gemma 4 12B——Google 6 月发布、本站此前漏收的中等尺寸 Gemma 4。它是 12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器；48 层中只有 8 层的缓存随上下文增长，所以 Q4 下 32K 约 8.6 GB，12 GB 显卡很从容，16 GB 显卡能加载完整窗口。在核对到 GGUF 文件大小之前，体积为估算值。',
   },
