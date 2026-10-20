@@ -116,7 +116,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
-  (`export const dynamic = 'force-static'`) e.g. `app/feed.xml/route.ts` for RSS.
+  (`export const dynamic = 'force-static'`) e.g. `app/feed.xml/route.ts` for RSS, and the public
+  data files `app/data/v1/{models,gpus}.json` (`lib/utils/data-export.ts`). **`v1` is a contract:**
+  add fields, never rename or repurpose one; never add `speedRTX4090` or a 0 for an unpublished loss.
   **The one runtime network call** is the calculator's Hugging Face import (`lib/utils/hf-import.ts`),
   made by the reader's browser on click, never at build or on load. Every failure path must degrade to
   "enter by hand"; a field the config does not carry stays empty — never filled with a plausible
@@ -1090,6 +1092,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (ii) | **Public JSON** — `/data/v1/models.json` + `gpus.json` from the live arrays (CC BY, attribution, field notes); `weightsGB` recomputed, confidence per quant, no 4090 speeds; linked from llms.txt, benchmarks, legal §10 |
 | 2026-10-20 | **Compare tool** — context 4K–256K (beyond a model's window → said, not sized); fit row used nameplate `gpu.vram` (16 GB Mac judged on 16) → `usableCapacityGB`/`tightCeiling`/`formatAllowed`; sizes at `referenceQuant` (was Q4_K_M-or-first). Review's "102/108/110/111" and "missing models" not reproduced in `out/` |
 | 2026-10-19 (iii) | **`/zh` Hub filters jumped to English** — `router.replace('/quant-hub/?…')` (runtime, invisible to the leak gate) → `localizeHref`; card speed labelled `tok/s · 4090`; hardware tags hidden on phones |
 | 2026-10-19 (ii) | **Calculator stacked bar** — weights/KV/activations/free scaled to `capacityGB()`, tick at 88%, overflow amber "spills" up to `tightCeiling(gpu)` else red; no card / blocked format → composition only |

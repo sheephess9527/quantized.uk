@@ -58,6 +58,7 @@ export function GET() {
 - Data changelog: ${SITE_URL}/changelog/
 - About: ${SITE_URL}/about/
 - Sitemap: ${SITE_URL}/sitemap.xml
+- Data (JSON, CC BY 4.0): ${SITE_URL}/data/v1/models.json, ${SITE_URL}/data/v1/gpus.json
 - Feed: ${SITE_URL}/feed.xml
 
 ## Languages

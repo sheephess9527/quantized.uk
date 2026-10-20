@@ -40,7 +40,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // data ship — they should not claim `siteDate` just because the site
   // rebuilt. Real last-touched dates (from `git log -1` on each source file);
   // bump the date here, not `siteDate`, when the page's own text changes.
-  const LEGAL_LASTMOD = new Date('2026-10-05');
+  const LEGAL_LASTMOD = new Date('2026-10-20');
   const PRIVACY_LASTMOD = new Date('2026-08-18');
   // A tool page also changes when its own explainer/FAQ text does (in
   // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the

@@ -103,6 +103,10 @@ export default function BenchmarksPage() {
             className="hover:text-slate-300 underline decoration-dotted underline-offset-2"
           >
             {t.bench.dataLicense}
+          </a>{' '}
+          {/* Plain <a>: the JSON is one file for both languages, not a /zh route. */}
+          <a href="/data/v1/models.json" className="hover:text-slate-300 underline decoration-dotted underline-offset-2">
+            {t.bench.dataJson}
           </a>
         </p>
       </div>

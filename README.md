@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (ii) — Public JSON: `/data/v1/models.json`, `/data/v1/gpus.json`
+
+- New `lib/utils/data-export.ts` + two `force-static` route handlers under `app/data/v1/` (same
+  pattern as `/llms.txt`): generated from `models` / `gpuDatabase` at build, so they cannot drift.
+  114 KB / 22 KB, 111 models / 82 rows (incl. the 4 CPU RAM rows, flagged `cpuOnly`).
+- Each file carries `license` (CC BY 4.0), `attribution`, `termsUrl`, `dataLastUpdated`, `count`,
+  and a `notes` block defining every non-obvious field. Models: id, name, family, `paramsB`,
+  `activeParamsB` (MoE only, via `activeParamsB()`), context, categories, status/supersededBy,
+  `addedToIndex`, the `arch` fields the KV arithmetic reads (attention note text dropped),
+  `referenceLevel` (`referenceQuant`), per-quant `bpw`, `weightsGB` = params × bpw / 8 (recomputed,
+  not the typed `vramGB`), `confidence` (`quantConfidence`), `pplLossPercent` only where published,
+  page `url` and a `calculatorUrl`. GPUs: type, `backend`, `vramGB`, `usableGB`
+  (`usableCapacityGB`), `tightCeiling`, bandwidth/memType where stated, page `url` (all 193 URLs
+  checked to exist in `out/`).
+- Deliberately absent: `speedRTX4090` (mostly unmeasured; a bare number loses the Estimated tag).
+- Linked from `/llms.txt`, `/benchmarks/` (plain `<a>` in both languages — one file, not a `/zh`
+  route; the leak gate accepts it) and `/legal/` §10 (new sentence, page date → 2026-10-20, sitemap
+  `LEGAL_LASTMOD` likewise). Not in the sitemap. `v1` = add fields, never rename or repurpose.
+
 ### 2026-10-20 — Compare tool: long context, Mac capacity, reference build
 
 From an outside review (docx). Checked each claim against `out/` before acting:

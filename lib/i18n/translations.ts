@@ -392,6 +392,7 @@ export const translations = {
       tableSubtitle: 'Multi-model speed & VRAM on real hardware — same quant levels where comparable',
       cols: { model: 'Model', hw: 'Hardware', framework: 'Framework', quant: 'Quant', speed: 'Speed (tok/s)', vram: 'VRAM Used', notes: 'Notes' },
       dataLicense: 'The benchmark data on this page is licensed CC BY 4.0 — reuse it freely with credit and a link to quantized.uk.',
+      dataJson: 'The whole index is also published as JSON (models and GPUs).',
       coverageIntro: 'Every row below was produced on a machine described on this page, not collected from elsewhere. That also means the coverage is narrow: {r} runs across {c} cards, out of {m} in the GPU index. Where a figure on this site is not measured, it says estimated — this page is the only place the measured ones come from.',
       coverage: {
         title: 'What is and is not covered',
@@ -778,7 +779,7 @@ export const translations = {
       badge: 'Legal',
       title: 'Terms & Disclaimer',
       subtitle: 'Please read before using calculators, benchmarks, or deployment guides on this site.',
-      lastUpdated: 'Last updated: 5 October 2026',
+      lastUpdated: 'Last updated: 20 October 2026',
       backHome: 'Back to Home',
       footerNote: 'This page is provided for transparency. It does not constitute legal advice.',
       linkLabel: 'Terms & Disclaimer',
@@ -852,6 +853,7 @@ export const translations = {
           paragraphs: [
             'The benchmark measurements, VRAM figures and data tables this site publishes are licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0): you may copy, adapt and reuse them, including commercially, provided you credit quantized.uk and link back to the page you used.',
             'This covers the site\'s own data only. Model weights, model cards, Hugging Face download counts, and third-party names and trademarks remain under their owners\' terms.',
+            'The same data is published as JSON at https://quantized.uk/data/v1/models.json and https://quantized.uk/data/v1/gpus.json, generated from the index on every update, under the same licence.',
           ],
         },
         {
@@ -1576,6 +1578,7 @@ export const translations = {
       tableSubtitle: '多模型真实硬件速度与显存 — 可比量化级别横向对照',
       cols: { model: '模型', hw: '硬件', framework: '框架', quant: '量化级别', speed: '速度 (tok/s)', vram: '显存用量', notes: '备注' },
       dataLicense: '本页基准数据采用 CC BY 4.0 许可——可以自由复用，注明出处并链接到 quantized.uk 即可。',
+      dataJson: '整个索引也以 JSON 形式公开（模型与显卡）。',
       coverageIntro: '下面每一行数据都产自本页描述的那台机器，不是从别处收集来的。这也意味着覆盖面很窄：在 GPU 索引的 {m} 张卡里，实测覆盖了 {c} 张，共 {r} 次运行。本站任何没有实测的数字都会标注为「预估」——而这一页，就是所有实测数字唯一的来源。',
       coverage: {
         title: '哪些有实测，哪些没有',
@@ -1962,7 +1965,7 @@ export const translations = {
       badge: '法律声明',
       title: '使用条款与免责声明',
       subtitle: '使用本站计算器、基准数据或部署指南前，请阅读以下内容。',
-      lastUpdated: '最后更新：2026 年 10 月 5 日',
+      lastUpdated: '最后更新：2026 年 10 月 20 日',
       backHome: '返回首页',
       footerNote: '本页面仅供透明披露之用，不构成法律意见。',
       linkLabel: '条款与免责',
@@ -2036,6 +2039,7 @@ export const translations = {
           paragraphs: [
             '本站发布的基准实测、显存数字和数据表格采用知识共享署名 4.0 国际许可协议（CC BY 4.0）：你可以复制、改编和再利用，包括商业用途，但须注明出自 quantized.uk 并链接回所用的页面。',
             '本许可只适用于本站自己的数据。模型权重、模型卡、Hugging Face 下载量以及第三方名称和商标，仍受各自所有者的条款约束。',
+            '同样的数据也以 JSON 形式公开：https://quantized.uk/data/v1/models.json 和 https://quantized.uk/data/v1/gpus.json，每次更新时从索引生成，许可相同。',
           ],
         },
         {

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-20',
+    en: 'The whole index is now downloadable as JSON. Every model with its architecture, quantization levels and file sizes is at /data/v1/models.json, and every card with its usable memory and bandwidth at /data/v1/gpus.json — regenerated with each update, under the same CC BY 4.0 licence as the rest of the data.',
+    zh: '整个索引现在可以 JSON 形式下载。所有模型及其架构、量化档位和文件体积在 /data/v1/models.json，所有显卡及其可用显存和带宽在 /data/v1/gpus.json——每次更新时重新生成，与其他数据一样采用 CC BY 4.0 许可。',
+  },
+  {
+    date: '2026-10-20',
     en: 'The model comparison now goes up to 256K of context and judges Macs by the memory they can actually use. Context choices are 4K to 256K, so you can watch a hybrid-attention model overtake a conventional one at long context; a model asked for more context than its window says so instead of showing a size. The "fits your card" row now uses a Mac\'s usable share of memory — a 16 GB Mac was being judged against all 16 GB — and each model is sized at the same build its own page uses.',
     zh: '模型对比现在支持到 256K 上下文，并按 Mac 实际可用的内存判定。上下文档位为 4K 到 256K，可以看到混合注意力模型在长上下文下反超常规模型；超出模型自身窗口时会直接说明，而不是给出一个体积。"能否装进显卡"一行现在按 Mac 实际可用的内存来算（以前 16 GB 的 Mac 按满 16 GB 判定），每个模型也按它自己模型页所用的档位计算。',
   },
