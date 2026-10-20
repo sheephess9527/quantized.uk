@@ -1,7 +1,9 @@
 import { QuantModel } from '@/lib/data/types';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { contextLabel } from '@/lib/utils/context-label';
-import { bestQuant as pickBestQuant } from '@/lib/utils/quality';
+import { bestQuant as pickBestQuant, referenceQuant } from '@/lib/utils/quality';
+import type { GPU } from '@/lib/data/gpus';
+import { usableCapacityGB, tightCeiling, formatAllowed } from '@/lib/utils/gpu-page';
 import { quantConfidence } from '@/lib/utils/model-meta';
 
 export type Winner = 'a' | 'b' | 'tie';
@@ -30,6 +32,9 @@ export interface CompareRow {
   labelZh: string;
   valueA: string;
   valueB: string;
+  /** Set when a value is words rather than a number (e.g. "beyond its window"). */
+  valueAZh?: string;
+  valueBZh?: string;
   basis: RowBasis;
   /**
    * Only set where one side being lower/higher is a real advantage *on that
@@ -85,11 +90,14 @@ function row(
 export function compareModels(
   modelA: QuantModel,
   modelB: QuantModel,
-  gpuVram?: number,
+  gpu?: GPU,
   contextLen = 4096,
 ): CompareResult {
-  const q4A = q4Quant(modelA);
-  const q4B = q4Quant(modelB);
+  // `referenceQuant`, the level each model page is sized at — not "Q4_K_M or
+  // whatever comes first", which labelled a Q2_K or Q4_0 size as Q4_K_M for the
+  // models that ship no Q4_K_M.
+  const q4A = referenceQuant(modelA.quants);
+  const q4B = referenceQuant(modelB.quants);
   const bestA = bestQuant(modelA);
   const bestB = bestQuant(modelB);
   const fastest = (m: QuantModel) => m.quants
@@ -101,9 +109,13 @@ export function compareModels(
     && quantConfidence(modelA.id, fastA) === 'measured'
     && quantConfidence(modelB.id, fastB) === 'measured';
 
-  /** Estimated total at the reader's current context — the row that must move. */
+  /**
+   * Estimated total at the reader's current context — the row that must move.
+   * Undefined past the model's own window: a size at a context the model cannot
+   * take is not an answer (same rule as the calculator's static tables).
+   */
   const estimate = (m: QuantModel, q: { bpw: number }) =>
-    calcVRAM({
+    contextLen > m.contextLength ? undefined : calcVRAM({
       paramsB: m.params,
       layers: m.arch.layers,
       kvHeads: m.arch.kvHeads,
@@ -116,6 +128,21 @@ export function compareModels(
 
   const estA = estimate(modelA, q4A);
   const estB = estimate(modelB, q4B);
+  const levelName = (q: { format: string; level: string }) => (q.format === 'GGUF' ? q.level : `${q.format} ${q.level}`);
+  const overEn = (m: QuantModel) => `beyond its ${contextLabel(m.contextLength)} window`;
+  const overZh = (m: QuantModel) => `超出它的 ${contextLabel(m.contextLength)} 窗口`;
+  const estRow: CompareRow = {
+    key: 'estVram',
+    labelEn: `Estimated VRAM @ ${contextLabel(contextLen)} ctx (reference build, batch 1)`,
+    labelZh: `当前上下文下的预估显存 @ ${contextLabel(contextLen)}（参考档位，batch 1）`,
+    valueA: estA === undefined ? overEn(modelA) : `${estA.toFixed(2)} GB · ${levelName(q4A)}`,
+    valueB: estB === undefined ? overEn(modelB) : `${estB.toFixed(2)} GB · ${levelName(q4B)}`,
+    valueAZh: estA === undefined ? overZh(modelA) : undefined,
+    valueBZh: estB === undefined ? overZh(modelB) : undefined,
+    basis: 'estimated',
+    lowerIsBetter: true,
+    winner: estA === undefined || estB === undefined ? undefined : estA === estB ? 'tie' : estA < estB ? 'a' : 'b',
+  };
 
   const rows: CompareRow[] = [
     // Spec rows: facts about the model, with no better side. A 70B is not
@@ -125,18 +152,16 @@ export function compareModels(
       n => contextLabel(n), 'spec'),
 
     // The row the context control actually drives.
-    row('estVram', `Estimated VRAM @ ${contextLabel(contextLen)} ctx (Q4_K_M, batch 1)`,
-      `当前上下文下的预估显存 @ ${contextLabel(contextLen)}（Q4_K_M，batch 1）`,
-      estA, estB, n => `${n.toFixed(2)} GB`, 'estimated', { lowerIsBetter: true }),
+    estRow,
 
     // Published figures. Fixed by definition — they do not move with context.
-    row('q4Vram', 'Published Q4_K_M size', '已发布的 Q4_K_M 体积', q4A.vramGB, q4B.vramGB,
+    row('q4Vram', 'Published size of that build', '该档位的已发布体积', q4A.vramGB, q4B.vramGB,
       n => `${n.toFixed(1)} GB`, 'fixed', { lowerIsBetter: true }),
     // A row is only comparable when both sides published a figure. When either
     // side has none, `row` is handed undefined and prints "—" without declaring
     // a winner — comparing a published loss against a missing one would hand the
     // win to whichever model happened to be documented.
-    row('q4Ppl', 'Q4_K_M PPL loss', 'Q4_K_M 困惑度损失', q4A.pplLossPercent, q4B.pplLossPercent,
+    row('q4Ppl', 'PPL loss of that build', '该档位的困惑度损失', q4A.pplLossPercent, q4B.pplLossPercent,
       n => `${n.toFixed(1)}%`, 'fixed', { lowerIsBetter: true }),
     row('bestPpl', 'Lowest PPL loss (any level)', '最低困惑度损失（任意档位）', bestA.pplLossPercent, bestB.pplLossPercent,
       n => `${n.toFixed(1)}%`, 'fixed', { lowerIsBetter: true }),
@@ -153,18 +178,32 @@ export function compareModels(
       modelA.quants.length, modelB.quants.length, n => String(n), 'spec'),
   ];
 
-  if (gpuVram) {
-    const verdictA = getVerdict(estA, gpuVram);
-    const verdictB = getVerdict(estB, gpuVram);
-    const scoreMap = { green: 2, yellow: 1, red: 0 };
+  if (gpu) {
+    // The same capacity and tight ceiling every other verdict on the site uses:
+    // a Mac's usable share, DGX Spark's hard 100%, and the format check — the
+    // raw nameplate figure judged a 16 GB Mac against 16 GB.
+    const cap = usableCapacityGB(gpu);
+    const scoreMap = { green: 2, yellow: 1, red: 0 } as const;
+    const fit = (m: QuantModel, q: { format: string }, est: number | undefined) => {
+      if (est === undefined) return { en: overEn(m), zh: overZh(m), score: -1 };
+      if (!formatAllowed(gpu, q.format as never)) return { en: `${q.format} does not run on this card`, zh: `这张卡跑不了 ${q.format}`, score: 0 };
+      const v = getVerdict(est, cap, tightCeiling(gpu));
+      return { en: `${est.toFixed(1)} GB · ${v}`, zh: `${est.toFixed(1)} GB · ${v === 'green' ? '从容' : v === 'yellow' ? '偏紧' : '装不下'}`, score: scoreMap[v] };
+    };
+    const fa = fit(modelA, q4A, estA);
+    const fb = fit(modelB, q4B, estB);
+    const capLabel = cap === gpu.vram ? `${gpu.vram}GB` : `${gpu.vram}GB (${cap.toFixed(0)} GB usable)`;
+    const capLabelZh = cap === gpu.vram ? `${gpu.vram}GB` : `${gpu.vram}GB（可用 ${cap.toFixed(0)} GB）`;
     rows.push({
       key: 'gpuFit',
-      labelEn: `Fits ${gpuVram}GB card at this context`,
-      labelZh: `在当前上下文下能否装进 ${gpuVram}GB 显卡`,
-      valueA: `${estA.toFixed(1)} GB · ${verdictA}`,
-      valueB: `${estB.toFixed(1)} GB · ${verdictB}`,
+      labelEn: `Fits ${gpu.name} ${capLabel} at this context`,
+      labelZh: `在当前上下文下能否装进 ${gpu.name} ${capLabelZh}`,
+      valueA: fa.en,
+      valueB: fb.en,
+      valueAZh: fa.zh,
+      valueBZh: fb.zh,
       basis: 'estimated',
-      winner: scoreMap[verdictA] > scoreMap[verdictB] ? 'a' : scoreMap[verdictA] < scoreMap[verdictB] ? 'b' : 'tie',
+      winner: fa.score < 0 || fb.score < 0 ? undefined : fa.score > fb.score ? 'a' : fa.score < fb.score ? 'b' : 'tie',
       higherIsBetter: true,
     });
   }

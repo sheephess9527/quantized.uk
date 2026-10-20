@@ -419,6 +419,34 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 — Compare tool: long context, Mac capacity, reference build
+
+From an outside review (docx). Checked each claim against `out/` before acting:
+- **Not reproduced:** "102 / 108 / 110 / 111 models on different pages" — every page in the export
+  says 111 (home, Hub, `/about/`, both languages); the four figures match four past ship dates, so
+  the reviewer's reader was serving snapshots of different ages. "Compare dropdown misses the
+  October models" — `groupedModels()` covers all 111 and the exported `<select>` has Gemma 4 12B,
+  Beam, Ling. "Footer Tools shows 4 items on some pages" — `/tools/feel/` is linked from every page
+  checked (benchmarks, compare, wizard, zh home, cookbook).
+- **Real, fixed (`lib/utils/compare.ts`, `components/tools/ModelCompare.tsx`):**
+  - Context chips were 2K–16K, which hides exactly what the index's hybrid/MLA/SWA entries are
+    about; now 4K / 8K / 32K / 128K / 256K (`aria-pressed` added). A side asked for more than its
+    `contextLength` prints "beyond its N window" (zh too) and takes no winner — never a size past
+    the window.
+  - Found while there: the "fits your card" row called `getVerdict(est, gpu.vram)` — nameplate
+    capacity, default tight ceiling, no format check. A 16 GB Mac judged Gemma 4 12B @256K (12.5 GB)
+    green at 78%; it is 104% of the 12 GB usable — amber. Now `usableCapacityGB` + `tightCeiling` +
+    `formatAllowed`, and the label names the usable figure. The caller duplicated the computation
+    instead of calling the shared helpers — the pattern CLAUDE.md warns about.
+  - `q4Quant()` was "Q4_K_M or `quants[0]`" under a label saying Q4_K_M — 8 models ship no Q4_K_M
+    (Lightning Q4_0, Beam Q2_K…). Now `referenceQuant()`, with the level printed beside each size;
+    the calculator links carry `quantLevelKey(referenceQuant)` instead of a hard `Q4_K_M`.
+- **Declined:** EXL3 / MLX formats (0 models ship them here — the HQQ rule); GitHub benchmark
+  intake (no public repo); CI that writes Hugging Face metadata into the data (unreviewed figures
+  in the index); WebGPU GPU auto-detect (`GPUAdapterInfo` exposes vendor/architecture, not the
+  card model or memory size, so it cannot pick a row honestly). A static JSON export of the CC BY
+  data and community outreach are reasonable but the owner's call.
+
 ### 2026-10-19 (iii) — `/zh` Hub filters navigated to the English Hub
 
 - **Bug (reader-reported, confirmed in a browser):** `QuantHubContent`'s `syncUrl` and `clearAll`

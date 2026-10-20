@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-19';
+export const dataLastUpdated = '2026-10-20';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-20',
+    en: 'The model comparison now goes up to 256K of context and judges Macs by the memory they can actually use. Context choices are 4K to 256K, so you can watch a hybrid-attention model overtake a conventional one at long context; a model asked for more context than its window says so instead of showing a size. The "fits your card" row now uses a Mac\'s usable share of memory — a 16 GB Mac was being judged against all 16 GB — and each model is sized at the same build its own page uses.',
+    zh: '模型对比现在支持到 256K 上下文，并按 Mac 实际可用的内存判定。上下文档位为 4K 到 256K，可以看到混合注意力模型在长上下文下反超常规模型；超出模型自身窗口时会直接说明，而不是给出一个体积。"能否装进显卡"一行现在按 Mac 实际可用的内存来算（以前 16 GB 的 Mac 按满 16 GB 判定），每个模型也按它自己模型页所用的档位计算。',
+  },
   {
     date: '2026-10-19',
     en: 'Filtering the Chinese model library no longer drops you into the English one. Picking a card, a size or a format on the Chinese Hub used to switch the whole page to English; it now stays in Chinese. Model cards also label their speed as an RTX 4090 figure right under the number, and on phones they skip the hardware tags to keep the list shorter.',

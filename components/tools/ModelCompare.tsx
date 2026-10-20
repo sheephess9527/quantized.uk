@@ -7,6 +7,9 @@ import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { models } from '@/lib/data/models';
 import { compareModels } from '@/lib/utils/compare';
+import { contextLabel } from '@/lib/utils/context-label';
+import { referenceQuant } from '@/lib/utils/quality';
+import { quantLevelKey } from '@/lib/utils/recommend';
 import { cn } from '@/lib/utils/cn';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
@@ -56,7 +59,7 @@ export default function ModelCompare() {
 
   const result = useMemo(() => {
     if (!modelA || !modelB || modelAId === modelBId) return null;
-    return compareModels(modelA, modelB, gpu?.vram, contextLen);
+    return compareModels(modelA, modelB, gpu ?? undefined, contextLen);
   }, [modelA, modelB, modelAId, modelBId, gpu, contextLen]);
 
   const copyLink = () => {
@@ -105,11 +108,11 @@ export default function ModelCompare() {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <label className="text-xs text-slate-500">{c.context}</label>
         <div className="flex flex-wrap gap-1.5">
-          {[2048, 4096, 8192, 16384].map(p => (
-            <button key={p} onClick={() => setContextLen(p)}
+          {[4096, 8192, 32768, 131072, 262144].map(p => (
+            <button key={p} onClick={() => setContextLen(p)} aria-pressed={contextLen === p}
               className={cn('px-2 py-1 rounded-lg text-xs font-mono border transition-all',
                 contextLen === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06]')}>
-              {p >= 1000 ? `${p / 1000}K` : p}
+              {contextLabel(p)}
             </button>
           ))}
         </div>
@@ -163,10 +166,10 @@ export default function ModelCompare() {
                         </span>
                       </td>
                       <td className={cn('px-3 py-3 text-right font-mono text-xs', row.winner === 'a' && 'text-emerald-400 font-semibold')}>
-                        {row.valueA}
+                        {lang === 'zh' && row.valueAZh ? row.valueAZh : row.valueA}
                       </td>
                       <td className={cn('px-5 py-3 text-right font-mono text-xs', row.winner === 'b' && 'text-emerald-400 font-semibold')}>
-                        {row.valueB}
+                        {lang === 'zh' && row.valueBZh ? row.valueBZh : row.valueB}
                       </td>
                     </tr>
                   );
@@ -178,8 +181,8 @@ export default function ModelCompare() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href={`/quant-hub/${modelA!.id}/`} className="text-xs text-violet-400 hover:text-violet-300">{modelA!.name} →</Link>
             <Link href={`/quant-hub/${modelB!.id}/`} className="text-xs text-violet-400 hover:text-violet-300">{modelB!.name} →</Link>
-            <Link href={`/tools/vram-calc/?mode=forward&model=${modelA!.id}&quant=Q4_K_M&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcA}</Link>
-            <Link href={`/tools/vram-calc/?mode=forward&model=${modelB!.id}&quant=Q4_K_M&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcB}</Link>
+            <Link href={`/tools/vram-calc/?mode=forward&model=${modelA!.id}&quant=${encodeURIComponent(quantLevelKey(referenceQuant(modelA!.quants)))}&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcA}</Link>
+            <Link href={`/tools/vram-calc/?mode=forward&model=${modelB!.id}&quant=${encodeURIComponent(quantLevelKey(referenceQuant(modelB!.quants)))}&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcB}</Link>
           </div>
         </div>
       ) : (

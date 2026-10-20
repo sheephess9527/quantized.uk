@@ -1090,6 +1090,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 | **Compare tool** — context 4K–256K (beyond a model's window → said, not sized); fit row used nameplate `gpu.vram` (16 GB Mac judged on 16) → `usableCapacityGB`/`tightCeiling`/`formatAllowed`; sizes at `referenceQuant` (was Q4_K_M-or-first). Review's "102/108/110/111" and "missing models" not reproduced in `out/` |
 | 2026-10-19 (iii) | **`/zh` Hub filters jumped to English** — `router.replace('/quant-hub/?…')` (runtime, invisible to the leak gate) → `localizeHref`; card speed labelled `tok/s · 4090`; hardware tags hidden on phones |
 | 2026-10-19 (ii) | **Calculator stacked bar** — weights/KV/activations/free scaled to `capacityGB()`, tick at 88%, overflow amber "spills" up to `tightCeiling(gpu)` else red; no card / blocked format → composition only |
 | 2026-10-19 | **+1 model (111): Gemma 4 12B** (gap audit — June release missed by the 7-day patrol) — shape from transformers' conversion script `_VARIANTS` (config defaults are a smaller reference checkpoint): 48 L = 40 SWA (8 KV × 256, 1536 cells) + 8 global (1 KV × 512), 11.95B counted; llama.cpp converts it as `gemma4`; generic bpw, `estimated`; Q4 8.6 GB @32K → green ≥ 10 GB; guide counts +1 per green card; llama.cpp b11721, vLLM v0.32.0 (Python ≥ 3.11, CORS default none) |
