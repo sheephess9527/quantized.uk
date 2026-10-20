@@ -419,6 +419,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (iv) — +1 model (112): North Mini Code 1.0 30B-A3B
+
+- From the owner's paste of `CohereLabs/North-Mini-Code-1.0` (config.json, safetensors index,
+  bartowski/unsloth file trees; huggingface.co is blocked here). Architecture `Cohere2MoeForCausalLM`
+  → llama.cpp `cohere2moe` (PR #24260, merged 2026-06-13; the unsloth card's "not in stock llama.cpp"
+  line is stale). `src/models/cohere2moe.cpp` @ b11748: `build_attn_inp_kv_iswa`, SWA standard.
+- Shape: 49 layers, `layer_types` 13 full + 36 sliding (window 4096 → 4608 cells), 32 heads / 4 KV ×
+  128, hidden 2048, 128 experts top-8 × 768, 1 dense lead layer × 3072, vocab 262,144. Context
+  262144 from the model card ("256K"); config says 500000 — the description states both.
+- params 30,484,303,872 = safetensors `total_parameters` = bartowski GGUF `total`; recount from the
+  config ≈ 30.49B (experts 29.0B + attention 0.92B + embedding 0.54B). Active ~3.3B by the same count;
+  the label keeps the vendor's A3B and no `activeParams` is typed (vendor-stated only).
+- bpw from bartowski byte counts: Q3_K_M 3.73 (14,209,048,128), Q4_K_M 4.92 (18,744,024,640),
+  Q8_0 8.51 (32,437,263,936); BF16 16.01 closes the chain. `hfRepoMap` → `bartowski/…-GGUF`, whose
+  filenames are `<repo base>-<level>.gguf`, so the CLI names files directly (all < `SHARD_GB`).
+- Sizes (`calcVRAM`): Q4_K_M 20.0 / 20.8 / 23.5 / 27.1 GB at 4K / 32K / 128K / 256K; Q3_K_M 15.3 @4K.
+  Comfortable count +1 on every ≥ 20 GB card and ≥ 24 GB Mac; 16 GB cards tight +1 only (Q3_K_M at
+  95%). Guide numbers re-run with `countModelsFitting()`: RX 7900 XTX 85 → 86, RTX 5090 89 → 90,
+  RTX 4090 85 → 86, DGX Spark 97 → 98 / 101 → 102, M3 Max 48G 89 → 90, 16 GB "load at all"
+  75 → 76; 12 GB / B580 / A770 / B570 / A750 unchanged; denominators 111 → 112; Q4_K_M ships
+  "106 of the 112".
+
 ### 2026-10-20 (iii) — Runtime versions; North Mini Code waiting on its config
 
 - llama.cpp b11748 (verbatim tag list). Ollama: v0.40.7 is still Pre-release (Latest v0.40.6);

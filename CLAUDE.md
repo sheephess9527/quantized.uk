@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **111** in index (`models-extra` … `models-extra-12`) |
+| Models | **112** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1092,6 +1092,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (iv) | **+1 model (112): North Mini Code 1.0 30B-A3B** — owner-pasted config + byte counts; llama.cpp `cohere2moe` (iSWA, 13 full + 36 SWA @4608 cells, 4 KV × 128); 30.48B = safetensors total = GGUF total; Q3_K_M 3.73 / Q4_K_M 4.92 / Q8_0 8.51 bpw (BF16 16.01); Q4_K_M 20.0 GB @4K → green on 24 GB; guide counts re-run |
 | 2026-10-20 (iii) | **Runtime versions** — llama.cpp b11748; Ollama v0.40.7 still pre-release; North Mini Code runnable (llama.cpp `cohere2moe` merged) but held for its real `config.json` (window/head_dim unreachable) |
 | 2026-10-20 (ii) | **Public JSON** — `/data/v1/models.json` + `gpus.json` from the live arrays (CC BY, attribution, field notes); `weightsGB` recomputed, confidence per quant, no 4090 speeds; linked from llms.txt, benchmarks, legal §10 |
 | 2026-10-20 | **Compare tool** — context 4K–256K (beyond a model's window → said, not sized); fit row used nameplate `gpu.vram` (16 GB Mac judged on 16) → `usableCapacityGB`/`tightCeiling`/`formatAllowed`; sizes at `referenceQuant` (was Q4_K_M-or-first). Review's "102/108/110/111" and "missing models" not reproduced in `out/` |

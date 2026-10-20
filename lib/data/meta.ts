@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-20',
+    en: 'Added North Mini Code 1.0, Cohere\'s open coding model. It is a 30B mixture-of-experts with about 3B parameters active per token, and only 13 of its 49 layers keep a growing cache: at Q4_K_M it needs about 20 GB at 4K and 21 GB at 32K, comfortable on a 24 GB card. A 16 GB card can run the Q3_K_M build, but only just.',
+    zh: '新增 North Mini Code 1.0——Cohere 的开源编程模型。它是 30B 混合专家，每个 token 约激活 3B 参数，49 层中只有 13 层的缓存随上下文增长：Q4_K_M 在 4K 下约需 20 GB，32K 约 21 GB，24 GB 显卡很从容。16 GB 显卡可以跑 Q3_K_M，但只是勉强装下。',
+  },
+  {
+    date: '2026-10-20',
     en: 'The whole index is now downloadable as JSON. Every model with its architecture, quantization levels and file sizes is at /data/v1/models.json, and every card with its usable memory and bandwidth at /data/v1/gpus.json — regenerated with each update, under the same CC BY 4.0 licence as the rest of the data.',
     zh: '整个索引现在可以 JSON 形式下载。所有模型及其架构、量化档位和文件体积在 /data/v1/models.json，所有显卡及其可用显存和带宽在 /data/v1/gpus.json——每次更新时重新生成，与其他数据一样采用 CC BY 4.0 许可。',
   },

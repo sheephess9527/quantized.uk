@@ -21,6 +21,7 @@ const ADDED_BEAM = '2026-10-17';
 const ADDED_LFM25 = '2026-10-14';
 const ADDED_LING31 = '2026-10-17';
 const ADDED_GEMMA4_12B = '2026-10-19';
+const ADDED_NORTH_MINI = '2026-10-20';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -744,6 +745,53 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 7.2,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Cohere North Mini Code 1.0 (June 2026, Apache 2.0) — gap-audit find, held on 10-20 until the
+    // owner pasted the real files (huggingface.co is blocked here): `CohereLabs/North-Mini-Code-1.0`
+    // config.json — Cohere2MoeForCausalLM, 49 layers, `layer_types` = 13 full_attention + 36
+    // sliding_attention (12 × [full, swa, swa, swa] + 1 full), sliding_window 4096, 32 heads / 4 KV
+    // × 128, hidden 2048, 128 experts top-8 (768 wide), 1 dense lead layer (3072), tied 262,144
+    // vocab, max_position_embeddings 500000 (model card: "Context length: 256K" — the card's figure
+    // is used). params = safetensors `total_parameters` 30,484,303,872 = bartowski GGUF `total`;
+    // counted from the config it is 29.0B experts + 0.92B attention + 0.54B embedding ≈ 30.49B.
+    // bpw from bartowski byte counts: Q3_K_M 14,209,048,128 → 3.73, Q4_K_M 18,744,024,640 → 4.92,
+    // Q8_0 32,437,263,936 → 8.51; BF16 61,004,406,272 → 16.01 confirms the chain.
+    // llama.cpp: `cohere2moe` (PR #24260, merged 2026-06-13), `build_attn_inp_kv_iswa` with
+    // LLAMA_SWA_TYPE_STANDARD → window cells pad256(4096 + 512) = 4608.
+    id: 'north-mini-code-1.0',
+    name: 'North Mini Code 1.0 30B-A3B',
+    family: 'Cohere North',
+    params: 30.48,
+    paramLabel: '30B-A3B',
+    categories: ['code', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: {
+      layers: 49,
+      attHeads: 32,
+      kvHeads: 4,
+      headDim: 128,
+      attention: {
+        fullLayers: 13,
+        windowLayers: 36,
+        windowTokens: 4608,
+        note: {
+          en: '13 of 49 layers use full attention and grow with context; the other 36 use a 4,096-token sliding window. All of them keep 4 KV heads × 128.',
+          zh: '49 层中 13 层是全局注意力，缓存随上下文增长；其余 36 层是 4096 token 滑动窗口。所有层都是 4 个 KV 头 × 128 维。',
+        },
+      },
+    },
+    addedAt: ADDED_NORTH_MINI,
+    description: {
+      en: 'Cohere\'s open coding model, released in June: a 30B mixture-of-experts with about 3B parameters active per token. It is built for code generation, agentic software work and terminal tasks, and takes text only. Only 13 of its 49 layers keep a cache that grows with context, so long sessions stay affordable: at Q4_K_M (bartowski\'s 18.7 GB file) it needs about 20.0 GB at 4K, 20.8 GB at 32K and 23.5 GB at 128K — comfortable on a 24 GB card up to 32K and tight at 128K. A 16 GB card needs Q3_K_M (bartowski\'s 14.2 GB file): about 15.3 GB at 4K, tight, and too big past 32K. The model card says 256K context while its config allows 500K; this page uses 256K. Sizes come from the published GGUF files; no per-level quality loss has been published, and Cohere\'s benchmark claims are its own.',
+      zh: 'Cohere 6 月发布的开源编程模型：30B 混合专家，每个 token 约激活 3B 参数，面向代码生成、智能体式软件开发和终端任务，纯文本。49 层中只有 13 层的缓存随上下文增长，所以长会话也负担得起：Q4_K_M（bartowski 的 18.7 GB 文件）在 4K 下约需 20.0 GB，32K 约 20.8 GB，128K 约 23.5 GB——24 GB 显卡到 32K 都很从容，128K 偏紧。16 GB 显卡需要用 Q3_K_M（bartowski 的 14.2 GB 文件）：4K 下约 15.3 GB，偏紧，超过 32K 就装不下。模型卡写的是 256K 上下文，配置文件允许 500K，本页按 256K 计算。体积按已发布的 GGUF 文件计算；各档位的质量损失未公布，基准成绩是 Cohere 自己报的。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.73, vramGB: 14.2, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q3_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.92, vramGB: 18.7, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 32.4, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
 ];
