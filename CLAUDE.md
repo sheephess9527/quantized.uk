@@ -974,8 +974,20 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
   the one that improves the **Chinese calculator path** and what a **16–24 GB Windows card** reader
   can run. A `/zh` bug outranks an equivalent English one (the 10-19 Hub filter bug that sent every
   Chinese reader to English is the type). Chinese copy is read first, not translated second.
-- The 2026-08-08 hypothesis (non-standard-hardware guides lead; single-digit volume) is superseded:
-  guides did not appear near the top of this sample. Keep serving AMD / Mac / multi-GPU readers in
+- **A second, separate audience reaches the site through Google's AI answers** (Search Console
+  "generative AI features" export, 2026-07-18 → 10-17, impressions only, no clicks in that report):
+  816 impressions, ~1–3/day in August, ~7/day early September, **20–35/day since ~09-27**. Countries
+  are the mirror image of Cloudflare's — US 137, UK 72, Germany 64, Canada 47 … China 2; desktop 93%.
+  **`/cookbook/amd-rocm-llamacpp/` alone is 482 (59%)**, then Qwen3-Coder 30B-A3B's model page 48,
+  `docker-ollama-gpu` 47, `m1-8gb-ollama-limits` 37, `8gb-gpu-starter-guide` 22. So Google does
+  know and cite the site; the near-zero Google visits in Cloudflare are AI answers satisfying the
+  query, not missing indexing. Consequence: the English guides Google cites are treated as
+  reference text by other systems — **keep the AMD ROCm guide's commands current first**, and a
+  wrong figure there costs more than one elsewhere. Clicks/CTR/position need the ordinary
+  Performance report, not yet seen.
+- The 2026-08-08 hypothesis (non-standard-hardware guides lead; single-digit volume) is superseded
+  for the Chinese/Bing audience, where guides did not appear near the top — but it holds for the
+  Google audience above, where the AMD guide leads. Keep serving AMD / Mac / multi-GPU readers in
   the tools, but do not rank them above the calculator. Re-check against the next sample before
   treating any of this as settled; one week is still a small sample.
 
@@ -1104,6 +1116,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (vii) | **Google audience added to CLAUDE.md** — Search Console AI-features export: 816 impressions in 3 months, 20–35/day since ~09-27, US/UK/DE/CA, AMD ROCm guide 59%; Google cites the site, the missing clicks are AI answers; keep that guide current first (docs only) |
 | 2026-10-20 (vi) | **Gemma 4 12B from real GGUF bytes** — Q8_0 = 8.51 bpw over the 11.91B decoder (params 11.95 → 11.91, embedders are the mmproj); Q4_K_M 4.78 (unsloth; bartowski's is 0.54 GB larger, stated); `hfRepoMap` → unsloth so the CLI names the file; no fit count moved |
 | 2026-10-20 (v) | **Audience rewritten from real data** — CF Web Analytics week of 10-11: zh calculator ~36% of views, Bing CN main search source, Google ~0, China + Windows desktop; replaces the 08-08 single-digit hypothesis; prefer the zh calculator path and 16–24 GB Windows cards when choosing (docs only) |
 | 2026-10-20 (iv) | **+1 model (112): North Mini Code 1.0 30B-A3B** — owner-pasted config + byte counts; llama.cpp `cohere2moe` (iSWA, 13 full + 36 SWA @4608 cells, 4 KV × 128); 30.48B = safetensors total = GGUF total; Q3_K_M 3.73 / Q4_K_M 4.92 / Q8_0 8.51 bpw (BF16 16.01); Q4_K_M 20.0 GB @4K → green on 24 GB; guide counts re-run |

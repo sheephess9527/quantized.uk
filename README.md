@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (vii) — Google AI-features data added to the audience notes (docs only)
+
+- Owner's Search Console export "Performance on Search — Generative AI features" (2026-07-18 → 10-17):
+  816 impressions; by page `amd-rocm-llamacpp` 482, `quant-hub/qwen3-coder-30b-a3b` 48,
+  `docker-ollama-gpu` 47, `m1-8gb-ollama-limits` 37, `8gb-gpu-starter-guide` 22, `/quant-hub/` 20,
+  `/zh/cookbook/amd-rocm-llamacpp/` 16; by country US 137, UK 72, DE 64, CA 47 (China 2); desktop
+  759 / mobile 52 / tablet 5. Daily impressions step from ~10 to 20–35 around 09-27 (no cause
+  claimed). Recorded in CLAUDE.md beside the Cloudflare sample as a second audience; the earlier
+  "Google indexing is the open question" reading is corrected — the site is indexed and cited.
+
 ### 2026-10-20 (vi) — Gemma 4 12B sized from real GGUF bytes
 
 - Owner-pasted byte counts (tree size = CDN Content-Length): unsloth Q4_K_M 7,121,861,440 /
