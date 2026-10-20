@@ -419,6 +419,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (v) — CLAUDE.md audience section rewritten from real traffic (docs only)
+
+- Owner-supplied Cloudflare Web Analytics for 2026-10-11 → 10-18 (716 visits / 2,323 views) replace
+  the 2026-08-08 "who shows up" hypothesis, which rested on single-digit volume and put
+  non-standard-hardware guides on top. New reading: `/zh/tools/vram-calc/` ~36% of views, Bing China
+  the main search source (cn.bing.com 190 of ~230), Google ~10, China ~350 visits, Windows desktop
+  dominant, mobile deeper per visit. Choosing rule added: prefer the Chinese calculator path and
+  16–24 GB Windows-card readers; a `/zh` bug outranks an equivalent English one.
+- Open caveat recorded with it: ~17 views per visit on the zh calculator may be address-bar rewrites
+  counted as views (unverified); the Singapore share likely includes the owner's own testing.
+
 ### 2026-10-20 (iv) — +1 model (112): North Mini Code 1.0 30B-A3B
 
 - From the owner's paste of `CohereLabs/North-Mini-Code-1.0` (config.json, safetensors index,

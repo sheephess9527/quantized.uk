@@ -959,13 +959,25 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
 
 ## Content cadence (product priority)
 
-**Who actually shows up (2026-08-08, weak signal — treat as hypothesis, not fact).** The first
-traffic snapshot put the homepage plus four cookbook guides in the top five:
-`amd-rocm-llamacpp`, `wsl2-ollama-gpu`, `dual-gpu-70b-llamacpp`, `mac-m3-pro-limits`. All four are
-**non-standard-hardware** guides; no single-NVIDIA-card guide made the list. Volume was single
-digits, so do not over-fit — but when choosing between two equally "newsworthy" models, prefer the
-one a constrained reader can actually run (AMD / Windows / Apple silicon / multi-GPU / CPU offload)
-over the 400B flagship. Re-check this against real numbers before treating it as settled.
+**Who actually shows up (Cloudflare Web Analytics, 2026-10-11 → 10-18 — the first real sample).**
+716 visits / 2,323 views in 7 days. What it says, in order of weight:
+- **The Chinese calculator is the core page.** `/zh/tools/vram-calc/` took ~36% of all views (~840
+  from ~50 visits); the English calculator ~220. ~60% of views were internal clicks. Caveat: 17 views
+  per visit on one page may be the calculator's address-bar rewrites being counted as page views —
+  unconfirmed (owner to check `cdn-cgi/rum` requests in devtools); trust visits over views until then.
+- **Search traffic is Bing China, not Google.** New sessions: direct ~450, Bing ~230 (cn.bing.com
+  190), t.co ~40, Google ~10 (google.com.hk). Google indexing is the open question, not ranking.
+- **Readers are mostly in China, on Windows desktops.** Visits: China ~350, Singapore ~170 (likely
+  includes the owner's own testing), US ~90, Japan ~30. Desktop 560 visits / 1,300 views, mobile
+  180 / 900 — mobile readers go deeper per visit, so the 390 px checks matter.
+- **What this means for choices:** when two candidates compete (a model, a feature, a fix), prefer
+  the one that improves the **Chinese calculator path** and what a **16–24 GB Windows card** reader
+  can run. A `/zh` bug outranks an equivalent English one (the 10-19 Hub filter bug that sent every
+  Chinese reader to English is the type). Chinese copy is read first, not translated second.
+- The 2026-08-08 hypothesis (non-standard-hardware guides lead; single-digit volume) is superseded:
+  guides did not appear near the top of this sample. Keep serving AMD / Mac / multi-GPU readers in
+  the tools, but do not rank them above the calculator. Re-check against the next sample before
+  treating any of this as settled; one week is still a small sample.
 
 **Serve that audience in the tools, not just the content.** AMD was the clearest example: an AMD
 guide was the #2 page while `gpuDatabase` had zero Radeon entries and the format wizard steered
@@ -1092,6 +1104,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (v) | **Audience rewritten from real data** — CF Web Analytics week of 10-11: zh calculator ~36% of views, Bing CN main search source, Google ~0, China + Windows desktop; replaces the 08-08 single-digit hypothesis; prefer the zh calculator path and 16–24 GB Windows cards when choosing (docs only) |
 | 2026-10-20 (iv) | **+1 model (112): North Mini Code 1.0 30B-A3B** — owner-pasted config + byte counts; llama.cpp `cohere2moe` (iSWA, 13 full + 36 SWA @4608 cells, 4 KV × 128); 30.48B = safetensors total = GGUF total; Q3_K_M 3.73 / Q4_K_M 4.92 / Q8_0 8.51 bpw (BF16 16.01); Q4_K_M 20.0 GB @4K → green on 24 GB; guide counts re-run |
 | 2026-10-20 (iii) | **Runtime versions** — llama.cpp b11748; Ollama v0.40.7 still pre-release; North Mini Code runnable (llama.cpp `cohere2moe` merged) but held for its real `config.json` (window/head_dim unreachable) |
 | 2026-10-20 (ii) | **Public JSON** — `/data/v1/models.json` + `gpus.json` from the live arrays (CC BY, attribution, field notes); `weightsGB` recomputed, confidence per quant, no 4090 speeds; linked from llms.txt, benchmarks, legal §10 |
