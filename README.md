@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (iii) — Runtime versions; North Mini Code waiting on its config
+
+- llama.cpp b11748 (verbatim tag list). Ollama: v0.40.7 is still Pre-release (Latest v0.40.6);
+  vLLM v0.32.0 and ExLlamaV3 v1.6.3 unchanged. No new open model in the 7-day window.
+- **Cohere North Mini Code 1.0** (June, 30B-A3B coding MoE, Apache 2.0) — the gap-audit candidate
+  from 10-19. llama.cpp master now has `LLM_ARCH_COHERE2MOE` (`cohere2moe`), and unsloth /
+  bartowski / mradermacher GGUFs exist, so it is runnable. Not added: the transformers
+  `configuration_cohere2_moe.py` defaults describe Command A+ (40 L, hidden 8192), not this model;
+  secondary snippets of its `config.json` give 49 layers, 32 heads / 4 KV, every 4th layer full, but
+  `sliding_window`, `head_dim`, `hidden_size` and the prefix-dense pattern are not reachable here
+  (huggingface.co and ollama.com blocked), nor any GGUF byte count. Asked the owner for
+  `config.json` + Q4_K_M / Q8_0 file sizes.
+
 ### 2026-10-20 (ii) — Public JSON: `/data/v1/models.json`, `/data/v1/gpus.json`
 
 - New `lib/utils/data-export.ts` + two `force-static` route handlers under `app/data/v1/` (same

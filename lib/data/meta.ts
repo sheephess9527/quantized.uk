@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-19',
+  checkedAt: '2026-10-20',
   current: {
-    llamacpp: 'b11721',
+    llamacpp: 'b11748',
     vllm: 'v0.32.0',
     ollama: 'v0.40.6',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for

@@ -1092,6 +1092,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (iii) | **Runtime versions** — llama.cpp b11748; Ollama v0.40.7 still pre-release; North Mini Code runnable (llama.cpp `cohere2moe` merged) but held for its real `config.json` (window/head_dim unreachable) |
 | 2026-10-20 (ii) | **Public JSON** — `/data/v1/models.json` + `gpus.json` from the live arrays (CC BY, attribution, field notes); `weightsGB` recomputed, confidence per quant, no 4090 speeds; linked from llms.txt, benchmarks, legal §10 |
 | 2026-10-20 | **Compare tool** — context 4K–256K (beyond a model's window → said, not sized); fit row used nameplate `gpu.vram` (16 GB Mac judged on 16) → `usableCapacityGB`/`tightCeiling`/`formatAllowed`; sizes at `referenceQuant` (was Q4_K_M-or-first). Review's "102/108/110/111" and "missing models" not reproduced in `out/` |
 | 2026-10-19 (iii) | **`/zh` Hub filters jumped to English** — `router.replace('/quant-hub/?…')` (runtime, invisible to the leak gate) → `localizeHref`; card speed labelled `tok/s · 4090`; hardware tags hidden on phones |
