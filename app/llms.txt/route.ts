@@ -56,6 +56,7 @@ export function GET() {
 - Cookbook: ${SITE_URL}/cookbook/
 - Benchmarks: ${SITE_URL}/benchmarks/
 - Data changelog: ${SITE_URL}/changelog/
+- Released but not runnable locally yet (with reasons): ${SITE_URL}/pending/
 - About: ${SITE_URL}/about/
 - Sitemap: ${SITE_URL}/sitemap.xml
 - Data (JSON, CC BY 4.0): ${SITE_URL}/data/v1/models.json, ${SITE_URL}/data/v1/gpus.json

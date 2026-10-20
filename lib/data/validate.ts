@@ -8,6 +8,8 @@ import { gpuSlug } from '@/lib/utils/gpu-page';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
 import { prefillData } from '@/lib/data/prefill';
+import { sourceBpw } from '@/lib/utils/quant-source';
+import { pendingModels } from '@/lib/data/pending';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -99,6 +101,7 @@ export function dataProblems(): string[] {
     if (!modelIds.has(id)) out.push(`hfRepoMap: '${id}' is not a model id`);
   }
   out.push(...guideFigureProblems());
+  out.push(...sourceAndPendingProblems());
   out.push(...guideModelCountProblems());
   return out;
 }
@@ -176,6 +179,39 @@ function guideFigureProblems(): string[] {
         out.push(`guide ${a.id}: "${sent.trim().slice(0, 90)}" says ${stated} GB; calculator gives ${r.totalGB.toFixed(1)} (weights ${r.modelWeightsGB.toFixed(1)})`);
       }
     }
+  }
+  return out;
+}
+
+/** Recorded file sources must reconcile with their rows; pending entries must not already be indexed. */
+function sourceAndPendingProblems(): string[] {
+  const out: string[] = [];
+  const modelIds = new Set(models.map(m => m.id));
+  const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
+  // A recorded file must be the file the row is sized from: bytes × 8 / params lands on the row's
+  // bpw (rounded to two places), split builds say how many parts, and the date is a real date.
+  for (const m of models) {
+    for (const q of m.quants) {
+      const src = q.source;
+      if (!src) continue;
+      const tag = `${m.id} ${q.format} ${q.level}`;
+      const implied = sourceBpw(m, src);
+      if (Math.abs(implied - q.bpw) > 0.02) out.push(`${tag}: source bytes imply ${implied.toFixed(3)} bpw, row says ${q.bpw}`);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(src.checkedAt) || src.checkedAt > dataLastUpdated) out.push(`${tag}: source checkedAt ${src.checkedAt} is not a date on or before dataLastUpdated`);
+      const split = src.file ? /-0+1-of-0*(\d+)\.gguf$/.exec(src.file) : null;
+      if (split && Number(split[1]) !== src.parts) out.push(`${tag}: ${src.file} is part 1 of ${split[1]} but parts is ${src.parts ?? 'unset'}`);
+      if (!split && src.parts !== undefined && src.file) out.push(`${tag}: parts ${src.parts} but ${src.file} is not a split file name`);
+      if (!/^[\w.-]+\/[\w.-]+$/.test(src.repo)) out.push(`${tag}: source repo "${src.repo}" is not owner/name`);
+    }
+  }
+  // A pending entry graduates the day its model enters the index — never both.
+  const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const indexedNames = new Set(models.map(m => norm(m.name)));
+  dupes(pendingModels.map(p => p.id)).forEach(id => out.push(`duplicate pending id: ${id}`));
+  for (const p of pendingModels) {
+    if (modelIds.has(p.id) || indexedNames.has(norm(p.name))) out.push(`pending ${p.id}: "${p.name}" is already in the index — remove it from lib/data/pending.ts`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.checkedAt) || p.checkedAt > dataLastUpdated) out.push(`pending ${p.id}: checkedAt ${p.checkedAt} is not a date on or before dataLastUpdated`);
+    if (p.announced && !/^\d{4}-\d{2}-\d{2}$/.test(p.announced)) out.push(`pending ${p.id}: announced ${p.announced} is not YYYY-MM-DD`);
   }
   return out;
 }

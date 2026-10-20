@@ -51,6 +51,9 @@ export default function ChangelogView() {
         <Link href="/quant-hub/?recency=recent" className="inline-flex items-center min-h-[44px] text-xs text-violet-400 hover:text-violet-300">
           {t.home.weekly.viewHub} →
         </Link>
+        <Link href="/pending/" className="inline-flex items-center min-h-[44px] ml-4 text-xs text-violet-400 hover:text-violet-300">
+          {t.pending.title} →
+        </Link>
       </div>
     </div>
   );

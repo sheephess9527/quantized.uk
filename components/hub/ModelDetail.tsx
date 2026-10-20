@@ -11,6 +11,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
+import QuantFileLine from '@/components/hub/QuantFileLine';
 import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
 import { isSuperseded, quantConfidence, supersededDiffNote } from '@/lib/utils/model-meta';
@@ -258,6 +259,18 @@ export default function ModelDetail({ model }: Props) {
               })}
             </tbody>
           </table>
+        </div>
+        <div className="px-5 py-4 border-t border-white/[0.06]">
+          <h3 className="text-sm font-semibold text-slate-300">{d.filesTitle}</h3>
+          <p className="text-xs text-slate-500 mt-1">{d.filesSub}</p>
+          <ul className="mt-3 space-y-1.5 text-xs">
+            {model.quants.map((quant, i) => (
+              <li key={`src-${quant.format}-${quant.level}-${i}`} className="flex gap-2">
+                <span className="font-mono text-slate-300 shrink-0 w-28">{quant.format} {quant.level}</span>
+                <QuantFileLine quant={quant} />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

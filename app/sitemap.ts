@@ -4,6 +4,7 @@ import { articleModifiedAt } from '@/lib/utils/article-dates';
 import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated, runtimeVersions, sizingChangedAt } from '@/lib/data/meta';
+import { pendingModels } from '@/lib/data/pending';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -77,6 +78,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...HUB_INDEX,
     ...CONTENT_INDEX,
     { path: '/changelog/', lastModified: siteDate, changeFrequency: 'weekly', priority: 0.5 },
+    // Changes when an entry is re-checked, added or graduates into the index.
+    { path: '/pending/', lastModified: latest(pendingModels.map(m => m.checkedAt)), changeFrequency: 'weekly', priority: 0.6 },
     { path: '/about/', lastModified: siteDate, changeFrequency: 'monthly', priority: 0.4 },
     { path: '/legal/', lastModified: LEGAL_LASTMOD, changeFrequency: 'yearly', priority: 0.2 },
     { path: '/privacy/', lastModified: PRIVACY_LASTMOD, changeFrequency: 'yearly', priority: 0.2 },

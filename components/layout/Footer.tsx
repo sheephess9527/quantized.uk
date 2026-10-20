@@ -105,6 +105,12 @@ export default function Footer() {
                 </Link>
                 <p className="text-xs text-slate-600 mt-0.5">{t.footer.changelogDesc}</p>
               </li>
+              <li>
+                <Link href="/pending/" className="text-sm text-slate-300 hover:text-violet-300 transition-colors">
+                  {t.pending.title}
+                </Link>
+                <p className="text-xs text-slate-600 mt-0.5">{t.pending.footerDesc}</p>
+              </li>
             </ul>
             <p className="text-xs text-slate-600 mt-3">
               {t.footer.foundWrong}{' '}

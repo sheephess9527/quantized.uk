@@ -5,6 +5,7 @@ import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import QuantFileLine from '@/components/hub/QuantFileLine';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
@@ -1476,6 +1477,12 @@ export default function VRAMCalculator() {
                 )}
               </p>
             </div>
+          )}
+          {mode === 'forward' && showForwardResult && selectedQuantObj && (
+            <p className="text-[11px] leading-relaxed mb-4 px-1">
+              <span className="text-slate-500">{t.calc.sizedFor} </span>
+              <QuantFileLine quant={selectedQuantObj} compact />
+            </p>
           )}
           {mode === 'forward' && showForwardResult && ctxOverModel && (
             <div className="glass rounded-2xl p-4 border border-amber-500/20 mb-4">

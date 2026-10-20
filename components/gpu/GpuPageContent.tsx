@@ -6,6 +6,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import QuantFileLine from '@/components/hub/QuantFileLine';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
@@ -102,6 +103,12 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
                 )}
                 {row.fit ? ' — ' : ''}
                 <span className="text-slate-400">{row.detail[lang]}</span>
+                {row.fit?.quant.source && (
+                  <span className="block text-[11px] mt-1">
+                    <span className="text-slate-500">{g.fileLabel} </span>
+                    <QuantFileLine quant={row.fit.quant} compact />
+                  </span>
+                )}
               </dd>
             </div>
           ))}

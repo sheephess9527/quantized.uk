@@ -139,7 +139,7 @@ export const extraModels12: QuantModel[] = [
       zh: 'Meta 自 Llama 4 以来第一个开放权重模型，8 月以 Apache 2.0 发布，目标就是单卡运行。它是稠密模型：28B 的文本解码器，通过单独的视觉编码器读取图像，输出文本。每四层中有三层使用 2K 滑动窗口，其余层只有 2 个 KV 头，所以长上下文格外便宜。Q4_K_M 在 4K 上下文下约需 17.7 GB，用满 128K 窗口也只要 19.4 GB，两种情况在 24 GB 显卡上都很宽裕。Q5_K_M 在 24 GB 上偏紧，Q8_0 需要 32 GB 显卡。视觉编码器（GGUF mmproj 文件约 1.4 GB）和 Meta 可选的投机解码草稿模型会额外占用显存，不含在上述数字内。体积按已公布的 GGUF 文件大小计算，Q4_K_M 一行是 Meta 官方发布的版本。基准成绩是 Meta 自己报的，各档位的质量损失也未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.81, vramGB: 17.7, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.81, vramGB: 17.7, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'meta-models/Muse-Glimmer-30B-GGUF', file: 'Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf', bytes: 16_756_683_904, checkedAt: '2026-10-09' } },
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.78, vramGB: 21.2, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q5_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.72, vramGB: 24.6, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q6_K'),   confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 31.1, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q8_0'),   confidence: 'estimated' },
@@ -441,10 +441,10 @@ export const extraModels12: QuantModel[] = [
       zh: 'IBM Granite 4.2 系列中最大的模型，8 月以 Apache 2.0 发布。和 8B 一样是普通的稠密 Transformer，不是 Granite 4.0 的混合架构，64 层全部保留完整缓存，所以上下文并不便宜：Q4_K_M 在 4K 下约需 19.6 GB，32K 约 27.3 GB，用满 128K 窗口约 53.7 GB。24 GB 显卡到 8K 都很宽裕，16K 偏紧；32K 需要 32 GB 显卡，用满窗口需要 80 GB 显卡或 96 GB 的 Mac。Q8_0（4K 下约 33.6 GB）需要 48 GB 显卡或 64 GB 的 Mac。体积按 IBM 官方 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.84, vramGB: 19.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 22.8, hfSearchUrl: hf('granite-4.2-30b GGUF Q5_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 26.2, hfSearchUrl: hf('granite-4.2-30b GGUF Q6_K'),   confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 33.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.84, vramGB: 19.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-30b-GGUF', file: 'granite-4.2-30b-Q4_K_M.gguf', bytes: 17_721_455_328, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 22.8, hfSearchUrl: hf('granite-4.2-30b GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-30b-GGUF', file: 'granite-4.2-30b-Q5_K_M.gguf', bytes: 20_775_957_216, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 26.2, hfSearchUrl: hf('granite-4.2-30b GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-30b-GGUF', file: 'granite-4.2-30b-Q6_K.gguf', bytes: 24_021_365_472, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 33.6, hfSearchUrl: hf('granite-4.2-30b GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-30b-GGUF', file: 'granite-4.2-30b-Q8_0.gguf', bytes: 31_111_705_312, checkedAt: '2026-10-16' } },
     ],
   },
   {
@@ -468,9 +468,9 @@ export const extraModels12: QuantModel[] = [
       zh: 'IBM Granite 4.2 系列中最小的模型，8 月以 Apache 2.0 发布：3.7B 稠密 Transformer，面向笔记本、小显存显卡和 CPU 服务器。Q4_K_M 在 4K 上下文下约需 2.7 GB，32K 约 5.1 GB，用满 128K 窗口约 13.3 GB，所以 8 GB 显卡到 32K 都很宽裕，64K 偏紧。Q8_0 在 4K 下也只要 4.4 GB，在显卡上几乎没有理由再往下压。体积按 IBM 官方 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.9,  vramGB: 2.7, hfSearchUrl: hf('granite-4.2-3b GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, vramGB: 3.1, hfSearchUrl: hf('granite-4.2-3b GGUF Q5_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 4.4, hfSearchUrl: hf('granite-4.2-3b GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.9,  vramGB: 2.7, hfSearchUrl: hf('granite-4.2-3b GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-3b-GGUF', file: 'granite-4.2-3b-Q4_K_M.gguf', bytes: 2_244_011_552, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, vramGB: 3.1, hfSearchUrl: hf('granite-4.2-3b GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-3b-GGUF', file: 'granite-4.2-3b-Q5_K_M.gguf', bytes: 2_613_634_592, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 4.4, hfSearchUrl: hf('granite-4.2-3b GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'ibm-granite/granite-4.2-3b-GGUF', file: 'granite-4.2-3b-Q8_0.gguf', bytes: 3_892_651_552, checkedAt: '2026-10-16' } },
     ],
   },
   {
@@ -500,8 +500,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'Liquid AI 在 10 月发布的 LFM2.5 系列中最大的模型：24B 混合专家推理模型，每个 token 约激活 2.45B 参数，面向端侧智能体和工具调用，回答前总会先思考。40 层中只有 10 层保留会增长的 KV 缓存，所以长上下文很便宜：Q4_K_M 在 4K 下约需 15.3 GB，32K 约 15.9 GB，用满 128K 窗口约 17.9 GB。在 16 GB 显卡上偏紧，24 GB 显卡在任何上下文下都很宽裕；Q8_0（约 26.7 GB）需要 32 GB 显卡。仅支持文本。体积按 Liquid 官方发布的 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM2.5-24B-A2B-GGUF', bytes: 14_526_258_464, checkedAt: '2026-10-14' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 26.7, hfSearchUrl: hf('LFM2.5-24B-A2B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM2.5-24B-A2B-GGUF', bytes: 25_493_732_640, checkedAt: '2026-10-14' } },
     ],
   },
   {
@@ -569,7 +569,7 @@ export const extraModels12: QuantModel[] = [
       zh: 'NVIDIA 的 Nemotron 3.5 Bolt 是 74B 混合专家模型，每个 token 约激活 9B 参数，目标是装进 24 GB 显卡。它由 Nemotron 3.5 Super VL 压缩而来，只有一个版本，即 NVIDIA 官方原生 2-bit 文件，22.0 GB。88 层中只有 8 层的缓存随上下文增长，所以上下文很便宜：4K 约 23.1 GB，128K 约 24.1 GB，用满 256K 约 25.2 GB。这正是 NVIDIA 设计的 24 GB，但超过了本站的宽裕线，所以 24 GB 显卡判定为偏紧；32 GB 显卡或 48 GB 的 Mac 可以从容运行。图像编码器是另外 1.7 GB 的文件。基准成绩是 NVIDIA 自己报的，2-bit 版本的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated', source: { repo: 'unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS.gguf', bytes: 22_018_326_528, mmprojBytes: 1_733_692_736, checkedAt: '2026-10-16' } },
     ],
   },
   {
@@ -597,8 +597,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'NVIDIA 的 Nemotron 3.5 Super VL 是 120B 混合专家视觉语言模型，每个 token 约激活 12B 参数，面向编程、工具调用和文档处理，上下文最长 100 万 token。88 层中只有 8 层的缓存随上下文增长，所以即使用满窗口也不贵：Q4_0（ggml-org 发布的 71.8 GB 文件）在 4K 下约需 75 GB，100 万上下文约 84 GB。128 GB 的 Mac 或 DGX Spark 128G 可以从容运行，单张 80 GB 显卡偏紧。Q8_0（128 GB）需要 256 GB 的 Mac。视觉编码器是另外 1–1.7 GB 的文件。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_0', bpw: 4.76, vramGB: 75.1,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.76, vramGB: 75.1,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q4_0.gguf', bytes: 71_803_752_384, mmprojBytes: 966_925_568, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf', bytes: 128_472_993_728, mmprojBytes: 966_925_568, checkedAt: '2026-10-16' } },
     ],
   },
   {
@@ -626,8 +626,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'NVIDIA Nemotron 3.5 系列中的小尺寸成员：30B 纯文本混合专家模型，每个 token 约激活 3B 参数，生成速度大致相当于 3B 模型。52 层中只有 6 层的缓存随上下文增长，所以长上下文几乎不占额外显存：Q4_0（ggml-org 发布的 18.9 GB 文件）在 4K 下约需 19.8 GB，128K 约 20.6 GB，用满 256K 约 21.4 GB。24 GB 显卡到 128K 都很宽裕，只有用满窗口时偏紧；16 GB 显卡装不下。Q8_0（约 35 GB）需要 48 GB 显卡或 64 GB 的 Mac。另有一个可选的 1.2 GB 草稿文件用于投机解码，单独下载。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_0', bpw: 4.79, vramGB: 19.8, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q4_0'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 35.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q8_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.79, vramGB: 19.8, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q4_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF', file: 'NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q4_0.gguf', bytes: 18_898_091_584, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 35.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Lightning-30B-A3B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF', file: 'NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q8_0.gguf', bytes: 33_585_495_616, checkedAt: '2026-10-16' } },
     ],
   },
   {
@@ -660,8 +660,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'inclusionAI（蚂蚁集团）的 Ling-3.1-flash，10 月以 MIT 许可发布：560B 混合专家推理模型，每个 token 激活 25B 参数。它面向智能体、编程和长时间的办公任务。72 层中只有 9 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 256K 窗口，缓存也只多约 3 GB——决定它能在什么硬件上跑的是权重。Q4_K_M 在 4K 上下文下约需 371 GB，超过本索引里任何一张单卡。512 GB 的 Mac Studio 能分给 GPU 约 384 GB，按本站规则只能算「勉强」装下；服务器上，官方的参考配置是 8 张 H200 或 4 张 GB300 跑 FP8。Q8_0 约需 628 GB。官方称上下文窗口为 100 万 token，但发布的 config 设定为 262,144 个位置且没有缩放配置，所以这里按这个上限计算。llama.cpp 从 b11571 版起以 `bailingmoe3` 架构运行它。体积按已公布的 GGUF 文件计算，制作者给出的是 KL 散度而非困惑度，所以不显示质量损失。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.03, vramGB: 370.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 627.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.03, vramGB: 370.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ling-3.1-flash-GGUF', bytes: 354_394_733_920, checkedAt: '2026-10-17' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 627.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'AtomicChat/Ling-3.1-flash-GGUF', bytes: 600_847_449_760, checkedAt: '2026-10-17' } },
     ],
   },
   {
@@ -748,8 +748,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'Google 6 月发布的中等尺寸 Gemma 4：12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器，原始输入直接进入同一个解码器。48 层中只有 8 层缓存完整上下文，每层只有一个宽 KV 头，所以缓存很小：32K 约 1 GB，用满 256K 也只要约 4.5 GB。Q4_K_M（unsloth 的 7.1 GB 文件）在 32K 下约 8.5 GB、128K 约 10.2 GB，12 GB 显卡都很从容；16 GB 显卡能从容加载完整窗口，8 GB 显卡即使 4K 也偏紧。bartowski 的 Q4_K_M 文件更大（7.7 GB），用它的话再加约 0.5 GB。体积按已发布的 GGUF 文件计算；图像和音频嵌入层在单独的 mmproj 文件里，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.78, vramGB: 7.1,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.78, vramGB: 7.1,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'unsloth/gemma-4-12b-it-GGUF', bytes: 7_121_861_440, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'unsloth/gemma-4-12b-it-GGUF', file: 'gemma-4-12b-it-Q8_0.gguf', bytes: 12_669_647_680, checkedAt: '2026-10-20' } },
     ],
   },
   {
@@ -794,9 +794,9 @@ export const extraModels12: QuantModel[] = [
       zh: 'Cohere 6 月发布的开源编程模型：30B 混合专家，每个 token 约激活 3B 参数，面向代码生成、智能体式软件开发和终端任务，纯文本。49 层中只有 13 层的缓存随上下文增长，所以长会话也负担得起：Q4_K_M（bartowski 的 18.7 GB 文件）在 4K 下约需 20.0 GB，32K 约 20.8 GB，128K 约 23.5 GB——24 GB 显卡到 32K 都很从容，128K 偏紧。16 GB 显卡需要用 Q3_K_M（bartowski 的 14.2 GB 文件）：4K 下约 15.3 GB，偏紧，超过 32K 就装不下。模型卡写的是 256K 上下文，配置文件允许 500K，本页按 256K 计算。体积按已发布的 GGUF 文件计算；各档位的质量损失未公布，基准成绩是 Cohere 自己报的。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.73, vramGB: 14.2, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q3_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.92, vramGB: 18.7, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 32.4, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.73, vramGB: 14.2, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/North-Mini-Code-1.0-GGUF', bytes: 14_209_048_128, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.92, vramGB: 18.7, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/North-Mini-Code-1.0-GGUF', bytes: 18_744_024_640, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 32.4, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/North-Mini-Code-1.0-GGUF', bytes: 32_437_263_936, checkedAt: '2026-10-20' } },
     ],
   },
   {
@@ -824,10 +824,10 @@ export const extraModels12: QuantModel[] = [
       zh: '面壁智能（OpenBMB）的混合专家视觉模型：在 34.7B 的语言模型上读图像和视频，每个 token 约激活 3B 参数，结构与 Qwen3.6 35B-A3B 相同。40 层中只有 10 层保留会增长的 KV 缓存，所以上下文很便宜。Q4_K_S 在 4K 下约需 20.9 GB，24 GB 显卡上很宽裕；Q4_K_M（22.2 GB）在 24 GB 上偏紧，32 GB 显卡用满 256K 窗口也装得下 Q4_K_M。视觉编码器是另外一个 1.1 GB 的文件，不在上面的数字里；加载图像后，24 GB 显卡上的 Q4_K_S 也会变成偏紧。llama.cpp 以 `qwen35moe` 架构运行它的文本部分。体积按 OpenBMB 官方 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 20.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_S'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.88, vramGB: 22.2, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.70, vramGB: 25.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q5_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 38.6, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 20.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_S'), confidence: 'estimated', source: { repo: 'openbmb/MiniCPM-V-4.7-35B-A3B-gguf', file: 'MiniCPM-V-4_7-35B-A3B-Q4_K_S.gguf', bytes: 19_889_400_736, mmprojBytes: 1_119_575_840, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.88, vramGB: 22.2, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'openbmb/MiniCPM-V-4.7-35B-A3B-gguf', file: 'MiniCPM-V-4_7-35B-A3B-Q4_K_M.gguf', bytes: 21_166_255_008, mmprojBytes: 1_119_575_840, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.70, vramGB: 25.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'openbmb/MiniCPM-V-4.7-35B-A3B-gguf', file: 'MiniCPM-V-4_7-35B-A3B-Q5_K_M.gguf', bytes: 24_728_583_072, mmprojBytes: 1_119_575_840, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 38.6, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'openbmb/MiniCPM-V-4.7-35B-A3B-gguf', file: 'MiniCPM-V-4_7-35B-A3B-Q8_0.gguf', bytes: 36_902_368_928, mmprojBytes: 1_119_575_840, checkedAt: '2026-10-20' } },
     ],
   },
   {
@@ -857,8 +857,8 @@ export const extraModels12: QuantModel[] = [
       zh: '小米 MiMo-V2.6 系列中较小的一款：309B 参数，每个 token 约激活 15B，MIT 许可，能读文本、图像、视频和音频。发布的权重在专家层本身就是 4 比特（MXFP4），ggml-org 的 GGUF 原样保留：4K 上下文约需 175 GB，只有 512 GB 的 Mac Studio 才宽裕，256 GB 的偏紧。Q2_K 版本（约 132 GB）在 256 GB 的 Mac 上很宽裕，在 192 GB 的 Mac 上偏紧。48 层中只有 9 层保留会增长的缓存，所以即使用满 100 万 token 窗口也只多约 25 GB。llama.cpp 以 `mimo2` 架构运行它（与 MiMo-V2.6-Pro 相同），视觉通过单独的编码器加载。体积按 ggml-org 的 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-Q2_K-00001-of-00002.gguf', bytes: 126_365_949_248, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-MXFP4-00001-of-00002.gguf', bytes: 167_369_465_152, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
     ],
   },
 ];

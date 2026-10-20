@@ -4,6 +4,7 @@ import { dataLastUpdated } from '@/lib/data/meta';
 import { SITE_URL } from '@/lib/seo';
 import { quantConfidence, activeParamsB, isMoE, isSuperseded } from '@/lib/utils/model-meta';
 import { referenceQuant } from '@/lib/utils/quality';
+import { sizingBasis } from '@/lib/utils/quant-source';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { usableCapacityGB, tightCeiling, backendFor, gpuSlug } from '@/lib/utils/gpu-page';
 
@@ -44,6 +45,7 @@ export function modelsExport() {
       weightsGB: 'params × bpw / 8, decimal GB — the weights only. Runtime memory adds KV cache and buffers; use calculatorUrl.',
       confidence: "'measured' = run on this site's hardware; 'estimated' = derived from the architecture or a published file size.",
       pplLossPercent: 'Perplexity increase vs the unquantized weights, where published. Absent means nobody published one.',
+      sizingBasis: "'file' = bpw derived from the recorded file in `source` (repo, file, exact bytes summed over parts, separate mmproj bytes, date the listing was read); 'published' = from a published file size that was not recorded; 'generic' = the calculator's table rate for the level.",
       arch: 'Fields the KV-cache arithmetic reads. attention.fullLayers / windowLayers describe hybrid and sliding-window models; windowTokens is what llama.cpp allocates.',
     },
     models: models.map(m => {
@@ -75,6 +77,8 @@ export function modelsExport() {
           weightsGB: round((m.params * q.bpw) / 8),
           confidence: quantConfidence(m.id, q),
           ...(q.pplLossPercent !== undefined ? { pplLossPercent: q.pplLossPercent } : {}),
+          sizingBasis: sizingBasis(q),
+          ...(q.source ? { source: q.source } : {}),
         })),
         url: `${SITE_URL}/quant-hub/${m.id}/`,
         calculatorUrl: `${SITE_URL}/tools/vram-calc/?mode=forward&model=${m.id}&quant=${encodeURIComponent(quantLevelKey(ref))}&ctx=4096`,

@@ -1,4 +1,4 @@
-export type { QuantVariant, ModelArch, QuantModel } from './types';
+export type { QuantVariant, QuantSource, ModelArch, QuantModel } from './types';
 import type { QuantModel } from './types';
 import { extraModels } from './models-extra';
 import { extraModels2 } from './models-extra-2';

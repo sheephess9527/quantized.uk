@@ -345,6 +345,9 @@ export default function QuantHubContent() {
           ))}
         </div>
       )}
+      <Link href="/pending/" className="inline-flex items-center min-h-[44px] mt-6 text-sm text-violet-400 hover:text-violet-300">
+        {t.pending.hubLink}
+      </Link>
     </div>
   );
 }

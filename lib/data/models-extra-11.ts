@@ -103,7 +103,7 @@ export const extraModels11: QuantModel[] = [
       // 17,651,001,568 B over the 30.70B decoder = 4.60 bpw (generic Q4_0 is 4.55); mmproj 1,200,726,368 B
       // separate. Owner-pulled tree API sizes, 2026-10-21. No loss figure: QAT is trained for the level,
       // but the bf16 weights were also released and Google publishes no per-level perplexity here.
-      { format: 'GGUF', level: 'Q4_0',   bpw: 4.60, vramGB: 20.1, hfSearchUrl: 'https://huggingface.co/google/gemma-4-31B-it-qat-q4_0-gguf', confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_0',   bpw: 4.60, vramGB: 20.1, hfSearchUrl: 'https://huggingface.co/google/gemma-4-31B-it-qat-q4_0-gguf', confidence: 'estimated', source: { repo: 'google/gemma-4-31B-it-qat-q4_0-gguf', file: 'gemma-4-31B_q4_0-it.gguf', bytes: 17_651_001_568, mmprojBytes: 1_200_726_368, checkedAt: '2026-10-21' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },

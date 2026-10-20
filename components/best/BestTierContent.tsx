@@ -8,6 +8,7 @@ import { models } from '@/lib/data/models';
 import { bestPage, type BestTier } from '@/lib/utils/best-page';
 import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import QuantFileLine from '@/components/hub/QuantFileLine';
 import { formatLoss } from '@/lib/utils/quality';
 
 /**
@@ -103,7 +104,15 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
                     <td className="py-3 pr-3 text-right font-mono text-slate-300">{p.totalGB.toFixed(1)} GB</td>
                     <td className="py-3 pr-3 text-right font-mono text-slate-400">{p.headroomGB.toFixed(1)} GB</td>
                     <td className="py-3 pr-3 text-right font-mono text-xs text-slate-400">{formatLoss(p.quant)}</td>
-                    <td className="py-3 text-xs text-slate-400 leading-relaxed max-w-md">{p.why[lang]}</td>
+                    <td className="py-3 text-xs text-slate-400 leading-relaxed max-w-md">
+                      {p.why[lang]}
+                      {p.quant.source && (
+                        <span className="block text-[11px] mt-1">
+                          <span className="text-slate-500">{t.gpuPage.fileLabel} </span>
+                          <QuantFileLine quant={p.quant} compact />
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

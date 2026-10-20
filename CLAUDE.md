@@ -562,6 +562,17 @@ and stored that way (`format: 'GGUF', level: 'MXFP4'`). Promoting it to a fifth 
 misdescribe the data and falsify the "formats tracked" count; it belongs on the GGUF page. The same
 reasoning keeps **NVFP4** and **FP8/W4A16** out entirely — zero models ship them here.
 
+**A quant row names its file only from a real listing** (2026-10-21). `QuantVariant.source` = repo,
+verbatim file name (optional), bytes summed over parts, `parts`, separate `mmprojBytes`, `checkedAt`.
+Set it whenever the owner pastes a tree listing or a model batch reads one — and only then; the build
+fails if `bytes × 8 / params` misses `bpw` by > 0.02. Rows without it render their basis
+(`sizingBasis()`: generic table vs unrecorded file), never a guessed file. `QuantFileLine` is the one
+renderer (model page, calculator, GPU, `/best/`).
+
+**Released-but-not-indexed models go on `/pending/`** (`lib/data/pending.ts`), not on stub model pages.
+Each patrol that skips a model adds or re-dates its entry with the reason it recorded; adding the model
+means deleting the entry in the same commit (the build fails while both exist).
+
 **Per-quant publisher attribution (`official QAT` vs community PTQ) is not derivable today.**
 `hfRepoMap` holds one repo per *model* and 14 entries point at the original weights, not a quant
 conversion — backfilling ~300 quant rows from it would invent attribution. It needs a real per-quant
@@ -1116,6 +1127,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (ii) | **Sizes name their file + `/pending/`** — `QuantVariant.source` (repo, file, bytes, parts, mmproj, date) on 29 rows with real listings, gated against `bpw`; `sizingBasis()` labels the rest; `QuantFileLine` on model page / calculator / GPU / `/best/`; `/pending/` lists 10 released-not-indexed models with reasons, gated against the index |
 | 2026-10-21 | **Gemma 4 31B QAT Q4_0** — Google's official single-file build, 17,651,001,568 B → 4.60 bpw over 30.70B; 20.1 GB @4K, green on 24 GB to 16K; mmproj 1.2 GB makes 4K tight; no loss figure (bf16 also released); MLX conversion that prompted it stays untracked |
 | 2026-10-20 (x) | **+2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash** — owner-pulled configs + byte counts; MiniCPM = Qwen3.6 35B-A3B backbone, 34.69B from its F16 GGUF, Q4_K_S 20.9 GB @4K green on 24 GB (+1 on every ≥24 GB card), mmproj 1.1 GB extra; MiMo-Flash 9 full (4 KV) + 39 SWA (8 KV), native MXFP4 175 GB / Q2_K 132 GB → 256–512 GB Macs; DeepSeek-V4-Flash held (dsv4 compressed cache not expressible yet) |
 | 2026-10-20 (viii) | **AMD ROCm guide re-checked** — build commands still match llama.cpp master; added RX 9070 (gfx1201, ROCm 7) / 9060 (gfx1200) and corrected "integrated not supported" (Ryzen AI on Ollama's ROCm list; override + `GGML_CUDA_ENABLE_UNIFIED_MEMORY=1` per llama.cpp docs); docs check, no `verifiedAt` |

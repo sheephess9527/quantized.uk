@@ -419,6 +419,37 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (ii) — Every size names its file; "not runnable yet" page
+
+- **`QuantVariant.source`** (`lib/data/types.ts`): `{ repo, file?, bytes, parts?, mmprojBytes?, checkedAt }`
+  — set only where a repo listing's bytes were read (tree API / CDN), never back-filled from a GiB figure
+  or a search snippet. Populated for 29 rows across 13 models from listings recorded in this repo's own
+  comments (Gemma 4 31B QAT, Gemma 4 12B, MiniCPM-V 4.7, MiMo-V2.6-Flash, North Mini Code, Granite 4.2
+  30B/3B, LFM2.5, Nemotron 3.5 Bolt / Super VL / Lightning, Ling-3.1-flash, Muse Glimmer). `file` is set
+  only when the name was read verbatim; the other rows show "file name not recorded". Not set: GiB-only
+  figures (GPT-OSS, MiMo-Pro), rows whose repo was not recorded (Granite 4.2 8B, Beam).
+- **`sizingBasis(quant)`** (`lib/utils/quant-source.ts`): `file` (has `source`) / `generic` (bpw equals
+  `quantBPW` for the level) / `published` (bpw from a file size whose file was not recorded). Derived, so
+  a row cannot claim a file it lacks.
+- **Gate** (`sourceAndPendingProblems()` in `validate.ts`): `bytes × 8 / params` must land within 0.02 of
+  the row's `bpw`; a `…-00001-of-N` file must carry `parts: N`; `checkedAt` ≤ `dataLastUpdated`. Proven by
+  perturbation (Gemma 4 31B bytes +1e9 → "implies 4.860 bpw, row says 4.6").
+- **Rendering** — one component, `components/hub/QuantFileLine.tsx`: model page (new "Which file each size
+  is for" list under the quant table, with the line that a file size is not a memory figure and mmproj is
+  in neither number), calculator forward result ("This size is for:"), GPU page summary rows and `/best/`
+  picks ("Download:" — only when the pick's row has a `source`). `/data/v1/models.json` gains
+  `sizingBasis` and `source` per quant (new fields only).
+- **`/pending/` + `/zh/pending/`** (`lib/data/pending.ts`, `components/pending/PendingView.tsx`): 10 entries
+  from README §9 patrol notes, each with reason (`no-weights` / `no-runtime` / `not-sized` /
+  `awaiting-data` / `community-only`), detail, re-check condition and the date of the note. One page, not
+  stub model pages (thin content). Gate: an entry whose id or name is in the index fails the build
+  (proven by renaming Kolibri-1 to an indexed name). Linked from the footer (every page), the Hub, the
+  changelog and `/llms.txt`; in the sitemap at the latest `checkedAt`.
+- Evaluated and declined from the same suggestion: "never give a GB without bytes" (most rows have no
+  listing; the basis label is the honest answer), MLX, a leaderboard, dropping the Chinese edition (the
+  Cloudflare sample says the zh calculator is the core page — the US/UK/DE skew is the Google AI-answers
+  audience only).
+
 ### 2026-10-21 — Gemma 4 31B: Google's QAT Q4_0 build
 
 - Owner-pulled tree API sizes (2026-10-21 05:42 +08) for `google/gemma-4-31B-it-qat-q4_0-gguf`

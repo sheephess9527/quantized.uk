@@ -20,6 +20,29 @@ export interface QuantVariant {
   hfSearchUrl: string;
   /** Default when omitted: estimated */
   confidence?: QuantConfidence;
+  /**
+   * The published file this row's `bpw` was derived from. Set only when the bytes were read from a
+   * real repo listing (tree API / CDN Content-Length) — never back-filled from a GiB figure or a
+   * search snippet, and never guessed. A row without it is sized from the generic table or from a
+   * file size that was not recorded; `sizingBasis()` (lib/utils/quant-source.ts) tells them apart.
+   * `assertDataConsistent()` fails the build when `bytes × 8 / params` drifts from `bpw`.
+   */
+  source?: QuantSource;
+}
+
+export interface QuantSource {
+  /** Hugging Face repo the listing was read from, e.g. `bartowski/North-Mini-Code-1.0-GGUF`. */
+  repo: string;
+  /** File name exactly as listed; the first part of a split build. Omitted when only the size was recorded. */
+  file?: string;
+  /** Bytes of the language-model weights, every part summed. Not the vision projector. */
+  bytes: number;
+  /** Number of parts when the build is split (`…-00001-of-0000N.gguf`). */
+  parts?: number;
+  /** The separate vision projector (mmproj) the repo ships — counted in neither `bytes` nor `vramGB`. */
+  mmprojBytes?: number;
+  /** YYYY-MM-DD the listing was read. */
+  checkedAt: string;
 }
 
 export interface ModelArch {

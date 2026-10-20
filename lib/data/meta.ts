@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-21',
+    en: 'Model pages now say which file each size is for. Where a file listing was read, a quant row names the repo, the file, its exact size in bytes, how many parts it is split into, the separate vision projector and the day it was checked; rows without one say whether they come from an unrecorded file size or the calculator\'s generic rate. The calculator, the GPU pages and the best-by-VRAM pages show the same line for their picks. A new page lists models that are released but cannot run locally yet, with the reason for each.',
+    zh: '模型页现在会写明每个体积对应哪个文件。核对过文件列表的档位，会列出仓库、文件名、精确到字节的大小、分几卷、另外的视觉投影文件和核对日期；没有核对的档位，会写明它来自未记录的文件大小，还是计算器的通用比特率。计算器、显卡页和按显存推荐页的推荐结果也显示同样的信息。另外新增一页，列出已经发布、但还不能本地运行的模型，每个都写明原因。',
+  },
+  {
+    date: '2026-10-21',
     en: 'Gemma 4 31B now lists Google\'s official quantization-aware (QAT) Q4_0 build. It is a single 17.7 GB file, about 1 GB smaller than Q4_K_M, and comfortable on a 24 GB card up to 16K context instead of 4K. Its 1.2 GB vision encoder is a separate download.',
     zh: 'Gemma 4 31B 现在收录了 Google 官方的量化感知训练（QAT）Q4_0 版本。它是单个 17.7 GB 文件，比 Q4_K_M 小约 1 GB，在 24 GB 显卡上能宽裕地跑到 16K 上下文（Q4_K_M 只到 4K）。1.2 GB 的视觉编码器需要另外下载。',
   },
