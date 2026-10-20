@@ -22,6 +22,7 @@ const ADDED_LFM25 = '2026-10-14';
 const ADDED_LING31 = '2026-10-17';
 const ADDED_GEMMA4_12B = '2026-10-19';
 const ADDED_NORTH_MINI = '2026-10-20';
+const ADDED_MINICPM47 = '2026-10-20';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -796,6 +797,68 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q3_K_M', bpw: 3.73, vramGB: 14.2, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q3_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.92, vramGB: 18.7, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 32.4, hfSearchUrl: hf('North-Mini-Code-1.0 GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // OpenBMB MiniCPM-V 4.7 35B-A3B (Hugging Face repo from 2026-10-06, Apache 2.0). Owner-pulled
+    // config.json (2026-10-20, huggingface.co blocked here): `minicpmv4_7` = SigLIP vision (27 layers,
+    // hidden 1152) + a `qwen3_5_moe_text` backbone with exactly Qwen3.6 35B-A3B's shape — 40 layers,
+    // hidden 2048, 16 heads / 2 KV × 256, full_attention_interval 4 (10 full + 30 Gated DeltaNet),
+    // 256 experts / 8 routed + shared, vocab 248144, 262144 positions. llama.cpp `qwen35moe` for the
+    // text; vision via OpenBMB's mmproj. Params from OpenBMB's own F16 GGUF: 69,375,191,008 B / 2 =
+    // 34.69B (Q8_0 → 8.51 and Q4_0 → 4.55 bpw confirm it). Q4_K_S / Q4_K_M / Q5_K_M / Q8_0 from the
+    // same repo's byte counts: 19.89 / 21.17 / 24.73 / 36.90 GB. mmproj-model-f16 = 1,119,575,840 B
+    // (the 4x-downsampling one 910,491,648 B) — not in the sizes below; the description says so.
+    id: 'minicpm-v-4-7-35b-a3b',
+    name: 'MiniCPM-V 4.7 35B-A3B',
+    family: 'OpenBMB MiniCPM-V',
+    params: 34.69,
+    paramLabel: '35B-A3B',
+    categories: ['multimodal', 'general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate. Same backbone shape as Qwen3.6 35B-A3B.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。骨干结构与 Qwen3.6 35B-A3B 相同。' } } },
+    addedAt: ADDED_MINICPM47,
+    description: {
+      en: 'A mixture-of-experts vision model from OpenBMB. It reads images and video on top of a 34.7B language model with about 3B parameters active per token, the same layout as Qwen3.6 35B-A3B. Only 10 of its 40 layers keep a growing KV cache, so context is cheap. At Q4_K_S it needs about 20.9 GB at 4K, comfortable on a 24 GB card; Q4_K_M (22.2 GB) is tight there, and a 32 GB card holds Q4_K_M across the whole 256K window. The vision encoder is a separate 1.1 GB file on top of these figures, which turns Q4_K_S on 24 GB tight as well once images are loaded. llama.cpp runs the text model as `qwen35moe`. Sizes come from OpenBMB\'s own GGUF files, and no per-level quality loss has been published.',
+      zh: '面壁智能（OpenBMB）的混合专家视觉模型：在 34.7B 的语言模型上读图像和视频，每个 token 约激活 3B 参数，结构与 Qwen3.6 35B-A3B 相同。40 层中只有 10 层保留会增长的 KV 缓存，所以上下文很便宜。Q4_K_S 在 4K 下约需 20.9 GB，24 GB 显卡上很宽裕；Q4_K_M（22.2 GB）在 24 GB 上偏紧，32 GB 显卡用满 256K 窗口也装得下 Q4_K_M。视觉编码器是另外一个 1.1 GB 的文件，不在上面的数字里；加载图像后，24 GB 显卡上的 Q4_K_S 也会变成偏紧。llama.cpp 以 `qwen35moe` 架构运行它的文本部分。体积按 OpenBMB 官方 GGUF 文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 20.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_S'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.88, vramGB: 22.2, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.70, vramGB: 25.9, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 38.6, hfSearchUrl: hf('MiniCPM-V-4.7-35B-A3B GGUF Q8_0'),   confidence: 'estimated' },
+    ],
+  },
+  {
+    // Xiaomi MiMo-V2.6-Flash-RL (2026-09-21, MIT). Owner-pulled config.json (2026-10-20): 48 layers,
+    // hidden 4096, 64 heads; hybrid_layer_pattern 0 = full at layers 0, 5, 11, 17, 23, 29, 35, 41, 47
+    // (9 full) and 1 = sliding window 128 (39 SWA). Full layers 4 KV heads, SWA layers 8 KV heads;
+    // K 192 / V 128 on both → headDim 160 (exact K+V bytes), fullKvHeads 4. SWA cells: llama.cpp
+    // `mimo2` is LLAMA_SWA_TYPE_STANDARD → pad256(128 + 512) = 768, as MiMo-V2.6-Pro. 256 experts /
+    // 8 routed (moe 2048) on layers 1–47, layer 0 dense (16384), vocab 152576 untied, 1,048,576
+    // positions. Config arithmetic: 308.78B (vendor 309B; MTP layers ship as a separate mtp- file and
+    // are excluded). ggml-org's GGUF (the only one; none from unsloth/bartowski): MXFP4 2 parts
+    // 167,369,465,152 B → 4.34 bpw (GPT-OSS 120B lands on the same rate), Q2_K 126,365,949,248 B →
+    // 3.27. Released weights are FP8 with MXFP4 experts, so MXFP4 is the native build (loss 0.0).
+    // mmproj BF16 2,748,509,792 B, not in the sizes.
+    id: 'mimo-v2-6-flash',
+    name: 'MiMo-V2.6-Flash',
+    family: 'Xiaomi MiMo',
+    params: 308.78,
+    paramLabel: '309B-A15B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['pro-gpu', 'mac'],
+    contextLength: 1048576,
+    arch: { layers: 48, attHeads: 64, kvHeads: 8, headDim: 160, attention: { fullLayers: 9, windowLayers: 39, windowTokens: 768, fullKvHeads: 4, note: { en: '9 of 48 layers use full attention (4 KV heads); the other 39 use a 128-token sliding window with 8 KV heads (llama.cpp keeps the window plus one 512-token batch, padded to 768). Keys are 192 wide and values 128, sized here as their 160 average.', zh: '48 层中 9 层是全注意力（4 个 KV 头），其余 39 层使用 128 token 滑动窗口、8 个 KV 头（llama.cpp 保留窗口加一个 512 token 批次，补齐到 768）。键宽 192、值宽 128，这里按平均 160 计算。' } } },
+    addedAt: ADDED_MINICPM47,
+    description: {
+      en: 'Xiaomi\'s smaller MiMo-V2.6 model: 309B parameters with about 15B active per token, MIT licence. It reads text, images, video and audio. The released weights are already 4-bit on the experts (MXFP4), and ggml-org\'s GGUF keeps them that way: about 175 GB at 4K context. That is comfortable only on a 512 GB Mac Studio, and tight on a 256 GB one. The Q2_K build (about 132 GB) fits a 256 GB Mac comfortably and is tight on a 192 GB one. Only 9 of its 48 layers keep a growing cache, so even the full 1M window adds about 25 GB. llama.cpp runs it as `mimo2`, the same as MiMo-V2.6-Pro, and vision loads through a separate encoder. Sizes come from ggml-org\'s GGUF files; no per-level quality loss has been published.',
+      zh: '小米 MiMo-V2.6 系列中较小的一款：309B 参数，每个 token 约激活 15B，MIT 许可，能读文本、图像、视频和音频。发布的权重在专家层本身就是 4 比特（MXFP4），ggml-org 的 GGUF 原样保留：4K 上下文约需 175 GB，只有 512 GB 的 Mac Studio 才宽裕，256 GB 的偏紧。Q2_K 版本（约 132 GB）在 256 GB 的 Mac 上很宽裕，在 192 GB 的 Mac 上偏紧。48 层中只有 9 层保留会增长的缓存，所以即使用满 100 万 token 窗口也只多约 25 GB。llama.cpp 以 `mimo2` 架构运行它（与 MiMo-V2.6-Pro 相同），视觉通过单独的编码器加载。体积按 ggml-org 的 GGUF 文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated' },
     ],
   },
 ];

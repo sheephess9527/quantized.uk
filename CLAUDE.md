@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **112** in index (`models-extra` … `models-extra-12`) |
+| Models | **114** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1116,6 +1116,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (x) | **+2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash** — owner-pulled configs + byte counts; MiniCPM = Qwen3.6 35B-A3B backbone, 34.69B from its F16 GGUF, Q4_K_S 20.9 GB @4K green on 24 GB (+1 on every ≥24 GB card), mmproj 1.1 GB extra; MiMo-Flash 9 full (4 KV) + 39 SWA (8 KV), native MXFP4 175 GB / Q2_K 132 GB → 256–512 GB Macs; DeepSeek-V4-Flash held (dsv4 compressed cache not expressible yet) |
 | 2026-10-20 (viii) | **AMD ROCm guide re-checked** — build commands still match llama.cpp master; added RX 9070 (gfx1201, ROCm 7) / 9060 (gfx1200) and corrected "integrated not supported" (Ryzen AI on Ollama's ROCm list; override + `GGML_CUDA_ENABLE_UNIFIED_MEMORY=1` per llama.cpp docs); docs check, no `verifiedAt` |
 | 2026-10-20 (vii) | **Google audience added to CLAUDE.md** — Search Console AI-features export: 816 impressions in 3 months, 20–35/day since ~09-27, US/UK/DE/CA, AMD ROCm guide 59%; Google cites the site, the missing clicks are AI answers; keep that guide current first (docs only) |
 | 2026-10-20 (vi) | **Gemma 4 12B from real GGUF bytes** — Q8_0 = 8.51 bpw over the 11.91B decoder (params 11.95 → 11.91, embedders are the mmproj); Q4_K_M 4.78 (unsloth; bartowski's is 0.54 GB larger, stated); `hfRepoMap` → unsloth so the CLI names the file; no fit count moved |

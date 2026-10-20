@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-20',
+    en: 'Two new models: MiniCPM-V 4.7 35B-A3B and MiMo-V2.6-Flash. MiniCPM-V 4.7 is OpenBMB\'s mixture-of-experts vision model with about 3B parameters active; at Q4_K_S it needs about 20.9 GB at 4K, comfortable on a 24 GB card, with its 1.1 GB vision encoder on top. MiMo-V2.6-Flash is Xiaomi\'s 309B model with about 15B active, shipped as native 4-bit weights; it needs about 175 GB, or 132 GB at Q2_K, so it is a 256 GB Mac model.',
+    zh: '新增两个模型：MiniCPM-V 4.7 35B-A3B 和 MiMo-V2.6-Flash。MiniCPM-V 4.7 是面壁智能的混合专家视觉模型，约激活 3B 参数；Q4_K_S 在 4K 下约需 20.9 GB，24 GB 显卡上很宽裕，视觉编码器另需 1.1 GB。MiMo-V2.6-Flash 是小米的 309B 模型，约激活 15B，权重原生就是 4 比特；约需 175 GB，Q2_K 约 132 GB，适合 256 GB 的 Mac。',
+  },
+  {
+    date: '2026-10-20',
     en: 'The AMD ROCm guide now covers the Radeon RX 9000 series and integrated Radeon graphics. RX 9070-class cards are on AMD\'s official ROCm list and need ROCm 7; the guide gives their build targets, and explains how Ryzen AI and older integrated GPUs can run models from system memory. The build commands were re-checked against llama.cpp\'s current docs and did not change.',
     zh: 'AMD ROCm 指南现在覆盖 Radeon RX 9000 系列和 AMD 核显。RX 9070 系列已在 AMD 官方 ROCm 支持列表中，需要 ROCm 7；指南给出了它们的编译目标，并说明 Ryzen AI 和较老的核显如何用系统内存跑模型。编译命令已按 llama.cpp 当前文档重新核对，没有变化。',
   },

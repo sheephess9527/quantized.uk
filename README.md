@@ -419,6 +419,37 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (x) — +2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash
+
+- From the owner's Hugging Face pull (2026-10-20 23:55 +08; `config.json` + tree API byte counts, CDN
+  `Content-Length` spot-checked by the owner). huggingface.co is blocked here.
+- **MiniCPM-V 4.7 35B-A3B** (`minicpm-v-4-7-35b-a3b`, OpenBMB, Apache 2.0): `minicpmv4_7` = SigLIP
+  (27 L, 1152) + `qwen3_5_moe_text` with Qwen3.6 35B-A3B's exact shape (40 L, 10 full + 30 Gated
+  DeltaNet, 2 KV × 256, 256 experts / 8, vocab 248144, 262144). Params = OpenBMB F16 GGUF
+  69,375,191,008 B / 2 = 34.69B; Q8_0 → 8.51 and Q4_0 → 4.55 bpw confirm it. Levels from the same repo:
+  Q4_K_S 4.59 / Q4_K_M 4.88 / Q5_K_M 5.70 / Q8_0 8.51 bpw. 4K: 20.9 / 22.2 / 25.9 / 38.6 GB →
+  Q4_K_S green on 24 GB (every 24 GB card's comfortable count +1), Q4_K_M tight; Q4_K_M green on
+  32 GB to 256K (27.6). mmproj 1,119,575,840 B is not in the sizes; the description says it makes
+  Q4_K_S tight on 24 GB with images. `hfRepoMap` → original weights: the GGUF files are named
+  `MiniCPM-V-4_7-…` (underscore), so `<repo>-<level>.gguf` would name a file that does not exist.
+  IQ3_M / IQ4_XS / IQ4_NL / Q4_1 / Q5_x / Q6_K files exist but are not filed (IQ levels are not in the
+  calculator's tables). Homepage feed id 24.
+- **MiMo-V2.6-Flash** (`mimo-v2-6-flash`, Xiaomi, MIT, the -RL checkpoint): 48 L,
+  `hybrid_layer_pattern` → 9 full (0, 5, 11 … 47; 4 KV heads) + 39 SWA-128 (8 KV heads); K 192 / V 128
+  → `headDim` 160, `fullKvHeads` 4, SWA 768 cells as MiMo-V2.6-Pro (`mimo2`). Params by config
+  arithmetic 308.78B (vendor 309B; MTP ships as a separate `mtp-` file). Only ggml-org publishes a
+  GGUF (unsloth/bartowski: none): MXFP4 2 parts 167,369,465,152 B → 4.34 bpw (native build, loss 0.0),
+  Q2_K 126,365,949,248 B → 3.27. 4K: 175.3 / 132.1 GB → MXFP4 green on M5 Ultra 512, tight on 256;
+  Q2_K green on 256, tight on the 192 GB Ultras. 1M window adds ~25 GB.
+- **DeepSeek-V4-Flash-0731 not added yet.** llama.cpp `deepseek4` has its own cache
+  (`llama-kv-cache-dsv4`): per-layer compressed caches at ratio 4 (with a 128-wide indexer) or 128 plus
+  a 128-token window, and `compress_ratios` gives 2 / 21 / 20 layers at 0 / 4 / 128. `ModelArch.attention`
+  cannot express that yet, and a new shape needs checking against a published KV measurement first.
+  Byte counts kept: ggml-org MXFP4 154,991,539,328 B, Q2_K 117,349,438,592 B, Q2_K_S 98,592,511,104 B.
+- Guide counts re-run (`countModelsFitting`, before/after): comfortable +1 on every 24 GB card and above
+  (4090/7900 XTX 86 → 87, 5090 90 → 91, Spark 98/102 → 99/103, M3 Max 48G 90 → 91); 16 GB and 12 GB
+  unchanged; denominators 112 → 114; Q4_K_M "107 of the 114" (MiMo-Flash ships none); AWQ 53 unchanged.
+
 ### 2026-10-20 (ix) — Candidate review from the owner's list (docs only, no model added)
 
 - Owner forwarded a list of ten recent models. llama.cpp master `src/llama-arch.cpp` and transformers'
