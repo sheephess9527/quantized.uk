@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-20';
+export const dataLastUpdated = '2026-10-21';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-21',
+    en: 'Gemma 4 31B now lists Google\'s official quantization-aware (QAT) Q4_0 build. It is a single 17.7 GB file, about 1 GB smaller than Q4_K_M, and comfortable on a 24 GB card up to 16K context instead of 4K. Its 1.2 GB vision encoder is a separate download.',
+    zh: 'Gemma 4 31B 现在收录了 Google 官方的量化感知训练（QAT）Q4_0 版本。它是单个 17.7 GB 文件，比 Q4_K_M 小约 1 GB，在 24 GB 显卡上能宽裕地跑到 16K 上下文（Q4_K_M 只到 4K）。1.2 GB 的视觉编码器需要另外下载。',
+  },
   {
     date: '2026-10-20',
     en: 'Two new models: MiniCPM-V 4.7 35B-A3B and MiMo-V2.6-Flash. MiniCPM-V 4.7 is OpenBMB\'s mixture-of-experts vision model with about 3B parameters active; at Q4_K_S it needs about 20.9 GB at 4K, comfortable on a 24 GB card, with its 1.1 GB vision encoder on top. MiMo-V2.6-Flash is Xiaomi\'s 309B model with about 15B active, shipped as native 4-bit weights; it needs about 175 GB, or 132 GB at Q2_K, so it is a 256 GB Mac model.',

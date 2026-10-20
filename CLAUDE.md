@@ -1116,6 +1116,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 | **Gemma 4 31B QAT Q4_0** — Google's official single-file build, 17,651,001,568 B → 4.60 bpw over 30.70B; 20.1 GB @4K, green on 24 GB to 16K; mmproj 1.2 GB makes 4K tight; no loss figure (bf16 also released); MLX conversion that prompted it stays untracked |
 | 2026-10-20 (x) | **+2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash** — owner-pulled configs + byte counts; MiniCPM = Qwen3.6 35B-A3B backbone, 34.69B from its F16 GGUF, Q4_K_S 20.9 GB @4K green on 24 GB (+1 on every ≥24 GB card), mmproj 1.1 GB extra; MiMo-Flash 9 full (4 KV) + 39 SWA (8 KV), native MXFP4 175 GB / Q2_K 132 GB → 256–512 GB Macs; DeepSeek-V4-Flash held (dsv4 compressed cache not expressible yet) |
 | 2026-10-20 (viii) | **AMD ROCm guide re-checked** — build commands still match llama.cpp master; added RX 9070 (gfx1201, ROCm 7) / 9060 (gfx1200) and corrected "integrated not supported" (Ryzen AI on Ollama's ROCm list; override + `GGML_CUDA_ENABLE_UNIFIED_MEMORY=1` per llama.cpp docs); docs check, no `verifiedAt` |
 | 2026-10-20 (vii) | **Google audience added to CLAUDE.md** — Search Console AI-features export: 816 impressions in 3 months, 20–35/day since ~09-27, US/UK/DE/CA, AMD ROCm guide 59%; Google cites the site, the missing clicks are AI answers; keep that guide current first (docs only) |

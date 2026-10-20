@@ -94,11 +94,16 @@ export const extraModels11: QuantModel[] = [
     },
     addedAt: ADDED,
     description: {
-      en: 'Google\'s dense Gemma 4 flagship: about 31B parameters, a 256K window and image input. Only 10 of its 60 layers cache the full context, and those use four wide KV heads, so 128K of context adds about 11 GB of cache where a conventional 60-layer design would need about 120 GB. At Q4 it is about 21 GB at 4K — on a 24 GB card that is right at the edge of comfortable, and tight from 32K. A 32 GB card holds 32K comfortably. Sizes use the calculator\'s generic rates — no GGUF file size could be checked, and no per-level quality loss has been published.',
-      zh: 'Google Gemma 4 的稠密旗舰：约 31B 参数，256K 上下文，支持图像输入。60 层中只有 10 层缓存完整上下文，而且这些层只用 4 个宽 KV 头，所以 128K 上下文只增加约 11 GB 缓存，常规的 60 层结构则要约 120 GB。Q4 下 4K 上下文约 21 GB——在 24 GB 显卡上刚好压在"从容"的边缘，32K 起就偏紧；32 GB 显卡跑 32K 很从容。下方体积使用计算器通用比特率——未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Google\'s dense Gemma 4 flagship: about 31B parameters, a 256K window and image input. Only 10 of its 60 layers cache the full context, and those use four wide KV heads, so 128K of context adds about 11 GB of cache where a conventional 60-layer design would need about 120 GB. At Q4 it is about 21 GB at 4K — on a 24 GB card that is right at the edge of comfortable, and tight from 32K. A 32 GB card holds 32K comfortably. Google also publishes its own quantization-aware (QAT) Q4_0 build, a single 17.7 GB file: about 20.1 GB at 4K, comfortable on 24 GB up to 16K. Its 1.2 GB vision encoder is a separate file, and with it loaded even 4K is tight on 24 GB. The Q4_K_M and Q8_0 sizes use the calculator\'s generic rates, and no per-level quality loss has been published.',
+      zh: 'Google Gemma 4 的稠密旗舰：约 31B 参数，256K 上下文，支持图像输入。60 层中只有 10 层缓存完整上下文，而且这些层只用 4 个宽 KV 头，所以 128K 上下文只增加约 11 GB 缓存，常规的 60 层结构则要约 120 GB。Q4 下 4K 上下文约 21 GB——在 24 GB 显卡上刚好压在"从容"的边缘，32K 起就偏紧；32 GB 显卡跑 32K 很从容。Google 还发布了官方的量化感知训练（QAT）Q4_0 版本，单个 17.7 GB 文件：4K 下约 20.1 GB，24 GB 显卡宽裕地跑到 16K。它的视觉编码器是另外一个 1.2 GB 的文件，加载后在 24 GB 上连 4K 都偏紧。Q4_K_M 和 Q8_0 的体积使用计算器通用比特率，各档位的质量损失未公布。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 18.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q4_K_M'), confidence: 'estimated' },
+      // Google's own QAT build (google/gemma-4-31B-it-qat-q4_0-gguf, 2026-05-01): one file,
+      // 17,651,001,568 B over the 30.70B decoder = 4.60 bpw (generic Q4_0 is 4.55); mmproj 1,200,726,368 B
+      // separate. Owner-pulled tree API sizes, 2026-10-21. No loss figure: QAT is trained for the level,
+      // but the bf16 weights were also released and Google publishes no per-level perplexity here.
+      { format: 'GGUF', level: 'Q4_0',   bpw: 4.60, vramGB: 20.1, hfSearchUrl: 'https://huggingface.co/google/gemma-4-31B-it-qat-q4_0-gguf', confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },

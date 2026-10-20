@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 — Gemma 4 31B: Google's QAT Q4_0 build
+
+- Owner-pulled tree API sizes (2026-10-21 05:42 +08) for `google/gemma-4-31B-it-qat-q4_0-gguf`
+  (created 2026-05-01, Apache 2.0): `gemma-4-31B_q4_0-it.gguf` 17,651,001,568 B (one file),
+  `gemma-4-31B-it-mmproj.gguf` 1,200,726,368 B; no `config.json` in the repo.
+- New `Q4_0` row on `gemma-4-31b`: 17.651e9 × 8 / 30.70B = 4.60 bpw (generic Q4_0 4.55 — the decoder
+  count reconciles). 4K 20.1 GB → green on 24 GB to 16K (21.1), tight from 24K; Q4_K_M (generic) is green
+  at 4K only. With the mmproj loaded, 4K is 21.3 / 24 = 88.75% → tight; the description says so.
+- No `pplLossPercent`: QAT is trained for this level, but bf16 weights were also released and no
+  per-level perplexity was published — not a native-format row like MXFP4.
+- `hfRepoMap` unchanged (original weights): the file is named `gemma-4-31B_q4_0-it`, not
+  `<repo>-<level>`, so the CLI keeps its placeholder. The Q4_K_M / Q8_0 rows stay generic.
+- Fit counts: no comfortable count moved (Q4_K_M was already green at 4K on 24 GB); RX 7900 XT 20 GB tight 86 → 87 (Q4_0 at 100.5%), quoted in no guide. `sizingChangedAt` not bumped — it
+  would re-date every derived page for one model's new row.
+- A community MLX conversion (`bambocher/gemma-4-31B-it-qat-mlx`) prompted this; MLX stays untracked.
+
 ### 2026-10-20 (x) — +2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash
 
 - From the owner's Hugging Face pull (2026-10-20 23:55 +08; `config.json` + tree API byte counts, CDN
