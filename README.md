@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (ix) — Candidate review from the owner's list (docs only, no model added)
+
+- Owner forwarded a list of ten recent models. llama.cpp master `src/llama-arch.cpp` and transformers'
+  `_toctree.yml` were read today; huggingface.co stays blocked, so no config or GGUF listing was reachable.
+- Worth adding, waiting on the owner's `config.json` + GGUF byte counts (priority order):
+  - **MiniCPM-V-4.7-35B-A3B** (OpenBMB, 10-06): transformers `minicpmv4_7` = SigLIP + Qwen3.5 text
+    backbone; llama.cpp has `qwen35moe`. The transformers defaults describe the 1B only, so the 35B's
+    layer layout is unknown. Best fit for the 16–24 GB audience.
+  - **MiMo-V2.6-Flash-RL** (Xiaomi, 09-21, 309B-A15B, 39 SWA + 9 global per reports): llama.cpp `mimo2`
+    (same arch as the indexed V2.6-Pro); GGUF availability reported both ways; KV heads / head_dim unsourced.
+  - **DeepSeek-V4-Flash / -0731** (284B-A13B): llama.cpp `deepseek4`, GGUFs exist (unsloth, ggml-org);
+    compressed attention (ratios 4 / 128 + indexer) has no `ModelArch.attention` shape yet.
+  - GLM-5.3-Flash: the 10-10 skip ("8-GPU class") is stale — size is not the bar; llama.cpp `glm-dsa`
+    exists. Same data needed, after the three above.
+- Still held: DeepSeek-V4.1-Flash(-1017) (see 10-18 (v)); Hy-Memory-30B-A3B (memory-writer model,
+  community GGUFs only); Kolibri-1 (no llama.cpp arch on master); Dory 1.0 4B (support PR not merged);
+  Step-5 Preview (official BF16 repo reported empty; llama.cpp `step35` is Step 3.5).
+- Side candidate: MiMo-V2.6-Distill-Qwen-9B (bartowski Q4_K_M reported 5.84 GB) — same data needed.
+
 ### 2026-10-20 (viii) — AMD ROCm guide re-checked (Google's most-cited page)
 
 - Documentation re-check, not a run (no Radeon here; no `verifiedAt`). Sources read today: llama.cpp
