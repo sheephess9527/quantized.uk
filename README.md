@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (viii) — AMD ROCm guide re-checked (Google's most-cited page)
+
+- Documentation re-check, not a run (no Radeon here; no `verifiedAt`). Sources read today: llama.cpp
+  master `docs/build.md` (HIP section) and `ggml/src/ggml-hip/CMakeLists.txt`; root `CMakeLists.txt`
+  `llama_option_depr`; AMD's ROCm Linux system requirements (via search: RX 9070 XT gfx1201 listed,
+  7.2.x); Ollama `docs/gpu.mdx` (Linux ROCm list incl. RX 9070/9060, Ryzen AI APUs; "requires the AMD
+  ROCm v7 driver"); LLVM `AMDGPUUsage.rst` (gfx1200 = RX 9060 / 9060 XT, gfx1201 = RX 9070 / XT / GRE,
+  gfx1151 = Radeon 8060S).
+- Still correct, unchanged: `HIPCXX="$(hipconfig -l)/clang" … -DGGML_HIP=ON -DGPU_TARGETS=…`, ROCm ≥ 6.1
+  gate, hipcc "legacy" warning, `AMDGPU_TARGETS` forwarded, `LLAMA_HIPBLAS` absent from the deprecation
+  table, override not supported on Windows.
+- Fixed: the card table had no RDNA 4 (the site lists four RX 9000 rows and vLLM's ROCm list allows
+  them) — added RX 9070 family (gfx1201, ROCm 7.x) and RX 9060 family (gfx1200, attributed to Ollama's
+  list, not claimed as AMD-official); "Not supported: integrated Radeon graphics" was wrong on two
+  counts — Ryzen AI APUs are on Ollama's ROCm list, and llama.cpp documents the override +
+  `GGML_CUDA_ENABLE_UNIFIED_MEMORY=1` for other iGPUs (with its warning that it slows discrete cards).
+  Prerequisites now say RX 9000 needs ROCm 7.x; `rocminfo` comment lists the new targets; stack line,
+  description and `updatedAt` (2026-10-20) follow.
+
 ### 2026-10-20 (vii) — Google AI-features data added to the audience notes (docs only)
 
 - Owner's Search Console export "Performance on Search — Generative AI features" (2026-07-18 → 10-17):

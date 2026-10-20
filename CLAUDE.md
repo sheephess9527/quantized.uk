@@ -1116,6 +1116,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (viii) | **AMD ROCm guide re-checked** — build commands still match llama.cpp master; added RX 9070 (gfx1201, ROCm 7) / 9060 (gfx1200) and corrected "integrated not supported" (Ryzen AI on Ollama's ROCm list; override + `GGML_CUDA_ENABLE_UNIFIED_MEMORY=1` per llama.cpp docs); docs check, no `verifiedAt` |
 | 2026-10-20 (vii) | **Google audience added to CLAUDE.md** — Search Console AI-features export: 816 impressions in 3 months, 20–35/day since ~09-27, US/UK/DE/CA, AMD ROCm guide 59%; Google cites the site, the missing clicks are AI answers; keep that guide current first (docs only) |
 | 2026-10-20 (vi) | **Gemma 4 12B from real GGUF bytes** — Q8_0 = 8.51 bpw over the 11.91B decoder (params 11.95 → 11.91, embedders are the mmproj); Q4_K_M 4.78 (unsloth; bartowski's is 0.54 GB larger, stated); `hfRepoMap` → unsloth so the CLI names the file; no fit count moved |
 | 2026-10-20 (v) | **Audience rewritten from real data** — CF Web Analytics week of 10-11: zh calculator ~36% of views, Bing CN main search source, Google ~0, China + Windows desktop; replaces the 08-08 single-digit hypothesis; prefer the zh calculator path and 16–24 GB Windows cards when choosing (docs only) |

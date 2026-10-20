@@ -341,22 +341,24 @@ export const extraArticles2: Article[] = [
     relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
     title: 'AMD GPU + llama.cpp via ROCm (Quick Start)',
     titleZh: 'AMD 显卡 + llama.cpp ROCm 快速入门',
-    description: 'Run GGUF models on Radeon RX 7900 / 6800 series with llama.cpp HIP backend — what works and what does not.',
-    descriptionZh: '用 llama.cpp HIP 后端在 RX 7900 / 6800 系列上跑 GGUF — 能做什么、不能做什么。',
+    description: 'Run GGUF models on Radeon RX 9070 / 7900 / 6800 series with llama.cpp HIP backend — what works and what does not.',
+    descriptionZh: '用 llama.cpp HIP 后端在 RX 9070 / 7900 / 6800 系列上跑 GGUF — 能做什么、不能做什么。',
     category: 'edge',
     difficulty: 'advanced',
     tags: ['AMD', 'ROCm', 'llama.cpp', 'HIP', 'Linux'],
     publishedAt: '2026-06-24',
-    // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03.
-    updatedAt: '2026-10-03',
+    // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03; RDNA 4 + iGPU
+    // re-check 2026-10-20 (llama.cpp docs/build.md + ggml-hip/CMakeLists.txt on master, AMD's ROCm
+    // Linux system requirements, Ollama docs/gpu.mdx, LLVM AMDGPUUsage processor table).
+    updatedAt: '2026-10-20',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
     // documented interfaces, not from a run. Saying otherwise would make the
     // badge meaningless on the other guides too.
     verifiedStack: {
-      en: 'Linux (Ubuntu 22.04/24.04) · ROCm 6.1+ · llama.cpp built with GGML_HIP=ON · RX 7900 / 6800 class · GGUF',
-      zh: 'Linux（Ubuntu 22.04/24.04）· ROCm 6.1+ · 以 GGML_HIP=ON 编译的 llama.cpp · RX 7900 / 6800 级显卡 · GGUF',
+      en: 'Linux (Ubuntu 22.04/24.04) · ROCm 6.1+ (7.x for RX 9000) · llama.cpp built with GGML_HIP=ON · RX 9070 / 7900 / 6800 class · GGUF',
+      zh: 'Linux（Ubuntu 22.04/24.04）· ROCm 6.1+（RX 9000 需 7.x）· 以 GGML_HIP=ON 编译的 llama.cpp · RX 9070 / 7900 / 6800 级显卡 · GGUF',
     },
     content: [
       {
@@ -366,17 +368,17 @@ export const extraArticles2: Article[] = [
         bodyZh: '一张跑在 Linux 上的 Radeon 显卡，用 llama.cpp 跑 GGUF。开始前先明确两点。消费级 Radeon 的 ROCm 以 Linux 为主：llama.cpp 文档里也有 Windows 上的 HIP 构建方法，但下面的 HSA_OVERRIDE_GFX_VERSION 变通办法在 Windows 上无效，所以不在 AMD 官方支持列表里的显卡，在 Windows 上通常更适合用 Vulkan 后端。另外可选格式比 NVIDIA 窄 —— GGUF 可用，vLLM 也有官方 ROCm 构建可用于 AWQ/GPTQ 服务（限 RX 7700 XT 及以上、RX 9000 系列，不含 RX 6000 和 7600 XT），但 EXL2 是 CUDA 独占，再怎么配 ROCm 也没用。',
         code: {
           lang: 'text',
-          content: 'Best reports:  RX 7900 XTX / XT (gfx1100), W7900\nWorks:         RX 7800 XT / 7700 XT (gfx1101), RX 6800 XT / 6900 XT (gfx1030)\nPatchy:        RX 6700 XT (gfx1031), older Polaris\nNot supported: integrated Radeon graphics',
+          content: 'Best reports:  RX 7900 XTX / XT (gfx1100), W7900\nWorks:         RX 9070 XT / 9070 / 9070 GRE (gfx1201, ROCm 7.x)\n               RX 9060 XT / 9060 (gfx1200, on Ollama\'s ROCm list)\n               RX 7800 XT / 7700 XT (gfx1101), RX 6800 XT / 6900 XT (gfx1030)\nPatchy:        RX 6700 XT (gfx1031), older Polaris\nIntegrated:    Ryzen AI APUs (Radeon 8060S = gfx1151) are on Ollama\'s ROCm list;\n               other iGPUs only via the override + unified memory (see below)',
         },
       },
       {
         heading: 'Prerequisites',
         headingZh: '前置条件',
-        body: 'Install ROCm 6.1 or newer from AMD’s repository for your distribution — llama.cpp’s HIP build refuses anything older — then add your user to the render and video groups and log out and back in. Missing group membership is the classic first failure: rocminfo reports no agents, and every later step looks like a build problem when it is a permissions problem. Find your card’s gfx target now — you need it for the build.',
-        bodyZh: '按你的发行版从 AMD 仓库安装 ROCm 6.1 或更新版本（llama.cpp 的 HIP 构建会拒绝更旧的版本），然后把用户加入 render 和 video 组，并重新登录。忘记加组是最典型的第一个坑：rocminfo 报告找不到设备，而后面每一步看起来都像编译问题，其实是权限问题。现在先确认显卡的 gfx 目标，编译时要用。',
+        body: 'Install ROCm 6.1 or newer from AMD’s repository for your distribution — llama.cpp’s HIP build refuses anything older; an RX 9000 card needs a current ROCm 7.x release, which is also what Ollama now requires — then add your user to the render and video groups and log out and back in. Missing group membership is the classic first failure: rocminfo reports no agents, and every later step looks like a build problem when it is a permissions problem. Find your card’s gfx target now — you need it for the build.',
+        bodyZh: '按你的发行版从 AMD 仓库安装 ROCm 6.1 或更新版本（llama.cpp 的 HIP 构建会拒绝更旧的版本；RX 9000 显卡需要较新的 ROCm 7.x，Ollama 现在也要求 7.x），然后把用户加入 render 和 video 组，并重新登录。忘记加组是最典型的第一个坑：rocminfo 报告找不到设备，而后面每一步看起来都像编译问题，其实是权限问题。现在先确认显卡的 gfx 目标，编译时要用。',
         code: {
           lang: 'bash',
-          content: 'sudo usermod -aG render,video $USER   # then log out and back in\n\nrocminfo | grep -i gfx      # e.g. gfx1100 for RX 7900 XTX\nrocm-smi                    # card, VRAM, temperature',
+          content: 'sudo usermod -aG render,video $USER   # then log out and back in\n\nrocminfo | grep -i gfx      # e.g. gfx1100 RX 7900 XTX, gfx1201 RX 9070 XT, gfx1200 RX 9060 XT\nrocm-smi                    # card, VRAM, temperature',
         },
       },
       {
@@ -392,11 +394,11 @@ export const extraArticles2: Article[] = [
       {
         heading: 'If your card is not on the official list',
         headingZh: '如果你的卡不在官方支持列表里',
-        body: 'ROCm refuses to initialise on gfx targets it does not officially support, even when the card is architecturally close to one that is. HSA_OVERRIDE_GFX_VERSION tells the runtime to treat it as the nearest supported target: 11.0.0 for RDNA3, 10.3.0 for RDNA2. This is a workaround, not a supported configuration — it is widely used and it can also produce wrong results or hangs on some kernels, so validate output before trusting it.',
-        bodyZh: 'ROCm 对于官方未支持的 gfx 目标会直接拒绝初始化，哪怕架构上和某个受支持型号很接近。HSA_OVERRIDE_GFX_VERSION 让运行时把它当作最接近的受支持目标：RDNA3 用 11.0.0，RDNA2 用 10.3.0。这是绕过手段而非受支持配置 —— 用的人很多，但在部分内核上也可能出现结果错误或卡死，采信前请先验证输出。',
+        body: 'ROCm refuses to initialise on gfx targets it does not officially support, even when the card is architecturally close to one that is. HSA_OVERRIDE_GFX_VERSION tells the runtime to treat it as the nearest supported target: 11.0.0 for RDNA3, 10.3.0 for RDNA2. This is a workaround, not a supported configuration — it is widely used and it can also produce wrong results or hangs on some kernels, so validate output before trusting it. An integrated Radeon outside AMD’s list (a gfx1035 laptop chip, say) can take the same override — llama.cpp’s build docs map gfx1035 to 10.3.0 — and also needs GGML_CUDA_ENABLE_UNIFIED_MEMORY=1 so the model can live in system RAM; the docs warn that this setting slows a discrete card, so set it only for the iGPU.',
+        bodyZh: 'ROCm 对于官方未支持的 gfx 目标会直接拒绝初始化，哪怕架构上和某个受支持型号很接近。HSA_OVERRIDE_GFX_VERSION 让运行时把它当作最接近的受支持目标：RDNA3 用 11.0.0，RDNA2 用 10.3.0。这是绕过手段而非受支持配置 —— 用的人很多，但在部分内核上也可能出现结果错误或卡死，采信前请先验证输出。 不在 AMD 列表里的核显（比如笔记本上的 gfx1035）也可以用同样的覆盖 —— llama.cpp 的构建文档把 gfx1035 归到 10.3.0 —— 另外还需要设置 GGML_CUDA_ENABLE_UNIFIED_MEMORY=1，让模型可以放在系统内存里；文档提醒这个设置会拖慢独立显卡，所以只在核显上开。',
         code: {
           lang: 'bash',
-          content: '# RDNA2 card reporting gfx1031, treated as gfx1030\nexport HSA_OVERRIDE_GFX_VERSION=10.3.0\n\n# RDNA3\n# export HSA_OVERRIDE_GFX_VERSION=11.0.0',
+          content: '# RDNA2 card reporting gfx1031, treated as gfx1030\nexport HSA_OVERRIDE_GFX_VERSION=10.3.0\n\n# RDNA3\n# export HSA_OVERRIDE_GFX_VERSION=11.0.0\n\n# Integrated Radeon (e.g. gfx1035) only:\n# export HSA_OVERRIDE_GFX_VERSION=10.3.0 GGML_CUDA_ENABLE_UNIFIED_MEMORY=1',
         },
       },
       {

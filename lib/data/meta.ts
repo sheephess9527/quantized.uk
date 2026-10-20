@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-20',
+    en: 'The AMD ROCm guide now covers the Radeon RX 9000 series and integrated Radeon graphics. RX 9070-class cards are on AMD\'s official ROCm list and need ROCm 7; the guide gives their build targets, and explains how Ryzen AI and older integrated GPUs can run models from system memory. The build commands were re-checked against llama.cpp\'s current docs and did not change.',
+    zh: 'AMD ROCm 指南现在覆盖 Radeon RX 9000 系列和 AMD 核显。RX 9070 系列已在 AMD 官方 ROCm 支持列表中，需要 ROCm 7；指南给出了它们的编译目标，并说明 Ryzen AI 和较老的核显如何用系统内存跑模型。编译命令已按 llama.cpp 当前文档重新核对，没有变化。',
+  },
+  {
+    date: '2026-10-20',
     en: 'Gemma 4 12B is now sized from its published GGUF files instead of generic rates. At Q4_K_M it needs about 8.5 GB at 32K context; none of the card verdicts changed. The page also notes that bartowski\'s Q4_K_M file is about half a gigabyte larger than unsloth\'s.',
     zh: 'Gemma 4 12B 现在按已发布的 GGUF 文件计算体积，不再用通用比特率。Q4_K_M 在 32K 上下文下约需 8.5 GB；各显卡的判定都没有变化。页面也注明了 bartowski 的 Q4_K_M 文件比 unsloth 的大约 0.5 GB。',
   },
