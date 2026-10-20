@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-20 (vi) — Gemma 4 12B sized from real GGUF bytes
+
+- Owner-pasted byte counts (tree size = CDN Content-Length): unsloth Q4_K_M 7,121,861,440 /
+  Q8_0 12,669,647,680; bartowski Q4_K_M 7,662,533,088 / Q8_0 12,669,647,328.
+- Q8_0 over the 11.91B decoder counted on 10-19 is exactly 8.51 bpw, so the main GGUF holds the
+  decoder only: `params` 11.95 → 11.91 (the ~0.04B patch/audio embedders are the separate mmproj).
+  Q4_K_M 4.85 (generic) → 4.78 from unsloth's file; bartowski's Q4_K_M is a different, larger file
+  (5.15 bpw, +0.54 GB) — the description says so rather than averaging.
+- `hfRepoMap` → `unsloth/gemma-4-12b-it-GGUF`: its filenames are `gemma-4-12b-it-<level>.gguf`, so
+  the CLI now names the file instead of printing a placeholder.
+- Q4_K_M @32K 8.64 → 8.50 GB, @128K 10.29 → 10.15. Re-ran `countModelsFitting()` over all 82 rows:
+  no comfortable or tight count moved, so no guide numbers change.
+
 ### 2026-10-20 (v) — CLAUDE.md audience section rewritten from real traffic (docs only)
 
 - Owner-supplied Cloudflare Web Analytics for 2026-10-11 → 10-18 (716 visits / 2,323 views) replace

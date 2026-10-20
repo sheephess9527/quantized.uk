@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-20',
+    en: 'Gemma 4 12B is now sized from its published GGUF files instead of generic rates. At Q4_K_M it needs about 8.5 GB at 32K context; none of the card verdicts changed. The page also notes that bartowski\'s Q4_K_M file is about half a gigabyte larger than unsloth\'s.',
+    zh: 'Gemma 4 12B 现在按已发布的 GGUF 文件计算体积，不再用通用比特率。Q4_K_M 在 32K 上下文下约需 8.5 GB；各显卡的判定都没有变化。页面也注明了 bartowski 的 Q4_K_M 文件比 unsloth 的大约 0.5 GB。',
+  },
+  {
+    date: '2026-10-20',
     en: 'Added North Mini Code 1.0, Cohere\'s open coding model. It is a 30B mixture-of-experts with about 3B parameters active per token, and only 13 of its 49 layers keep a growing cache: at Q4_K_M it needs about 20 GB at 4K and 21 GB at 32K, comfortable on a 24 GB card. A 16 GB card can run the Q3_K_M build, but only just.',
     zh: '新增 North Mini Code 1.0——Cohere 的开源编程模型。它是 30B 混合专家，每个 token 约激活 3B 参数，49 层中只有 13 层的缓存随上下文增长：Q4_K_M 在 4K 下约需 20 GB，32K 约 21 GB，24 GB 显卡很从容。16 GB 显卡可以跑 Q3_K_M，但只是勉强装下。',
   },

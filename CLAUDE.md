@@ -1104,6 +1104,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-20 (vi) | **Gemma 4 12B from real GGUF bytes** — Q8_0 = 8.51 bpw over the 11.91B decoder (params 11.95 → 11.91, embedders are the mmproj); Q4_K_M 4.78 (unsloth; bartowski's is 0.54 GB larger, stated); `hfRepoMap` → unsloth so the CLI names the file; no fit count moved |
 | 2026-10-20 (v) | **Audience rewritten from real data** — CF Web Analytics week of 10-11: zh calculator ~36% of views, Bing CN main search source, Google ~0, China + Windows desktop; replaces the 08-08 single-digit hypothesis; prefer the zh calculator path and 16–24 GB Windows cards when choosing (docs only) |
 | 2026-10-20 (iv) | **+1 model (112): North Mini Code 1.0 30B-A3B** — owner-pasted config + byte counts; llama.cpp `cohere2moe` (iSWA, 13 full + 36 SWA @4608 cells, 4 KV × 128); 30.48B = safetensors total = GGUF total; Q3_K_M 3.73 / Q4_K_M 4.92 / Q8_0 8.51 bpw (BF16 16.01); Q4_K_M 20.0 GB @4K → green on 24 GB; guide counts re-run |
 | 2026-10-20 (iii) | **Runtime versions** — llama.cpp b11748; Ollama v0.40.7 still pre-release; North Mini Code runnable (llama.cpp `cohere2moe` merged) but held for its real `config.json` (window/head_dim unreachable) |

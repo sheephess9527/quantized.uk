@@ -711,11 +711,15 @@ export const extraModels12: QuantModel[] = [
     // llama.cpp: `conversion/gemma.py` registers Gemma4UnifiedForConditionalGeneration as the
     // `gemma4` arch; `src/models/gemma4.cpp` uses K as V when there is no v_proj but still caches
     // both, so the full layers are sized as K + V like the 31B. Window cells pad256(1024 + 512).
-    // No GGUF byte count reachable (huggingface.co blocked) → generic bpw, `estimated`.
+    // GGUF byte counts (owner-pasted 2026-10-20, tree size = CDN Content-Length): unsloth
+    // `gemma-4-12b-it-Q8_0.gguf` 12,669,647,680 → exactly 8.51 bpw over the 11.91B decoder, so the
+    // main GGUF holds the decoder only and `params` is 11.91 (the ~0.04B patch/audio embedders ship
+    // in the separate mmproj file). Q4_K_M from unsloth's 7,121,861,440 → 4.78; bartowski's
+    // Q4_K_M is a different file (7,662,533,088 → 5.15) — the description names both.
     id: 'gemma-4-12b',
     name: 'Gemma 4 12B IT',
     family: 'Google Gemma 4',
-    params: 11.95,
+    params: 11.91,
     paramLabel: '12B',
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'mac'],
@@ -739,12 +743,12 @@ export const extraModels12: QuantModel[] = [
     },
     addedAt: ADDED_GEMMA4_12B,
     description: {
-      en: 'Google\'s mid-sized Gemma 4, released in June: a dense 12B with a 256K window. It takes text, images and audio without separate encoders — the raw inputs go straight into the one decoder. Only 8 of its 48 layers cache the full context, each with a single wide KV head, so the cache stays small: about 1 GB at 32K and 4.5 GB at the full 256K. At Q4 that is about 8.6 GB at 32K and 10.3 GB at 128K, both comfortable on a 12 GB card; a 16 GB card holds the whole window comfortably, and an 8 GB card is tight even at 4K. Sizes use the calculator\'s generic rates — no GGUF file size could be checked, and no per-level quality loss has been published.',
-      zh: 'Google 6 月发布的中等尺寸 Gemma 4：12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器，原始输入直接进入同一个解码器。48 层中只有 8 层缓存完整上下文，每层只有一个宽 KV 头，所以缓存很小：32K 约 1 GB，用满 256K 也只要约 4.5 GB。Q4 下 32K 约 8.6 GB、128K 约 10.3 GB，12 GB 显卡都很从容；16 GB 显卡能从容加载完整窗口，8 GB 显卡即使 4K 也偏紧。下方体积使用计算器通用比特率——未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Google\'s mid-sized Gemma 4, released in June: a dense 12B with a 256K window. It takes text, images and audio without separate encoders — the raw inputs go straight into the one decoder. Only 8 of its 48 layers cache the full context, each with a single wide KV head, so the cache stays small: about 1 GB at 32K and 4.5 GB at the full 256K. At Q4_K_M (unsloth\'s 7.1 GB file) that is about 8.5 GB at 32K and 10.2 GB at 128K, both comfortable on a 12 GB card; a 16 GB card holds the whole window comfortably, and an 8 GB card is tight even at 4K. bartowski\'s Q4_K_M is a larger file (7.7 GB), so add about half a gigabyte if you use it. Sizes come from the published GGUF files; the image and audio embedders ship as a separate mmproj file, and no per-level quality loss has been published.',
+      zh: 'Google 6 月发布的中等尺寸 Gemma 4：12B 稠密模型，256K 上下文，文本、图像、音频都不需要单独的编码器，原始输入直接进入同一个解码器。48 层中只有 8 层缓存完整上下文，每层只有一个宽 KV 头，所以缓存很小：32K 约 1 GB，用满 256K 也只要约 4.5 GB。Q4_K_M（unsloth 的 7.1 GB 文件）在 32K 下约 8.5 GB、128K 约 10.2 GB，12 GB 显卡都很从容；16 GB 显卡能从容加载完整窗口，8 GB 显卡即使 4K 也偏紧。bartowski 的 Q4_K_M 文件更大（7.7 GB），用它的话再加约 0.5 GB。体积按已发布的 GGUF 文件计算；图像和音频嵌入层在单独的 mmproj 文件里，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 7.2,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.78, vramGB: 7.1,  hfSearchUrl: hf('gemma-4-12b-it GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 12.7, hfSearchUrl: hf('gemma-4-12b-it GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
   {
