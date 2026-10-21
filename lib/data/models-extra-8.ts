@@ -85,7 +85,12 @@ export const extraModels8: QuantModel[] = [
     id: 'seed-oss-36b',
     name: 'Seed-OSS 36B Instruct',
     family: 'ByteDance Seed',
-    params: 36.0,
+    // 36.16B = bartowski's and unsloth's BF16 GGUFs (72,311,396,928 / 72,311,397,472 B ÷ 2), owner-
+    // pulled 2026-10-21; was typed 36.0. GGUF bpw from bartowski's files (unsloth's same levels differ
+    // by 512 B). AWQ from QuantTrio's repo (quant_method awq, 4-bit): 8 shards = 21,135,821,912 B →
+    // 4.68 bpw, not the 4.0 once typed here — its 55 tok/s on a 4090 then exceeds the bandwidth gate and
+    // was removed, not adjusted. cyankiwi's "AWQ-4bit" is compressed-tensors, not AWQ — not used.
+    params: 36.16,
     paramLabel: '36B',
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
@@ -93,14 +98,14 @@ export const extraModels8: QuantModel[] = [
     arch: { layers: 64, attHeads: 80, kvHeads: 8, headDim: 128 },
     addedAt: ADDED,
     description: {
-      en: 'Dense 36B with a native 512K context. Q4 weights are ~22GB, which lands on a 24GB card or a 2×16GB split — but the context is the real cost: 512K of KV cache is roughly 128GB on its own, so budget context first and weights second.',
-      zh: '稠密 36B,原生 512K 上下文。Q4 权重约 22GB,单张 24GB 卡或 2×16GB 拆分即可 —— 但真正的开销是上下文:512K 的 KV cache 单独就约 128GB,所以要先规划上下文再考虑权重。',
+      en: 'Dense 36B with a native 512K context. The Q4_K_M file is 21.8 GB, so with cache and buffers it needs about 23.9 GB at 4K: tight on a 24 GB card, where Q3_K_M (19.5 GB) is the comfortable choice, or a 2×16GB split. The AWQ build is 21.1 GB, not the 4-bit rate the name suggests. Context is the real cost: 512K of KV cache is roughly 128GB on its own, so budget context first and weights second.',
+      zh: '稠密 36B，原生 512K 上下文。Q4_K_M 文件是 21.8 GB，加上缓存和运行缓冲，4K 下约需 23.9 GB：在 24 GB 显卡上偏紧，那里宽裕的选择是 Q3_K_M（19.5 GB），或者用 2×16GB 拆分。AWQ 版本是 21.1 GB，并不是名字暗示的 4 比特体积。真正的开销是上下文：512K 的 KV cache 单独就约 128GB,所以要先规划上下文再考虑权重。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 21.8, pplLossPercent: 2.7, speedRTX4090: 42, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 17.4, pplLossPercent: 5.6, speedRTX4090: 48, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q3_K_M') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 25.6, pplLossPercent: 1.3, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q5_K_M') },
-      { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 19.5, pplLossPercent: 3.8, speedRTX4090: 55, hfSearchUrl: hf('Seed-OSS-36B-Instruct AWQ') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.82, vramGB: 23.9, pplLossPercent: 2.7, speedRTX4090: 42, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/ByteDance-Seed_Seed-OSS-36B-Instruct-GGUF', file: 'ByteDance-Seed_Seed-OSS-36B-Instruct-Q4_K_M.gguf', bytes: 21_762_149_024, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.90, vramGB: 19.5, pplLossPercent: 5.6, speedRTX4090: 48, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q3_K_M'), source: { repo: 'bartowski/ByteDance-Seed_Seed-OSS-36B-Instruct-GGUF', file: 'ByteDance-Seed_Seed-OSS-36B-Instruct-Q3_K_M.gguf', bytes: 17_620_949_664, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.66, vramGB: 27.8, pplLossPercent: 1.3, hfSearchUrl: hf('Seed-OSS-36B-Instruct GGUF Q5_K_M'), source: { repo: 'bartowski/ByteDance-Seed_Seed-OSS-36B-Instruct-GGUF', file: 'ByteDance-Seed_Seed-OSS-36B-Instruct-Q5_K_M.gguf', bytes: 25_594_366_624, checkedAt: '2026-10-21' } },
+      { format: 'AWQ',  level: 'INT4',   bpw: 4.68,  vramGB: 23.2, pplLossPercent: 3.8, hfSearchUrl: hf('Seed-OSS-36B-Instruct AWQ'), source: { repo: 'QuantTrio/Seed-OSS-36B-Instruct-AWQ', file: 'model-00001-of-00008.safetensors', bytes: 21_135_821_912, parts: 8, checkedAt: '2026-10-21' } },
     ],
   },
 ];

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-21',
+    en: 'Seed-OSS 36B and ERNIE 4.5 21B-A3B are now sized from their real files, and the 24 GB card pages name a file to download. Seed-OSS\'s AWQ build is 21.1 GB, not the 18 GB a 4-bit rate implies, so on a 24 GB card it is now tight and Q3_K_M is the comfortable pick. ERNIE 4.5 at Q4_K_M is 14.2 GB at 4K, just past the comfortable line on a 16 GB card.',
+    zh: 'Seed-OSS 36B 和 ERNIE 4.5 21B-A3B 现在按真实文件计算体积，24 GB 显卡的页面也会写明下载哪个文件。Seed-OSS 的 AWQ 版本是 21.1 GB，而不是按 4 比特推算的 18 GB，所以在 24 GB 显卡上现在属于偏紧，宽裕的选择是 Q3_K_M。ERNIE 4.5 的 Q4_K_M 在 4K 下约 14.2 GB，在 16 GB 显卡上刚好越过宽裕线。',
+  },
+  {
+    date: '2026-10-21',
     en: 'Gemma 4 26B-A4B needs more memory than this site said. Its real Q4_K_M file is 17.0 GB, about 1.7 GB more than the generic rate predicted, so it now needs about 18.2 GB at 4K context: still comfortable on a 24 GB card, but no longer loadable on a 16 GB one, and only tight on a 20 GB RX 7900 XT. Qwen3.6 35B-A3B and Qwen3.6 27B are now sized from their exact files too; their figures did not change. All three pages name the files.',
     zh: 'Gemma 4 26B-A4B 需要的显存比本站之前写的多。它真实的 Q4_K_M 文件是 17.0 GB，比通用比特率估算多约 1.7 GB，所以 4K 上下文下约需 18.2 GB：24 GB 显卡仍然宽裕，但 16 GB 显卡已经装不下，20 GB 的 RX 7900 XT 也只算偏紧。Qwen3.6 35B-A3B 和 Qwen3.6 27B 现在也按准确的文件计算，数字没有变化。三个模型页都写明了对应的文件。',
   },

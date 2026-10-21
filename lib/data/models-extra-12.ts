@@ -67,7 +67,10 @@ export const extraModels12: QuantModel[] = [
     id: 'ernie-4.5-21b-a3b',
     name: 'ERNIE 4.5 21B-A3B',
     family: 'Baidu ERNIE 4.5',
-    params: 21.8,
+    // The PT (instruct) checkpoint, not -Thinking. 21.83B = both BF16 GGUFs ÷ 2 (owner-pulled
+    // 2026-10-21). Q4_K_M from unsloth's file (bartowski's is 168,252,736 B larger, 4.95 bpw);
+    // Q8_0 from bartowski (unsloth's differs by 704 B). No AWQ build of PT exists.
+    params: 21.83,
     paramLabel: '21B-A3B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
@@ -75,12 +78,12 @@ export const extraModels12: QuantModel[] = [
     arch: { layers: 28, attHeads: 20, kvHeads: 4, headDim: 128 },
     addedAt: ADDED,
     description: {
-      en: 'Baidu\'s open mixture-of-experts model: about 21.8B parameters in total and roughly 3B active per token. Each token goes through 6 of 64 routed experts plus 2 shared ones. The total decides the memory and the active count decides the speed, so it needs the VRAM of a 20B-class model and reads about as much per token as a 3B one. At Q4_K_M it needs about 14.1 GB at 4K context, which is right at the edge of comfortable on a 16 GB card and tight by 32K. A 24 GB card, or a 24 GB Mac through the GPU\'s share of unified memory, leaves real room for context. Sizes use the calculator\'s generic rates, since no GGUF file size could be checked, and no per-level quality loss has been published.',
-      zh: '百度开源的混合专家模型：总参数约 21.8B，每个 token 约激活 3B，由 64 个路由专家（每个 token 选 6 个）加 2 个共享专家组成。总参数决定显存，激活参数决定速度，所以它需要 20B 级模型的显存，每个 token 读取的数据量却和 3B 模型差不多。Q4_K_M 在 4K 上下文下约需 14.1 GB，在 16 GB 显卡上正好处于“宽裕”的边缘，到 32K 就偏紧了；24 GB 显卡，或 24 GB 的 Mac（靠 GPU 可用的那部分统一内存）才有真正的上下文余量。下方体积使用计算器的通用比特率，因为未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Baidu\'s open mixture-of-experts model: about 21.8B parameters in total and roughly 3B active per token. Each token goes through 6 of 64 routed experts plus 2 shared ones. The total decides the memory and the active count decides the speed, so it needs the VRAM of a 20B-class model and reads about as much per token as a 3B one. At Q4_K_M it needs about 14.2 GB at 4K context, just past the comfortable line on a 16 GB card (it loads, with little margin). A 24 GB card, or a 24 GB Mac through the GPU\'s share of unified memory, leaves real room for context. Sizes come from the published GGUF files of the PT (instruct) checkpoint; bartowski\'s Q4_K_M is a different file, 0.17 GB larger than Unsloth\'s used here. No per-level quality loss has been published.',
+      zh: '百度开源的混合专家模型：总参数约 21.8B，每个 token 约激活 3B，由 64 个路由专家（每个 token 选 6 个）加 2 个共享专家组成。总参数决定显存，激活参数决定速度，所以它需要 20B 级模型的显存，每个 token 读取的数据量却和 3B 模型差不多。Q4_K_M 在 4K 上下文下约需 14.2 GB，在 16 GB 显卡上刚好越过“宽裕”线（能加载，余量很小）；24 GB 显卡，或 24 GB 的 Mac（靠 GPU 可用的那部分统一内存）才有真正的上下文余量。体积按 PT（指令版）检查点已发布的 GGUF 文件计算；bartowski 的 Q4_K_M 是另一个文件，比这里用的 Unsloth 版大 0.17 GB。各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 14.1, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 24.4, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.89, vramGB: 14.2, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'unsloth/ERNIE-4.5-21B-A3B-PT-GGUF', file: 'ERNIE-4.5-21B-A3B-PT-Q4_K_M.gguf', bytes: 13_331_015_456, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.50,  vramGB: 24.4, hfSearchUrl: hf('ERNIE-4.5-21B-A3B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/baidu_ERNIE-4.5-21B-A3B-PT-GGUF', file: 'baidu_ERNIE-4.5-21B-A3B-PT-Q8_0.gguf', bytes: 23_205_354_592, checkedAt: '2026-10-21' } },
     ],
   },
   {

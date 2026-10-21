@@ -446,8 +446,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'What fits on a 24GB RX 7900 XTX compared with a 16GB Radeon?',
         qZh: '24GB 的 RX 7900 XTX 和 16GB 的 Radeon 能装下的模型差多少？',
-        a: 'At 4K context, 87 of the 114 models in this index fit the RX 7900 XTX comfortably, against 64 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
-        aZh: '在 4K 上下文下，本索引 114 个模型中有 87 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 64 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
+        a: 'At 4K context, 87 of the 114 models in this index fit the RX 7900 XTX comfortably, against 63 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
+        aZh: '在 4K 上下文下，本索引 114 个模型中有 87 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 63 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
       },
     ],
   },
@@ -706,8 +706,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'How many models fit on an Arc B580?',
         qZh: 'Arc B580 能装下多少个模型？',
-        a: '57 of the 114 models in this index fit the B580 comfortably at 4K context, all as GGUF — the same count as any other 12 GB card, because only capacity decides what fits. The A770 16G fits 60, the B570 10G 49, and the A750 8G 40. Speed is a different question: the B580 has 456 GB/s of memory bandwidth, which sets the ceiling on tokens per second once a model fits.',
-        aZh: '本索引 114 个模型中，有 57 个能以 GGUF 在 4K 上下文下宽裕地装进 B580 —— 与其他 12 GB 显卡相同，因为决定能否装下的只有容量。A770 16G 可装 60 个，B570 10G 49 个，A750 8G 40 个。速度是另一个问题：B580 的显存带宽为 456 GB/s，模型装下之后，它决定了每秒 token 数的上限。',
+        a: '57 of the 114 models in this index fit the B580 comfortably at 4K context, all as GGUF — the same count as any other 12 GB card, because only capacity decides what fits. The A770 16G fits 59, the B570 10G 49, and the A750 8G 40. Speed is a different question: the B580 has 456 GB/s of memory bandwidth, which sets the ceiling on tokens per second once a model fits.',
+        aZh: '本索引 114 个模型中，有 57 个能以 GGUF 在 4K 上下文下宽裕地装进 B580 —— 与其他 12 GB 显卡相同，因为决定能否装下的只有容量。A770 16G 可装 59 个，B570 10G 49 个，A750 8G 40 个。速度是另一个问题：B580 的显存带宽为 456 GB/s，模型装下之后，它决定了每秒 token 数的上限。',
       },
     ],
   },
@@ -804,8 +804,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'RTX 3060 12G or RTX 4060 Ti 16G for local LLMs?',
         qZh: '跑本地大模型，RTX 3060 12G 还是 RTX 4060 Ti 16G？',
-        a: 'The 16GB card fits more: 64 of the 114 models in this index comfortably at 4K, against 57 for any 12GB card, and it holds 14B models at long contexts that a 12GB card cannot. On speed the 3060 is not behind — its 360 GB/s of memory bandwidth is higher than the 4060 Ti\'s 288 GB/s, and bandwidth is what limits generation once a model fits. If the models you want already fit in 12GB, the extra 4GB buys nothing.',
-        aZh: '16GB 的卡能装下更多：本索引 114 个模型中，它能在 4K 下宽裕装下 64 个，任何 12GB 卡是 57 个；它还能在长上下文下装下 12GB 卡装不下的 14B 模型。速度上 3060 并不落后 —— 它 360 GB/s 的显存带宽高于 4060 Ti 的 288 GB/s，而模型装下之后，限制生成速度的正是带宽。如果你想跑的模型 12GB 已经装得下，多出的 4GB 并不带来什么。',
+        a: 'The 16GB card fits more: 63 of the 114 models in this index comfortably at 4K, against 57 for any 12GB card, and it holds 14B models at long contexts that a 12GB card cannot. On speed the 3060 is not behind — its 360 GB/s of memory bandwidth is higher than the 4060 Ti\'s 288 GB/s, and bandwidth is what limits generation once a model fits. If the models you want already fit in 12GB, the extra 4GB buys nothing.',
+        aZh: '16GB 的卡能装下更多：本索引 114 个模型中，它能在 4K 下宽裕装下 63 个，任何 12GB 卡是 57 个；它还能在长上下文下装下 12GB 卡装不下的 14B 模型。速度上 3060 并不落后 —— 它 360 GB/s 的显存带宽高于 4060 Ti 的 288 GB/s，而模型装下之后，限制生成速度的正是带宽。如果你想跑的模型 12GB 已经装得下，多出的 4GB 并不带来什么。',
       },
       {
         q: 'Can I run GPT-OSS 20B on a 12GB card?',

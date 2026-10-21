@@ -34,8 +34,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The honest summary of this card',
         headingZh: '关于这张卡的实话',
-        body: 'Capacity is generous and bandwidth is not. 64 of the models in this index fit it comfortably at 4K context and 75 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
-        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 64 个模型能在 4K 上下文下从容装进这张卡，75 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
+        body: 'Capacity is generous and bandwidth is not. 63 of the models in this index fit it comfortably at 4K context and 75 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
+        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 63 个模型能在 4K 上下文下从容装进这张卡，75 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
         heading: 'The three worth starting with',
@@ -68,8 +68,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is the 16GB RTX 4060 Ti good for local LLMs?',
         qZh: '16GB 的 RTX 4060 Ti 适合跑本地大模型吗？',
-        a: 'For capacity, yes — 64 of the models in this index fit it comfortably at 4K context, including 14B models at Q4_K_M with room to spare. For speed, it shares last place among 16GB cards here with the RX 7600 XT: 288 GB/s against 736 on an RTX 4080 Super holding exactly the same models. It is a good card for running larger models slowly and a poor one for running small models fast.',
-        aZh: '就容量而言适合 —— 本索引中有 64 个模型能在 4K 上下文下从容装进它，包括 Q4_K_M 的 14B 模型并且还有余量。就速度而言，它和 RX 7600 XT 并列本站收录的 16GB 显卡里最慢：288 GB/s，而装着完全相同模型的 RTX 4080 Super 是 736。它适合「慢慢地跑大模型」，不适合「快快地跑小模型」。',
+        a: 'For capacity, yes — 63 of the models in this index fit it comfortably at 4K context, including 14B models at Q4_K_M with room to spare. For speed, it shares last place among 16GB cards here with the RX 7600 XT: 288 GB/s against 736 on an RTX 4080 Super holding exactly the same models. It is a good card for running larger models slowly and a poor one for running small models fast.',
+        aZh: '就容量而言适合 —— 本索引中有 63 个模型能在 4K 上下文下从容装进它，包括 Q4_K_M 的 14B 模型并且还有余量。就速度而言，它和 RX 7600 XT 并列本站收录的 16GB 显卡里最慢：288 GB/s，而装着完全相同模型的 RTX 4080 Super 是 736。它适合「慢慢地跑大模型」，不适合「快快地跑小模型」。',
       },
       {
         q: 'Can an RTX 4060 Ti 16G run a 30B model?',

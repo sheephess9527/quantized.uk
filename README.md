@@ -419,6 +419,26 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (iv) — Seed-OSS 36B and ERNIE 4.5 21B-A3B from real files (24 GB pages now name one)
+
+- Owner-pulled listings (2026-10-21 08:25 +08, `X-Linked-Size` spot-checked): unsloth + bartowski GGUF for
+  Seed-OSS-36B-Instruct and ERNIE-4.5-21B-A3B-**PT** (the index entry's checkpoint — `hfRepoMap` already
+  points at `baidu/ERNIE-4.5-21B-A3B-PT`; the -Thinking checkpoint and cyankiwi's Thinking AWQ are not
+  this model and were not used), QuantTrio + cyankiwi AWQ repos.
+- **Seed-OSS 36B**: both BF16 GGUFs → params 36.0 → **36.16**. bartowski Q4_K_M 4.85 → 4.82, Q3_K_M
+  3.87 → 3.90, Q5_K_M 5.68 → 5.66 (unsloth's same levels differ by 512 B). **AWQ INT4: QuantTrio's 8
+  shards = 21,135,821,912 B → 4.68 bpw, not the typed 4.0** (4K 19.5 → 23.2 GB: tight on 24 GB). Its
+  `speedRTX4090: 55` then exceeded the dense bandwidth gate (ceiling ×1.15 = 54.8) and was removed, not
+  adjusted. cyankiwi's "AWQ-4bit" is `compressed-tensors` — not AWQ, not used. Description rewritten:
+  Q4_K_M 23.9 GB @4K is tight on 24 GB; Q3_K_M 19.5 GB is the comfortable pick. The 24 GB GPU pages'
+  "biggest" row moved from Seed AWQ to Seed Q3_K_M and now names its file.
+- **ERNIE 4.5 21B-A3B**: params 21.8 → **21.83**; Q4_K_M from unsloth's file (4.89 bpw; bartowski's is
+  168,252,736 B larger), Q8_0 bartowski 8.50. 4K 14.1 → 14.2 GB = 88.75% of 16 GB → just past green:
+  **every 16 GB card's comfortable count −1** (64 → 63; Arc A770 / RX 6800 XT class 60 → 59). Guides
+  updated in en + zh: AMD ROCm (16GB Radeon 63), Intel Arc (A770 59), 12GB guide (16GB card 63), 4060 Ti
+  guide body + FAQ (63).
+- Gate: `source` split-name check now accepts `.safetensors` shards. 42 rows carry `source`.
+
 ### 2026-10-21 (iii) — Gemma 4 26B-A4B was ~1.7 GB light; Qwen3.6 35B / 27B pinned to files
 
 - Owner-pulled tree listings (2026-10-21 08:05 +08, `X-Linked-Size` spot-checked) for bartowski + unsloth

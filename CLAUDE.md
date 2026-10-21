@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (iv) | **Seed-OSS 36B / ERNIE 4.5 from real files** — Seed AWQ (QuantTrio) is 4.68 bpw not 4.0 → tight on 24 GB, its 4090 speed failed the bandwidth gate and was removed; ERNIE PT Q4_K_M 14.2 GB → 16 GB comfortable 64 → 63 (4 guides, en + zh); 24 GB GPU pages now name a download file; a repo called "AWQ" may be compressed-tensors — read `quant_method` |
 | 2026-10-21 (iii) | **Gemma 4 26B-A4B Q4_K_M is 5.40 bpw, not 4.85** — bartowski 17,035,039,872 B (both BF16s = 25.25B) → 18.2 GB @4K: red on 16 GB (tight 76 → 75), tight on 20 GB; Qwen3.6 35B/27B params from bartowski BF16 (35.53 / 27.33; unsloth's files are 34.69 / 26.90 — publishers differ, never mix bytes); 36 rows carry `source` |
 | 2026-10-21 (ii) | **Sizes name their file + `/pending/`** — `QuantVariant.source` (repo, file, bytes, parts, mmproj, date) on 29 rows with real listings, gated against `bpw`; `sizingBasis()` labels the rest; `QuantFileLine` on model page / calculator / GPU / `/best/`; `/pending/` lists 10 released-not-indexed models with reasons, gated against the index |
 | 2026-10-21 | **Gemma 4 31B QAT Q4_0** — Google's official single-file build, 17,651,001,568 B → 4.60 bpw over 30.70B; 20.1 GB @4K, green on 24 GB to 16K; mmproj 1.2 GB makes 4K tight; no loss figure (bf16 also released); MLX conversion that prompted it stays untracked |

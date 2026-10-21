@@ -198,7 +198,7 @@ function sourceAndPendingProblems(): string[] {
       const implied = sourceBpw(m, src);
       if (Math.abs(implied - q.bpw) > 0.02) out.push(`${tag}: source bytes imply ${implied.toFixed(3)} bpw, row says ${q.bpw}`);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(src.checkedAt) || src.checkedAt > dataLastUpdated) out.push(`${tag}: source checkedAt ${src.checkedAt} is not a date on or before dataLastUpdated`);
-      const split = src.file ? /-0+1-of-0*(\d+)\.gguf$/.exec(src.file) : null;
+      const split = src.file ? /-0+1-of-0*(\d+)\.(gguf|safetensors)$/.exec(src.file) : null;
       if (split && Number(split[1]) !== src.parts) out.push(`${tag}: ${src.file} is part 1 of ${split[1]} but parts is ${src.parts ?? 'unset'}`);
       if (!split && src.parts !== undefined && src.file) out.push(`${tag}: parts ${src.parts} but ${src.file} is not a split file name`);
       if (!/^[\w.-]+\/[\w.-]+$/.test(src.repo)) out.push(`${tag}: source repo "${src.repo}" is not owner/name`);
