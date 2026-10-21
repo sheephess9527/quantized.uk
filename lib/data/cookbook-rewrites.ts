@@ -34,8 +34,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The honest summary of this card',
         headingZh: '关于这张卡的实话',
-        body: 'Capacity is generous and bandwidth is not. 63 of the models in this index fit it comfortably at 4K context and 75 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
-        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 63 个模型能在 4K 上下文下从容装进这张卡，75 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
+        body: 'Capacity is generous and bandwidth is not. 64 of the models in this index fit it comfortably at 4K context and 76 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
+        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 64 个模型能在 4K 上下文下从容装进这张卡，76 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
         heading: 'The three worth starting with',
@@ -68,8 +68,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is the 16GB RTX 4060 Ti good for local LLMs?',
         qZh: '16GB 的 RTX 4060 Ti 适合跑本地大模型吗？',
-        a: 'For capacity, yes — 63 of the models in this index fit it comfortably at 4K context, including 14B models at Q4_K_M with room to spare. For speed, it shares last place among 16GB cards here with the RX 7600 XT: 288 GB/s against 736 on an RTX 4080 Super holding exactly the same models. It is a good card for running larger models slowly and a poor one for running small models fast.',
-        aZh: '就容量而言适合 —— 本索引中有 63 个模型能在 4K 上下文下从容装进它，包括 Q4_K_M 的 14B 模型并且还有余量。就速度而言，它和 RX 7600 XT 并列本站收录的 16GB 显卡里最慢：288 GB/s，而装着完全相同模型的 RTX 4080 Super 是 736。它适合「慢慢地跑大模型」，不适合「快快地跑小模型」。',
+        a: 'For capacity, yes — 64 of the models in this index fit it comfortably at 4K context, including 14B models at Q4_K_M with room to spare. For speed, it shares last place among 16GB cards here with the RX 7600 XT: 288 GB/s against 736 on an RTX 4080 Super holding exactly the same models. It is a good card for running larger models slowly and a poor one for running small models fast.',
+        aZh: '就容量而言适合 —— 本索引中有 64 个模型能在 4K 上下文下从容装进它，包括 Q4_K_M 的 14B 模型并且还有余量。就速度而言，它和 RX 7600 XT 并列本站收录的 16GB 显卡里最慢：288 GB/s，而装着完全相同模型的 RTX 4080 Super 是 736。它适合「慢慢地跑大模型」，不适合「快快地跑小模型」。',
       },
       {
         q: 'Can an RTX 4060 Ti 16G run a 30B model?',
@@ -100,8 +100,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Pull a model and run it',
         headingZh: '拉一个模型跑起来',
-        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 91 of the 114 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
-        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 114 个模型中的 91 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
+        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 94 of the 117 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
+        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 117 个模型中的 94 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
         code: { lang: 'bash', content: 'ollama pull llama3.1:8b\nollama run llama3.1:8b "Summarise the difference between Q4_K_M and Q5_K_M."' },
       },
       {
@@ -136,8 +136,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Does a Mac’s unified memory count as VRAM for Ollama?',
         qZh: 'Mac 的统一内存对 Ollama 来说算显存吗？',
-        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 91 of the 114 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
-        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 114 个模型中有 91 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
+        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 94 of the 117 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
+        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 117 个模型中有 94 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
       },
       {
         q: 'How do I tell whether Ollama used the GPU on a Mac?',
@@ -490,8 +490,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is AWQ the right format for serving?',
         qZh: '做服务端该用 AWQ 吗？',
-        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 114 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
-        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 114 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
+        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 117 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
+        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 117 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
       },
     ],
   },
@@ -881,8 +881,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Quantize it',
         headingZh: '量化',
-        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16 (across the 79 models that report one), and 107 of the 114 models here ship it — the exceptions are released only in other forms, such as a native MXFP4 or 2-bit build or ggml-org\'s Q4_0.',
-        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%（基于公布了该数字的 79 个模型），本站 114 个模型中有 107 个提供这个档位 —— 例外的几个只以其他形式发布，例如原生 MXFP4、2-bit 版本或 ggml-org 的 Q4_0。',
+        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16 (across the 79 models that report one), and 110 of the 117 models here ship it — the exceptions are released only in other forms, such as a native MXFP4 or 2-bit build or ggml-org\'s Q4_0.',
+        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%（基于公布了该数字的 79 个模型），本站 117 个模型中有 110 个提供这个档位 —— 例外的几个只以其他形式发布，例如原生 MXFP4、2-bit 版本或 ggml-org 的 Q4_0。',
         code: { lang: 'bash', content: './build/bin/llama-quantize my-model-bf16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
       },
       {

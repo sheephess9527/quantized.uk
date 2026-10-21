@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (vi) — +3 models (117): K2 Horizon 7B, 32B, MoVA 36B-A4B
+
+- Source: owner-pulled `config.json` for all three (`IFM/…`, `model_type: k2_horizon`) plus HF tree byte
+  counts for IFM's and bartowski's GGUF repos (six Q4_K_M sizes confirmed by `X-Linked-Size`); no mmproj
+  anywhere. The 7B's shape matches the second-hand note.com figure from (v) (36 × 8 KV × 128 × 2 × 2 B =
+  147,456 B/token), so (v)'s reading was right but is no longer what the entry rests on.
+- Shapes: 36B-A4B — 48 L, hidden 2560, 32 heads / 8 KV × 128, 100 experts top-8 + 1 shared, 3 dense lead
+  layers, MoVA value experts 64 top-4, softplus attention gate; 32B — 64 L, 64 / 8 × 128; 7B — 36 L,
+  32 / 8 × 128. All: no sliding window, vocab 250,624 untied, 524,288 positions. llama.cpp `k2-horizon` is a
+  plain per-layer cache, so no `attention` field.
+- Params = IFM BF16 GGUF bytes ÷ 2: 37.46B / 34.79B / 9.01B (bartowski's BF16s agree within kB); Q8_0 lands
+  on 8.50–8.51 bpw for all three. The "7B" holds 9.0B — the 250K vocab's two tables are ~2.05B. Active
+  ~4B for the MoE comes from the name (`-A4B` label), not a config field.
+- Rows: IFM Q4_K_M / Q5_K_M / Q6_K / Q8_0 with `source` (one publisher; bartowski's Q4_K_M are 0.33 /
+  0.96 / 0.18 GB larger and are named only in descriptions). `hfRepoMap` → IFM GGUF repos (filenames are
+  `<repo>-<level>.gguf`, so the CLI names them). `confidence: 'estimated'`, no loss figures.
+- Sizes @4K Q4_K_M: 36B-A4B 24.2 GB (tight on 24 GB, green on 32 GB to 16K; 512K = 129 GB), 32B 23.1 GB
+  (same verdicts; +8.8 GB per 32K), 7B 6.5 GB (green on 8 GB at 4K only; 16 GB to 32K).
+- Counts re-run (`countModelsFitting`): every card +1 comfortable (the 7B), ≥ 32 GB discrete and larger
+  Macs +3; 24 GB tight +3. Guides updated en + zh: denominators 114 → 117, Q4_K_M "110 of the 117", 16 GB
+  63/75 → 64/76, 12 GB 57/59 → 58/60, A770/B570/A750 → 60/50/41, XTX 88, 5090 94, Spark 102/106, M3 Max 48
+  94. AWQ count (53) unchanged — none of the three ships AWQ.
+- `/pending/` `k2-horizon` narrowed to the 0.9B / 3.7B / 375B-A23B. `todayFeed` id 25 = the 7B.
+
 ### 2026-10-21 (v) — Daily patrol: runtime versions; K2 Horizon family held on `/pending/`
 
 - Runtime (verbatim tag / release lists): llama.cpp **b11769** (b11748 → b11769, all Oct 20); ExLlamaV3

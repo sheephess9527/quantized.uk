@@ -23,6 +23,7 @@ const ADDED_LING31 = '2026-10-17';
 const ADDED_GEMMA4_12B = '2026-10-19';
 const ADDED_NORTH_MINI = '2026-10-20';
 const ADDED_MINICPM47 = '2026-10-20';
+const ADDED_K2H = '2026-10-21';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -865,6 +866,89 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-Q2_K-00001-of-00002.gguf', bytes: 126_365_949_248, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
       { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-MXFP4-00001-of-00002.gguf', bytes: 167_369_465_152, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
+    ],
+  },
+  {
+    // MBZUAI IFM K2 Horizon MoVA 36B-A4B (2026-09-03, Apache 2.0, fully open incl. data). Owner-pulled
+    // config.json (2026-10-21): k2_horizon, 48 layers, hidden 2560, 32 heads / 8 KV × 128, no sliding
+    // window, 100 routed experts top-8 (768) + 1 shared, first 3 layers dense (6144), "MoVA" value
+    // experts (64, top-4), softplus attention gate, vocab 250624 untied, 524288 positions. llama.cpp
+    // master `k2-horizon` (`src/models/k2-horizon.cpp`): `build_attn_inp_kv()` — a plain cache on every
+    // layer; n_layer 48 → LLM_TYPE_36B. Params = IFM's BF16 GGUF 74,924,627,296 B ÷ 2 = 37.46B (bartowski's
+    // BF16 agrees to 9 kB); Q8_0 → 8.51 bpw confirms. Levels from IFM's own GGUF repo (bartowski's Q4_K_M
+    // is 333,874,048 B larger). No mmproj. Active ~4B per the name (no config figure).
+    id: 'k2-horizon-mova-36b-a4b',
+    name: 'K2 Horizon MoVA 36B-A4B',
+    family: 'MBZUAI K2 Horizon',
+    params: 37.46,
+    paramLabel: '36B-A4B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 524288,
+    arch: { layers: 48, attHeads: 32, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_K2H,
+    description: {
+      en: 'The mixture-of-experts member of MBZUAI IFM\'s K2 Horizon family: 37.5B parameters with about 4B active per token, Apache 2.0, released with its training data. Every one of its 48 layers keeps an ordinary KV cache, so context is not cheap: Q4_K_M is about 24.2 GB at 4K, which is tight on a 24 GB card, and comfortable on a 32 GB card up to 16K. The 512K window would need about 129 GB. llama.cpp runs it as `k2-horizon`. Sizes come from IFM\'s own GGUF files (bartowski\'s Q4_K_M is about 0.3 GB larger); no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中的混合专家型号：37.5B 参数，每个 token 约激活 4B，Apache 2.0 许可，训练数据一并公开。48 层每层都保留普通 KV 缓存，所以上下文不便宜：Q4_K_M 在 4K 上下文约需 24.2 GB，24 GB 显卡上偏紧，32 GB 显卡到 16K 都宽裕；用满 512K 窗口约需 129 GB。llama.cpp 以 `k2-horizon` 架构运行它。体积按 IFM 官方 GGUF 文件计算（bartowski 的 Q4_K_M 约大 0.3 GB），各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.78, vramGB: 24.2, hfSearchUrl: hf('K2-Horizon-MoVA-36B-A4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-MoVA-36B-A4B-GGUF', file: 'K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf', bytes: 22_368_011_616, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.65, vramGB: 28.5, hfSearchUrl: hf('K2-Horizon-MoVA-36B-A4B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-MoVA-36B-A4B-GGUF', file: 'K2-Horizon-MoVA-36B-A4B-Q5_K_M.gguf', bytes: 26_439_456_096, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q6_K', bpw: 6.57, vramGB: 33.0, hfSearchUrl: hf('K2-Horizon-MoVA-36B-A4B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-MoVA-36B-A4B-GGUF', file: 'K2-Horizon-MoVA-36B-A4B-Q6_K.gguf', bytes: 30_765_365_856, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 42.5, hfSearchUrl: hf('K2-Horizon-MoVA-36B-A4B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-MoVA-36B-A4B-GGUF', file: 'K2-Horizon-MoVA-36B-A4B-Q8_0.gguf', bytes: 39_831_174_496, checkedAt: '2026-10-21' } },
+    ],
+  },
+  {
+    // K2 Horizon 32B (dense). Owner-pulled config.json: 64 layers, hidden 5120, 64 heads / 8 KV × 128,
+    // no sliding window, SwiGLU 26624, vocab 250624 untied, 524288 positions, no experts. llama.cpp
+    // n_layer 64 → LLM_TYPE_32B, plain cache. Params = IFM BF16 69,571,404,896 B ÷ 2 = 34.79B (bartowski
+    // agrees); Q8_0 → 8.50. Levels from IFM's GGUF repo (bartowski's Q4_K_M is 963,060,576 B larger).
+    id: 'k2-horizon-32b',
+    name: 'K2 Horizon 32B',
+    family: 'MBZUAI K2 Horizon',
+    params: 34.79,
+    paramLabel: '32B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 524288,
+    arch: { layers: 64, attHeads: 64, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_K2H,
+    description: {
+      en: 'The dense 32B member of MBZUAI IFM\'s K2 Horizon family (34.8B counted, Apache 2.0, released with its training data). All 64 layers keep an ordinary KV cache with 8 KV heads: Q4_K_M is about 23.1 GB at 4K, tight on a 24 GB card and comfortable on a 32 GB card up to 16K; each extra 32K of context adds roughly 8.8 GB. llama.cpp runs it as `k2-horizon`. Sizes come from IFM\'s own GGUF files (bartowski\'s Q4_K_M is about 1 GB larger); no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中的 32B 稠密型号（实际 34.8B 参数，Apache 2.0 许可，训练数据一并公开）。64 层每层都保留 8 个 KV 头的普通缓存：Q4_K_M 在 4K 上下文约需 23.1 GB，24 GB 显卡上偏紧，32 GB 显卡到 16K 都宽裕；上下文每多 32K 约多 8.8 GB。llama.cpp 以 `k2-horizon` 架构运行它。体积按 IFM 官方 GGUF 文件计算（bartowski 的 Q4_K_M 约大 1 GB），各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 23.1, hfSearchUrl: hf('K2-Horizon-32B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-32B-GGUF', file: 'K2-Horizon-32B-Q4_K_M.gguf', bytes: 21_075_778_656, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 26.9, hfSearchUrl: hf('K2-Horizon-32B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-32B-GGUF', file: 'K2-Horizon-32B-Q5_K_M.gguf', bytes: 24_696_478_816, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q6_K', bpw: 6.56, vramGB: 30.9, hfSearchUrl: hf('K2-Horizon-32B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-32B-GGUF', file: 'K2-Horizon-32B-Q6_K.gguf', bytes: 28_543_472_736, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 39.7, hfSearchUrl: hf('K2-Horizon-32B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-32B-GGUF', file: 'K2-Horizon-32B-Q8_0.gguf', bytes: 36_966_425_696, checkedAt: '2026-10-21' } },
+    ],
+  },
+  {
+    // K2 Horizon 7B (dense). Owner-pulled config.json: 36 layers, hidden 4096, 32 heads / 8 KV × 128,
+    // no sliding window, SwiGLU 12288, vocab 250624 untied, 524288 positions. Counted from the config:
+    // 8.999B; IFM BF16 18,010,413,440 B ÷ 2 = 9.005B (params); Q8_0 → 8.50. The "7B" name counts the
+    // core without the 250K-vocab embeddings. Levels from IFM's GGUF repo (bartowski's Q4_K_M is
+    // 183,739,296 B larger).
+    id: 'k2-horizon-7b',
+    name: 'K2 Horizon 7B',
+    family: 'MBZUAI K2 Horizon',
+    params: 9.01,
+    paramLabel: '7B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 524288,
+    arch: { layers: 36, attHeads: 32, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_K2H,
+    description: {
+      en: 'The small dense member of MBZUAI IFM\'s K2 Horizon family, Apache 2.0, released with its training data. It is called 7B but holds 9.0B parameters: the 250K-token vocabulary\'s input and output tables add about 2B. Q4_K_M is about 6.5 GB at 4K, comfortable on an 8 GB card at that length; a 16 GB card holds it comfortably to 32K (10.8 GB), and 128K needs about 25.6 GB because every layer keeps an ordinary KV cache. llama.cpp runs it as `k2-horizon`. Sizes come from IFM\'s own GGUF files (bartowski\'s Q4_K_M is about 0.2 GB larger); no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中的小号稠密型号，Apache 2.0 许可，训练数据一并公开。名字叫 7B，实际有 9.0B 参数：25 万词表的输入、输出两张表多出约 2B。Q4_K_M 在 4K 上下文约需 6.5 GB，8 GB 显卡在这个长度下宽裕；16 GB 显卡到 32K（10.8 GB）都宽裕，128K 则约需 25.6 GB，因为每层都保留普通 KV 缓存。llama.cpp 以 `k2-horizon` 架构运行它。体积按 IFM 官方 GGUF 文件计算（bartowski 的 Q4_K_M 约大 0.2 GB），各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.97, vramGB: 6.5, hfSearchUrl: hf('K2-Horizon-7B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q4_K_M.gguf', bytes: 5_592_217_984, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.74, vramGB: 7.4, hfSearchUrl: hf('K2-Horizon-7B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q5_K_M.gguf', bytes: 6_466_075_008, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q6_K', bpw: 6.57, vramGB: 8.3, hfSearchUrl: hf('K2-Horizon-7B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q6_K.gguf', bytes: 7_394_548_096, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 10.6, hfSearchUrl: hf('K2-Horizon-7B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q8_0.gguf', bytes: 9_573_964_160, checkedAt: '2026-10-21' } },
     ],
   },
 ];

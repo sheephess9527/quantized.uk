@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-21',
+    en: 'Three K2 Horizon models from MBZUAI\'s IFM are now in the index: the 7B, the 32B and the 36B-A4B mixture-of-experts model. All three are Apache 2.0 and released with their training data. The 7B at Q4_K_M is about 6.5 GB at 4K and comfortable on an 8 GB card; the 32B (23.1 GB) and 36B-A4B (24.2 GB) are tight on a 24 GB card and comfortable on 32 GB. Every layer keeps a full cache, so long context costs more than on most 2026 models. Sizes come from IFM\'s own GGUF files; the 0.9B, 3.7B and 375B stay on the not-runnable-yet list.',
+    zh: 'MBZUAI 旗下 IFM 的三个 K2 Horizon 模型已收录：7B、32B 和 36B-A4B 混合专家模型，都是 Apache 2.0 许可，训练数据一并公开。7B 的 Q4_K_M 在 4K 下约 6.5 GB，8 GB 显卡很宽裕；32B（23.1 GB）和 36B-A4B（24.2 GB）在 24 GB 显卡上偏紧，32 GB 上宽裕。它们每一层都保留完整缓存，所以长上下文比大多数 2026 年的模型更费显存。体积按 IFM 官方 GGUF 文件计算；0.9B、3.7B 和 375B 仍在“还不能本地跑”清单上。',
+  },
+  {
+    date: '2026-10-21',
     en: 'Runtime versions re-checked: llama.cpp is at b11769 and ExLlamaV3 at v1.6.4; Ollama (v0.40.6) and vLLM (v0.32.0) are unchanged. The K2 Horizon family from MBZUAI\'s IFM, six fully open models from 0.9B to 375B, is now on the not-runnable-yet list until its files are checked.',
     zh: '重新核对了运行时版本：llama.cpp 更新到 b11769，ExLlamaV3 更新到 v1.6.4；Ollama（v0.40.6）和 vLLM（v0.32.0）没有变化。MBZUAI 旗下 IFM 的 K2 Horizon 系列（六个完全开源的模型，从 0.9B 到 375B）已列入“还不能本地跑”清单，等文件核对后再收录。',
   },

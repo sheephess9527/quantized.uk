@@ -264,6 +264,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 25, type: 'new', modelId: 'k2-horizon-7b', level: 'Q4_K_M', note: { en: 'Fully open, data included, 8 GB', zh: '完全开源，含训练数据，8 GB 可跑' }, quantizer: 'IFM' },
   { id: 24, type: 'new', modelId: 'minicpm-v-4-7-35b-a3b', level: 'Q4_K_S', note: { en: 'Vision MoE, 3B active, 24 GB', zh: '视觉 MoE，激活 3B，24 GB 可跑' }, quantizer: 'OpenBMB' },
   { id: 23, type: 'new', modelId: 'north-mini-code-1.0', level: 'Q4_K_M', note: { en: 'Coding MoE, 3B active, 24 GB', zh: '编程 MoE，激活 3B，24 GB 可跑' }, quantizer: 'bartowski' },
   { id: 22, type: 'new', modelId: 'gemma-4-12b', level: 'Q4_K_M', note: { en: '12B, 256K window on 16 GB', zh: '12B，16 GB 跑满 256K' }, quantizer: 'unsloth' },

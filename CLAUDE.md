@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **114** in index (`models-extra` … `models-extra-12`) |
+| Models | **117** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (vi) | **+3 models (117): K2 Horizon 7B / 32B / MoVA 36B-A4B** — owner-pulled configs + IFM/bartowski byte counts; params from IFM BF16 (9.01 / 34.79 / 37.46B; the "7B" carries ~2B of 250K-vocab tables); plain KV on every layer; IFM rows with `source`; 7B 6.5 GB @4K green on 8 GB, 32B 23.1 / 36B 24.2 GB tight on 24 GB; every card +1 comfortable; 0.9B / 3.7B / 375B stay on `/pending/` |
 | 2026-10-21 (v) | **Patrol** — llama.cpp b11769, ExLlamaV3 1.6.4 (Ollama v0.40.7 still pre-release, vLLM v0.32.0 unchanged); K2 Horizon family (IFM, 09-03, 0.9B–375B, llama.cpp `k2-horizon` plain KV) added to `/pending/` — layout second-hand only, needs configs + GGUF listing |
 | 2026-10-21 (iv) | **Seed-OSS 36B / ERNIE 4.5 from real files** — Seed AWQ (QuantTrio) is 4.68 bpw not 4.0 → tight on 24 GB, its 4090 speed failed the bandwidth gate and was removed; ERNIE PT Q4_K_M 14.2 GB → 16 GB comfortable 64 → 63 (4 guides, en + zh); 24 GB GPU pages now name a download file; a repo called "AWQ" may be compressed-tensors — read `quant_method` |
 | 2026-10-21 (iii) | **Gemma 4 26B-A4B Q4_K_M is 5.40 bpw, not 4.85** — bartowski 17,035,039,872 B (both BF16s = 25.25B) → 18.2 GB @4K: red on 16 GB (tight 76 → 75), tight on 20 GB; Qwen3.6 35B/27B params from bartowski BF16 (35.53 / 27.33; unsloth's files are 34.69 / 26.90 — publishers differ, never mix bytes); 36 rows carry `source` |
