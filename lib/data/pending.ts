@@ -25,6 +25,22 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'k2-horizon',
+    name: 'K2 Horizon (0.9B – 375B-A23B)',
+    vendor: 'MBZUAI IFM',
+    announced: '2026-09-03',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'A family of six fully open models under Apache 2.0, with training data and logs: 0.9B, 3.7B, 7B, 32B, 36B-A4B and 375B-A23B. llama.cpp master supports it as `k2-horizon` with an ordinary per-layer KV cache, and IFM publishes GGUF builds (the 7B in BF16 to Q4_K_M). The 36B-A4B and 32B are 24 GB-class candidates. Not sized yet: the layer layout has only been read second-hand, and no file sizes have been checked.',
+      zh: '一组六个完全开源的模型，Apache 2.0 许可，连训练数据和日志一起公开：0.9B、3.7B、7B、32B、36B-A4B 和 375B-A23B。llama.cpp 主线以 `k2-horizon` 架构支持它，用的是每层都缓存的普通 KV 缓存；IFM 自己发布了 GGUF（7B 从 BF16 到 Q4_K_M 都有）。其中 36B-A4B 和 32B 是 24 GB 显卡的候选。还没算显存：层结构目前只有二手读数，文件大小也还没核对。',
+    },
+    recheck: {
+      en: 'When each size\'s config.json and a GGUF file listing are in hand.',
+      zh: '拿到各个尺寸的 config.json 和 GGUF 文件列表时。',
+    },
+    checkedAt: '2026-10-21',
+  },
+  {
     id: 'deepseek-v4-1-flash-1017',
     name: 'DeepSeek-V4.1-Flash-1017',
     vendor: 'DeepSeek',

@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (v) | **Patrol** — llama.cpp b11769, ExLlamaV3 1.6.4 (Ollama v0.40.7 still pre-release, vLLM v0.32.0 unchanged); K2 Horizon family (IFM, 09-03, 0.9B–375B, llama.cpp `k2-horizon` plain KV) added to `/pending/` — layout second-hand only, needs configs + GGUF listing |
 | 2026-10-21 (iv) | **Seed-OSS 36B / ERNIE 4.5 from real files** — Seed AWQ (QuantTrio) is 4.68 bpw not 4.0 → tight on 24 GB, its 4090 speed failed the bandwidth gate and was removed; ERNIE PT Q4_K_M 14.2 GB → 16 GB comfortable 64 → 63 (4 guides, en + zh); 24 GB GPU pages now name a download file; a repo called "AWQ" may be compressed-tensors — read `quant_method` |
 | 2026-10-21 (iii) | **Gemma 4 26B-A4B Q4_K_M is 5.40 bpw, not 4.85** — bartowski 17,035,039,872 B (both BF16s = 25.25B) → 18.2 GB @4K: red on 16 GB (tight 76 → 75), tight on 20 GB; Qwen3.6 35B/27B params from bartowski BF16 (35.53 / 27.33; unsloth's files are 34.69 / 26.90 — publishers differ, never mix bytes); 36 rows carry `source` |
 | 2026-10-21 (ii) | **Sizes name their file + `/pending/`** — `QuantVariant.source` (repo, file, bytes, parts, mmproj, date) on 29 rows with real listings, gated against `bpw`; `sizingBasis()` labels the rest; `QuantFileLine` on model page / calculator / GPU / `/best/`; `/pending/` lists 10 released-not-indexed models with reasons, gated against the index |

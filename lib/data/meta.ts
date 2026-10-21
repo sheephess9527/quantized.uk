@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-20',
+  checkedAt: '2026-10-21',
   current: {
-    llamacpp: 'b11748',
+    llamacpp: 'b11769',
     vllm: 'v0.32.0',
     ollama: 'v0.40.6',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -82,12 +82,17 @@ export const runtimeVersions = {
     exllama: 'v0.3.2 (stalled)',
   },
   note: {
-    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.3 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
-    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.3，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
+    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.4 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
+    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.4，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
   },
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-21',
+    en: 'Runtime versions re-checked: llama.cpp is at b11769 and ExLlamaV3 at v1.6.4; Ollama (v0.40.6) and vLLM (v0.32.0) are unchanged. The K2 Horizon family from MBZUAI\'s IFM, six fully open models from 0.9B to 375B, is now on the not-runnable-yet list until its files are checked.',
+    zh: '重新核对了运行时版本：llama.cpp 更新到 b11769，ExLlamaV3 更新到 v1.6.4；Ollama（v0.40.6）和 vLLM（v0.32.0）没有变化。MBZUAI 旗下 IFM 的 K2 Horizon 系列（六个完全开源的模型，从 0.9B 到 375B）已列入“还不能本地跑”清单，等文件核对后再收录。',
+  },
   {
     date: '2026-10-21',
     en: 'Seed-OSS 36B and ERNIE 4.5 21B-A3B are now sized from their real files, and the 24 GB card pages name a file to download. Seed-OSS\'s AWQ build is 21.1 GB, not the 18 GB a 4-bit rate implies, so on a 24 GB card it is now tight and Q3_K_M is the comfortable pick. ERNIE 4.5 at Q4_K_M is 14.2 GB at 4K, just past the comfortable line on a 16 GB card.',

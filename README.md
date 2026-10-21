@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (v) — Daily patrol: runtime versions; K2 Horizon family held on `/pending/`
+
+- Runtime (verbatim tag / release lists): llama.cpp **b11769** (b11748 → b11769, all Oct 20); ExLlamaV3
+  **1.6.4** (Latest, Oct 20); Ollama v0.40.7 still Pre-release (keeps v0.40.6); vLLM v0.32.0 unchanged.
+  `runtimeVersions.checkedAt` → 2026-10-21.
+- Gap-audit find: **K2 Horizon** (MBZUAI IFM, 2026-09-03, Apache 2.0, fully open incl. data and logs —
+  MBZUAI announcement + press): 0.9B / 3.7B / 7B / 32B / 36B-A4B / 375B-A23B. llama.cpp master has
+  `LLM_ARCH_K2_HORIZON` (`src/models/k2-horizon.cpp`: `build_attn_inp_kv()`, a plain per-layer cache —
+  no SWA/hybrid; layer-count switch 28 → 1B, 36 + 2560/4096 → 4B/7B, 48 → 36B, 64 → 32B; optional
+  attention gate and "value experts"). IFM's own GGUF repo for the 7B lists BF16 … Q4_K_M. The 7B's
+  36 layers / 8 KV × 128 come from one third-party reading of its config (a note.com post whose KV
+  per-token figure, 147,456 B, matches that shape) — one second-hand source, so not shipped. Added to
+  `/pending/` as `awaiting-data`; needs each size's `config.json` + a GGUF listing (owner pull).
+- Nothing else new in the 7-day window that is not already indexed or on `/pending/`.
+
 ### 2026-10-21 (iv) — Seed-OSS 36B and ERNIE 4.5 21B-A3B from real files (24 GB pages now name one)
 
 - Owner-pulled listings (2026-10-21 08:25 +08, `X-Linked-Size` spot-checked): unsloth + bartowski GGUF for
