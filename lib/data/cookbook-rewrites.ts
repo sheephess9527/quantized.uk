@@ -20,9 +20,9 @@ import type { Article } from '@/lib/data/cookbook';
  */
 export const cookbookRewrites: Record<string, Partial<Article>> = {
   'rtx4060ti-what-to-run': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-21',
     verifiedAt: undefined,
-    relatedModelIds: ['qwen3-14b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
+    relatedModelIds: ['qwen3-14b', 'gpt-oss-20b', 'gemma-4-12b', 'qwen3-5-9b', 'mistral-small-24b', 'qwen3-30b-a3b'],
     content: [
       {
         heading: 'What you need first',
@@ -38,11 +38,11 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         bodyZh: '容量宽裕，带宽不宽裕。本索引中有 64 个模型能在 4K 上下文下从容装进这张卡，76 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
-        heading: 'The three worth starting with',
-        headingZh: '值得从这三个开始',
-        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 12.8 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 83% of the card, with nothing left for context.',
-        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 12.8 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 83%，几乎没有余量留给上下文。',
-        code: { lang: 'bash', content: 'ollama pull qwen3:14b\nollama run qwen3:14b' },
+        heading: 'The four worth starting with',
+        headingZh: '值得从这四个开始',
+        body: 'Qwen3 14B at Q4_K_M needs 10.0 GB at 4K context and gives up 2.6% perplexity against FP16 — the best general-purpose fit, with 6 GB spare for a longer window. GPT-OSS 20B needs 12.8 GB: it is a mixture-of-experts model, so it reads only a fraction of its weights per token and runs faster than its size suggests, and its 4-bit weights are the released checkpoint rather than a conversion. Mistral Small 24B at AWQ INT4 is the largest thing that fits at all, at 13.2 GB — 83% of the card, with nothing left for context. For long context, Gemma 4 12B is the one to know: Gemma 4 12B at Q4_K_M with a 128K context is about 10.2 GB, still comfortable, because only 8 of its 48 layers keep a full-length cache and the rest use a short sliding window.',
+        bodyZh: 'Qwen3 14B 在 Q4_K_M 下 4K 上下文需要 10.0 GB，相对 FP16 损失 2.6% 困惑度 —— 通用场景最合适，还剩 6 GB 给更长的窗口。GPT-OSS 20B 需要 12.8 GB：它是 MoE 模型，每个 token 只读取一部分权重，实际速度比体积暗示的更快，而且它的 4-bit 权重就是发布出来的检查点，不是转换来的。Mistral Small 24B 在 AWQ INT4 下是这张卡能装下的最大模型，13.2 GB —— 占满显存的 83%，几乎没有余量留给上下文。要长上下文，就记住 Gemma 4 12B：Gemma 4 12B 在 Q4_K_M、128K 上下文下约 10.2 GB，仍然宽裕，因为它 48 层中只有 8 层保留完整长度的缓存，其余层只用很短的滑动窗口。',
+        code: { lang: 'bash', content: 'ollama pull qwen3:14b\nollama run qwen3:14b\n\n# long context:\nollama run hf.co/unsloth/gemma-4-12b-it-GGUF:Q4_K_M\n/set parameter num_ctx 131072' },
       },
       {
         heading: 'Check it actually ran on the GPU',
@@ -87,7 +87,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'mac-ollama-setup': {
-    updatedAt: '2026-10-07',
+    updatedAt: '2026-10-21',
     verifiedAt: undefined,
     content: [
       {
@@ -432,7 +432,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'vllm-awq-production': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-21',
     verifiedAt: undefined,
     relatedModelIds: ['qwen2.5-7b', 'llama-3.1-8b'],
     verifiedStack: {
@@ -726,9 +726,9 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     // Re-derived 2026-10-03 from calcVRAM on both models' own rows. Added: per-context verdicts
     // (the old stack line said "4K–16K" while GGUF is 104% at 16K), the EXL2 build the index ships,
     // Qwen3-Coder 30B-A3B as the long-context option on 24 GB, and `--host 127.0.0.1` on vLLM.
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-21',
     verifiedAt: undefined,
-    relatedModelIds: ['qwen2.5-coder-32b', 'qwen3-coder-30b-a3b'],
+    relatedModelIds: ['qwen2.5-coder-32b', 'qwen3-coder-30b-a3b', 'north-mini-code-1.0'],
     verifiedStack: {
       en: 'RTX 4090 24GB · Ollama/llama.cpp (GGUF Q4_K_M, 4K) or vLLM on Linux (AWQ INT4, up to 8K comfortable)',
       zh: 'RTX 4090 24GB · Ollama/llama.cpp（GGUF Q4_K_M，4K）或 Linux 上的 vLLM（AWQ INT4，8K 以内宽裕）',
@@ -749,11 +749,11 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         code: { lang: 'bash', content: '# GGUF via Ollama: simplest path; Ollama\'s default 4K window is the one that fits\nollama pull qwen2.5-coder:32b\n\n# AWQ via vLLM (Linux / WSL2): more headroom, 8K stays comfortable\nvllm serve Qwen/Qwen2.5-Coder-32B-Instruct-AWQ \\\n  --max-model-len 8192 \\\n  --host 127.0.0.1 --port 8000' },
       },
       {
-        heading: 'If you need long context: the MoE coder',
+        heading: 'If you need long context: the MoE coders',
         headingZh: '如果你需要长上下文：MoE 代码模型',
-        body: 'For coding across whole files or repositories, the 32B dense model runs out of room on 24GB before the context gets useful. Qwen3-Coder 30B-A3B, also in this index, is the one that stretches. Qwen3-Coder 30B-A3B at GGUF Q4_K_M is about 19.7 GB at 4K context (82%, comfortable) and 22.6 GB at 32K (94%, tight). Qwen3-Coder 30B-A3B at AWQ INT4 is about 16.4 GB at 4K context and 19.2 GB at 32K, 80% of the card and still comfortable. It is a mixture-of-experts model that reads only about 3B active parameters per token, so its bandwidth ceiling is far higher than a dense 32B. This site has no measured run of it, and runs no coding benchmarks to say which model writes better code.',
-        bodyZh: '如果要跨整个文件甚至整个仓库写代码，32B 稠密模型在 24GB 上还没到实用的上下文长度就没空间了。本索引里的 Qwen3-Coder 30B-A3B 能撑得更长：Qwen3-Coder 30B-A3B 的 GGUF Q4_K_M 在 4K 上下文下约 19.7 GB（82%，宽裕），32K 下约 22.6 GB（94%，偏紧）；AWQ INT4 在 4K 上下文下约 16.4 GB，32K 下约 19.2 GB，占显卡 80%，仍然宽裕。它是混合专家模型，每个 token 只读取约 3B 激活参数，所以带宽上限比 32B 稠密模型高得多。本站没有它的实测数据，也不跑代码能力评测，无法判断哪个模型写代码更好。',
-        code: { lang: 'bash', content: '# Long-context coding on one 24GB card (Linux / WSL2).\n# Substitute a real AWQ conversion — this site could not confirm\n# which repo publishes one, so it does not guess a name.\nvllm serve <an-AWQ-build-of-Qwen3-Coder-30B-A3B-Instruct> \\\n  --max-model-len 32768 \\\n  --host 127.0.0.1 --port 8000\n\n# Or GGUF Q4_K_M at 32K (tight) through llama.cpp:\n# llama-server -m <Qwen3-Coder-30B-A3B Q4_K_M .gguf> -ngl all -c 32768' },
+        body: 'For coding across whole files or repositories, the 32B dense model runs out of room on 24GB before the context gets useful. Qwen3-Coder 30B-A3B, also in this index, is the one that stretches. Qwen3-Coder 30B-A3B at GGUF Q4_K_M is about 19.7 GB at 4K context (82%, comfortable) and 22.6 GB at 32K (94%, tight). Qwen3-Coder 30B-A3B at AWQ INT4 is about 16.4 GB at 4K context and 19.2 GB at 32K, 80% of the card and still comfortable. It is a mixture-of-experts model that reads only about 3B active parameters per token, so its bandwidth ceiling is far higher than a dense 32B. This site has no measured run of it, and runs no coding benchmarks to say which model writes better code. A newer option, added in October, goes further as GGUF: North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K context, comfortable, and about 23.5 GB at 128K, still only tight. Only 13 of its 49 layers keep a growing cache, which is why its context costs so little.',
+        bodyZh: '如果要跨整个文件甚至整个仓库写代码，32B 稠密模型在 24GB 上还没到实用的上下文长度就没空间了。本索引里的 Qwen3-Coder 30B-A3B 能撑得更长：Qwen3-Coder 30B-A3B 的 GGUF Q4_K_M 在 4K 上下文下约 19.7 GB（82%，宽裕），32K 下约 22.6 GB（94%，偏紧）；AWQ INT4 在 4K 上下文下约 16.4 GB，32K 下约 19.2 GB，占显卡 80%，仍然宽裕。它是混合专家模型，每个 token 只读取约 3B 激活参数，所以带宽上限比 32B 稠密模型高得多。本站没有它的实测数据，也不跑代码能力评测，无法判断哪个模型写代码更好。10 月新增的一个选择用 GGUF 就能走得更远：North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 上下文下约 20.8 GB，宽裕；128K 下约 23.5 GB，也只是偏紧。它 49 层中只有 13 层保留增长的缓存，所以上下文几乎不占地方。',
+        code: { lang: 'bash', content: '# GGUF, long context, works on Windows too:\nollama run hf.co/bartowski/North-Mini-Code-1.0-GGUF:Q4_K_M\n/set parameter num_ctx 32768\n\n# Long-context coding on one 24GB card (Linux / WSL2).\n# Substitute a real AWQ conversion — this site could not confirm\n# which repo publishes one, so it does not guess a name.\nvllm serve <an-AWQ-build-of-Qwen3-Coder-30B-A3B-Instruct> \\\n  --max-model-len 32768 \\\n  --host 127.0.0.1 --port 8000\n\n# Or GGUF Q4_K_M at 32K (tight) through llama.cpp:\n# llama-server -m <Qwen3-Coder-30B-A3B Q4_K_M .gguf> -ngl all -c 32768' },
       },
       {
         heading: 'Check it actually ran on the GPU',
@@ -785,8 +785,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Which coding model in this index handles 32K context on a 24GB card?',
         qZh: '本索引里哪个代码模型能在 24GB 显卡上跑 32K 上下文？',
-        a: 'Qwen3-Coder 30B-A3B. At AWQ INT4 it is about 19.2 GB at 32K, 80% of the card and comfortable. At GGUF Q4_K_M it is 22.6 GB at 32K, which is tight but fits. Qwen2.5-Coder 32B does not fit 32K in AWQ or GGUF on this card. This site runs no coding benchmarks, so it does not rank the two models by quality, only by whether they fit.',
-        aZh: 'Qwen3-Coder 30B-A3B。它的 AWQ INT4 在 32K 下约 19.2 GB，占显卡 80%，宽裕；GGUF Q4_K_M 在 32K 下为 22.6 GB，偏紧但放得下。Qwen2.5-Coder 32B 的 AWQ 和 GGUF 在这张卡上都放不下 32K。本站不跑代码能力评测，所以不按质量给这两个模型排序，只比较放不放得下。',
+        a: 'Two. Qwen3-Coder 30B-A3B at AWQ INT4 is about 19.2 GB at 32K, 80% of the card and comfortable; at GGUF Q4_K_M it is 22.6 GB at 32K, which is tight but fits. North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K, comfortable without vLLM. Qwen2.5-Coder 32B does not fit 32K in AWQ or GGUF on this card. This site runs no coding benchmarks, so it does not rank these models by quality, only by whether they fit.',
+        aZh: '有两个。Qwen3-Coder 30B-A3B 的 AWQ INT4 在 32K 下约 19.2 GB，占显卡 80%，宽裕；GGUF Q4_K_M 在 32K 下为 22.6 GB，偏紧但放得下。North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 下约 20.8 GB，不用 vLLM 也宽裕。Qwen2.5-Coder 32B 的 AWQ 和 GGUF 在这张卡上都放不下 32K。本站不跑代码能力评测，所以不按质量给这些模型排序，只比较放不放得下。',
       },
       {
         q: 'How many tokens per second should I expect?',
@@ -861,7 +861,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'quantize-own-model-gguf': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-10-21',
     verifiedAt: undefined,
     content: [
       {

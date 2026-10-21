@@ -4,7 +4,7 @@ export const extraArticles2: Article[] = [
   {
     id: '8gb-gpu-starter-guide',
     gpuPreset: { gpuId: 'rtx4060', ctx: 4096 },
-    relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'qwen3-4b', 'phi-4-mini', 'qwen3-vl-8b', 'gemma-4-e4b', 'qwen3-5-9b', 'granite-4.2-8b'],
+    relatedModelIds: ['qwen3-5-9b', 'gemma-4-e4b', 'granite-4.2-8b', 'k2-horizon-7b', 'qwen3-5-4b', 'llama-3.1-8b', 'qwen3-8b', 'qwen3-vl-8b', 'phi-4-mini'],
     title: '8GB GPU Starter Guide: 3060 / 4060 / 3070',
     titleZh: '8GB 显卡入门指南：3060 / 4060 / 3070',
     description: 'The most common local LLM hardware tier — which models, quants, and context lengths actually fit in 8GB VRAM.',
@@ -13,8 +13,8 @@ export const extraArticles2: Article[] = [
     difficulty: 'beginner',
     tags: ['8GB VRAM', 'RTX 3060', 'RTX 4060', 'GGUF', 'Ollama'],
     publishedAt: '2026-06-24',
-    // Rewritten from the index on this date; see README §9, 2026-09-08.
-    updatedAt: '2026-10-03',
+    // Rewritten from the index on this date; see README §9, 2026-09-08. Model list refreshed 2026-10-21.
+    updatedAt: '2026-10-21',
     // No `verifiedAt`: the guide previously carried one while its own VRAM
     // figures were ~2 GB above what this site's calculator returns for the
     // same models. The numbers are corrected and now derive from the index,
@@ -38,8 +38,14 @@ export const extraArticles2: Article[] = [
         bodyZh: '以下数字来自本站显存计算器的估算：按该量化档位实测的 bits-per-weight 计算权重，加上对应上下文的 KV 缓存，再加 10% 激活缓冲。它们不是实际文件大小，也不包含桌面本身已占用的显存 —— Windows 上通常是 0.5–1.5GB。这也是绿色区间到 88% 就截止、而不是 100% 的原因。4K 上下文下，8GB 显卡跑 7–8B 的 Q4_K_M 有实打实的余量；14B 在任何上下文下都装不进 Q4_K_M，因为光权重就超过整张卡。',
         code: {
           lang: 'text',
-          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        3.0 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.0 GB     fits\nGemma 4 E4B (image, audio)  Q4_K_M   4K        4.9 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nQwen3-VL 8B (image)         Q4_K_M   4K        6.2 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.3 GB     tight — 91% of the card\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
+          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        3.0 GB     fits, large margin\nQwen3.5 4B                  Q4_K_M   4K        3.3 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.0 GB     fits\nGemma 4 E4B (image, audio)  Q4_K_M   4K        4.9 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nQwen3-VL 8B (image)         Q4_K_M   4K        6.2 GB     fits\nGranite 4.2 8B              Q4_K_M   4K        6.3 GB     fits\nK2 Horizon 7B               Q4_K_M   4K        6.5 GB     fits\nQwen3.5 9B                  Q4_K_M   4K        6.6 GB     fits\nQwen3.5 9B                  Q4_K_M   16K       7.0 GB     fits\nGemma 4 E4B                 Q4_K_M   128K      7.0 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.3 GB     tight — 91% of the card\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
         },
+      },
+      {
+        heading: 'Newer models that hold a long context on 8GB',
+        headingZh: '能在 8GB 上撑起长上下文的新模型',
+        body: 'On most models only the KV cache grows with context, and on an 8GB card that is what runs out first. Two newer models keep a growing cache on only some of their layers, so they hold far more context in the same space. Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable, because only 8 of its 32 layers keep a growing cache; at 32K it is tight. Gemma 4 E4B at Q4_K_M with a 128K context is about 7.0 GB, comfortable. For comparison, Llama 3.1 8B at Q4_K_M with a 16K context is about 7.3 GB, already tight. If your work is long documents or long chats rather than short questions, start with one of these two.',
+        bodyZh: '大多数模型里，随上下文增长的只有 KV 缓存，而在 8GB 显卡上最先用完的正是它。有两个较新的模型只在部分层保留增长的缓存，所以同样的空间能放下多得多的上下文。Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕，因为它 32 层中只有 8 层保留增长缓存；到 32K 就偏紧了。Gemma 4 E4B 在 Q4_K_M、128K 上下文下约 7.0 GB，宽裕。作为对比，Llama 3.1 8B 在 Q4_K_M、16K 上下文下约 7.3 GB，已经偏紧。如果你主要处理长文档或长对话，而不是简短提问，就从这两个开始。',
       },
       {
         heading: 'What "over the card" actually means',
@@ -100,8 +106,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'How much context can an 8GB card handle?',
         qZh: '8GB 显卡能撑多长的上下文？',
-        a: 'For an 8B model at Q4_K_M, about 16K before it leaves the comfortable band: Llama 3.1 8B is 5.6GB at 4K and 7.3GB at 16K, which is 91% of the card — tight, with nothing left for the desktop. The KV cache is the only part that grows with context. A lower quant frees room for it by shrinking the weights; a smaller model does that and also has a smaller cache per token, so it buys more window for the same memory.',
-        aZh: '对 Q4_K_M 的 8B 模型来说，大约到 16K 就会离开宽裕区间：Llama 3.1 8B 在 4K 时 5.6GB，16K 时 7.3GB，占显卡的 91% —— 偏紧，已经没有余量留给桌面。随上下文增长的只有 KV 缓存。降低量化档位能通过缩小权重给它腾出空间；换更小的模型不但同样缩小权重，每个 token 的缓存也更小，所以同样的显存能换来更长的窗口。',
+        a: 'For an 8B model at Q4_K_M, about 16K before it leaves the comfortable band: Llama 3.1 8B is 5.6GB at 4K and 7.3GB at 16K, which is 91% of the card — tight, with nothing left for the desktop. The KV cache is the only part that grows with context. A lower quant frees room for it by shrinking the weights; a smaller model does that and also has a smaller cache per token, so it buys more window for the same memory. A model that keeps a growing cache on only some layers buys the most: Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable. Gemma 4 E4B holds a 128K window in about the same space.',
+        aZh: '对 Q4_K_M 的 8B 模型来说，大约到 16K 就会离开宽裕区间：Llama 3.1 8B 在 4K 时 5.6GB，16K 时 7.3GB，占显卡的 91% —— 偏紧，已经没有余量留给桌面。随上下文增长的只有 KV 缓存。降低量化档位能通过缩小权重给它腾出空间；换更小的模型不但同样缩小权重，每个 token 的缓存也更小，所以同样的显存能换来更长的窗口。只在部分层保留增长缓存的模型收益最大：Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕；Gemma 4 E4B 用差不多的空间就能撑起 128K 窗口。',
       },
     ],
   },
@@ -350,7 +356,7 @@ export const extraArticles2: Article[] = [
     // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03; RDNA 4 + iGPU
     // re-check 2026-10-20 (llama.cpp docs/build.md + ggml-hip/CMakeLists.txt on master, AMD's ROCm
     // Linux system requirements, Ollama docs/gpu.mdx, LLVM AMDGPUUsage processor table).
-    updatedAt: '2026-10-20',
+    updatedAt: '2026-10-21',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
@@ -610,7 +616,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['Intel Arc', 'SYCL', 'llama.cpp', 'Ollama', 'Vulkan', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-04',
+    updatedAt: '2026-10-21',
     // Written 2026-10-04 from llama.cpp docs/backend/SYCL.md, docs/build.md and
     // docs/docker.md, and Ollama docs/gpu.mdx + docs/docker.mdx. No `verifiedAt`:
     // there is no Arc card in this environment, so nothing here was run.
@@ -725,7 +731,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'beginner',
     tags: ['12GB', 'RTX 3060', 'RTX 4070', 'RTX 5070', 'Ollama', 'llama.cpp', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-04',
+    updatedAt: '2026-10-21',
     // Written 2026-10-04. Every size is calcVRAM on the model's own row; speeds are
     // roofline ceilings from vendor bandwidth. No `verifiedAt` — no GPU here.
     verifiedStack: {
@@ -829,7 +835,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['RTX 5090', '32GB', 'Blackwell', 'llama.cpp', 'Ollama', 'GGUF', 'long context'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-04',
+    updatedAt: '2026-10-21',
     // Written 2026-10-04. Sizes are calcVRAM on each model's own row; speeds are
     // roofline ceilings from NVIDIA's 1,792 GB/s figure. CUDA 12.8 as the first
     // toolkit with RTX 50 (sm_120) support is from NVIDIA's 12.8 release notes.
@@ -929,7 +935,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['DGX Spark', 'GB10', 'unified memory', '64GB', '128GB', 'GPT-OSS', 'Ollama', 'llama.cpp'],
     publishedAt: '2026-10-05',
-    updatedAt: '2026-10-10',
+    updatedAt: '2026-10-21',
     // Written 2026-10-05, ahead of the 64GB model's 23 October sale date. Specs
     // from nvidia.com (128GB LPDDR5X, 273 GB/s, 256-bit; 64GB at $4,999 from six
     // OEMs); the 64GB model's identical bandwidth from press coverage. Sizes are
@@ -1009,6 +1015,112 @@ export const extraArticles2: Article[] = [
         qZh: '跑本地大模型，DGX Spark 比 RTX 5090 快吗？',
         a: 'Not on any model both can hold. Token generation is bound by memory bandwidth, and the 5090 moves 1,792 GB/s against the Spark\'s 273, about 6.6× more. The Spark\'s advantage is capacity: 70B dense models and 100B-class mixture-of-experts models that no 32GB card holds at all.',
         aZh: '在两者都装得下的模型上不快。token 生成受内存带宽限制，5090 是 1,792 GB/s，Spark 是 273 GB/s，相差约 6.6 倍。Spark 的优势在容量：70B 稠密模型和 100B 级混合专家模型，任何 32GB 显卡都完全装不下。',
+      },
+    ],
+  },
+  {
+    id: '24gb-gpu-what-to-run',
+    gpuPreset: { gpuId: 'rtx4090', ctx: 32768 },
+    relatedModelIds: ['qwen3-6-27b', 'gemma-4-26b-a4b', 'qwen3-coder-30b-a3b', 'north-mini-code-1.0', 'nemotron-3.5-lightning-30b-a3b', 'qwen3-6-35b-a3b', 'gemma-4-31b', 'qwen3-32b'],
+    title: 'What to Run on a 24GB GPU (RTX 4090, 3090, RX 7900 XTX)',
+    titleZh: '24GB 显卡能跑什么（RTX 4090、3090、RX 7900 XTX）',
+    seoTitle: '24GB GPU: What to Run (4090, 3090, 7900 XTX)',
+    description: 'Which models fit a 24GB card at 8K–128K context, which 30B-class models are only tight, and which hold a long window cheaply. Sizes from the calculator.',
+    descriptionZh: '24GB 显卡在 8K–128K 上下文下能装下哪些模型、哪些 30B 级模型只是偏紧、哪些能便宜地撑起长窗口，以及如何确认确实跑在 GPU 上。',
+    category: 'edge',
+    difficulty: 'beginner',
+    tags: ['24GB', 'RTX 4090', 'RTX 3090', 'RX 7900 XTX', 'Ollama', 'llama.cpp', 'GGUF', 'long context'],
+    publishedAt: '2026-10-21',
+    updatedAt: '2026-10-21',
+    // Written 2026-10-21. Every size is calcVRAM on the model's own row (most of the 27B–36B
+    // rows are sized from real GGUF byte counts); speeds are roofline ceilings from vendor
+    // bandwidth. No `verifiedAt` — there is no GPU here.
+    verifiedStack: {
+      en: 'Windows or Linux · NVIDIA driver with CUDA (or ROCm for the RX 7900 XTX) · Ollama, or llama.cpp built with GGML_CUDA=ON · GGUF',
+      zh: 'Windows 或 Linux · 带 CUDA 的 NVIDIA 驱动（RX 7900 XTX 用 ROCm）· Ollama，或以 GGML_CUDA=ON 编译的 llama.cpp · GGUF',
+    },
+    content: [
+      {
+        heading: 'Which cards this covers',
+        headingZh: '适用于哪些显卡',
+        body: 'Four cards in this index have 24GB: the RTX 4090, the RTX 3090, the Radeon RX 7900 XTX and the older Tesla P40. They fit exactly the same models, because only capacity decides what fits, but they do not run them at the same speed: generation is limited by memory bandwidth, which ranges from 346 GB/s on the P40 to 1,008 GB/s on the 4090. The RX 7900 XTX runs GGUF through ROCm or Vulkan; the AMD guide covers that setup. A 24GB Mac is a different case: macOS lets the GPU use about three quarters of it, so it fits fewer models than these cards.',
+        bodyZh: '本索引里有四张 24GB 的卡：RTX 4090、RTX 3090、Radeon RX 7900 XTX，以及较老的 Tesla P40。它们能装下的模型完全一样，因为决定能否装下的只有容量；但跑起来速度不同：生成速度受显存带宽限制，从 P40 的 346 GB/s 到 4090 的 1,008 GB/s 不等。RX 7900 XTX 通过 ROCm 或 Vulkan 跑 GGUF，具体配置见 AMD 指南。24GB 的 Mac 是另一回事：macOS 只让 GPU 使用大约四分之三的内存，所以能装下的模型比这几张卡少。',
+        code: {
+          lang: 'text',
+          content: 'Card              Bandwidth    ceiling for Qwen3.6 27B Q4_K_M\nRTX 4090          1,008 GB/s   59 tok/s\nRX 7900 XTX         960 GB/s   56 tok/s\nRTX 3090            936 GB/s   55 tok/s\nTesla P40           346 GB/s   20 tok/s\n\nCeilings = bandwidth ÷ weight file size. Not measured here; real speed is lower.',
+        },
+      },
+      {
+        heading: 'What fits, and where the 30B class gets tight',
+        headingZh: '能装下什么，以及 30B 级从哪里开始偏紧',
+        body: '88 of the 117 models in this index fit a 24GB card comfortably at 4K context, and 93 load at all. Up to about 27B the question is only how long a context you want. Above that, many of the newest models land just over this site’s comfortable line, which leaves room for the model but not for your desktop. Qwen3.6 27B at Q4_K_M with a 32K context is about 21.0 GB, still comfortable. Qwen3.6 35B-A3B at Q4_K_M with a 4K context is about 23.4 GB, which is tight. K2 Horizon 32B at Q4_K_M with a 4K context is about 23.1 GB, also tight. Qwen3 32B at Q4_K_M with an 8K context is about 22.9 GB, tight, and at 32K it no longer fits.',
+        bodyZh: '本索引 117 个模型中，有 88 个能在 4K 上下文下宽裕地装进 24GB 显卡，能加载的共 93 个。27B 左右及以下，只看你想要多长的上下文。再往上，很多最新的模型刚好越过本站的宽裕线：模型本身放得下，但没给桌面留余地。Qwen3.6 27B 在 Q4_K_M、32K 上下文下约 21.0 GB，仍然宽裕。Qwen3.6 35B-A3B 在 Q4_K_M、4K 上下文下约 23.4 GB，偏紧。K2 Horizon 32B 在 Q4_K_M、4K 上下文下约 23.1 GB，同样偏紧。Qwen3 32B 在 Q4_K_M、8K 上下文下约 22.9 GB，偏紧，到 32K 就装不下了。',
+        code: {
+          lang: 'text',
+          content: 'GGUF (level)                         8K        32K       64K       128K\nGemma 4 26B-A4B (Q4_K_M)             18.3 GB   18.8 GB   19.5 GB   20.9 GB\nMuse Glimmer 30B (Q4_K_M)            17.7 GB   18.1 GB   18.5 GB   19.4 GB\nNemotron 3.5 Lightning (Q4_0)        19.8 GB   20.0 GB   20.2 GB   20.6 GB\nQwen3.6 27B (Q4_K_M)                 19.3 GB   21.0 GB   23.2 GB ~ 27.6 GB ✗\nQwen3.8 27B (Q4_K_M)                 17.8 GB   19.4 GB   21.6 GB ~ 26.0 GB ✗\nNorth Mini Code 30B-A3B (Q4_K_M)     20.2 GB   20.8 GB   21.7 GB ~ 23.5 GB ~\nQwen3-Coder 30B-A3B (Q4_K_M)         20.1 GB   22.6 GB ~ 25.9 GB ✗\nGemma 4 31B (Q4_0, Google QAT)       20.4 GB   22.5 GB ~ 25.2 GB ✗\nQwen3.6 35B-A3B (Q4_K_M)             23.5 GB ~ 24.0 GB ~ 24.7 GB ~ 26.1 GB ✗\nQwen3 32B (Q4_K_M)*                  22.9 GB ~ 29.6 GB ✗\nK2 Horizon 32B (Q4_K_M)              24.2 GB ~ 30.8 GB ✗\n\n~ = tight (88–105% of 24 GB)   ✗ = does not fit   * window ends at 40,960 tokens',
+        },
+      },
+      {
+        heading: 'Long context: pick the architecture, not the parameter count',
+        headingZh: '长上下文：看架构，而不是看参数量',
+        body: 'The table above splits into two groups. Models whose every layer keeps a growing cache, such as Qwen3 32B and K2 Horizon 32B, add several GB for every extra 32K of context. Models that keep a growing cache on only some layers barely move: the rest use a short sliding window or a fixed-size state. Gemma 4 26B-A4B at Q4_K_M with a 128K context is about 20.9 GB, comfortable. Nemotron 3.5 Lightning 30B-A3B at Q4_0 with a 128K context is about 20.6 GB. Muse Glimmer 30B at Q4_K_M with a 128K context is about 19.4 GB. If you want a whole repository or a long document in the window on one 24GB card, start with these rather than the dense 32B models.',
+        bodyZh: '上表可以分成两组。每一层都保留随上下文增长的缓存的模型，比如 Qwen3 32B 和 K2 Horizon 32B，上下文每多 32K 就要多出好几 GB。只有部分层保留增长缓存的模型几乎不涨：其余层只用很短的滑动窗口或固定大小的状态。Gemma 4 26B-A4B 在 Q4_K_M、128K 上下文下约 20.9 GB，宽裕。Nemotron 3.5 Lightning 30B-A3B 在 Q4_0、128K 上下文下约 20.6 GB。Muse Glimmer 30B 在 Q4_K_M、128K 上下文下约 19.4 GB。如果想在一张 24GB 显卡上把整个代码仓库或一篇长文档放进窗口，先从这几个开始，而不是稠密的 32B 模型。',
+      },
+      {
+        heading: 'For code',
+        headingZh: '写代码用',
+        body: 'Two coding models in this index are built for this card size. North Mini Code 1.0 30B-A3B at Q4_K_M with a 32K context is about 20.8 GB, comfortable, and stays only tight up to 128K, because 13 of its 49 layers keep a growing cache. Qwen3-Coder 30B-A3B at Q4_K_M with an 8K context is about 20.1 GB, comfortable; with a 32K context it is about 22.6 GB, tight. Both are mixture-of-experts models with about 3B parameters active per token, so they generate much faster than a dense 30B. This site runs no coding benchmarks, so it does not say which writes better code.',
+        bodyZh: '本索引里有两个编程模型正好面向这个显存档位。North Mini Code 1.0 30B-A3B 在 Q4_K_M、32K 上下文下约 20.8 GB，宽裕；一直到 128K 也只是偏紧，因为它 49 层中只有 13 层保留增长缓存。Qwen3-Coder 30B-A3B 在 Q4_K_M、8K 上下文下约 20.1 GB，宽裕；32K 下约 22.6 GB，偏紧。两者都是混合专家模型，每个 token 约激活 3B 参数，所以生成速度比稠密 30B 快得多。本站没有跑编程评测，所以不评判哪个代码写得更好。',
+      },
+      {
+        heading: 'Run it',
+        headingZh: '运行',
+        body: 'With Ollama, pull the exact quant straight from a GGUF repo; at this size the difference between Q4_K_M and Q5_K_M is often the difference between comfortable and tight. With llama.cpp, pass -ngl all and an explicit -c. Recent builds fit the model to the card automatically and keep about 1 GiB free, so a model near the limit silently loses layers to the CPU; asking for every layer makes a setting that does not fit fail at load instead. Bind to 127.0.0.1 unless you mean to serve your network.',
+        bodyZh: '用 Ollama 时，直接从 GGUF 仓库拉取指定的量化档位；在这个体量上，Q4_K_M 和 Q5_K_M 往往就是宽裕和偏紧的区别。用 llama.cpp 时，传 -ngl all 和明确的 -c。新版本会自动按显卡容量调整，并保留约 1 GiB 空闲，所以接近上限的模型会悄悄把部分层留在 CPU 上；明确要求全部层上 GPU，设置装不下时就会在加载阶段直接报错。除非你确实要对局域网提供服务，否则绑定 127.0.0.1。',
+        code: {
+          lang: 'bash',
+          content: 'ollama run hf.co/bartowski/Qwen_Qwen3.6-27B-GGUF:Q4_K_M\n/set parameter num_ctx 32768\nollama ps          # PROCESSOR should read 100% GPU\n\n# or llama.cpp:\nhf download bartowski/Qwen_Qwen3.6-27B-GGUF --include "Qwen_Qwen3.6-27B-Q4_K_M.gguf" --local-dir ./models\n./build/bin/llama-server -m ./models/Qwen_Qwen3.6-27B-Q4_K_M.gguf \\\n  -ngl all -c 32768 --host 127.0.0.1 --port 8080\n#   load_tensors: offloaded 65/65 layers to GPU',
+        },
+      },
+      {
+        heading: 'Check it is really on the GPU',
+        headingZh: '确认真的在 GPU 上',
+        body: 'Any one of these is enough: ollama ps shows 100% GPU; llama.cpp’s startup log reports every layer offloaded; nvidia-smi shows the memory held while the model is loaded. A tight model is where the slow-but-working case shows up most: on Windows, the NVIDIA control panel’s System Memory Fallback is on by default and spills VRAM into system RAM instead of failing, so a model that is a few hundred MB over turns into a model that crawls. Set CUDA Sysmem Fallback Policy to prefer no fallback while you are sizing things.',
+        bodyZh: '以下任何一项都够：ollama ps 显示 100% GPU；llama.cpp 的启动日志显示所有层都已卸载；模型加载期间 nvidia-smi 显示显存被占用。“能跑但很慢”最常出现在偏紧的模型上：Windows 上 NVIDIA 控制面板的系统内存回退默认开启，显存不够时会溢出到系统内存而不是报错，于是只超出几百 MB 的模型会变得慢得出奇。调试显存占用时，把 CUDA 系统内存回退策略设为不回退。',
+        code: {
+          lang: 'bash',
+          content: 'nvidia-smi --query-gpu=name,memory.used,memory.total --format=csv\n\n# measure speed on your own card:\n./build/bin/llama-bench -m ./models/Qwen_Qwen3.6-27B-Q4_K_M.gguf -ngl 99   # pp512 / tg128',
+        },
+      },
+      {
+        heading: 'When it does not work',
+        headingZh: '出问题时',
+        body: 'On a 24GB card most problems come from a model that was only ever tight.',
+        bodyZh: '在 24GB 显卡上，大多数问题来自一个本来就只是“偏紧”的模型。',
+        code: {
+          lang: 'text',
+          content: 'Loads, then runs out of memory partway through a long answer\n  → the KV cache grows with the conversation; lower -c / num_ctx\n\nLoads, but generates at a few tok/s\n  → layers on the CPU: check ollama ps / the load_tensors line\n  → Windows: System Memory Fallback is hiding an out-of-memory\n\nA 35B model "fits" in the calculator but not in practice\n  → it is tight: close the browser / other GPU apps, or drop one quant level\n\nWant 70B\n  → does not fit one 24 GB card at Q4_K_M; see the dual-GPU guide',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can a 24GB GPU run a 32B model?',
+        qZh: '24GB 显卡能跑 32B 模型吗？',
+        a: 'At Q4_K_M only with a short context, and only tight. This site sizes Qwen3 32B at Q4_K_M at about 22.9 GB with an 8K context, past its comfortable line, and with a 32K context it no longer fits. Q3_K_M brings it to about 17.7 GB at 4K. If you want a dense model of about that size with a real context, Qwen3.6 27B at Q4_K_M with a 32K context is about 21.0 GB and stays comfortable.',
+        aZh: '用 Q4_K_M 只能配短上下文，而且只是偏紧。本站估算 Qwen3 32B 在 Q4_K_M、8K 上下文下约 22.9 GB，已经越过宽裕线；32K 上下文就装不下了。用 Q3_K_M 时 4K 下约 17.7 GB。如果想要差不多体量、又有像样上下文的稠密模型，Qwen3.6 27B 在 Q4_K_M、32K 上下文下约 21.0 GB，仍然宽裕。',
+      },
+      {
+        q: 'RTX 3090 or RTX 4090 for local LLMs?',
+        qZh: '跑本地大模型，RTX 3090 还是 RTX 4090？',
+        a: 'They fit the same models: 88 of the 117 models in this index comfortably at 4K context on either card. The difference is bandwidth, 936 against 1,008 GB/s, which puts the generation ceiling for Qwen3.6 27B at Q4_K_M at about 55 tok/s on the 3090 and 59 on the 4090. For running models, as opposed to training them, a used 3090 gives up very little.',
+        aZh: '能装下的模型一样：两张卡都能在 4K 上下文下宽裕装下本索引 117 个模型中的 88 个。区别在带宽，936 对 1,008 GB/s，Qwen3.6 27B（Q4_K_M）的生成速度上限在 3090 上约 55 tok/s，在 4090 上约 59 tok/s。如果只是跑模型而不是训练，二手 3090 损失很小。',
+      },
+      {
+        q: 'Can a 24GB GPU run a 70B model?',
+        qZh: '24GB 显卡能跑 70B 模型吗？',
+        a: 'Not on the card. This site sizes Llama 3.3 70B at Q4_K_M at about 46.1 GB with a 4K context, nearly twice what the card holds. Two 24GB cards, or offloading most of the model to system RAM at a large speed cost, are the realistic routes; the dual-GPU guide covers the first.',
+        aZh: '单卡跑不了。本站估算 Llama 3.3 70B 在 Q4_K_M、4K 上下文下约 46.1 GB，接近这张卡容量的两倍。现实的路线是两张 24GB 显卡，或者把大部分模型卸载到系统内存（速度损失很大）；前者见双卡指南。',
       },
     ],
   },

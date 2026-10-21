@@ -6,6 +6,7 @@ import { sameBudgetCards } from '@/lib/utils/gpu-page';
 import { formatById, FORMAT_PAGES } from '@/lib/utils/format-page';
 import { BEST_TIERS } from '@/lib/utils/best-page';
 import type { QuantModel } from '@/lib/data/types';
+import { articleModifiedAt } from '@/lib/utils/article-dates';
 
 /**
  * "What this guide uses" — the cookbook's links out to the rest of the site.
@@ -183,7 +184,11 @@ export function guidesForGpu(gpu: GPU, limit = 3): Article[] {
       return { a, score: preset.vram === gpu.vram ? 3 : 0 };
     })
     .filter(x => x.score > 0)
-    .sort((x, y) => y.score - x.score)
+    // Equal scores: the most recently changed guide first (then the newer one), so a new card-class guide is not
+    // cut by `limit` behind older ones sharing its preset (file order did exactly that).
+    .sort((x, y) => y.score - x.score
+      || articleModifiedAt(y.a).localeCompare(articleModifiedAt(x.a))
+      || y.a.publishedAt.localeCompare(x.a.publishedAt))
     .slice(0, limit)
     .map(x => x.a);
 }

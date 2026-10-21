@@ -26,7 +26,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Surface | Notes |
 |--------|--------|
 | Models | **117** in index (`models-extra` … `models-extra-12`) |
-| Cookbook | **27** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
@@ -451,7 +451,7 @@ buying guides and HF trending, not only against release feeds.
    and a short `note`; size and card are computed by `TodayBoard`, never typed.
 5. Bump `dataLastUpdated` + top `changelog` entry in `lib/data/meta.ts`.
 6. Counts need no edit — `MODEL_COUNT` and `/llms.txt` derive from `models.length`. **Guides are the
-   exception**: their prose counts are typed, and `guideModelCountProblems()` fails the build until
+   exception**: their prose counts are typed (and a guide whose count moves gets `updatedAt` = today, or its byline and sitemap `lastmod` go stale), and `guideModelCountProblems()` fails the build until
    every "N of the M models" names the new total — then re-run the fit count N it quotes. **The gate
    only sees that one phrasing** — "51 of the models … and 60 load at all" (4060 Ti guide) drifted
    by 10 unseen, and zh sentences had their own wrong numbers; grep for any count near a card name.
@@ -616,7 +616,7 @@ says so rather than implying a quality ranking. Verify a change by perturbation 
 against the first Apple entry — a 512 GB Mac Studio — and recommended a 675B model needing 429 GB
 while the same page's context ladder used the declared 36 GB. One page, two capacities.
 
-**Internal links are computed from relationships, never listed.** `guidesForGpu()` gives every GPU page its guides by reversing `gpuPreset` (a new guide's preset is what makes card pages link it). `ModelPlacement`
+**Internal links are computed from relationships, never listed.** `guidesForGpu()` gives every GPU page its guides by reversing `gpuPreset` (a new guide's preset is what makes card pages link it; ties go to the most recently modified guide — under file order a new 4090 guide was the 5th tie and never shown). `ModelPlacement`
 (`model-placement.ts`) and `GuideReferences` (`guide-references.ts`) join models ↔ hardware ↔
 formats ↔ `/best/` ↔ guides out of data the site already holds, so the graph cannot rot. Measure
 before and after by crawling `out/`, excluding hrefs present on >90% of pages (that is the nav and
@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (vii) | **Guide refresh** — new 24GB guide (28; 88 / 93 at 4K, 8K–128K table, partial-cache models hold 128K in ~21 GB); 8GB + 4060 Ti 16G guides gain Qwen3.5 / Gemma 4 / Granite / K2 rows; 4090 coder adds North Mini Code; Qwen3.5 9B "32K comfortable on 8 GB" was tight; guides whose fit counts move get `updatedAt` the same day |
 | 2026-10-21 (vi) | **+3 models (117): K2 Horizon 7B / 32B / MoVA 36B-A4B** — owner-pulled configs + IFM/bartowski byte counts; params from IFM BF16 (9.01 / 34.79 / 37.46B; the "7B" carries ~2B of 250K-vocab tables); plain KV on every layer; IFM rows with `source`; 7B 6.5 GB @4K green on 8 GB, 32B 23.1 / 36B 24.2 GB tight on 24 GB; every card +1 comfortable; 0.9B / 3.7B / 375B stay on `/pending/` |
 | 2026-10-21 (v) | **Patrol** — llama.cpp b11769, ExLlamaV3 1.6.4 (Ollama v0.40.7 still pre-release, vLLM v0.32.0 unchanged); K2 Horizon family (IFM, 09-03, 0.9B–375B, llama.cpp `k2-horizon` plain KV) added to `/pending/` — layout second-hand only, needs configs + GGUF listing |
 | 2026-10-21 (iv) | **Seed-OSS 36B / ERNIE 4.5 from real files** — Seed AWQ (QuantTrio) is 4.68 bpw not 4.0 → tight on 24 GB, its 4090 speed failed the bandwidth gate and was removed; ERNIE PT Q4_K_M 14.2 GB → 16 GB comfortable 64 → 63 (4 guides, en + zh); 24 GB GPU pages now name a download file; a repo called "AWQ" may be compressed-tensors — read `quant_method` |

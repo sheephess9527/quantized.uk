@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-21',
+    en: 'New guide: what to run on a 24GB card (RTX 4090, 3090, RX 7900 XTX). It lists which 27B–36B models are comfortable and which are only tight, and which ones hold a 128K window in about 21 GB. The 8GB and RTX 4060 Ti 16G guides now include this autumn\'s models, Qwen3.5 9B, Gemma 4 E4B and Gemma 4 12B among them, that keep long contexts small. The RTX 4090 coding guide adds North Mini Code, which stays comfortable at 32K as a plain GGUF. Qwen3.5 9B\'s page said 32K was comfortable on an 8GB card; at 7.5 GB it is tight there, and the page now says so.',
+    zh: '新指南：24GB 显卡（RTX 4090、3090、RX 7900 XTX）能跑什么。里面列出了哪些 27B–36B 模型宽裕、哪些只是偏紧，以及哪些能用约 21 GB 撑起 128K 窗口。8GB 和 RTX 4060 Ti 16G 两篇指南加入了今年秋天的新模型，其中 Qwen3.5 9B、Gemma 4 E4B 和 Gemma 4 12B 的长上下文都很省显存。RTX 4090 编程指南加入了 North Mini Code，它用普通 GGUF 在 32K 下仍然宽裕。Qwen3.5 9B 的页面原先说 32K 在 8GB 显卡上宽裕；实际 7.5 GB 在 8GB 卡上偏紧，页面已改正。',
+  },
+  {
+    date: '2026-10-21',
     en: 'Three K2 Horizon models from MBZUAI\'s IFM are now in the index: the 7B, the 32B and the 36B-A4B mixture-of-experts model. All three are Apache 2.0 and released with their training data. The 7B at Q4_K_M is about 6.5 GB at 4K and comfortable on an 8 GB card; the 32B (23.1 GB) and 36B-A4B (24.2 GB) are tight on a 24 GB card and comfortable on 32 GB. Every layer keeps a full cache, so long context costs more than on most 2026 models. Sizes come from IFM\'s own GGUF files; the 0.9B, 3.7B and 375B stay on the not-runnable-yet list.',
     zh: 'MBZUAI 旗下 IFM 的三个 K2 Horizon 模型已收录：7B、32B 和 36B-A4B 混合专家模型，都是 Apache 2.0 许可，训练数据一并公开。7B 的 Q4_K_M 在 4K 下约 6.5 GB，8 GB 显卡很宽裕；32B（23.1 GB）和 36B-A4B（24.2 GB）在 24 GB 显卡上偏紧，32 GB 上宽裕。它们每一层都保留完整缓存，所以长上下文比大多数 2026 年的模型更费显存。体积按 IFM 官方 GGUF 文件计算；0.9B、3.7B 和 375B 仍在“还不能本地跑”清单上。',
   },

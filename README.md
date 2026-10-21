@@ -419,6 +419,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (vii) — Guide refresh: new 24GB guide (28), 8GB / 4060 Ti / 4090-coder updated
+
+- **New `24gb-gpu-what-to-run`** (`cookbook-extra-2.ts`, `gpuPreset` rtx4090 @32K): the four 24 GB cards
+  (4090 / 3090 / 7900 XTX / P40) with roofline ceilings for Qwen3.6 27B Q4_K_M (59 / 55 / 56 / 20 tok/s);
+  counts 88 comfortable / 93 load at 4K (`countModelsFitting`, identical on all four); an 8K–128K table
+  for 11 models from `calcVRAM` on their own rows (most from real GGUF bytes); long-context section
+  (Gemma 4 26B-A4B 20.9, Nemotron 3.5 Lightning Q4_0 20.6, Muse Glimmer 19.4 GB at 128K vs dense
+  32B); coding (North Mini Code 20.8 @32K green, Qwen3-Coder 22.6 @32K tight); 3 FAQs. A table row's
+  "(40K max)" tripped `guideFigureProblems` (it read 40K as the context) → footnote instead.
+- **8GB starter**: table +6 rows (Qwen3.5 4B / 9B, Granite 4.2 8B, K2 Horizon 7B, Qwen3.5 9B @16K 7.0,
+  Gemma 4 E4B @128K 7.0 — all green on the RTX 4060); new section on partial-cache models; context FAQ
+  extended. A sentence naming two models confused the figure gate (it picks the longest alias) → split.
+- **4060 Ti 16G**: "three" → "four worth starting with" + Gemma 4 12B Q4_K_M @128K 10.2 GB green.
+- **4090 coder**: North Mini Code 1.0 (GGUF Q4_K_M 20.8 GB @32K green, 23.5 @128K tight); FAQ "which
+  coding model handles 32K" names both. EXL2 guides already open with the archived notice — unchanged.
+- **Fix:** Qwen3.5 9B description called 32K (7.5 GB) comfortable on 8 GB; it is 94% → tight.
+- **`guidesForGpu()` tie-break**: equal scores kept file order, so the new guide (5th with an `rtx4090`
+  preset) was cut by `limit = 3` from every 24 GB page. Ties now go to the most recently modified guide,
+  then the newest. Diff over all 82 rows: 4090 / 3090 / P40 now link it (the two archived-EXL2 guides
+  drop off the 4090 page); Mac and CPU rows only reorder the same three guides.
+- **`updatedAt` → 2026-10-21** on the 8 guides whose counts changed in (vi) (mac-ollama-setup, quantize,
+  vllm-awq, amd-rocm, intel-arc, 12gb, rtx5090, dgx-spark): a fit-count change is a content change, and
+  (vi) left their bylines and sitemap `lastmod` on the old date.
+
 ### 2026-10-21 (vi) — +3 models (117): K2 Horizon 7B, 32B, MoVA 36B-A4B
 
 - Source: owner-pulled `config.json` for all three (`IFM/…`, `model_type: k2_horizon`) plus HF tree byte
