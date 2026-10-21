@@ -20,8 +20,9 @@ const ADDED_E = '2026-10-02';
  * builds an iSWA cache and stores K and V separately even where
  * `attention_k_eq_v` makes them one projection (V is normed, not roped).
  * Sliding window 1024 → llama.cpp allocates pad256(1024 + 512) = 1536 cells.
- * No GGUF file size was reachable (huggingface.co blocked), so quant rows use
- * the calculator's generic bpw and are marked `estimated`.
+ * No GGUF file size was reachable at first (huggingface.co blocked), so quant rows used
+ * the calculator's generic bpw; the 26B-A4B rows now come from bartowski's file
+ * sizes (owner-pulled 2026-10-21, see `source`). Rows stay `estimated`.
  *
  * `params` is the text decoder only, counted layer by layer from those
  * configs; llama.cpp loads the vision tower from a separate mmproj file.
@@ -31,8 +32,9 @@ export const extraModels11: QuantModel[] = [
     id: 'gemma-4-26b-a4b',
     name: 'Gemma 4 26B-A4B IT',
     family: 'Google Gemma 4',
-    // 25.23B total / 3.81B active (text), vendor "26B / 4B active".
-    params: 25.23,
+    // 25.25B = both bartowski's and unsloth's BF16 GGUFs (50,505,135,424 / 50,505,137,824 B ÷ 2);
+    // the layer-by-layer count was 25.23B. 3.81B active (text), vendor "26B / 4B active".
+    params: 25.25,
     paramLabel: '26B-A4B',
     categories: ['general', 'instruct', 'multimodal', 'code'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
@@ -57,12 +59,12 @@ export const extraModels11: QuantModel[] = [
     },
     addedAt: ADDED,
     description: {
-      en: 'Google\'s Gemma 4 mixture-of-experts model: about 25B parameters in the text model, roughly 4B active per token, a 256K window and image input. Only 5 of its 30 layers keep a cache that grows with context, and those use fewer, wider heads, so the cache stays small — about 0.9 GB at 32K and 5.3 GB at the full 256K. At Q4 that is about 17 GB at 32K: comfortable on a 24 GB card, which can still load the whole window (tight). A 16 GB card is just too small. Sizes use the calculator\'s generic rates — no GGUF file size could be checked, and no per-level quality loss has been published.',
-      zh: 'Google Gemma 4 的混合专家模型：文本部分约 25B 参数，每 token 激活约 4B，256K 上下文，支持图像输入。30 层中只有 5 层的缓存随上下文增长，而且这些层用的是更少、更宽的注意力头，所以缓存很小——32K 下约 0.9 GB，用满 256K 也只要约 5.3 GB。Q4 下 32K 上下文约 17 GB：24 GB 显卡可以从容运行，甚至能加载完整窗口（偏紧）。16 GB 显卡差一点装不下。下方体积使用计算器通用比特率——未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Google\'s Gemma 4 mixture-of-experts model: about 25B parameters in the text model, roughly 4B active per token, a 256K window and image input. Only 5 of its 30 layers keep a cache that grows with context, and those use fewer, wider heads, so the cache stays small — about 0.9 GB at 32K and 5.3 GB at the full 256K. At Q4_K_M that is about 18.8 GB at 32K: comfortable on a 24 GB card, which can still load the whole window (tight, about 23.6 GB). A 16 GB card cannot hold it, since the Q4_K_M file alone is 17.0 GB. The vision encoder is a separate 1.2 GB file on top. Sizes come from bartowski\'s GGUF files, whose Q4_K_M works out at 5.40 bits per weight, well above the generic 4-bit rate; Unsloth\'s UD-Q4_K_M is a different file, 0.09 GB smaller. No per-level quality loss has been published.',
+      zh: 'Google Gemma 4 的混合专家模型：文本部分约 25B 参数，每 token 激活约 4B，256K 上下文，支持图像输入。30 层中只有 5 层的缓存随上下文增长，而且这些层用的是更少、更宽的注意力头，所以缓存很小——32K 下约 0.9 GB，用满 256K 也只要约 5.3 GB。Q4_K_M 下 32K 上下文约 18.8 GB：24 GB 显卡可以从容运行，甚至能加载完整窗口（偏紧，约 23.6 GB）。16 GB 显卡装不下，光 Q4_K_M 文件就有 17.0 GB。视觉编码器是另外一个 1.2 GB 的文件。体积按 bartowski 的 GGUF 文件计算，其 Q4_K_M 折合每参数 5.40 比特，明显高于通用的 4 比特档；Unsloth 的 UD-Q4_K_M 是另一个文件，小 0.09 GB。各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 15.3, hfSearchUrl: hf('gemma-4-26B-A4B-it GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 26.8, hfSearchUrl: hf('gemma-4-26B-A4B-it GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.40, vramGB: 15.3, hfSearchUrl: hf('gemma-4-26B-A4B-it GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/google_gemma-4-26B-A4B-it-GGUF', file: 'google_gemma-4-26B-A4B-it-Q4_K_M.gguf', bytes: 17_035_039_872, mmprojBytes: 1_193_058_528, checkedAt: '2026-10-21' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51,  vramGB: 26.8, hfSearchUrl: hf('gemma-4-26B-A4B-it GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/google_gemma-4-26B-A4B-it-GGUF', file: 'google_gemma-4-26B-A4B-it-Q8_0.gguf', bytes: 26_859_861_120, mmprojBytes: 1_193_058_528, checkedAt: '2026-10-21' } },
     ],
   },
   {

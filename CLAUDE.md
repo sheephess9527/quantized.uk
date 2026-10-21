@@ -564,7 +564,8 @@ reasoning keeps **NVFP4** and **FP8/W4A16** out entirely — zero models ship th
 
 **A quant row names its file only from a real listing** (2026-10-21). `QuantVariant.source` = repo,
 verbatim file name (optional), bytes summed over parts, `parts`, separate `mmprojBytes`, `checkedAt`.
-Set it whenever the owner pastes a tree listing or a model batch reads one — and only then; the build
+Set it whenever the owner pastes a tree listing or a model batch reads one — and only then; one
+publisher's file per row (bartowski's and unsloth's same-named levels differ in bytes and even in tensor count); the build
 fails if `bytes × 8 / params` misses `bpw` by > 0.02. Rows without it render their basis
 (`sizingBasis()`: generic table vs unrecorded file), never a guessed file. `QuantFileLine` is the one
 renderer (model page, calculator, GPU, `/best/`).
@@ -1127,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-21 (iii) | **Gemma 4 26B-A4B Q4_K_M is 5.40 bpw, not 4.85** — bartowski 17,035,039,872 B (both BF16s = 25.25B) → 18.2 GB @4K: red on 16 GB (tight 76 → 75), tight on 20 GB; Qwen3.6 35B/27B params from bartowski BF16 (35.53 / 27.33; unsloth's files are 34.69 / 26.90 — publishers differ, never mix bytes); 36 rows carry `source` |
 | 2026-10-21 (ii) | **Sizes name their file + `/pending/`** — `QuantVariant.source` (repo, file, bytes, parts, mmproj, date) on 29 rows with real listings, gated against `bpw`; `sizingBasis()` labels the rest; `QuantFileLine` on model page / calculator / GPU / `/best/`; `/pending/` lists 10 released-not-indexed models with reasons, gated against the index |
 | 2026-10-21 | **Gemma 4 31B QAT Q4_0** — Google's official single-file build, 17,651,001,568 B → 4.60 bpw over 30.70B; 20.1 GB @4K, green on 24 GB to 16K; mmproj 1.2 GB makes 4K tight; no loss figure (bf16 also released); MLX conversion that prompted it stays untracked |
 | 2026-10-20 (x) | **+2 models (114): MiniCPM-V 4.7 35B-A3B, MiMo-V2.6-Flash** — owner-pulled configs + byte counts; MiniCPM = Qwen3.6 35B-A3B backbone, 34.69B from its F16 GGUF, Q4_K_S 20.9 GB @4K green on 24 GB (+1 on every ≥24 GB card), mmproj 1.1 GB extra; MiMo-Flash 9 full (4 KV) + 39 SWA (8 KV), native MXFP4 175 GB / Q2_K 132 GB → 256–512 GB Macs; DeepSeek-V4-Flash held (dsv4 compressed cache not expressible yet) |

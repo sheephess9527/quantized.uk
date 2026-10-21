@@ -15,7 +15,7 @@ export const dataLastUpdated = '2026-10-21';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-10-18';
+export const sizingChangedAt = '2026-10-21';
 
 export const dataSources = {
   models: {
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-21',
+    en: 'Gemma 4 26B-A4B needs more memory than this site said. Its real Q4_K_M file is 17.0 GB, about 1.7 GB more than the generic rate predicted, so it now needs about 18.2 GB at 4K context: still comfortable on a 24 GB card, but no longer loadable on a 16 GB one, and only tight on a 20 GB RX 7900 XT. Qwen3.6 35B-A3B and Qwen3.6 27B are now sized from their exact files too; their figures did not change. All three pages name the files.',
+    zh: 'Gemma 4 26B-A4B 需要的显存比本站之前写的多。它真实的 Q4_K_M 文件是 17.0 GB，比通用比特率估算多约 1.7 GB，所以 4K 上下文下约需 18.2 GB：24 GB 显卡仍然宽裕，但 16 GB 显卡已经装不下，20 GB 的 RX 7900 XT 也只算偏紧。Qwen3.6 35B-A3B 和 Qwen3.6 27B 现在也按准确的文件计算，数字没有变化。三个模型页都写明了对应的文件。',
+  },
   {
     date: '2026-10-21',
     en: 'Model pages now say which file each size is for. Where a file listing was read, a quant row names the repo, the file, its exact size in bytes, how many parts it is split into, the separate vision projector and the day it was checked; rows without one say whether they come from an unrecorded file size or the calculator\'s generic rate. The calculator, the GPU pages and the best-by-VRAM pages show the same line for their picks. A new page lists models that are released but cannot run locally yet, with the reason for each.',

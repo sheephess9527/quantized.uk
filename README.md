@@ -419,6 +419,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-21 (iii) — Gemma 4 26B-A4B was ~1.7 GB light; Qwen3.6 35B / 27B pinned to files
+
+- Owner-pulled tree listings (2026-10-21 08:05 +08, `X-Linked-Size` spot-checked) for bartowski + unsloth
+  GGUF repos of Qwen3.6 35B-A3B, Qwen3.6 27B and Gemma 4 26B-A4B. huggingface.co still returns 000 here.
+- **Gemma 4 26B-A4B**: both BF16 GGUFs total 50,505,135,424 / 50,505,137,824 B → params 25.23 → **25.25**
+  (the layer count missed ~0.02B). Q8_0 26,859,861,120 → 8.51 (confirms). **Q4_K_M 17,035,039,872 B →
+  5.40 bpw, not the generic 4.85**: 4K 16.4 → 18.2 GB, 32K 17.0 → 18.8, 256K 21.8 → 23.6. Verdicts: every
+  16 GB card tight → red (tight counts 76 → 75 NVIDIA, 72 → 71 RDNA, 69 → 68 others); RX 7900 XT 20 GB
+  green → tight (75 → 74 comfortable); 24 GB still green. 4060 Ti guide "76 load at all" → 75 (en + zh).
+  unsloth has no plain Q4_K_M — `UD-Q4_K_M` 16,947,541,728 B is a different file, named in the description.
+- **Qwen3.6 35B-A3B**: bartowski BF16 71,065,941,536 B → params 35.59 → **35.53**; unsloth BF16 is
+  69,376,638,176 B = 34.69B (same as MiniCPM-V 4.7's backbone) — bartowski's files carry ~0.84B more
+  tensors, so each `source` is per-publisher, never mixed. Q4_K_M 5.01 → 5.02, Q8_0 8.50 → 8.51; sizes
+  unchanged (23.4 GB @4K, tight on 24 GB). unsloth's UD-Q4_K_M (22,134,528,992 B) named.
+- **Qwen3.6 27B**: bartowski BF16 → params 27.41 → **27.33** (unsloth 26.90B); Q4_K_M 5.25 → 5.26, Q5_K_M
+  6.12 → 6.14, Q8_0 8.50 → 8.52; sizes unchanged (19.1 / 21.0 GB @4K / 32K).
+- `source` (bartowski file + f16 mmproj bytes) on 7 more rows → 36 rows. `sizingChangedAt` → 2026-10-21
+  (fit counts moved on 18 cards). No `todayFeed`, guide-figure or comfortable count on 16/24 GB changed.
+
 ### 2026-10-21 (ii) — Every size names its file; "not runnable yet" page
 
 - **`QuantVariant.source`** (`lib/data/types.ts`): `{ repo, file?, bytes, parts?, mmprojBytes?, checkedAt }`

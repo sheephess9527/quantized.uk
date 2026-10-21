@@ -34,8 +34,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'The honest summary of this card',
         headingZh: '关于这张卡的实话',
-        body: 'Capacity is generous and bandwidth is not. 64 of the models in this index fit it comfortably at 4K context and 76 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
-        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 64 个模型能在 4K 上下文下从容装进这张卡，76 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
+        body: 'Capacity is generous and bandwidth is not. 64 of the models in this index fit it comfortably at 4K context and 75 load at all, which is the same list a 16GB RTX 4080 Super returns — but the 4060 Ti reads its weights at 288 GB/s against that card’s 736. Generating a token means reading every weight once, so the ceiling on throughput is roughly a third of what the same file does on the faster card. Pick models expecting that, not the capacity.',
+        bodyZh: '容量宽裕，带宽不宽裕。本索引中有 64 个模型能在 4K 上下文下从容装进这张卡，75 个至少能加载 —— 这份清单和 16GB 的 RTX 4080 Super 完全相同，但 4060 Ti 读取权重的速度是 288 GB/s，而那张卡是 736。每生成一个 token 都要把全部权重读一遍，所以吞吐上限大约只有同一个文件在快卡上的三分之一。选模型时要按这一点来预期，而不是按容量。',
       },
       {
         heading: 'The three worth starting with',
