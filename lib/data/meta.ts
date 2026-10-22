@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-21';
+export const dataLastUpdated = '2026-10-22';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-21',
+  checkedAt: '2026-10-22',
   current: {
-    llamacpp: 'b11769',
+    llamacpp: 'b11803',
     vllm: 'v0.32.0',
-    ollama: 'v0.40.6',
+    ollama: 'v0.40.8',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-22',
+    en: 'Runtime versions re-checked: llama.cpp is at b11803 and Ollama at v0.40.8; vLLM (v0.32.0) and ExLlamaV3 (v1.6.4) are unchanged. Recursive\'s Flint, a 40B mixture-of-experts coding model released on 21 October with about 2.5B parameters active per token, is now on the not-runnable-yet list until its GGUF file sizes are checked. Its layout is already known: only 14 of its 49 layers keep a cache that grows with context.',
+    zh: '重新核对了运行时版本：llama.cpp 更新到 b11803，Ollama 更新到 v0.40.8；vLLM（v0.32.0）和 ExLlamaV3（v1.6.4）没有变化。Recursive 10 月 21 日发布的编程模型 Flint（40B 混合专家，每个 token 约激活 2.5B 参数）已列入“还不能本地跑”清单，等 GGUF 文件大小核对后再收录。它的层结构已经确认：49 层中只有 14 层的缓存随上下文增长。',
+  },
   {
     date: '2026-10-21',
     en: 'New guide: what to run on a 24GB card (RTX 4090, 3090, RX 7900 XTX). It lists which 27B–36B models are comfortable and which are only tight, and which ones hold a 128K window in about 21 GB. The 8GB and RTX 4060 Ti 16G guides now include this autumn\'s models, Qwen3.5 9B, Gemma 4 E4B and Gemma 4 12B among them, that keep long contexts small. The RTX 4090 coding guide adds North Mini Code, which stays comfortable at 32K as a plain GGUF. Qwen3.5 9B\'s page said 32K was comfortable on an 8GB card; at 7.5 GB it is tight there, and the page now says so.',

@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-22 — Daily patrol: runtime versions; Recursive Flint held on `/pending/`
+
+- Runtime (verbatim tag / release lists): llama.cpp **b11803** (b11769 → b11803, all Oct 21); Ollama
+  **v0.40.8** (Latest, Oct 21; v0.40.7 is no longer marked pre-release); vLLM v0.32.0 and ExLlamaV3 1.6.4
+  unchanged. `runtimeVersions.checkedAt` → 2026-10-22.
+- Candidate: **Recursive Flint** (10-21, Apache 2.0, coding MoE; named in Ollama v0.40.8's notes, which
+  say macOS only for now). Shape from transformers `models/flint/configuration_flint.py` (checkpoint
+  `RecursiveSI/flint`): 49 L, hidden 2048, 32 heads / 4 KV × 128, vocab 150,144 untied, 256 experts top-6
+  (512) + 1 shared (1024), 2 dense lead layers (6144), attention sinks, 262,144 positions; layer types =
+  full on i < 2, i % 4 == 1 and the last layer → **14 full + 35 SWA (window 513)**. Counted from those
+  fields: 39.78B, matching the published 39.8B. llama.cpp master has `LLM_ARCH_FLINT`
+  (`src/models/flint.cpp`: `build_attn_inp_kv_iswa()`, standard SWA) → SWA layers hold
+  pad256(513 + 512) = 1280 cells. **Not shipped**: huggingface.co is blocked (403), so unsloth/flint-GGUF's
+  levels and byte counts are unread; generic 4.85 bpw would size Q4_K_M at ~24 GB of weights, and
+  whether a plain Q4_K_M/Q3_K_M exists at all is unknown (Beam had none). `/pending/` entry
+  `flint` (`awaiting-data`) — needs the GGUF tree listing from the owner.
+
 ### 2026-10-21 (vii) — Guide refresh: new 24GB guide (28), 8GB / 4060 Ti / 4090-coder updated
 
 - **New `24gb-gpu-what-to-run`** (`cookbook-extra-2.ts`, `gpuPreset` rtx4090 @32K): the four 24 GB cards
