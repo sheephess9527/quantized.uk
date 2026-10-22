@@ -24,6 +24,7 @@ const ADDED_GEMMA4_12B = '2026-10-19';
 const ADDED_NORTH_MINI = '2026-10-20';
 const ADDED_MINICPM47 = '2026-10-20';
 const ADDED_K2H = '2026-10-21';
+const ADDED_FLINT = '2026-10-22';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -949,6 +950,39 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.74, vramGB: 7.4, hfSearchUrl: hf('K2-Horizon-7B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q5_K_M.gguf', bytes: 6_466_075_008, checkedAt: '2026-10-21' } },
       { format: 'GGUF', level: 'Q6_K', bpw: 6.57, vramGB: 8.3, hfSearchUrl: hf('K2-Horizon-7B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q6_K.gguf', bytes: 7_394_548_096, checkedAt: '2026-10-21' } },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 10.6, hfSearchUrl: hf('K2-Horizon-7B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q8_0.gguf', bytes: 9_573_964_160, checkedAt: '2026-10-21' } },
+    ],
+  },
+  {
+    // Recursive Flint 40B-A2.5B (RecursiveSI/flint, weights 2026-10-21, Apache 2.0). Official
+    // config.json (read from huggingface.co 2026-10-22): FlintForCausalLM, 49 layers, hidden 2048,
+    // 32 heads / 4 KV × 128, layer_types = full on 0, 1, every 4th from 5 (5, 9, … 45) and 48 →
+    // 14 full + 35 sliding, sliding_window 513 (current token + 512), learned attention sinks, NoPE
+    // on the full layers; 256 experts top-6 (512 wide) + shared (1024), 2 dense lead layers (6144);
+    // vocab 150,144 untied; 262,144 positions. params = 39,785,287,456, the Hub safetensors total,
+    // matched exactly by the tensor headers of lmstudio-community's Q8_0 GGUF (779 tensors).
+    // llama.cpp `flint` (ggml-org/llama.cpp#30928, merged 2026-10-21, first in b11803):
+    // build_attn_inp_kv_iswa(), standard SWA → a window layer holds pad256(513 + 512) = 1280 cells.
+    // bpw from lmstudio-community/flint-GGUF byte counts: Q4_K_M 24,166,841,184 → 4.86, Q6_K
+    // 32,720,880,480 → 6.58, Q8_0 42,350,359,392 → 8.52. unsloth/flint-GGUF ships only UD-* tiers
+    // plus Q8_0 (UD-Q3_K_XL 18,494,977,472 B → 3.72 bpw, ~19.6 GB at 4K), named in prose only.
+    id: 'flint-40b-a2-5b',
+    name: 'Recursive Flint 40B-A2.5B',
+    family: 'Recursive Flint',
+    params: 39.79,
+    paramLabel: '40B-A2.5B',
+    categories: ['code', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
+    contextLength: 262144,
+    arch: { layers: 49, attHeads: 32, kvHeads: 4, headDim: 128, attention: { fullLayers: 14, windowLayers: 35, windowTokens: 1280, note: { en: '14 of 49 layers use full attention and grow with context; the other 35 use a 513-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1,280 cells). All of them keep 4 KV heads × 128.', zh: '49 层中 14 层是全注意力，缓存随上下文增长；其余 35 层使用 513 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1,280 个位置）。所有层都是 4 个 KV 头 × 128 维。' } } },
+    addedAt: ADDED_FLINT,
+    description: {
+      en: 'Recursive\'s Flint, released in October under Apache 2.0: a 39.8B coding mixture-of-experts model with about 2.5B parameters active per token. It is built for coding agents, takes text only, and has a 256K window. Only 14 of its 49 layers keep a cache that grows with context, so long sessions are cheap: at Q4_K_M (lmstudio-community\'s 24.2 GB file) it needs about 25.5 GB at 4K, 29.2 GB at 128K and 33.0 GB across the full 256K window. That is too big for a 24 GB card; a 32 GB card holds it comfortably up to 32K and tightly at 128K, and a 48 GB Mac comfortably up to 128K. On 24 GB, unsloth\'s dynamic UD-Q3_K_XL file (18.5 GB) works out to about 19.6 GB at 4K. llama.cpp runs it as `flint` from build b11803. Sizes come from the published GGUF files; Recursive\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'Recursive 10 月以 Apache 2.0 发布的 Flint：39.8B 编程混合专家模型，每个 token 约激活 2.5B 参数，面向编程智能体，纯文本，256K 上下文。49 层中只有 14 层的缓存随上下文增长，所以长会话很便宜：Q4_K_M（lmstudio-community 的 24.2 GB 文件）在 4K 下约需 25.5 GB，128K 约 29.2 GB，用满 256K 约 33.0 GB。24 GB 显卡装不下；32 GB 显卡到 32K 都很宽裕，128K 偏紧；48 GB 的 Mac 到 128K 都很宽裕。24 GB 显卡可以用 unsloth 的动态文件 UD-Q3_K_XL（18.5 GB），4K 下约 19.6 GB。llama.cpp 从 b11803 版起以 `flint` 架构运行它。体积按已发布的 GGUF 文件计算；基准成绩是 Recursive 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.86, vramGB: 25.5, hfSearchUrl: hf('flint GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'lmstudio-community/flint-GGUF', file: 'flint-Q4_K_M.gguf', bytes: 24_166_841_184, checkedAt: '2026-10-22' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.58, vramGB: 34.4, hfSearchUrl: hf('flint GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'lmstudio-community/flint-GGUF', file: 'flint-Q6_K.gguf', bytes: 32_720_880_480, checkedAt: '2026-10-22' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 44.5, hfSearchUrl: hf('flint GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'lmstudio-community/flint-GGUF', file: 'flint-Q8_0.gguf', bytes: 42_350_359_392, checkedAt: '2026-10-22' } },
     ],
   },
 ];

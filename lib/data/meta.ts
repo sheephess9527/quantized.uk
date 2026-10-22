@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-22',
+    en: 'Recursive Flint, a 39.8B coding mixture-of-experts model with about 2.5B parameters active per token (Apache 2.0), is now in the index. Only 14 of its 49 layers keep a growing cache. At Q4_K_M it needs about 25.5 GB at 4K, comfortable on a 32 GB card up to 32K; 24 GB cards need unsloth\'s smaller UD-Q3_K_XL file. llama.cpp runs it from build b11803. Sizes come from lmstudio-community\'s GGUF files.',
+    zh: 'Recursive 的 Flint 已收录：39.8B 编程混合专家模型，每个 token 约激活 2.5B 参数，Apache 2.0 许可。49 层中只有 14 层保留会增长的缓存。Q4_K_M 在 4K 下约需 25.5 GB，32 GB 显卡到 32K 都很宽裕；24 GB 显卡需要用 unsloth 更小的 UD-Q3_K_XL 文件。llama.cpp 从 b11803 版起支持它。体积按 lmstudio-community 的 GGUF 文件计算。',
+  },
+  {
+    date: '2026-10-22',
     en: 'Runtime versions re-checked: llama.cpp is at b11803 and Ollama at v0.40.8; vLLM (v0.32.0) and ExLlamaV3 (v1.6.4) are unchanged. Recursive\'s Flint, a 40B mixture-of-experts coding model released on 21 October with about 2.5B parameters active per token, is now on the not-runnable-yet list until its GGUF file sizes are checked. Its layout is already known: only 14 of its 49 layers keep a cache that grows with context.',
     zh: '重新核对了运行时版本：llama.cpp 更新到 b11803，Ollama 更新到 v0.40.8；vLLM（v0.32.0）和 ExLlamaV3（v1.6.4）没有变化。Recursive 10 月 21 日发布的编程模型 Flint（40B 混合专家，每个 token 约激活 2.5B 参数）已列入“还不能本地跑”清单，等 GGUF 文件大小核对后再收录。它的层结构已经确认：49 层中只有 14 层的缓存随上下文增长。',
   },

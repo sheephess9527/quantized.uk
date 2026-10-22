@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **117** in index (`models-extra` … `models-extra-12`) |
+| Models | **118** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-22 (ii) | **+1 model (118): Recursive Flint 40B-A2.5B** — official config (49 L, 14 full + 35 SWA window 513 → 1280 cells, 4 KV × 128, 262K) + lmstudio-community GGUF bytes (Q4_K_M 4.86 / Q6_K 6.58 / Q8_0 8.52 bpw); params 39.785B = safetensors = Q8_0 tensor total; llama.cpp `flint` from b11803 (#30928); Q4_K_M 25.5 GB @4K → red on 24 GB, green on 32 GB to 32K; guide counts 5090 / M3 Max 48 / Spark +1, Q4_K_M 111 of 118; `/pending/` flint removed (tracker PR) |
 | 2026-10-22 | **Patrol** — llama.cpp b11803, Ollama v0.40.8 (vLLM / ExLlamaV3 unchanged); Recursive Flint 40B-A2.5B (10-21) on `/pending/`: shape confirmed from transformers + llama.cpp `flint` (14 full + 35 SWA-513 → 1280 cells, 4 KV × 128, 39.78B counted), GGUF listing unreadable (HF 403) |
 | 2026-10-21 (vii) | **Guide refresh** — new 24GB guide (28; 88 / 93 at 4K, 8K–128K table, partial-cache models hold 128K in ~21 GB); 8GB + 4060 Ti 16G guides gain Qwen3.5 / Gemma 4 / Granite / K2 rows; 4090 coder adds North Mini Code; Qwen3.5 9B "32K comfortable on 8 GB" was tight; guides whose fit counts move get `updatedAt` the same day |
 | 2026-10-21 (vi) | **+3 models (117): K2 Horizon 7B / 32B / MoVA 36B-A4B** — owner-pulled configs + IFM/bartowski byte counts; params from IFM BF16 (9.01 / 34.79 / 37.46B; the "7B" carries ~2B of 250K-vocab tables); plain KV on every layer; IFM rows with `source`; 7B 6.5 GB @4K green on 8 GB, 32B 23.1 / 36B 24.2 GB tight on 24 GB; every card +1 comfortable; 0.9B / 3.7B / 375B stay on `/pending/` |

@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-22 (ii) — Recursive Flint 40B-A2.5B graduates from `/pending/` (118 models)
+
+- Data the patrol could not read is now in hand (read from huggingface.co 2026-10-22): `RecursiveSI/flint`
+  config.json confirms the patrol's layout — 49 L, 14 full + 35 SWA (window 513), 4 KV × 128, 256 experts
+  top-6 + shared, 2 dense lead layers, 262,144 positions. `params` 39,785,287,456 = Hub safetensors total =
+  tensor total in lmstudio-community's Q8_0 header (779 tensors).
+- llama.cpp `flint` landed in ggml-org/llama.cpp#30928 (merged 2026-10-21), first tagged in **b11803**.
+- Levels from `lmstudio-community/flint-GGUF` (plain, single files): Q4_K_M 24,166,841,184 B → 4.86 bpw,
+  Q6_K 32,720,880,480 → 6.58, Q8_0 42,350,359,392 → 8.52; rows carry `source`. unsloth ships only UD-*
+  tiers + Q8_0; UD-Q3_K_XL (18,494,977,472 B, ~19.6 GB @4K) is named in prose for 24 GB cards.
+- Q4_K_M 25.5 GB @4K: red on 24 GB, comfortable on RTX 5090 to 32K (tight at 128K), 48 GB Macs comfortable
+  to 128K. Guide counts: 5090 94 → 95, M3 Max 48 94 → 95, DGX Spark 102/106 → 103/107, Q4_K_M 110 → 111,
+  all denominators 117 → 118 (en + zh). `/pending/` `flint` entry removed.
+
 ### 2026-10-22 — Daily patrol: runtime versions; Recursive Flint held on `/pending/`
 
 - Runtime (verbatim tag / release lists): llama.cpp **b11803** (b11769 → b11803, all Oct 21); Ollama

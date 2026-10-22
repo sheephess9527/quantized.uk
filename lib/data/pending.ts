@@ -25,22 +25,6 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
-    id: 'flint',
-    name: 'Recursive Flint 40B-A2.5B',
-    vendor: 'Recursive',
-    announced: '2026-10-21',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'A coding mixture-of-experts model under Apache 2.0: 39.8B parameters, about 2.5B active per token, a 262K window. Its layout is confirmed from the transformers configuration and llama.cpp\'s `flint` architecture: 49 layers, of which 14 keep a full-length cache and 35 use a 513-token sliding window, with 4 KV heads, so long context is cheap. Ollama v0.40.8 runs it on macOS only for now. Not sized yet: no GGUF file listing has been read, so neither the levels on offer nor their real sizes are known.',
-      zh: 'Apache 2.0 许可的编程混合专家模型：39.8B 参数，每个 token 约激活 2.5B，262K 上下文。层结构已根据 transformers 配置和 llama.cpp 的 `flint` 架构确认：49 层中 14 层保留完整长度的缓存，35 层只用 513 token 的滑动窗口，4 个 KV 头，所以长上下文很省显存。Ollama v0.40.8 目前只在 macOS 上支持它。还没算显存：没有读到 GGUF 文件列表，既不知道提供哪些量化档位，也不知道真实大小。',
-    },
-    recheck: {
-      en: 'When a GGUF repo\'s file listing with byte counts is in hand.',
-      zh: '拿到某个 GGUF 仓库带字节数的文件列表时。',
-    },
-    checkedAt: '2026-10-22',
-  },
-  {
     id: 'k2-horizon',
     name: 'K2 Horizon 0.9B / 3.7B / 375B-A23B',
     vendor: 'MBZUAI IFM',
