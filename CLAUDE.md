@@ -168,6 +168,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **`public/_headers` also carries HSTS** (`/*`, `max-age=31536000`, no `includeSubDomains`/`preload` — both are hard to
   undo), plus `X-Frame-Options: DENY` and a CSP that is **only** `frame-ancestors 'none'`. Do not grow it into a
   `script-src` policy without testing every page with JS on: Next's inline scripts, Cloudflare's beacon and Plausible all need allowing. If the owner turns HSTS on in the Cloudflare dashboard instead, delete the rule rather than keep two sources.
+- **`public/.well-known/security.txt` expires 2027-10-01** (RFC 9116 requires `Expires`); renew it before then —
+  an expired file is worse than none. `public/favicon.ico` (16/32/48) is built from `icon-512.png`; regenerate it with the PNGs.
 - **A bare email address rendered as text is a Cloudflare hydration risk.** Scrape Shield → Email
   Address Obfuscation rewrites any bare address or `mailto:` link in the HTML leaving Cloudflare's
   edge; since this is a static export, the React bundle hydrates against the *unmutated* text it was
@@ -1135,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-23 (viii) | **External check** — `/favicon.ico` added; `og.png` 336 → 90 KB (256-colour palette) and "85+" → "120+"; `security.txt`; model-page lastmod was 10-21 while today's VRAM column changed every model page → `sizingChangedAt` 10-23 (the report's "batched lastmod" was real dates, not batching); SPF/DMARC/CAA are DNS, owner's |
 | 2026-10-23 (v) | **+5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B** — owner-pulled configs + byte counts; publisher per model picked so the CLI's `<repo>-<level>` filename exists (IFM names its K2 files 1B / 4B); 375B params counted from config (Q8_0 → 8.50 confirms); Flint Q3_K_M 20.6 GB green on 24 GB; three `/pending/` entries removed |
 | 2026-10-23 (iii) | **VRAM column derived** — typed `vramGB` off by > 0.15 GB on 182 of 313 rows (Gemma 4 12B showed its file size, 7.1 vs 8.0); model table, cards, similar, Hub export, 4090 gate → `sizeAt4K()`; compare row → recorded file bytes; footnote states GiB vs decimal GB |
 | 2026-10-23 (ii) | **"97.1% quality retained" → "+2.9% perplexity vs FP16"** — homepage stat, model-page tile, similar-model cards and the FAQ answer called a perplexity rise "quality"/"accuracy"; reader email was right on that, wrong that the rows are all WikiText-2 (they are model-card / community figures) |

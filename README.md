@@ -419,6 +419,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (viii) — External site check: favicon.ico, og.png weight, security.txt, model-page lastmod
+
+An outside check of the live site listed five items; each was checked here before acting.
+
+- **`/favicon.ico` 404** — true (only `icon.svg` + PNGs existed). `public/favicon.ico` (16/32/48,
+  2.5 KB) built from `icon-512.png` with Pillow in a scratch venv (system PIL is broken here).
+- **`og.png` 336 KB** — re-rendered with the §10 recipe and quantized to a 256-colour palette
+  (Floyd–Steinberg): **90 KB**, mean channel error < 0.6/255. The card also still said
+  "85+ Models"; `og.svg` now says "120+" (a floor, true until the index shrinks).
+- **Sitemap lastmods "batched"** — the dates were real, not batched: 166 GPU pages + `/best/`,
+  formats, tools, FAQ moved on 10-23 because five models changed every card's fit list, and model
+  pages carried `sizingChangedAt` (10-21). The fault ran the other way: today's derived VRAM column
+  (182 of 313 rows changed) and perplexity relabel changed **every model page** on 10-23 while the
+  sitemap said 10-21. `sizingChangedAt` → 2026-10-23. A site-wide template change dates every page
+  it touched; uniform is honest when the change was uniform.
+- **No `security.txt`** — added `public/.well-known/security.txt` (RFC 9116: Contact, Expires
+  2027-10-01, Canonical). **Renew `Expires` before it passes**; an expired file is worse than none.
+- **No CAA / HSTS `includeSubDomains`** — CAA is a DNS record (owner's dashboard). `includeSubDomains`
+  stays off deliberately (see the comment in `public/_headers`): it is hard to undo and would bind
+  every future subdomain to HTTPS.
+- **SPF/DMARC** — DNS, owner's dashboard; not changeable from the repo.
+
 ### 2026-10-23 (vii) — Description gate: figures and verdict words in model descriptions
 
 - `descriptionProblems()` in `lib/data/validate.ts`, run by `dataProblems()` → the build. (1) en "N GB at NK" and
@@ -4929,6 +4951,12 @@ echo '<!doctype html><style>*{margin:0}html,body{width:1200px;height:630px;overf
 /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell --no-sandbox --hide-scrollbars \
   --virtual-time-budget=3000 --window-size=1200,630 --screenshot=public/og.png file://$S/wrap.html
 ```
+
+Then shrink it: the raw screenshot is ~340 KB. Quantize to a 256-colour palette (Pillow in a scratch
+venv — the system PIL is broken here): `Image.open(raw).convert('RGB').quantize(colors=256,
+method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG).save('public/og.png', optimize=True)`
+→ ~90 KB. `public/favicon.ico`: `Image.open('public/icon-512.png').convert('RGBA').save('public/favicon.ico',
+sizes=[(16,16),(32,32),(48,48)])`.
 
 Favicons under ~48px render blank in this Chromium, so the favicon is served as the SVG
 (`/icon.svg`) with the PNGs as fallback — all declared in `metadata.icons`.

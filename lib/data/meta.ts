@@ -15,7 +15,7 @@ export const dataLastUpdated = '2026-10-23';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-10-21';
+export const sizingChangedAt = '2026-10-23';
 
 export const dataSources = {
   models: {
