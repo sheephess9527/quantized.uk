@@ -419,6 +419,27 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (vi) — Self-audit: pages against their own definitions
+
+Owner asked for a sweep after two reader emails found faults the build gates cannot see. Checks run (scripts
+in the session scratchpad, not committed):
+- **Hand-written model descriptions vs `calcVRAM`** (the guide figure gate's rule, applied to `description`
+  en + zh): every GB-at-context figure within rounding (13 hits, all integer rounding or a parser artefact).
+- **Verdict words in descriptions** ("comfortable / tight on an N GB card") recomputed on a card of that size:
+  **one real fault** — Qwen3.8-Flash-Next called 256K (87.4 GB) comfortable on a 128 GB Mac; usable is ~96 GB →
+  91%, tight (comfortable on the 128 GB Spark). Fixed en + zh. Seven other hits were sentences pairing two
+  figures, read by hand and correct.
+- **Verdict words in guides** against each guide's `gpuPreset` card: 4 hits, all correct on reading ("past the
+  comfortable line"; the dual-3090 pair).
+- **`todayFeed` notes** (hand-typed, ungated) recomputed: all hold (e.g. Gemma 4 12B 256K on 16 GB = 12.3 GB, 77%).
+- **English text in `/zh` exports**: one hit, a list of Mac names (proper nouns).
+- **GPU page count vs listed rows**: `countModelsFitting(comfortable)` = `fitsOnGpu().length` on all 82 rows.
+- **CLI for the five new models**: exact names resolve; Laguna (> 48 GB) and the 375B split folders get the
+  pattern + `find` form, and the pattern matches the listed paths.
+- **Leftover reads of typed `vramGB`**: none in displays; `tool-content.ts` still told readers the `vramGB` field
+  carries a confidence marker — rewritten (confidence attaches to speed).
+- Not covered: the live domain (403 from here), 390 px layout of the new pages (no browser run tonight).
+
 ### 2026-10-23 (v) — +5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B
 
 - Source: owner-pulled config.json for all five + HF tree byte counts (X-Linked-Size checked on the Q4_K_M

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-23',
+    en: 'Qwen3.8-Flash-Next\'s page said its full 256K window was comfortable on a 128 GB Mac. At about 87 GB it is comfortable on a 128 GB DGX Spark but only tight on the Mac, whose GPU gets about three quarters of the memory; the page now says so.',
+    zh: 'Qwen3.8-Flash-Next 的页面原先说用满 256K 窗口在 128 GB 的 Mac 上也宽裕。约 87 GB 在 128 GB 的 DGX Spark 上确实宽裕，但在 Mac 上只是偏紧，因为 macOS 只让 GPU 使用约四分之三的内存；页面已改正。',
+  },
+  {
+    date: '2026-10-23',
     en: 'Five models added, all sized from their real files: Recursive Flint, Poolside Laguna S 2.1, and the 0.9B, 3.7B and 375B-A23B members of K2 Horizon. Flint is a 40B coding model with 2.5B active per token; at Q3_K_M it needs about 20.6 GB at 4K and is comfortable on a 24 GB card. Laguna S 2.1 needs about 71 GB at Q4_K_M and suits 128 GB machines. The K2 Horizon 375B fits a 256 GB Mac at Q2_K; the 0.9B and 3.7B run on almost anything.',
     zh: '新增五个模型，全部按真实文件计算体积：Recursive Flint、Poolside Laguna S 2.1，以及 K2 Horizon 的 0.9B、3.7B 和 375B-A23B。Flint 是 40B 的编程模型，每个 token 激活 2.5B；Q3_K_M 在 4K 下约需 20.6 GB，24 GB 显卡很宽裕。Laguna S 2.1 的 Q4_K_M 约需 71 GB，适合 128 GB 的机器。K2 Horizon 375B 用 Q2_K 能装进 256 GB 的 Mac；0.9B 和 3.7B 几乎什么硬件都能跑。',
   },

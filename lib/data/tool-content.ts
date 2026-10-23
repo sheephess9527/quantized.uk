@@ -108,8 +108,8 @@ export const vramCalcContent: ToolContent = {
     {
       q: { en: 'Are these numbers measured or estimated?', zh: '这些数字是实测还是估算？' },
       a: {
-        en: 'The VRAM figure is computed, not measured. The per-quant `vramGB` and speed values in the model index carry a confidence marker — measured, estimated or community — and the benchmarks page documents the hardware and framework versions behind the measured ones.',
-        zh: '显存数字是计算得出，不是实测。模型索引中每个量化档位的 `vramGB` 与速度值都带有可信度标记 —— 实测、估算或社区数据；基准页面记录了实测数据背后的硬件与框架版本。',
+        en: 'The VRAM figure is computed, not measured. Every size on this site comes from the same arithmetic as this calculator; what carries a confidence marker — measured, estimated or community — is each quant row\'s speed, and the benchmarks page documents the hardware and framework versions behind the measured ones.',
+        zh: '显存数字是计算得出，不是实测。本站所有体积数字都和这个计算器用同一套算法；带可信度标记（实测、估算或社区数据）的是每个量化档位的速度，基准页面记录了实测数据背后的硬件与框架版本。',
       },
     },
     {
