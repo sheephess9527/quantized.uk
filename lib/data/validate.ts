@@ -3,9 +3,9 @@ import { models, todayFeed } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { calcVRAM, quantBPW, quantGroups } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantBPW, quantGroups } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { gpuSlug } from '@/lib/utils/gpu-page';
+import { gpuSlug, usableCapacityGB, tightCeiling } from '@/lib/utils/gpu-page';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
 import { prefillData } from '@/lib/data/prefill';
@@ -103,6 +103,7 @@ export function dataProblems(): string[] {
     if (!modelIds.has(id)) out.push(`hfRepoMap: '${id}' is not a model id`);
   }
   out.push(...guideFigureProblems());
+  out.push(...descriptionProblems());
   out.push(...sourceAndPendingProblems());
   out.push(...guideModelCountProblems());
   return out;
@@ -137,6 +138,62 @@ function guideModelCountProblems(): string[] {
       for (const m of Array.from(text.matchAll(re))) {
         const n = Number(m[m.length - 1]);
         if (n !== total) out.push(`guide ${a.id}: "${m[0]}" names ${n} models; the index has ${total}`);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Model descriptions are hand-written prose carrying the same kind of numbers as the guides, and two
+ * faults reached the live site through them (Qwen3.5 9B "32K comfortable on 8 GB" — 94%, tight;
+ * Qwen3.8-Flash-Next "256K comfortable on a 128 GB Mac" — 91% of the usable 96 GB). Two rules:
+ *  1. every "N GB at NK" (en) / "NK … 约需 N GB" (zh) next to a level must match calcVRAM — integers within
+ *     0.5 (rounded prose), decimals within 0.3;
+ *  2. a verdict word that directly follows such a figure — "7.5 GB at 32K, comfortable on an 8 GB card" —
+ *     must be the verdict calcVRAM gives on a card of that size (a Mac when it says Mac). Only that adjacent
+ *     phrasing is read: looser pairing guessed wrong on 7 of 8 sentences in the 2026-10-23 audit.
+ */
+function descriptionProblems(): string[] {
+  const out: string[] = [];
+  const LEVEL = /\b(IQ2_XXS|Q[2-8]_K_[MS]|Q[2-8]_K|Q8_0|Q4_0|MXFP4|INT4)\b/g;
+  const sizeOf = (m: (typeof models)[number], level: string, ctxK: number) => {
+    const bpw = m.quants.find(q => q.level === level)?.bpw ?? (quantBPW as Record<string, number>)[level];
+    if (!bpw) return undefined;
+    return calcVRAM({
+      paramsB: m.params, layers: m.arch.layers, kvHeads: m.arch.kvHeads, headDim: m.arch.headDim,
+      attention: m.arch.attention, bpw, contextLength: ctxK * 1024, batchSize: 1,
+    });
+  };
+  const near = (stated: string, r: { totalGB: number; modelWeightsGB: number }) => {
+    const n = Number(stated); const tol = stated.includes('.') ? 0.3 : 0.5;
+    return Math.abs(n - r.totalGB) <= tol || Math.abs(n - r.modelWeightsGB) <= tol;
+  };
+  const cardFor = (gb: number, mac: boolean) => gpuDatabase.find(g => g.vram === gb && !g.isCPU &&
+    (mac ? g.type === 'apple' : g.type === 'nvidia-consumer'))
+    ?? (mac ? undefined : gpuDatabase.find(g => g.vram === gb && !g.isCPU && g.type !== 'apple'));
+  for (const m of models) {
+    for (const lang of ['en', 'zh'] as const) {
+      for (const sent of m.description[lang].split(/(?<=[.;])\s+|(?<=[。；])/)) {
+        const levels = Array.from(sent.matchAll(LEVEL));
+        if (!levels.length) continue;
+        const levelAt = (pos: number) => levels.filter(l => l.index! < pos).pop()?.[1] ?? levels[0][1];
+        const figs = lang === 'en'
+          ? Array.from(sent.matchAll(/(\d+(?:\.\d+)?) GB at (\d+)K\b/g)).map(x => ({ gb: x[1], k: Number(x[2]), at: x.index!, end: x.index! + x[0].length }))
+          : Array.from(sent.matchAll(/(\d+)K\s*(?:上下文)?\s*下?\s*约(?:需)?\s*(\d+(?:\.\d+)?) GB/g)).map(x => ({ gb: x[2], k: Number(x[1]), at: x.index!, end: x.index! + x[0].length }));
+        for (const f of figs) {
+          const lv = levelAt(f.at); const r = sizeOf(m, lv, f.k);
+          if (!r) continue;
+          if (!near(f.gb, r)) out.push(`model ${m.id} [${lang}]: "${f.gb} GB at ${f.k}K" (${lv}) — calculator gives ${r.totalGB.toFixed(1)}`);
+          if (lang !== 'en') continue;
+          const v = /^,? (comfortable|tight) on (?:a|an) (\d+) GB (card|Mac|DGX Spark)\b/.exec(sent.slice(f.end));
+          if (!v) continue;
+          const g = cardFor(Number(v[2]), v[3] === 'Mac');
+          if (!g) continue;
+          const got = getVerdict(r.totalGB, usableCapacityGB(g), tightCeiling(g))[0];
+          const want = v[1] === 'comfortable' ? 'g' : 'y';
+          if (got !== want) out.push(`model ${m.id}: "${f.gb} GB at ${f.k}K, ${v[1]} on a ${v[2]} GB ${v[3]}" — on ${g.name} the calculator says ${got === 'g' ? 'comfortable' : got === 'y' ? 'tight' : 'does not fit'}`);
+        }
       }
     }
   }

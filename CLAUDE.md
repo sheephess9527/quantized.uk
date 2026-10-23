@@ -47,7 +47,10 @@ stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos
 
 `build` fails on **data invariants** too: `app/sitemap.ts` calls `assertDataConsistent()`
 (`lib/data/validate.ts`) — broken `supersededBy`, a `todayFeed` level the model does not ship, a
-guide pointing at a missing model/GPU, a quant level the calculator cannot select. When a new
+guide pointing at a missing model/GPU, a quant level the calculator cannot select. **Model descriptions too** (`descriptionProblems()`, 2026-10-23): every
+"N GB at NK" / "NK … 约需 N GB" beside a level must match `calcVRAM`, and a verdict written directly after one
+("…, comfortable on an 8 GB card") must be the verdict on a card that size — keep that adjacent phrasing so the
+gate can read it; a verdict phrased any other way is unchecked, so run the number yourself. When a new
 hand-typed cross-reference is added, add its rule there and prove it fires by perturbation.
 
 `postbuild` ends with `scripts/indexnow.mjs`: on Cloudflare production builds only, it pings

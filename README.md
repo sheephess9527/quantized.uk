@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (vii) — Description gate: figures and verdict words in model descriptions
+
+- `descriptionProblems()` in `lib/data/validate.ts`, run by `dataProblems()` → the build. (1) en "N GB at NK" and
+  zh "NK（上下文）下约需 N GB" figures next to a quant level vs `calcVRAM` (integers ±0.5, decimals ±0.3, total or
+  weights — the guide gate's rule); 76 figures per language. (2) en verdicts written directly after a figure —
+  `^, (comfortable|tight) on a(n) N GB (card|Mac|DGX Spark)` — recomputed on an `nvidia-consumer` card of that size
+  (Apple row for "Mac"), with `usableCapacityGB` + `tightCeiling`.
+- Adjacent phrasing only, on purpose: the audit's loose pairing was wrong on 7 of 8 sentences, and a gate that
+  cries wolf gets ignored. zh verdict words are not parsed.
+- Proved by perturbation, then restored: re-inserting the two live faults fixed today (Qwen3.5 9B "7.5 GB at 32K,
+  comfortable on an 8 GB card"; Qwen3.8-Flash-Next "87 GB at 256K, comfortable on a 128 GB Mac") fails the build
+  with both; a wrong en figure (8.6) and zh figure (4.6) fail it too. A wrong figure that happens to land on the
+  model's bare weight size passes — the same blind spot as the guide gate.
+- First version split sentences on every "." and read "23.9 GB" as "9 GB"; fixed before shipping.
+
 ### 2026-10-23 (vi) — Self-audit: pages against their own definitions
 
 Owner asked for a sweep after two reader emails found faults the build gates cannot see. Checks run (scripts
