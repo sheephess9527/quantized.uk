@@ -430,8 +430,9 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   "median of {n} published figures · range lo–hi% · perplexity only, not task quality" (en + zh).
   Same fix on the model page tile ("Accuracy Retained" / 精度保留率 → "Perplexity rise (best build)") and
   `SimilarModels` (`accuracy` → `perplexity rise`); the computed FAQ answer no longer says "… retained".
-- Not done: the email's second suggestion (move the stat bar so a stranger's first number is not someone
-  else's GPU) is a layout preference with no data behind it. The old 09-01 changelog entry keeps its
+- The email's second point (the strip sits under the picker's example result, so its numbers read as that
+  card's): not moved — the picker stays first — but labelled "About this index — not your card" /
+  关于这个索引 —— 不是你这张卡的数字 (`home.stats.heading`). The old 09-01 changelog entry keeps its
   "97.1% retained" wording — it records what shipped then.
 
 ### 2026-10-23 — Daily patrol: llama.cpp b11829; Laguna S 2.1 held on `/pending/`

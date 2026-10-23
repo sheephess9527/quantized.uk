@@ -90,8 +90,8 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-23',
-    en: 'The homepage figure that read "97.1% Q4_K_M quality retained" now says what it measures: perplexity at Q4_K_M rises by a median of 2.9% over FP16, across the models that publish a figure. Perplexity is the only quality measure this index has, and the benchmarks page already says task quality is not covered, so calling it "quality" or "accuracy" claimed more than the data supports. Model pages and the similar-model cards use the same wording now.',
-    zh: '首页原先写着“Q4_K_M 质量保留率 97.1%”的数字，现在直接说明它测的是什么：在公布了数据的模型里，Q4_K_M 的困惑度相对 FP16 上升的中位数是 2.9%。困惑度是本索引唯一的质量指标，基准页本来就写明不涵盖任务能力，所以叫它“质量”或“精度”，说得比数据能支撑的多。模型页和相似模型卡片也改成了同样的说法。',
+    en: 'The homepage figure that read "97.1% Q4_K_M quality retained" now says what it measures: perplexity at Q4_K_M rises by a median of 2.9% over FP16, across the models that publish a figure. Perplexity is the only quality measure this index has, and the benchmarks page already says task quality is not covered, so calling it "quality" or "accuracy" claimed more than the data supports. Model pages and the similar-model cards use the same wording now, and the strip is labelled as describing the index, so it does not read as the example card\'s result above it.',
+    zh: '首页原先写着“Q4_K_M 质量保留率 97.1%”的数字，现在直接说明它测的是什么：在公布了数据的模型里，Q4_K_M 的困惑度相对 FP16 上升的中位数是 2.9%。困惑度是本索引唯一的质量指标，基准页本来就写明不涵盖任务能力，所以叫它“质量”或“精度”，说得比数据能支撑的多。模型页和相似模型卡片也改成了同样的说法；这一栏还加了标题，说明它描述的是整个索引，免得被当成上方示例显卡的结果。',
   },
   {
     date: '2026-10-23',

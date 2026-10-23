@@ -21,6 +21,9 @@ export default function StatsBar() {
     // between and the negative margin was never revisited, so the card spent
     // that time overlapping the job-path cards and covering their descriptions.
     <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      {/* The strip sits right under the picker's example result; without a label its numbers read as
+          belonging to that card (reader feedback, 2026-10-23). */}
+      <p className="text-xs text-slate-500 mb-2 px-1">{t.home.stats.heading}</p>
       <div className="glass rounded-2xl p-1">
         <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
           {stats.map(({ value, keyName }) => (
