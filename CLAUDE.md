@@ -518,7 +518,7 @@ top-traffic page — spent its life ~2GB high, and `mac-m3-pro-limits` told 18GB
 36GB+" when it needs 11.0. Both had `verifiedAt`. Before editing a guide, run the numbers it cites;
 before adding one, check the level you are citing actually exists in that model's `quants`.
 
-**Derived, not typed.** `readTime` was hand-written and fiction on 22 of 23 guides (5–12 minutes for
+**Derived, not typed.** `QuantVariant.vramGB` is the second instance: hand-typed, it disagreed with the calculator on 182 of 313 rows and was shown under a footnote describing the calculator's total. Every display now calls `sizeAt4K()` (`lib/utils/quant-source.ts`); do not render `vramGB` again (2026-10-23). `readTime` was hand-written and fiction on 22 of 23 guides (5–12 minutes for
 14–75 words). It is gone; `readingMinutes(article, lang)` computes it. Any field a human types once
 and nobody recomputes will drift — prefer a helper over a column.
 
@@ -1129,6 +1129,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-23 (iii) | **VRAM column derived** — typed `vramGB` off by > 0.15 GB on 182 of 313 rows (Gemma 4 12B showed its file size, 7.1 vs 8.0); model table, cards, similar, Hub export, 4090 gate → `sizeAt4K()`; compare row → recorded file bytes; footnote states GiB vs decimal GB |
 | 2026-10-23 (ii) | **"97.1% quality retained" → "+2.9% perplexity vs FP16"** — homepage stat, model-page tile, similar-model cards and the FAQ answer called a perplexity rise "quality"/"accuracy"; reader email was right on that, wrong that the rows are all WikiText-2 (they are model-card / community figures) |
 | 2026-10-23 | **Patrol** — llama.cpp b11829 (Ollama v0.40.9 pre-release, rest unchanged); Poolside Laguna S 2.1 118B-A8B on `/pending/` (llama.cpp `laguna` exists; transformers defaults are XS.2, not S 2.1 — layout unread); Bolt E4B no weights yet |
 | 2026-10-22 | **Patrol** — llama.cpp b11803, Ollama v0.40.8 (vLLM / ExLlamaV3 unchanged); Recursive Flint 40B-A2.5B (10-21) on `/pending/`: shape confirmed from transformers + llama.cpp `flint` (14 full + 35 SWA-513 → 1280 cells, 4 KV × 128, 39.78B counted), GGUF listing unreadable (HF 403) |

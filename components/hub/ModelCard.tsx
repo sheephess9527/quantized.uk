@@ -8,6 +8,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
+import { sizeAt4K } from '@/lib/utils/quant-source';
 import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 
 const formatColors: Record<string, string> = {
@@ -89,7 +90,7 @@ export default function ModelCard({ model, lang }: Props) {
       </p>
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-          <p className="text-xs font-bold text-violet-300">{refQuant.vramGB.toFixed(1)} GB</p>
+          <p className="text-xs font-bold text-violet-300">{sizeAt4K(model, refQuant).toFixed(1)} GB</p>
           <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.vramAtRef}</p>
         </div>
         <div className="text-center p-2 rounded-lg bg-white/[0.02]">

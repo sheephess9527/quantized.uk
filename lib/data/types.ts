@@ -5,6 +5,8 @@ export interface QuantVariant {
   format: 'GGUF' | 'AWQ' | 'EXL2' | 'GPTQ' | 'HQQ';
   level: string;
   bpw: number;
+  /** Legacy hand-typed figure — no display reads it (they call `sizeAt4K()`); kept so old rows
+   *  type-check. It mixed file sizes with old 4K totals and disagreed with the calculator on 182 of 313 rows. */
   vramGB: number;
   /**
    * Perplexity loss against the unquantized weights, where someone has actually

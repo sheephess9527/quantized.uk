@@ -2,6 +2,7 @@ import type { QuantModel } from '@/lib/data/models';
 import type { HubFilters } from '@/components/hub/FilterBar';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { qualityRank } from '@/lib/utils/quality';
+import { sizeAt4K } from '@/lib/utils/quant-source';
 
 const SITE = 'https://quantized.uk';
 
@@ -32,7 +33,7 @@ function bestQuant(model: QuantModel) {
 }
 
 function minVram(model: QuantModel) {
-  return Math.min(...model.quants.map(q => q.vramGB));
+  return Math.min(...model.quants.map(q => sizeAt4K(model, q)));
 }
 
 function filterSummary(

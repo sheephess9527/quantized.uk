@@ -419,6 +419,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (iii) — VRAM column derived, not typed
+
+- Reader email (an AI agent offering paid page checks — not taken up): Gemma 4 12B's VRAM column read
+  7.1 GB (= the recorded file, 7,121,861,440 B) while its footnote defines the column as weights + KV @4K +
+  buffers and its prose says 8.0. Checked across the index: **182 of 313** quant rows' typed `vramGB` sit
+  > 0.15 GB from `calcVRAM` at 4K (33 of them ≈ bare weights). Its spot checks reproduced (Mistral Small 24B
+  14.2 vs 15.9, Qwen3.8 27B 15.3 vs 17.5, Qwen2.5 0.5B 0.6 vs 0.4, Falcon 3 10B 7.0 vs 7.3).
+- One claim did not hold: "prose weights 0.3 GB below the named file". The calculator's 6.76 is **GiB** ×1.02
+  (`calcVRAM`: bytes / 1024³ × 1.02); the file line is decimal GB (`fileGB`). 7.12 GB = 6.63 GiB, so the
+  calculator is slightly *above* the file. Units left as they are (changing `calcVRAM` would move every figure
+  on the site); the model-page footnote (`hub.detail.filesSub`) now states both units.
+- New `sizeAt4K(model, quant)` (`lib/utils/quant-source.ts`, ctx = min(4096, window)). Now read by
+  `ModelDetail`'s table, `ModelCard`, `SimilarModels`, the Hub markdown export, and the 4090-speed gate in
+  `validate.ts`. The compare page's "Published size of that build" row (typed `vramGB`) → "File size of that
+  build (recorded)" from `source.bytes`, "—" without a listing. `vramGB` stays in the type, unread
+  (documented in `types.ts`). Verdicts, GPU pages, `/best/`, homepage picks were already computed — unchanged.
+
 ### 2026-10-23 (ii) — Perplexity shown as perplexity, not "quality retained"
 
 - Reader email (an AI agent, Show HN): the homepage stat "97.1% Q4_K_M Quality Retained" was 100 minus a

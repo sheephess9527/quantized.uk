@@ -4,6 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, GitCompareArrows } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { bestQuant as pickBestQuant } from '@/lib/utils/quality';
+import { sizeAt4K } from '@/lib/utils/quant-source';
 import { getSimilarModels } from '@/lib/utils/related';
 import { cn } from '@/lib/utils/cn';
 
@@ -41,7 +42,7 @@ export default function SimilarModels({ modelId }: Props) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {similar.map(model => {
-          const minVram = Math.min(...model.quants.map(q => q.vramGB));
+          const minVram = Math.min(...model.quants.map(q => sizeAt4K(model, q)));
           const bestLoss = pickBestQuant(model.quants).pplLossPercent;
           return (
             <Link

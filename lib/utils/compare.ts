@@ -155,8 +155,11 @@ export function compareModels(
     estRow,
 
     // Published figures. Fixed by definition — they do not move with context.
-    row('q4Vram', 'Published size of that build', '该档位的已发布体积', q4A.vramGB, q4B.vramGB,
-      n => `${n.toFixed(1)} GB`, 'fixed', { lowerIsBetter: true }),
+    // The file as recorded from a real listing (decimal GB, as Hugging Face shows it) — not the
+    // typed `vramGB`, which mixed file sizes with old 4K totals. No recorded file → "—".
+    row('q4Vram', 'File size of that build (recorded)', '该档位的文件大小（已核对）',
+      q4A.source ? q4A.source.bytes / 1e9 : undefined, q4B.source ? q4B.source.bytes / 1e9 : undefined,
+      n => `${n.toFixed(2)} GB`, 'fixed', { lowerIsBetter: true }),
     // A row is only comparable when both sides published a figure. When either
     // side has none, `row` is handed undefined and prints "—" without declaring
     // a winner — comparing a published loss against a missing one would hand the

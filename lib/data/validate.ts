@@ -1,3 +1,4 @@
+import { sizeAt4K } from '@/lib/utils/quant-source';
 import { models, todayFeed } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
@@ -68,8 +69,9 @@ export function dataProblems(): string[] {
         out.push(`${m.id}: level '${key}' missing from quantBPW/quantGroups — the calculator cannot select it`);
       }
       if (q.speedRTX4090 != null && rtx4090?.bandwidth) {
-        if (q.vramGB > rtx4090.vram) {
-          out.push(`${m.id} ${key}: speedRTX4090 set on a ${q.vramGB} GB row — an RTX 4090 holds ${rtx4090.vram} GB`);
+        const at4k = sizeAt4K(m, q);
+        if (at4k > rtx4090.vram) {
+          out.push(`${m.id} ${key}: speedRTX4090 set on a ${at4k.toFixed(1)} GB row (4K total) — an RTX 4090 holds ${rtx4090.vram} GB`);
         } else if (!isMoE(m)) {
           // Dense: every token reads every weight. 15% covers params×bpw vs the
           // real file (untouched input embeddings, mixed-precision heads).

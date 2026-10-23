@@ -7,6 +7,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
 import { bestQuant as pickBestQuant, formatLoss, referenceQuant } from '@/lib/utils/quality';
+import { sizeAt4K } from '@/lib/utils/quant-source';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
@@ -215,7 +216,7 @@ export default function ModelDetail({ model }: Props) {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right font-mono text-slate-400">{quant.bpw}</td>
-                    <td className="px-3 py-3 text-right font-mono text-violet-300">{quant.vramGB.toFixed(1)} GB</td>
+                    <td className="px-3 py-3 text-right font-mono text-violet-300">{sizeAt4K(model, quant).toFixed(1)} GB</td>
                     <td className="px-3 py-3 text-right font-mono text-slate-400">{formatLoss(quant)}</td>
                     <td className="px-3 py-3 text-right font-mono text-orange-300">
                       {quant.speedRTX4090 ? `${quant.speedRTX4090} tok/s` : '—'}
