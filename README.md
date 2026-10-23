@@ -419,6 +419,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 — Daily patrol: llama.cpp b11829; Laguna S 2.1 held on `/pending/`
+
+- Runtime (verbatim tag / release lists): llama.cpp **b11829** (Oct 22); Ollama v0.40.9 is Pre-release
+  (keeps v0.40.8); vLLM v0.32.0 and ExLlamaV3 1.6.4 unchanged. `runtimeVersions.checkedAt` → 2026-10-23.
+  llama.cpp `llama-arch.cpp` gained no architecture since 10-22 (two tokenizer keys only).
+- Gap-audit find: **Poolside Laguna S 2.1** (118B-A8B, 1M context, OpenMDW-1.1; release date reported as
+  07-21 by one source and 08-24 by another, so `announced` is omitted). llama.cpp has `LLM_ARCH_LAGUNA`
+  (`src/models/laguna.cpp`: optional SWA, pattern loaded per GGUF, XS.2 = full on il % 4 == 0).
+  transformers `configuration_laguna.py` defaults are the **XS.2** reference checkpoint (40 L, 48 heads /
+  8 KV × 128, 256 experts top-8, per-layer head-count list), not S 2.1 — so S 2.1's layout is unread.
+  Added to `/pending/` (`awaiting-data`). Laguna XS.2 itself is also unindexed; not pursued today.
+- **Nemotron 3.5 Bolt E4B** (announced for 10-23): no NVIDIA repo visible in any source yet — re-check.
+- GLM-5.3-Flash (already on `/pending/`) and Ternary-Bonsai-2-27B (needs a llama.cpp fork) skipped.
+
 ### 2026-10-22 — Daily patrol: runtime versions; Recursive Flint held on `/pending/`
 
 - Runtime (verbatim tag / release lists): llama.cpp **b11803** (b11769 → b11803, all Oct 21); Ollama

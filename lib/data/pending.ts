@@ -25,6 +25,21 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'laguna-s-2-1',
+    name: 'Poolside Laguna S 2.1 118B-A8B',
+    vendor: 'Poolside',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'An agentic coding mixture-of-experts model: 118B parameters, about 8B active per token, a 1M-token window, under Poolside\'s OpenMDW-1.1 licence. Poolside says it runs on one DGX Spark. llama.cpp supports the `laguna` architecture, which can mix full-attention and sliding-window layers. Not sized yet: the only reachable configuration describes the smaller Laguna XS.2, and this model\'s layer layout, per-layer head counts and GGUF file sizes have not been read. Reports also disagree on its release date (21 July or 24 August).',
+      zh: '面向智能体编程的混合专家模型：118B 参数，每个 token 约激活 8B，100 万 token 上下文，采用 Poolside 的 OpenMDW-1.1 许可。Poolside 称它能在一台 DGX Spark 上运行。llama.cpp 已支持 `laguna` 架构，这种架构可以混用全注意力层和滑动窗口层。还没算显存：目前能读到的配置描述的是较小的 Laguna XS.2，这个模型自己的层结构、每层注意力头数和 GGUF 文件大小都还没读到。各方报道的发布日期也不一致（7 月 21 日或 8 月 24 日）。',
+    },
+    recheck: {
+      en: 'When its config.json and a GGUF repo\'s file listing with byte counts are in hand.',
+      zh: '拿到它的 config.json 和某个 GGUF 仓库带字节数的文件列表时。',
+    },
+    checkedAt: '2026-10-23',
+  },
+  {
     id: 'flint',
     name: 'Recursive Flint 40B-A2.5B',
     vendor: 'Recursive',

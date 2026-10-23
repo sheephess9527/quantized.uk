@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-22';
+export const dataLastUpdated = '2026-10-23';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-22',
+  checkedAt: '2026-10-23',
   current: {
-    llamacpp: 'b11803',
+    llamacpp: 'b11829',
     vllm: 'v0.32.0',
     ollama: 'v0.40.8',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-23',
+    en: 'llama.cpp is now at b11829; Ollama (v0.40.8), vLLM (v0.32.0) and ExLlamaV3 (v1.6.4) are unchanged. Poolside\'s Laguna S 2.1, a 118B mixture-of-experts coding model with about 8B parameters active per token, is now on the not-runnable-yet list: llama.cpp supports its architecture, but its layer layout and file sizes have not been checked.',
+    zh: 'llama.cpp 更新到 b11829；Ollama（v0.40.8）、vLLM（v0.32.0）和 ExLlamaV3（v1.6.4）没有变化。Poolside 的 Laguna S 2.1（118B 混合专家编程模型，每个 token 约激活 8B 参数）已列入“还不能本地跑”清单：llama.cpp 已支持它的架构，但它的层结构和文件大小还没核对。',
+  },
   {
     date: '2026-10-22',
     en: 'Runtime versions re-checked: llama.cpp is at b11803 and Ollama at v0.40.8; vLLM (v0.32.0) and ExLlamaV3 (v1.6.4) are unchanged. Recursive\'s Flint, a 40B mixture-of-experts coding model released on 21 October with about 2.5B parameters active per token, is now on the not-runnable-yet list until its GGUF file sizes are checked. Its layout is already known: only 14 of its 49 layers keep a cache that grows with context.',

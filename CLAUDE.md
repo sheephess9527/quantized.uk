@@ -1128,6 +1128,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-23 | **Patrol** — llama.cpp b11829 (Ollama v0.40.9 pre-release, rest unchanged); Poolside Laguna S 2.1 118B-A8B on `/pending/` (llama.cpp `laguna` exists; transformers defaults are XS.2, not S 2.1 — layout unread); Bolt E4B no weights yet |
 | 2026-10-22 | **Patrol** — llama.cpp b11803, Ollama v0.40.8 (vLLM / ExLlamaV3 unchanged); Recursive Flint 40B-A2.5B (10-21) on `/pending/`: shape confirmed from transformers + llama.cpp `flint` (14 full + 35 SWA-513 → 1280 cells, 4 KV × 128, 39.78B counted), GGUF listing unreadable (HF 403) |
 | 2026-10-21 (vii) | **Guide refresh** — new 24GB guide (28; 88 / 93 at 4K, 8K–128K table, partial-cache models hold 128K in ~21 GB); 8GB + 4060 Ti 16G guides gain Qwen3.5 / Gemma 4 / Granite / K2 rows; 4090 coder adds North Mini Code; Qwen3.5 9B "32K comfortable on 8 GB" was tight; guides whose fit counts move get `updatedAt` the same day |
 | 2026-10-21 (vi) | **+3 models (117): K2 Horizon 7B / 32B / MoVA 36B-A4B** — owner-pulled configs + IFM/bartowski byte counts; params from IFM BF16 (9.01 / 34.79 / 37.46B; the "7B" carries ~2B of 250K-vocab tables); plain KV on every layer; IFM rows with `source`; 7B 6.5 GB @4K green on 8 GB, 32B 23.1 / 36B 24.2 GB tight on 24 GB; every card +1 comfortable; 0.9B / 3.7B / 375B stay on `/pending/` |
