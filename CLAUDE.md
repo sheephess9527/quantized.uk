@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **117** in index (`models-extra` … `models-extra-12`) |
+| Models | **122** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1131,6 +1131,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-23 (v) | **+5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B** — owner-pulled configs + byte counts; publisher per model picked so the CLI's `<repo>-<level>` filename exists (IFM names its K2 files 1B / 4B); 375B params counted from config (Q8_0 → 8.50 confirms); Flint Q3_K_M 20.6 GB green on 24 GB; three `/pending/` entries removed |
 | 2026-10-23 (iii) | **VRAM column derived** — typed `vramGB` off by > 0.15 GB on 182 of 313 rows (Gemma 4 12B showed its file size, 7.1 vs 8.0); model table, cards, similar, Hub export, 4090 gate → `sizeAt4K()`; compare row → recorded file bytes; footnote states GiB vs decimal GB |
 | 2026-10-23 (ii) | **"97.1% quality retained" → "+2.9% perplexity vs FP16"** — homepage stat, model-page tile, similar-model cards and the FAQ answer called a perplexity rise "quality"/"accuracy"; reader email was right on that, wrong that the rows are all WikiText-2 (they are model-card / community figures) |
 | 2026-10-23 | **Patrol** — llama.cpp b11829 (Ollama v0.40.9 pre-release, rest unchanged); Poolside Laguna S 2.1 118B-A8B on `/pending/` (llama.cpp `laguna` exists; transformers defaults are XS.2, not S 2.1 — layout unread); Bolt E4B no weights yet |

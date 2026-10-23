@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-23',
+    en: 'Five models added, all sized from their real files: Recursive Flint, Poolside Laguna S 2.1, and the 0.9B, 3.7B and 375B-A23B members of K2 Horizon. Flint is a 40B coding model with 2.5B active per token; at Q3_K_M it needs about 20.6 GB at 4K and is comfortable on a 24 GB card. Laguna S 2.1 needs about 71 GB at Q4_K_M and suits 128 GB machines. The K2 Horizon 375B fits a 256 GB Mac at Q2_K; the 0.9B and 3.7B run on almost anything.',
+    zh: '新增五个模型，全部按真实文件计算体积：Recursive Flint、Poolside Laguna S 2.1，以及 K2 Horizon 的 0.9B、3.7B 和 375B-A23B。Flint 是 40B 的编程模型，每个 token 激活 2.5B；Q3_K_M 在 4K 下约需 20.6 GB，24 GB 显卡很宽裕。Laguna S 2.1 的 Q4_K_M 约需 71 GB，适合 128 GB 的机器。K2 Horizon 375B 用 Q2_K 能装进 256 GB 的 Mac；0.9B 和 3.7B 几乎什么硬件都能跑。',
+  },
+  {
+    date: '2026-10-23',
     en: 'The VRAM column on model pages and model cards now shows what its footnote promised: the calculator\'s total at 4K context. It had been a hand-typed figure that on many rows was just the file size; Gemma 4 12B at Q4_K_M read 7.1 GB where the total is 8.0 GB. No fit verdict changes, since those were always computed. The footnote also says why a file size and a VRAM figure use different units.',
     zh: '模型页和模型卡片上的显存一栏，现在显示的就是脚注承诺的内容：计算器在 4K 上下文下的总量。它原先是手填的数字，很多行其实只是文件大小；比如 Gemma 4 12B 的 Q4_K_M 写的是 7.1 GB，实际总量是 8.0 GB。能否装下的判断没有变化，因为那些一直是计算出来的。脚注还说明了文件大小和显存数字为什么用不同的单位。',
   },

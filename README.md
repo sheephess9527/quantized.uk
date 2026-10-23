@@ -419,6 +419,31 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (v) — +5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B
+
+- Source: owner-pulled config.json for all five + HF tree byte counts (X-Linked-Size checked on the Q4_K_M
+  files). One publisher per row, chosen so the CLI's `<repo>-<level>` filename exists: bartowski for Flint
+  and the three K2 sizes, ggml-org for Laguna.
+- **Flint** (Recursive, 10-21, Apache 2.0): config confirms the transformers construction from 10-22 — 14 full
+  + 35 SWA-513 (`layer_types`), 4 KV × 128 → 1280 cells. 39.81B = ggml-org BF16 ÷ 2. bartowski Q3_K_M 3.92 /
+  Q4_K_M 5.09 / Q8_0 8.51 bpw (ggml-org Q4_K_M is 1.96 GB smaller, 4.70; unsloth has UD-Q4_K_XL, no Q4_K_M).
+  Q3_K_M 20.6 GB @4K → green on 24 GB (tight 32K–128K); Q4_K_M 26.7 → 32 GB. `todayFeed` id 26.
+- **Laguna S 2.1** (Poolside, OpenMDW-1.1): 48 L = 12 full + 36 SWA-512 → 1024 cells; 8 KV × 128 on every
+  layer (query heads 48 full / 72 window — KV unaffected); 117.60B = poolside F16 ÷ 2 (unsloth BF16 parts agree);
+  ggml-org Q4_K_M 4.60 / Q8_0 8.50. Poolside's own Q4_K_M is 96.0 GB (6.53 bpw) — named in the description, not
+  mixed in. Q4_K_M 71.0 GB @4K, 123.6 GB at 1M → green on 128 GB Spark / Macs.
+- **K2 Horizon 0.9B / 3.7B**: 1.08B / 5.06B from bartowski bf16 (IFM's BF16 agree; IFM names its files 1B / 4B,
+  bartowski 0.9B / 3.7B — bartowski used so the CLI filename resolves). Plain KV (28 × 8 × 64; 36 × 8 × 128).
+- **K2 Horizon 375B-A23B**: no BF16 GGUF; params counted from config = 379.17B, and the 11-part Q8_0 lands on
+  8.50 bpw over it. bartowski Q2_K 3.09 / Q3_K_M 3.85 / Q4_K_M 5.02 / Q8_0 8.50 (bytes = sum of parts, `parts`
+  set). Plain KV on 61 layers. Q2_K 154 GB @4K → 256 GB Mac; Q4_K_M 250 GB → 512 GB only.
+- `/pending/`: `flint`, `laguna-s-2-1`, `k2-horizon` removed (13 → 10). Counts re-run: every card +2 comfortable
+  (0.9B / 3.7B), ≥ 24 GB +3 (Flint), 128 GB +4, 256/512 GB +5. Guides en + zh: denominators 117 → 122, Q4_K_M
+  "115 of the 122", 16 GB 66/78, 12 GB 60/62, Arc 60/62/52/43, XTX / 24 GB 91 (96 load), 5090 97, Spark 105/110,
+  M3 Max 48 97; AWQ (53) unchanged. 24 GB guide's coding section adds Flint. `updatedAt` → 10-23 on the 10 guides
+  whose counts moved.
+- Not deployed tonight (owner: one deploy for the evening).
+
 ### 2026-10-23 (iv) — HSTS header
 
 - A cold "passive scan" email (ShipGuard) reported HSTS missing. Checked the repo: `public/_headers` set no

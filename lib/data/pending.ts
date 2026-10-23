@@ -25,53 +25,6 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
-    id: 'laguna-s-2-1',
-    name: 'Poolside Laguna S 2.1 118B-A8B',
-    vendor: 'Poolside',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'An agentic coding mixture-of-experts model: 118B parameters, about 8B active per token, a 1M-token window, under Poolside\'s OpenMDW-1.1 licence. Poolside says it runs on one DGX Spark. llama.cpp supports the `laguna` architecture, which can mix full-attention and sliding-window layers. Not sized yet: the only reachable configuration describes the smaller Laguna XS.2, and this model\'s layer layout, per-layer head counts and GGUF file sizes have not been read. Reports also disagree on its release date (21 July or 24 August).',
-      zh: '面向智能体编程的混合专家模型：118B 参数，每个 token 约激活 8B，100 万 token 上下文，采用 Poolside 的 OpenMDW-1.1 许可。Poolside 称它能在一台 DGX Spark 上运行。llama.cpp 已支持 `laguna` 架构，这种架构可以混用全注意力层和滑动窗口层。还没算显存：目前能读到的配置描述的是较小的 Laguna XS.2，这个模型自己的层结构、每层注意力头数和 GGUF 文件大小都还没读到。各方报道的发布日期也不一致（7 月 21 日或 8 月 24 日）。',
-    },
-    recheck: {
-      en: 'When its config.json and a GGUF repo\'s file listing with byte counts are in hand.',
-      zh: '拿到它的 config.json 和某个 GGUF 仓库带字节数的文件列表时。',
-    },
-    checkedAt: '2026-10-23',
-  },
-  {
-    id: 'flint',
-    name: 'Recursive Flint 40B-A2.5B',
-    vendor: 'Recursive',
-    announced: '2026-10-21',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'A coding mixture-of-experts model under Apache 2.0: 39.8B parameters, about 2.5B active per token, a 262K window. Its layout is confirmed from the transformers configuration and llama.cpp\'s `flint` architecture: 49 layers, of which 14 keep a full-length cache and 35 use a 513-token sliding window, with 4 KV heads, so long context is cheap. Ollama v0.40.8 runs it on macOS only for now. Not sized yet: no GGUF file listing has been read, so neither the levels on offer nor their real sizes are known.',
-      zh: 'Apache 2.0 许可的编程混合专家模型：39.8B 参数，每个 token 约激活 2.5B，262K 上下文。层结构已根据 transformers 配置和 llama.cpp 的 `flint` 架构确认：49 层中 14 层保留完整长度的缓存，35 层只用 513 token 的滑动窗口，4 个 KV 头，所以长上下文很省显存。Ollama v0.40.8 目前只在 macOS 上支持它。还没算显存：没有读到 GGUF 文件列表，既不知道提供哪些量化档位，也不知道真实大小。',
-    },
-    recheck: {
-      en: 'When a GGUF repo\'s file listing with byte counts is in hand.',
-      zh: '拿到某个 GGUF 仓库带字节数的文件列表时。',
-    },
-    checkedAt: '2026-10-22',
-  },
-  {
-    id: 'k2-horizon',
-    name: 'K2 Horizon 0.9B / 3.7B / 375B-A23B',
-    vendor: 'MBZUAI IFM',
-    announced: '2026-09-03',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'The rest of a six-model, fully open family under Apache 2.0 (training data and logs included). The 7B, 32B and 36B-A4B are now in the index, sized from their config.json files and IFM\'s GGUF byte counts. The 0.9B, 3.7B and 375B-A23B are not sized yet: their configs and file listings have not been read.',
-      zh: '一组六个完全开源模型（Apache 2.0，训练数据和日志一并公开）中剩下的三个。7B、32B 和 36B-A4B 已按各自的 config.json 和 IFM 的 GGUF 字节数收录。0.9B、3.7B 和 375B-A23B 还没算显存：它们的 config 和文件列表还没读到。',
-    },
-    recheck: {
-      en: 'When these three sizes\' config.json and a GGUF file listing are in hand.',
-      zh: '拿到这三个尺寸的 config.json 和 GGUF 文件列表时。',
-    },
-    checkedAt: '2026-10-21',
-  },
-  {
     id: 'deepseek-v4-1-flash-1017',
     name: 'DeepSeek-V4.1-Flash-1017',
     vendor: 'DeepSeek',

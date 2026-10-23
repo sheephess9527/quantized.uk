@@ -24,6 +24,7 @@ const ADDED_GEMMA4_12B = '2026-10-19';
 const ADDED_NORTH_MINI = '2026-10-20';
 const ADDED_MINICPM47 = '2026-10-20';
 const ADDED_K2H = '2026-10-21';
+const ADDED_1023 = '2026-10-23';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -949,6 +950,138 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.74, vramGB: 7.4, hfSearchUrl: hf('K2-Horizon-7B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q5_K_M.gguf', bytes: 6_466_075_008, checkedAt: '2026-10-21' } },
       { format: 'GGUF', level: 'Q6_K', bpw: 6.57, vramGB: 8.3, hfSearchUrl: hf('K2-Horizon-7B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q6_K.gguf', bytes: 7_394_548_096, checkedAt: '2026-10-21' } },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 10.6, hfSearchUrl: hf('K2-Horizon-7B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'IFM/K2-Horizon-7B-GGUF', file: 'K2-Horizon-7B-Q8_0.gguf', bytes: 9_573_964_160, checkedAt: '2026-10-21' } },
+    ],
+  },
+  {
+    // Recursive Flint (2026-10-21, Apache 2.0). Owner-pulled config.json (2026-10-23): `flint`, 49 layers,
+    // hidden 2048, 32 heads / 4 KV × 128, 256 experts top-6 (512) + 1 shared (1024), 2 dense lead layers,
+    // attention sinks, vocab 150144 untied, 262144 positions. layer_types: 14 full + 35 sliding (window
+    // 513) — matches transformers' construction. llama.cpp `flint`: build_attn_inp_kv_iswa, standard SWA →
+    // pad256(513 + 512) = 1280 cells. Params = ggml-org BF16 79,625,761,760 B ÷ 2 = 39.81B. Levels from
+    // bartowski (one publisher; its filenames are what the CLI derives): Q3_K_M 3.92 / Q4_K_M 5.09 /
+    // Q8_0 8.51 bpw. ggml-org's Q4_K_M is 1,958,740,224 B smaller (4.70 bpw); unsloth has no plain Q4_K_M.
+    id: 'flint-40b-a2-5b',
+    name: 'Recursive Flint 40B-A2.5B',
+    family: 'Recursive Flint',
+    params: 39.81,
+    paramLabel: '40B-A2.5B',
+    categories: ['code', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 49, attHeads: 32, kvHeads: 4, headDim: 128, attention: { fullLayers: 14, windowLayers: 35, windowTokens: 1280, note: { en: '14 of 49 layers use full attention; the other 35 use a 513-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1280).', zh: '49 层中 14 层是全注意力，其余 35 层使用 513 token 的滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1280）。' } } },
+    addedAt: ADDED_1023,
+    description: {
+      en: 'Recursive\'s open coding model, released on 21 October under Apache 2.0: 39.8B parameters, about 2.5B active per token. It is built for repository work such as tracing bugs and adding tests. Only 14 of its 49 layers keep a cache that grows with context, so long sessions stay cheap. On a 24 GB card the Q3_K_M build (bartowski\'s 19.5 GB file) needs about 20.6 GB at 4K, which is comfortable, and stays only tight up to 128K. Q4_K_M needs about 26.7 GB at 4K, so it wants a 32 GB card; ggml-org\'s Q4_K_M file is about 2 GB smaller than bartowski\'s. llama.cpp runs it as `flint`; Ollama v0.40.8 supports it on macOS only so far. Sizes come from real files; no per-level quality loss has been published.',
+      zh: 'Recursive 10 月 21 日发布的开源编程模型，Apache 2.0 许可：39.8B 参数，每个 token 约激活 2.5B，面向追查 bug、补测试这类代码仓库工作。49 层中只有 14 层的缓存随上下文增长，所以长会话也很省显存。在 24 GB 显卡上，Q3_K_M（bartowski 的 19.5 GB 文件）在 4K 下约需 20.6 GB，宽裕；一直到 128K 也只是偏紧。Q4_K_M 在 4K 下约需 26.7 GB，需要 32 GB 显卡；ggml-org 的 Q4_K_M 文件比 bartowski 的小约 2 GB。llama.cpp 以 `flint` 架构运行它；Ollama v0.40.8 目前只在 macOS 上支持。体积按真实文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.92, vramGB: 0, hfSearchUrl: hf('RecursiveSI flint GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/RecursiveSI_flint-GGUF', file: 'RecursiveSI_flint-Q3_K_M.gguf', bytes: 19_529_151_712, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.09, vramGB: 0, hfSearchUrl: hf('RecursiveSI flint GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/RecursiveSI_flint-GGUF', file: 'RecursiveSI_flint-Q4_K_M.gguf', bytes: 25_346_651_360, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 0, hfSearchUrl: hf('RecursiveSI flint GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/RecursiveSI_flint-GGUF', file: 'RecursiveSI_flint-Q8_0.gguf', bytes: 42_350_359_776, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // Poolside Laguna S 2.1 (OpenMDW-1.1; release date reported as 07-21 or 08-24). Owner-pulled
+    // config.json (2026-10-23): `laguna`, 48 layers, hidden 3072, 8 KV × 128 on every layer (query heads
+    // 48 on full layers, 72 on window layers), 256 experts top-10 (1024) + shared (1024), first layer dense,
+    // per-head gating, vocab 100352 untied, 1,048,576 positions (YaRN ×128 from 8192 on full layers).
+    // layer_types: 12 full + 36 sliding (window 512). llama.cpp `laguna`: build_attn_inp_kv_iswa when the
+    // GGUF carries a window → pad256(512 + 512) = 1024 cells. Params = poolside F16 235,202,258,240 B ÷ 2 =
+    // 117.60B (unsloth BF16 parts agree to 1 kB). Levels from ggml-org: Q4_K_M 4.60 / Q8_0 8.50 bpw.
+    // poolside's own Q4_K_M is 96,031,829,760 B (6.53 bpw) — far larger; not mixed in.
+    id: 'laguna-s-2-1-118b-a8b',
+    name: 'Laguna S 2.1 118B-A8B',
+    family: 'Poolside Laguna',
+    params: 117.6,
+    paramLabel: '118B-A8B',
+    categories: ['code', 'instruct'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 1048576,
+    arch: { layers: 48, attHeads: 48, kvHeads: 8, headDim: 128, attention: { fullLayers: 12, windowLayers: 36, windowTokens: 1024, note: { en: '12 of 48 layers use full attention; the other 36 use a 512-token sliding window (llama.cpp keeps the window plus one 512-token batch, 1024 cells).', zh: '48 层中 12 层是全注意力，其余 36 层使用 512 token 的滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，共 1024 个单元）。' } } },
+    addedAt: ADDED_1023,
+    description: {
+      en: 'Poolside\'s agentic coding model under its OpenMDW-1.1 licence: 117.6B parameters with about 8B active per token and a 1M-token window. Only 12 of its 48 layers keep a cache that grows with context; the rest use a 512-token sliding window. At Q4_K_M (ggml-org\'s 67.7 GB file) it needs about 71.0 GB at 4K, which is comfortable on a 128 GB DGX Spark or Mac, and the full 1M window adds only about 53 GB more. Poolside\'s own Q4_K_M file is far larger (96.0 GB), so check which file you download. llama.cpp runs it as `laguna`. Sizes come from real files; no per-level quality loss has been published.',
+      zh: 'Poolside 的智能体编程模型，采用 OpenMDW-1.1 许可：117.6B 参数，每个 token 约激活 8B，100 万 token 上下文。48 层中只有 12 层的缓存随上下文增长，其余层只用 512 token 的滑动窗口。Q4_K_M（ggml-org 的 67.7 GB 文件）在 4K 下约需 71.0 GB，128 GB 的 DGX Spark 或 Mac 都很宽裕；用满 100 万窗口也只多约 53 GB。Poolside 自己发布的 Q4_K_M 文件大得多（96.0 GB），下载前请确认是哪个文件。llama.cpp 以 `laguna` 架构运行它。体积按真实文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.6, vramGB: 0, hfSearchUrl: hf('Laguna-S-2.1 GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'ggml-org/Laguna-S-2.1-GGUF', file: 'Laguna-S-2.1-Q4_K_M.gguf', bytes: 67_661_639_264, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('Laguna-S-2.1 GGUF Q8_0'), confidence: 'estimated', source: { repo: 'ggml-org/Laguna-S-2.1-GGUF', file: 'Laguna-S-2.1-Q8_0.gguf', bytes: 125_022_858_848, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // K2 Horizon 0.9B (dense). Owner-pulled config.json: 28 layers, hidden 1536, 32 heads / 8 KV × 64,
+    // vocab 64256 untied, 131072 positions (YaRN ×16 from 8192), no window → plain cache. Params =
+    // bartowski bf16 2,159,434,560 B ÷ 2 = 1.08B (IFM's BF16 agrees). Levels from bartowski, whose files are
+    // named `K2-Horizon-0.9B-*` (IFM's own repo names them `K2-Horizon-1B-*`; its Q4_K_M is 23,750,368 B smaller).
+    id: 'k2-horizon-0-9b',
+    name: 'K2 Horizon 0.9B',
+    family: 'MBZUAI K2 Horizon',
+    params: 1.08,
+    paramLabel: '0.9B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: { layers: 28, attHeads: 32, kvHeads: 8, headDim: 64 },
+    addedAt: ADDED_1023,
+    description: {
+      en: 'The smallest member of MBZUAI IFM\'s K2 Horizon family, Apache 2.0 and released with its training data. It is called 0.9B and holds 1.08B parameters. At Q4_K_M it needs about 1.0 GB at 4K and 2.6 GB at 32K, so it runs on almost anything, including a CPU. Every layer keeps an ordinary cache, which is why its full 128K window needs about 8.4 GB. IFM\'s own GGUF repo names these files 1B; the sizes here are bartowski\'s files, and no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中最小的型号，Apache 2.0 许可，训练数据一并公开。名字叫 0.9B，实际是 1.08B 参数。Q4_K_M 在 4K 下约需 1.0 GB，32K 下约 2.6 GB，几乎什么硬件都能跑，包括纯 CPU。它每一层都保留普通缓存，所以用满 128K 窗口约需 8.4 GB。IFM 自己的 GGUF 仓库把这些文件命名为 1B；这里的体积按 bartowski 的文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.11, vramGB: 0, hfSearchUrl: hf('K2-Horizon-0.9B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-0.9B-GGUF', file: 'K2-Horizon-0.9B-Q4_K_M.gguf', bytes: 689_934_432, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 0, hfSearchUrl: hf('K2-Horizon-0.9B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-0.9B-GGUF', file: 'K2-Horizon-0.9B-Q8_0.gguf', bytes: 1_148_623_968, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // K2 Horizon 3.7B (dense). Owner-pulled config.json: 36 layers, hidden 2560, 32 heads / 8 KV × 128,
+    // vocab 250624 untied, 524288 positions, no window → plain cache. Params = bartowski bf16
+    // 10,128,352,256 B ÷ 2 = 5.06B — the "3.7B" omits the 250K-vocab tables (2 × 250624 × 2560 = 1.28B).
+    // Levels from bartowski (IFM's repo names its files `K2-Horizon-4B-*`; its Q4_K_M is 97,903,520 B smaller).
+    id: 'k2-horizon-3-7b',
+    name: 'K2 Horizon 3.7B',
+    family: 'MBZUAI K2 Horizon',
+    params: 5.06,
+    paramLabel: '3.7B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 524288,
+    arch: { layers: 36, attHeads: 32, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_1023,
+    description: {
+      en: 'A small dense member of MBZUAI IFM\'s K2 Horizon family, Apache 2.0 and released with its training data. It is called 3.7B but holds 5.06B parameters: the 250K-token vocabulary\'s input and output tables add about 1.3B. At Q4_K_M it needs about 4.0 GB at 4K, comfortable on any card; at 32K it is about 8.3 GB, tight on an 8 GB card. Every layer keeps an ordinary cache, so 128K needs about 23.2 GB. IFM\'s own GGUF repo names these files 4B; the sizes here are bartowski\'s files, and no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中的小号稠密型号，Apache 2.0 许可，训练数据一并公开。名字叫 3.7B，实际有 5.06B 参数：25 万词表的输入、输出两张表多出约 1.3B。Q4_K_M 在 4K 下约需 4.0 GB，任何显卡都宽裕；32K 下约 8.3 GB，在 8 GB 显卡上偏紧。它每一层都保留普通缓存，所以 128K 约需 23.2 GB。IFM 自己的 GGUF 仓库把这些文件命名为 4B；这里的体积按 bartowski 的文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.14, vramGB: 0, hfSearchUrl: hf('K2-Horizon-3.7B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-3.7B-GGUF', file: 'K2-Horizon-3.7B-Q4_K_M.gguf', bytes: 3_254_501_664, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 0, hfSearchUrl: hf('K2-Horizon-3.7B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-3.7B-GGUF', file: 'K2-Horizon-3.7B-Q8_0.gguf', bytes: 5_386_413_344, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // K2 Horizon 375B-A23B (MoE). Owner-pulled config.json: 61 layers, hidden 6144, 48 heads / 8 KV × 128,
+    // 192 experts top-8 (1792) + 1 shared, first 3 layers dense (16384), no MoVA experts, vocab 250624
+    // untied, 524288 positions, no window → plain cache on all 61 layers. No BF16 GGUF listed, so params are
+    // counted from the config: 379.17B; bartowski's 11-part Q8_0 lands on exactly 8.50 bpw over that, which
+    // confirms it. Levels from bartowski (split folders; bytes = sum of parts): Q2_K 3.09 / Q3_K_M 3.85 /
+    // Q4_K_M 5.02 / Q8_0 8.50. No IFM GGUF repo exists for this size.
+    id: 'k2-horizon-375b-a23b',
+    name: 'K2 Horizon 375B-A23B',
+    family: 'MBZUAI K2 Horizon',
+    params: 379.17,
+    paramLabel: '375B-A23B',
+    categories: ['general', 'instruct', 'code'],
+    hardwareTags: ['mac', 'pro-gpu'],
+    contextLength: 524288,
+    arch: { layers: 61, attHeads: 48, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_1023,
+    description: {
+      en: 'The largest K2 Horizon model from MBZUAI IFM, Apache 2.0 with its training data: 379B parameters, about 23B active per token. The parameter count is taken from its configuration. Every one of its 61 layers keeps an ordinary cache. Q2_K (bartowski\'s 146 GB in four parts) needs about 154 GB at 4K, comfortable on a 256 GB Mac Studio; Q4_K_M (238 GB in seven parts) needs about 250 GB and is comfortable only on a 512 GB one. IFM publishes no GGUF for this size; the sizes here are bartowski\'s files, and no per-level quality loss has been published.',
+      zh: 'MBZUAI IFM 的 K2 Horizon 系列中最大的型号，Apache 2.0 许可，训练数据一并公开：按配置算出 379B 参数，每个 token 约激活 23B。61 层每一层都保留普通缓存。Q2_K（bartowski 的 146 GB，分 4 卷）在 4K 下约需 154 GB，256 GB 的 Mac Studio 宽裕；Q4_K_M（238 GB，分 7 卷）约需 250 GB，只有 512 GB 的才宽裕。IFM 没有为这个尺寸发布 GGUF；这里的体积按 bartowski 的文件计算，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q2_K', bpw: 3.09, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q2_K'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q2_K-00001-of-00004.gguf', bytes: 146_249_929_920, parts: 4, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf', bytes: 182_537_573_664, parts: 5, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf', bytes: 237_797_004_832, parts: 7, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf', bytes: 403_079_845_472, parts: 11, checkedAt: '2026-10-23' } },
     ],
   },
 ];
