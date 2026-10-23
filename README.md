@@ -472,6 +472,10 @@ in the session scratchpad, not committed):
   live domain and the dashboard are unreachable). Added `/*  Strict-Transport-Security: max-age=31536000`
   — no `includeSubDomains` / `preload` (both hard to undo; other records in the zone not audited). The
   report link in the email was not opened. Infrastructure only, so no reader changelog entry.
+- Follow-up (owner shared the scorecard: HSTS medium, X-Frame-Options/frame-ancestors low, CSP low): added
+  `X-Frame-Options: DENY` + `Content-Security-Policy: frame-ancestors 'none'` on `/*`. No `script-src` CSP — it
+  would have to whitelist Next's inline scripts, Cloudflare Web Analytics and Plausible, and a wrong one blanks
+  every page; this site has no logins, forms or user content for it to protect.
 
 ### 2026-10-23 (iii) — VRAM column derived, not typed
 

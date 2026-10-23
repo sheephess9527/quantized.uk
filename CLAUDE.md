@@ -163,7 +163,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   in `public/_headers` (`*` matches one path segment, never across `/`, so each route depth needs
   its own line — see the file for all 10).
 - **`public/_headers` also carries HSTS** (`/*`, `max-age=31536000`, no `includeSubDomains`/`preload` — both are hard to
-  undo). If the owner turns HSTS on in the Cloudflare dashboard instead, delete the rule rather than keep two sources.
+  undo), plus `X-Frame-Options: DENY` and a CSP that is **only** `frame-ancestors 'none'`. Do not grow it into a
+  `script-src` policy without testing every page with JS on: Next's inline scripts, Cloudflare's beacon and Plausible all need allowing. If the owner turns HSTS on in the Cloudflare dashboard instead, delete the rule rather than keep two sources.
 - **A bare email address rendered as text is a Cloudflare hydration risk.** Scrape Shield → Email
   Address Obfuscation rewrites any bare address or `mailto:` link in the HTML leaving Cloudflare's
   edge; since this is a static export, the React bundle hydrates against the *unmutated* text it was
