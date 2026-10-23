@@ -162,6 +162,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `application/octet-stream` — a type social-card validators do not sniff past. One line per route
   in `public/_headers` (`*` matches one path segment, never across `/`, so each route depth needs
   its own line — see the file for all 10).
+- **`public/_headers` also carries HSTS** (`/*`, `max-age=31536000`, no `includeSubDomains`/`preload` — both are hard to
+  undo). If the owner turns HSTS on in the Cloudflare dashboard instead, delete the rule rather than keep two sources.
 - **A bare email address rendered as text is a Cloudflare hydration risk.** Scrape Shield → Email
   Address Obfuscation rewrites any bare address or `mailto:` link in the HTML leaving Cloudflare's
   edge; since this is a static export, the React bundle hydrates against the *unmutated* text it was

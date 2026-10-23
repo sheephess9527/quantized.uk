@@ -43,3 +43,10 @@
 
 /zh/formats/*/opengraph-image
   Content-Type: image/png
+
+# HSTS (2026-10-23, after a passive scan flagged it missing). The site is HTTPS-only on Cloudflare
+# Pages already; this tells browsers to stop trying http:// first. One year, no includeSubDomains
+# and no preload — both are hard to undo and this zone's other records were not audited for them.
+# If HSTS is later switched on in the Cloudflare dashboard (SSL/TLS → Edge Certificates), remove this.
+/*
+  Strict-Transport-Security: max-age=31536000

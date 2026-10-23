@@ -419,6 +419,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-23 (iv) — HSTS header
+
+- A cold "passive scan" email (ShipGuard) reported HSTS missing. Checked the repo: `public/_headers` set no
+  `Strict-Transport-Security`; whether the Cloudflare dashboard sets it could not be checked from here (the
+  live domain and the dashboard are unreachable). Added `/*  Strict-Transport-Security: max-age=31536000`
+  — no `includeSubDomains` / `preload` (both hard to undo; other records in the zone not audited). The
+  report link in the email was not opened. Infrastructure only, so no reader changelog entry.
+
 ### 2026-10-23 (iii) — VRAM column derived, not typed
 
 - Reader email (an AI agent offering paid page checks — not taken up): Gemma 4 12B's VRAM column read
