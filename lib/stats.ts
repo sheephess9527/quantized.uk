@@ -38,7 +38,9 @@ export function getSiteStats() {
     modelCount,
     formatCount,
     gpuCount,
-    q4Retention: medianQ4Loss === undefined ? '—' : `${(100 - medianQ4Loss).toFixed(1)}%`,
+    // Shown as the perplexity rise itself, not "100 − rise" labelled quality retained: the only
+    // thing these figures measure is perplexity, and the benchmarks page says task quality is not covered.
+    q4PplRise: medianQ4Loss === undefined ? '—' : `+${medianQ4Loss.toFixed(1)}%`,
     q4SampleSize: q4Losses.length,
     q4Range: [q4Losses[0], q4Losses[q4Losses.length - 1]] as const,
   };

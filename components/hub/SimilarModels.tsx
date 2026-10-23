@@ -71,7 +71,7 @@ export default function SimilarModels({ modelId }: Props) {
                 <span>{s.minVram}</span>
                 <span aria-hidden className="text-slate-700">·</span>
                 <span className="font-mono text-emerald-400">
-                  {bestLoss === undefined ? '—' : `${(100 - bestLoss).toFixed(1)}%`}
+                  {bestLoss === undefined ? '—' : `+${bestLoss.toFixed(1)}%`}
                 </span>
                 <span>{s.accuracy}</span>
               </div>

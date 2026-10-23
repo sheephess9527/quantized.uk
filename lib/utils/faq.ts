@@ -222,8 +222,8 @@ export function faqGroups(): FaqGroup[] {
             zh: 'Q4 量化掉点严重吗？',
           },
           a: {
-            en: `At Q4_K_M the median published perplexity loss across the ${stats.q4SampleSize} models here that report one is ${(100 - Number(stats.q4Retention.replace('%', ''))).toFixed(1)}% — ${stats.q4Retention} retained — with the range running ${one(stats.q4Range[0])}% to ${one(stats.q4Range[1])}%. Two caveats that matter more than the median: smaller models lose more than larger ones at the same level, and perplexity is a language-modelling measure, not a measure of whether the model still does your task. Models without a published figure are shown as a dash here rather than assumed to be lossless.`,
-            zh: `在 Q4_K_M 下，本站有公开困惑度数据的 ${stats.q4SampleSize} 个模型，损失中位数为 ${(100 - Number(stats.q4Retention.replace('%', ''))).toFixed(1)}% —— 即保留 ${stats.q4Retention} —— 区间从 ${one(stats.q4Range[0])}% 到 ${one(stats.q4Range[1])}%。有两点比中位数更重要：同一档位下，小模型掉得比大模型多；而且困惑度衡量的是语言建模能力，不等于「它还能不能做好你的任务」。没有公开数据的模型在本站显示为短横线，而不是当作零损失。`,
+            en: `At Q4_K_M the median published perplexity loss across the ${stats.q4SampleSize} models here that report one is ${stats.q4PplRise.replace('+', '')} over FP16, with the range running ${one(stats.q4Range[0])}% to ${one(stats.q4Range[1])}%. Two caveats that matter more than the median: smaller models lose more than larger ones at the same level, and perplexity is a language-modelling measure, not a measure of whether the model still does your task. Models without a published figure are shown as a dash here rather than assumed to be lossless.`,
+            zh: `在 Q4_K_M 下，本站有公开困惑度数据的 ${stats.q4SampleSize} 个模型，困惑度相对 FP16 上升的中位数为 ${stats.q4PplRise.replace('+', '')}，区间从 ${one(stats.q4Range[0])}% 到 ${one(stats.q4Range[1])}%。有两点比中位数更重要：同一档位下，小模型掉得比大模型多；而且困惑度衡量的是语言建模能力，不等于「它还能不能做好你的任务」。没有公开数据的模型在本站显示为短横线，而不是当作零损失。`,
           },
           link: { href: '/quant-hub/', label: { en: 'Per-model figures', zh: '逐个模型的数据' } },
         },

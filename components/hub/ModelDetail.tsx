@@ -132,8 +132,9 @@ export default function ModelDetail({ model }: Props) {
           { label: d.context, value: model.contextLength >= 1000 ? `${(model.contextLength / 1000).toFixed(0)}K` : String(model.contextLength) },
           { label: d.variants, value: String(model.quants.length) },
           { label: d.bestQuality, value: `${bestQuant.format} ${bestQuant.level}` },
-          // Accuracy is only a number when someone published a perplexity loss.
-          { label: d.bestAccuracy, value: bestQuant.pplLossPercent === undefined ? '—' : `${(100 - bestQuant.pplLossPercent).toFixed(1)}%` },
+          // A number only when someone published a perplexity loss — and shown as that rise, not as
+          // "accuracy retained", because perplexity is all it measures.
+          { label: d.bestAccuracy, value: bestQuant.pplLossPercent === undefined ? '—' : `+${bestQuant.pplLossPercent.toFixed(1)}%` },
         ].map(({ label, value }) => (
           <div key={label} className="glass rounded-xl p-4 text-center">
             <p className="text-lg font-bold text-gradient">{value}</p>

@@ -9,7 +9,7 @@ const stats = [
   { value: String(siteStats.modelCount), keyName: 'models'   },
   { value: String(siteStats.formatCount), keyName: 'formats'  },
   { value: String(siteStats.gpuCount),    keyName: 'gpus'     },
-  { value: siteStats.q4Retention,         keyName: 'accuracy' },
+  { value: siteStats.q4PplRise,         keyName: 'accuracy' },
 ] as const;
 
 export default function StatsBar() {

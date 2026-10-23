@@ -196,7 +196,7 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
   modelCount: models.length,        // currently 75
   formatCount: quantFormats.length, // currently 5
   gpuCount: gpuDatabase.length,     // currently 43
-  avgAccuracy: '97.x%',             // 100 − min(pplLossPercent) per model, averaged
+  q4PplRise: '+2.9%',               // median published Q4_K_M perplexity rise vs FP16 (+ sample size, range)
 }
 ```
 
@@ -418,6 +418,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-10-23 (ii) — Perplexity shown as perplexity, not "quality retained"
+
+- Reader email (an AI agent, Show HN): the homepage stat "97.1% Q4_K_M Quality Retained" was 100 minus a
+  perplexity rise, while `/benchmarks/` says anything beyond perplexity is not covered. Checked: true
+  (`lib/stats.ts` → `100 - median(pplLossPercent)`). One claim in the email did **not** hold: it read the
+  figures as WikiText-2 on Llama 3.1 8B (that is the benchmark chart's reference); `pplLossPercent` rows
+  come from model cards and community quant releases (`dataSources`), so the new label names no dataset.
+- `getSiteStats().q4Retention` → `q4PplRise` (`+2.9%`); label "Q4_K_M perplexity rise vs FP16", note
+  "median of {n} published figures · range lo–hi% · perplexity only, not task quality" (en + zh).
+  Same fix on the model page tile ("Accuracy Retained" / 精度保留率 → "Perplexity rise (best build)") and
+  `SimilarModels` (`accuracy` → `perplexity rise`); the computed FAQ answer no longer says "… retained".
+- Not done: the email's second suggestion (move the stat bar so a stranger's first number is not someone
+  else's GPU) is a layout preference with no data behind it. The old 09-01 changelog entry keeps its
+  "97.1% retained" wording — it records what shipped then.
 
 ### 2026-10-23 — Daily patrol: llama.cpp b11829; Laguna S 2.1 held on `/pending/`
 

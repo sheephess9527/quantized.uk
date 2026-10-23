@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-23',
+    en: 'The homepage figure that read "97.1% Q4_K_M quality retained" now says what it measures: perplexity at Q4_K_M rises by a median of 2.9% over FP16, across the models that publish a figure. Perplexity is the only quality measure this index has, and the benchmarks page already says task quality is not covered, so calling it "quality" or "accuracy" claimed more than the data supports. Model pages and the similar-model cards use the same wording now.',
+    zh: '首页原先写着“Q4_K_M 质量保留率 97.1%”的数字，现在直接说明它测的是什么：在公布了数据的模型里，Q4_K_M 的困惑度相对 FP16 上升的中位数是 2.9%。困惑度是本索引唯一的质量指标，基准页本来就写明不涵盖任务能力，所以叫它“质量”或“精度”，说得比数据能支撑的多。模型页和相似模型卡片也改成了同样的说法。',
+  },
+  {
+    date: '2026-10-23',
     en: 'llama.cpp is now at b11829; Ollama (v0.40.8), vLLM (v0.32.0) and ExLlamaV3 (v1.6.4) are unchanged. Poolside\'s Laguna S 2.1, a 118B mixture-of-experts coding model with about 8B parameters active per token, is now on the not-runnable-yet list: llama.cpp supports its architecture, but its layer layout and file sizes have not been checked.',
     zh: 'llama.cpp 更新到 b11829；Ollama（v0.40.8）、vLLM（v0.32.0）和 ExLlamaV3（v1.6.4）没有变化。Poolside 的 Laguna S 2.1（118B 混合专家编程模型，每个 token 约激活 8B 参数）已列入“还不能本地跑”清单：llama.cpp 已支持它的架构，但它的层结构和文件大小还没核对。',
   },

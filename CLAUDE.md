@@ -314,7 +314,8 @@ so anything computed has to say what it is computed over. `98.4% avg accuracy` a
 `100 - min(pplLoss)` across models — silently mixing Q4_K_M for 31 models, Q8_0 for 18, Q5_K_M for
 13 — so it tracked the shape of the index, not quantization, and moved whenever a level was added.
 Replaced with one named level (`Q4_K_M`, which all 79 models ship), a median, and the range printed
-under it. If a number cannot state its basis in one line, it does not belong on the homepage.
+under it — **and shown as the perplexity rise it is (`+2.9%`), never as "quality/accuracy retained"**: perplexity is
+the only quality measure here and `/benchmarks/` says task quality is not covered (2026-10-23, from a reader email). If a number cannot state its basis in one line, it does not belong on the homepage.
 
 **Format vocabularies come from the data** — `SHIPPED_FORMATS` in `lib/utils/model-meta.ts` is the
 single source: Hub chips, hero badges, the "formats tracked" stat and the format wizard all derive
@@ -1128,6 +1129,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-23 (ii) | **"97.1% quality retained" → "+2.9% perplexity vs FP16"** — homepage stat, model-page tile, similar-model cards and the FAQ answer called a perplexity rise "quality"/"accuracy"; reader email was right on that, wrong that the rows are all WikiText-2 (they are model-card / community figures) |
 | 2026-10-23 | **Patrol** — llama.cpp b11829 (Ollama v0.40.9 pre-release, rest unchanged); Poolside Laguna S 2.1 118B-A8B on `/pending/` (llama.cpp `laguna` exists; transformers defaults are XS.2, not S 2.1 — layout unread); Bolt E4B no weights yet |
 | 2026-10-22 | **Patrol** — llama.cpp b11803, Ollama v0.40.8 (vLLM / ExLlamaV3 unchanged); Recursive Flint 40B-A2.5B (10-21) on `/pending/`: shape confirmed from transformers + llama.cpp `flint` (14 full + 35 SWA-513 → 1280 cells, 4 KV × 128, 39.78B counted), GGUF listing unreadable (HF 403) |
 | 2026-10-21 (vii) | **Guide refresh** — new 24GB guide (28; 88 / 93 at 4K, 8K–128K table, partial-cache models hold 128K in ~21 GB); 8GB + 4060 Ti 16G guides gain Qwen3.5 / Gemma 4 / Granite / K2 rows; 4090 coder adds North Mini Code; Qwen3.5 9B "32K comfortable on 8 GB" was tight; guides whose fit counts move get `updatedAt` the same day |
