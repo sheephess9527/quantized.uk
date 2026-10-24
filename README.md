@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-24 (ii) — +1 model (123): Nemotron 3.5 Bolt E4B
+
+- Source: nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16 `config.json` diffed key by key against google/gemma-4-E4B-it:
+  the only difference is `text_config.max_position_embeddings` 65536 vs 131072 (the card also says 64K in /
+  64K out). So the shape is Gemma 4 E4B's (42 L, 8 heads / 2 KV × 256, 4 global 2 × 512 + 20 SWA-512, 18 shared
+  KV layers) — the patrol's worry that it might differ is settled. GGUF header (ggml-org Q8_0): 7,518,069,290 params.
+- Rows from lmstudio-community (CLI filename `<repo>-<level>` resolves; sizes identical to NVIDIA's `-4GB`
+  repo): Q4_K_M 6,180,446,208 B → 6.57 bpw (NVIDIA keeps both embedding tables, 3.49B params, at Q8_0), Q8_0
+  8,031,243,872 → 8.54. Unsloth UD-Q4_K_XL 4.76 GB named in the description, not mixed in. Q4_K_M 6.6 GB @4K,
+  7.6 GB @64K. `todayFeed` id 27.
+- `/pending/`: `nemotron-3-5-bolt-e4b` removed. Counts re-run: every card +1 comfortable at 4K. Guides en + zh:
+  denominators 122 → 123, Q4_K_M "116 of the 123", 16 GB 67/79, 12 GB 61/63, Arc 61/63/53/44, XTX / 24 GB 92
+  (97 load), 5090 98, Spark 106/111, M3 Max 48 98; AWQ (53) unchanged. `updatedAt` → 10-24 on guides whose counts moved.
+- Not deployed (draft PR from the new-model tracker).
+
 ### 2026-10-24 — Patrol: llama.cpp b11847, Ollama v0.40.10; Bolt E4B released, not sized
 
 - **Runtimes** (verbatim tag/release pages): llama.cpp b11847 (all top tags dated 10-23); Ollama

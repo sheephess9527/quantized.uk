@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-24',
+    en: 'Added Nemotron 3.5 Bolt E4B, NVIDIA\'s retune of Gemma 4 E4B. Its config is Gemma 4 E4B\'s with a 64K window, and its sizes come from the published GGUF files; it has left the pending page.',
+    zh: '新增 Nemotron 3.5 Bolt E4B，即 NVIDIA 调优的 Gemma 4 E4B。它的配置与 Gemma 4 E4B 相同，只是窗口为 64K；体积按已发布的 GGUF 文件计算，已从待收录页移出。',
+  },
+  {
+    date: '2026-10-24',
     en: 'Runtime versions updated: llama.cpp b11847 and Ollama v0.40.10. Nemotron 3.5 Bolt E4B is now out and Ollama runs it, but its sizes are not on the site yet: the pending page says what is still needed before it can be sized from its real files.',
     zh: '运行时版本已更新：llama.cpp b11847、Ollama v0.40.10。Nemotron 3.5 Bolt E4B 已经发布，Ollama 也能运行，但本站还没有收录它的体积：待收录页写明了按真实文件计算前还缺什么。',
   },

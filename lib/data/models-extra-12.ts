@@ -25,6 +25,7 @@ const ADDED_NORTH_MINI = '2026-10-20';
 const ADDED_MINICPM47 = '2026-10-20';
 const ADDED_K2H = '2026-10-21';
 const ADDED_1023 = '2026-10-23';
+const ADDED_BOLT_E4B = '2026-10-24';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1082,6 +1083,52 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf', bytes: 182_537_573_664, parts: 5, checkedAt: '2026-10-23' } },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf', bytes: 237_797_004_832, parts: 7, checkedAt: '2026-10-23' } },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf', bytes: 403_079_845_472, parts: 11, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // Nemotron 3.5 Bolt E4B (NVIDIA, released on HF 2026-10-23, OpenMDW-1.1; post-trained from
+    // google/gemma-4-E4B-it). nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16 config.json text_config is
+    // field-for-field the Gemma 4 E4B one (42 layers, 8 heads / 2 KV × 256 sliding, global 512,
+    // window 512, num_kv_shared_layers 18, per-layer input 256, vocab 262144) except
+    // max_position_embeddings 65536 — the card also says 64K in / 64K out. So the arch block is the
+    // gemma-4-e4b one. GGUF header (ggml-org Q8_0, read 2026-10-24): 720 tensors, 7,518,069,290
+    // params — same 7.52B text total. Rows from lmstudio-community (files byte-identical in size to
+    // NVIDIA's own `-4GB` Q4_K_M repo): Q4_K_M 6,180,446,208 → 6.57 bpw, because NVIDIA's recipe keeps
+    // both embedding tables (3.49B params) at Q8_0; Q8_0 8,031,243,872 → 8.54. Unsloth's
+    // UD-Q4_K_XL is 4,758,125,760 B (5.06) — named in the description, not mixed in.
+    id: 'nemotron-3-5-bolt-e4b',
+    name: 'Nemotron 3.5 Bolt E4B',
+    family: 'NVIDIA Nemotron',
+    params: 7.52,
+    paramLabel: 'E4B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 65536,
+    arch: {
+      layers: 42,
+      attHeads: 8,
+      kvHeads: 2,
+      headDim: 256,
+      attention: {
+        fullLayers: 4,
+        windowLayers: 20,
+        windowTokens: 1024,
+        fullKvHeads: 2,
+        fullHeadDim: 512,
+        note: {
+          en: 'Same layout as Gemma 4 E4B: only 24 of 42 layers keep a cache — the last 18 reuse it. Of those 24, 4 are global (2 KV heads × 512) and grow with context; 20 use a 512-token sliding window.',
+          zh: '与 Gemma 4 E4B 相同：42 层中只有 24 层有自己的缓存——最后 18 层复用前面层的缓存。这 24 层里 4 层为全局注意力（2 个 KV 头 × 512 维），缓存随上下文增长；其余 20 层是 512 token 滑动窗口。',
+        },
+      },
+    },
+    addedAt: ADDED_BOLT_E4B,
+    description: {
+      en: 'NVIDIA\'s retune of Gemma 4 E4B for fast local assistants, released in October under OpenMDW-1.1. It improves tool use and instruction following over the Gemma it starts from. The shape is Gemma 4 E4B\'s, 7.5B parameters counting the per-layer embedding table, but the window is 64K rather than 128K. At Q4_K_M it needs about 6.6 GB at 4K and 7.6 GB across the full 64K window. Those sizes count the whole model in GPU memory, as a Mac uses it. NVIDIA\'s Q4_K_M file is 6.2 GB because it keeps both embedding tables at 8 bits, and llama.cpp leaves the per-layer table in system RAM, so on a discrete card it needs roughly 3 GB less VRAM than shown. Unsloth\'s UD-Q4_K_XL is a smaller 4.8 GB file. Sizes come from the published GGUF files; no per-level quality loss has been published.',
+      zh: 'NVIDIA 在 Gemma 4 E4B 基础上为本地快速助手重新训练的版本，10 月以 OpenMDW-1.1 发布，工具调用和指令遵循都比原版 Gemma 更好。结构与 Gemma 4 E4B 相同，算上逐层嵌入表共 7.5B 参数，但上下文窗口是 64K 而不是 128K。Q4_K_M 在 4K 下约需 6.6 GB，用满 64K 窗口约 7.6 GB。这些体积按整个模型都放进 GPU 内存计算，也就是 Mac 上的占用。NVIDIA 的 Q4_K_M 文件有 6.2 GB，因为两张嵌入表都保留为 8 位；llama.cpp 会把逐层嵌入表留在系统内存，所以在独立显卡上实际显存占用比这里少约 3 GB。Unsloth 的 UD-Q4_K_XL 是更小的 4.8 GB 文件。体积按已发布的 GGUF 文件计算；各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 6.57, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf', bytes: 6_180_446_208, checkedAt: '2026-10-24' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q8_0.gguf', bytes: 8_031_243_872, checkedAt: '2026-10-24' } },
     ],
   },
 ];

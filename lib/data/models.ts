@@ -264,6 +264,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 27, type: 'new', modelId: 'nemotron-3-5-bolt-e4b', level: 'Q4_K_M', note: { en: 'NVIDIA Gemma 4 E4B retune, 8 GB', zh: 'NVIDIA 调优的 Gemma 4 E4B，8 GB 可跑' }, quantizer: 'lmstudio-community' },
   { id: 26, type: 'new', modelId: 'flint-40b-a2-5b', level: 'Q3_K_M', note: { en: 'Coding MoE, 2.5B active, 24 GB', zh: '编程 MoE，激活 2.5B，24 GB 可跑' }, quantizer: 'bartowski' },
   { id: 25, type: 'new', modelId: 'k2-horizon-7b', level: 'Q4_K_M', note: { en: 'Fully open, data included, 8 GB', zh: '完全开源，含训练数据，8 GB 可跑' }, quantizer: 'IFM' },
   { id: 24, type: 'new', modelId: 'minicpm-v-4-7-35b-a3b', level: 'Q4_K_S', note: { en: 'Vision MoE, 3B active, 24 GB', zh: '视觉 MoE，激活 3B，24 GB 可跑' }, quantizer: 'OpenBMB' },
