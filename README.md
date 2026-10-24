@@ -419,6 +419,32 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-24 (iv) — Gemma 4 E4B sized from its own files; 8GB guide corrected
+
+Owner-pulled tree + `X-Linked-Size` for unsloth, bartowski, lmstudio-community, ggml-org and Google's QAT
+repo (2026-10-24 19:10 +08). The owner divided bytes by the Hub's `safetensors.total` (7,996,156,490),
+which also counts the vision and audio towers that ship as a separate mmproj; the index's `params` is
+the 7.52B text total (BF16 GGUF 15,053,097,856 B = 7.53B incl. metadata), so bpw is taken over that.
+
+- Rows → **unsloth** (one publisher; its names match the CLI's `<repo>-<level>`, so `hfRepoMap` moves from
+  the original weights to `unsloth/gemma-4-E4B-it-GGUF`): Q4_K_M 4,977,171,584 B → **5.30 bpw** (was
+  generic 4.85), Q8_0 8,192,953,472 B → **8.72** (was 8.5); mmproj-F16 990,372,672 B.
+  Other publishers for the record: bartowski Q4_K_M 5,405,170,144 (5.75), lmstudio 5,335,291,936 (5.68),
+  ggml-org Q4_0 4,590,807,392 (4.88), Google QAT Q4_0 5,154,941,280 (5.48), lmstudio/bartowski/ggml
+  Q8_0 ≈ 8,031,24x,xxx (8.54). QAT row not added (would cite a different repo from the CLI's).
+- Sizes: Q4_K_M 4.9 → **5.32 GB @4K**, 6.35 @64K, 7.45 @128K. On 8 GB discrete: green to 64K, tight at 128K
+  (the 8GB guide said 7.0 GB "comfortable" at 128K — now 64K comfortable / 128K tight, 93%). On 8 GB Macs
+  (6 GB usable) 4K turns tight: m1-8 / m3-8 comfortable 27 → 26. No other card moved.
+- The 8GB guide's image FAQ said "Two in this index fit comfortably" — already wrong before today (Gemma 3
+  4B, Gemma 4 E2B and Qwen3.5 2B/4B/9B are multimodal and fit); now "Eight current models", from a sweep.
+  Bolt E4B added to its table. Description gate checked the new verdict sentences (8 GB card / 8 GB Mac).
+- Bolt E4B comparison, now that both listings exist: lmstudio's Gemma 4 E4B Q4_K_M is 5,335,291,936 B but
+  its Bolt E4B "Q4_K_M" is 6,180,446,208 B — within 0.6% of both models' Q6_K (6,217,26x,xxx). The Bolt row
+  stays sized from its own file (that is what a reader downloads), but the file is unusually large for its
+  label; worth re-checking when another publisher ships a plain Bolt E4B Q4_K_M.
+- `sizingChangedAt` not bumped: it would re-date ~240 model pages for one model's change; Gemma 4 E4B's
+  own page keeps its 10-23 lastmod (derived pages already carry 10-24 from Bolt E4B's `addedAt`).
+
 ### 2026-10-24 (iii) — +1 model (123): Nemotron 3.5 Bolt E4B
 
 Owner-pulled `config.json` (nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16, 5,144 B) and tree/`X-Linked-Size`

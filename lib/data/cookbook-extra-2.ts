@@ -14,7 +14,7 @@ export const extraArticles2: Article[] = [
     tags: ['8GB VRAM', 'RTX 3060', 'RTX 4060', 'GGUF', 'Ollama'],
     publishedAt: '2026-06-24',
     // Rewritten from the index on this date; see README §9, 2026-09-08. Model list refreshed 2026-10-21.
-    updatedAt: '2026-10-21',
+    updatedAt: '2026-10-24',
     // No `verifiedAt`: the guide previously carried one while its own VRAM
     // figures were ~2 GB above what this site's calculator returns for the
     // same models. The numbers are corrected and now derive from the index,
@@ -38,14 +38,14 @@ export const extraArticles2: Article[] = [
         bodyZh: '以下数字来自本站显存计算器的估算：按该量化档位实测的 bits-per-weight 计算权重，加上对应上下文的 KV 缓存，再加 10% 激活缓冲。它们不是实际文件大小，也不包含桌面本身已占用的显存 —— Windows 上通常是 0.5–1.5GB。这也是绿色区间到 88% 就截止、而不是 100% 的原因。4K 上下文下，8GB 显卡跑 7–8B 的 Q4_K_M 有实打实的余量；14B 在任何上下文下都装不进 Q4_K_M，因为光权重就超过整张卡。',
         code: {
           lang: 'text',
-          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        3.0 GB     fits, large margin\nQwen3.5 4B                  Q4_K_M   4K        3.3 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.0 GB     fits\nGemma 4 E4B (image, audio)  Q4_K_M   4K        4.9 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nQwen3-VL 8B (image)         Q4_K_M   4K        6.2 GB     fits\nGranite 4.2 8B              Q4_K_M   4K        6.3 GB     fits\nK2 Horizon 7B               Q4_K_M   4K        6.5 GB     fits\nQwen3.5 9B                  Q4_K_M   4K        6.6 GB     fits\nQwen3.5 9B                  Q4_K_M   16K       7.0 GB     fits\nGemma 4 E4B                 Q4_K_M   128K      7.0 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.3 GB     tight — 91% of the card\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
+          content: 'Model                       Level    Context   Estimate   On 8GB\n----------------------------------------------------------------------\nPhi-4 Mini 3.8B             Q4_K_M   4K        3.0 GB     fits, large margin\nQwen3.5 4B                  Q4_K_M   4K        3.3 GB     fits, large margin\nQwen3 4B                    Q6_K     4K        4.0 GB     fits\nQwen2.5 7B                  Q4_K_M   4K        5.1 GB     fits\nGemma 4 E4B (image, audio)  Q4_K_M   4K        5.3 GB     fits\nLlama 3.1 8B                Q4_K_M   4K        5.6 GB     fits\nQwen3 8B                    Q4_K_M   4K        5.8 GB     fits\nQwen3-VL 8B (image)         Q4_K_M   4K        6.2 GB     fits\nGranite 4.2 8B              Q4_K_M   4K        6.3 GB     fits\nGemma 4 E4B                 Q4_K_M   64K       6.4 GB     fits\nK2 Horizon 7B               Q4_K_M   4K        6.5 GB     fits\nQwen3.5 9B                  Q4_K_M   4K        6.6 GB     fits\nNemotron Bolt E4B (image)   Q4_K_M   4K        6.6 GB     fits\nQwen3.5 9B                  Q4_K_M   16K       7.0 GB     fits\nLlama 3.1 8B                Q4_K_M   16K       7.3 GB     tight — 91% of the card\nGemma 4 E4B                 Q4_K_M   128K      7.5 GB     tight — 93% of the card\nQwen3 14B                   Q4_K_M   2K        9.7 GB     over the card — see below\nQwen2.5 32B                 any      4K        21.7 GB    not on 8GB',
         },
       },
       {
         heading: 'Newer models that hold a long context on 8GB',
         headingZh: '能在 8GB 上撑起长上下文的新模型',
-        body: 'On most models only the KV cache grows with context, and on an 8GB card that is what runs out first. Two newer models keep a growing cache on only some of their layers, so they hold far more context in the same space. Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable, because only 8 of its 32 layers keep a growing cache; at 32K it is tight. Gemma 4 E4B at Q4_K_M with a 128K context is about 7.0 GB, comfortable. For comparison, Llama 3.1 8B at Q4_K_M with a 16K context is about 7.3 GB, already tight. If your work is long documents or long chats rather than short questions, start with one of these two.',
-        bodyZh: '大多数模型里，随上下文增长的只有 KV 缓存，而在 8GB 显卡上最先用完的正是它。有两个较新的模型只在部分层保留增长的缓存，所以同样的空间能放下多得多的上下文。Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕，因为它 32 层中只有 8 层保留增长缓存；到 32K 就偏紧了。Gemma 4 E4B 在 Q4_K_M、128K 上下文下约 7.0 GB，宽裕。作为对比，Llama 3.1 8B 在 Q4_K_M、16K 上下文下约 7.3 GB，已经偏紧。如果你主要处理长文档或长对话，而不是简短提问，就从这两个开始。',
+        body: 'On most models only the KV cache grows with context, and on an 8GB card that is what runs out first. Two newer models keep a growing cache on only some of their layers, so they hold far more context in the same space. Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable, because only 8 of its 32 layers keep a growing cache; at 32K it is tight. Gemma 4 E4B at Q4_K_M with a 64K context is about 6.4 GB, comfortable. At its full 128K window it is about 7.5 GB, tight. For comparison, Llama 3.1 8B at Q4_K_M with a 16K context is about 7.3 GB, already tight. If your work is long documents or long chats rather than short questions, start with one of these two.',
+        bodyZh: '大多数模型里，随上下文增长的只有 KV 缓存，而在 8GB 显卡上最先用完的正是它。有两个较新的模型只在部分层保留增长的缓存，所以同样的空间能放下多得多的上下文。Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕，因为它 32 层中只有 8 层保留增长缓存；到 32K 就偏紧了。Gemma 4 E4B 在 Q4_K_M、64K 上下文下约 6.4 GB，宽裕。用满 128K 窗口约 7.5 GB，偏紧。作为对比，Llama 3.1 8B 在 Q4_K_M、16K 上下文下约 7.3 GB，已经偏紧。如果你主要处理长文档或长对话，而不是简短提问，就从这两个开始。',
       },
       {
         heading: 'What "over the card" actually means',
@@ -100,14 +100,14 @@ export const extraArticles2: Article[] = [
       {
         q: 'Which models run on an 8GB card with image input?',
         qZh: '8GB 显卡上有哪些能看图的模型？',
-        a: 'Two in this index fit comfortably at 4K context: Gemma 4 E4B at about 4.9GB, which also takes audio, and Qwen3-VL 8B at about 6.2GB. Both are Q4_K_M estimates from this site\'s calculator. Image input adds a vision encoder, which llama.cpp loads from a separate file and which these figures do not include, so leave some margin.',
-        aZh: '本索引里有两个在 4K 上下文下可以从容运行：Gemma 4 E4B 约 4.9GB，还支持音频输入；Qwen3-VL 8B 约 6.2GB。两者都是本站计算器给出的 Q4_K_M 估算。图像输入需要额外的视觉编码器，llama.cpp 会从单独的文件加载它，上面的数字不包含这部分，所以要留出一些余量。',
+        a: 'Eight current models in this index take image input and fit an 8GB card comfortably at 4K context. The largest are Nemotron 3.5 Bolt E4B and Qwen3.5 9B at about 6.6GB each and Qwen3-VL 8B at about 6.2GB; Gemma 4 E4B, at about 5.3GB, also takes audio. All are Q4_K_M estimates from this site\'s calculator. Image input adds a vision encoder, which llama.cpp loads from a separate file and which these figures do not include, so leave some margin.',
+        aZh: '本索引里有 8 个当前模型支持图像输入，并能在 4K 上下文下从容装进 8GB 显卡。最大的是 Nemotron 3.5 Bolt E4B 和 Qwen3.5 9B，各约 6.6GB，以及 Qwen3-VL 8B，约 6.2GB；Gemma 4 E4B 约 5.3GB，还支持音频输入。以上都是本站计算器给出的 Q4_K_M 估算。图像输入需要额外的视觉编码器，llama.cpp 会从单独的文件加载它，上面的数字不包含这部分，所以要留出一些余量。',
       },
       {
         q: 'How much context can an 8GB card handle?',
         qZh: '8GB 显卡能撑多长的上下文？',
-        a: 'For an 8B model at Q4_K_M, about 16K before it leaves the comfortable band: Llama 3.1 8B is 5.6GB at 4K and 7.3GB at 16K, which is 91% of the card — tight, with nothing left for the desktop. The KV cache is the only part that grows with context. A lower quant frees room for it by shrinking the weights; a smaller model does that and also has a smaller cache per token, so it buys more window for the same memory. A model that keeps a growing cache on only some layers buys the most: Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable. Gemma 4 E4B holds a 128K window in about the same space.',
-        aZh: '对 Q4_K_M 的 8B 模型来说，大约到 16K 就会离开宽裕区间：Llama 3.1 8B 在 4K 时 5.6GB，16K 时 7.3GB，占显卡的 91% —— 偏紧，已经没有余量留给桌面。随上下文增长的只有 KV 缓存。降低量化档位能通过缩小权重给它腾出空间；换更小的模型不但同样缩小权重，每个 token 的缓存也更小，所以同样的显存能换来更长的窗口。只在部分层保留增长缓存的模型收益最大：Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕；Gemma 4 E4B 用差不多的空间就能撑起 128K 窗口。',
+        a: 'For an 8B model at Q4_K_M, about 16K before it leaves the comfortable band: Llama 3.1 8B is 5.6GB at 4K and 7.3GB at 16K, which is 91% of the card — tight, with nothing left for the desktop. The KV cache is the only part that grows with context. A lower quant frees room for it by shrinking the weights; a smaller model does that and also has a smaller cache per token, so it buys more window for the same memory. A model that keeps a growing cache on only some layers buys the most: Qwen3.5 9B at Q4_K_M with a 16K context is about 7.0 GB, still comfortable. Gemma 4 E4B holds a 64K window in less.',
+        aZh: '对 Q4_K_M 的 8B 模型来说，大约到 16K 就会离开宽裕区间：Llama 3.1 8B 在 4K 时 5.6GB，16K 时 7.3GB，占显卡的 91% —— 偏紧，已经没有余量留给桌面。随上下文增长的只有 KV 缓存。降低量化档位能通过缩小权重给它腾出空间；换更小的模型不但同样缩小权重，每个 token 的缓存也更小，所以同样的显存能换来更长的窗口。只在部分层保留增长缓存的模型收益最大：Qwen3.5 9B 在 Q4_K_M、16K 上下文下约 7.0 GB，仍然宽裕；Gemma 4 E4B 用更少的空间就能撑起 64K 窗口。',
       },
     ],
   },

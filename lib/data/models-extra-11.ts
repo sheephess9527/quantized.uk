@@ -143,12 +143,16 @@ export const extraModels11: QuantModel[] = [
     },
     addedAt: ADDED_E,
     description: {
-      en: 'Google\'s on-device Gemma 4: about 4.7B parameters doing the work plus a 2.8B per-layer embedding table, a 128K window, and image and audio input. Only 4 of its 42 layers keep a cache that grows with context, so the full 128K window costs about 2.0 GB of cache. At Q4 it is about 4.9 GB at 4K and 7.0 GB at the full window — an 8 GB card runs it comfortably at everyday context lengths. Sizes here count the whole model in GPU memory, which is what a Mac or a full GPU load uses; llama.cpp keeps the embedding table in system RAM instead, so on a discrete card it needs roughly 1.6 GB less VRAM than shown at Q4. Sizes use the calculator\'s generic rates — no GGUF file size could be checked.',
-      zh: 'Google 面向端侧的 Gemma 4：实际参与计算的约 4.7B 参数，外加一张 2.8B 的逐层嵌入表，128K 上下文，支持图像和音频输入。42 层中只有 4 层的缓存随上下文增长，所以用满 128K 也只要约 2.0 GB 缓存。Q4 下 4K 上下文约 4.9 GB，用满窗口约 7.0 GB——日常上下文长度下 8 GB 显卡可以从容运行。这里的体积按整个模型都放进 GPU 内存计算，也就是 Mac 或整模型上 GPU 时的占用；llama.cpp 会把嵌入表留在系统内存，所以在独立显卡上，Q4 实际显存占用比这里少约 1.6 GB。体积使用计算器通用比特率——未能核对到 GGUF 文件大小。',
+      en: 'Google\'s on-device Gemma 4: about 4.7B parameters doing the work plus a 2.8B per-layer embedding table, a 128K window, and image and audio input. Only 4 of its 42 layers keep a cache that grows with context, so the full 128K window costs about 2.0 GB of cache. At Q4_K_M it needs about 5.3 GB at 4K, comfortable on an 8 GB card, and 7.5 GB at 128K, tight on an 8 GB card. An 8 GB Mac gives its GPU about 6 GB, so 5.3 GB at 4K is tight on an 8 GB Mac. Sizes here count the whole model in GPU memory, which is what a Mac or a full GPU load uses; llama.cpp keeps the embedding table in system RAM instead, so on a discrete card real VRAM use is lower than shown. Sizes come from unsloth\'s files (Q4_K_M 5.0 GB, Q8_0 8.2 GB); other publishers\' Q4_K_M files are up to 0.4 GB larger. The image and audio encoder is a separate 1.0 GB file.',
+      zh: 'Google 面向端侧的 Gemma 4：实际参与计算的约 4.7B 参数，外加一张 2.8B 的逐层嵌入表，128K 上下文，支持图像和音频输入。42 层中只有 4 层的缓存随上下文增长，所以用满 128K 也只要约 2.0 GB 缓存。Q4_K_M 在 4K 上下文约需 5.3 GB，8 GB 显卡宽裕；128K 约需 7.5 GB，8 GB 显卡偏紧。8 GB 的 Mac 只能给 GPU 约 6 GB，所以 4K 下在 8 GB Mac 上就偏紧。这里的体积按整个模型都放进 GPU 内存计算，也就是 Mac 或整模型上 GPU 时的占用；llama.cpp 会把嵌入表留在系统内存，所以在独立显卡上实际显存占用比这里低。体积按 unsloth 发布的文件计算（Q4_K_M 5.0 GB，Q8_0 8.2 GB）；其他发布者的 Q4_K_M 文件最多大 0.4 GB。图像和音频编码器是另外一个 1.0 GB 的文件。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 4.56, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 7.99, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q8_0'),   confidence: 'estimated' },
+      // unsloth/gemma-4-E4B-it-GGUF (owner-pulled tree + X-Linked-Size, 2026-10-24); bpw over the 7.52B
+      // text total — the Hub's safetensors total 7,996,156,490 also counts the vision and audio towers,
+      // which ship as a separate mmproj. Other publishers' Q4_K_M differ by up to 0.43 GB (bartowski
+      // 5,405,170,144 B = 5.75 bpw, lmstudio 5,335,291,936 B = 5.68); one publisher per row.
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.30, vramGB: 0, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'unsloth/gemma-4-E4B-it-GGUF', file: 'gemma-4-E4B-it-Q4_K_M.gguf', bytes: 4_977_171_584, mmprojBytes: 990_372_672, checkedAt: '2026-10-24' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.72, vramGB: 0, hfSearchUrl: hf('gemma-4-E4B-it GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'unsloth/gemma-4-E4B-it-GGUF', file: 'gemma-4-E4B-it-Q8_0.gguf', bytes: 8_192_953_472, mmprojBytes: 990_372_672, checkedAt: '2026-10-24' } },
     ],
   },
   {
