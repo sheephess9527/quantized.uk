@@ -1137,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-24 | **Patrol** — llama.cpp b11847, Ollama v0.40.10 (adds Bolt E4B); Bolt E4B released but unsized (config + GGUF bytes unreachable; Gemma 4-based ≠ Gemma 4 E4B's shape) → `/pending/` `awaiting-data` |
 | 2026-10-23 (viii) | **External check** — `/favicon.ico` added; `og.png` 336 → 90 KB (256-colour palette) and "85+" → "120+"; `security.txt`; model-page lastmod was 10-21 while today's VRAM column changed every model page → `sizingChangedAt` 10-23 (the report's "batched lastmod" was real dates, not batching); SPF/DMARC/CAA are DNS, owner's |
 | 2026-10-23 (v) | **+5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B** — owner-pulled configs + byte counts; publisher per model picked so the CLI's `<repo>-<level>` filename exists (IFM names its K2 files 1B / 4B); 375B params counted from config (Q8_0 → 8.50 confirms); Flint Q3_K_M 20.6 GB green on 24 GB; three `/pending/` entries removed |
 | 2026-10-23 (iii) | **VRAM column derived** — typed `vramGB` off by > 0.15 GB on 182 of 313 rows (Gemma 4 12B showed its file size, 7.1 vs 8.0); model table, cards, similar, Hub export, 4090 gate → `sizeAt4K()`; compare row → recorded file bytes; footnote states GiB vs decimal GB |

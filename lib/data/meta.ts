@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-23';
+export const dataLastUpdated = '2026-10-24';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-23',
+  checkedAt: '2026-10-24',
   current: {
-    llamacpp: 'b11829',
+    llamacpp: 'b11847',
     vllm: 'v0.32.0',
-    ollama: 'v0.40.8',
+    ollama: 'v0.40.10',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-24',
+    en: 'Runtime versions updated: llama.cpp b11847 and Ollama v0.40.10. Nemotron 3.5 Bolt E4B is now out and Ollama runs it, but its sizes are not on the site yet: the pending page says what is still needed before it can be sized from its real files.',
+    zh: '运行时版本已更新：llama.cpp b11847、Ollama v0.40.10。Nemotron 3.5 Bolt E4B 已经发布，Ollama 也能运行，但本站还没有收录它的体积：待收录页写明了按真实文件计算前还缺什么。',
+  },
   {
     date: '2026-10-23',
     en: 'Qwen3.8-Flash-Next\'s page said its full 256K window was comfortable on a 128 GB Mac. At about 87 GB it is comfortable on a 128 GB DGX Spark but only tight on the Mac, whose GPU gets about three quarters of the memory; the page now says so.',

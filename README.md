@@ -419,6 +419,22 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-24 — Patrol: llama.cpp b11847, Ollama v0.40.10; Bolt E4B released, not sized
+
+- **Runtimes** (verbatim tag/release pages): llama.cpp b11847 (all top tags dated 10-23); Ollama
+  **v0.40.10** Latest (10-23; v0.40.11 is a pre-release, skipped); vLLM v0.32.0 and ExLlamaV3 1.6.4
+  unchanged.
+- **Nemotron 3.5 Bolt E4B** — out: Ollama v0.40.10's notes add `nemotron-3.5-bolt:e4b` ("Gemma
+  4-based" vision-language model, 128K, DFlash draft for speculative decoding). Not added: ollama.com,
+  unsloth.ai and huggingface.co were all unreachable from here (DNS / 403), so no `config.json` and no
+  GGUF byte counts. "Gemma 4-based" does not prove Gemma 4 E4B's shape (KV-sharing split, PLE size,
+  vision tower), so borrowing that row would be a guessed size. `/pending/` entry moved from
+  `no-weights` to `awaiting-data` with the release date. **Ask the owner for its config.json + GGUF
+  tree listing.**
+- Other candidates seen: InternScience Sage-A1.5 (FP8 + GGUF, 10-21) appeared only on an aggregator
+  leaderboard; no primary page reachable — not added, not yet on `/pending/` until a primary source
+  confirms it exists. Dory 1.0 4B and the rest of `/pending/` unchanged.
+
 ### 2026-10-23 (viii) — External site check: favicon.ico, og.png weight, security.txt, model-page lastmod
 
 An outside check of the live site listed five items; each was checked here before acting.
