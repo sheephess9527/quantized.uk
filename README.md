@@ -419,6 +419,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-24 (ii) — Nemotron 3.5 Super VL / Bolt re-checked against the owner's 10-16 material
+
+The owner re-sent the 10-16 Hugging Face material (Super VL BF16 config, Bolt 74B BF16 config, both
+GGUF trees). Every indexed figure matches it: Super VL 120.76B from ggml-org's BF16 file, Q4_0
+71,803,752,384 B → 4.76 bpw, Q8_0 128,472,993,728 B → 8.51, mmproj Q8_0 966,925,568 B; Bolt 74.04B,
+IQ2_XXS 22,018,326,528 B → 2.38 bpw, context 262,144, 8 of 88 layers caching. One mix-up fixed: the
+Bolt row cites unsloth's repo but carried the official repo's mmproj byte count (1,733,692,736);
+unsloth's `mmproj-BF16.gguf` is 1,733,692,672 B. 64 bytes, no displayed figure moves — the rule is
+one publisher per row. This material is not the Bolt **E4B** (still `/pending/`, `awaiting-data`).
+
 ### 2026-10-24 — Patrol: llama.cpp b11847, Ollama v0.40.10; Bolt E4B released, not sized
 
 - **Runtimes** (verbatim tag/release pages): llama.cpp b11847 (all top tags dated 10-23); Ollama

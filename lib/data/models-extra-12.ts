@@ -561,7 +561,8 @@ export const extraModels12: QuantModel[] = [
     // 2-bit one (modelopt MIXED_PRECISION: experts + shared expert IQ2_XXS at 2.0625, latent
     // projections Q8_0): 22,018,326,528 B in both the official 24GB GGUF and unsloth's IQ2_XXS file
     // → 2.38 bpw; that recipe predicts 21.77 GB, within ~1%. The vision encoder ships separately
-    // (mmproj 1,733,692,736 B). llama.cpp v0.7.0 lists the arch; Ollama v0.40.5 ships it.
+    // (mmproj 1,733,692,736 B official / 1,733,692,672 B unsloth's mmproj-BF16 — the row cites unsloth,
+    // so it carries unsloth's). llama.cpp v0.7.0 lists the arch; Ollama v0.40.5 ships it.
     id: 'nemotron-3.5-bolt-74b-a9b',
     name: 'Nemotron 3.5 Bolt 74B-A9B',
     family: 'NVIDIA Nemotron',
@@ -577,7 +578,7 @@ export const extraModels12: QuantModel[] = [
       zh: 'NVIDIA 的 Nemotron 3.5 Bolt 是 74B 混合专家模型，每个 token 约激活 9B 参数，目标是装进 24 GB 显卡。它由 Nemotron 3.5 Super VL 压缩而来，只有一个版本，即 NVIDIA 官方原生 2-bit 文件，22.0 GB。88 层中只有 8 层的缓存随上下文增长，所以上下文很便宜：4K 约 23.1 GB，128K 约 24.1 GB，用满 256K 约 25.2 GB。这正是 NVIDIA 设计的 24 GB，但超过了本站的宽裕线，所以 24 GB 显卡判定为偏紧；32 GB 显卡或 48 GB 的 Mac 可以从容运行。图像编码器是另外 1.7 GB 的文件。基准成绩是 NVIDIA 自己报的，2-bit 版本的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated', source: { repo: 'unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS.gguf', bytes: 22_018_326_528, mmprojBytes: 1_733_692_736, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated', source: { repo: 'unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS.gguf', bytes: 22_018_326_528, mmprojBytes: 1_733_692_672, checkedAt: '2026-10-16' } },
     ],
   },
   {
