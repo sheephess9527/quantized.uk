@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-24',
+    en: 'Nemotron 3.5 Bolt E4B added, sized from its real files. NVIDIA built it on Gemma 4 E4B and it takes image input; its Q4_K_M file is 6.2 GB, larger than the level name suggests, and needs about 6.6 GB at 4K — comfortable on an 8 GB card. Its window is 64K. Every card above 8 GB now fits one more model, and the guides that quote those counts are updated.',
+    zh: '新增 Nemotron 3.5 Bolt E4B，按真实文件计算体积。它由 NVIDIA 基于 Gemma 4 E4B 打造，支持图像输入；Q4_K_M 文件 6.2 GB，比档位名称暗示的大，4K 上下文约需 6.6 GB，8 GB 显卡宽裕。上下文窗口 64K。8 GB 以上的每张卡都多装下一个模型，引用这些数字的指南已同步更新。',
+  },
+  {
+    date: '2026-10-24',
     en: 'Runtime versions updated: llama.cpp b11847 and Ollama v0.40.10. Nemotron 3.5 Bolt E4B is now out and Ollama runs it, but its sizes are not on the site yet: the pending page says what is still needed before it can be sized from its real files.',
     zh: '运行时版本已更新：llama.cpp b11847、Ollama v0.40.10。Nemotron 3.5 Bolt E4B 已经发布，Ollama 也能运行，但本站还没有收录它的体积：待收录页写明了按真实文件计算前还缺什么。',
   },

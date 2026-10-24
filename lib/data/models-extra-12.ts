@@ -25,6 +25,7 @@ const ADDED_NORTH_MINI = '2026-10-20';
 const ADDED_MINICPM47 = '2026-10-20';
 const ADDED_K2H = '2026-10-21';
 const ADDED_1023 = '2026-10-23';
+const ADDED_BOLT_E4B = '2026-10-24';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1083,6 +1084,60 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf', bytes: 182_537_573_664, parts: 5, checkedAt: '2026-10-23' } },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf', bytes: 237_797_004_832, parts: 7, checkedAt: '2026-10-23' } },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf', bytes: 403_079_845_472, parts: 11, checkedAt: '2026-10-23' } },
+    ],
+  },
+  {
+    // NVIDIA Nemotron 3.5 Bolt E4B (released 2026-10-23; Ollama v0.40.10 ships it). Official config.json
+    // (nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16, 5,144 B, pasted by the owner 2026-10-24): model_type
+    // gemma4, Gemma4ForConditionalGeneration with vision + audio towers. text_config is Gemma 4 E4B's
+    // shape field for field: 42 layers (35 sliding / 7 full, 5:1), 8 heads / 2 KV × 256, global_head_dim
+    // 512, sliding_window 512, num_kv_shared_layers 18, hidden_size_per_layer_input 256, vocab 262,144
+    // (PLE vocab the same), tied embeddings — so the arch block is Gemma 4 E4B's and params is its 7.52B
+    // (4.70B + 2.82B per-layer table); BF16 GGUF 15,053,100,032 B (ggml-org) = 7.53B incl. metadata.
+    // Context: max_position_embeddings 65,536 (Ollama's notes say 128K; the config wins).
+    // Files: one publisher per row — lmstudio-community is the only repo with a plain Q4_K_M and it also
+    // ships Q8_0, so both rows cite it and the CLI's `<repo>-<level>` name exists. Q4_K_M 6,180,446,208 B
+    // → 6.57 bpw: far above the nominal 4.85 (its Q6_K is 6,217,264,736 B, nearly the same), i.e. the
+    // per-layer table is not stored at Q4 — sized from the file, not the level name. Q8_0 8,031,243,872 B
+    // → 8.54. Neither lmstudio nor ggml-org ships an mmproj; unsloth's mmproj-F16 is 990,373,568 B /
+    // Q8_0 559,875,776 B. unsloth ships only UD-* dynamic levels (UD-Q4_K_XL 5,060,482,240 B), not tracked.
+    // dflash-* files are speculative-decoding drafts, not the model.
+    id: 'nemotron-3.5-bolt-e4b',
+    name: 'Nemotron 3.5 Bolt E4B',
+    family: 'NVIDIA Nemotron',
+    params: 7.52,
+    paramLabel: 'E4B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 65536,
+    arch: {
+      layers: 42,
+      attHeads: 8,
+      kvHeads: 2,
+      headDim: 256,
+      // As Gemma 4 E4B: layers 24–41 reuse earlier caches (num_kv_shared_layers 18) and llama.cpp
+      // allocates none for them; of the 24 that keep one, 4 are global and 20 sliding. Window 512 →
+      // pad256(512 + 512) = 1024 cells.
+      attention: {
+        fullLayers: 4,
+        windowLayers: 20,
+        windowTokens: 1024,
+        fullKvHeads: 2,
+        fullHeadDim: 512,
+        note: {
+          en: 'Only 24 of 42 layers keep a cache — the last 18 reuse it. Of those 24, 4 are global (2 KV heads × 512) and grow with context; 20 use a 512-token sliding window.',
+          zh: '42 层中只有 24 层有自己的缓存——最后 18 层复用前面层的缓存。这 24 层里 4 层为全局注意力（2 个 KV 头 × 512 维），缓存随上下文增长；其余 20 层是 512 token 滑动窗口。',
+        },
+      },
+    },
+    addedAt: ADDED_BOLT_E4B,
+    description: {
+      en: 'NVIDIA\'s Nemotron 3.5 Bolt E4B is a small vision model built on Google\'s Gemma 4 E4B. It has the same 42-layer shape, about 4.7B parameters doing the work plus a 2.8B per-layer embedding table, with image input and a 64K window. Only 4 of its 42 layers keep a cache that grows with context, so long context is cheap. The one plain Q4_K_M file (LM Studio\'s, 6.2 GB) is much larger than the level name suggests, because the embedding table is not stored at 4 bits. It needs about 6.6 GB at 4K, comfortable on an 8 GB card, and 7.6 GB at 64K, tight on an 8 GB card. Q8_0 (an 8.0 GB file) needs about 8.5 GB at 4K and wants a 12 GB card. On a discrete card llama.cpp keeps the embedding table in system RAM, so real VRAM use is lower than shown. The vision encoder is a separate 0.6–1.0 GB file published by unsloth, and a small DFlash draft model for speculative decoding ships beside it. NVIDIA\'s benchmark claims are its own, and no per-level quality loss has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Bolt E4B 是基于 Google Gemma 4 E4B 的小型视觉模型。结构完全相同，42 层，实际参与计算的约 4.7B 参数外加一张 2.8B 的逐层嵌入表，支持图像输入，上下文 64K。42 层中只有 4 层的缓存随上下文增长，所以长上下文很便宜。唯一的标准 Q4_K_M 文件（LM Studio 发布，6.2 GB）比档位名称暗示的大得多，因为嵌入表没有按 4 bit 存储。4K 上下文约需 6.6 GB，8 GB 显卡宽裕；64K 约需 7.6 GB，8 GB 显卡偏紧。Q8_0（8.0 GB 文件）4K 约需 8.5 GB，要 12 GB 显卡。在独立显卡上，llama.cpp 会把嵌入表留在系统内存，实际显存占用比这里低。视觉编码器是另外 0.6–1.0 GB 的文件，由 unsloth 发布；旁边还有一个用于投机解码的小型 DFlash 草稿模型。基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 6.57, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf', bytes: 6_180_446_208, checkedAt: '2026-10-24' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q8_0.gguf', bytes: 8_031_243_872, checkedAt: '2026-10-24' } },
     ],
   },
 ];

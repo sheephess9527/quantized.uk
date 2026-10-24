@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **122** in index (`models-extra` … `models-extra-12`) |
+| Models | **123** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1137,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-24 (iii) | **+1 model (123): Nemotron 3.5 Bolt E4B** — owner-pulled config = Gemma 4 E4B's shape field for field (arch + 7.52B reused, now confirmed); context 65,536 (config, not Ollama's 128K); lmstudio-community Q4_K_M is 6.57 bpw (PLE table not at 4 bits) → 6.6 GB @4K green on 8 GB; every card +1; Gemma 4 E4B's own generic 4.85 bpw now suspect (needs its listing) |
 | 2026-10-24 | **Patrol** — llama.cpp b11847, Ollama v0.40.10 (adds Bolt E4B); Bolt E4B released but unsized (config + GGUF bytes unreachable; Gemma 4-based ≠ Gemma 4 E4B's shape) → `/pending/` `awaiting-data` |
 | 2026-10-23 (viii) | **External check** — `/favicon.ico` added; `og.png` 336 → 90 KB (256-colour palette) and "85+" → "120+"; `security.txt`; model-page lastmod was 10-21 while today's VRAM column changed every model page → `sizingChangedAt` 10-23 (the report's "batched lastmod" was real dates, not batching); SPF/DMARC/CAA are DNS, owner's |
 | 2026-10-23 (v) | **+5 models (122): Flint, Laguna S 2.1, K2 Horizon 0.9B / 3.7B / 375B-A23B** — owner-pulled configs + byte counts; publisher per model picked so the CLI's `<repo>-<level>` filename exists (IFM names its K2 files 1B / 4B); 375B params counted from config (Q8_0 → 8.50 confirms); Flint Q3_K_M 20.6 GB green on 24 GB; three `/pending/` entries removed |

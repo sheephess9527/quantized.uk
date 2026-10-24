@@ -419,6 +419,33 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-24 (iii) — +1 model (123): Nemotron 3.5 Bolt E4B
+
+Owner-pulled `config.json` (nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16, 5,144 B) and tree/`X-Linked-Size`
+byte counts for unsloth, lmstudio-community and ggml-org.
+
+- **Shape = Gemma 4 E4B, field for field** (`model_type` gemma4): 42 layers, 35 sliding / 7 full,
+  8 heads / 2 KV × 256, global head 512, window 512, `num_kv_shared_layers` 18, PLE 256 × 262,144.
+  So the arch block is Gemma 4 E4B's (4 full + 20 window @1024 cells) and `params` its 7.52B; ggml-org's
+  BF16 GGUF 15,053,100,032 B = 7.53B incl. metadata agrees. The 10-24 morning patrol was right not to
+  assume this — it is confirmed now, not inferred.
+- **Context 65,536** from `max_position_embeddings`; Ollama's release notes say 128K — the config wins.
+- **One publisher per row: lmstudio-community** (the only plain Q4_K_M; it also ships Q8_0, so the CLI's
+  `<repo>-<level>` filename exists for both). Q4_K_M 6,180,446,208 B → **6.57 bpw**, not 4.85 — its
+  Q6_K is 6,217,264,736 B, nearly the same, so the per-layer table is not stored at 4 bits. Q8_0
+  8,031,243,872 B → 8.54. ggml-org's Q8_0 (8,031,245,312) differs by 1,440 B and is not mixed in.
+  unsloth ships only UD-* levels (UD-Q4_K_XL now 5,060,482,240 B; the owner notes it changed from an
+  earlier 4,758,125,760 — the new figure is the one recorded here, though no row uses UD). No mmproj in
+  lmstudio or ggml-org; unsloth's mmproj-F16 990,373,568 / Q8_0 559,875,776 B are named in the description.
+  `dflash-*` files are speculative-decoding drafts.
+- Sizes: Q4_K_M 6.57 GB @4K (green on 8 GB discrete), 6.77 @16K, 7.05 @32K (tight), 7.60 @64K (tight);
+  Q8_0 8.50 GB @4K → 12 GB cards. 8 GB Macs (6 GB usable) red. Every other card +1 comfortable and +1 tight;
+  guide counts re-run (+1 each), denominators 122 → 123, Q4_K_M ships 115 → 116 of 123, AWQ 53 unchanged;
+  ten guides get `updatedAt` 2026-10-24. `/pending/` entry removed. `todayFeed` id 27.
+- **Flag, not acted on:** if LM Studio's Q4_K_M for this exact Gemma 4 E4B shape is 6.57 bpw, the indexed
+  Gemma 4 E4B's generic 4.85 bpw (4.9 GB @4K) may be low too. Different model and publisher, so nothing is
+  transferred; it needs Gemma 4 E4B's own GGUF listing.
+
 ### 2026-10-24 (ii) — Nemotron 3.5 Super VL / Bolt re-checked against the owner's 10-16 material
 
 The owner re-sent the 10-16 Hugging Face material (Super VL BF16 config, Bolt 74B BF16 config, both

@@ -70,19 +70,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-10-18',
   },
   {
-    id: 'nemotron-3-5-bolt-e4b',
-    name: 'Nemotron 3.5 Bolt E4B',
-    vendor: 'NVIDIA',
-    announced: '2026-10-23',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'Released on 23 October; Ollama v0.40.10 runs it (Gemma 4-based vision model, 128K context, ships a DFlash speculative-decoding draft). Its config.json and GGUF file sizes could not be read from here, and a Gemma 4 E4B-based model is not automatically the same shape as Gemma 4 E4B.',
-      zh: '10 月 23 日发布，Ollama v0.40.10 已支持（基于 Gemma 4 的视觉模型，128K 上下文，附带 DFlash 投机解码草稿模型）。这里读不到它的 config.json 和 GGUF 文件大小；基于 Gemma 4 E4B 并不等于结构与 Gemma 4 E4B 完全相同。',
-    },
-    recheck: { en: 'When its config.json and a GGUF listing with byte counts can be read.', zh: '能读到 config.json 和带字节数的 GGUF 文件列表时。' },
-    checkedAt: '2026-10-24',
-  },
-  {
     id: 'step-5-preview',
     name: 'Step-5 Preview',
     vendor: 'StepFun',
