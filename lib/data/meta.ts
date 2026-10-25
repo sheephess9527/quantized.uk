@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-24';
+export const dataLastUpdated = '2026-10-25';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-24',
+  checkedAt: '2026-10-25',
   current: {
-    llamacpp: 'b11847',
+    llamacpp: 'b11869',
     vllm: 'v0.32.0',
-    ollama: 'v0.40.10',
+    ollama: 'v0.40.11',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-25',
+    en: 'Runtime versions updated: llama.cpp b11869 and Ollama v0.40.11. No new model was added today.',
+    zh: '运行时版本已更新：llama.cpp b11869、Ollama v0.40.11。今天没有新增模型。',
+  },
   {
     date: '2026-10-24',
     en: 'Gemma 4 E4B is now sized from its real files, and it is a little larger than the site said. At Q4_K_M it needs about 5.3 GB at 4K instead of 4.9 GB: still comfortable on an 8 GB card, but tight on an 8 GB Mac. Its full 128K window is about 7.5 GB, which is tight on an 8 GB card; the 8 GB guide now says so and lists every image model that fits.',

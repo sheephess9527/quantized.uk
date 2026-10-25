@@ -419,6 +419,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-25 — Patrol: llama.cpp b11869, Ollama v0.40.11; no model
+
+- **Runtimes** (verbatim tag/release pages): llama.cpp b11869 (10-24); Ollama **v0.40.11** Latest (10-24);
+  vLLM v0.32.0 and ExLlamaV3 1.6.4 unchanged.
+- **Skipped: vLLM Semantic Router "d3" (Decision 3.0)**, which Ollama v0.40.11 adds. Per MarkTechPost
+  (10-11) these are Qwen3.5 / Qwen3.8-27B fine-tunes (0.85B–26.09B) that return class / yes-no / option
+  probabilities, not text — decision models, not the chat and coding models this index sizes; their bases
+  are already indexed. No `/pending/` entry (out of scope, not waiting on data).
+- **Not listed: "Kimi K3.1 Pro"** — one third-party blog says it launched 10-23 with weights promised by
+  11-04; no other coverage and no Moonshot page found, and Kimi K3 itself (2.8T) is outside single-machine
+  reach. Not put on `/pending/` until a primary source confirms it.
+
 ### 2026-10-24 (iv) — Gemma 4 E4B sized from its own files; 8GB guide corrected
 
 Owner-pulled tree + `X-Linked-Size` for unsloth, bartowski, lmstudio-community, ggml-org and Google's QAT

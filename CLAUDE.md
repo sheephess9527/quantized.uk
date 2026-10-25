@@ -1137,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-25 | **Patrol** — llama.cpp b11869, Ollama v0.40.11; d3 decision models skipped (classifiers on Qwen bases, out of scope); "Kimi K3.1 Pro" unconfirmed (one blog) |
 | 2026-10-24 (iv) | **Gemma 4 E4B from unsloth's files** — Q4_K_M 5.30 bpw (was generic 4.85): 4.9 → 5.3 GB @4K, 128K 7.0 → 7.5 GB (tight on 8 GB); 8 GB Macs 27 → 26; bpw over the 7.52B text total, never the Hub's safetensors total (includes vision/audio towers); 8GB guide's "two image models" was eight |
 | 2026-10-24 (iii) | **+1 model (123): Nemotron 3.5 Bolt E4B** — owner-pulled config = Gemma 4 E4B's shape field for field (arch + 7.52B reused, now confirmed); context 65,536 (config, not Ollama's 128K); lmstudio-community Q4_K_M is 6.57 bpw (PLE table not at 4 bits) → 6.6 GB @4K green on 8 GB; every card +1; Gemma 4 E4B's own generic 4.85 bpw now suspect (needs its listing) |
 | 2026-10-24 | **Patrol** — llama.cpp b11847, Ollama v0.40.10 (adds Bolt E4B); Bolt E4B released but unsized (config + GGUF bytes unreachable; Gemma 4-based ≠ Gemma 4 E4B's shape) → `/pending/` `awaiting-data` |
