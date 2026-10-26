@@ -419,6 +419,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-26 — Patrol: llama.cpp b11889, ExLlamaV3 1.6.5; DeepSeek-V4.1-Flash runnable, not sized; Nanbeige4.3-33B pending
+
+- **Runtimes** (verbatim tag/release pages): llama.cpp b11889 (10-25); ExLlamaV3 **1.6.5** (10-25,
+  Latest; the methodology note's "v1.6.4" updated in both languages); Ollama v0.40.11 and vLLM v0.32.0
+  unchanged.
+- **DeepSeek-V4.1-Flash-1017** — llama.cpp master's `src/llama-arch.cpp` now has `LLM_ARCH_DEEPSEEK41`
+  ("deepseek41"), handled alongside `deepseek4`, and community GGUFs are trending (ISTA-DASLab GSQ-RCO,
+  an abliterated build). `/pending/` reason `no-runtime` → `not-sized`: same blocker as V4-Flash (per-layer
+  compressed cache the calculator cannot express), and no widely used publisher's listing read here.
+- **Nanbeige4.3-33B** — on Hugging Face trending (10-26 digest, 0 downloads at capture, so new); llama.cpp
+  has `nanbeige`. Dense 33B = the 24 GB-card class, so worth the owner pulling its config.json + a GGUF
+  tree. Added to `/pending/` (`awaiting-data`, no release date recorded).
+- Seen, not listed: XHToken Spark-X2.6-4B (trending; llama.cpp has a `spark2_5` arch, provenance unread),
+  d3 (out of scope, 10-25), Kimi K3.1 Pro (still unconfirmed).
+
 ### 2026-10-25 — Patrol: llama.cpp b11869, Ollama v0.40.11; no model
 
 - **Runtimes** (verbatim tag/release pages): llama.cpp b11869 (10-24); Ollama **v0.40.11** Latest (10-24);
