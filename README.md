@@ -463,6 +463,10 @@ readable source: "no kernel image is available" (CUDA runtime string), vLLM's
 max-model-len-vs-KV message (moved out of `kv_cache_utils.py`), "CUDA driver version is
 insufficient". `errorEntryProblems()` in `validate.ts` fails the build on a dotted/duplicate id, a
 missing guide or `seeAlso` target, no source, or an empty en/zh string. Pages: 536 → 582.
+Guide titles are passed from the server page (`app/errors/[id]/page.tsx`) rather than importing
+`articles` in the client view — that import put every guide body in the bundle (415 → 289 kB first load).
+Pre-deploy check: four table rows' calculator links opened in a browser show the same size, speed
+range and bound as the tables.
 
 ### 2026-10-26 (iii) — Similar-model cards: one named build
 

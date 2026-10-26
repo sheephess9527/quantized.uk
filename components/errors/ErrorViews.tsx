@@ -8,7 +8,6 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 import { canonical, FEEDBACK_EMAIL } from '@/lib/seo';
 import { localizeHref } from '@/lib/i18n/routing';
-import { articles } from '@/lib/data/cookbook';
 import { runtimeErrors, errorById, type RuntimeErrorEntry } from '@/lib/data/errors';
 
 /**
@@ -105,15 +104,15 @@ export function ErrorIndexView() {
   );
 }
 
-export function ErrorDetailView({ id }: { id: string }) {
+/** Guide titles come from the server page, so the guide bodies stay out of this bundle. */
+export interface GuideLink { id: string; title: string; titleZh: string }
+
+export function ErrorDetailView({ id, guides }: { id: string; guides: GuideLink[] }) {
   const { t, lang } = useLanguage();
   const e = t.errorPages;
   const err = errorById(id);
   if (!err) return null;
   const path = localizeHref(`/errors/${err.id}/`, lang);
-  const guides = (err.guides ?? [])
-    .map(g => articles.find(a => a.id === g))
-    .filter((a): a is (typeof articles)[number] => !!a);
   const related = (err.seeAlso ?? []).map(errorById).filter((x): x is RuntimeErrorEntry => !!x);
 
   return (
