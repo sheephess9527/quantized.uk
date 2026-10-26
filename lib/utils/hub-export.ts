@@ -1,7 +1,7 @@
 import type { QuantModel } from '@/lib/data/models';
 import type { HubFilters } from '@/components/hub/FilterBar';
 import { gpuDatabase } from '@/lib/data/gpus';
-import { qualityRank } from '@/lib/utils/quality';
+import { qualityRank, referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 
 const SITE = 'https://quantized.uk';
@@ -32,8 +32,10 @@ function bestQuant(model: QuantModel) {
   return `${q.format} ${q.level}`;
 }
 
-function minVram(model: QuantModel) {
-  return Math.min(...model.quants.map(q => sizeAt4K(model, q)));
+// The size column names its own build: a bare minimum beside "Best Quant" read as that build's size.
+function refSize(model: QuantModel) {
+  const q = referenceQuant(model.quants);
+  return `${sizeAt4K(model, q).toFixed(1)} GB (${q.level})`;
 }
 
 function filterSummary(
@@ -76,7 +78,7 @@ export function buildHubMarkdown(
   for (const m of models) {
     const url = `${SITE}/quant-hub/${m.id}/`;
     lines.push(
-      `| ${m.name} | ${m.paramLabel} | ${minVram(m).toFixed(1)} GB | ${bestQuant(m)} | [${m.id}](${url}) |`,
+      `| ${m.name} | ${m.paramLabel} | ${refSize(m)} | ${bestQuant(m)} | [${m.id}](${url}) |`,
     );
   }
 

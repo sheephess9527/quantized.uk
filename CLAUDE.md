@@ -1137,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-26 (iii) | **Similar-model cards: one named build** — size was `min` over all quants (often AWQ INT4) beside the best quant's perplexity rise; both now from `referenceQuant()`, level printed; Hub export column the same |
 | 2026-10-26 (ii) | **+2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B** — owner-pulled configs + bartowski byte counts; Nanbeige plain Llama (52 L, 8 KV × 128, 213 KB/token) Q4_K_M 22.6 GB @4K tight on 24 GB, Q3_K_M 17.5 green; Spark `spark2-5` iSWA (27 × 1024 cells + 9 full, 4 KV × 256) 3.0 GB @4K; XHToken's own Q4_K_M is non-standard (BF16 embeddings/gates), not used |
 | 2026-10-26 | **Patrol** — llama.cpp b11889, ExLlamaV3 1.6.5; llama.cpp gained `deepseek41` → DeepSeek-V4.1-Flash `/pending/` no-runtime → not-sized (compressed cache, as V4-Flash); Nanbeige4.3-33B (trending, `nanbeige` arch) → `/pending/` awaiting config + GGUF bytes |
 | 2026-10-25 | **Patrol** — llama.cpp b11869, Ollama v0.40.11; d3 decision models skipped (classifiers on Qwen bases, out of scope); "Kimi K3.1 Pro" unconfirmed (one blog) |

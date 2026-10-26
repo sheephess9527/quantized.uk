@@ -419,6 +419,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-26 (iii) — Similar-model cards: one named build
+
+A reader's audit (outside, unsolicited) re-ran every Hub-listed model page against itself and found
+the 10-23 fault class gone; it noted Codestral 22B / Mistral Small 24B / Qwen2.5-Coder 32B cards
+quoting AWQ INT4 ("min VRAM", 12.6 / 13.2 GB) while the page table leads with Q4_K_M (15.0 / 15.9)
+and judged that consistent. By this repo's own rule it is not: `SimilarModels` paired
+`min(sizeAt4K)` over every quant with `bestQuant`'s perplexity rise — two different files on one
+card, the smallest possibly a format the reader's backend cannot load. Both now come from
+`referenceQuant()` (the level the model page is sized at), and the level is printed. The Hub
+Markdown export's "Min VRAM" beside "Best Quant" had the same pairing; the column is now
+"VRAM @ 4K" with the reference level in the cell. Her count of 102 = 125 − 20 superseded (hidden by
+default) − 3 added since; it checks out.
+
 ### 2026-10-26 (ii) — +2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B
 
 Owner-pulled configs + tree API byte counts (2026-10-26 UTC); unsloth and lmstudio-community have no

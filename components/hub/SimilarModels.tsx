@@ -3,7 +3,7 @@
 import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, GitCompareArrows } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { bestQuant as pickBestQuant } from '@/lib/utils/quality';
+import { referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 import { getSimilarModels } from '@/lib/utils/related';
 import { cn } from '@/lib/utils/cn';
@@ -42,8 +42,10 @@ export default function SimilarModels({ modelId }: Props) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {similar.map(model => {
-          const minVram = Math.min(...model.quants.map(q => sizeAt4K(model, q)));
-          const bestLoss = pickBestQuant(model.quants).pplLossPercent;
+          // One named build for both figures — the size and the perplexity rise used to come from
+          // the smallest and the best quant respectively, a pairing no one can run.
+          const ref = referenceQuant(model.quants);
+          const loss = ref.pplLossPercent;
           return (
             <Link
               key={model.id}
@@ -68,11 +70,11 @@ export default function SimilarModels({ modelId }: Props) {
                 ))}
               </div>
               <div className="flex items-center gap-3 text-xs text-slate-500">
-                <span className="font-mono text-violet-300">{minVram.toFixed(1)} GB</span>
-                <span>{s.minVram}</span>
+                <span className="font-mono text-slate-400">{ref.level}</span>
+                <span className="font-mono text-violet-300">{sizeAt4K(model, ref).toFixed(1)} GB</span>
                 <span aria-hidden className="text-slate-700">·</span>
                 <span className="font-mono text-emerald-400">
-                  {bestLoss === undefined ? '—' : `+${bestLoss.toFixed(1)}%`}
+                  {loss === undefined ? '—' : `+${loss.toFixed(1)}%`}
                 </span>
                 <span>{s.accuracy}</span>
               </div>

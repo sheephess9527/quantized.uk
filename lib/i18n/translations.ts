@@ -315,14 +315,13 @@ export const translations = {
         search: 'Search',
         colModel: 'Model',
         colParams: 'Params',
-        colMinVram: 'Min VRAM',
+        colMinVram: 'VRAM @ 4K',
         colBestQuant: 'Best Quant',
         colLink: 'Link',
       },
       similar: {
         title: 'Similar models',
         compareWith: 'Compare with {name}',
-        minVram: 'min VRAM',
         accuracy: 'perplexity rise',
       },
       detail: {
@@ -1531,14 +1530,13 @@ export const translations = {
         search: '搜索',
         colModel: '模型',
         colParams: '参数量',
-        colMinVram: '最低显存',
+        colMinVram: '4K 显存',
         colBestQuant: '最佳量化',
         colLink: '链接',
       },
       similar: {
         title: '相似模型',
         compareWith: '与 {name} 对比',
-        minVram: '最低显存',
         accuracy: '困惑度增幅',
       },
       detail: {
