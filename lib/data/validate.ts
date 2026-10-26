@@ -11,6 +11,7 @@ import { dataLastUpdated, sizingChangedAt } from '@/lib/data/meta';
 import { prefillData } from '@/lib/data/prefill';
 import { sourceBpw } from '@/lib/utils/quant-source';
 import { pendingModels } from '@/lib/data/pending';
+import { runtimeErrors } from '@/lib/data/errors';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -106,6 +107,31 @@ export function dataProblems(): string[] {
   out.push(...descriptionProblems());
   out.push(...sourceAndPendingProblems());
   out.push(...guideModelCountProblems());
+  out.push(...errorEntryProblems());
+  return out;
+}
+
+/**
+ * `/errors/` entries are hand-written and cross-reference guides and each
+ * other; a renamed guide or a dropped entry would leave a link to a 404.
+ */
+function errorEntryProblems(): string[] {
+  const out: string[] = [];
+  const ids = new Set<string>();
+  const guideIds = new Set(articles.map(a => a.id));
+  for (const e of runtimeErrors) {
+    if (ids.has(e.id)) out.push(`errors: duplicate id '${e.id}'`);
+    ids.add(e.id);
+    if (e.id.includes('.')) out.push(`errors: '${e.id}' contains a dot (next/link drops the trailing slash)`);
+    if (!e.sources.length) out.push(`errors: '${e.id}' cites no source`);
+    for (const g of e.guides ?? []) if (!guideIds.has(g)) out.push(`errors: '${e.id}' links missing guide '${g}'`);
+    for (const t of [e.title, e.summary, ...e.causes, ...e.fixes]) {
+      if (!t.en.trim() || !t.zh.trim()) out.push(`errors: '${e.id}' has an empty en/zh string`);
+    }
+  }
+  for (const e of runtimeErrors) {
+    for (const r of e.seeAlso ?? []) if (!ids.has(r)) out.push(`errors: '${e.id}' links missing entry '${r}'`);
+  }
   return out;
 }
 

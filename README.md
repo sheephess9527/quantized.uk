@@ -81,6 +81,9 @@ app/                        # Next.js App Router pages
   feed.xml/route.ts         # RSS (force-static)
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
+  tools/speed/, tools/which-quant/, tools/context-length/
+                            # Quick-answer tables (QuestionPage) — calculator functions only
+  errors/, errors/[id]/     # Error lookup (lib/data/errors.ts), zh mirrors under app/zh/
   globals.css               # Glass / glow utilities, grid background
 
 components/
@@ -103,6 +106,7 @@ lib/
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   43 GPUs (NVIDIA consumer/pro, AMD Radeon/ROCm, Apple Silicon, CPU RAM)
     meta.ts                 #   dataLastUpdated + changelog
+    errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
   i18n/
     translations.ts         #   EN/ZH dictionary
     context.tsx             #   LanguageProvider + useLanguage() hook
@@ -114,6 +118,8 @@ lib/
     hub-url.ts              #   shareable Hub filter URLs
     cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM / ExLlama
     cn.ts                   #   clsx + tailwind-merge helper
+    question-pages.ts       #   rows for /tools/speed|which-quant|context-length (levelTable,
+                            #   contextReach, measuredSpeed, speedCeiling — nothing re-derived)
 
 scripts/
   fetch-hf-stats.mjs        # prebuild — refresh HF downloads/likes (fails gracefully offline)
@@ -418,6 +424,42 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-10-26 (iv) — Quick-answer pages + error lookup (owner request)
+
+**Three entry pages** (`/tools/speed/`, `/tools/which-quant/`, `/tools/context-length/`, + `/zh`):
+the calculator's follow-up answers as static tables. Rows per card = `homePicks` `capable` +
+`headroom` picks for chat / code / multimodal (the `fastest` slot is dropped — almost always a
+sub-1B model) over `POPULAR_GPU_IDS`. Every cell is `levelTable` (pick at 4K, batch 1, fp16),
+`contextReach` at the picked level for f16 / q8_0 / q4_0 KV (`KV_CACHE_TYPES`), `measuredSpeed`
+and `speedCeiling` — `lib/utils/question-pages.ts` calls nothing else, and each row links the
+calculator with the same `model`/`quant`/`gpu`/`ctx`. Level and context pages group cards whose
+answer is identical (5060 Ti 16G + 4060 Ti 16G; 3090 + 4090); speed never groups. Explainer/FAQ
+copy in `tool-content.ts` carries only formula constants and documented defaults; Ollama's KV
+cache wording is from its `docs/faq.mdx`. `ToolExplainer` got `app={false}` so these tables do
+not claim a `SoftwareApplication`.
+
+Found, not changed: the calibrated speed range can exceed the bandwidth bound printed beside it
+(RTX 4060 Ti 8G, Qwen3.5 9B: 39–52 vs ≤ 49). The calculator, GPU pages and `/tools/feel/` show the
+same pair; capping `measuredSpeed().high` at the roofline would move every surface, and the
+roofline is itself ~7% low by the owner's 10-08 decision — left for the owner.
+
+**Error lookup** (`/errors/` + 19 pages × 2): `lib/data/errors.ts`. Every `message` was read in
+the cited source file today — llama.cpp (`ggml-cuda.cu` `ggml_cuda_error` prints
+`GGML_CUDA_NAME " error: %s"`, so ROCm builds say `ROCm error:`; `llama-model.cpp`
+`unable to allocate %s buffer`; `llama-kv-cache.cpp`; `llama-model-loader.cpp`
+`done_getting_tensors`; `gguf.cpp` `gguf_init_from_reader`; `ggml-metal-device.m`
+`ggml_metal_buffer_init`), Ollama (`server/sched.go` incompatible-model wrapper, `images.go`
+`pull model manifest: %s` + `os.ErrNotExist` → "file does not exist" and the min-version check,
+`routes.go` not-found, `docs/gpu.mdx` HSA override, `docs/faq.mdx` `ollama ps`), vLLM
+(`v1/worker/utils.py` `request_memory`; default utilization is now **0.92**, `config/cache.py`),
+PyTorch (`CUDACachingAllocator.cpp`, `torch/cuda/__init__.py` `_check_cubins`), rocBLAS
+(`tensile_host.cpp`), Moby (`daemon/errors.go` `incompatibleDeviceRequest`), HF hub-docs
+(`ollama.md`, `hf.co/<user>/<repo>:<quant>`). Not listed because the text could not be found in
+readable source: "no kernel image is available" (CUDA runtime string), vLLM's
+max-model-len-vs-KV message (moved out of `kv_cache_utils.py`), "CUDA driver version is
+insufficient". `errorEntryProblems()` in `validate.ts` fails the build on a dotted/duplicate id, a
+missing guide or `seeAlso` target, no source, or an empty en/zh string. Pages: 536 → 582.
 
 ### 2026-10-26 (iii) — Similar-model cards: one named build
 

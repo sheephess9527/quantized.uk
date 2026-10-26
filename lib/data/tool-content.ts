@@ -326,3 +326,148 @@ export const feelContent: ToolContent = {
     },
   ],
 };
+
+/*
+ * The three question pages (`/tools/speed/`, `/tools/which-quant/`,
+ * `/tools/context-length/`). Their tables are computed by
+ * `lib/utils/question-pages.ts` from the calculator's own functions; this copy
+ * explains the method and carries no figure that could drift from the data
+ * (formula constants and documented runtime defaults only).
+ */
+export const speedQContent: ToolContent = {
+  summary: {
+    en: 'Tokens per second for the models that fit the most common cards: a calibrated estimate from each card\'s own measured run, and the upper bound its memory bandwidth sets.',
+    zh: '最常见几张卡上、能装下的模型每秒能生成多少 token：按每张卡自己的实测跑分校准的估计值，以及显存带宽决定的上限。',
+  },
+  sections: [
+    {
+      heading: { en: 'Why memory bandwidth sets the limit', zh: '为什么显存带宽决定上限' },
+      body: {
+        en: 'To generate one token, a dense model reads every one of its weights from memory once. So **tokens per second can never exceed `bandwidth ÷ weight bytes`**: an RTX 4090 moves about 1 TB/s, and a model whose weights take 10 GB cannot pass about 100 tokens per second on it, however fast the compute is. That is why a smaller quant level is faster as well as smaller, and why a card with more bandwidth but the same memory runs the same model faster. A mixture-of-experts model reads only the experts each token is routed to, so its bound is computed over the active parameters and is much higher.',
+        zh: '稠密模型每生成一个 token，都要把全部权重从显存里读一遍。所以**每秒 token 数永远不可能超过 `带宽 ÷ 权重字节数`**：RTX 4090 每秒约能搬运 1 TB，一个权重占 10 GB 的模型在它上面最多约每秒 100 个 token，算力再强也一样。这也是为什么更小的量化档位不仅更省显存、也更快；以及为什么显存一样但带宽更高的卡，跑同一个模型会更快。MoE（混合专家）模型每个 token 只读取被路由到的专家，所以它的上限按激活参数计算，会高得多。',
+      },
+    },
+    {
+      heading: { en: 'Why the estimate sits below the bound', zh: '为什么估计值低于上限' },
+      body: {
+        en: 'No runtime reaches its card\'s peak bandwidth: kernels, drivers and per-token overhead all cost something, and how much differs by card. So the estimate starts from what this card actually did — its `tg128` result for Llama 2 7B Q4_0 on llama.cpp\'s community scoreboards — and scales it by how many more or fewer bytes the chosen model reads per token. Checked against the dense GGUF runs in this site\'s benchmark table, real speeds landed between 0.99× and 1.31× of the estimate, which is the range printed beside it. Outside dense 7–33B GGUF models that check does not apply, so those rows show the bound alone.',
+        zh: '没有哪个运行时能跑满显卡的峰值带宽：计算内核、驱动和每个 token 的固定开销都要占时间，而且每张卡损耗不同。所以估计值从这张卡自己的实测出发 —— 它在 llama.cpp 社区跑分里 Llama 2 7B Q4_0 的 `tg128` 结果 —— 再按所选模型每个 token 要多读或少读多少字节来缩放。用本站基准表里的稠密 GGUF 实测数据核对，真实速度落在估计值的 0.99 到 1.31 倍之间，这就是估计值旁边印的范围。超出 7–33B 稠密 GGUF 模型的范围，这个核对就不适用，那些行只给上限。',
+      },
+    },
+  ],
+  faqs: [
+    {
+      q: { en: 'Why do some rows show only an upper bound?', zh: '为什么有些行只有上限，没有估计值？' },
+      a: {
+        en: 'The estimate is calibrated on llama.cpp runs of GGUF files from dense 7–33B models. A row whose recommended level is AWQ or GPTQ (run by vLLM), a mixture-of-experts model, or a model outside that size range has not been checked against a real run, so it gets the bandwidth bound only — a printed guess would look as reliable as the checked figures and would not be.',
+        zh: '估计值是用 7–33B 稠密模型的 GGUF 文件在 llama.cpp 上的实测校准的。推荐档位是 AWQ 或 GPTQ（由 vLLM 运行）的行、MoE 模型，以及超出这个体量范围的模型，都没有和真实跑分核对过，所以只给带宽上限 —— 硬印一个猜测值，看起来会和核对过的数字一样可靠，但它并不是。',
+      },
+    },
+    {
+      q: { en: 'Does a long prompt or a long conversation slow it down?', zh: '提示词或对话很长时会变慢吗？' },
+      a: {
+        en: 'Yes. These figures are for generating with a nearly empty context, which is what `tg128` measures. As the context grows each token also reads more of the KV cache, so generation slows, and a long prompt adds a wait before the first token appears. The VRAM calculator shows that wait separately, from each card\'s measured prompt-processing speed.',
+        zh: '会。这里的数字对应上下文几乎为空时的生成速度，也就是 `tg128` 测的情况。上下文变长后，每个 token 还要多读 KV 缓存，生成会变慢；很长的提示词还会让第一个字出现之前多等一段时间。显存计算器会根据每张卡实测的提示词处理速度，单独给出这个等待时间。',
+      },
+    },
+    {
+      q: { en: 'Do two cards make it twice as fast?', zh: '插两张卡会快一倍吗？' },
+      a: {
+        en: 'Not with the default setup. llama.cpp and Ollama split a model across cards by layers, and the cards take turns on every token, so the speed bound stays that of one card; a second card buys capacity — a bigger model or a longer context — not speed. Tensor-parallel serving in vLLM can scale speed, at the cost of a fast link between the cards.',
+        zh: '默认设置下不会。llama.cpp 和 Ollama 按层把模型拆到几张卡上，每个 token 都要几张卡轮流算一遍，所以速度上限仍是一张卡的水平；第二张卡换来的是容量 —— 能放更大的模型或更长的上下文 —— 而不是速度。vLLM 的张量并行可以提升速度，但需要卡与卡之间有高速互联。',
+      },
+    },
+  ],
+};
+
+export const quantQContent: ToolContent = {
+  summary: {
+    en: 'Which quant level to download for each recommended model on the most common cards: every level sized at 4K context, and the highest-quality one that fits comfortably.',
+    zh: '最常见几张卡上，每个推荐模型该下载哪个量化档位：所有档位在 4K 上下文下的显存，以及能从容装下的最高质量那一档。',
+  },
+  sections: [
+    {
+      heading: { en: 'How the pick is made', zh: '推荐档位是怎么选出来的' },
+      body: {
+        en: 'Every level the model is published at is sized with the VRAM calculator at 4K context, then judged against the card: green is at most 88% of it, amber up to 105%, and a format the card\'s runtime cannot read is out at any size. Of the green levels, the pick is the most faithful one: the lowest published perplexity rise when the level has one, otherwise the most bits per weight — within one model more bits is closer to the original, which is the only ordering the data supports when no perplexity was published. It is the same rule the calculator\'s "Best fit" uses, so the two always agree.',
+        zh: '模型发布的每个量化档位，都用显存计算器按 4K 上下文算出显存，再和显卡比较：不超过显存 88% 为绿色，最多到 105% 为黄色；这张卡的运行时读不了的格式，无论多大都排除。在绿色档位里，选最接近原模型的那一档：有公开困惑度增幅的，取增幅最小的；没有的，取每权重比特数最高的 —— 同一个模型，比特数越高越接近原版，这是在没有困惑度数据时数据唯一能支持的排序。这与计算器的"最佳选择"用的是同一条规则，所以两边永远一致。',
+      },
+    },
+    {
+      heading: { en: 'What the level names mean', zh: '这些档位名称是什么意思' },
+      body: {
+        en: 'The number is roughly the bits stored per weight. GGUF `Q8_0` keeps about 8.5 bits, `Q6_K` about 6.6, `Q5_K_M` about 5.7, `Q4_K_M` about 4.9 and `Q3_K_M` about 3.9; the file shrinks in step, and the perplexity rise grows as the bits fall. `AWQ INT4` and `GPTQ INT4` are 4-bit formats that vLLM runs, usually a little smaller than `Q4_K_M`. A model released in a native low-bit format, such as GPT-OSS in `MXFP4`, has no full-precision original to lose against, so that level is the reference.',
+        zh: '数字大致是每个权重存储的比特数。GGUF 的 `Q8_0` 约 8.5 比特，`Q6_K` 约 6.6，`Q5_K_M` 约 5.7，`Q4_K_M` 约 4.9，`Q3_K_M` 约 3.9；文件大小随之等比缩小，比特数越低，困惑度增幅越大。`AWQ INT4` 和 `GPTQ INT4` 是由 vLLM 运行的 4 比特格式，通常比 `Q4_K_M` 略小。以原生低比特格式发布的模型（比如以 `MXFP4` 发布的 GPT-OSS）没有可供对比的全精度原版，所以发布的那一档本身就是基准。',
+      },
+    },
+  ],
+  faqs: [
+    {
+      q: { en: 'Q4 or Q5 — which should I pick?', zh: 'Q4 和 Q5 该选哪个？' },
+      a: {
+        en: 'If both are green on your card at the context you need, take the higher one: it is closer to the original model and costs only memory you have spare. If only Q4 is green, take Q4 rather than a tight Q5 — a level that barely loads leaves no room for context, and the runtime may push layers to system memory, which is far slower. Where a model\'s perplexity is published for both levels, its own page shows the difference.',
+        zh: '如果在你需要的上下文长度下两档都是绿色，就选高的那档：它更接近原模型，多占的只是你本来就空着的显存。如果只有 Q4 是绿色，就选 Q4，而不要选偏紧的 Q5 —— 勉强能加载的档位没有上下文余量，运行时还可能把部分层挪到内存里，速度会慢得多。模型对两档都公布了困惑度的，它自己的页面上能看到差别。',
+      },
+    },
+    {
+      q: { en: 'Why does the pick change when I raise the context?', zh: '为什么上下文开大后推荐档位会变？' },
+      a: {
+        en: 'The weights stay the same size at any context, but the KV cache grows with every token of context, and it shares the card with them. A level that is green at 4K can turn amber at 32K, and the pick moves down a level to make room. The context-length page shows how far each pick stretches; the calculator recomputes the pick at whatever context you set.',
+        zh: '权重大小不随上下文变化，但 KV 缓存会随上下文每多一个 token 而增长，并且和权重共用显存。4K 时是绿色的档位，到 32K 可能就变黄，推荐档位就会降一档来腾出空间。上下文长度页面列出了每个推荐档位能开到多长；计算器会按你设置的上下文重新选档。',
+      },
+    },
+    {
+      q: { en: 'Why is the pick AWQ on some cards, and can I use it on Windows?', zh: '为什么有些卡推荐的是 AWQ？Windows 上能用吗？' },
+      a: {
+        en: 'AWQ INT4 stores every layer at 4 bits, so it is smaller than GGUF `Q4_K_M` and can be the only level that fits a card comfortably. It runs in vLLM, which needs Linux or WSL2 — Ollama and LM Studio on native Windows load GGUF only. If that is your setup, take the best GGUF row in the table instead, even if it is amber, and keep the context short.',
+        zh: 'AWQ INT4 每一层都存成 4 比特，所以比 GGUF 的 `Q4_K_M` 更小，有时是唯一能从容装进这张卡的档位。它要用 vLLM 运行，需要 Linux 或 WSL2 —— Windows 原生的 Ollama 和 LM Studio 只能加载 GGUF。如果你是这种环境，就选表里最好的 GGUF 档位，即使它是黄色，也把上下文开短一些。',
+      },
+    },
+  ],
+};
+
+export const contextQContent: ToolContent = {
+  summary: {
+    en: 'The longest context each recommended model keeps comfortably on the most common cards, with the default fp16 KV cache and with the cache quantized to q8_0 or q4_0.',
+    zh: '最常见几张卡上，每个推荐模型能从容开到的最长上下文 —— 分别列出默认 fp16 KV 缓存，以及缓存量化为 q8_0、q4_0 后的结果。',
+  },
+  sections: [
+    {
+      heading: { en: 'Why context costs memory', zh: '为什么上下文会占显存' },
+      body: {
+        en: 'Every token of context leaves a key and a value vector in every layer that keeps a cache: `2 × layers × kv_heads × head_dim × bytes` per token. Two models of the same size can differ several-fold here. Grouped-query attention shares one KV head between several attention heads; sliding-window layers keep only a fixed window; hybrid models such as Qwen3.5/3.6 keep a growing cache in a quarter of their layers. That is why some models reach their full window on a card where a same-size model stops at a few thousand tokens. Each figure here is found by running the calculator itself at every step, not by inverting the formula.',
+        zh: '上下文里的每个 token，都会在每个保留缓存的层里留下一组 K 和 V 向量：每个 token 占 `2 × 层数 × kv_heads × head_dim × 字节数`。同样大小的两个模型，这里可以相差好几倍。分组查询注意力让多个注意力头共用一个 KV 头；滑动窗口层只保留固定长度的窗口；Qwen3.5/3.6 这样的混合架构只在四分之一的层里保留随上下文增长的缓存。所以同一张卡上，有的模型能开满整个窗口，同样大小的另一个模型却只能开几千 token。这里每个数字都是让计算器本身逐档计算得出的，而不是把公式倒推出来。',
+      },
+    },
+    {
+      heading: { en: 'Quantizing the KV cache', zh: '把 KV 缓存量化' },
+      body: {
+        en: 'The cache does not have to be fp16. ggml\'s `q8_0` stores 32 values in 34 bytes, about 53% of fp16, and `q4_0` stores them in 18, about 28%. Ollama\'s documentation describes `q8_0` as a very small loss in precision that usually has no noticeable impact, and `q4_0` as a small-to-medium loss that may be more noticeable at long contexts, varying by model. Both runtimes need Flash Attention for it. In llama.cpp pass `-ctk q8_0 -ctv q8_0` (the default `-fa auto` turns Flash Attention on); in Ollama set `OLLAMA_KV_CACHE_TYPE=q8_0` on the server, which applies to every model it loads.',
+        zh: 'KV 缓存不一定要用 fp16。ggml 的 `q8_0` 用 34 字节存 32 个值，约为 fp16 的 53%；`q4_0` 用 18 字节，约 28%。Ollama 的文档说，`q8_0` 精度损失很小，通常对模型质量没有明显影响；`q4_0` 有小到中等的损失，上下文越长可能越明显，具体因模型而异。两个运行时都需要开启 Flash Attention。llama.cpp 里加 `-ctk q8_0 -ctv q8_0`（默认的 `-fa auto` 会自动开启 Flash Attention）；Ollama 在服务端设置 `OLLAMA_KV_CACHE_TYPE=q8_0`，它会作用于加载的所有模型。',
+      },
+    },
+  ],
+  faqs: [
+    {
+      q: { en: 'Is a q8_0 cache worth it?', zh: 'q8_0 缓存值得开吗？' },
+      a: {
+        en: 'For long documents and code, usually yes: it roughly doubles the context that fits for the cache\'s share of memory, and Ollama\'s own documentation calls the precision loss very small. `q4_0` stretches further but its loss is larger and more visible at long contexts, so try it on your own task before relying on it.',
+        zh: '处理长文档和代码时，通常值得：缓存所占的那部分显存能多装大约一倍的上下文，而且 Ollama 自己的文档说它的精度损失很小。`q4_0` 能开得更长，但损失更大，上下文越长越明显，所以要先在你自己的任务上试过再依赖它。',
+      },
+    },
+    {
+      q: { en: 'Why does a model stop at "full window" even with memory to spare?', zh: '为什么显存还有剩余，模型却停在"满窗口"？' },
+      a: {
+        en: 'Because that is the longest context the model was trained or configured for; this page never sizes a model past its own window. Runtimes may let you set a longer context, but the model was not built to use it, and answers past the window degrade.',
+        zh: '因为那是模型训练或配置支持的最长上下文；本页从不按超过模型自身窗口的长度来计算。运行时也许允许你设得更长，但模型并不是为此设计的，超出窗口后回答质量会下降。',
+      },
+    },
+    {
+      q: { en: 'Does llama.cpp use this much context by default?', zh: 'llama.cpp 默认会开这么长的上下文吗？' },
+      a: {
+        en: 'Recent llama.cpp starts from the model\'s trained context when you omit `-c`, then trims it to fit the card, and Ollama picks its own default. Set the context yourself (`-c 32768` in llama.cpp, `num_ctx` in Ollama) so you get the length you planned for rather than whatever the runtime settled on.',
+        zh: '新版 llama.cpp 在不加 `-c` 时会从模型训练时的上下文长度开始，再裁剪到显卡装得下；Ollama 有它自己的默认值。最好自己设定上下文（llama.cpp 用 `-c 32768`，Ollama 用 `num_ctx`），这样得到的是你计划的长度，而不是运行时自己定下的值。',
+      },
+    },
+  ],
+};

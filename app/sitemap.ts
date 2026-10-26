@@ -5,6 +5,7 @@ import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated, runtimeVersions, sizingChangedAt } from '@/lib/data/meta';
 import { pendingModels } from '@/lib/data/pending';
+import { runtimeErrors } from '@/lib/data/errors';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -48,6 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // tool's date here when that text changes — not `sizingChangedAt`, which
   // would re-announce every derived page.
   const VRAM_CALC_EDITED = '2026-10-13';
+  const QUESTIONS_EDITED = '2026-10-26';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
 
@@ -71,6 +73,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/tools/format-wizard/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/compare/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/feel/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-10-18']), changeFrequency: 'monthly', priority: 0.7 },
+    // Derived tables over the calculator's own functions; first published 2026-10-26.
+    { path: '/tools/speed/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/which-quant/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/context-length/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/errors/', lastModified: latest(runtimeErrors.map(e => e.checkedAt)), changeFrequency: 'monthly', priority: 0.7 },
   ];
 
   const entries: Entry[] = [
@@ -116,6 +123,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...formatPairs.map(p => ({
       path: `/formats/${p.slug}/`,
       lastModified: inventoryDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+    // Each error page changes when its own entry is re-checked.
+    ...runtimeErrors.map(e => ({
+      path: `/errors/${e.id}/`,
+      lastModified: new Date(e.checkedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),

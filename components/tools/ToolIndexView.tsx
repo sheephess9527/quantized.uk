@@ -2,10 +2,11 @@
 
 import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/seo';
-import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge, Cpu, Layers } from 'lucide-react';
+import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge, Cpu, Layers, Zap, ListChecks, Ruler, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import { vramCalcContent, cliGenContent, formatWizardContent, compareContent, feelContent } from '@/lib/data/tool-content';
+import { vramCalcContent, cliGenContent, formatWizardContent, compareContent, feelContent, speedQContent, quantQContent, contextQContent } from '@/lib/data/tool-content';
+import { errorsIndexSummary } from '@/lib/data/errors';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -25,6 +26,13 @@ const tools = [
   { href: '/tools/format-wizard/', icon: Wand2,             accent: 'text-orange-300',  content: formatWizardContent, key: 'formatWizard' as const },
   { href: '/tools/compare/',       icon: GitCompareArrows,  accent: 'text-emerald-300', content: compareContent,      key: 'modelCompare' as const },
   { href: '/tools/feel/',          icon: Gauge,             accent: 'text-amber-300',   content: feelContent,         key: 'feelSpeed' as const },
+];
+
+const questions = [
+  { href: '/tools/speed/',          icon: Zap,           accent: 'text-emerald-300', summary: speedQContent.summary,   key: 'speedQ' as const },
+  { href: '/tools/which-quant/',    icon: ListChecks,    accent: 'text-violet-300',  summary: quantQContent.summary,   key: 'quantQ' as const },
+  { href: '/tools/context-length/', icon: Ruler,         accent: 'text-cyan-300',    summary: contextQContent.summary, key: 'contextQ' as const },
+  { href: '/errors/',               icon: AlertTriangle, accent: 'text-amber-300',   summary: errorsIndexSummary,      key: 'errors' as const },
 ];
 
 export default function ToolIndexView() {
@@ -49,6 +57,24 @@ export default function ToolIndexView() {
                   <Icon size={15} /> {t.nav[tool.key]}
                 </span>
                 <p className="text-sm text-slate-400 leading-relaxed mt-2">{tool.content.summary[lang]}</p>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      <h2 className="text-lg font-bold text-slate-100 mt-10 mb-1">{t.questions.indexTitle}</h2>
+      <p className="text-sm text-slate-400 leading-relaxed mb-3 max-w-3xl">{t.questions.indexBody}</p>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {questions.map(item => {
+          const Icon = item.icon;
+          return (
+            <li key={item.href}>
+              <Link href={item.href} className="block glass glass-hover rounded-2xl p-5 h-full">
+                <span className={`inline-flex items-center gap-2 text-sm font-semibold ${item.accent}`}>
+                  <Icon size={15} /> {t.nav[item.key]}
+                </span>
+                <p className="text-sm text-slate-400 leading-relaxed mt-2">{item.summary[lang]}</p>
               </Link>
             </li>
           );

@@ -19,11 +19,14 @@ export default function ToolExplainer({
   content,
   toolName,
   path,
+  app = true,
 }: {
   content: ToolContent;
   toolName: string;
   /** English path, e.g. `/tools/vram-calc/`. Localized for the schema below. */
   path: string;
+  /** False for a reference page that is a table, not an application. */
+  app?: boolean;
 }) {
   const { lang } = useLanguage();
   const url = canonical(localizeHref(path, lang));
@@ -32,7 +35,7 @@ export default function ToolExplainer({
     <>
       <JsonLd
         data={[
-          {
+          ...(app ? [{
             '@context': 'https://schema.org',
             '@type': 'SoftwareApplication',
             name: toolName,
@@ -42,7 +45,7 @@ export default function ToolExplainer({
             inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
             description: content.summary[lang],
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-          },
+          }] : []),
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',

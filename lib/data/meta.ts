@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-26',
+    en: 'New: an error lookup and three quick-answer pages. The error lookup covers 19 messages from llama.cpp, Ollama, vLLM, ROCm and Docker, from CUDA out of memory to HSA_OVERRIDE_GFX_VERSION, each quoted from the project\'s own source with its causes and fixes. The quick-answer pages show, for the most common cards, how fast the recommended models run, which quant level to download, and how much context fits with and without a quantized KV cache — every figure taken from the VRAM calculator itself.',
+    zh: '新增：报错速查和三个直接给答案的页面。报错速查收录了 llama.cpp、Ollama、vLLM、ROCm 和 Docker 的 19 条报错，从 CUDA out of memory 到 HSA_OVERRIDE_GFX_VERSION，每条都从项目源码里逐字核对，附原因和解决办法。另外三个页面针对最常见的几张卡，列出推荐模型能跑多快、该下载哪个量化档位、开不开 KV 缓存量化各能开多长上下文 —— 每个数字都直接取自显存计算器。',
+  },
+  {
+    date: '2026-10-26',
     en: 'Similar-model cards now describe one build you can actually download. Each card printed the smallest build\'s memory beside the best build\'s perplexity rise, two different files, so its size often disagreed with the model\'s own table. Both figures now come from the level the model page is sized at, named on the card. The Hub\'s table export does the same.',
     zh: '“相似模型”卡片现在描述的是同一个可以下载的版本。原来卡片上的显存取最小的量化版本，困惑度增幅却取质量最好的版本，是两个不同的文件，所以显存常和模型页自己的表格对不上。现在两个数都来自模型页使用的参考级别，并在卡片上写明。模型库的表格导出也一并改了。',
   },

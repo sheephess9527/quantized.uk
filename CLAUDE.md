@@ -30,8 +30,8 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 483 pages (242 EN + 241 ZH), hreflang-paired, Chinese baked into static HTML |
+| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (19); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 582 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -578,6 +578,13 @@ publisher's file per row (bartowski's and unsloth's same-named levels differ in 
 fails if `bytes × 8 / params` misses `bpw` by > 0.02. Rows without it render their basis
 (`sizingBasis()`: generic table vs unrecorded file), never a guessed file. `QuantFileLine` is the one
 renderer (model page, calculator, GPU, `/best/`).
+
+**`/errors/` quotes a message only from source** (`lib/data/errors.ts`, 2026-10-26): `message` is copied from the
+file in `sources`, read on `checkedAt`; a message found only in forums or memory is not listed (CUDA's
+"no kernel image" was left out for that reason). Fixes name real flags from the project's docs. Add an
+entry's id to `GROUP_OF` in `components/errors/ErrorViews.tsx`; `errorEntryProblems()` gates links.
+**The quick-answer pages (`/tools/speed|which-quant|context-length/`) compute nothing themselves** —
+`question-pages.ts` may only call the calculator's functions; a new column means a new call, never a formula.
 
 **Released-but-not-indexed models go on `/pending/`** (`lib/data/pending.ts`), not on stub model pages.
 Each patrol that skips a model adds or re-dates its entry with the reason it recorded; adding the model
@@ -1137,6 +1144,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range can exceed the bound beside it (left for owner) |
 | 2026-10-26 (iii) | **Similar-model cards: one named build** — size was `min` over all quants (often AWQ INT4) beside the best quant's perplexity rise; both now from `referenceQuant()`, level printed; Hub export column the same |
 | 2026-10-26 (ii) | **+2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B** — owner-pulled configs + bartowski byte counts; Nanbeige plain Llama (52 L, 8 KV × 128, 213 KB/token) Q4_K_M 22.6 GB @4K tight on 24 GB, Q3_K_M 17.5 green; Spark `spark2-5` iSWA (27 × 1024 cells + 9 full, 4 KV × 256) 3.0 GB @4K; XHToken's own Q4_K_M is non-standard (BF16 embeddings/gates), not used |
 | 2026-10-26 | **Patrol** — llama.cpp b11889, ExLlamaV3 1.6.5; llama.cpp gained `deepseek41` → DeepSeek-V4.1-Flash `/pending/` no-runtime → not-sized (compressed cache, as V4-Flash); Nanbeige4.3-33B (trending, `nanbeige` arch) → `/pending/` awaiting config + GGUF bytes |
