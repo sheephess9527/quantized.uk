@@ -39,7 +39,7 @@ export const extraModels3: QuantModel[] = [
     arch: { layers: 40, attHeads: 40, kvHeads: 8, headDim: 128 },
     description: {
       en: 'Qwen3 14B — best balance of reasoning and VRAM in the 2026 Qwen lineup.',
-      zh: 'Qwen3 14B — 2026 Qwen 系列中推理能力与显存占用的最佳平衡点。',
+      zh: 'Qwen3 14B GGUF 量化版（Q4_K_M 等）显存需求一览，2026 Qwen 系列中推理能力与显存占用的最佳平衡点。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 10.5, pplLossPercent: 2.6, speedRTX4090: 88, hfSearchUrl: hf('Qwen3-14B GGUF Q4_K_M bartowski') },

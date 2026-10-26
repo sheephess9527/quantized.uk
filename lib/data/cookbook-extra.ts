@@ -292,8 +292,9 @@ export const extraArticles: Article[] = [
   {
     id: 'llamacpp-windows-cuda',
     title: 'llama.cpp on Windows with CUDA',
+    seoTitle: 'Build llama.cpp with CUDA on Windows 11',
     titleZh: 'Windows + CUDA 运行 llama.cpp',
-    description: 'Build llama.cpp with NVIDIA GPU support on Windows 11 — the path of least resistance for PC gamers.',
+    description: 'Compile llama.cpp with NVIDIA CUDA on Windows 11: install VS Build Tools, CMake and CUDA 12.x, then build with GGML_CUDA=ON.',
     descriptionZh: 'Windows 11 上编译带 NVIDIA GPU 支持的 llama.cpp — PC 玩家的最简路径。',
     category: 'edge',
     difficulty: 'beginner',
