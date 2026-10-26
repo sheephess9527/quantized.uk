@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-26',
+    en: 'Speed estimates no longer run past their own upper bound. On some slower cards the top of the estimated range was higher than the bandwidth limit printed beside it, such as 50–66 tok/s next to a limit of 62; the range now stops at the limit. The estimates themselves are unchanged.',
+    zh: '速度估计不再超过它旁边印的上限。在一些带宽较低的卡上，估计范围的上端曾高于旁边的带宽上限，例如 50–66 tok/s 旁边写着上限 62；现在范围最高只到上限。估计值本身没有变化。',
+  },
+  {
+    date: '2026-10-26',
     en: 'New: an error lookup and three quick-answer pages. The error lookup covers 19 messages from llama.cpp, Ollama, vLLM, ROCm and Docker, from CUDA out of memory to HSA_OVERRIDE_GFX_VERSION, each quoted from the project\'s own source with its causes and fixes. The quick-answer pages show, for the most common cards, how fast the recommended models run, which quant level to download, and how much context fits with and without a quantized KV cache — every figure taken from the VRAM calculator itself.',
     zh: '新增：报错速查和三个直接给答案的页面。报错速查收录了 llama.cpp、Ollama、vLLM、ROCm 和 Docker 的 19 条报错，从 CUDA out of memory 到 HSA_OVERRIDE_GFX_VERSION，每条都从项目源码里逐字核对，附原因和解决办法。另外三个页面针对最常见的几张卡，列出推荐模型能跑多快、该下载哪个量化档位、开不开 KV 缓存量化各能开多长上下文 —— 每个数字都直接取自显存计算器。',
   },

@@ -417,7 +417,8 @@ memory size, and keep odd orderings as reported.
 **Calibrated generation speed is `lib/utils/measured-speed.ts`** — each card's scoreboard `tg128`
 scaled by weight bytes; it answers only inside the range its check set covers (dense 7–33B,
 `CALIBRATED_PARAMS_B`) — the linear scaling printed ~1,380 tok/s for a 0.5B. Widen the range only
-with new `matrixData` rows in it, and keep `scripts/check-measured-speed.ts` passing. Ranking by
+with new `matrixData` rows in it, and keep `scripts/check-measured-speed.ts` passing. The range's top end is capped
+at `rooflineTokS` (2026-10-26) — a range printed beside a bound must never pass it. Ranking by
 speed uses the card's bandwidth ceiling for every row, never "rows with an estimate first".
 **Fine-tune memory is `lib/utils/finetune.ts`** — every constant there names its source in the
 header comment; change one only with a new source, never to match a vendor's table (Unsloth's
@@ -1144,7 +1145,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
-| 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range can exceed the bound beside it (left for owner) |
+| 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range's top end capped at `rooflineTokS` (325 of 6,254 combos printed e.g. 50–66 beside ≤ 62) |
 | 2026-10-26 (iii) | **Similar-model cards: one named build** — size was `min` over all quants (often AWQ INT4) beside the best quant's perplexity rise; both now from `referenceQuant()`, level printed; Hub export column the same |
 | 2026-10-26 (ii) | **+2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B** — owner-pulled configs + bartowski byte counts; Nanbeige plain Llama (52 L, 8 KV × 128, 213 KB/token) Q4_K_M 22.6 GB @4K tight on 24 GB, Q3_K_M 17.5 green; Spark `spark2-5` iSWA (27 × 1024 cells + 9 full, 4 KV × 256) 3.0 GB @4K; XHToken's own Q4_K_M is non-standard (BF16 embeddings/gates), not used |
 | 2026-10-26 | **Patrol** — llama.cpp b11889, ExLlamaV3 1.6.5; llama.cpp gained `deepseek41` → DeepSeek-V4.1-Flash `/pending/` no-runtime → not-sized (compressed cache, as V4-Flash); Nanbeige4.3-33B (trending, `nanbeige` arch) → `/pending/` awaiting config + GGUF bytes |

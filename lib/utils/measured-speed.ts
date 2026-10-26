@@ -1,7 +1,7 @@
 import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { prefillData, type PrefillRow } from '@/lib/data/prefill';
-import { weightsGB } from '@/lib/utils/roofline';
+import { weightsGB, rooflineTokS } from '@/lib/utils/roofline';
 import { isMoE } from '@/lib/utils/model-meta';
 
 /**
@@ -58,10 +58,17 @@ export function measuredSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant):
   const readGB = weightsGB(model, quant);
   if (!(readGB > 0)) return undefined;
   const raw = (row.tg128 * REF_WEIGHTS_GB) / readGB;
+  // The range's top end must not pass the bandwidth bound printed beside it:
+  // on slower cards raw × 1.31 did on ~5% of combinations (4060 Ti 16G,
+  // Llama 3.1 8B Q4_K_M: 50–66 beside ≤ 62). The bound is the conservative
+  // `rooflineTokS` (decimal GB/s over binary GiB, ~7% low — kept by the
+  // owner's 2026-10-08 decision), so the capped top end errs low, never high.
+  const roof = rooflineTokS(gpu, model, quant);
+  const high = Math.round(raw * CALIBRATION_ERROR.high);
   return {
     tokS: Math.round(raw),
     low: Math.round(raw * CALIBRATION_ERROR.low),
-    high: Math.round(raw * CALIBRATION_ERROR.high),
+    high: roof === undefined ? high : Math.min(high, roof),
     row,
   };
 }

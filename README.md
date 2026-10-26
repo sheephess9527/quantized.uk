@@ -439,10 +439,13 @@ copy in `tool-content.ts` carries only formula constants and documented defaults
 cache wording is from its `docs/faq.mdx`. `ToolExplainer` got `app={false}` so these tables do
 not claim a `SoftwareApplication`.
 
-Found, not changed: the calibrated speed range can exceed the bandwidth bound printed beside it
-(RTX 4060 Ti 8G, Qwen3.5 9B: 39–52 vs ≤ 49). The calculator, GPU pages and `/tools/feel/` show the
-same pair; capping `measuredSpeed().high` at the roofline would move every surface, and the
-roofline is itself ~7% low by the owner's 10-08 decision — left for the owner.
+Found and fixed (owner approved the same day): the calibrated speed range could exceed the
+bandwidth bound printed beside it — 325 of 6,254 card × model × level combinations (all on the
+range's top end; the point estimate and the low end never did), e.g. RTX 4060 Ti 16G, Llama 3.1 8B
+Q4_K_M: 50–66 beside ≤ 62. `measuredSpeed()` now caps `high` at `rooflineTokS`, so the calculator,
+GPU pages, `/tools/feel/`, the share card and these tables change together. The roofline itself is
+untouched (still ~7% low by the 10-08 decision), so the capped top end errs low. 325 → 0;
+`scripts/check-measured-speed.ts` still passes (calibration constants unchanged).
 
 **Error lookup** (`/errors/` + 19 pages × 2): `lib/data/errors.ts`. Every `message` was read in
 the cited source file today — llama.cpp (`ggml-cuda.cu` `ggml_cuda_error` prints
