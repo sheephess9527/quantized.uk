@@ -419,6 +419,32 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-26 (ii) — +2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B
+
+Owner-pulled configs + tree API byte counts (2026-10-26 UTC); unsloth and lmstudio-community have no
+repos for either, so both come from bartowski (single-file `Q4_K_M`, `file_type = 15`).
+
+- **Nanbeige4.3 33B** — `LlamaForCausalLM` / `llama` (no custom code): 52 layers, hidden 7168, 56 heads /
+  8 KV × 128, SwiGLU 22016, vocab 166,912 untied, 524,288 positions from rope_theta 1.2e8. Plain KV on
+  every layer, 212,992 B/token. Params = safetensors 33,118,977,024 (BF16 GGUF 66,243,464,192 B = 2× + 5.5 MB
+  header). bartowski (b11845): Q3_K_M 15,919,746,176 → 3.85 bpw, Q4_K_M 20,788,825,216 → 5.02, Q8_0
+  35,195,128,960 → 8.50. Sizes: Q4_K_M 22.6 GB @4K (tight on 24 GB), 25.3 @16K; Q3_K_M 17.55 @4K / 20.2 @16K
+  (green on 24 GB), 23.8 @32K tight; 32 GB cards green at Q4_K_M to 16K. The GGUF header's base_model says
+  "-Base"; README, the Hub field and the `<think>` chat template say Instruct — indexed as Instruct.
+  `/pending/` entry removed (added that morning).
+- **Spark-X2.6 4B** — `spark2_5` (custom code); llama.cpp `src/models/spark2-5.cpp` builds an iSWA cache
+  (`LLAMA_SWA_TYPE_STANDARD`), so 27 sliding layers at pad256(512 + 512) = 1024 cells + 9 full, 4 KV × 256;
+  1,048,576 positions; tied embeddings. Params 4,112,079,360. bartowski (b11716): Q4_K_M 2,621,104,768 →
+  5.10 bpw, Q8_0 4,375,022,208 → 8.52. 3.0 GB @4K, 4.1 @32K (green on 8 GB), 7.8 @128K (tight), 42 GB @1M.
+  XHToken's own "Q4_K_M" (3,543,441,312 B) keeps BF16 embeddings and attn_gate, an untied Q8_0 output and
+  Q8_0 attn_output — not the standard recipe, named in the description, not used for sizing.
+- Fit counts: every card +1 comfortable (8–20 GB class) or +2 (24 GB and up); guide counts re-run per card
+  (24 GB 92 → 94, 5090 98 → 100, Spark 106/111 → 108/113, 16 GB 67 → 68, 12 GB 61 → 62, Arc 63/53/44 →
+  64/54/45, M3 Max 48 98 → 100), denominators 123 → 125, Q4_K_M ships 116 → 118 of 125; ten guides
+  `updatedAt` 2026-10-26. `todayFeed` id 28 (Nanbeige Q3_K_M).
+- **Mistral Large 4** (owner check): the Hub page is "Upcoming release", ETA 2026-10-31, no files; stays on
+  `/pending/` as `no-weights`.
+
 ### 2026-10-26 — Patrol: llama.cpp b11889, ExLlamaV3 1.6.5; DeepSeek-V4.1-Flash runnable, not sized; Nanbeige4.3-33B pending
 
 - **Runtimes** (verbatim tag/release pages): llama.cpp b11889 (10-25); ExLlamaV3 **1.6.5** (10-25,

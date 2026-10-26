@@ -26,6 +26,7 @@ const ADDED_MINICPM47 = '2026-10-20';
 const ADDED_K2H = '2026-10-21';
 const ADDED_1023 = '2026-10-23';
 const ADDED_BOLT_E4B = '2026-10-24';
+const ADDED_1026 = '2026-10-26';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1138,6 +1139,69 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 6.57, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf', bytes: 6_180_446_208, checkedAt: '2026-10-24' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-E4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-E4B-Q8_0.gguf', bytes: 8_031_243_872, checkedAt: '2026-10-24' } },
+    ],
+  },
+  {
+    // Nanbeige4.3-33B (Nanbeige, repo created 2026-10-24, Apache 2.0). Owner-pulled config.json (883 B):
+    // LlamaForCausalLM / model_type llama — a plain Llama layout, no custom code needed. 52 layers,
+    // hidden 7168, 56 heads / 8 KV × 128, SwiGLU 22016, vocab 166,912 untied, 524,288 positions via
+    // rope_theta 1.2e8 (no rope_scaling). Plain KV on every layer: 2 × 52 × 8 × 128 × 2 B = 208 KiB a token.
+    // Params = safetensors 33,118,977,024 (bartowski BF16 66,243,464,192 B = 2 × that + 5.5 MB header).
+    // bartowski's GGUF (llama.cpp b11845, header llama.*, tensors Q4_K/Q5_K/Q6_K/Q8_0 + F32 norms):
+    // Q3_K_M 15,919,746,176 → 3.85 bpw, Q4_K_M 20,788,825,216 → 5.02, Q8_0 35,195,128,960 → 8.50.
+    // The GGUF header's base_model says "-Base"; README and the Hub field say the Instruct repo, and the
+    // chat template is the <think> instruct one — indexed as the instruct model.
+    id: 'nanbeige4.3-33b',
+    name: 'Nanbeige4.3 33B',
+    family: 'Nanbeige',
+    params: 33.12,
+    paramLabel: '33B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 524288,
+    arch: { layers: 52, attHeads: 56, kvHeads: 8, headDim: 128 },
+    addedAt: ADDED_1026,
+    description: { en: 'Nanbeige4.3 33B is a dense 33B model in the plain Llama layout, released under Apache 2.0. Its 512K window comes from a very large RoPE base, and every one of its 52 layers keeps a full KV cache (8 KV heads), so context is expensive: about 213 KB per token. Q4_K_M needs about 22.6 GB at 4K, tight on a 24 GB card, and 25.3 GB at 16K, which no longer fits one. Q3_K_M needs about 17.5 GB at 4K, comfortable on a 24 GB card, and 20.2 GB at 16K. A 32 GB card holds Q4_K_M comfortably to 16K. The full 512K window needs well over 100 GB of cache alone. Sizes come from bartowski\'s GGUF files; no per-level quality loss has been published.', zh: 'Nanbeige4.3 33B 是采用标准 Llama 结构的 33B 稠密模型，Apache 2.0 许可。它的 512K 上下文靠很大的 RoPE base 实现，而 52 层每层都保留完整 KV 缓存（8 个 KV 头），所以上下文很贵：每个 token 约 213 KB。Q4_K_M 在 4K 上下文约需 22.6 GB，24 GB 显卡偏紧；16K 约需 25.3 GB，单张 24 GB 卡就放不下了。Q3_K_M 在 4K 上下文约需 17.5 GB，24 GB 显卡宽裕；16K 约需 20.2 GB。32 GB 显卡跑 Q4_K_M 到 16K 都宽裕。用满 512K 窗口光缓存就要 100 GB 以上。体积按 bartowski 的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('Nanbeige4.3-33B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Nanbeige_Nanbeige4.3-33B-GGUF', file: 'Nanbeige_Nanbeige4.3-33B-Q3_K_M.gguf', bytes: 15_919_746_176, checkedAt: '2026-10-26' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('Nanbeige4.3-33B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Nanbeige_Nanbeige4.3-33B-GGUF', file: 'Nanbeige_Nanbeige4.3-33B-Q4_K_M.gguf', bytes: 20_788_825_216, checkedAt: '2026-10-26' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.50, vramGB: 0, hfSearchUrl: hf('Nanbeige4.3-33B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Nanbeige_Nanbeige4.3-33B-GGUF', file: 'Nanbeige_Nanbeige4.3-33B-Q8_0.gguf', bytes: 35_195_128_960, checkedAt: '2026-10-26' } },
+    ],
+  },
+  {
+    // Spark-X2.6-4B (XHToken, repo created 2026-10-19). Owner-pulled config.json: Spark2_5ForCausalLM,
+    // model_type spark2_5 (custom code; llama.cpp `spark2-5`, which builds an iSWA cache with
+    // LLAMA_SWA_TYPE_STANDARD — src/models/spark2-5.cpp). 36 layers in a 3:1 pattern = 27 sliding + 9 full,
+    // sliding_window 512 → pad256(512 + 512) = 1024 cells; 16 heads / 4 KV × 256 on both layer types;
+    // head-wise sigmoid attention gate; GELU FFN 10240; vocab 131,072 tied; 1,048,576 positions.
+    // Params = safetensors 4,112,079,360. bartowski (b11716): Q4_K_M 2,621,104,768 → 5.10 bpw,
+    // Q8_0 4,375,022,208 → 8.52. XHToken's own "Q4_K_M" is 3,543,441,312 B — BF16 embeddings, an untied
+    // Q8_0 output, Q8_0 attn_output and BF16 attn_gate — not the standard recipe, so not used here.
+    id: 'spark-x2.6-4b',
+    name: 'Spark-X2.6 4B',
+    family: 'XHToken Spark',
+    params: 4.11,
+    paramLabel: '4B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 1048576,
+    arch: {
+      layers: 36, attHeads: 16, kvHeads: 4, headDim: 256,
+      attention: {
+        fullLayers: 9,
+        windowLayers: 27,
+        windowTokens: 1024,
+        note: {
+          en: '9 of 36 layers are global and grow with context (4 KV heads × 256); the other 27 use a 512-token sliding window, so their cache stays fixed.',
+          zh: '36 层中 9 层为全局注意力，缓存随上下文增长（4 个 KV 头 × 256 维）；其余 27 层是 512 token 滑动窗口，缓存大小固定。',
+        },
+      },
+    },
+    addedAt: ADDED_1026,
+    description: { en: 'Spark-X2.6 4B is a small XHToken model with a nominal 1M-token window. Only 9 of its 36 layers keep a cache that grows with context; the other 27 use a 512-token sliding window. Q4_K_M needs about 3.0 GB at 4K, comfortable on an 8 GB card, and 4.1 GB at 32K, comfortable on an 8 GB card. At 128K it needs about 7.8 GB, tight on an 8 GB card, and the full 1M window needs over 40 GB. llama.cpp runs it as spark2-5. XHToken\'s own Q4_K_M file is 3.5 GB because it keeps the embeddings and attention gates at 16 bits; sizes here use bartowski\'s standard 2.6 GB file. No per-level quality loss has been published.', zh: 'Spark-X2.6 4B 是 XHToken 的小模型，标称上下文 100 万 token。36 层中只有 9 层的缓存随上下文增长，其余 27 层是 512 token 滑动窗口。Q4_K_M 在 4K 上下文约需 3.0 GB，8 GB 显卡宽裕；32K 约需 4.1 GB，仍然宽裕。128K 约需 7.8 GB，8 GB 显卡偏紧；用满 100 万上下文要 40 GB 以上。llama.cpp 以 spark2-5 架构运行它。XHToken 官方的 Q4_K_M 文件有 3.5 GB，因为嵌入层和注意力门保留了 16 位；这里按 bartowski 的标准 2.6 GB 文件计算。各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.10, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q4_K_M.gguf', bytes: 2_621_104_768, checkedAt: '2026-10-26' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q8_0.gguf', bytes: 4_375_022_208, checkedAt: '2026-10-26' } },
     ],
   },
 ];

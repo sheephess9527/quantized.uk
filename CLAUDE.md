@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **123** in index (`models-extra` … `models-extra-12`) |
+| Models | **125** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1137,6 +1137,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-26 (ii) | **+2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B** — owner-pulled configs + bartowski byte counts; Nanbeige plain Llama (52 L, 8 KV × 128, 213 KB/token) Q4_K_M 22.6 GB @4K tight on 24 GB, Q3_K_M 17.5 green; Spark `spark2-5` iSWA (27 × 1024 cells + 9 full, 4 KV × 256) 3.0 GB @4K; XHToken's own Q4_K_M is non-standard (BF16 embeddings/gates), not used |
 | 2026-10-26 | **Patrol** — llama.cpp b11889, ExLlamaV3 1.6.5; llama.cpp gained `deepseek41` → DeepSeek-V4.1-Flash `/pending/` no-runtime → not-sized (compressed cache, as V4-Flash); Nanbeige4.3-33B (trending, `nanbeige` arch) → `/pending/` awaiting config + GGUF bytes |
 | 2026-10-25 | **Patrol** — llama.cpp b11869, Ollama v0.40.11; d3 decision models skipped (classifiers on Qwen bases, out of scope); "Kimi K3.1 Pro" unconfirmed (one blog) |
 | 2026-10-24 (iv) | **Gemma 4 E4B from unsloth's files** — Q4_K_M 5.30 bpw (was generic 4.85): 4.9 → 5.3 GB @4K, 128K 7.0 → 7.5 GB (tight on 8 GB); 8 GB Macs 27 → 26; bpw over the 7.52B text total, never the Hub's safetensors total (includes vision/audio towers); 8GB guide's "two image models" was eight |

@@ -41,18 +41,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-10-26',
   },
   {
-    id: 'nanbeige4-3-33b',
-    name: 'Nanbeige4.3-33B',
-    vendor: 'Nanbeige',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'A 33B model trending on Hugging Face this week; llama.cpp has a `nanbeige` architecture. A dense 33B is the size a 24 GB card is bought for, but its config.json and GGUF file sizes could not be read from here.',
-      zh: '本周在 Hugging Face 上热门的 33B 模型；llama.cpp 已有 `nanbeige` 架构。33B 稠密模型正是 24 GB 显卡用户关心的尺寸，但这里读不到它的 config.json 和 GGUF 文件大小。',
-    },
-    recheck: { en: 'When its config.json and a GGUF listing with byte counts can be read.', zh: '能读到 config.json 和带字节数的 GGUF 文件列表时。' },
-    checkedAt: '2026-10-26',
-  },
-  {
     id: 'deepseek-v4-flash-0731',
     name: 'DeepSeek-V4-Flash-0731',
     vendor: 'DeepSeek',

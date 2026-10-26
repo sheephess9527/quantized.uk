@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-26',
+    en: 'Two models added, sized from their real files: Nanbeige4.3 33B and Spark-X2.6 4B. Nanbeige is a dense 33B under Apache 2.0; at Q3_K_M it needs about 17.5 GB at 4K, comfortable on a 24 GB card, while Q4_K_M is tight there. Spark-X2.6 4B needs about 3 GB at Q4_K_M and keeps 32K of context comfortably on an 8 GB card. Guides that quote fit counts are updated.',
+    zh: '新增两个模型，按真实文件计算体积：Nanbeige4.3 33B 和 Spark-X2.6 4B。Nanbeige 是 Apache 2.0 的 33B 稠密模型；Q3_K_M 在 4K 上下文约需 17.5 GB，24 GB 显卡宽裕，Q4_K_M 则偏紧。Spark-X2.6 4B 的 Q4_K_M 约 3 GB，在 8 GB 显卡上跑 32K 上下文也宽裕。引用可运行数的指南已同步更新。',
+  },
+  {
+    date: '2026-10-26',
     en: 'llama.cpp can now load DeepSeek-V4.1-Flash, but the site still cannot size it. Its cache is compressed in a way the calculator does not model yet; the pending page says what is missing. Runtime versions updated: llama.cpp b11889 and ExLlamaV3 1.6.5.',
     zh: 'llama.cpp 现在能加载 DeepSeek-V4.1-Flash，但本站还算不了它的显存。它的缓存压缩方式计算器暂不支持；待收录页写明了还缺什么。运行时版本已更新：llama.cpp b11889、ExLlamaV3 1.6.5。',
   },
