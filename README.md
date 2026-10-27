@@ -425,6 +425,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-27 — Patrol: llama.cpp b11913; no model
+
+Tags page read verbatim: llama.cpp b11913 (10-26). Ollama Latest still v0.40.11 (v0.40.12 is a
+pre-release: MLX vision-tower and DFlash2 changes, no new model); vLLM v0.32.0 and ExLlamaV3 1.6.5
+unchanged. llama.cpp's `llama-arch.cpp` architecture list is identical to yesterday's (165 entries),
+so no newly runnable family. Mistral Large 4: weights not downloadable — its HF repo is marked
+"Upcoming release" and reported dates range 27–31 October (search results; mistral.ai unreachable
+from here); `/pending/` entry re-dated. Nothing else in the 7-day window was both released and new
+to the index.
+
 ### 2026-10-26 (iv) — Quick-answer pages + error lookup (owner request)
 
 **Three entry pages** (`/tools/speed/`, `/tools/which-quant/`, `/tools/context-length/`, + `/zh`):

@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-26';
+export const dataLastUpdated = '2026-10-27';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -70,9 +70,9 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-26',
+  checkedAt: '2026-10-27',
   current: {
-    llamacpp: 'b11889',
+    llamacpp: 'b11913',
     vllm: 'v0.32.0',
     ollama: 'v0.40.11',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-27',
+    en: 'Runtime versions re-checked: llama.cpp b11913; Ollama, vLLM and ExLlamaV3 unchanged. No model added today. Mistral Large 4 weights are still not downloadable, and the pending page now says so.',
+    zh: '运行时版本已复核：llama.cpp b11913；Ollama、vLLM 和 ExLlamaV3 没有新正式版。今天没有新增模型。Mistral Large 4 的权重仍不能下载，待收录页已同步说明。',
+  },
   {
     date: '2026-10-26',
     en: 'Speed estimates no longer run past their own upper bound. On some slower cards the top of the estimated range was higher than the bandwidth limit printed beside it, such as 50–66 tok/s next to a limit of 62; the range now stops at the limit. The estimates themselves are unchanged.',

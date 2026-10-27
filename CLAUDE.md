@@ -1146,6 +1146,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-27 | **Patrol** — llama.cpp b11913 (Ollama v0.40.12 pre-release, rest unchanged); llama.cpp arch list unchanged; Mistral Large 4 weights still not out (HF "upcoming", reports 10-27 to 10-31), `/pending/` re-dated; no model |
 | 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range's top end capped at `rooflineTokS` (325 of 6,254 combos printed e.g. 50–66 beside ≤ 62) |
 | 2026-10-26 (iii) | **Similar-model cards: one named build** — size was `min` over all quants (often AWQ INT4) beside the best quant's perplexity rise; both now from `referenceQuant()`, level printed; Hub export column the same |
 | 2026-10-26 (ii) | **+2 models (125): Nanbeige4.3 33B, Spark-X2.6 4B** — owner-pulled configs + bartowski byte counts; Nanbeige plain Llama (52 L, 8 KV × 128, 213 KB/token) Q4_K_M 22.6 GB @4K tight on 24 GB, Q3_K_M 17.5 green; Spark `spark2-5` iSWA (27 × 1024 cells + 9 full, 4 KV × 256) 3.0 GB @4K; XHToken's own Q4_K_M is non-standard (BF16 embeddings/gates), not used |

@@ -63,11 +63,11 @@ export const pendingModels: PendingModel[] = [
     announced: '2026-10-06',
     reason: 'no-weights',
     detail: {
-      en: 'Announced at about 1T parameters, API-only so far, with open weights reported as due on 27 October.',
-      zh: '公布时约 1T 参数，目前只有 API，据报道开放权重定在 10 月 27 日。',
+      en: 'Announced at about 1T parameters, API-only so far. Its Hugging Face repo is marked as an upcoming release; reported dates for the weights range from 27 to 31 October.',
+      zh: '公布时约 1T 参数，目前只有 API。它的 Hugging Face 仓库标注为即将发布；关于权重的报道日期在 10 月 27 日到 31 日之间。',
     },
     recheck: { en: 'When the weights are downloadable and a GGUF exists.', zh: '权重可下载并且有 GGUF 时。' },
-    checkedAt: '2026-10-18',
+    checkedAt: '2026-10-27',
   },
   {
     id: 'step-5-preview',
