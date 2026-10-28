@@ -425,6 +425,25 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 (iii) — Chinese commands download through a mirror; HF connection error entry
+
+- **`lib/utils/cli.ts`**: on `/zh` every generated `hf download` (llama.cpp, ExLlama) is preceded by
+  `export HF_ENDPOINT=https://hf-mirror.com` with a comment saying it is a third-party mirror and can be
+  deleted outside China; vLLM native/docker/compose pass the same variable (`-e` / `environment:`). English
+  output is unchanged. `HF_ENDPOINT` is huggingface_hub's own Hub URL switch
+  (`constants.py`: `ENDPOINT = os.getenv("HF_ENDPOINT", …)`).
+- Ollama: `ollama pull hf.co/…` talks to huggingface.co itself and does not read `HF_ENDPOINT`, so the zh
+  note gives the mirror download + Modelfile `FROM` + `ollama create` route (Ollama `docs/import.mdx`);
+  split builds (> 48 GB) are described with a wildcard `FROM` rather than a typed path.
+- Swept 320 framework × env × backend × lang cases: no mirror in English, every zh `hf download` carries it,
+  every zh note in Chinese. The calculator's launch commands come from the same generator.
+- **`/errors/hf-hub-cannot-locate-file/`** (20 entries): the `LocalEntryNotFoundError` text huggingface_hub
+  raises when the HEAD call fails for a reason other than missing/gated repo or 401
+  (`file_download.py`, read 2026-10-28). Fix: `HF_ENDPOINT`. A `HTTPS_PROXY` fix was drafted and dropped —
+  the client library's proxy handling was not confirmed from source.
+- Not done: ModelScope. Its repo names differ from Hugging Face's and are not derivable from `hfRepoMap`;
+  needs a per-model mapping the owner verifies. hf-mirror's availability cannot be tested from here.
+
 ### 2026-10-28 (ii) — Patrol: llama.cpp b11941, Ollama v0.40.12; LFM3 pending
 
 Ollama v0.40.12 is now Latest (it was a pre-release yesterday): adds Liquid AI's lfm3 / lfm3-vl /

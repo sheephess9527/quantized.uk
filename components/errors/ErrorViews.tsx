@@ -38,6 +38,7 @@ const GROUP_OF: Record<string, GroupKey> = {
   'ollama-requires-newer-version': 'ollama',
   'ollama-model-not-found': 'ollama',
   'ollama-pull-manifest-not-found': 'ollama',
+  'hf-hub-cannot-locate-file': 'file',
 };
 const GROUP_ORDER: GroupKey[] = ['memory', 'file', 'gpu', 'amd', 'ollama'];
 

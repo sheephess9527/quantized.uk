@@ -30,7 +30,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (19); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
+| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 582 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
@@ -586,6 +586,7 @@ renderer (model page, calculator, GPU, `/best/`).
 file in `sources`, read on `checkedAt`; a message found only in forums or memory is not listed (CUDA's
 "no kernel image" was left out for that reason). Fixes name real flags from the project's docs. Add an
 entry's id to `GROUP_OF` in `components/errors/ErrorViews.tsx`; `errorEntryProblems()` gates links.
+**Chinese CLI output downloads through `HF_ENDPOINT=https://hf-mirror.com`** (2026-10-28, `HF_MIRROR` / `mirrorLines()` in `cli.ts`) — zh only, always labelled a third-party mirror; English never gets it. Ollama's `hf.co/` pulls do not read `HF_ENDPOINT`, so never present it as fixing them. ModelScope ids are not derivable from `hfRepoMap` — do not guess them.
 **The quick-answer pages (`/tools/speed|which-quant|context-length/`) compute nothing themselves** —
 `question-pages.ts` may only call the calculator's functions; a new column means a new call, never a formula.
 
@@ -1148,6 +1149,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 (iii) | **zh commands via hf-mirror** — `HF_ENDPOINT=https://hf-mirror.com` (third-party, said in the comment) on every zh `hf download` + vLLM; Ollama `hf.co/` ignores it → zh note gives download + Modelfile import; English unchanged; `/errors/` +1 (huggingface_hub cannot-locate, 20) |
 | 2026-10-28 (ii) | **Patrol** — llama.cpp b11941 (new arch `lfm3`), Ollama v0.40.12 Latest (LFM3 family + d1); LFM3 1.7B → `/pending/` awaiting config + GGUF bytes (layer split is metadata); d1 skipped (decision model) |
 | 2026-10-28 | **Homepage vs what is measured** — forwarded review checked in `out/`: stale title counts not reproduced (all 125); real: "Measured, not guessed" over 4 rows (2 sample keys pointed at removed rows) + old-stack-only line → 6 rows, measured-on + current versions; fastest pick ranked estimates (0.5B under "measured") → measured only; Editor's Picks capped at 6; About/Privacy June dates removed / corrected |
 | 2026-10-27 | **Patrol** — llama.cpp b11913 (Ollama v0.40.12 pre-release, rest unchanged); llama.cpp arch list unchanged; Mistral Large 4 weights still not out (HF "upcoming", reports 10-27 to 10-31), `/pending/` re-dated; no model |

@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-28',
+    en: 'Download commands on the Chinese pages now go through a mirror. Every Hugging Face download the command generator writes for Chinese readers sets HF_ENDPOINT to hf-mirror.com, a third-party mirror, and says so; Ollama users get a download-then-import route, since Ollama\'s own Hugging Face pulls ignore that setting. The error lookup adds the "cannot locate the file on the Hub" message.',
+    zh: '中文版的下载命令现在默认走镜像。命令生成器为中文读者写出的每条 Hugging Face 下载命令都会设置 HF_ENDPOINT=https://hf-mirror.com，并注明这是第三方镜像；Ollama 自带的 hf.co 拉取不读这个设置，所以给 Ollama 用户的是"先经镜像下载、再导入"的做法。报错速查新增"cannot locate the file on the Hub"一条。',
+  },
+  {
+    date: '2026-10-28',
     en: 'Liquid AI\'s LFM3 is on the pending page: a 1.7B model with a 256K context that Ollama and llama.cpp now run, waiting for its configuration and file sizes before it can be sized. Runtime versions updated: llama.cpp b11941, Ollama v0.40.12.',
     zh: 'Liquid AI 的 LFM3 已列入待收录页：一个 1.7B、上下文 256K 的模型，Ollama 和 llama.cpp 都已能运行，等拿到它的配置和文件大小后再计算显存。运行时版本已更新：llama.cpp b11941、Ollama v0.40.12。',
   },

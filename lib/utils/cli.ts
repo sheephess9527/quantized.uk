@@ -50,6 +50,20 @@ function L(lang: Lang, en: string, zh: string): string {
 }
 
 /**
+ * Mainland readers cannot reach huggingface.co directly, and they are most of
+ * the Chinese tree. `HF_ENDPOINT` is huggingface_hub's own switch for the Hub
+ * URL (`constants.py`, checked 2026-10-28), so every `hf download` and every
+ * vLLM model fetch follows it. hf-mirror.com is a community mirror, not
+ * Hugging Face — the line says so, and it is only emitted for `zh`.
+ */
+export const HF_MIRROR = 'https://hf-mirror.com';
+function mirrorLines(lang: Lang): string[] {
+  return lang === 'zh'
+    ? ['# 国内网络：经第三方镜像 hf-mirror.com 下载（不是 Hugging Face 官方；在海外可删掉下一行）', `export HF_ENDPOINT=${HF_MIRROR}`]
+    : [];
+}
+
+/**
  * `hfRepoMap` exists to source HF download/like stats, so for ~14 models it
  * points at the *original weights* (`openai/gpt-oss-20b`,
  * `deepseek-ai/DeepSeek-R1`) rather than a GGUF conversion. Handing one of
@@ -213,6 +227,7 @@ function generateExLlama(opts: CLIOptions): CLIOutput {
     ``,
     `# Download the EXL2 build — each bitrate is a separate branch of the repo`,
     `pip install -U huggingface_hub`,
+    ...mirrorLines(lang),
     `hf download <hf-exl2-repo-id> --revision ${bpw}bpw --local-dir ../models/${modelDir}-exl2-${bpw}bpw`,
     ``,
     `# Chat locally (-gs auto splits across GPUs; -l sets the context length)`,
@@ -340,6 +355,7 @@ services:
   const downloadCmd = [
     `# Download the model (installs the hf CLI the next line needs)`,
     `pip install -U huggingface_hub`,
+    ...mirrorLines(lang),
     `hf download ${repoId} --include "${sharded ? `*${filePattern}` : modelFile}" --local-dir ./models`,
   ].join('\n');
   const installCmd = env === 'mac'
@@ -376,6 +392,13 @@ function generateOllama(opts: CLIOptions): CLIOutput {
   // derivable from a display name, so the old slug ("llama-3.1-8b-instruct")
   // simply 404s on pull. Ollama can run any GGUF repo straight from Hugging
   // Face, which works for every model in the index and pins the exact quant.
+  // For the mirror route in the zh notes: the same `<repo base>-<level>` file name the
+  // llama.cpp command downloads.
+  // Split builds (past SHARD_GB) land in a publisher-specific sub-folder, so their FROM path is
+  // described rather than typed; a single file gets its exact name.
+  const ollamaSharded = (opts.fileGB ?? 0) > SHARD_GB;
+  const ollamaGgufPattern = hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}${ollamaSharded ? '*' : ''}.gguf` : '';
+  const ollamaLocalName = hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}`.toLowerCase().replace(/[^a-z0-9._-]/g, '-') : '';
   const ollamaModel = hfRepo
     ? `hf.co/${hfRepo}:${quantLevel}`
     : modelName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '');
@@ -462,6 +485,12 @@ volumes:
         ? [
             L(lang, `hf.co/… pulls the GGUF directly and pins the quant to ${quantLevel}`, `hf.co/… 会直接拉取 GGUF，并固定为 ${quantLevel} 量化`),
             L(lang, 'If this model has a curated library tag (e.g. `ollama run qwen2.5:7b`), that works too — but it picks the quant for you', '如果这个模型在 Ollama 库里有官方标签（如 `ollama run qwen2.5:7b`），也可以用——但量化档位由它替你选'),
+            // `ollama pull hf.co/…` talks to huggingface.co itself; HF_ENDPOINT does not
+            // reach it. Ollama's own import doc (`docs/import.mdx`) loads a local GGUF
+            // with `FROM <file>` (a wildcard for split files) and `ollama create`.
+            ...(lang === 'zh' && hfRepo
+              ? [`国内直连 huggingface.co 拉取常会失败，HF_ENDPOINT 对 Ollama 的 hf.co/ 拉取不起作用。可以先经镜像下载 GGUF 再导入：pip install -U huggingface_hub，然后 HF_ENDPOINT=${HF_MIRROR} hf download ${hfRepo} --include "${ollamaGgufPattern}" --local-dir ./models，${ollamaSharded ? '再写一个 Modelfile，FROM 用通配符指向下载到的全部分片文件（例如 FROM ./models/子目录/文件名-*.gguf），然后 ollama create ' + ollamaLocalName + ' -f Modelfile' : `再执行 echo "FROM ./models/${ollamaGgufPattern}" > Modelfile && ollama create ${ollamaLocalName} -f Modelfile`}（hf-mirror.com 是第三方镜像，不是 Hugging Face 官方）`]
+              : []),
           ]
         : [L(lang, 'No GGUF conversion is mapped for this model — replace the tag with a real Ollama library tag or an hf.co/<user>/<repo>-GGUF tag', '本站没有为这个模型对应的 GGUF 转换版本——请换成真实的 Ollama 库标签，或 hf.co/<用户>/<仓库>-GGUF 形式的标签')]),
       L(lang, `Set OLLAMA_NUM_PARALLEL for concurrent requests`, `需要并发请求时设置 OLLAMA_NUM_PARALLEL`),
@@ -528,7 +557,7 @@ services:
     restart: unless-stopped
     environment:
       - HF_TOKEN=\${HF_TOKEN}
-
+${lang === 'zh' ? `      - HF_ENDPOINT=${HF_MIRROR}\n` : ''}
 volumes:
   huggingface_cache:`;
 
@@ -547,6 +576,7 @@ volumes:
       `  -p 127.0.0.1:${port}:${port} \\`,
       `  -v ~/.cache/huggingface:/root/.cache/huggingface \\`,
       `  -e HF_TOKEN=$HF_TOKEN \\`,
+      ...(lang === 'zh' ? [`  -e HF_ENDPOINT=${HF_MIRROR} \\`] : []),
       `  vllm/vllm-openai${rocm ? '-rocm' : ''}:latest \\`,
       `  --model ${repoId}${quantFlag} \\`,
       `  --max-model-len ${contextLen} \\`,
@@ -563,6 +593,7 @@ volumes:
       ? [`# Install vLLM's ROCm build (Python 3.12, ROCm 7.0)`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`]
       : [`# Install vLLM in a fresh venv (uv picks the torch build for your CUDA driver)`, `pip install --upgrade uv`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --torch-backend=auto`]),
     ``,
+    ...mirrorLines(lang),
     `# Serve the model`,
     `vllm serve ${repoId}${quantFlag} \\`,
     `  --max-model-len ${contextLen} \\`,

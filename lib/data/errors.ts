@@ -12,7 +12,7 @@
  * - Everything a reader sees is `{ en, zh }`.
  */
 
-export type ErrorRuntime = 'llama.cpp' | 'Ollama' | 'vLLM' | 'PyTorch' | 'ROCm' | 'Docker';
+export type ErrorRuntime = 'llama.cpp' | 'Ollama' | 'vLLM' | 'PyTorch' | 'ROCm' | 'Docker' | 'huggingface_hub';
 
 export interface Bi { en: string; zh: string }
 
@@ -43,6 +43,7 @@ export interface RuntimeErrorEntry {
 const LLAMA = 'https://github.com/ggml-org/llama.cpp/blob/master/';
 const OLLAMA = 'https://github.com/ollama/ollama/blob/main/';
 const CHECKED = '2026-10-26';
+const HF_HUB = 'https://github.com/huggingface/huggingface_hub/blob/main/';
 
 export const errorsIndexSummary: Bi = {
   en: 'The messages llama.cpp, Ollama, vLLM, ROCm and Docker print when a model will not load or will not use the GPU — each quoted from the project\'s own source, with what it means and what fixes it.',
@@ -525,6 +526,32 @@ export const runtimeErrors: RuntimeErrorEntry[] = [
       { label: 'Hugging Face hub-docs docs/hub/ollama.md', url: 'https://github.com/huggingface/hub-docs/blob/main/docs/hub/ollama.md' },
     ],
     checkedAt: CHECKED,
+  },
+  {
+    id: 'hf-hub-cannot-locate-file',
+    runtime: 'huggingface_hub',
+    hardware: 'any',
+    message: 'An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.',
+    title: { en: 'hf download: cannot locate the file on the Hub', zh: 'hf download 报 cannot locate the file on the Hub' },
+    summary: {
+      en: 'huggingface_hub could not reach the Hub and has no cached copy. It is a network failure, not a missing repo, and common from mainland China.',
+      zh: 'huggingface_hub 连不上 Hugging Face，本地缓存里也没有这个文件。仓库多半是存在的，是网络没连通 —— 在中国大陆直连时很常见。',
+    },
+    causes: [
+      { en: 'huggingface.co is unreachable from this network: blocked, timing out, or behind a proxy the tool is not using. This is the branch the library takes when the request fails for a reason other than a missing repo, a gated repo or a bad token.', zh: '这个网络访问不了 huggingface.co：被拦截、超时，或者需要代理而工具没有走代理。源码里，只要请求失败的原因不是仓库不存在、需要授权或 token 无效，就会走到这条报错。' },
+      { en: 'A gated or private repo is a different message (a 401 or a gated-repo error), so this one is not a token problem.', zh: '需要授权或私有的仓库会报另一种错误（401 或 gated repo），所以这条报错不是 token 的问题。' },
+    ],
+    fixes: [
+      { en: 'Point the library at a mirror: `export HF_ENDPOINT=https://hf-mirror.com` before `hf download`. `HF_ENDPOINT` is huggingface_hub\'s own setting for the Hub address; hf-mirror.com is a third-party mirror, not run by Hugging Face. The Chinese pages of this site\'s command generator already add it.', zh: '把下载地址换成镜像：在 `hf download` 之前执行 `export HF_ENDPOINT=https://hf-mirror.com`。`HF_ENDPOINT` 是 huggingface_hub 自带的 Hub 地址设置；hf-mirror.com 是第三方镜像，不是 Hugging Face 官方运营的。本站中文版的命令生成器已经自动加上了这一行。' },
+      { en: '`ollama pull hf.co/…` does not read `HF_ENDPOINT`. Download the GGUF with `hf download` through the mirror, then import it with a Modelfile (`FROM ./file.gguf`) and `ollama create`.', zh: '`ollama pull hf.co/…` 不读 `HF_ENDPOINT`。先经镜像用 `hf download` 下载 GGUF，再写一个 Modelfile（`FROM ./文件名.gguf`）用 `ollama create` 导入。' },
+    ],
+    seeAlso: ['ollama-pull-manifest-not-found'],
+    sources: [
+      { label: 'huggingface_hub src/huggingface_hub/file_download.py (_raise_on_head_call_error)', url: `${HF_HUB}src/huggingface_hub/file_download.py` },
+      { label: 'huggingface_hub src/huggingface_hub/constants.py (HF_ENDPOINT)', url: `${HF_HUB}src/huggingface_hub/constants.py` },
+      { label: 'Ollama docs/import.mdx', url: `${OLLAMA}docs/import.mdx` },
+    ],
+    checkedAt: '2026-10-28',
   },
 ];
 
