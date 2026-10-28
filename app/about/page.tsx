@@ -29,7 +29,7 @@ export default function AboutPage() {
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{a.title}</h1>
         <p className="text-slate-400 leading-relaxed">{a.subtitle}</p>
         <p className="text-xs text-slate-600 mt-3">
-          {a.lastUpdated} · {a.dataRefresh.replace('{date}', dataLastUpdated)}
+          {a.dataRefresh.replace('{date}', dataLastUpdated)}
         </p>
       </div>
 

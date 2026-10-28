@@ -14,6 +14,14 @@ const typeConfig = {
   upd:  { className: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' },
 };
 
+/**
+ * The newest few only. The feed is appended to on every model batch and had
+ * grown past twenty rows — at that length it stops being a pick and becomes a
+ * second copy of the Hub's recency filter, which the "view all" link covers.
+ */
+const PICKS_SHOWN = 6;
+const picks = [...todayFeed].sort((a, b) => b.id - a.id).slice(0, PICKS_SHOWN);
+
 export default function TodayBoard() {
   const { t, lang } = useLanguage();
 
@@ -30,7 +38,7 @@ export default function TodayBoard() {
       </div>
 
       <ul className="flex flex-col gap-2 flex-1">
-        {todayFeed.map((item) => {
+        {picks.map((item) => {
           const cfg = typeConfig[item.type];
           const model = models.find(m => m.id === item.modelId);
           const quant = model?.quants.find(q => q.level === item.level);

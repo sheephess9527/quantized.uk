@@ -425,6 +425,34 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 — Homepage claims vs what is measured (owner-forwarded review)
+
+Checked each point of a forwarded review against `out/` before changing anything:
+- **Stale counts in titles (Hub "111", zh home "114", About "123") — not reproduced.** Every title and
+  description in the export says 125 (all derived from `models.length`); those figures are older
+  crawls / search snippets and will refresh on recrawl. Nothing changed.
+- **Mistral Large 4 dated 10-18 on `/pending/` — already fixed** by the 10-27 patrol.
+- **About page "last updated 24 June 2026" — real, and wrong** (its text changed at least on 10-03,
+  the contact-address ship). Repo history here starts 10-13, so no reliable edit date exists; the
+  hand-typed line is removed and the derived "data last refreshed" stays. Privacy said 24 June while
+  the sitemap's `PRIVACY_LASTMOD` (from `git log` on 2026-08-18) says 08-18 → now 18 August.
+- **"Measured, not guessed" over a 4-row sample — real.** Two `SAMPLE_KEYS` named 4060 Ti rows that
+  were removed (bandwidth gate) so the sample silently shrank to 4; replaced with Qwen2.5 32B on the
+  4090 and Llama 3.1 8B on the M2 Ultra (6 rows). Heading → "A sample of measured runs" / "真机实测样本",
+  subtitle states the rest of the site's sizes and most speeds are calculated. The stack line was
+  `dataSources.benchmarks` ("llama.cpp b4000+ … Ollama 0.3.x", which also disagreed with the
+  methodology's b4217 / 0.3.14); the homepage now prints measured-on and current versions from
+  `benchmarkMethodology.frameworks` + `runtimeVersions`. `dataSources.benchmarks` text corrected to
+  the exact versions; `dataSources.models` no longer claims "WikiText-2 PPL benchmarks" (10-23 found
+  the rows are model-card / community figures).
+- **Fastest pick = Qwen2.5 0.5B — real, and the caption contradicted the tag.** `homePicks` said
+  "requires a measured tok/s figure" but filtered `speedRTX4090 != null` (mostly estimates), so the
+  card read "highest measured throughput" beside "Estimated". Now `quantConfidence() === 'measured'`.
+  Sweep over 78 cards × 3 use cases: fastest = Qwen3 4B 142, Llama 3.1 8B 9, Qwen3 8B 9, Qwen2.5 7B 4,
+  slot dropped 82 times (nothing measured fits / matches the use case). Affects `/best/` the same way.
+- **Editor's Picks 20+ rows — real.** `TodayBoard` shows the 6 highest ids; "view all" covers the rest.
+- Pick cards said "{n}% quality loss" → "+{n}% perplexity vs FP16" (the 10-23 rule; missed surface).
+
 ### 2026-10-27 — Patrol: llama.cpp b11913; no model
 
 Tags page read verbatim: llama.cpp b11913 (10-26). Ollama Latest still v0.40.11 (v0.40.12 is a

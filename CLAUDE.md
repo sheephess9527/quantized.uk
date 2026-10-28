@@ -489,6 +489,8 @@ Instruct/StarCoder2 15B legacy immediately made them start winning the `code` sl
 `fitsOnGpu` itself stays untouched, since "does this fit" and "what should you run" are different
 questions and a legacy model's own GPU page should still say honestly that it fits.
 
+**A slot or heading that says "measured" must filter on `quantConfidence() === 'measured'`, never on `speedRTX4090 != null`** — most of those figures are estimates; `homePicks`' fastest slot did this and put a 0.5B model under "highest measured throughput" (2026-10-28). Homepage sample rows are looked up by key (`MeasuredCases`): a removed `matrixData` row silently shrinks the sample — check its row count in `out/` after touching benchmarks.
+
 **Measured confidence** — models in the site-side benchmark set (see `MEASURED_MODEL_IDS` in
 `model-meta.ts`) with `speedRTX4090` default to **measured**; otherwise **estimated** unless
 `confidence` is set explicitly.
@@ -1146,6 +1148,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 | **Homepage vs what is measured** — forwarded review checked in `out/`: stale title counts not reproduced (all 125); real: "Measured, not guessed" over 4 rows (2 sample keys pointed at removed rows) + old-stack-only line → 6 rows, measured-on + current versions; fastest pick ranked estimates (0.5B under "measured") → measured only; Editor's Picks capped at 6; About/Privacy June dates removed / corrected |
 | 2026-10-27 | **Patrol** — llama.cpp b11913 (Ollama v0.40.12 pre-release, rest unchanged); llama.cpp arch list unchanged; Mistral Large 4 weights still not out (HF "upcoming", reports 10-27 to 10-31), `/pending/` re-dated; no model |
 | 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range's top end capped at `rooflineTokS` (325 of 6,254 combos printed e.g. 50–66 beside ≤ 62) |
 | 2026-10-26 (iii) | **Similar-model cards: one named build** — size was `min` over all quants (often AWQ INT4) beside the best quant's perplexity rise; both now from `referenceQuant()`, level printed; Hub export column the same |

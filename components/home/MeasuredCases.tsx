@@ -4,12 +4,13 @@ import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { matrixData } from '@/lib/data/benchmarks';
-import { benchmarkMethodology, dataSources } from '@/lib/data/meta';
+import { benchmarkMethodology, runtimeVersions } from '@/lib/data/meta';
 
 /**
- * Six rows of the benchmark matrix, chosen to span hardware classes rather
- * than to flatter one card — a reader on a 4060 Ti or an M3 should see their
- * own class of machine in the sample, not only a 4090.
+ * Six rows of the benchmark matrix, chosen to span the hardware and runtimes it
+ * covers rather than to flatter one card. Every key must name an existing row:
+ * two 4060 Ti keys pointed at rows removed for exceeding the card's bandwidth
+ * and the sample silently shrank to four (fixed 2026-10-28).
  *
  * Every row carries the hardware and the framework it was run on, and the
  * methodology line under the table names the model, dataset, context and batch
@@ -19,8 +20,8 @@ import { benchmarkMethodology, dataSources } from '@/lib/data/meta';
 const SAMPLE_KEYS = [
   ['Llama 3.1 8B', 'RTX 4090 24G', 'ExLlamaV2'],
   ['Qwen3 30B-A3B', 'RTX 4090 24G', 'llama.cpp'],
-  ['Llama 3.1 8B', 'RTX 4060 Ti 16G', 'llama.cpp'],
-  ['Qwen2.5 7B', 'RTX 4060 Ti 16G', 'llama.cpp'],
+  ['Qwen2.5 32B', 'RTX 4090 24G', 'llama.cpp'],
+  ['Llama 3.1 8B', 'M2 Ultra 192G', 'llama.cpp'],
   ['Llama 3.1 8B', 'M3 Max 48G', 'Ollama'],
   ['Llama 3.1 8B', 'RTX 3090 24G', 'ExLlamaV2'],
 ] as const;
@@ -30,7 +31,7 @@ const sample = SAMPLE_KEYS.map(([model, hardware, framework]) =>
 ).filter((r): r is (typeof matrixData)[number] => r !== undefined);
 
 export default function MeasuredCases() {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const m = t.home.measured;
 
   return (
@@ -40,7 +41,7 @@ export default function MeasuredCases() {
           <FlaskConical size={16} className="text-emerald-400" />
           {m.title}
         </h2>
-        <p className="section-subtitle text-xs mt-0.5">{m.subtitle}</p>
+        <p className="section-subtitle text-xs mt-0.5">{m.subtitle.replace('{n}', String(sample.length))}</p>
       </div>
 
       <div className="overflow-x-auto -mx-1 px-1">
@@ -77,7 +78,19 @@ export default function MeasuredCases() {
           .replace('{ctx}', String(benchmarkMethodology.context))
           .replace('{batch}', String(benchmarkMethodology.batch))}
       </p>
-      <p className="text-xs text-slate-600 mt-1 leading-relaxed">{dataSources.benchmarks[lang]}</p>
+      {/* Measured-on beside current, both from data — the hand-typed "b4000+ / Ollama 0.3.x" line
+          showed only the old stack, which reads as an abandoned site. */}
+      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+        {m.stack
+          .replace('{lcpp}', benchmarkMethodology.frameworks.llamacpp.split(' ')[0])
+          .replace('{exl}', benchmarkMethodology.frameworks.exllama.replace('ExLlamaV2 ', ''))
+          .replace('{vllm}', benchmarkMethodology.frameworks.vllm)
+          .replace('{ollama}', benchmarkMethodology.frameworks.ollama)
+          .replace('{date}', runtimeVersions.checkedAt)
+          .replace('{lcppNow}', runtimeVersions.current.llamacpp)
+          .replace('{vllmNow}', runtimeVersions.current.vllm)
+          .replace('{ollamaNow}', runtimeVersions.current.ollama)}
+      </p>
 
       <Link
         href="/benchmarks/"

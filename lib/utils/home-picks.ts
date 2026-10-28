@@ -2,7 +2,7 @@ import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { fitsOnGpu, usableCapacityGB, type GpuFit } from '@/lib/utils/gpu-page';
 import { qualityRank } from '@/lib/utils/quality';
-import { isSuperseded } from '@/lib/utils/model-meta';
+import { isSuperseded, quantConfidence } from '@/lib/utils/model-meta';
 
 /**
  * Use cases are matched against `model.categories`, which the index already
@@ -87,8 +87,11 @@ export function homePicks(gpu: GPU, useCase: HomeUseCase): HomePick[] {
 
   take('capable', bySize);
   take('headroom', bySize.filter(f => f.totalGB <= usableCapacityGB(gpu) * HEADROOM_BUDGET));
+  // "Measured" as the slot promises: `speedRTX4090` is mostly an estimate, and
+  // ranking estimates put a 0.5B model on the default homepage card under a
+  // "highest measured throughput" caption beside an "Estimated" tag (2026-10-28).
   take('fastest', [...fits]
-    .filter(f => f.quant.speedRTX4090 != null)
+    .filter(f => quantConfidence(f.model.id, f.quant) === 'measured')
     .sort((a, b) => (b.quant.speedRTX4090 ?? 0) - (a.quant.speedRTX4090 ?? 0)));
 
   const order: HomePick['kind'][] = ['capable', 'headroom', 'fastest'];

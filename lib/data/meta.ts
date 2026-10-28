@@ -4,7 +4,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-27';
+export const dataLastUpdated = '2026-10-28';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -19,12 +19,12 @@ export const sizingChangedAt = '2026-10-23';
 
 export const dataSources = {
   models: {
-    en: 'Hugging Face model cards, community quant releases (bartowski, turboderp, unsloth, city96), WikiText-2 PPL benchmarks',
-    zh: 'Hugging Face 模型卡、社区量化发布（bartowski、turboderp、unsloth、city96）、WikiText-2 PPL 基准',
+    en: 'Hugging Face model cards and community quant releases (bartowski, turboderp, unsloth, city96); perplexity figures as those sources publish them',
+    zh: 'Hugging Face 模型卡和社区量化发布（bartowski、turboderp、unsloth、city96）；困惑度数字取自这些来源公布的数据',
   },
   benchmarks: {
-    en: 'Local inference runs on RTX 4090 / 3090 / M3 Max / M2 Ultra; llama.cpp b4000+, ExLlamaV2 0.2.x, vLLM 0.6.x, Ollama 0.3.x',
-    zh: 'RTX 4090 / 3090 / M3 Max / M2 Ultra 本地实测；llama.cpp b4000+、ExLlamaV2 0.2.x、vLLM 0.6.x、Ollama 0.3.x',
+    en: 'Local inference runs on RTX 4090 / 3090 / M3 Max / M2 Ultra; llama.cpp b4217, ExLlamaV2 0.2.1, vLLM v0.6.3, Ollama 0.3.14',
+    zh: 'RTX 4090 / 3090 / M3 Max / M2 Ultra 本地实测；llama.cpp b4217、ExLlamaV2 0.2.1、vLLM v0.6.3、Ollama 0.3.14',
   },
   formatHeat: {
     en: 'Editorial judgement from which formats Hugging Face uploads and community threads favour. It is not measured, so it is shown as an order, not a percentage — the per-format model counts above are the measured part.',
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-28',
+    en: 'The homepage now says plainly which numbers are measured. The benchmark sample is headed as a sample of measured runs, shows six rows instead of four, and names both the runtime versions it was measured on and the current ones. The fastest pick on each card is now chosen only from speeds actually measured, so it no longer suggests a 0.5B model on a 16 GB card. Editor\'s Picks shows the six newest entries, the pick cards call perplexity rise by its name, and the About and Privacy pages no longer carry a June date.',
+    zh: '首页现在会明确说明哪些数字是实测的。基准样本的标题改为"真机实测样本"，从 4 行增加到 6 行，并同时写明测试时和当前的运行时版本。每张卡的"速度最快"推荐现在只从真正实测过的速度里选，不会再给 16 GB 显卡推荐一个 0.5B 模型。编辑推荐只显示最新的 6 条，推荐卡上的"质量损失"改称"困惑度增幅"，关于页和隐私页也不再显示 6 月的日期。',
+  },
   {
     date: '2026-10-27',
     en: 'Runtime versions re-checked: llama.cpp b11913; Ollama, vLLM and ExLlamaV3 unchanged. No model added today. Mistral Large 4 weights are still not downloadable, and the pending page now says so.',
