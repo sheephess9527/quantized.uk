@@ -716,6 +716,7 @@ export const translations = {
       moeNoRoom: 'Even with every expert in system RAM, the rest of this model (attention, shared weights and the KV cache) does not fit the card at this context — shorten the context or use the layer split above.',
       launchMoe: 'Every layer on the GPU; the expert weights of the first {n} layers in system RAM (--n-cpu-moe {n}).',
       launchMoeAll: 'Every layer on the GPU; all expert weights in system RAM (--cpu-moe).',
+      launchOs: 'System',
       refTable: {
         title: 'Quick reference by model size',
         intro: 'The calculator\'s answer for every size class in this index, at each model\'s reference quant (its native build, else Q4_K_M, else its nearest 4-bit build) and batch 1 — the same arithmetic as the tool above, written out so it can be read without it. The 32K column counts only models whose own context window reaches 32K. The last column is the smallest card that holds every model in the class comfortably at 4K.',
@@ -865,7 +866,7 @@ export const translations = {
       copied: 'Copied!',
       outputTab: { cmd: 'Command', compose: 'docker-compose.yml', notes: 'Notes' },
       selectFirst: 'Select framework, environment and model above',
-      envOptions: { linux: 'Linux / Ubuntu', mac: 'macOS Terminal', docker: 'Docker', compose: 'Docker Compose' },
+      envOptions: { linux: 'Linux / Ubuntu', windows: 'Windows PowerShell', mac: 'macOS Terminal', docker: 'Docker', compose: 'Docker Compose' },
     },
     legal: {
       badge: 'Legal',
@@ -2012,6 +2013,7 @@ export const translations = {
       moeNoRoom: '即使把全部专家都放到系统内存，这个模型其余部分（注意力、共享权重和 KV 缓存）在这个上下文下也放不进显卡——请缩短上下文，或使用上面的整层拆分。',
       launchMoe: '所有层放 GPU；前 {n} 层的专家权重放系统内存（--n-cpu-moe {n}）。',
       launchMoeAll: '所有层放 GPU；全部专家权重放系统内存（--cpu-moe）。',
+      launchOs: '系统',
       refTable: {
         title: '按模型规模速查',
         intro: '本索引每个规模档位的计算结果，按各模型的基准量化（官方原生版本，否则 Q4_K_M，再否则最接近的 4-bit 版本）、batch 1 计算 —— 与上面的计算器是同一套算法，写成表格，不用它也能直接看。32K 一列只统计原生上下文窗口达到 32K 的模型。最后一列是 4K 上下文下能从容装下该档位全部模型的最小显卡。',
@@ -2161,7 +2163,7 @@ export const translations = {
       copied: '已复制！',
       outputTab: { cmd: '启动命令', compose: 'docker-compose.yml', notes: '注意事项' },
       selectFirst: '请先在上方选择框架、环境和模型',
-      envOptions: { linux: 'Linux / Ubuntu', mac: 'macOS 终端', docker: 'Docker', compose: 'Docker Compose' },
+      envOptions: { linux: 'Linux / Ubuntu', windows: 'Windows PowerShell', mac: 'macOS 终端', docker: 'Docker', compose: 'Docker Compose' },
     },
     legal: {
       badge: '法律声明',

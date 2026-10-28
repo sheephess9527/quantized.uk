@@ -1,3 +1,4 @@
+import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 export interface ChangelogEntry {
   date: string;
   en: string;
@@ -72,7 +73,7 @@ export const benchmarkMethodology = {
 export const runtimeVersions = {
   checkedAt: '2026-10-28',
   current: {
-    llamacpp: 'b11941',
+    llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.32.0',
     ollama: 'v0.40.12',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
@@ -88,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-28',
+    en: 'Launch commands now come in a Windows version. On a Windows PC the calculator shows PowerShell commands that download llama.cpp\'s official prebuilt build for your card (CUDA for NVIDIA, Vulkan for AMD and Intel) instead of compiling it, and install Ollama with its Windows installer; a switch goes back to Linux. The command generator has the same Windows option.',
+    zh: '启动命令现在有 Windows 版了。在 Windows 电脑上，计算器会直接给出 PowerShell 命令：按你的显卡下载 llama.cpp 官方预编译版（NVIDIA 用 CUDA 版，AMD 和 Intel 用 Vulkan 版），不用自己编译；Ollama 用官方 Windows 安装脚本。也可以一键切回 Linux。命令生成器也加了同样的 Windows 选项。',
+  },
   {
     date: '2026-10-28',
     en: 'When a mixture-of-experts model does not fit your card, the calculator now gives the expert-offload answer. For twelve MoE models, including GPT-OSS, Qwen3 30B-A3B and GLM-4.5-Air, it works out how many layers\' experts to keep in system RAM, prints the llama.cpp --n-cpu-moe value in the launch command, and shows what stays on the card and the speed limit. Speed limits for any CPU/GPU split now also count reading the context cache, so long contexts show lower, more realistic figures.',

@@ -1,7 +1,9 @@
 import { vllmRocmSupported } from '@/lib/utils/gpu-page';
+import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
 export type Framework = 'llamacpp' | 'ollama' | 'vllm' | 'exllama';
-export type Env = 'linux' | 'mac' | 'docker' | 'compose';
+/** `windows` is PowerShell on the host (prebuilt llama.cpp zips, Ollama's Windows installer). */
+export type Env = 'linux' | 'mac' | 'windows' | 'docker' | 'compose';
 
 export interface CLIOptions {
   framework: Framework;
@@ -163,6 +165,11 @@ export interface CLIOutput {
 export function generateCLI(opts: CLIOptions): CLIOutput {
   const { framework } = opts;
 
+  if (opts.env === 'windows' && (framework === 'vllm' || framework === 'exllama')) {
+    const out = generateCLI({ ...opts, env: 'linux' });
+    const lang: Lang = opts.lang ?? 'en';
+    return { ...out, notes: [L(lang, 'There is no native Windows build of this runtime: run these commands inside WSL2 (Ubuntu), or use llama.cpp / Ollama on Windows itself', '这个运行时没有原生 Windows 版本：请在 WSL2（Ubuntu）里运行下面的命令，或者直接在 Windows 上用 llama.cpp / Ollama'), ...out.notes] };
+  }
   if (framework === 'llamacpp') return generateLlamaCpp(opts);
   if (framework === 'ollama')   return generateOllama(opts);
   if (framework === 'vllm')     return generateVLLM(opts);
@@ -300,6 +307,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const containerModelPath = sharded ? `"/models/$(cd models && find . -name '${filePattern}' | sort | head -1)"` : `/models/${modelFile}`;
   const composeModelPath = sharded ? `/models/<first part: ${modelFile.replace(/\.gguf$/, '')}-00001-of-NNNNN.gguf, or the single file>` : `/models/${modelFile}`;
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
+  if (env === 'windows') return llamaCppWindows(opts, { repoId, modelFile, filePattern, sharded, moeFlag, lang, backend });
 
   // Loopback by default. `--host 0.0.0.0` publishes an unauthenticated
   // inference server to every interface on the machine, which is not what
@@ -394,6 +402,75 @@ function ollamaIntelNote(lang: Lang): string {
   return L(lang, "Intel Arc runs through Ollama's Vulkan backend, which is on by default — `ollama ps` should show GPU in the PROCESSOR column. On Linux, install Intel's GPU driver first", 'Intel Arc 通过 Ollama 的 Vulkan 后端运行，默认已开启——`ollama ps` 的 PROCESSOR 一列应显示 GPU。Linux 上需先安装英特尔 GPU 驱动')
 }
 
+/**
+ * llama.cpp on Windows from the project's own prebuilt zips — no compiler, which
+ * is what most Windows readers lack. Asset names are copied from the release
+ * page (`llama-<build>-bin-win-cuda-12.4-x64.zip`, `cudart-llama-bin-win-cuda-12.4-x64.zip`
+ * — the runtime zip carries no build number, checked on b11941 and b11960), and
+ * the URL pattern is the one winget's `ggml.llamacpp` manifest downloads. Every backend zip
+ * carries the CPU zip's executables at its root (`.github/workflows/release-publish.yml` injects
+ * them), and the cudart DLLs go next to them (`release.yml`: "extract next to the binaries").
+ * CUDA 12.4 for NVIDIA except Blackwell (RTX 50), which gets the CUDA 13.4 zip;
+ * Vulkan for AMD and Intel, the build winget installs. PowerShell rules from
+ * this repo: one command per line, no `^`, no `curl` alias.
+ */
+function llamaCppWindows(
+  opts: CLIOptions,
+  f: { repoId: string; modelFile: string; filePattern: string; sharded: boolean; moeFlag: string; lang: Lang; backend: Backend },
+): CLIOutput {
+  const { gpuLayers, contextLen, port, apiKey } = opts;
+  const { lang, backend } = f;
+  const blackwell = /RTX 50\d\d/i.test(opts.gpuName ?? '');
+  const cuda = backend === 'cuda' ? (blackwell ? 'cuda-13.4' : 'cuda-12.4') : undefined;
+  const flavour = cuda ?? (backend === 'cpu' ? 'cpu' : 'vulkan');
+  const modelPath = f.sharded
+    ? `(Get-ChildItem models -Recurse -Filter "${f.filePattern}" | Sort-Object FullName | Select-Object -First 1).FullName`
+    : `models\\${f.modelFile}`;
+  const flags = [
+    `-m ${modelPath}`,
+    `--host 127.0.0.1 --port ${port}`,
+    `-ngl ${gpuLayers}`,
+    ...(f.moeFlag ? [f.moeFlag] : []),
+    `-c ${contextLen}`,
+    ...(apiKey ? [`--api-key "${apiKey}"`] : []),
+  ].join(' ');
+  const command = [
+    L(lang, `# 1. Download llama.cpp's prebuilt Windows build (${flavour}, release ${LLAMACPP_BUILD})`, `# 1. 下载 llama.cpp 官方预编译的 Windows 版（${flavour}，版本 ${LLAMACPP_BUILD}）`),
+    `$ProgressPreference = "SilentlyContinue"`,
+    `$B = "${LLAMACPP_BUILD}"`,
+    `$U = "https://github.com/ggml-org/llama.cpp/releases/download/$B"`,
+    `Invoke-WebRequest "$U/llama-$B-bin-win-${flavour}-x64.zip" -OutFile llama.zip`,
+    ...(cuda ? [`Invoke-WebRequest "$U/cudart-llama-bin-win-${cuda}-x64.zip" -OutFile cudart.zip`] : []),
+    `Expand-Archive llama.zip -DestinationPath llama.cpp -Force`,
+    ...(cuda ? [`Expand-Archive cudart.zip -DestinationPath llama.cpp -Force`] : []),
+    ``,
+    L(lang, `# 2. Download the model (installs the hf CLI the next line needs)`, `# 2. 下载模型（先安装下一行要用的 hf 命令）`),
+    `pip install -U huggingface_hub`,
+    ...(lang === 'zh' ? ['# 国内网络：经第三方镜像 hf-mirror.com 下载（不是 Hugging Face 官方；在海外可删掉下一行）', `$env:HF_ENDPOINT = "${HF_MIRROR}"`] : []),
+    `hf download ${f.repoId} --include "${f.sharded ? `*${f.filePattern}` : f.modelFile}" --local-dir models`,
+    ``,
+    L(lang, `# 3. Start the server`, `# 3. 启动服务`),
+    `.\\llama.cpp\\llama-server.exe ${flags}`,
+  ].join('\n');
+  const notes = [
+    L(lang, 'Run these in PowerShell, from the folder you want llama.cpp and the model in. Each command is on one line, so they also paste into Windows Terminal as they are', '在 PowerShell 里运行，先进入想放 llama.cpp 和模型的文件夹。每条命令都在一行内，直接粘贴即可'),
+    ...(cuda ? [blackwell
+      ? L(lang, 'RTX 50 cards need the CUDA 13 build; if llama-server exits at start, update the NVIDIA driver first', 'RTX 50 系列需要 CUDA 13 版本；如果 llama-server 一启动就退出，先更新 NVIDIA 驱动')
+      : L(lang, 'The cudart zip holds the CUDA runtime DLLs — no CUDA Toolkit install is needed, only an NVIDIA driver', 'cudart 压缩包里是 CUDA 运行库 DLL——不需要安装 CUDA Toolkit，只需要 NVIDIA 驱动')] : []),
+    ...(backend === 'rocm' ? [L(lang, 'The Vulkan build runs on any recent Radeon driver; the release also has a ROCm build (llama-<build>-bin-win-rocm-10.0-x64.zip) for cards ROCm supports', 'Vulkan 版在较新的 Radeon 驱动上都能运行；发布页另有 ROCm 版（llama-<版本>-bin-win-rocm-10.0-x64.zip），适用于 ROCm 支持的显卡')] : []),
+    ...(backend === 'sycl' ? [L(lang, 'The Vulkan build runs on Intel Arc with the normal graphics driver; the release also has a SYCL build (llama-<build>-bin-win-sycl-x64.zip)', 'Vulkan 版用普通显卡驱动就能在 Intel Arc 上运行；发布页另有 SYCL 版（llama-<版本>-bin-win-sycl-x64.zip）')] : []),
+    L(lang, '`winget install llama.cpp` also works and keeps it updated — it installs the Vulkan build', '也可以用 `winget install llama.cpp` 安装并自动更新——它装的是 Vulkan 版'),
+    ...(lang === 'zh' ? ['GitHub 在国内下载可能很慢：也可以在浏览器里打开 llama.cpp 的发布页，手动下载上面这几个 zip，再解压到 llama.cpp 文件夹'] : []),
+    L(lang, `-ngl ${gpuLayers}: number of layers offloaded to GPU (99 = all)`, `-ngl ${gpuLayers}：放到 GPU 上的层数（99 即全部）`),
+    ...(opts.cpuMoe ? [opts.cpuMoe.all
+      ? L(lang, '--cpu-moe: every expert weight stays in system RAM; attention, shared weights and the KV cache stay on the GPU', '--cpu-moe：全部专家权重留在系统内存，注意力、共享权重和 KV 缓存留在 GPU')
+      : L(lang, `--n-cpu-moe ${opts.cpuMoe.n}: the expert weights of the first ${opts.cpuMoe.n} layers stay in system RAM. Lower it until loading fails for lack of VRAM, then step back up — fewer is faster`, `--n-cpu-moe ${opts.cpuMoe.n}：前 ${opts.cpuMoe.n} 层的专家权重留在系统内存。可以逐步调小，直到显存不够加载失败再调回一格——数字越小越快`)] : []),
+    L(lang, `Health check once it starts: curl.exe -s http://127.0.0.1:${port}/health — expect {"status":"ok"} (write curl.exe: in Windows PowerShell, curl is an alias of Invoke-WebRequest)`, `启动后检查：curl.exe -s http://127.0.0.1:${port}/health——应返回 {"status":"ok"}（要写 curl.exe：Windows PowerShell 里的 curl 是 Invoke-WebRequest 的别名）`),
+    L(lang, `API endpoint: http://127.0.0.1:${port}/v1/chat/completions (OpenAI-compatible)`, `接口地址：http://127.0.0.1:${port}/v1/chat/completions（OpenAI 兼容）`),
+  ];
+  return { command, notes };
+}
+
 function generateOllama(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, port } = opts;
   const lang: Lang = opts.lang ?? 'en';
@@ -463,6 +540,36 @@ volumes:
       `docker exec ollama ollama pull ${ollamaModel}`,
     ].join('\n');
     return { command, notes: [...containerNotes(backend, lang), ...(backend === 'sycl' ? [ollamaIntelNote(lang)] : []), exposureNote(lang), L(lang, `API available at http://localhost:${port}/v1`, `接口地址：http://localhost:${port}/v1`)] };
+  }
+
+  if (env === 'windows') {
+    const command = [
+      L(lang, `# Install Ollama (its official PowerShell installer; OllamaSetup.exe from ollama.com does the same)`, `# 安装 Ollama（官方 PowerShell 安装脚本；也可以从 ollama.com 下载 OllamaSetup.exe）`),
+      `irm https://ollama.com/install.ps1 | iex`,
+      ``,
+      L(lang, `# Pull and run ${modelName}`, `# 拉取并运行 ${modelName}`),
+      `ollama pull ${ollamaModel}`,
+      `ollama run ${ollamaModel}`,
+      ``,
+      L(lang, `# Ollama keeps running in the background and serves the API on 127.0.0.1:11434.`, `# 安装后 Ollama 在后台运行，接口在 127.0.0.1:11434。`),
+      ...(port === 11434 ? [] : [
+        L(lang, `# To serve on port ${port} instead: quit Ollama from the tray icon first, then:`, `# 要改用 ${port} 端口：先从托盘图标退出 Ollama，然后：`),
+        `$env:OLLAMA_HOST = "127.0.0.1:${port}"; ollama serve`,
+      ]),
+    ].join('\n');
+    const zhImport = lang === 'zh' && hfRepo
+      ? [`国内直连 huggingface.co 拉取常会失败，HF_ENDPOINT 对 Ollama 的 hf.co/ 拉取不起作用。可以先经镜像下载 GGUF 再导入（PowerShell）：pip install -U huggingface_hub；$env:HF_ENDPOINT = "${HF_MIRROR}"；hf download ${hfRepo} --include "${ollamaGgufPattern}" --local-dir models；${ollamaSharded ? '再写一个 Modelfile，FROM 用通配符指向下载到的全部分片文件，然后 ollama create ' + ollamaLocalName + ' -f Modelfile' : `Set-Content Modelfile "FROM ./models/${ollamaGgufPattern}"；ollama create ${ollamaLocalName} -f Modelfile`}（Windows PowerShell 里不要用 echo > 写 Modelfile，它会写成 UTF-16；hf-mirror.com 是第三方镜像，不是 Hugging Face 官方）`]
+      : [];
+    return {
+      command,
+      notes: [
+        L(lang, 'Ollama for Windows needs Windows 10 22H2 or newer, and an NVIDIA driver 551.61+ or a recent AMD driver (ROCm v7 or Vulkan)', 'Windows 版 Ollama 需要 Windows 10 22H2 或更新版本，以及 551.61 以上的 NVIDIA 驱动或较新的 AMD 驱动（ROCm v7 或 Vulkan）'),
+        L(lang, `OpenAI-compatible API: http://localhost:${port}/v1/chat/completions`, `OpenAI 兼容接口：http://localhost:${port}/v1/chat/completions`),
+        ...(hfRepo ? [L(lang, `hf.co/… pulls the GGUF directly and pins the quant to ${quantLevel}`, `hf.co/… 会直接拉取 GGUF，并固定为 ${quantLevel} 量化`)] : []),
+        ...zhImport,
+        L(lang, 'Models are stored in your home folder; set the OLLAMA_MODELS user variable to put them on another drive', '模型默认存放在用户目录；要放到其他盘，设置用户环境变量 OLLAMA_MODELS'),
+      ],
+    };
   }
 
   const installCmd = env === 'mac'

@@ -28,6 +28,7 @@ const FRAMEWORKS: { id: Framework; label: string; color: string; textColor: stri
 
 const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli']['envOptions'] }[] = [
   { id: 'linux',   labelKey: 'linux'   },
+  { id: 'windows', labelKey: 'windows' },
   { id: 'mac',     labelKey: 'mac'     },
   { id: 'docker',  labelKey: 'docker'  },
   { id: 'compose', labelKey: 'compose' },

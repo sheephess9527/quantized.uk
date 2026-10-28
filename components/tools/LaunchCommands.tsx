@@ -7,12 +7,12 @@
  * fed with the calculator's own answer — the level picked, the context, and
  * the GPU-layer count from `offloadPlan` when the model does not fit whole.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { generateCLI, ggufFileGB, type Framework } from '@/lib/utils/cli';
+import { generateCLI, ggufFileGB, type Framework, type Env } from '@/lib/utils/cli';
 import { backendFor, formatAllowed } from '@/lib/utils/gpu-page';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
@@ -45,13 +45,21 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
     return out;
   }, [model, quant, gpu, gpuLayers]);
   const [fw, setFw] = useState<Framework | null>(null);
+  // Most readers are on Windows desktops, and a bash block pasted into
+  // PowerShell fails on its first line. Start from Linux (what the HTML was
+  // built with) and switch after mount, so hydration never sees a difference.
+  const mac = gpu?.type === 'apple';
+  const [os, setOs] = useState<Env>('linux');
+  useEffect(() => {
+    try { if (/Windows/i.test(navigator.userAgent)) setOs('windows'); } catch { /* keep linux */ }
+  }, []);
   const [copied, setCopied] = useState(false);
   const active = levels.find(l => l.fw === fw) ?? levels[0];
   const out = useMemo(() => {
     if (!active) return null;
     return generateCLI({
       framework: active.fw,
-      env: gpu?.type === 'apple' ? 'mac' : 'linux',
+      env: mac ? 'mac' : os,
       modelId: model.id,
       modelName: model.name,
       hfRepo: hfRepoMap[model.id as keyof typeof hfRepoMap],
@@ -67,7 +75,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       lang,
       gpuName: gpu?.name,
     });
-  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang]);
+  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os]);
   if (!active || !out) return null;
 
   const copy = async () => {
@@ -99,6 +107,24 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
           ))}
         </div>
       </div>
+      {!mac && (
+        <div className="flex items-center gap-1.5 mb-2" role="group" aria-label={t.calc.launchOs}>
+          <span className="text-[11px] text-slate-500 mr-1">{t.calc.launchOs}</span>
+          {(['windows', 'linux'] as Env[]).map(o => (
+            <button
+              key={o}
+              onClick={() => setOs(o)}
+              aria-pressed={os === o}
+              className={cn(
+                'px-2 py-1 rounded-lg text-[11px] border min-h-[32px]',
+                os === o ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+              )}
+            >
+              {o === 'windows' ? 'Windows' : 'Linux'}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="relative">
         <pre className="text-[11px] leading-relaxed font-mono text-slate-300 bg-black/30 rounded-xl p-3 pr-12 overflow-x-auto whitespace-pre">{out.command}</pre>
         <button

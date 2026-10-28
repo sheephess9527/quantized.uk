@@ -425,6 +425,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 (v) — Windows (PowerShell) launch commands
+
+- **`Env` gains `windows`** (`lib/utils/cli.ts`): llama.cpp from the project's prebuilt zips, pinned to
+  `LLAMACPP_BUILD` (new `lib/data/runtime-build.ts`, also what `runtimeVersions.current.llamacpp` shows —
+  kept out of `meta.ts` so the changelog does not ride into the client bundle).
+  - Asset names copied from the b11941 and b11960 release pages: `llama-<build>-bin-win-{cuda-12.4,cuda-13.4,vulkan,cpu}-x64.zip`,
+    `cudart-llama-bin-win-cuda-<ver>-x64.zip` (no build number). URL pattern is the one winget's
+    `ggml.llamacpp` manifest downloads; that manifest installs the **Vulkan** zip.
+  - Every backend zip carries the CPU zip's executables at its root (`release-publish.yml` injects them);
+    cudart DLLs go next to them (`release.yml`).
+  - CUDA 12.4 for NVIDIA, CUDA 13.4 for RTX 50 (Blackwell); Vulkan for AMD and Intel, with the ROCm / SYCL
+    zips named in a note; CPU zip for CPU rows.
+  - One command per line, `$env:HF_ENDPOINT` for zh, `curl.exe` in notes, `Get-ChildItem` for split builds.
+- Ollama on Windows: `irm https://ollama.com/install.ps1 | iex` (Ollama README), requirements from
+  `docs/windows.mdx`; the zh import note uses `Set-Content` (PowerShell 5.1's `echo >` writes UTF-16).
+- vLLM / ExLlama with `windows` emit the Linux commands with a WSL2 note first.
+- Calculator: Windows / Linux switch (`aria-pressed`), defaulting to Windows from the user agent **after
+  mount** so the static HTML and hydration agree. CLI generator page has the same option.
+- Sweep: 4,800 framework × env × backend × lang × file size × card × MoE × port cases, 0 faults (no `\`
+  continuations, `export`, bare `curl`, `^`, `./build`, `sudo` or `$(find` in Windows output; right zip per
+  backend; cudart for CUDA; zh mirror; notes in the reader's language). Not run on a Windows machine here.
+
 ### 2026-10-28 (iv) — Calculator: MoE expert offload (`--n-cpu-moe`)
 
 - **`ModelArch.moe`** (`lib/data/types.ts`): `expertParams` (routed-expert tensors, billions), `experts`,

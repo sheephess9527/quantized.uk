@@ -588,6 +588,7 @@ file in `sources`, read on `checkedAt`; a message found only in forums or memory
 "no kernel image" was left out for that reason). Fixes name real flags from the project's docs. Add an
 entry's id to `GROUP_OF` in `components/errors/ErrorViews.tsx`; `errorEntryProblems()` gates links.
 **Chinese CLI output downloads through `HF_ENDPOINT=https://hf-mirror.com`** (2026-10-28, `HF_MIRROR` / `mirrorLines()` in `cli.ts`) — zh only, always labelled a third-party mirror; English never gets it. Ollama's `hf.co/` pulls do not read `HF_ENDPOINT`, so never present it as fixing them. ModelScope ids are not derivable from `hfRepoMap` — do not guess them.
+**Windows commands (`env: 'windows'`, 2026-10-28) download llama.cpp's prebuilt zips for `LLAMACPP_BUILD`** (`lib/data/runtime-build.ts`, the one place the build is typed; `runtimeVersions` reads it). A patrol that bumps it must first see `llama-<build>-bin-win-*` on that release's asset list (`/releases/expanded_assets/<build>`) — the zip names are typed into `llamaCppWindows()`. PowerShell output: one command per line, no `^`, no bare `curl`, no `echo >` for files (UTF-16 in 5.1).
 **The quick-answer pages (`/tools/speed|which-quant|context-length/`) compute nothing themselves** —
 `question-pages.ts` may only call the calculator's functions; a new column means a new call, never a formula.
 
@@ -1150,6 +1151,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 (v) | **Windows launch commands** — `Env` `windows`: llama.cpp prebuilt zips pinned to `LLAMACPP_BUILD` (CUDA 12.4 / 13.4 for RTX 50 / Vulkan / CPU, names from the release page), Ollama `install.ps1`; calculator OS switch defaults from the UA after mount; sweep 4,800 cases 0 faults |
 | 2026-10-28 (iv) | **MoE expert offload** — `ModelArch.moe` on 12 models (counted from configs, reconciled with `params`); `offloadPlan().moe` → `-ngl 99 --n-cpu-moe N` (120B/24 GB/16K = 28, as llama.cpp's guide); offload speed bounds now include the KV read; sweep 0 faults |
 | 2026-10-28 (iii) | **zh commands via hf-mirror** — `HF_ENDPOINT=https://hf-mirror.com` (third-party, said in the comment) on every zh `hf download` + vLLM; Ollama `hf.co/` ignores it → zh note gives download + Modelfile import; English unchanged; `/errors/` +1 (huggingface_hub cannot-locate, 20) |
 | 2026-10-28 (ii) | **Patrol** — llama.cpp b11941 (new arch `lfm3`), Ollama v0.40.12 Latest (LFM3 family + d1); LFM3 1.7B → `/pending/` awaiting config + GGUF bytes (layer split is metadata); d1 skipped (decision model) |
