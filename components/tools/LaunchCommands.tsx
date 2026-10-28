@@ -24,9 +24,11 @@ interface Props {
   gpu?: GPU;
   /** From `offloadPlan` when part of the model has to sit in system RAM. */
   gpuLayers?: number;
+  /** From `offloadPlan().moe`: llama.cpp keeps every layer on the card and moves only experts. */
+  cpuMoe?: { n: number; all: boolean };
 }
 
-export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayers }: Props) {
+export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayers, cpuMoe }: Props) {
   const { t, lang } = useLanguage();
   const levels = useMemo(() => {
     const gguf = quant.format === 'GGUF' ? quant : model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? model.quants.find(q => q.format === 'GGUF');
@@ -55,7 +57,9 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       hfRepo: hfRepoMap[model.id as keyof typeof hfRepoMap],
       quantLevel: active.level,
       fileGB: ggufFileGB(model, active.level),
-      gpuLayers: gpuLayers ?? 99,
+      // Expert offload applies to llama.cpp only; Ollama keeps its own layer split.
+      gpuLayers: active.fw === 'llamacpp' && cpuMoe ? 99 : gpuLayers ?? 99,
+      cpuMoe: active.fw === 'llamacpp' ? cpuMoe : undefined,
       contextLen,
       threads: 8,
       port: 8080,
@@ -63,7 +67,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       lang,
       gpuName: gpu?.name,
     });
-  }, [active, gpu, model, gpuLayers, contextLen, lang]);
+  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang]);
   if (!active || !out) return null;
 
   const copy = async () => {
@@ -107,7 +111,9 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       </div>
       <p className="text-[11px] text-slate-500 mt-1.5">
         {t.calc.launchNote.replace('{level}', active.level).replace('{ctx}', String(contextLen))}
-        {gpuLayers !== undefined && ` ${t.calc.launchOffload.replace('{n}', String(gpuLayers))}`}
+        {active.fw === 'llamacpp' && cpuMoe
+          ? ` ${(cpuMoe.all ? t.calc.launchMoeAll : t.calc.launchMoe).replace(/\{n\}/g, String(cpuMoe.n))}`
+          : gpuLayers !== undefined && ` ${t.calc.launchOffload.replace('{n}', String(gpuLayers))}`}
       </p>
       {out.notes.length > 0 && (
         <ul className="mt-1 space-y-0.5">

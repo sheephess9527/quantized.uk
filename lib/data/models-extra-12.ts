@@ -79,7 +79,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 28, attHeads: 20, kvHeads: 4, headDim: 128 },
+    // MoE offload: Ernie4_5_MoeConfig defaults (this model): 27 MoE layers × 64 × 3 × 2560 × 1536 = 20.38B routed, moe_layer_start_index 1; + 2 shared experts 0.64B, attention 0.44B, tied embeddings 0.26B, dense layer 0.09B = 21.82B.
+    arch: { layers: 28, attHeads: 20, kvHeads: 4, headDim: 128, moe: { expertParams: 20.38, experts: 64, perToken: 6, moeLayers: 27, denseLead: 1 } },
     addedAt: ADDED,
     description: {
       en: 'Baidu\'s open mixture-of-experts model: about 21.8B parameters in total and roughly 3B active per token. Each token goes through 6 of 64 routed experts plus 2 shared ones. The total decides the memory and the active count decides the speed, so it needs the VRAM of a 20B-class model and reads about as much per token as a 3B one. At Q4_K_M it needs about 14.2 GB at 4K context, just past the comfortable line on a 16 GB card (it loads, with little margin). A 24 GB card, or a 24 GB Mac through the GPU\'s share of unified memory, leaves real room for context. Sizes come from the published GGUF files of the PT (instruct) checkpoint; bartowski\'s Q4_K_M is a different file, 0.17 GB larger than Unsloth\'s used here. No per-level quality loss has been published.',
@@ -630,7 +631,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
     contextLength: 262144,
-    arch: { layers: 52, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 6, note: { en: 'Only 6 of 52 layers are attention layers with a growing KV cache (2 KV heads × 128); 23 are Mamba-2 layers with a fixed recurrent state and 23 are mixture-of-experts layers that cache nothing per token.', zh: '52 层中只有 6 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；23 层是状态大小固定的 Mamba-2 层，另 23 层是不缓存任何内容的混合专家层。' } } },
+    // MoE offload: 23 MoE blocks × 128 × 2 (relu2: up + down) × 2688 × 1856 = 29.37B routed, interleaved with Mamba and attention blocks.
+    arch: { layers: 52, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 6, note: { en: 'Only 6 of 52 layers are attention layers with a growing KV cache (2 KV heads × 128); 23 are Mamba-2 layers with a fixed recurrent state and 23 are mixture-of-experts layers that cache nothing per token.', zh: '52 层中只有 6 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；23 层是状态大小固定的 Mamba-2 层，另 23 层是不缓存任何内容的混合专家层。' } }, moe: { expertParams: 29.37, experts: 128, perToken: 6, moeLayers: 23, interleaved: true } },
     addedAt: ADDED_LIGHTNING,
     description: {
       en: 'The small member of NVIDIA\'s Nemotron 3.5 family: a 30B text-only mixture-of-experts model with about 3B parameters active per token. It generates at roughly the speed of a 3B model. Only 6 of its 52 layers keep a growing cache, which makes long context almost free: at Q4_0 (ggml-org\'s 18.9 GB file) it needs about 19.8 GB at 4K, 20.6 GB at 128K and 21.4 GB at its full 256K window. That is comfortable on a 24 GB card up to 128K and tight only at the full window; a 16 GB card cannot hold it. Q8_0 (about 35 GB) wants a 48 GB card or a 64 GB Mac. An optional 1.2 GB draft file for speculative decoding ships separately. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
@@ -784,7 +786,9 @@ export const extraModels12: QuantModel[] = [
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'pro-gpu'],
     contextLength: 262144,
+    // MoE offload: 48 MoE layers × 128 × 3 × 2048 × 768 = 28.99B routed, 1 dense lead (the 29.0B above).
     arch: {
+      moe: { expertParams: 28.99, experts: 128, perToken: 8, moeLayers: 48, denseLead: 1 },
       layers: 49,
       attHeads: 32,
       kvHeads: 4,

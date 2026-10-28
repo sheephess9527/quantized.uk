@@ -425,6 +425,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 (iv) — Calculator: MoE expert offload (`--n-cpu-moe`)
+
+- **`ModelArch.moe`** (`lib/data/types.ts`): `expertParams` (routed-expert tensors, billions), `experts`,
+  `perToken`, `moeLayers`, `denseLead`, `interleaved`. Set on 12 models, counted from the config and reconciled
+  against `params`: Qwen3 30B-A3B / Coder / VL (48 × 128 × 3 × 2048 × 768 = 28.99B; transformers' default is a
+  24-layer reference, the 48-layer count closes at 30.53B), Qwen3 235B-A22B, GPT-OSS 20B/120B, GLM-4.5-Air,
+  GLM-4.7-Flash, ERNIE 4.5 21B-A3B, Llama 4 Scout, North Mini Code, Nemotron 3.5 Lightning (interleaved).
+  `dataProblems()` checks `denseLead + moeLayers = layers` (≤ for interleaved), expert < total, top-k < experts.
+- **`offloadPlan().moe`** (`calc-insights.ts`): every layer on the card, routed experts of the first N layers
+  in RAM (`--n-cpu-moe N`, `common/arg.cpp`: `blk.<i>.ffn_*_exps` for i < N), N counting the dense lead layers;
+  `--cpu-moe` when every expert must go, and always for interleaved layouts (N is an index there). Expert bytes
+  at the level's bpw, MXFP4 at 4.25. Checked against llama.cpp's gpt-oss guide: 120B on 24 GB at 16K → 28
+  (guide: 28); 20B on 8 GB at 32K → 17 (guide, RTX 2060: 16).
+- `--fit` (default on) already moves MoE tensors to RAM when `-ngl` is unset (`common/fit.cpp`), but stands down
+  when `-ngl` is set — and the calculator's launch command set `-ngl <layers>`, so MoE readers got the slower
+  whole-layer split. The llama.cpp tab now emits `-ngl 99 --n-cpu-moe N`; Ollama keeps its layer split (no such
+  option is claimed for it).
+- **Speed bounds now include the KV read** for both splits: decode reads the whole cache each token, so a layer
+  moved to RAM carries its cache share. Without it the layer split looked faster than the expert split at 128K.
+  The expert split is offered only when its bound is not below the layer split's (interleaved near-fits lose).
+- Sweep: 17,220 model × level × card × context × cards cases, 5,587 expert plans, 0 faults (card side within
+  budget, sides sum to the total, N in range, flag present in native/docker/compose, en + zh).
+- Not done: the other 27 MoE models (configs not read); they keep the generic `--n-cpu-moe` note.
+
 ### 2026-10-28 (iii) — Chinese commands download through a mirror; HF connection error entry
 
 - **`lib/utils/cli.ts`**: on `/zh` every generated `hf download` (llama.cpp, ExLlama) is preceded by

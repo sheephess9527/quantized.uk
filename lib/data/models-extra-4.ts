@@ -36,7 +36,8 @@ export const extraModels4: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 40960,
-    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128 },
+    // MoE offload: 48 MoE layers × 128 experts × 3 × 2048 × 768 = 28.99B routed (Qwen3MoeConfig widths; 48 layers, not the config default 24 — with 48 the count closes at 30.53B = params).
+    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128, moe: { expertParams: 28.99, experts: 128, perToken: 8, moeLayers: 48 } },
     description: {
       en: 'Qwen3 MoE with only 3B active params. Q4 ~19GB file; outperforms QwQ-32B on 16GB cards.',
       zh: 'Qwen3 MoE，仅 3B 激活参数。Q4 约 19GB，16GB 显卡上超越 QwQ-32B。',
@@ -56,7 +57,8 @@ export const extraModels4: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu'],
     contextLength: 40960,
-    arch: { layers: 94, attHeads: 64, kvHeads: 4, headDim: 128 },
+    // MoE offload: 94 × 128 experts × 3 × 4096 × 1536 = 227.11B routed; + attention 6.70B + embeddings 1.25B = 235.05B = params.
+    arch: { layers: 94, attHeads: 64, kvHeads: 4, headDim: 128, moe: { expertParams: 227.11, experts: 128, perToken: 8, moeLayers: 94 } },
     description: {
       en: 'Qwen3 flagship MoE (22B active / 235B total). Q4_K_M ~142GB; rivals DeepSeek-R1 class models.',
       zh: 'Qwen3 旗舰 MoE（激活 22B / 总 235B）。Q4_K_M 约 142GB，对标 DeepSeek-R1 级模型。',

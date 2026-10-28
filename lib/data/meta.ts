@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-28',
+    en: 'When a mixture-of-experts model does not fit your card, the calculator now gives the expert-offload answer. For twelve MoE models, including GPT-OSS, Qwen3 30B-A3B and GLM-4.5-Air, it works out how many layers\' experts to keep in system RAM, prints the llama.cpp --n-cpu-moe value in the launch command, and shows what stays on the card and the speed limit. Speed limits for any CPU/GPU split now also count reading the context cache, so long contexts show lower, more realistic figures.',
+    zh: '混合专家（MoE）模型放不进显卡时，计算器现在会给出"只把专家放到内存"的方案。对 GPT-OSS、Qwen3 30B-A3B、GLM-4.5-Air 等 12 个 MoE 模型，它会算出需要把多少层的专家留在系统内存，在启动命令里写好 llama.cpp 的 --n-cpu-moe 数值，并显示显卡上保留多少、速度上限是多少。所有 CPU/GPU 拆分的速度上限现在也计入读取上下文缓存的开销，所以长上下文下的数字会更低、更接近实际。',
+  },
+  {
+    date: '2026-10-28',
     en: 'Download commands on the Chinese pages now go through a mirror. Every Hugging Face download the command generator writes for Chinese readers sets HF_ENDPOINT to hf-mirror.com, a third-party mirror, and says so; Ollama users get a download-then-import route, since Ollama\'s own Hugging Face pulls ignore that setting. The error lookup adds the "cannot locate the file on the Hub" message.',
     zh: '中文版的下载命令现在默认走镜像。命令生成器为中文读者写出的每条 Hugging Face 下载命令都会设置 HF_ENDPOINT=https://hf-mirror.com，并注明这是第三方镜像；Ollama 自带的 hf.co 拉取不读这个设置，所以给 Ollama 用户的是"先经镜像下载、再导入"的做法。报错速查新增"cannot locate the file on the Hub"一条。',
   },

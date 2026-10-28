@@ -41,7 +41,8 @@ export const extraModels10: QuantModel[] = [
     // 128K context length". The config default (202752) is higher but is not a
     // published figure for this checkpoint.
     contextLength: 131072,
-    arch: { layers: 47, attHeads: 20, kvHeads: 1, headDim: 288 },
+    // MoE offload: 46 MoE layers × 64 × 3 × 2048 × 1536 = 27.78B routed, 1 dense lead (Glm4MoeLiteConfig, top-4).
+    arch: { layers: 47, attHeads: 20, kvHeads: 1, headDim: 288, moe: { expertParams: 27.78, experts: 64, perToken: 4, moeLayers: 46, denseLead: 1 } },
     addedAt: ADDED,
     description: {
       en: 'Zhipu\'s lightweight member of GLM-4.7: 30B total, about 3B active per token, MIT licence. Its attention is MLA, which caches one compressed 576-value vector per token per layer instead of full keys and values — so at 32K context the cache is under 2 GB where a conventional 47-layer model would need several times that. llama.cpp runs it as a DeepSeek-2-style model. Sizes below use the calculator\'s generic Q4_K_M/Q8_0 rates: no GGUF file size could be checked, and quality loss per level has not been published.',

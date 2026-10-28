@@ -35,6 +35,18 @@ export function dataProblems(): string[] {
     else if (active > m.params) out.push(`${m.id}: activeParams ${active} exceeds params ${m.params}`);
     if (m.activeParams !== undefined && !isMoE(m)) out.push(`${m.id}: activeParams set on a model the label does not mark as MoE`);
   }
+  // Expert offload (`--n-cpu-moe N`) counts layers by index, so the layout must add up.
+  for (const m of models) {
+    const e = m.arch.moe;
+    if (!e) continue;
+    if (!isMoE(m)) out.push(`${m.id}: arch.moe on a model the label does not mark as MoE`);
+    if (e.expertParams >= m.params) out.push(`${m.id}: arch.moe.expertParams ${e.expertParams} is not below params ${m.params}`);
+    if (e.perToken >= e.experts) out.push(`${m.id}: arch.moe.perToken ${e.perToken} is not below experts ${e.experts}`);
+    const lead = e.denseLead ?? 0;
+    if (e.interleaved ? lead + e.moeLayers > m.arch.layers : lead + e.moeLayers !== m.arch.layers) {
+      out.push(`${m.id}: arch.moe denseLead ${lead} + moeLayers ${e.moeLayers} does not match layers ${m.arch.layers}`);
+    }
+  }
   // A sitemap date in the future of the data ship would be announced to IndexNow as a change tomorrow.
   if (sizingChangedAt > dataLastUpdated) out.push(`sizingChangedAt ${sizingChangedAt} is later than dataLastUpdated ${dataLastUpdated}`);
   dupes(gpuDatabase.map(g => g.id)).forEach(id => out.push(`duplicate GPU id: ${id}`));

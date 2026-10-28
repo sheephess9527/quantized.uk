@@ -27,7 +27,9 @@ export const extraModels7: QuantModel[] = [
     contextLength: 131072,
     // transformers GptOssConfig: sliding_window 128 on alternate layers;
     // llama.cpp `src/models/openai-moe.cpp` builds an iSWA cache (pattern 2).
+    // MoE offload: 24 layers × 32 experts × (2880×5760 gate_up + 2880×2880 down + biases) = 19.12B routed; + attention 0.64B + embeddings 1.16B = 20.91B (GptOssConfig widths).
     arch: {
+      moe: { expertParams: 19.12, experts: 32, perToken: 4, moeLayers: 24 },
       layers: 24,
       attHeads: 64,
       kvHeads: 8,
@@ -70,7 +72,9 @@ export const extraModels7: QuantModel[] = [
     contextLength: 131072,
     // transformers GptOssConfig: sliding_window 128 on alternate layers;
     // llama.cpp `src/models/openai-moe.cpp` builds an iSWA cache (pattern 2).
+    // MoE offload: 36 layers × 128 experts × 24.89M = 114.70B routed; + attention 0.96B + embeddings 1.16B = 116.82B (GptOssConfig defaults are this model).
     arch: {
+      moe: { expertParams: 114.70, experts: 128, perToken: 4, moeLayers: 36 },
       layers: 36,
       attHeads: 64,
       kvHeads: 8,
@@ -107,7 +111,8 @@ export const extraModels7: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['pro-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 46, attHeads: 96, kvHeads: 8, headDim: 128 },
+    // MoE offload: Glm4MoeConfig defaults (this model): 45 MoE layers × 128 × 3 × 4096 × 1408 = 99.66B routed, 1 dense lead layer; the rest (attention 5.0B, shared experts 0.78B, embeddings 1.24B) closes near 106B.
+    arch: { layers: 46, attHeads: 96, kvHeads: 8, headDim: 128, moe: { expertParams: 99.66, experts: 128, perToken: 8, moeLayers: 45, denseLead: 1 } },
     addedAt: ADDED,
     description: {
       en: 'Zhipu\'s agentic/reasoning MoE (106B total / 12B active). Q4 ~64GB — the sweet spot is a 96GB+ unified Mac or 2× 48GB cards. Strong tool-calling for its class.',

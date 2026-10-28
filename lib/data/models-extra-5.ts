@@ -38,7 +38,8 @@ export const extraModels5: QuantModel[] = [
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 262144,
-    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128 },
+    // MoE offload: 48 MoE layers × 128 experts × 3 × 2048 × 768 = 28.99B routed (Qwen3MoeConfig widths; 48 layers, not the config default 24 — with 48 the count closes at 30.53B = params).
+    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128, moe: { expertParams: 28.99, experts: 128, perToken: 8, moeLayers: 48 } },
     description: {
       en: 'Agentic coding MoE with 3.3B active params and 256K native context. Top open coder for 16–24GB cards.',
       zh: 'Agentic 代码 MoE，3.3B 激活参数，原生 256K 上下文。16–24GB 显卡上最强开源代码模型之一。',

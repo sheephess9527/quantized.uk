@@ -133,7 +133,9 @@ export const extraModels3: QuantModel[] = [
     // llama.cpp `src/models/llama4.cpp`: chunked attention (8192-token chunks)
     // on 3 of every 4 layers, iSWA cache of pad256(8192 + 512) = 8704 cells;
     // transformers Llama4TextConfig marks every 4th layer full (NoPE).
+    // MoE offload: Llama4TextConfig defaults (this model): 48 layers × 16 experts × 3 × 5120 × 8192 = 96.64B routed, every layer MoE; + shared expert 6.04B, attention 3.02B, embeddings 2.07B = 107.8B of the 109B (vision tower).
     arch: {
+      moe: { expertParams: 96.64, experts: 16, perToken: 1, moeLayers: 48 },
       layers: 48,
       attHeads: 40,
       kvHeads: 8,

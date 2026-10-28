@@ -26,6 +26,11 @@ export interface CLIOptions {
    */
   fileGB?: number;
   gpuLayers: number;
+  /**
+   * llama.cpp only: keep routed experts in system RAM — `n` for `--n-cpu-moe n`,
+   * `all` for `--cpu-moe` (`offloadPlan().moe`). Pair it with a full `-ngl`.
+   */
+  cpuMoe?: { n: number; all: boolean };
   contextLen: number;
   threads: number;
   port: number;
@@ -271,7 +276,8 @@ function linuxBuild(backend: Backend): string {
 }
 
 function generateLlamaCpp(opts: CLIOptions): CLIOutput {
-  const { env, modelName, quantLevel, gpuLayers, contextLen, threads, port, apiKey } = opts;
+  const { env, modelName, quantLevel, gpuLayers, contextLen, threads, port, apiKey, cpuMoe } = opts;
+  const moeFlag = cpuMoe ? (cpuMoe.all ? '--cpu-moe' : `--n-cpu-moe ${cpuMoe.n}`) : '';
   const lang: Lang = opts.lang ?? 'en';
   const backend: Backend = opts.backend ?? 'cuda';
   const hfRepo = ggufRepoId(opts.hfRepo);
@@ -307,6 +313,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     `  -m ${hostModelPath} \\`,
     `  --host 127.0.0.1 --port ${port} \\`,
     `  -ngl ${gpuLayers} \\`,
+    ...(moeFlag ? [`  ${moeFlag} \\`] : []),
     `  -c ${contextLen} \\`,
     `  -t ${threads}${apiKeyFlag}`,
   ].join('\n');
@@ -321,6 +328,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
       `  -m ${containerModelPath} \\`,
       `  --host 0.0.0.0 --port ${port} \\`,
       `  -ngl ${gpuLayers} \\`,
+      ...(moeFlag ? [`  ${moeFlag} \\`] : []),
       `  -c ${contextLen}${apiKey ? ` \\\n  --api-key "${apiKey}"` : ''}`,
     ].join('\n');
     // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
@@ -342,7 +350,7 @@ services:
       -m ${composeModelPath}
       --host 0.0.0.0
       --port ${port}
-      -ngl ${gpuLayers}
+      -ngl ${gpuLayers}${moeFlag ? `\n      ${moeFlag}` : ''}
       -c ${contextLen}${apiKey ? `\n      --api-key ${apiKey}` : ''}
     restart: unless-stopped${composeGpuBlock(backend)}`;
     return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录')] };
@@ -366,6 +374,9 @@ services:
     command: `${installCmd}\n${serverCmd}`,
     notes: [
       L(lang, `-ngl ${gpuLayers}: number of layers offloaded to GPU (set to 99 for full GPU)`, `-ngl ${gpuLayers}：放到 GPU 上的层数（设为 99 即全部放到 GPU）`),
+      ...(cpuMoe ? [cpuMoe.all
+        ? L(lang, '--cpu-moe: every expert weight stays in system RAM; attention, shared weights and the KV cache stay on the GPU', '--cpu-moe：全部专家权重留在系统内存，注意力、共享权重和 KV 缓存留在 GPU')
+        : L(lang, `--n-cpu-moe ${cpuMoe.n}: the expert weights of the first ${cpuMoe.n} layers stay in system RAM. Lower it until loading fails for lack of VRAM, then step back up — fewer is faster`, `--n-cpu-moe ${cpuMoe.n}：前 ${cpuMoe.n} 层的专家权重留在系统内存。可以逐步调小，直到显存不够加载失败再调回一格——数字越小越快`)] : []),
       L(lang, `-c ${contextLen}: context length in tokens`, `-c ${contextLen}：上下文长度（token 数）`),
       L(lang, `API endpoint: http://127.0.0.1:${port}/v1/chat/completions (OpenAI-compatible)`, `接口地址：http://127.0.0.1:${port}/v1/chat/completions（OpenAI 兼容）`),
       L(lang, `Health check once it starts: curl -s http://127.0.0.1:${port}/health — expect {"status":"ok"}`, `启动后检查：curl -s http://127.0.0.1:${port}/health——应返回 {"status":"ok"}`),

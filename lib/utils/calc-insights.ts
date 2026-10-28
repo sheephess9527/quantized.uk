@@ -226,6 +226,27 @@ export interface OffloadPlan {
   ramGB: number;
   /** Approximate token-generation bound with this split, if knowable. */
   tokS?: number;
+  /**
+   * The expert-only split, for a MoE model whose `arch.moe` is known — only
+   * when its speed bound is not below the layer split's.
+   */
+  moe?: MoeOffload;
+  /** `arch.moe` is known but the expert-free part alone overflows the card. */
+  moeNoRoom?: boolean;
+}
+
+export interface MoeOffload {
+  /** N for `--n-cpu-moe N` (a layer index: dense lead layers count). */
+  n: number;
+  /** Every expert goes to RAM — `--cpu-moe`. */
+  all: boolean;
+  /** MoE layers whose experts sit in system RAM, of `moeLayers`. */
+  cpuMoeLayers: number;
+  moeLayers: number;
+  ramGB: number;
+  /** What stays on the card(s): attention, shared weights, KV cache, buffers. */
+  gpuGB: number;
+  tokS?: number;
 }
 
 /**
@@ -234,20 +255,23 @@ export interface OffloadPlan {
  * costed at an even share of the estimate (weights, cache and buffer alike),
  * and the card keeps `--fit`'s 1 GiB free — the same rule `-ngl auto` uses.
  * The speed bound adds the two halves' read times: the GPU's share of the
- * weights over its bandwidth, the CPU's over the RAM's. For MoE only the
- * active share is read. Undefined when nothing needs offloading, when the
+ * weights and KV cache over its bandwidth, the CPU's over the RAM's — decode
+ * reads the whole cache every token, so at long context the cache a layer
+ * carries to RAM matters as much as its weights. For MoE only the active
+ * share of the weights is read. Undefined when nothing needs offloading, when the
  * card is not discrete, or when the format has no layer offload here (only
  * GGUF runtimes split this way).
  */
 export function offloadPlan(
   input: CalcInput,
-  result: { totalGB: number; modelWeightsGB: number },
+  result: { totalGB: number; modelWeightsGB: number; kvCacheGB?: number },
   gpu: GPU,
   cards: number,
   ram: RamSetup,
   model?: QuantModel,
   format?: string,
   extra: GPU[] = [],
+  level?: string,
 ): OffloadPlan | undefined {
   if (!canStack(gpu) || (format && format !== 'GGUF')) return undefined;
   const layers = input.layers;
@@ -260,7 +284,7 @@ export function offloadPlan(
   let tokS: number | undefined;
   if (devices.every(g => g.bandwidth)) {
     const activeShare = model && isMoE(model) ? (activeParamsB(model) ?? model.params) / model.params : 1;
-    const read = result.modelWeightsGB * activeShare;
+    const read = result.modelWeightsGB * activeShare + (result.kvCacheGB ?? 0);
     const gpuPart = read * (gpuLayers / layers);
     const cpuPart = read - gpuPart;
     // The GPU share is itself split by memory across the cards.
@@ -268,5 +292,58 @@ export function offloadPlan(
     const gpuTime = devices.reduce((s, g) => s + (gpuPart * usableCapacityGB(g)) / total / g.bandwidth!, 0);
     tokS = Math.round(10 / (gpuTime + cpuPart / RAM_SETUPS[ram].gbs)) / 10;
   }
-  return { gpuLayers, layers, ramGB, tokS };
+  const moe = model?.arch.moe ? moeOffload(input, result, devices, budget, ram, model, level) : undefined;
+  // Interleaved layouts can only move every expert, which on a near-fit costs
+  // more than moving two layers; offer the expert split only when it is not slower.
+  const keep = moe && !(moe.tokS !== undefined && tokS !== undefined && moe.tokS < tokS);
+  return { gpuLayers, layers, ramGB, tokS, moe: keep ? moe : undefined, moeNoRoom: !!model?.arch.moe && !moe };
+}
+
+/**
+ * The MoE answer to "does not fit": every layer on the card, and the routed
+ * experts of the first N layers in system RAM (`--n-cpu-moe N`, llama.cpp
+ * `common/arg.cpp`). That is also what `--fit` does by itself for a MoE model
+ * when `-ngl` is left unset (`common/fit.cpp`, "all MoE tensors in system
+ * memory"); a set `-ngl` makes `--fit` stand down, so the command must carry
+ * the flag. Expert bytes are `expertParams` at the level's rate — MXFP4's 4.25
+ * for the native GPT-OSS build, whose other tensors are wider. Undefined when
+ * even the expert-free part does not fit the card.
+ *
+ * The speed bound reads, per token, the non-expert share of the active weights
+ * and the whole KV cache from the card plus `perToken / experts` of each layer's experts from
+ * wherever they sit — so moving experts costs far less than moving layers.
+ */
+function moeOffload(
+  input: CalcInput,
+  result: { totalGB: number; modelWeightsGB: number; kvCacheGB?: number },
+  devices: GPU[],
+  budget: number,
+  ram: RamSetup,
+  model: QuantModel,
+  level?: string,
+): MoeOffload | undefined {
+  const e = model.arch.moe!;
+  const bpw = level === 'MXFP4' ? 4.25 : input.bpw;
+  const expertGB = Math.min(result.modelWeightsGB, (e.expertParams * 1e9 * bpw / 8) / 1024 ** 3);
+  if (result.totalGB - expertGB > budget) return undefined;
+  const perLayer = expertGB / e.moeLayers;
+  const cpuMoeLayers = e.interleaved
+    ? e.moeLayers
+    : Math.min(e.moeLayers, Math.max(1, Math.ceil((result.totalGB - budget) / perLayer)));
+  const all = cpuMoeLayers >= e.moeLayers;
+  const n = all ? input.layers : (e.denseLead ?? 0) + cpuMoeLayers;
+  const ramGB = Math.round(cpuMoeLayers * perLayer * 10) / 10;
+  const gpuGB = Math.round((result.totalGB - cpuMoeLayers * perLayer) * 10) / 10;
+  let tokS: number | undefined;
+  if (devices.every(g => g.bandwidth)) {
+    const routedRead = expertGB * e.perToken / e.experts;
+    const activeShare = (activeParamsB(model) ?? model.params) / model.params;
+    const sharedRead = Math.max(0, result.modelWeightsGB * activeShare - routedRead);
+    const cpuPart = routedRead * cpuMoeLayers / e.moeLayers;
+    const gpuPart = sharedRead + routedRead - cpuPart + (result.kvCacheGB ?? 0);
+    const total = devices.reduce((s, g) => s + usableCapacityGB(g), 0);
+    const gpuTime = devices.reduce((s, g) => s + (gpuPart * usableCapacityGB(g)) / total / g.bandwidth!, 0);
+    tokS = Math.round(10 / (gpuTime + cpuPart / RAM_SETUPS[ram].gbs)) / 10;
+  }
+  return { n, all, cpuMoeLayers, moeLayers: e.moeLayers, ramGB, gpuGB, tokS };
 }

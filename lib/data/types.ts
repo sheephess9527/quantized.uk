@@ -97,6 +97,31 @@ export interface ModelArch {
     /** Where the layer split was sourced from — shown to the reader. */
     note?: { en: string; zh: string };
   };
+  /**
+   * The routed-expert tensors of a MoE model — what llama.cpp's `--n-cpu-moe N`
+   * (`blk.<i>.ffn_*_exps` for i < N, `common/arg.cpp`) moves to system RAM while
+   * attention, shared experts, embeddings and the KV cache stay on the card.
+   * `expertParams` is counted from the config (layers × experts × matrices ×
+   * hidden × expert width) and must reconcile with `params` — the rest is what
+   * the card has to hold. Omit it when the config was not read: the calculator
+   * then offers only the whole-layer split.
+   */
+  moe?: {
+    /** Parameters in the routed-expert tensors, billions. */
+    expertParams: number;
+    experts: number;
+    perToken: number;
+    /** Layers that carry routed experts. */
+    moeLayers: number;
+    /** Dense layers before the first MoE layer (`first_k_dense_replace`). */
+    denseLead?: number;
+    /**
+     * MoE layers alternate with other block types (Mamba, attention), so N in
+     * `--n-cpu-moe N` is a layer index, not a count of MoE layers — only
+     * `--cpu-moe` (every expert) is offered.
+     */
+    interleaved?: boolean;
+  };
 }
 
 export interface QuantModel {

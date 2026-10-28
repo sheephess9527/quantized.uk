@@ -1598,15 +1598,21 @@ export default function VRAMCalculator() {
                     </div>
                   );
                 })()}
-                {selectedModel && selectedQuantObj && (
-                  <LaunchCommands
-                    model={selectedModel}
-                    quant={selectedQuantObj}
-                    contextLen={contextLen}
-                    gpu={profileGpu ?? undefined}
-                    gpuLayers={profileGpu && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format) ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras)?.gpuLayers : undefined}
-                  />
-                )}
+                {selectedModel && selectedQuantObj && (() => {
+                  const plan = profileGpu && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)
+                    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras, selectedQuantObj.level)
+                    : undefined;
+                  return (
+                    <LaunchCommands
+                      model={selectedModel}
+                      quant={selectedQuantObj}
+                      contextLen={contextLen}
+                      gpu={profileGpu ?? undefined}
+                      gpuLayers={plan?.gpuLayers}
+                      cpuMoe={plan?.moe && { n: plan.moe.n, all: plan.moe.all }}
+                    />
+                  );
+                })()}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
                     {selectedQuantObj && (() => {
@@ -1894,7 +1900,7 @@ export default function VRAMCalculator() {
                         );
                       })()}
                       {v === 'red' && formatOk && (() => {
-                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras);
+                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level);
                         if (!plan) return null;
                         return (
                           <div className="mt-3 pt-2 border-t border-white/[0.05]">
@@ -1932,7 +1938,29 @@ export default function VRAMCalculator() {
                                 </p>
                               </>
                             )}
-                            {selectedModel && isMoE(selectedModel) && (
+                            {plan.moe ? (
+                              <div className="mt-2 pt-2 border-t border-white/[0.05]" data-testid="moe-offload">
+                                <p className="text-xs font-medium text-slate-400">{t.calc.moeTitle}</p>
+                                <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                                  {(plan.moe.all ? t.calc.moeLineAll : t.calc.moeLine)
+                                    .replace(/\{n\}/g, String(plan.moe.n))
+                                    .replace('{k}', String(plan.moe.cpuMoeLayers))
+                                    .replace('{m}', String(plan.moe.moeLayers))
+                                    .replace('{gpu}', plan.moe.gpuGB.toFixed(1))
+                                    .replace('{ram}', plan.moe.ramGB.toFixed(1))}
+                                </p>
+                                {plan.moe.tokS !== undefined && (
+                                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                                    {t.calc.moeSpeed
+                                      .replace('{n}', String(plan.moe.tokS))
+                                      .replace('{ram}', RAM_SETUPS[ram].label)}
+                                  </p>
+                                )}
+                                <p className="text-[11px] text-slate-600 leading-relaxed mt-1">{t.calc.moeNote}</p>
+                              </div>
+                            ) : plan.moeNoRoom ? (
+                              <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.moeNoRoom}</p>
+                            ) : selectedModel && isMoE(selectedModel) && !selectedModel.arch.moe && (
                               <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.offloadMoE}</p>
                             )}
                           </div>

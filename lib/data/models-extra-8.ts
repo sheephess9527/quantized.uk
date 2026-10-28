@@ -45,7 +45,8 @@ export const extraModels8: QuantModel[] = [
     categories: ['multimodal', 'instruct', 'general'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
     contextLength: 40960,
-    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128 },
+    // MoE offload: text model as Qwen3 30B-A3B: 48 MoE layers × 128 experts × 3 × 2048 × 768 = 28.99B routed (Qwen3MoeConfig widths; 48 layers, not the config default 24 — with 48 the count closes at 30.53B = params).
+    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128, moe: { expertParams: 28.99, experts: 128, perToken: 8, moeLayers: 48 } },
     addedAt: ADDED,
     description: {
       en: 'Multimodal MoE with only ~3B active parameters, so it stays responsive on Apple unified memory and survives CPU offload far better than a dense 30B. Q4 ~19GB — a 24GB card holds it outright.',

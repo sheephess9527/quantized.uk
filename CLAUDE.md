@@ -424,6 +424,7 @@ speed uses the card's bandwidth ceiling for every row, never "rows with an estim
 header comment; change one only with a new source, never to match a vendor's table (Unsloth's
 lower QLoRA minimums come from their offloading, and the page says so). A total missing a term
 (unknown vocab) is a floor: print it as "≥" and give no verdict.
+**MoE expert offload is `offloadPlan().moe`** (2026-10-28) — needs `arch.moe` (`expertParams` counted from the config and reconciled with `params`; never estimated from the active count). N in `--n-cpu-moe N` is a layer *index* (dense lead layers count), so interleaved layouts get `--cpu-moe` only. A set `-ngl` makes llama.cpp's `--fit` stand down, so a MoE command that sets `-ngl` must carry the flag. Ollama gets no expert flag. The expert split is shown only when its speed bound is not below the layer split's.
 **Multi-card capacity is `capacityGB(gpu, cards, extra)`** (`gpu-page.ts`) — `extra` is mixed cards on the
 same backend; pass it through every insight (`levelTable`, `contextReach`, `offloadPlan`,
 `rigSpeedCeiling`) or the panels disagree. Only `canStack()` types stack;
@@ -1149,6 +1150,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 (iv) | **MoE expert offload** — `ModelArch.moe` on 12 models (counted from configs, reconciled with `params`); `offloadPlan().moe` → `-ngl 99 --n-cpu-moe N` (120B/24 GB/16K = 28, as llama.cpp's guide); offload speed bounds now include the KV read; sweep 0 faults |
 | 2026-10-28 (iii) | **zh commands via hf-mirror** — `HF_ENDPOINT=https://hf-mirror.com` (third-party, said in the comment) on every zh `hf download` + vLLM; Ollama `hf.co/` ignores it → zh note gives download + Modelfile import; English unchanged; `/errors/` +1 (huggingface_hub cannot-locate, 20) |
 | 2026-10-28 (ii) | **Patrol** — llama.cpp b11941 (new arch `lfm3`), Ollama v0.40.12 Latest (LFM3 family + d1); LFM3 1.7B → `/pending/` awaiting config + GGUF bytes (layer split is metadata); d1 skipped (decision model) |
 | 2026-10-28 | **Homepage vs what is measured** — forwarded review checked in `out/`: stale title counts not reproduced (all 125); real: "Measured, not guessed" over 4 rows (2 sample keys pointed at removed rows) + old-stack-only line → 6 rows, measured-on + current versions; fastest pick ranked estimates (0.5B under "measured") → measured only; Editor's Picks capped at 6; About/Privacy June dates removed / corrected |
