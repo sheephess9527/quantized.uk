@@ -27,6 +27,7 @@ const ADDED_K2H = '2026-10-21';
 const ADDED_1023 = '2026-10-23';
 const ADDED_BOLT_E4B = '2026-10-24';
 const ADDED_1026 = '2026-10-26';
+const ADDED_LFM3 = '2026-10-28';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1202,6 +1203,49 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.10, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q4_K_M.gguf', bytes: 2_621_104_768, checkedAt: '2026-10-26' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q8_0.gguf', bytes: 4_375_022_208, checkedAt: '2026-10-26' } },
+    ],
+  },
+  {
+    // Liquid AI LFM3 1.7B (repo created 2026-10-23, LFM Open License v1.0, launched with Ollama v0.40.12 /
+    // llama.cpp `lfm3` on 10-27). config.json (LiquidAI/LFM3-1.7B, read 2026-10-28): Lfm3ForCausalLM, 24 layers
+    // from `layer_types` = 12 conv + 6 full_attention + 6 sliding_attention, hidden 2048, 16 heads / 4 KV × 128,
+    // sliding_window 256, SwiGLU 7680, vocab 128,000 tied, 262,144 positions. The official GGUF header agrees
+    // (head_count_kv 0 on the 12 short-conv layers, sliding_window_pattern true on layers 4, 8, …, 20,
+    // shortconv.l_cache 7). llama.cpp `src/models/lfm3.cpp` builds a hybrid iSWA memory with
+    // LLAMA_SWA_TYPE_STANDARD → a window layer holds pad256(256 + 512) = 768 cells; conv layers keep a fixed
+    // 7-token state (not modelled, a few hundred KB). Full layers grow 2 × 6 × 4 × 128 × 2 B = 12 KiB a token.
+    // Params = safetensors 1,728,801,536 (BF16 GGUF 3,466,626,336 B = 2× + 9 MB header).
+    // LiquidAI's own GGUF repo: Q4_K_M 1,099,627,808 → 5.09 bpw, Q6_K 1,427,638,304 → 6.61, Q8_0
+    // 1,846,238,496 → 8.54. Its extra QAD-Q4_0 (quantization-aware distilled) is not tracked.
+    id: 'lfm3-1-7b',
+    name: 'LFM3 1.7B',
+    family: 'Liquid AI LFM3',
+    params: 1.73,
+    paramLabel: '1.7B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: {
+      layers: 24, attHeads: 16, kvHeads: 4, headDim: 128,
+      attention: {
+        fullLayers: 6,
+        windowLayers: 6,
+        windowTokens: 768,
+        note: {
+          en: 'Half of the 24 layers are short convolution blocks with a fixed 7-token state. Of the 12 attention layers, 6 are full attention and grow with context (4 KV heads × 128); the other 6 use a 256-token sliding window.',
+          zh: '24 层中一半是短卷积块，只保留固定的 7 个 token 状态。其余 12 层注意力层里，6 层为全注意力，缓存随上下文增长（4 个 KV 头 × 128 维）；另外 6 层是 256 token 滑动窗口。',
+        },
+      },
+    },
+    addedAt: ADDED_LFM3,
+    description: {
+      en: 'LFM3 1.7B is Liquid AI\'s new small on-device model, released in October with a 256K window and built for local agents and tool calling. Only 6 of its 24 layers keep a cache that grows with context, about 12 KB per token, so long context is cheap. Q4_K_M needs about 1.2 GB at 4K and 1.6 GB at 32K, small enough for almost any GPU, and about 4.5 GB across the whole 256K window, comfortable on an 8 GB card. Q8_0 needs about 2.0 GB at 4K. It thinks before answering by default. Liquid says it is not meant for agentic coding or complex multi-step reasoning. Sizes come from Liquid\'s own GGUF files, and no per-level quality loss has been published. The licence is Liquid\'s own LFM Open License, not a standard open-source one.',
+      zh: 'LFM3 1.7B 是 Liquid AI 10 月发布的端侧小模型，上下文 256K，面向本地智能体和工具调用。24 层中只有 6 层的缓存随上下文增长，每个 token 约 12 KB，所以长上下文很便宜。Q4_K_M 在 4K 上下文约需 1.2 GB，32K 约 1.6 GB，几乎任何显卡都能跑；用满 256K 窗口约 4.5 GB，8 GB 显卡宽裕。Q8_0 在 4K 上下文约需 2.0 GB。默认会先思考再回答。Liquid 表示它不适合智能体编程或复杂的多步推理。体积按 Liquid 官方发布的 GGUF 文件计算，各档位的质量损失未公布。许可证是 Liquid 自己的 LFM Open License，不是常规开源许可。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.09, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q4_K_M.gguf', bytes: 1_099_627_808, checkedAt: '2026-10-28' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.61, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q6_K.gguf', bytes: 1_427_638_304, checkedAt: '2026-10-28' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q8_0.gguf', bytes: 1_846_238_496, checkedAt: '2026-10-28' } },
     ],
   },
 ];

@@ -25,19 +25,6 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
-    id: 'lfm3-1-7b',
-    name: 'LFM3 1.7B',
-    vendor: 'Liquid AI',
-    announced: '2026-10-27',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'A 1.7B text model with a 256K-token context, in Ollama since v0.40.12; llama.cpp has the architecture (`lfm3`). It mixes short-convolution layers with attention layers, some of them sliding-window, and which layers are which is set in its config, not in llama.cpp — so it is not sized until that config and the GGUF file sizes have been read.',
-      zh: '一个 1.7B 文本模型，上下文 256K，Ollama 自 v0.40.12 起支持；llama.cpp 已有对应架构（`lfm3`）。它把短卷积层和注意力层（部分为滑动窗口）混在一起，哪些层是哪种写在它自己的配置里，不在 llama.cpp 源码中——所以在读到配置和 GGUF 文件大小之前不计算显存。',
-    },
-    recheck: { en: 'When its config.json and a GGUF file listing are in hand.', zh: '拿到它的 config.json 和 GGUF 文件列表时。' },
-    checkedAt: '2026-10-28',
-  },
-  {
     id: 'deepseek-v4-1-flash-1017',
     name: 'DeepSeek-V4.1-Flash-1017',
     vendor: 'DeepSeek',

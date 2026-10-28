@@ -425,6 +425,24 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 (iii) — +1 model (126): LFM3 1.7B
+
+config.json and the official GGUF tree read 2026-10-28; unsloth and bartowski have no repos, so sizes come from
+Liquid AI's own `LiquidAI/LFM3-1.7B-GGUF` (lmstudio-community mirrors the same files).
+
+- **LFM3 1.7B** — `Lfm3ForCausalLM` / `lfm3` (custom code): 24 layers = 12 short-conv + 6 full_attention + 6
+  sliding_attention (window 256), hidden 2048, 16 heads / 4 KV × 128, SwiGLU 7680, vocab 128,000 tied, 262,144
+  positions. GGUF header agrees (`head_count_kv` 0 on conv layers, `sliding_window_pattern`, `shortconv.l_cache`
+  7). llama.cpp `src/models/lfm3.cpp` uses a hybrid iSWA memory with `LLAMA_SWA_TYPE_STANDARD` → window layers
+  at pad256(256 + 512) = 768 cells; full layers 12,288 B/token. Params = safetensors 1,728,801,536. LiquidAI:
+  Q4_K_M 1,099,627,808 → 5.09 bpw, Q6_K 1,427,638,304 → 6.61, Q8_0 1,846,238,496 → 8.54 (QAD-Q4_0 not tracked).
+  Sizes: Q4_K_M 1.2 GB @4K, 1.6 @32K, 2.8 @128K, 4.5 @256K; Q8_0 2.0 @4K. LFM Open License v1.0.
+  `/pending/` entry (added by the morning patrol) removed. `todayFeed` id 29.
+- Fit counts: every card +1; guide counts re-run per card, denominators 125 → 126 (24 GB 94 → 95, 5090 100 →
+  101, Spark 108/113 → 109/114, 16 GB 68 → 69, 12 GB 62 → 63, Arc 64/54/45 → 65/55/46, M3 Max 48 100 → 101),
+  Q4_K_M ships 118 → 119 of 126, AWQ stays 53. Three stale English figures fixed on the way (B580 FAQ Arc
+  counts, DGX Spark FAQ "128GB fits 110", RTX 5090 FAQ "4090 fits 91"). Ten guides `updatedAt` 2026-10-28.
+
 ### 2026-10-28 (ii) — Patrol: llama.cpp b11941, Ollama v0.40.12; LFM3 pending
 
 Ollama v0.40.12 is now Latest (it was a pre-release yesterday): adds Liquid AI's lfm3 / lfm3-vl /

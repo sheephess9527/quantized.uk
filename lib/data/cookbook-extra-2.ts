@@ -358,7 +358,7 @@ export const extraArticles2: Article[] = [
     // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03; RDNA 4 + iGPU
     // re-check 2026-10-20 (llama.cpp docs/build.md + ggml-hip/CMakeLists.txt on master, AMD's ROCm
     // Linux system requirements, Ollama docs/gpu.mdx, LLVM AMDGPUUsage processor table).
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
@@ -454,8 +454,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'What fits on a 24GB RX 7900 XTX compared with a 16GB Radeon?',
         qZh: '24GB 的 RX 7900 XTX 和 16GB 的 Radeon 能装下的模型差多少？',
-        a: 'At 4K context, 94 of the 125 models in this index fit the RX 7900 XTX comfortably, against 68 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
-        aZh: '在 4K 上下文下，本索引 125 个模型中有 94 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 68 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
+        a: 'At 4K context, 95 of the 126 models in this index fit the RX 7900 XTX comfortably, against 69 on a 16GB RX 7800 XT or RX 9070 XT. The difference is the 30B class. Qwen3 30B-A3B at Q4_K_M is about 20.2 GB at 8K context — 84% of a 7900 XTX, comfortable — and does not fit a 16GB card. GPT-OSS 20B at MXFP4 is about 12.9 GB at 8K context, so it runs on either. These are memory figures only; this site has no Radeon speed measurements.',
+        aZh: '在 4K 上下文下，本索引 126 个模型中有 95 个能宽裕地放进 RX 7900 XTX，而 16GB 的 RX 7800 XT 或 RX 9070 XT 是 69 个。差距在 30B 这一档。Qwen3 30B-A3B 的 Q4_K_M 在 8K 上下文下约 20.2 GB —— 占 7900 XTX 的 84%，属于宽裕 —— 而 16GB 卡放不下。GPT-OSS 20B 的 MXFP4 在 8K 上下文下约 12.9 GB，两种卡都能跑。以上只是显存数字；本站没有 Radeon 上的速度实测。',
       },
     ],
   },
@@ -618,7 +618,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['Intel Arc', 'SYCL', 'llama.cpp', 'Ollama', 'Vulkan', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Written 2026-10-04 from llama.cpp docs/backend/SYCL.md, docs/build.md and
     // docs/docker.md, and Ollama docs/gpu.mdx + docs/docker.mdx. No `verifiedAt`:
     // there is no Arc card in this environment, so nothing here was run.
@@ -714,8 +714,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'How many models fit on an Arc B580?',
         qZh: 'Arc B580 能装下多少个模型？',
-        a: '62 of the 125 models in this index fit the B580 comfortably at 4K context, all as GGUF — the same count as any other 12 GB card, because only capacity decides what fits. The A770 16G fits 62, the B570 10G 52, and the A750 8G 43. Speed is a different question: the B580 has 456 GB/s of memory bandwidth, which sets the ceiling on tokens per second once a model fits.',
-        aZh: '本索引 125 个模型中，有 62 个能以 GGUF 在 4K 上下文下宽裕地装进 B580 —— 与其他 12 GB 显卡相同，因为决定能否装下的只有容量。A770 16G 可装 64 个，B570 10G 54 个，A750 8G 45 个。速度是另一个问题：B580 的显存带宽为 456 GB/s，模型装下之后，它决定了每秒 token 数的上限。',
+        a: '63 of the 126 models in this index fit the B580 comfortably at 4K context, all as GGUF — the same count as any other 12 GB card, because only capacity decides what fits. The A770 16G fits 65, the B570 10G 55, and the A750 8G 46. Speed is a different question: the B580 has 456 GB/s of memory bandwidth, which sets the ceiling on tokens per second once a model fits.',
+        aZh: '本索引 126 个模型中，有 63 个能以 GGUF 在 4K 上下文下宽裕地装进 B580 —— 与其他 12 GB 显卡相同，因为决定能否装下的只有容量。A770 16G 可装 65 个，B570 10G 55 个，A750 8G 46 个。速度是另一个问题：B580 的显存带宽为 456 GB/s，模型装下之后，它决定了每秒 token 数的上限。',
       },
     ],
   },
@@ -733,7 +733,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'beginner',
     tags: ['12GB', 'RTX 3060', 'RTX 4070', 'RTX 5070', 'Ollama', 'llama.cpp', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Written 2026-10-04. Every size is calcVRAM on the model's own row; speeds are
     // roofline ceilings from vendor bandwidth. No `verifiedAt` — no GPU here.
     verifiedStack: {
@@ -754,8 +754,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'What fits, and where 14B stops fitting',
         headingZh: '能装下什么，以及 14B 从哪里开始装不下',
-        body: '62 of the 125 models in this index fit a 12GB card comfortably at 4K context, and 64 load at all. 7B–12B models are the comfortable zone, and the context length is what decides the rest. Gemma 3 12B at Q4_K_M with a 32K context is about 10.4 GB, still comfortable, because most of its layers use a short sliding window. Mistral Nemo 12B at Q4_K_M with a 32K context is about 13.2 GB, which does not fit. 14B is the edge: Qwen3 14B at Q4_K_M with a 4K context is about 10.0 GB, comfortable, but Qwen3 14B at Q4_K_M with an 8K context is about 10.7 GB — 89% of the card, past this site’s comfortable line — and with 16K it no longer fits.',
-        bodyZh: '本索引 125 个模型中，有 62 个能在 4K 上下文下宽裕地装进 12GB 显卡，能加载的共 64 个。7B–12B 是宽裕区间，其余取决于上下文长度。Gemma 3 12B 在 Q4_K_M、32K 上下文下约 10.4 GB，仍然宽裕，因为它大部分层只用很短的滑动窗口。Mistral Nemo 12B 在 Q4_K_M、32K 上下文下约 13.2 GB，装不下。14B 是边界：Qwen3 14B 在 Q4_K_M、4K 上下文下约 10.0 GB，宽裕；但在 8K 上下文下约 10.7 GB —— 占显卡 89%，超过了本站的宽裕线 —— 到 16K 就装不下了。',
+        body: '63 of the 126 models in this index fit a 12GB card comfortably at 4K context, and 65 load at all. 7B–12B models are the comfortable zone, and the context length is what decides the rest. Gemma 3 12B at Q4_K_M with a 32K context is about 10.4 GB, still comfortable, because most of its layers use a short sliding window. Mistral Nemo 12B at Q4_K_M with a 32K context is about 13.2 GB, which does not fit. 14B is the edge: Qwen3 14B at Q4_K_M with a 4K context is about 10.0 GB, comfortable, but Qwen3 14B at Q4_K_M with an 8K context is about 10.7 GB — 89% of the card, past this site’s comfortable line — and with 16K it no longer fits.',
+        bodyZh: '本索引 126 个模型中，有 63 个能在 4K 上下文下宽裕地装进 12GB 显卡，能加载的共 65 个。7B–12B 是宽裕区间，其余取决于上下文长度。Gemma 3 12B 在 Q4_K_M、32K 上下文下约 10.4 GB，仍然宽裕，因为它大部分层只用很短的滑动窗口。Mistral Nemo 12B 在 Q4_K_M、32K 上下文下约 13.2 GB，装不下。14B 是边界：Qwen3 14B 在 Q4_K_M、4K 上下文下约 10.0 GB，宽裕；但在 8K 上下文下约 10.7 GB —— 占显卡 89%，超过了本站的宽裕线 —— 到 16K 就装不下了。',
         code: {
           lang: 'text',
           content: 'GGUF Q4_K_M            8K        16K       32K\nLlama 3.1 8B           6.2 GB    7.3 GB    9.5 GB\nQwen3 8B               6.4 GB    7.7 GB    10.1 GB\nGemma 3 12B            8.8 GB    9.3 GB    10.4 GB\nMistral Nemo 12B       9.1 GB    10.5 GB   13.2 GB  ✗\nQwen3 14B              10.7 GB ~ 12.1 GB ✗ 14.9 GB ✗\nPhi-4 14B              11.0 GB ~ 12.8 GB ✗ (16K max)\n\n~ = tight (88–105% of the card)   ✗ = does not fit',
@@ -812,8 +812,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'RTX 3060 12G or RTX 4060 Ti 16G for local LLMs?',
         qZh: '跑本地大模型，RTX 3060 12G 还是 RTX 4060 Ti 16G？',
-        a: 'The 16GB card fits more: 68 of the 125 models in this index comfortably at 4K, against 62 for any 12GB card, and it holds 14B models at long contexts that a 12GB card cannot. On speed the 3060 is not behind — its 360 GB/s of memory bandwidth is higher than the 4060 Ti\'s 288 GB/s, and bandwidth is what limits generation once a model fits. If the models you want already fit in 12GB, the extra 4GB buys nothing.',
-        aZh: '16GB 的卡能装下更多：本索引 125 个模型中，它能在 4K 下宽裕装下 68 个，任何 12GB 卡是 62 个；它还能在长上下文下装下 12GB 卡装不下的 14B 模型。速度上 3060 并不落后 —— 它 360 GB/s 的显存带宽高于 4060 Ti 的 288 GB/s，而模型装下之后，限制生成速度的正是带宽。如果你想跑的模型 12GB 已经装得下，多出的 4GB 并不带来什么。',
+        a: 'The 16GB card fits more: 69 of the 126 models in this index comfortably at 4K, against 63 for any 12GB card, and it holds 14B models at long contexts that a 12GB card cannot. On speed the 3060 is not behind — its 360 GB/s of memory bandwidth is higher than the 4060 Ti\'s 288 GB/s, and bandwidth is what limits generation once a model fits. If the models you want already fit in 12GB, the extra 4GB buys nothing.',
+        aZh: '16GB 的卡能装下更多：本索引 126 个模型中，它能在 4K 下宽裕装下 69 个，任何 12GB 卡是 63 个；它还能在长上下文下装下 12GB 卡装不下的 14B 模型。速度上 3060 并不落后 —— 它 360 GB/s 的显存带宽高于 4060 Ti 的 288 GB/s，而模型装下之后，限制生成速度的正是带宽。如果你想跑的模型 12GB 已经装得下，多出的 4GB 并不带来什么。',
       },
       {
         q: 'Can I run GPT-OSS 20B on a 12GB card?',
@@ -837,7 +837,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['RTX 5090', '32GB', 'Blackwell', 'llama.cpp', 'Ollama', 'GGUF', 'long context'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Written 2026-10-04. Sizes are calcVRAM on each model's own row; speeds are
     // roofline ceilings from NVIDIA's 1,792 GB/s figure. CUDA 12.8 as the first
     // toolkit with RTX 50 (sm_120) support is from NVIDIA's 12.8 release notes.
@@ -850,8 +850,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'The honest answer: not many more models',
         headingZh: '老实说：能多装的模型并不多',
-        body: 'At 4K context, 100 of the 125 models in this index fit an RTX 5090 comfortably, against 94 for a 24GB RTX 4090. The models that fit on neither are the 70B-and-up class: Llama 3.3 70B at Q4_K_M with an 8K context is about 47.5 GB, so a single 5090 does not change that — it takes two cards, or offloading layers to system RAM. What the extra 8GB does buy is room for context on the 27B–36B models that a 24GB card can only run with a short one, and the bandwidth — 1,792 GB/s against 1,008 — raises the speed ceiling on everything by about 1.8×.',
-        bodyZh: '在 4K 上下文下，本索引 125 个模型中有 100 个能宽裕地装进 RTX 5090，24GB 的 RTX 4090 是 94 个。两张卡都装不下的是 70B 及以上：Llama 3.3 70B 在 Q4_K_M、8K 上下文下约 47.5 GB，单张 5090 改变不了这一点 —— 需要两张卡，或者把部分层卸载到系统内存。多出来的 8GB 真正换来的，是 27B–36B 模型的上下文空间（24GB 卡上只能用短上下文跑这些模型）；而 1,792 GB/s 对 1,008 GB/s 的带宽，让所有模型的速度上限提高约 1.8 倍。',
+        body: 'At 4K context, 101 of the 126 models in this index fit an RTX 5090 comfortably, against 95 for a 24GB RTX 4090. The models that fit on neither are the 70B-and-up class: Llama 3.3 70B at Q4_K_M with an 8K context is about 47.5 GB, so a single 5090 does not change that — it takes two cards, or offloading layers to system RAM. What the extra 8GB does buy is room for context on the 27B–36B models that a 24GB card can only run with a short one, and the bandwidth — 1,792 GB/s against 1,008 — raises the speed ceiling on everything by about 1.8×.',
+        bodyZh: '在 4K 上下文下，本索引 126 个模型中有 101 个能宽裕地装进 RTX 5090，24GB 的 RTX 4090 是 95 个。两张卡都装不下的是 70B 及以上：Llama 3.3 70B 在 Q4_K_M、8K 上下文下约 47.5 GB，单张 5090 改变不了这一点 —— 需要两张卡，或者把部分层卸载到系统内存。多出来的 8GB 真正换来的，是 27B–36B 模型的上下文空间（24GB 卡上只能用短上下文跑这些模型）；而 1,792 GB/s 对 1,008 GB/s 的带宽，让所有模型的速度上限提高约 1.8 倍。',
       },
       {
         heading: 'Where the extra 8GB goes: context',
@@ -908,8 +908,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'Is the RTX 5090 worth it over the RTX 4090 for local LLMs?',
         qZh: '跑本地大模型，RTX 5090 比 RTX 4090 值吗？',
-        a: 'Only if you need the context or the speed. At 4K context the 5090 fits 100 of the 125 models in this index comfortably and the 4090 fits 91, so the list of models barely changes. What changes is long context on 27B–32B models — Gemma 4 31B at 32K is comfortable on the 5090 and 98% of a 4090 — and the speed ceiling, which rises with bandwidth from 1,008 to 1,792 GB/s.',
-        aZh: '只有你需要更长的上下文或更快的速度时才值。在 4K 上下文下，5090 能宽裕装下本索引 125 个模型中的 100 个，4090 是 94 个，模型清单几乎没变。变化在于 27B–32B 模型的长上下文 —— Gemma 4 31B 在 32K 下在 5090 上宽裕、在 4090 上占 98% —— 以及速度上限，它随带宽从 1,008 GB/s 提高到 1,792 GB/s。',
+        a: 'Only if you need the context or the speed. At 4K context the 5090 fits 101 of the 126 models in this index comfortably and the 4090 fits 95, so the list of models barely changes. What changes is long context on 27B–32B models — Gemma 4 31B at 32K is comfortable on the 5090 and 98% of a 4090 — and the speed ceiling, which rises with bandwidth from 1,008 to 1,792 GB/s.',
+        aZh: '只有你需要更长的上下文或更快的速度时才值。在 4K 上下文下，5090 能宽裕装下本索引 126 个模型中的 101 个，4090 是 95 个，模型清单几乎没变。变化在于 27B–32B 模型的长上下文 —— Gemma 4 31B 在 32K 下在 5090 上宽裕、在 4090 上占 98% —— 以及速度上限，它随带宽从 1,008 GB/s 提高到 1,792 GB/s。',
       },
       {
         q: 'Can an RTX 5090 run a 70B model?',
@@ -937,7 +937,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'intermediate',
     tags: ['DGX Spark', 'GB10', 'unified memory', '64GB', '128GB', 'GPT-OSS', 'Ollama', 'llama.cpp'],
     publishedAt: '2026-10-05',
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Written 2026-10-05, ahead of the 64GB model's 23 October sale date. Specs
     // from nvidia.com (128GB LPDDR5X, 273 GB/s, 256-bit; 64GB at $4,999 from six
     // OEMs); the 64GB model's identical bandwidth from press coverage. Sizes are
@@ -953,8 +953,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'The short answer',
         headingZh: '简短的回答',
-        body: 'Both DGX Spark models use the same GB10 chip and the same 273 GB/s memory; the only difference that matters for local models is capacity. NVIDIA announced the 64GB model at $4,999, on sale from 23 October 2026 through Acer, ASUS, Dell, GIGABYTE, HP and MSI. At 4K context, 108 of the 125 models in this index fit the 64GB Spark comfortably and 113 fit the 128GB one — against 100 for a 32GB RTX 5090. The gap between the two Sparks is narrow but it sits exactly on the models people buy a Spark for: the 100B-class mixture-of-experts releases.',
-        bodyZh: '两款 DGX Spark 用的是同一颗 GB10 芯片、同样 273 GB/s 的内存；对本地模型而言，唯一要紧的差别是容量。NVIDIA 公布 64GB 版售价 4,999 美元，2026 年 10 月 23 日起通过宏碁、华硕、戴尔、技嘉、惠普和微星发售。在 4K 上下文下，本索引 125 个模型中有 108 个能宽裕装进 64GB 版，128GB 版是 113 个——32GB 的 RTX 5090 是 100 个。两款 Spark 的差距不大，但恰好落在人们买 Spark 的理由上：100B 级的混合专家（MoE）模型。',
+        body: 'Both DGX Spark models use the same GB10 chip and the same 273 GB/s memory; the only difference that matters for local models is capacity. NVIDIA announced the 64GB model at $4,999, on sale from 23 October 2026 through Acer, ASUS, Dell, GIGABYTE, HP and MSI. At 4K context, 109 of the 126 models in this index fit the 64GB Spark comfortably and 114 fit the 128GB one — against 101 for a 32GB RTX 5090. The gap between the two Sparks is narrow but it sits exactly on the models people buy a Spark for: the 100B-class mixture-of-experts releases.',
+        bodyZh: '两款 DGX Spark 用的是同一颗 GB10 芯片、同样 273 GB/s 的内存；对本地模型而言，唯一要紧的差别是容量。NVIDIA 公布 64GB 版售价 4,999 美元，2026 年 10 月 23 日起通过宏碁、华硕、戴尔、技嘉、惠普和微星发售。在 4K 上下文下，本索引 126 个模型中有 109 个能宽裕装进 64GB 版，128GB 版是 114 个——32GB 的 RTX 5090 是 101 个。两款 Spark 的差距不大，但恰好落在人们买 Spark 的理由上：100B 级的混合专家（MoE）模型。',
       },
       {
         heading: 'GPT-OSS 120B does not fit the 64GB model',
@@ -1009,8 +1009,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'Should I buy the 64GB or the 128GB DGX Spark?',
         qZh: 'DGX Spark 买 64GB 还是 128GB？',
-        a: 'Decide by the largest model you want. At 4K context the 64GB model fits 108 of the 125 models in this index comfortably and the 128GB fits 110, with the same chip and the same 273 GB/s, so neither is faster. The ones only the 128GB holds are the 100B-class mixture-of-experts models at 4-bit — GPT-OSS 120B, GLM-4.5-Air, Llama 4 Scout and Qwen3.8-Flash-Next at Q4_K_M — plus long context on 70B.',
-        aZh: '按你想跑的最大模型来决定。在 4K 上下文下，64GB 版能宽裕装下本索引 125 个模型中的 108 个，128GB 版是 113 个；两者芯片相同、带宽同为 273 GB/s，所以谁也不比谁快。只有 128GB 版装得下的，是 4-bit 的 100B 级混合专家模型——GPT-OSS 120B，以及 Q4_K_M 的 GLM-4.5-Air、Llama 4 Scout 和 Qwen3.8-Flash-Next——再加上 70B 的长上下文。',
+        a: 'Decide by the largest model you want. At 4K context the 64GB model fits 109 of the 126 models in this index comfortably and the 128GB fits 114, with the same chip and the same 273 GB/s, so neither is faster. The ones only the 128GB holds are the 100B-class mixture-of-experts models at 4-bit — GPT-OSS 120B, GLM-4.5-Air, Llama 4 Scout and Qwen3.8-Flash-Next at Q4_K_M — plus long context on 70B.',
+        aZh: '按你想跑的最大模型来决定。在 4K 上下文下，64GB 版能宽裕装下本索引 126 个模型中的 109 个，128GB 版是 114 个；两者芯片相同、带宽同为 273 GB/s，所以谁也不比谁快。只有 128GB 版装得下的，是 4-bit 的 100B 级混合专家模型——GPT-OSS 120B，以及 Q4_K_M 的 GLM-4.5-Air、Llama 4 Scout 和 Qwen3.8-Flash-Next——再加上 70B 的长上下文。',
       },
       {
         q: 'Is a DGX Spark faster than an RTX 5090 for local LLMs?',
@@ -1033,7 +1033,7 @@ export const extraArticles2: Article[] = [
     difficulty: 'beginner',
     tags: ['24GB', 'RTX 4090', 'RTX 3090', 'RX 7900 XTX', 'Ollama', 'llama.cpp', 'GGUF', 'long context'],
     publishedAt: '2026-10-21',
-    updatedAt: '2026-10-26',
+    updatedAt: '2026-10-28',
     // Written 2026-10-21. Every size is calcVRAM on the model's own row (most of the 27B–36B
     // rows are sized from real GGUF byte counts); speeds are roofline ceilings from vendor
     // bandwidth. No `verifiedAt` — there is no GPU here.
@@ -1055,8 +1055,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'What fits, and where the 30B class gets tight',
         headingZh: '能装下什么，以及 30B 级从哪里开始偏紧',
-        body: '94 of the 125 models in this index fit a 24GB card comfortably at 4K context, and 99 load at all. Up to about 27B the question is only how long a context you want. Above that, many of the newest models land just over this site’s comfortable line, which leaves room for the model but not for your desktop. Qwen3.6 27B at Q4_K_M with a 32K context is about 21.0 GB, still comfortable. Qwen3.6 35B-A3B at Q4_K_M with a 4K context is about 23.4 GB, which is tight. K2 Horizon 32B at Q4_K_M with a 4K context is about 23.1 GB, also tight. Qwen3 32B at Q4_K_M with an 8K context is about 22.9 GB, tight, and at 32K it no longer fits.',
-        bodyZh: '本索引 125 个模型中，有 94 个能在 4K 上下文下宽裕地装进 24GB 显卡，能加载的共 99 个。27B 左右及以下，只看你想要多长的上下文。再往上，很多最新的模型刚好越过本站的宽裕线：模型本身放得下，但没给桌面留余地。Qwen3.6 27B 在 Q4_K_M、32K 上下文下约 21.0 GB，仍然宽裕。Qwen3.6 35B-A3B 在 Q4_K_M、4K 上下文下约 23.4 GB，偏紧。K2 Horizon 32B 在 Q4_K_M、4K 上下文下约 23.1 GB，同样偏紧。Qwen3 32B 在 Q4_K_M、8K 上下文下约 22.9 GB，偏紧，到 32K 就装不下了。',
+        body: '95 of the 126 models in this index fit a 24GB card comfortably at 4K context, and 100 load at all. Up to about 27B the question is only how long a context you want. Above that, many of the newest models land just over this site’s comfortable line, which leaves room for the model but not for your desktop. Qwen3.6 27B at Q4_K_M with a 32K context is about 21.0 GB, still comfortable. Qwen3.6 35B-A3B at Q4_K_M with a 4K context is about 23.4 GB, which is tight. K2 Horizon 32B at Q4_K_M with a 4K context is about 23.1 GB, also tight. Qwen3 32B at Q4_K_M with an 8K context is about 22.9 GB, tight, and at 32K it no longer fits.',
+        bodyZh: '本索引 126 个模型中，有 95 个能在 4K 上下文下宽裕地装进 24GB 显卡，能加载的共 100 个。27B 左右及以下，只看你想要多长的上下文。再往上，很多最新的模型刚好越过本站的宽裕线：模型本身放得下，但没给桌面留余地。Qwen3.6 27B 在 Q4_K_M、32K 上下文下约 21.0 GB，仍然宽裕。Qwen3.6 35B-A3B 在 Q4_K_M、4K 上下文下约 23.4 GB，偏紧。K2 Horizon 32B 在 Q4_K_M、4K 上下文下约 23.1 GB，同样偏紧。Qwen3 32B 在 Q4_K_M、8K 上下文下约 22.9 GB，偏紧，到 32K 就装不下了。',
         code: {
           lang: 'text',
           content: 'GGUF (level)                         8K        32K       64K       128K\nGemma 4 26B-A4B (Q4_K_M)             18.3 GB   18.8 GB   19.5 GB   20.9 GB\nMuse Glimmer 30B (Q4_K_M)            17.7 GB   18.1 GB   18.5 GB   19.4 GB\nNemotron 3.5 Lightning (Q4_0)        19.8 GB   20.0 GB   20.2 GB   20.6 GB\nQwen3.6 27B (Q4_K_M)                 19.3 GB   21.0 GB   23.2 GB ~ 27.6 GB ✗\nQwen3.8 27B (Q4_K_M)                 17.8 GB   19.4 GB   21.6 GB ~ 26.0 GB ✗\nNorth Mini Code 30B-A3B (Q4_K_M)     20.2 GB   20.8 GB   21.7 GB ~ 23.5 GB ~\nQwen3-Coder 30B-A3B (Q4_K_M)         20.1 GB   22.6 GB ~ 25.9 GB ✗\nGemma 4 31B (Q4_0, Google QAT)       20.4 GB   22.5 GB ~ 25.2 GB ✗\nQwen3.6 35B-A3B (Q4_K_M)             23.5 GB ~ 24.0 GB ~ 24.7 GB ~ 26.1 GB ✗\nQwen3 32B (Q4_K_M)*                  22.9 GB ~ 29.6 GB ✗\nK2 Horizon 32B (Q4_K_M)              24.2 GB ~ 30.8 GB ✗\n\n~ = tight (88–105% of 24 GB)   ✗ = does not fit   * window ends at 40,960 tokens',
@@ -1115,8 +1115,8 @@ export const extraArticles2: Article[] = [
       {
         q: 'RTX 3090 or RTX 4090 for local LLMs?',
         qZh: '跑本地大模型，RTX 3090 还是 RTX 4090？',
-        a: 'They fit the same models: 94 of the 125 models in this index comfortably at 4K context on either card. The difference is bandwidth, 936 against 1,008 GB/s, which puts the generation ceiling for Qwen3.6 27B at Q4_K_M at about 55 tok/s on the 3090 and 59 on the 4090. For running models, as opposed to training them, a used 3090 gives up very little.',
-        aZh: '能装下的模型一样：两张卡都能在 4K 上下文下宽裕装下本索引 125 个模型中的 94 个。区别在带宽，936 对 1,008 GB/s，Qwen3.6 27B（Q4_K_M）的生成速度上限在 3090 上约 55 tok/s，在 4090 上约 59 tok/s。如果只是跑模型而不是训练，二手 3090 损失很小。',
+        a: 'They fit the same models: 95 of the 126 models in this index comfortably at 4K context on either card. The difference is bandwidth, 936 against 1,008 GB/s, which puts the generation ceiling for Qwen3.6 27B at Q4_K_M at about 55 tok/s on the 3090 and 59 on the 4090. For running models, as opposed to training them, a used 3090 gives up very little.',
+        aZh: '能装下的模型一样：两张卡都能在 4K 上下文下宽裕装下本索引 126 个模型中的 95 个。区别在带宽，936 对 1,008 GB/s，Qwen3.6 27B（Q4_K_M）的生成速度上限在 3090 上约 55 tok/s，在 4090 上约 59 tok/s。如果只是跑模型而不是训练，二手 3090 损失很小。',
       },
       {
         q: 'Can a 24GB GPU run a 70B model?',

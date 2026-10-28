@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **125** in index (`models-extra` … `models-extra-12`) |
+| Models | **126** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1148,6 +1148,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 (iii) | **+1 model (126): LFM3 1.7B** — config + LiquidAI's own GGUF bytes; `lfm3` hybrid: 12 short-conv + 6 full + 6 iSWA (256 → 768 cells), 4 KV × 128, 12 KB/token; Q4_K_M 5.09 bpw 1.2 GB @4K, 4.5 GB @256K; pending entry removed; guide counts +1, 125 → 126, three stale English figures fixed |
 | 2026-10-28 (ii) | **Patrol** — llama.cpp b11941 (new arch `lfm3`), Ollama v0.40.12 Latest (LFM3 family + d1); LFM3 1.7B → `/pending/` awaiting config + GGUF bytes (layer split is metadata); d1 skipped (decision model) |
 | 2026-10-28 | **Homepage vs what is measured** — forwarded review checked in `out/`: stale title counts not reproduced (all 125); real: "Measured, not guessed" over 4 rows (2 sample keys pointed at removed rows) + old-stack-only line → 6 rows, measured-on + current versions; fastest pick ranked estimates (0.5B under "measured") → measured only; Editor's Picks capped at 6; About/Privacy June dates removed / corrected |
 | 2026-10-27 | **Patrol** — llama.cpp b11913 (Ollama v0.40.12 pre-release, rest unchanged); llama.cpp arch list unchanged; Mistral Large 4 weights still not out (HF "upcoming", reports 10-27 to 10-31), `/pending/` re-dated; no model |

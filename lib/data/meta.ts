@@ -90,6 +90,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-28',
+    en: 'LFM3 1.7B added, sized from Liquid AI\'s own GGUF files. Only 6 of its 24 layers keep a cache that grows with context, so Q4_K_M needs about 1.2 GB at 4K and about 4.5 GB across the full 256K window. Guides that quote fit counts are updated.',
+    zh: '新增 LFM3 1.7B，按 Liquid AI 官方 GGUF 文件计算体积。它 24 层中只有 6 层的缓存随上下文增长，Q4_K_M 在 4K 上下文约需 1.2 GB，用满 256K 窗口约 4.5 GB。引用可运行数的指南已同步更新。',
+  },
+  {
+    date: '2026-10-28',
     en: 'Liquid AI\'s LFM3 is on the pending page: a 1.7B model with a 256K context that Ollama and llama.cpp now run, waiting for its configuration and file sizes before it can be sized. Runtime versions updated: llama.cpp b11941, Ollama v0.40.12.',
     zh: 'Liquid AI 的 LFM3 已列入待收录页：一个 1.7B、上下文 256K 的模型，Ollama 和 llama.cpp 都已能运行，等拿到它的配置和文件大小后再计算显存。运行时版本已更新：llama.cpp b11941、Ollama v0.40.12。',
   },
