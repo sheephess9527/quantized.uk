@@ -425,6 +425,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-28 (ii) — Patrol: llama.cpp b11941, Ollama v0.40.12; LFM3 pending
+
+Ollama v0.40.12 is now Latest (it was a pre-release yesterday): adds Liquid AI's lfm3 / lfm3-vl /
+lfm3-audio / lfm3-omni and d1 2B. Release notes: lfm3 is "a 1.7B text model with a 256K-token
+context window". llama.cpp's arch list gained exactly one entry since yesterday, `LLM_ARCH_LFM3`
+(`src/models/lfm3.cpp`): short-conv layers (`n_head_kv(il) == 0`) mixed with attention, SWA per
+layer from `attention.sliding_window_pattern` — the layer split, window and KV heads are GGUF/config
+metadata, and transformers has no `lfm3` config to read, so it goes on `/pending/` as
+`awaiting-data` (owner to supply config.json + GGUF bytes). d1 2B skipped — a decision/classifier
+model like d3 (out of scope). vLLM v0.32.0, ExLlamaV3 1.6.5 unchanged. Deployed together with the
+2026-10-28 homepage fixes below.
+
 ### 2026-10-28 — Homepage claims vs what is measured (owner-forwarded review)
 
 Checked each point of a forwarded review against `out/` before changing anything:

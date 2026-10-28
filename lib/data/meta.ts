@@ -70,11 +70,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-27',
+  checkedAt: '2026-10-28',
   current: {
-    llamacpp: 'b11913',
+    llamacpp: 'b11941',
     vllm: 'v0.32.0',
-    ollama: 'v0.40.11',
+    ollama: 'v0.40.12',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -88,6 +88,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-28',
+    en: 'Liquid AI\'s LFM3 is on the pending page: a 1.7B model with a 256K context that Ollama and llama.cpp now run, waiting for its configuration and file sizes before it can be sized. Runtime versions updated: llama.cpp b11941, Ollama v0.40.12.',
+    zh: 'Liquid AI 的 LFM3 已列入待收录页：一个 1.7B、上下文 256K 的模型，Ollama 和 llama.cpp 都已能运行，等拿到它的配置和文件大小后再计算显存。运行时版本已更新：llama.cpp b11941、Ollama v0.40.12。',
+  },
   {
     date: '2026-10-28',
     en: 'The homepage now says plainly which numbers are measured. The benchmark sample is headed as a sample of measured runs, shows six rows instead of four, and names both the runtime versions it was measured on and the current ones. The fastest pick on each card is now chosen only from speeds actually measured, so it no longer suggests a 0.5B model on a 16 GB card. Editor\'s Picks shows the six newest entries, the pick cards call perplexity rise by its name, and the About and Privacy pages no longer carry a June date.',

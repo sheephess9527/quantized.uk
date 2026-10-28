@@ -1148,6 +1148,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-28 (ii) | **Patrol** — llama.cpp b11941 (new arch `lfm3`), Ollama v0.40.12 Latest (LFM3 family + d1); LFM3 1.7B → `/pending/` awaiting config + GGUF bytes (layer split is metadata); d1 skipped (decision model) |
 | 2026-10-28 | **Homepage vs what is measured** — forwarded review checked in `out/`: stale title counts not reproduced (all 125); real: "Measured, not guessed" over 4 rows (2 sample keys pointed at removed rows) + old-stack-only line → 6 rows, measured-on + current versions; fastest pick ranked estimates (0.5B under "measured") → measured only; Editor's Picks capped at 6; About/Privacy June dates removed / corrected |
 | 2026-10-27 | **Patrol** — llama.cpp b11913 (Ollama v0.40.12 pre-release, rest unchanged); llama.cpp arch list unchanged; Mistral Large 4 weights still not out (HF "upcoming", reports 10-27 to 10-31), `/pending/` re-dated; no model |
 | 2026-10-26 (iv) | **Quick-answer pages + error lookup** — `/tools/speed|which-quant|context-length/` tables from `levelTable`/`contextReach`/`measuredSpeed`/`speedCeiling` only (`question-pages.ts`); `/errors/` 19 entries, each message read in its cited source; 582 pages; calibrated range's top end capped at `rooflineTokS` (325 of 6,254 combos printed e.g. 50–66 beside ≤ 62) |
