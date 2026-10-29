@@ -27,6 +27,7 @@ const ADDED_K2H = '2026-10-21';
 const ADDED_1023 = '2026-10-23';
 const ADDED_BOLT_E4B = '2026-10-24';
 const ADDED_1026 = '2026-10-26';
+const ADDED_1029 = '2026-10-29';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -206,7 +207,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['general', 'instruct', 'code', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
     contextLength: 262144,
-    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    // MoE offload: owner-pulled Qwen/Qwen3.6-35B-A3B config (2026-10-29): 40 MoE layers (no dense layers, no decoder_sparse_step) × 256 experts × 3 × 2048 × 512 = 32.21B routed, top-8 + 1 shared expert (512); the remaining 3.32B of the 35.53B total (bartowski's BF16) is attention, linear attention, shared experts and 2 × 248320 × 2048 untied embeddings.
+    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } }, moe: { expertParams: 32.21, experts: 256, perToken: 8, moeLayers: 40 } },
     addedAt: ADDED_QWEN36,
     description: {
       en: 'One of the most recommended models for a 24 GB card this year: 35.5B parameters, about 3B active per token, so it reads per token about as much as a 3B model. Only 10 of its 40 layers keep a growing KV cache, so context is cheap: at Q4_K_M it needs about 23.4 GB at 4K and 24.0 GB at 32K. On this site\'s rule that is tight on a 24 GB card, not comfortable, because it counts a working buffer most guides leave out. A 32 GB card, or a 48 GB Mac through the GPU\'s share of unified memory, has real room. It reads images through a separate vision encoder. Sizes come from bartowski\'s GGUF files; Unsloth\'s UD-Q4_K_M is a different file, 0.15 GB smaller. No per-level quality loss has been published.',
@@ -392,7 +394,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 28, attHeads: 32, kvHeads: 4, headDim: 128, attention: { fullLayers: 7, windowLayers: 21, windowTokens: 1536, note: { en: '21 of 28 layers use a 1,024-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1,536); only every fourth layer grows a cache with context.', zh: '28 层中 21 层使用 1,024 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1,536），只有每四层中的一层缓存随上下文增长。' } } },
+    // MoE offload: owner-pulled JetBrains/Mellum2.1-12B-A2.5B-Thinking config (2026-10-29): mlp_layer_types all 28 sparse, 64 experts × 3 × 2304 × 896 = 11.10B routed, top-8; + attention 0.59B and untied 98304 × 2304 embeddings 0.45B = 12.14B of 12.15B.
+    arch: { layers: 28, attHeads: 32, kvHeads: 4, headDim: 128, attention: { fullLayers: 7, windowLayers: 21, windowTokens: 1536, note: { en: '21 of 28 layers use a 1,024-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1,536); only every fourth layer grows a cache with context.', zh: '28 层中 21 层使用 1,024 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1,536），只有每四层中的一层缓存随上下文增长。' } }, moe: { expertParams: 11.10, experts: 64, perToken: 8, moeLayers: 28 } },
     addedAt: ADDED_MELLUM21,
     description: {
       en: 'JetBrains\' open coding model for agents and fast sub-agents, released in October under Apache 2.0. It is a 12B mixture-of-experts model with about 2.5B parameters active per token, so it generates at roughly the speed of a 3B model. At Q4_K_M it needs about 8.6 GB at 4K context and 10.5 GB even at its full 128K window, because only 7 of its 28 layers keep a growing cache. That is comfortable on a 10 or 12 GB card; an 8 GB card cannot hold it. Q8_0 fits a 16 GB card. llama.cpp supports it as `mellum`. Sizes come from JetBrains\' own GGUF files; JetBrains publishes KL divergence rather than perplexity, so no quality-loss figure is shown.',
@@ -504,7 +507,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
     contextLength: 131072,
-    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 64, attention: { fullLayers: 10, note: { en: '10 of 40 layers are full (GQA) attention; the other 30 are short gated convolution blocks that keep a fixed 3-token state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中只有 10 层是全注意力（GQA），其余 30 层是带门控的短卷积块，只保留固定的 3 个 token 状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    // MoE offload: owner-pulled LiquidAI/LFM2.5-24B-A2B config (2026-10-29): num_dense_layers 2, then 38 MoE layers × 64 experts × 3 × 2048 × 1536 = 22.95B routed, top-4; + 2 dense MLPs (11776) 0.14B, tied embeddings 0.26B, conv/attention ~0.6B ≈ the 23.97B safetensors total.
+    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 64, attention: { fullLayers: 10, note: { en: '10 of 40 layers are full (GQA) attention; the other 30 are short gated convolution blocks that keep a fixed 3-token state, so the KV cache grows at a quarter of the usual rate.', zh: '40 层中只有 10 层是全注意力（GQA），其余 30 层是带门控的短卷积块，只保留固定的 3 个 token 状态，因此 KV 缓存的增长只有常规架构的四分之一。' } }, moe: { expertParams: 22.95, experts: 64, perToken: 4, moeLayers: 38, denseLead: 2 } },
     addedAt: ADDED_LFM25,
     description: {
       en: 'Liquid AI\'s largest LFM2.5 model, released in October: a 24B mixture-of-experts reasoning model with about 2.45B parameters active per token. It is built for on-device agents and tool calling, and always thinks before it answers. Only 10 of its 40 layers keep a growing KV cache, so long context is cheap: at Q4_K_M it needs about 15.3 GB at 4K, 15.9 GB at 32K and 17.9 GB across the whole 128K window. That is tight on a 16 GB card and comfortable on 24 GB at any context; Q8_0 (about 26.7 GB) needs a 32 GB card. Text only. Sizes come from Liquid\'s own GGUF files, and no per-level quality loss has been published.',
@@ -832,7 +836,8 @@ export const extraModels12: QuantModel[] = [
     categories: ['multimodal', 'general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
     contextLength: 262144,
-    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate. Same backbone shape as Qwen3.6 35B-A3B.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。骨干结构与 Qwen3.6 35B-A3B 相同。' } } },
+    // MoE offload: owner-pulled openbmb/MiniCPM-V-4.7-35B-A3B text_config (2026-10-29) is the Qwen3.6 35B-A3B layout: 40 MoE layers × 256 × 3 × 2048 × 512 = 32.21B routed, top-8 + 1 shared; 2.48B of the 34.69B total stays on the card.
+    arch: { layers: 40, attHeads: 16, kvHeads: 2, headDim: 256, attention: { fullLayers: 10, note: { en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate. Same backbone shape as Qwen3.6 35B-A3B.', zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。骨干结构与 Qwen3.6 35B-A3B 相同。' } }, moe: { expertParams: 32.21, experts: 256, perToken: 8, moeLayers: 40 } },
     addedAt: ADDED_MINICPM47,
     description: {
       en: 'A mixture-of-experts vision model from OpenBMB. It reads images and video on top of a 34.7B language model with about 3B parameters active per token, the same layout as Qwen3.6 35B-A3B. Only 10 of its 40 layers keep a growing KV cache, so context is cheap. At Q4_K_S it needs about 20.9 GB at 4K, comfortable on a 24 GB card; Q4_K_M (22.2 GB) is tight there, and a 32 GB card holds Q4_K_M across the whole 256K window. The vision encoder is a separate 1.1 GB file on top of these figures, which turns Q4_K_S on 24 GB tight as well once images are loaded. llama.cpp runs the text model as `qwen35moe`. Sizes come from OpenBMB\'s own GGUF files, and no per-level quality loss has been published.',
@@ -1206,6 +1211,68 @@ export const extraModels12: QuantModel[] = [
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.10, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q4_K_M.gguf', bytes: 2_621_104_768, checkedAt: '2026-10-26' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Spark-X2.6-4B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Spark-X2.6-4B-GGUF', file: 'Spark-X2.6-4B-Q8_0.gguf', bytes: 4_375_022_208, checkedAt: '2026-10-26' } },
+    ],
+  },
+  {
+    // LFM3-1.7B (Liquid AI, 2026-10-27). Owner-pulled config.json (2026-10-29): Lfm3ForCausalLM, 24 layers
+    // = 13 short-conv + 6 full_attention + 5 sliding_attention (window 256), 16 heads / 4 KV × 128, hidden
+    // 2048, vocab 128000 tied, 262144 positions. llama.cpp `lfm3` builds a hybrid iSWA memory with
+    // LLAMA_SWA_TYPE_STANDARD (src/models/lfm3.cpp) → window cells pad256(256 + 512) = 768; the conv state
+    // (L_cache 7) is fixed and tiny. Params from Liquid's own BF16 GGUF: 3,466,626,336 B ÷ 2 = 1.733B;
+    // Q8_0 1,846,238,496 B → 8.52 bpw confirms the chain. Liquid also ships a QAD-Q4_0 (1,049,615,680 B)
+    // which is not a standard level and is not listed.
+    id: 'lfm3-1-7b',
+    name: 'LFM3 1.7B',
+    family: 'Liquid AI LFM3',
+    params: 1.73,
+    paramLabel: '1.7B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: {
+      layers: 24, attHeads: 16, kvHeads: 4, headDim: 128,
+      attention: {
+        fullLayers: 6,
+        windowLayers: 5,
+        windowTokens: 768,
+        note: {
+          en: 'Only 6 of 24 layers are global attention with a cache that grows with context; 5 use a 256-token sliding window and the other 13 are short convolutions with a fixed state.',
+          zh: '24 层中只有 6 层是全局注意力、缓存随上下文增长；5 层是 256 token 滑动窗口，其余 13 层是短卷积，状态大小固定。',
+        },
+      },
+    },
+    addedAt: ADDED_1029,
+    description: { en: 'The smallest model of Liquid AI\'s LFM3 family, released on 27 October: a 1.7B text model with a 256K-token window, built for phones, laptops and small GPUs. Only 6 of its 24 layers keep a cache that grows with context; 5 use a 256-token sliding window and the other 13 are short convolutions. At Q4_K_M it needs about 1.2 GB at 4K and 2.8 GB at 128K, comfortable on an 8 GB card; the full window needs about 4.5 GB at 256K, comfortable on an 8 GB card. Q8_0 needs about 2.0 GB at 4K. Ollama v0.40.12 runs the LFM3 family on Apple hardware only for now; llama.cpp loads its architecture on every platform. Sizes come from Liquid\'s own GGUF files, and no per-level quality loss has been published.', zh: 'Liquid AI LFM3 系列中最小的模型，10 月 27 日发布：一个 1.7B 文本模型，上下文 256K，面向手机、笔记本和小显存显卡。24 层中只有 6 层的缓存随上下文增长；5 层是 256 token 滑动窗口，其余 13 层是短卷积。Q4_K_M 在 4K 下约需 1.2 GB，128K 下约需 2.8 GB，8 GB 显卡可以从容运行；用满 256K 窗口约需 4.5 GB。Q8_0 在 4K 下约需 2.0 GB。Ollama v0.40.12 目前只在 Apple 硬件上运行 LFM3 系列；llama.cpp 在各平台都能加载它的架构。体积按 Liquid 官方发布的 GGUF 文件大小计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.08, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q4_K_M.gguf', bytes: 1_099_627_808, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.82, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q5_K_M.gguf', bytes: 1_258_663_200, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.60, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q6_K.gguf', bytes: 1_427_638_304, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q8_0.gguf', bytes: 1_846_238_496, checkedAt: '2026-10-29' } },
+    ],
+  },
+  {
+    // MiMo-V2.6-Distill-Qwen-9B (Xiaomi, 2026-09-21). Owner-pulled config.json (2026-10-29):
+    // Qwen3_5ForConditionalGeneration (text `qwen3_5`, llama.cpp `qwen35`) — the Qwen3.5 9B layout: 32
+    // layers = 24 linear_attention + 8 full_attention, 16 heads / 4 KV × 256, hidden 4096, vocab 248320,
+    // 262144 positions. Params from bartowski's BF16 GGUF: 17,920,693,440 B ÷ 2 = 8.96B; Q8_0
+    // 9,545,979,424 B → 8.52 bpw confirms it. The vision encoder is a separate mmproj (f16 918,166,048 B).
+    // One publisher only (bartowski); ggml-org's files were not read.
+    id: 'mimo-v2-6-distill-qwen-9b',
+    name: 'MiMo-V2.6-Distill-Qwen-9B',
+    family: 'Xiaomi MiMo',
+    params: 8.96,
+    paramLabel: '9B',
+    categories: ['general', 'instruct', 'multimodal'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: { layers: 32, attHeads: 16, kvHeads: 4, headDim: 256, attention: { fullLayers: 8, note: { en: '8 of 32 layers use full attention; the other 24 are linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate.', zh: '32 层中 8 层是全注意力，其余 24 层是线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一。' } } },
+    addedAt: ADDED_1029,
+    description: { en: 'Xiaomi\'s MiMo-V2.6 distilled into the Qwen3.5 9B architecture, released in September, with image input through a separate vision encoder. Only 8 of its 32 layers keep a cache that grows with context. At Q4_K_M it needs about 6.3 GB at 4K and 6.7 GB at 16K, comfortable on an 8 GB card; at 32K (7.2 GB) it is tight on an 8 GB card and comfortable from 10 GB up. It needs about 10.5 GB at 128K, comfortable on a 12 GB card. Q8_0 needs about 10.1 GB at 4K, comfortable on a 12 GB card. The vision encoder adds about 0.9 GB. Sizes come from bartowski\'s GGUF files, and no per-level quality loss has been published.', zh: '小米把 MiMo-V2.6 蒸馏到 Qwen3.5 9B 架构上的版本，9 月发布，通过单独的视觉编码器读取图像。32 层中只有 8 层保留会增长的缓存。Q4_K_M 在 4K 下约需 6.3 GB，16K 下约需 6.7 GB，8 GB 显卡可以从容运行；32K（7.2 GB）在 8 GB 卡上偏紧，10 GB 起才宽裕；128K 下约需 10.5 GB，12 GB 显卡可以从容运行。Q8_0 在 4K 下约需 10.1 GB，12 GB 起很宽裕。视觉编码器另需约 0.9 GB。体积按 bartowski 发布的 GGUF 文件大小计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 4.00, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q3_K_M.gguf', bytes: 4_479_948_320, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.22, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf', bytes: 5_841_049_120, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.14, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q5_K_M.gguf', bytes: 6_876_124_704, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q8_0.gguf', bytes: 9_545_979_424, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
     ],
   },
 ];

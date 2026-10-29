@@ -425,6 +425,37 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-29 (ii) — +2 models (127), MoE offload on 5 more, owner-pulled data
+
+Source: owner-pulled Hugging Face `config.json` files and `api/models/<repo>/tree/main` byte counts (2026-10-29 02:11 UTC).
+
+- **LFM3 1.7B** (`LiquidAI/LFM3-1.7B`, GGUF `LiquidAI/LFM3-1.7B-GGUF`):
+  - Layout: 24 layers = 13 short-conv + 6 full + 5 SWA-256, 4 KV × 128. llama.cpp `lfm3` uses a hybrid iSWA memory (`src/models/lfm3.cpp`), so the window holds pad256(256 + 512) = 768 cells.
+  - Params: BF16 3,466,626,336 B ÷ 2 = 1.73B; Q8_0 → 8.54 bpw confirms the chain.
+  - Sizing: Q4_K_M 1.2 GB @4K, 4.5 GB at the full 256K.
+  - Liquid's QAD-Q4_0 is not a standard level and is not listed. Ollama v0.40.12 runs LFM3 on Apple hardware only (release notes).
+- **MiMo-V2.6-Distill-Qwen-9B** (bartowski GGUF only; ggml-org's files were not read):
+  - Layout: `qwen3_5` 32 layers = 24 linear + 8 full, 4 KV × 256 (the Qwen3.5 9B shape).
+  - Params: BF16 17,920,693,440 B ÷ 2 = 8.96B; Q8_0 → 8.52 bpw.
+  - Sizing: Q4_K_M 5.22 bpw → 6.3 GB @4K (green on 8 GB), 7.2 GB @32K (tight on 8 GB). The mmproj is 0.92 GB.
+  - Added to `todayFeed`.
+- **`arch.moe`** on Qwen3.6 35B-A3B, MiniCPM-V 4.7 35B-A3B, Gemma 4 26B-A4B, LFM2.5 24B-A2B and Mellum2.1 (now 17 models):
+  - Each row's routed-expert count closes against a total read from real files.
+  - Example plans: Qwen3.6 35B-A3B Q4_K_M on a 16 GB card @8K → `--n-cpu-moe 18`; LFM2.5 on 8 GB → N 27 (2 dense lead layers + 25).
+  - Sweep: 25,092 cases, 0 faults.
+- **Kimi Linear 48B-A3B skipped.** Counting its config (MLA + KDA, untied 163840 vocab, 26 MoE layers) gives about 49.3B, while the index carries 48.0B, which is not a file-derived figure. Its expert split would undercount the card side, so it waits for a GGUF / safetensors total. The index's 48.0 may itself be low.
+- **Guide counts:**
+  - 125 → 127 everywhere; per-card comfortable/tight counts re-run (+2 on every card quoted); `updatedAt` set on the 10 guides that changed.
+  - Two English sentences had drifted from their Chinese twins and from the calculator: the RTX 5090 FAQ said "4090 fits 91" (it was 94, now 96), and the DGX Spark FAQ said "128GB fits 110" (it was 113, now 115).
+- **`/pending/`:** LFM3 and MiMo removed. GLM-5.3-Flash and MiniMax M3.1 Flash were moved to `not-sized` now that their configs are read, because:
+  - their caches are new: GLM is 34 linear + 11 DSA layers with an MLA cache and an indexer (`glm5-next`); MiniMax uses MSA (`minimax-m3`, `llama-kv-cache-msa`);
+  - their GGUFs are unsloth UD-* only (GLM also has a 341 GB Q8_0), with no standard Q4_K_M;
+  - both need a 512 GB Mac.
+- **Owner-checked outside facts:**
+  - SPF and DMARC records already exist; there is no CAA record.
+  - Email Address Obfuscation is off (the address is served as plain text).
+  - The Web Analytics beacon runs with `{"spa":2}`, so the calculator's `history.replaceState` on every parameter change is counted as a new page view in Chrome. That explains the ~17 views per visit on the calculator.
+
 ### 2026-10-29 — Patrol: llama.cpp b11972 (v0.8.0); MiniMax M3.1 Flash pending
 
 - **Runtimes** (tag / release pages, pre-releases skipped): llama.cpp newest tag b11974 had no binaries yet,

@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **125** in index (`models-extra` … `models-extra-12`) |
+| Models | **127** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 582 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 590 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -184,7 +184,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   living inside a `mailto:` href attribute. **Unconfirmed against the live site** — this environment
   has no way to load the Cloudflare-fronted domain and check the actual console; treat it as a
   best-effort mitigation until someone checks devtools on the real URL. Disabling Email Address
-  Obfuscation in the Cloudflare dashboard is the more certain fix and is the site owner's to make.
+  Obfuscation in the Cloudflare dashboard is the more certain fix — and the owner confirmed on 2026-10-29 that it
+  is **off** (the address is served as plain text), so the guard is belt-and-braces. Keep it: turning the
+  feature back on must not break hydration. DNS already has SPF and DMARC; there is no CAA record.
 - **Never read the clock in anything that renders.** A static export renders once at build and
   hydrates at visit time; any output depending on `Date.now()` / `new Date()` differs between the two
   as soon as time passes, which is a React #418/#425 text mismatch. `isRecentModel` did exactly this
@@ -997,8 +999,9 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
 716 visits / 2,323 views in 7 days. What it says, in order of weight:
 - **The Chinese calculator is the core page.** `/zh/tools/vram-calc/` took ~36% of all views (~840
   from ~50 visits); the English calculator ~220. ~60% of views were internal clicks. Caveat: 17 views
-  per visit on one page may be the calculator's address-bar rewrites being counted as page views —
-  unconfirmed (owner to check `cdn-cgi/rum` requests in devtools); trust visits over views until then.
+  per visit on one page **is** the calculator's address-bar rewrites being counted as page views — the
+  beacon runs with `{"spa":2}` (soft-navigation heuristics), so every `history.replaceState` in `syncUrl`
+  is a new view in Chrome (owner-checked 2026-10-29). Trust visits, not views, for the calculator.
 - **Search traffic is Bing China, not Google.** New sessions: direct ~450, Bing ~230 (cn.bing.com
   190), t.co ~40, Google ~10 (google.com.hk). Google indexing is the open question, not ranking.
 - **Readers are mostly in China, on Windows desktops.** Visits: China ~350, Singapore ~170 (likely
@@ -1151,6 +1154,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-29 (ii) | **+2 models (127): MiMo-V2.6-Distill-Qwen-9B, LFM3 1.7B; `arch.moe` on 5 more (17)** — owner-pulled configs + byte counts; MiMo 6.3 GB @4K green on 8 GB; LFM3 4.5 GB at 256K; Kimi Linear skipped (config counts ~49.3B vs 48.0 in the index); 10 guides re-counted (two en sentences had drifted: 91 → 96, 110 → 115); GLM-5.3-Flash / MiniMax M3.1 Flash → not-sized (new caches, UD-only GGUFs) |
 | 2026-10-29 | **Patrol** — llama.cpp b11972 (b11974 had no binaries; v0.8.0 requires `-m`/`-hf` except server — no site command affected), `LLAMACPP_BUILD` bumped after checking its Windows assets; MiniMax M3.1 Flash 428B-A23B → `/pending/` (llama.cpp `minimax-m3`, sparse-attention cache, config unreadable); Mistral Large 4 still upcoming |
 | 2026-10-28 (v) | **Windows launch commands** — `Env` `windows`: llama.cpp prebuilt zips pinned to `LLAMACPP_BUILD` (CUDA 12.4 / 13.4 for RTX 50 / Vulkan / CPU, names from the release page), Ollama `install.ps1`; calculator OS switch defaults from the UA after mount; sweep 4,800 cases 0 faults |
 | 2026-10-28 (iv) | **MoE expert offload** — `ModelArch.moe` on 12 models (counted from configs, reconciled with `params`); `offloadPlan().moe` → `-ngl 99 --n-cpu-moe N` (120B/24 GB/16K = 28, as llama.cpp's guide); offload speed bounds now include the KV read; sweep 0 faults |

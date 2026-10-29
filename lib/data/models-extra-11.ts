@@ -40,7 +40,9 @@ export const extraModels11: QuantModel[] = [
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
     // max_position_embeddings = 262_144 in the conversion config.
     contextLength: 262144,
+    // MoE offload: owner-pulled google/gemma-4-26B-A4B-it config (2026-10-29): enable_moe_block on all 30 layers, 128 experts × 3 × 2816 × 704 = 22.84B routed, top-8, beside a dense 2112-wide MLP per layer; + dense MLP 0.54B, attention 1.04B, tied 262144 × 2816 embeddings 0.74B = 25.16B of the 25.25B BF16 total.
     arch: {
+      moe: { expertParams: 22.84, experts: 128, perToken: 8, moeLayers: 30 },
       layers: 30,
       attHeads: 16,
       kvHeads: 8,

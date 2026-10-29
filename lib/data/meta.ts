@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-29',
+    en: 'Two small models added: MiMo-V2.6-Distill-Qwen-9B, which fits an 8 GB card at Q4_K_M with room for a 16K context, and Liquid AI\'s LFM3 1.7B, which holds its full 256K window in under 5 GB. The expert-offload answer in the calculator now also covers Qwen3.6 35B-A3B, MiniCPM-V 4.7, Gemma 4 26B-A4B, LFM2.5 24B-A2B and Mellum2.1 — for example, Qwen3.6 35B-A3B on a 16 GB card keeps every layer on the GPU with 18 layers\' experts in system RAM.',
+    zh: '新增两个小模型：MiMo-V2.6-Distill-Qwen-9B，Q4_K_M 在 8 GB 显卡上就能跑，还能留出 16K 上下文；Liquid AI 的 LFM3 1.7B，用满 256K 窗口也不到 5 GB。计算器的"只把专家放到内存"方案新增 Qwen3.6 35B-A3B、MiniCPM-V 4.7、Gemma 4 26B-A4B、LFM2.5 24B-A2B 和 Mellum2.1——例如 Qwen3.6 35B-A3B 在 16 GB 显卡上可以所有层都留在 GPU，只把 18 层的专家放进内存。',
+  },
+  {
+    date: '2026-10-29',
     en: 'MiniMax M3.1 Flash is on the pending page: a 428B model with about 23B active per token whose weights came out on 23 October, waiting for its configuration and file sizes before it can be sized. llama.cpp is now at b11972, and the Windows commands download that build.',
     zh: 'MiniMax M3.1 Flash 已列入待收录页：一个 428B、每个 token 约激活 23B 参数的模型，权重于 10 月 23 日发布，等拿到它的配置和文件大小后再计算显存。llama.cpp 更新到 b11972，Windows 启动命令也改为下载这个版本。',
   },
