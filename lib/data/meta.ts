@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-28';
+export const dataLastUpdated = '2026-10-29';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-28',
+  checkedAt: '2026-10-29',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.32.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-29',
+    en: 'MiniMax M3.1 Flash is on the pending page: a 428B model with about 23B active per token whose weights came out on 23 October, waiting for its configuration and file sizes before it can be sized. llama.cpp is now at b11972, and the Windows commands download that build.',
+    zh: 'MiniMax M3.1 Flash 已列入待收录页：一个 428B、每个 token 约激活 23B 参数的模型，权重于 10 月 23 日发布，等拿到它的配置和文件大小后再计算显存。llama.cpp 更新到 b11972，Windows 启动命令也改为下载这个版本。',
+  },
   {
     date: '2026-10-28',
     en: 'Launch commands now come in a Windows version. On a Windows PC the calculator shows PowerShell commands that download llama.cpp\'s official prebuilt build for your card (CUDA for NVIDIA, Vulkan for AMD and Intel) instead of compiling it, and install Ollama with its Windows installer; a switch goes back to Linux. The command generator has the same Windows option.',

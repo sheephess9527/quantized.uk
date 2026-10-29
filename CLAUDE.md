@@ -1151,6 +1151,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-29 | **Patrol** — llama.cpp b11972 (b11974 had no binaries; v0.8.0 requires `-m`/`-hf` except server — no site command affected), `LLAMACPP_BUILD` bumped after checking its Windows assets; MiniMax M3.1 Flash 428B-A23B → `/pending/` (llama.cpp `minimax-m3`, sparse-attention cache, config unreadable); Mistral Large 4 still upcoming |
 | 2026-10-28 (v) | **Windows launch commands** — `Env` `windows`: llama.cpp prebuilt zips pinned to `LLAMACPP_BUILD` (CUDA 12.4 / 13.4 for RTX 50 / Vulkan / CPU, names from the release page), Ollama `install.ps1`; calculator OS switch defaults from the UA after mount; sweep 4,800 cases 0 faults |
 | 2026-10-28 (iv) | **MoE expert offload** — `ModelArch.moe` on 12 models (counted from configs, reconciled with `params`); `offloadPlan().moe` → `-ngl 99 --n-cpu-moe N` (120B/24 GB/16K = 28, as llama.cpp's guide); offload speed bounds now include the KV read; sweep 0 faults |
 | 2026-10-28 (iii) | **zh commands via hf-mirror** — `HF_ENDPOINT=https://hf-mirror.com` (third-party, said in the comment) on every zh `hf download` + vLLM; Ollama `hf.co/` ignores it → zh note gives download + Modelfile import; English unchanged; `/errors/` +1 (huggingface_hub cannot-locate, 20) |

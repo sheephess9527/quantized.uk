@@ -25,6 +25,19 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'minimax-m3-1-flash',
+    name: 'MiniMax M3.1 Flash',
+    vendor: 'MiniMax',
+    announced: '2026-10-23',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'A 428B mixture-of-experts model with about 23B parameters active per token; the weights went up on 23 October under the MiniMax Community License, reportedly about 252 GB, with the routed experts stored in 4-bit. llama.cpp loads its architecture (`minimax-m3`, sized there as 428B-A23B), which caches attention through MiniMax Sparse Attention with an indexer — a cache layout this site has not sized before. It is not sized until its config and the GGUF file sizes have been read.',
+      zh: '一个 428B 的混合专家模型，每个 token 约激活 23B 参数；权重于 10 月 23 日以 MiniMax Community License 发布，据报道约 252 GB，路由专家以 4-bit 存储。llama.cpp 已能加载它的架构（`minimax-m3`，源码里标为 428B-A23B），它的注意力缓存采用带索引器的 MiniMax 稀疏注意力——本站还没有计算过这种缓存结构。在读到它的配置和 GGUF 文件大小之前不计算显存。',
+    },
+    recheck: { en: 'When its config.json and a GGUF file listing are in hand.', zh: '拿到它的 config.json 和 GGUF 文件列表时。' },
+    checkedAt: '2026-10-29',
+  },
+  {
     id: 'lfm3-1-7b',
     name: 'LFM3 1.7B',
     vendor: 'Liquid AI',
@@ -76,11 +89,11 @@ export const pendingModels: PendingModel[] = [
     announced: '2026-10-06',
     reason: 'no-weights',
     detail: {
-      en: 'Announced at about 1T parameters, API-only so far. Its Hugging Face repo is marked as an upcoming release; reported dates for the weights range from 27 to 31 October.',
-      zh: '公布时约 1T 参数，目前只有 API。它的 Hugging Face 仓库标注为即将发布；关于权重的报道日期在 10 月 27 日到 31 日之间。',
+      en: 'Announced at about 1T parameters, API-only so far. Its Hugging Face repo is still marked as an upcoming release, with 31 October as the expected date.',
+      zh: '公布时约 1T 参数，目前只有 API。它的 Hugging Face 仓库仍标注为即将发布，预计日期为 10 月 31 日。',
     },
     recheck: { en: 'When the weights are downloadable and a GGUF exists.', zh: '权重可下载并且有 GGUF 时。' },
-    checkedAt: '2026-10-27',
+    checkedAt: '2026-10-29',
   },
   {
     id: 'step-5-preview',

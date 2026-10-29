@@ -425,6 +425,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-29 — Patrol: llama.cpp b11972 (v0.8.0); MiniMax M3.1 Flash pending
+
+- **Runtimes** (tag / release pages, pre-releases skipped): llama.cpp newest tag b11974 had no binaries yet,
+  so `LLAMACPP_BUILD` → **b11972**, whose release lists every `llama-b11972-bin-win-*` zip under the same
+  names (`/releases/expanded_assets/b11972`). The first `v0.8.0` release (10-28) requires `--model` / `-hf`
+  except for the server (`common/arg.cpp`: "model is required (except for server)"); every site command
+  passes `-m`/`-hf`, and `--list-devices` exits during parsing, so nothing changes. Ollama v0.40.12 still
+  Latest (v0.40.13-rc1 pre-release skipped); vLLM v0.32.0 and ExLlamaV3 1.6.5 unchanged.
+- **MiniMax M3.1 Flash** (weights 10-23, 428B-A23B per secondary coverage, MiniMax Community License) →
+  `/pending/` `awaiting-data`. llama.cpp has `minimax-m3` (`src/models/minimax-m3.cpp`: 60 layers →
+  `LLM_TYPE_428B_A23B`, DeepSeek-V3-style dense lead + routed/shared experts, MiniMax Sparse Attention
+  with an indexer and its own `llama-kv-cache-msa`), a cache shape not yet expressible in `ModelArch`;
+  transformers has no `minimax_m3` config and huggingface.co is blocked, so no layout or file size was read.
+- Mistral Large 4: HF placeholder still "upcoming" (ETA 10-31), pending entry re-dated. SenseNova U1
+  (`sensenova_u1`, already in llama.cpp) skipped — a unified image-generation/understanding model, out of
+  scope. LFM3 still awaiting config + GGUF bytes.
+
 ### 2026-10-28 (v) — Windows (PowerShell) launch commands
 
 - **`Env` gains `windows`** (`lib/utils/cli.ts`): llama.cpp from the project's prebuilt zips, pinned to
