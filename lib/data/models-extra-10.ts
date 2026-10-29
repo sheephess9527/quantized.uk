@@ -57,23 +57,28 @@ export const extraModels10: QuantModel[] = [
     id: 'kimi-linear-48b-a3b',
     name: 'Kimi Linear 48B-A3B Instruct',
     family: 'Moonshot Kimi Linear',
-    // Vendor README: 48B total / 3B activated. A layer-by-layer estimate from
-    // KimiLinearConfig lands at ~49.1B (the KDA projections are approximated),
-    // within 2.3% — the vendor figure is used.
-    params: 48.0,
+    // 49,122,681,728 = model.safetensors.index.json `total_parameters` (owner-pulled
+    // 2026-10-29; BF16 49,122,599,168 + F32 82,560, × 2 / × 4 = the 98,245,528,576-byte
+    // `total_size`). The README's "48B" is a rounded figure; this index carried 48.0 until
+    // 2026-10-29, which understated the weights by 2.3%.
+    params: 49.12,
     paramLabel: '48B-A3B',
     categories: ['general', 'instruct'],
     hardwareTags: ['pro-gpu', 'mac'],
     // MoonshotAI/Kimi-Linear README: context length 1M.
     contextLength: 1048576,
     /**
-     * 27 layers; the README gives a 3:1 KDA-to-MLA ratio and "reduces the need
-     * for large KV caches by up to 75%". 7 full layers of 27 is a 74% cut and
-     * 20:7 ≈ 3:1; transformers' fallback rule (every 4th, 0-based) would give 6
-     * — a 78% cut, which the published figure does not support. KDA layers keep
-     * a fixed recurrent state and, in llama.cpp, no KV cache at all.
+     * 27 layers; config.json `linear_attn_config` (owner-pulled 2026-10-29) lists
+     * full_attn_layers 4, 8, 12, 16, 20, 24, 27 (7, 1-based) and 20 kda_layers —
+     * the 7 this entry had inferred from the README's 3:1 ratio. KDA layers keep a
+     * fixed recurrent state and, in llama.cpp, no KV cache at all.
+     * MoE offload: first_k_dense_replace 1, then 26 MoE layers × 256 experts × 3 ×
+     * 2304 × 1024 = 47.11B routed, top-8 + 1 shared; the other 2.01B of the 49.12B
+     * total (untied 163840 × 2304 embeddings 0.75B, MLA + KDA projections, shared
+     * experts 0.18B, dense layer 0.06B) stays on the card.
      */
     arch: {
+      moe: { expertParams: 47.11, experts: 256, perToken: 8, moeLayers: 26, denseLead: 1 },
       layers: 27,
       attHeads: 32,
       kvHeads: 1,
@@ -88,8 +93,8 @@ export const extraModels10: QuantModel[] = [
     },
     addedAt: ADDED,
     description: {
-      en: 'Moonshot\'s hybrid linear-attention model: 48B total, 3B active, a 1M-token window. Only 7 of its 27 layers keep a growing cache, and those store MLA\'s compressed vectors, so even the full million tokens needs about 8 GB of cache — the weights, not the context, decide what it runs on. At Q4 a Mac with 48 GB or more runs it comfortably; a 32 GB card holds it only with no room to spare. Sizes below use the calculator\'s generic rates: no GGUF file size could be checked, and quality loss per level has not been published.',
-      zh: '月之暗面的混合线性注意力模型：总参数 48B，激活 3B，上下文窗口 100 万 token。27 层中只有 7 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 100 万 token，缓存也只要约 8 GB——决定它能在什么硬件上跑的是权重，不是上下文。Q4 下，48 GB 及以上的 Mac 可以从容运行；32 GB 显卡只能勉强装下、几乎不剩余量。下方体积使用计算器通用的比特率：未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Moonshot\'s hybrid linear-attention model: 49.1B parameters in total (the name rounds it to 48B), about 3B active, a 1M-token window. Only 7 of its 27 layers keep a growing cache, and those store MLA\'s compressed vectors, so even the full million tokens needs about 8 GB of cache — the weights, not the context, decide what it runs on. At Q4 a Mac with 48 GB or more runs it comfortably; a 32 GB card holds it only with no room to spare. Sizes below use the calculator\'s generic rates: no GGUF file size could be checked, and quality loss per level has not been published.',
+      zh: '月之暗面的混合线性注意力模型：总参数 49.1B（名称里取整为 48B），激活约 3B，上下文窗口 100 万 token。27 层中只有 7 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 100 万 token，缓存也只要约 8 GB——决定它能在什么硬件上跑的是权重，不是上下文。Q4 下，48 GB 及以上的 Mac 可以从容运行；32 GB 显卡只能勉强装下、几乎不剩余量。下方体积使用计算器通用的比特率：未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 29.1, hfSearchUrl: hf('Kimi-Linear-48B-A3B-Instruct GGUF Q4_K_M'), confidence: 'estimated' },

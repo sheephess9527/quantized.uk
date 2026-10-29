@@ -16,7 +16,7 @@ export const dataLastUpdated = '2026-10-29';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-10-23';
+export const sizingChangedAt = '2026-10-29';
 
 export const dataSources = {
   models: {
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-29',
+    en: 'Kimi Linear 48B-A3B is now sized from its real parameter count, 49.1B rather than the 48B in its name, so its sizes rise by about 2% (Q4_K_M about 31.2 GB at 4K). It also gets the calculator\'s expert-offload answer: on a 24 GB card it keeps every layer on the GPU with part of its experts in system RAM.',
+    zh: 'Kimi Linear 48B-A3B 现在按真实参数量 49.1B 计算，而不是名称里的 48B，所以体积上调约 2%（Q4_K_M 在 4K 下约 31.2 GB）。计算器也为它加上了"只把专家放到内存"的方案：在 24 GB 显卡上可以所有层都留在 GPU，只把一部分专家放进内存。',
+  },
   {
     date: '2026-10-29',
     en: 'Two small models added: MiMo-V2.6-Distill-Qwen-9B, which fits an 8 GB card at Q4_K_M with room for a 16K context, and Liquid AI\'s LFM3 1.7B, which holds its full 256K window in under 5 GB. The expert-offload answer in the calculator now also covers Qwen3.6 35B-A3B, MiniCPM-V 4.7, Gemma 4 26B-A4B, LFM2.5 24B-A2B and Mellum2.1 — for example, Qwen3.6 35B-A3B on a 16 GB card keeps every layer on the GPU with 18 layers\' experts in system RAM.',

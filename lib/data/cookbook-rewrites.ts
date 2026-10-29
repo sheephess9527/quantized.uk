@@ -100,8 +100,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Pull a model and run it',
         headingZh: '拉一个模型跑起来',
-        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 102 of the 127 models here comfortably — the largest being Kimi Linear 48B-A3B at about 30.4 GB.',
-        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 127 个模型中的 102 个 —— 最大的是约 30.4 GB 的 Kimi Linear 48B-A3B。',
+        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 102 of the 127 models here comfortably — the largest being Kimi Linear 48B-A3B at about 31.2 GB.',
+        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 127 个模型中的 102 个 —— 最大的是约 31.2 GB 的 Kimi Linear 48B-A3B。',
         code: { lang: 'bash', content: 'ollama pull llama3.1:8b\nollama run llama3.1:8b "Summarise the difference between Q4_K_M and Q5_K_M."' },
       },
       {

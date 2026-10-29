@@ -425,6 +425,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-29 (iii) — Kimi Linear 48B-A3B: real total + expert offload
+
+- **Total parameters:** owner-pulled `model.safetensors.index.json` gives `total_parameters` 49,122,681,728.
+  - The safetensors API splits it as BF16 49,122,599,168 + F32 82,560; at 2 and 4 bytes that equals the `total_size` of 98,245,528,576 bytes.
+  - `params` 48.0 → **49.12**. The README's "48B" is rounded; the 10-29 (ii) layer count of ~49.3B was within 0.4%.
+  - Effect: Q4_K_M 30.4 → 31.2 GB @4K. Still green on 48 GB Macs, still tight on 32 GB cards; no quoted fit count moved.
+  - `sizingChangedAt` → 2026-10-29. The Mac guide's "about 30.4 GB" → 31.2 (re-checked: still the largest comfortable model on an M3 Max 48G).
+- **Attention layers:** config `linear_attn_config.full_attn_layers` lists 7 layers, which confirms the 7 that had been inferred from the README's 3:1 ratio.
+- **`arch.moe`** (now 18 models): 26 MoE layers × 256 × 3 × 2304 × 1024 = 47.11B routed, `first_k_dense_replace` 1, top-8; 2.01B stays on the card.
+
 ### 2026-10-29 (ii) — +2 models (127), MoE offload on 5 more, owner-pulled data
 
 Source: owner-pulled Hugging Face `config.json` files and `api/models/<repo>/tree/main` byte counts (2026-10-29 02:11 UTC).
