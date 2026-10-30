@@ -425,6 +425,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-30 (iii) — Repo ops: PR #15 merged, PR #14 closed
+
+- PR #15 (Mistral Large 4) merged via PR (squash, `48ec791`); Cloudflare Pages deploy from `main` verified live: `/quant-hub/mistral-large-4/` and `/zh/quant-hub/mistral-large-4/` return 200.
+- PR #14 (LFM3 1.7B) closed unmerged: superseded by commits already on `main`.
+- Homepage top changelog checked after deploy: shows the 10-30 (ii) entry in EN and ZH. The old "stays on the pending page" text seen earlier was fetched before the deploy finished; no content change.
+- Infrastructure/docs only, so no reader changelog entry in `meta.ts`.
+
 ### 2026-10-30 (ii) — +1 model (128): Mistral Large 4 (1T-A52B)
 
 - **Config:** official `params.json` in `mistralai/Mistral-Large-4-1T-A52B`: 72 layers, dim 6144, 64 heads × 128, MLA (kv_lora 512 + rope 64), 128 experts top-4 + 1 shared (hidden 6144), first dense 1, DSA indexer 32 × 128 top-k 2048, 1,048,576 positions, vision encoder (separate mmproj).
