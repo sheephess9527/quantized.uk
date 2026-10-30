@@ -1154,6 +1154,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-30 (iii) | **Repo ops, no site change** — PR #15 (Mistral Large 4) merged by squash as `48ec791`, Pages deploy verified live (`/quant-hub/mistral-large-4/` + `/zh/` 200); PR #14 (LFM3 1.7B) closed unmerged, superseded by main; homepage top changelog checked: old "stays on pending" text was pre-deploy timing, content correct, no change |
 | 2026-10-30 (ii) | **+1 model (128): Mistral Large 4 1T-A52B** — official params.json + ggml-org GGUF bytes; MLA + DSA: 63 own caches + 9 shared, 44 indexer keys, 83,840 B/token → fullHeadDim 333; IQ2_XXS 2.27 bpw 311 GB @4K (512 GB Mac only); pending entry removed; guide counts 127 → 128 |
 | 2026-10-30 | **Patrol** — llama.cpp b11997 (b11998/b11996/b11989 had no binaries), Ollama v0.40.13 Latest (LFM3 on Linux/Windows → LFM3 description corrected); llama.cpp added `mistral-large4` (MLA + DSA + cross-layer KV sharing) → Mistral Large 4 `/pending/` not-sized; `limite` 1B research model skipped |
 | 2026-10-29 (iii) | **Kimi Linear real total** — safetensors index `total_parameters` 49.12B (was the README's rounded 48.0; Q4_K_M 30.4 → 31.2 GB @4K, no quoted count moved); `arch.moe` added (18 models); `sizingChangedAt` 10-29 |
