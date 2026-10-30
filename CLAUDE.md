@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **127** in index (`models-extra` … `models-extra-12`) |
+| Models | **128** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1154,6 +1154,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-30 (ii) | **+1 model (128): Mistral Large 4 1T-A52B** — official params.json + ggml-org GGUF bytes; MLA + DSA: 63 own caches + 9 shared, 44 indexer keys, 83,840 B/token → fullHeadDim 333; IQ2_XXS 2.27 bpw 311 GB @4K (512 GB Mac only); pending entry removed; guide counts 127 → 128 |
 | 2026-10-30 | **Patrol** — llama.cpp b11997 (b11998/b11996/b11989 had no binaries), Ollama v0.40.13 Latest (LFM3 on Linux/Windows → LFM3 description corrected); llama.cpp added `mistral-large4` (MLA + DSA + cross-layer KV sharing) → Mistral Large 4 `/pending/` not-sized; `limite` 1B research model skipped |
 | 2026-10-29 (iii) | **Kimi Linear real total** — safetensors index `total_parameters` 49.12B (was the README's rounded 48.0; Q4_K_M 30.4 → 31.2 GB @4K, no quoted count moved); `arch.moe` added (18 models); `sizingChangedAt` 10-29 |
 | 2026-10-29 (ii) | **+2 models (127): MiMo-V2.6-Distill-Qwen-9B, LFM3 1.7B; `arch.moe` on 5 more (17)** — owner-pulled configs + byte counts; MiMo 6.3 GB @4K green on 8 GB; LFM3 4.5 GB at 256K; Kimi Linear skipped (config counts ~49.3B vs 48.0 in the index); 10 guides re-counted (two en sentences had drifted: 91 → 96, 110 → 115); GLM-5.3-Flash / MiniMax M3.1 Flash → not-sized (new caches, UD-only GGUFs) |

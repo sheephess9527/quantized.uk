@@ -425,6 +425,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-30 (ii) — +1 model (128): Mistral Large 4 (1T-A52B)
+
+- **Config:** official `params.json` in `mistralai/Mistral-Large-4-1T-A52B`: 72 layers, dim 6144, 64 heads × 128, MLA (kv_lora 512 + rope 64), 128 experts top-4 + 1 shared (hidden 6144), first dense 1, DSA indexer 32 × 128 top-k 2048, 1,048,576 positions, vision encoder (separate mmproj).
+- **Params:** summed tensor counts from all 13 `ggml-org/Mistral-Large-4-1T-A52B-GGUF` Q4_K_M shard headers = 1,049,357,365,536 → `params` 1049.36. Routed experts 71 × 128 × 3 × 6144² = 1,029.18B; remainder + 4/128 of experts ≈ 52B active.
+- **Cache** (read in `src/llama-model.cpp` → `llama_kv_cache_dsa`, `src/llama-kv-cache-dsa.cpp`): 63 of 72 layers own a 576-wide MLA K cache, 9 (39, 43 … 71) reuse layer 35's; 44 indexer layers add 1 × 128. f16: 63·576·2 + 44·128·2 = 83,840 B/token → `fullLayers 63, fullKvHeads 1, fullHeadDim 333` (+0.09%).
+- **Quants** (ggml-org bytes, all shards): IQ2_XXS 297.68 GB (2.27), Q2_K 380.71 GB (2.90), Q4_K_M 634.80 GB (4.84), Q8_0 1,115.15 GB (8.50); mmproj BF16 3.44 GB.
+- **Fit:** M5 Ultra 512 GB only — IQ2_XXS comfortable to 256K (333.7 GB), tight at 1M (401.3); Q2_K tight to 64K. `/pending/` entry removed; guide counts recomputed.
+
 ### 2026-10-30 — Patrol: llama.cpp b11997, Ollama v0.40.13; Mistral Large 4 arch in llama.cpp
 
 - **Runtimes:** tag and release pages read; pre-releases skipped.

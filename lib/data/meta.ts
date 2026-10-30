@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-10-30',
+    en: 'Mistral Large 4 added, sized from ggml-org\'s GGUF files and the cache layout in llama.cpp\'s source. It is a 1T mixture-of-experts model with about 52B active; only its 2-bit files fit a 512 GB Mac Studio, IQ2_XXS at about 311 GB at 4K. It leaves the pending page.',
+    zh: '新增 Mistral Large 4，按 ggml-org 的 GGUF 文件和 llama.cpp 源码中的缓存结构计算。它是 1T 混合专家模型，约激活 52B；只有 2-bit 文件装得进 512 GB 的 Mac Studio，IQ2_XXS 在 4K 下约需 311 GB。它已移出待收录页。',
+  },
+  {
+    date: '2026-10-30',
     en: 'LFM3 1.7B now runs in Ollama on Windows and Linux, not only on Macs, and its page says so. Runtime versions updated: llama.cpp b11997, Ollama v0.40.13; the Windows commands download the new llama.cpp build. llama.cpp has added support for Mistral Large 4, which stays on the pending page until it can be sized.',
     zh: 'LFM3 1.7B 现在可以在 Windows 和 Linux 的 Ollama 上运行，不再只限 Mac，模型页已同步更新。运行时版本已更新：llama.cpp b11997、Ollama v0.40.13；Windows 启动命令改为下载新的 llama.cpp 版本。llama.cpp 已加入对 Mistral Large 4 的支持，它在能计算显存之前仍留在待收录页。',
   },
