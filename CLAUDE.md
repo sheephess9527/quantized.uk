@@ -1154,6 +1154,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-30 | **Patrol** — llama.cpp b11997 (b11998/b11996/b11989 had no binaries), Ollama v0.40.13 Latest (LFM3 on Linux/Windows → LFM3 description corrected); llama.cpp added `mistral-large4` (MLA + DSA + cross-layer KV sharing) → Mistral Large 4 `/pending/` not-sized; `limite` 1B research model skipped |
 | 2026-10-29 (iii) | **Kimi Linear real total** — safetensors index `total_parameters` 49.12B (was the README's rounded 48.0; Q4_K_M 30.4 → 31.2 GB @4K, no quoted count moved); `arch.moe` added (18 models); `sizingChangedAt` 10-29 |
 | 2026-10-29 (ii) | **+2 models (127): MiMo-V2.6-Distill-Qwen-9B, LFM3 1.7B; `arch.moe` on 5 more (17)** — owner-pulled configs + byte counts; MiMo 6.3 GB @4K green on 8 GB; LFM3 4.5 GB at 256K; Kimi Linear skipped (config counts ~49.3B vs 48.0 in the index); 10 guides re-counted (two en sentences had drifted: 91 → 96, 110 → 115); GLM-5.3-Flash / MiniMax M3.1 Flash → not-sized (new caches, UD-only GGUFs) |
 | 2026-10-29 | **Patrol** — llama.cpp b11972 (b11974 had no binaries; v0.8.0 requires `-m`/`-hf` except server — no site command affected), `LLAMACPP_BUILD` bumped after checking its Windows assets; MiniMax M3.1 Flash 428B-A23B → `/pending/` (llama.cpp `minimax-m3`, sparse-attention cache, config unreadable); Mistral Large 4 still upcoming |

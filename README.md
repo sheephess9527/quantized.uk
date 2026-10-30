@@ -425,6 +425,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-30 — Patrol: llama.cpp b11997, Ollama v0.40.13; Mistral Large 4 arch in llama.cpp
+
+- **Runtimes:** tag and release pages read; pre-releases skipped.
+  - llama.cpp: newest tag b11998, and b11996 / b11989 have no binaries. **b11997** lists every `llama-b11997-bin-win-*` zip under the usual names (the first fetch of its asset page was truncated; a re-fetch gave all 38). `LLAMACPP_BUILD` → b11997.
+  - Ollama: **v0.40.13** is now Latest. Its only note is "LFM3 on Linux and Windows", so the LFM3 1.7B description, which said Apple-only (from v0.40.12), is corrected.
+  - vLLM v0.32.0 and ExLlamaV3 1.6.5 are unchanged.
+- **New llama.cpp architectures** (diff of `src/llama-arch.cpp` against 10-29):
+  - `mistral-large4` (`src/models/mistral-large4.cpp`): MLA, a DSA indexer with `llama-kv-cache-dsa`, and a KV-source map that shares caches across layers. None of this is expressible in `ModelArch` yet.
+    - One secondary report says the weights went up 10-29 as FP8 / NVFP4. Both linked articles are outside this session's network allow-list, so that claim is unverified here.
+    - `/pending/` entry: `no-weights` → `not-sized`, with the claim attributed to reports.
+  - `limite` (paradigma-inc, 48 layers → `LLM_TYPE_1B`, SWA pattern 4, value embeddings): a research model with no verified release note, so skipped.
+- **Deploy:** this patrol also ships the 10-29 (iii) Kimi Linear commit, which the owner held for this morning's deploy.
+
 ### 2026-10-29 (iii) — Kimi Linear 48B-A3B: real total + expert offload
 
 - **Total parameters:** owner-pulled `model.safetensors.index.json` gives `total_parameters` 49,122,681,728.

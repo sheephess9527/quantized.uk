@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-29';
+export const dataLastUpdated = '2026-10-30';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,11 +71,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-29',
+  checkedAt: '2026-10-30',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.32.0',
-    ollama: 'v0.40.12',
+    ollama: 'v0.40.13',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-30',
+    en: 'LFM3 1.7B now runs in Ollama on Windows and Linux, not only on Macs, and its page says so. Runtime versions updated: llama.cpp b11997, Ollama v0.40.13; the Windows commands download the new llama.cpp build. llama.cpp has added support for Mistral Large 4, which stays on the pending page until it can be sized.',
+    zh: 'LFM3 1.7B 现在可以在 Windows 和 Linux 的 Ollama 上运行，不再只限 Mac，模型页已同步更新。运行时版本已更新：llama.cpp b11997、Ollama v0.40.13；Windows 启动命令改为下载新的 llama.cpp 版本。llama.cpp 已加入对 Mistral Large 4 的支持，它在能计算显存之前仍留在待收录页。',
+  },
   {
     date: '2026-10-29',
     en: 'Kimi Linear 48B-A3B is now sized from its real parameter count, 49.1B rather than the 48B in its name, so its sizes rise by about 2% (Q4_K_M about 31.2 GB at 4K). It also gets the calculator\'s expert-offload answer: on a 24 GB card it keeps every layer on the GPU with part of its experts in system RAM.',
