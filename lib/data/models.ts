@@ -264,6 +264,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 30, type: 'new', modelId: 'mistral-large-4', level: 'IQ2_XXS', note: { en: 'Mistral 1T MoE, 512 GB Mac', zh: 'Mistral 1T MoE，512 GB Mac 可跑' }, quantizer: 'ggml-org' },
   { id: 29, type: 'new', modelId: 'mimo-v2-6-distill-qwen-9b', level: 'Q4_K_M', note: { en: 'MiMo distilled into a 9B, 8 GB', zh: 'MiMo 蒸馏的 9B，8 GB 可跑' }, quantizer: 'bartowski' },
   { id: 28, type: 'new', modelId: 'nanbeige4.3-33b', level: 'Q3_K_M', note: { en: 'Dense 33B, Apache 2.0, 24 GB', zh: '33B 稠密，Apache 2.0，24 GB 可跑' }, quantizer: 'bartowski' },
   { id: 27, type: 'new', modelId: 'nemotron-3.5-bolt-e4b', level: 'Q4_K_M', note: { en: 'NVIDIA vision model, 8 GB', zh: 'NVIDIA 视觉小模型，8 GB 可跑' }, quantizer: 'lmstudio-community' },

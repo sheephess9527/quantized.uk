@@ -70,19 +70,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-10-21',
   },
   {
-    id: 'mistral-large-4',
-    name: 'Mistral Large 4',
-    vendor: 'Mistral AI',
-    announced: '2026-10-06',
-    reason: 'not-sized',
-    detail: {
-      en: 'About 1T parameters with roughly 49B active per token. llama.cpp added its architecture on 29 October (`mistral-large4`): MLA attention with a DSA indexer and key/value caches shared across layers — a cache layout this site cannot size yet. Reports say the weights went up the same day as FP8 and NVFP4 checkpoints; the Hugging Face repo could not be read from here and no GGUF has been seen. At this size only multi-GPU servers or the largest Macs could hold it.',
-      zh: '约 1T 参数，每个 token 约激活 49B。llama.cpp 于 10 月 29 日加入了它的架构（`mistral-large4`）：MLA 注意力加 DSA 索引器，KV 缓存在层之间共享——本站目前还算不了这种缓存结构。有报道称权重已于同日以 FP8 和 NVFP4 版本发布；这里读不到 Hugging Face 仓库，也还没看到 GGUF。按这个体积，只有多卡服务器或最大内存的 Mac 才能装下。',
-    },
-    recheck: { en: 'When a GGUF exists and its shared-cache layout has been read in llama.cpp\'s source.', zh: '有 GGUF、并且在 llama.cpp 源码里核实它的共享缓存结构时。' },
-    checkedAt: '2026-10-30',
-  },
-  {
     id: 'step-5-preview',
     name: 'Step-5 Preview',
     vendor: 'StepFun',

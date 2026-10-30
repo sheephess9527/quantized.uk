@@ -28,6 +28,7 @@ const ADDED_1023 = '2026-10-23';
 const ADDED_BOLT_E4B = '2026-10-24';
 const ADDED_1026 = '2026-10-26';
 const ADDED_1029 = '2026-10-29';
+const ADDED_1030 = '2026-10-30';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1273,6 +1274,51 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.22, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf', bytes: 5_841_049_120, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
       { format: 'GGUF', level: 'Q5_K_M', bpw: 6.14, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q5_K_M.gguf', bytes: 6_876_124_704, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('MiMo-V2.6-Distill-Qwen-9B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF', file: 'MiMo-V2.6-Distill-Qwen-9B-Q8_0.gguf', bytes: 9_545_979_424, mmprojBytes: 918_166_048, checkedAt: '2026-10-29' } },
+    ],
+  },
+  {
+    // Mistral Large 4 (Mistral AI, 1T-A52B). Official params.json in mistralai/Mistral-Large-4-1T-A52B
+    // (read 2026-10-30): dim 6144, 72 layers, 64 heads × 128, MLA kv_lora_rank 512 + qk_rope 64,
+    // 128 routed experts top-4 + 1 shared, expert hidden 6144, first_k_dense_replace 1, vocab 204800,
+    // 1,048,576 positions, DSA indexer (32 heads × 128, top-k 2048), vision encoder in the separate mmproj.
+    // Params: sum of tensor counts across all 13 shard headers of ggml-org/Mistral-Large-4-1T-A52B-GGUF
+    // Q4_K_M = 1,049,357,365,536 (text model). MoE: 71 × 128 × 3 × 6144 × 6144 = 1,029.18B routed;
+    // the ~20.2B remainder (attention, shared experts, embeddings, indexer) + 4/128 of the experts ≈ 52B
+    // active, matching the name.
+    // Cache, from llama.cpp src/llama-model.cpp (LLM_ARCH_MISTRAL_LARGE4 → llama_kv_cache_dsa) and
+    // src/llama-kv-cache-dsa.cpp: 63 of 72 layers own an MLA cache (576 values per token); the other 9
+    // (layers 39, 43, … 71) reuse layer 35's. The 44 "full" indexer layers each add a 1 × 128 indexer
+    // key. f16 bytes per token = 63·576·2 + 44·128·2 = 83,840. Encoded as fullLayers 63, fullKvHeads 1,
+    // fullHeadDim 333 (83,840 ÷ (2·2·63) = 332.7, rounded up; +0.09%).
+    id: 'mistral-large-4',
+    name: 'Mistral Large 4',
+    family: 'Mistral Large',
+    params: 1049.36,
+    paramLabel: '1T-A52B',
+    categories: ['general', 'instruct', 'code', 'multimodal'],
+    hardwareTags: ['pro-gpu', 'mac'],
+    contextLength: 1048576,
+    arch: {
+      layers: 72, attHeads: 64, kvHeads: 1, headDim: 288,
+      attention: {
+        fullLayers: 63,
+        windowLayers: 0,
+        fullKvHeads: 1,
+        fullHeadDim: 333,
+        note: {
+          en: 'MLA attention: 63 of 72 layers keep their own compressed cache and the other 9 reuse an earlier layer\'s; 44 layers add a small sparse-attention indexer key. About 82 KB per token in total.',
+          zh: 'MLA 注意力：72 层中 63 层保留各自的压缩缓存，另外 9 层复用前面某层的缓存；其中 44 层还多存一个稀疏注意力索引键。合计每个 token 约 82 KB。',
+        },
+      },
+      moe: { expertParams: 1029.18, experts: 128, perToken: 4, moeLayers: 71, denseLead: 1 },
+    },
+    addedAt: ADDED_1030,
+    description: { en: 'Mistral AI\'s open-weight flagship, released in October: a 1T mixture-of-experts model with about 52B active per token. It reads text and images (the vision encoder is a separate 3.4 GB file) and has a 1M-token window. Its compressed attention cache costs about 82 KB per token, so context is cheap next to the weights. Only the 2-bit files fit any machine in this index, a 512 GB Mac Studio: IQ2_XXS (ggml-org\'s 298 GB file) needs about 311 GB at 4K and 334 GB at 256K, both comfortable, and about 401 GB across the full 1M window, which is tight. Q2_K (381 GB) needs about 398 GB at 4K and is tight on that Mac up to 64K. Q4_K_M (635 GB, about 664 GB at 4K) and Q8_0 (1.1 TB) need multi-GPU servers. llama.cpp runs it since late October. Sizes come from ggml-org\'s GGUF files, and no per-level quality loss has been published.', zh: 'Mistral AI 的开放权重旗舰模型，10 月发布：1T 混合专家模型，每个 token 约激活 52B 参数。它支持文本和图像输入（视觉编码器是单独的 3.4 GB 文件），上下文窗口 100 万 token。它的注意力缓存经过压缩，每个 token 约 82 KB，和权重相比上下文很便宜。本站收录的机器中只有 512 GB 的 Mac Studio 装得下，而且只能用 2-bit 文件：IQ2_XXS（ggml-org 的 298 GB 文件）在 4K 下约需 311 GB、256K 约 334 GB，都很从容，用满 100 万上下文约 401 GB，偏紧。Q2_K（381 GB）在 4K 下约需 398 GB，在这台 Mac 上到 64K 为止偏紧。Q4_K_M（635 GB，4K 下约 664 GB）和 Q8_0（1.1 TB）需要多卡服务器。llama.cpp 自 10 月下旬起支持运行。体积按 ggml-org 发布的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.27, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF IQ2_XXS'), confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 297_676_048_832, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
+      { format: 'GGUF', level: 'Q2_K',    bpw: 2.90, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q2_K'),    confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 380_706_433_472, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
+      { format: 'GGUF', level: 'Q4_K_M',  bpw: 4.84, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q4_K_M'),  confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 634_802_244_608, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
+      { format: 'GGUF', level: 'Q8_0',    bpw: 8.50, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q8_0'),    confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 1_115_150_340_608, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
     ],
   },
 ];
