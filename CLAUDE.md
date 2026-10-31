@@ -250,6 +250,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   counts match the emitted list, `inLanguage`/`url` follow the page's language, FAQ questions appear
   in the visible text. There is deliberately no `AggregateRating` or `Review` anywhere — the site has
   no ratings to report, and inventing a reviewer identity is not on the table.
+- **No `Product` without offers/review/aggregateRating, no `SoftwareApplication` without offers** (2026-10-31,
+  Search Console product-snippet error). Guides tagged their card as a `Product`; Google then demands
+  commercial fields the site cannot honestly supply. Use `Thing`; the postbuild gate fails on either.
 - **A schema entity is not more credible for citing an identity that does not exist.** The
   site-wide `Organization` block (`components/seo/JsonLd.tsx`) deliberately omits `founder` (no
   real `Person` is named — `/about/` describes an intentionally unnamed maintainer) and `sameAs`
@@ -1157,6 +1160,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-31 (ii) | **Search Console product-snippet error** — guide JSON-LD typed the target card `Product` (+ model mentions as offer-less `SoftwareApplication`, 222 entities); both → `Thing`; postbuild gate now rejects either |
 | 2026-10-31 | **Patrol** — llama.cpp b12017 (all Windows zips present), Ollama/vLLM/ExLlamaV3 unchanged; only new llama.cpp model commit is Mistral Large 4 (already indexed); LFM3-VL-2B skipped (no config/bytes reachable) |
 | 2026-10-30 (iii) | **Repo ops, no site change** — PR #15 (Mistral Large 4) merged by squash as `48ec791`, Pages deploy verified live (`/quant-hub/mistral-large-4/` + `/zh/` 200); PR #14 (LFM3 1.7B) closed unmerged, superseded by main; homepage top changelog checked: old "stays on pending" text was pre-deploy timing, content correct, no change |
 | 2026-10-30 (ii) | **+1 model (128): Mistral Large 4 1T-A52B** — official params.json + ggml-org GGUF bytes; MLA + DSA: 63 own caches + 9 shared, 44 indexer keys, 83,840 B/token → fullHeadDim 333; IQ2_XXS 2.27 bpw 311 GB @4K (512 GB Mac only); pending entry removed; guide counts 127 → 128 |

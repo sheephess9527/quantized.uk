@@ -298,6 +298,11 @@ if (existsSync(redirectsFile)) {
       for (const o of walk(data)) {
         if (zh && o['@type'] === 'ListItem' && typeof o.item === 'string' && o.item.startsWith('https://quantized.uk/') && !o.item.includes('/zh')) problems.push(`${page}: breadcrumb leaves /zh → ${o.item}`);
         if (o['@type'] === 'ItemList' && Array.isArray(o.itemListElement) && 'numberOfItems' in o && o.numberOfItems !== o.itemListElement.length) problems.push(`${page}: ItemList says ${o.numberOfItems}, lists ${o.itemListElement.length}`);
+        // Google's Product and Software App rich results require offers, review or
+        // aggregateRating; this site has no ratings and sells nothing, so a Product
+        // (or a SoftwareApplication with no offers) is a Search Console error by design.
+        if (o['@type'] === 'Product' && !('offers' in o || 'review' in o || 'aggregateRating' in o)) problems.push(`${page}: Product "${o.name}" has no offers/review/aggregateRating`);
+        if (o['@type'] === 'SoftwareApplication' && !('offers' in o || 'aggregateRating' in o)) problems.push(`${page}: SoftwareApplication "${o.name}" has no offers/aggregateRating`);
         if (o['@type'] === 'Question' && typeof o.name === 'string' && !visible.includes(decode(o.name).slice(0, 40))) problems.push(`${page}: FAQ question not in visible text: ${o.name.slice(0, 60)}`);
       }
     }

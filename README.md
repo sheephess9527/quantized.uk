@@ -425,6 +425,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-31 (ii) — Search Console: Product snippet error on guides
+
+- **Report:** Search Console mailed "1 product-snippet structured-data issue — offers, review or
+  aggregateRating must be specified" for quantized.uk.
+- **Cause:** `articleEntities()` (`lib/utils/article-entities.ts`) emitted each guide's `gpuPreset` card as
+  `about: { "@type": "Product" }`, and the models it links as `mentions: SoftwareApplication` with no
+  `offers` — 222 entities across the en + zh cookbook. Google treats any Product as a product-snippet
+  candidate. The site sells nothing and has no ratings (and will not invent either), so both are now
+  plain `Thing` with the same name / url.
+- **Gate:** `scripts/localize-export.mjs` now fails the build on any `Product` without
+  offers/review/aggregateRating and any `SoftwareApplication` without offers/aggregateRating; proven by
+  running it on the old markup first (222 problems), then 0 after the fix. Tool pages keep their
+  `SoftwareApplication` with a free `Offer` (price 0), which passes.
+- **Owner:** after deploy, press "验证修复 / Validate fix" in Search Console's Product snippets report.
+
 ### 2026-10-31 — Patrol: llama.cpp b12017; no model
 
 - **Runtimes:** llama.cpp tags read (b12005–b12017, all 10-30); `LLAMACPP_BUILD` b11997 → b12017 after its

@@ -14,22 +14,27 @@ import { canonical } from '@/lib/seo';
  * `about` is the subject; `mentions` are the things named in passing. Here the
  * hardware a guide targets is its subject (these are deployment guides for a
  * class of machine) and the models it routes readers to are mentions.
+ *
+ * Both are plain `Thing`s. They were `Product` / `SoftwareApplication`, and
+ * Google treats any Product as a product-snippet candidate that must carry
+ * offers, review or aggregateRating — Search Console flagged it (2026-10-31).
+ * This site sells nothing and has no ratings, so the honest type is the
+ * untyped one; the postbuild gate now fails on either without them.
  */
 export function articleEntities(article: Article, lang: 'en' | 'zh') {
   const prefix = lang === 'zh' ? '/zh' : '';
 
   const gpu = article.gpuPreset ? gpuDatabase.find(g => g.id === article.gpuPreset!.gpuId) : undefined;
   const about = gpu
-    ? [{ '@type': 'Product', name: gpu.name, category: 'Computer hardware' }]
+    ? [{ '@type': 'Thing', name: gpu.name, description: 'Computer hardware' }]
     : undefined;
 
   const mentioned = (article.relatedModelIds ?? [])
     .map(id => models.find(m => m.id === id))
     .filter((m): m is (typeof models)[number] => m !== undefined)
     .map(m => ({
-      '@type': 'SoftwareApplication',
+      '@type': 'Thing',
       name: m.name,
-      applicationCategory: 'DeveloperApplication',
       url: canonical(`${prefix}/quant-hub/${m.id}`),
     }));
 
