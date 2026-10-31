@@ -425,6 +425,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-10-31 — Patrol: llama.cpp b12017; no model
+
+- **Runtimes:** llama.cpp tags read (b12005–b12017, all 10-30); `LLAMACPP_BUILD` b11997 → b12017 after its
+  expanded asset list showed every zip `llamaCppWindows()` names (win cpu-x64, cuda-12.4 / 13.4-x64,
+  vulkan-x64, rocm-10.0, sycl, plus both cudart zips). Ollama v0.40.13 still Latest, vLLM v0.32.0,
+  ExLlamaV3 1.6.5 — unchanged.
+- **Models:** llama.cpp `src/models` history since 10-15 checked: the only model commit after the last
+  patrol is #31376 "mistral large 4 le chonk" (the `mistral-large4` arch, already indexed via PR #15).
+  LFM3-VL-2B (llama.cpp #31252, Ollama v0.40.12) skipped for now — no config or GGUF byte counts
+  reachable (HF blocked); ask the owner if wanted. Kimi K3 (July, 2.8T, 1.56 TB MXFP4) stays out as
+  before — not fresh, and no config readable here.
+
 ### 2026-10-30 (iii) — Repo ops: PR #15 merged, PR #14 closed
 
 - PR #15 (Mistral Large 4) merged via PR (squash, `48ec791`); Cloudflare Pages deploy from `main` verified live: `/quant-hub/mistral-large-4/` and `/zh/quant-hub/mistral-large-4/` return 200.

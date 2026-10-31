@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-30';
+export const dataLastUpdated = '2026-10-31';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-30',
+  checkedAt: '2026-10-31',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.32.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-10-31',
+    en: 'The Windows launch commands now download llama.cpp b12017, the newest build with every Windows package published. Ollama, vLLM and ExLlamaV3 are unchanged since the last check, and no new model this week fits the index yet.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12017，这是 Windows 安装包全部发布的最新版本。Ollama、vLLM 和 ExLlamaV3 与上次检查相比没有变化，本周暂无可收录的新模型。',
+  },
   {
     date: '2026-10-30',
     en: 'Mistral Large 4 added, sized from ggml-org\'s GGUF files and the cache layout in llama.cpp\'s source. It is a 1T mixture-of-experts model with about 52B active; only its 2-bit files fit a 512 GB Mac Studio, IQ2_XXS at about 311 GB at 4K. It leaves the pending page.',

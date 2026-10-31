@@ -1157,6 +1157,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-10-31 | **Patrol** — llama.cpp b12017 (all Windows zips present), Ollama/vLLM/ExLlamaV3 unchanged; only new llama.cpp model commit is Mistral Large 4 (already indexed); LFM3-VL-2B skipped (no config/bytes reachable) |
 | 2026-10-30 (iii) | **Repo ops, no site change** — PR #15 (Mistral Large 4) merged by squash as `48ec791`, Pages deploy verified live (`/quant-hub/mistral-large-4/` + `/zh/` 200); PR #14 (LFM3 1.7B) closed unmerged, superseded by main; homepage top changelog checked: old "stays on pending" text was pre-deploy timing, content correct, no change |
 | 2026-10-30 (ii) | **+1 model (128): Mistral Large 4 1T-A52B** — official params.json + ggml-org GGUF bytes; MLA + DSA: 63 own caches + 9 shared, 44 indexer keys, 83,840 B/token → fullHeadDim 333; IQ2_XXS 2.27 bpw 311 GB @4K (512 GB Mac only); pending entry removed; guide counts 127 → 128 |
 | 2026-10-30 | **Patrol** — llama.cpp b11997 (b11998/b11996/b11989 had no binaries), Ollama v0.40.13 Latest (LFM3 on Linux/Windows → LFM3 description corrected); llama.cpp added `mistral-large4` (MLA + DSA + cross-layer KV sharing) → Mistral Large 4 `/pending/` not-sized; `limite` 1B research model skipped |
