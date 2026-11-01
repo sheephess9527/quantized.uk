@@ -1160,6 +1160,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-01 | **Patrol** — llama.cpp b12024 (b12025 had no binaries yet), ExLlamaV3 1.6.6; Ollama/vLLM unchanged; no new llama.cpp arch, no model |
 | 2026-10-31 (ii) | **Search Console product-snippet error** — guide JSON-LD typed the target card `Product` (+ model mentions as offer-less `SoftwareApplication`, 222 entities); both → `Thing`; postbuild gate now rejects either |
 | 2026-10-31 | **Patrol** — llama.cpp b12017 (all Windows zips present), Ollama/vLLM/ExLlamaV3 unchanged; only new llama.cpp model commit is Mistral Large 4 (already indexed); LFM3-VL-2B skipped (no config/bytes reachable) |
 | 2026-10-30 (iii) | **Repo ops, no site change** — PR #15 (Mistral Large 4) merged by squash as `48ec791`, Pages deploy verified live (`/quant-hub/mistral-large-4/` + `/zh/` 200); PR #14 (LFM3 1.7B) closed unmerged, superseded by main; homepage top changelog checked: old "stays on pending" text was pre-deploy timing, content correct, no change |

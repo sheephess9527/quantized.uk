@@ -425,6 +425,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-01 — Patrol: llama.cpp b12024, ExLlamaV3 1.6.6; no model
+
+- **Runtimes:** llama.cpp tags b12018–b12025 (all 10-31). b12025 had only source archives when read, so
+  `LLAMACPP_BUILD` → b12024, whose asset list carries every zip `llamaCppWindows()` names (38 assets).
+  ExLlamaV3 1.6.5 → 1.6.6 (10-31; the `runtimeVersions.note` text names it). Ollama v0.40.13 still Latest,
+  vLLM v0.32.0 unchanged.
+- **Models:** llama.cpp `src/models` commits since the last patrol are fixes only (#31406 shared-KV rotation,
+  #30831 LFM short-conv reshape); no new arch. Search turned up no new open-weight release in the window.
+
 ### 2026-10-31 (ii) — Search Console: Product snippet error on guides
 
 - **Report:** Search Console mailed "1 product-snippet structured-data issue — offers, review or

@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-10-31';
+export const dataLastUpdated = '2026-11-01';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-10-31',
+  checkedAt: '2026-11-01',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.32.0',
@@ -83,12 +83,17 @@ export const runtimeVersions = {
     exllama: 'v0.3.2 (stalled)',
   },
   note: {
-    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.5 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
-    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.5，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
+    en: 'The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.6 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
+    zh: '本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.6，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
   },
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-01',
+    en: 'The Windows launch commands now download llama.cpp b12024. ExLlamaV3 moved to 1.6.6; Ollama and vLLM are unchanged, and no new model this week fits the index yet.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12024。ExLlamaV3 更新到 1.6.6；Ollama 和 vLLM 没有变化，本周暂无可收录的新模型。',
+  },
   {
     date: '2026-10-31',
     en: 'The Windows launch commands now download llama.cpp b12017, the newest build with every Windows package published. Ollama, vLLM and ExLlamaV3 are unchanged since the last check, and no new model this week fits the index yet.',
