@@ -102,11 +102,11 @@ export const pendingModels: PendingModel[] = [
     announced: '2026-10-16',
     reason: 'no-runtime',
     detail: {
-      en: 'A looped (nGPT-style) 4B model. llama.cpp support was still an open pull request (#30306) when last checked.',
-      zh: '循环结构（nGPT 风格）的 4B 模型。上次核对时，llama.cpp 的支持仍是一个未合并的 PR（#30306）。',
+      en: 'A looped (nGPT-style) 4B model. llama.cpp support was still an open draft pull request (#30306) when last checked.',
+      zh: '循环结构（nGPT 风格）的 4B 模型。上次核对时，llama.cpp 的支持仍是一个未合并的草稿 PR（#30306）。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-10-17',
+    checkedAt: '2026-11-01',
   },
   {
     id: 'glm-5-3-flash',

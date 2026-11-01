@@ -433,6 +433,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   vLLM v0.32.0 unchanged.
 - **Models:** llama.cpp `src/models` commits since the last patrol are fixes only (#31406 shared-KV rotation,
   #30831 LFM short-conv reshape); no new arch. Search turned up no new open-weight release in the window.
+- **Owner asked "no new models?" — second search pass:** only Mistral Large 4 (10-29, already indexed).
+  "DeepSeek V4.1 Flash 1017 Cyber" is a third-party abliterated variant, not a DeepSeek release — skipped.
+  Kimi K3.1 Pro weights are only promised (by 11-04). Nemotron-Labs Dory 1.0 4B (10-16) has an official
+  GGUF but llama.cpp PR #30306 is still an open draft (last activity 10-22, CI failing); `/pending/` re-dated.
+  Nemotron 3.5 Transcribe is speech, out of scope.
 
 ### 2026-10-31 (ii) — Search Console: Product snippet error on guides
 
