@@ -1160,6 +1160,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-02 (ii) | **Calculator → speed player as a button** — under the speed line when a card is picked (same `streamTokS` gate via `feelTarget()`, not on red); bottom text link kept only with no card; en/zh/390 px checked |
 | 2026-11-02 | **Patrol** — llama.cpp b12032 (all Windows zips present); Ollama/vLLM/ExLlamaV3 unchanged; no new arch or model; Dory PR still draft |
 | 2026-11-01 | **Patrol** — llama.cpp b12024 (b12025 had no binaries yet), ExLlamaV3 1.6.6; Ollama/vLLM unchanged; no new llama.cpp arch, no model |
 | 2026-10-31 (ii) | **Search Console product-snippet error** — guide JSON-LD typed the target card `Product` (+ model mentions as offer-less `SoftwareApplication`, 222 entities); both → `Thing`; postbuild gate now rejects either |

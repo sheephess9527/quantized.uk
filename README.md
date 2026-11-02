@@ -425,6 +425,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-02 (ii) — Calculator: speed player promoted to a button under the speed line
+
+- Owner-reported traffic: `/tools/feel/` was the most-viewed page on 11-02 (318 views / 111 visits, but mostly
+  from one Singapore source with no referrer — likely automated; treat with care). Asked to make the entry
+  from the calculator more visible.
+- The link was a small text item in the bottom link row, after the share card and launch commands. With a card
+  picked it is now a full-width button (`data-testid="feel-button"`) directly under the calibrated speed / bandwidth
+  ceiling lines, with a one-line hint (`calc.feelHint`, en + zh). Same gate as before, now one helper
+  `feelTarget()` in `VRAMCalculator.tsx`: shown only when `streamTokS(speedQuote())` is defined (never for a bare
+  ceiling) and the verdict is not red. With no card picked the old text link stays in the bottom row.
+- Checked in Chromium against `out/`: en + zh at 1280 px and zh at 390 px — button present, zh href stays in `/zh`,
+  `scrollWidth` = viewport, 0 page errors. Note for testing: the calculator's quant URL key for GGUF is the bare
+  level (`quant=Q4_K_M`), not `GGUF Q4_K_M`; and `?gpu=` alone does not set the card in a fresh browser — the stored
+  profile (`quantized-config-v1`) does.
+
 ### 2026-11-02 — Patrol: llama.cpp b12032; no model
 
 - **Runtimes:** llama.cpp tags b12027–b12032 (10-31 / 11-01); b12032's asset list carries every zip

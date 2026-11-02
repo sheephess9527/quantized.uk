@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-02',
+    en: 'The calculator now puts the speed player right under its speed estimate. Once you pick a card, a button below the tok/s figure plays a sentence at that card\'s speed beside a second card, so the number turns into a wait you can see.',
+    zh: '显存计算器把「感受速度」放到了速度估算的正下方。选好显卡后，tok/s 数字下面会出现一个按钮，按这张卡的速度把一段话打出来，并和另一张卡并排对比，速度数字变成看得见的等待时间。',
+  },
+  {
+    date: '2026-11-02',
     en: 'The Windows launch commands now download llama.cpp b12032. Ollama, vLLM and ExLlamaV3 are unchanged, and no new open-weight model came out over the weekend.',
     zh: 'Windows 启动命令改为下载 llama.cpp b12032。Ollama、vLLM 和 ExLlamaV3 没有变化，周末也没有新的开源权重模型发布。',
   },

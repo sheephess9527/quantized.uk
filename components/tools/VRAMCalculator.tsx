@@ -29,7 +29,7 @@ import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
 import { importFromHub, parseRepoInput, mmprojFromHub, type ImportedShape } from '@/lib/utils/hf-import';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import type { ModelArch } from '@/lib/data/types';
+import type { ModelArch, QuantModel, QuantVariant } from '@/lib/data/types';
 import { rigPrefillSeconds } from '@/lib/utils/prefill';
 import { prefillData } from '@/lib/data/prefill';
 import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
@@ -92,6 +92,14 @@ function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number]['key']) => string
       </optgroup>
     );
   });
+}
+
+/** The speed player's link for this pick, or undefined when it could only show a ceiling there. */
+function feelTarget(gpu: GPU | undefined, model: QuantModel, quant: QuantVariant, contextLen: number): string | undefined {
+  const ctx = feelContext(contextLen);
+  if (gpu && streamTokS(speedQuote(gpu, model, quant, ctx)) === undefined) return undefined;
+  const right = gpu?.id === 'rtx4090' ? gpuDatabase.find(g => g.id === 'rtx5090') : undefined;
+  return feelHref(gpu, right, { model, quant }, ctx);
 }
 
 function findFormatGroup(quant: string): keyof typeof quantGroups {
@@ -1615,21 +1623,15 @@ export default function VRAMCalculator() {
                 })()}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
-                    {selectedQuantObj && (() => {
-                      // Offered only when the speed tool can stream this model on the reader's card
-                      // (a measured or calibrated rate); with no card picked it opens on the defaults.
-                      const pick = { model: selectedModel, quant: selectedQuantObj };
-                      const ctx = feelContext(contextLen);
-                      if (profileGpu && streamTokS(speedQuote(profileGpu, selectedModel, selectedQuantObj, ctx)) === undefined) return null;
-                      const right = profileGpu?.id === 'rtx4090' ? gpuDatabase.find(g => g.id === 'rtx5090') : undefined;
-                      return (
-                        <Link
-                          href={feelHref(profileGpu ?? undefined, right, pick, ctx)}
-                          className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
-                        >
-                          {profileGpu ? t.calc.feelThis.replace('{card}', profileGpu.name) : t.calc.feelThisNoCard} →
+                    {selectedQuantObj && !profileGpu && (() => {
+                      // With a card picked the player is offered as a button beside the speed line
+                      // above; with none it opens on the defaults from here.
+                      const href = feelTarget(undefined, selectedModel, selectedQuantObj, contextLen);
+                      return href ? (
+                        <Link href={href} className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+                          {t.calc.feelThisNoCard} →
                         </Link>
-                      );
+                      ) : null;
                     })()}
                     <Link
                       href={`/tools/cli-gen/?model=${selectedModel.id}`}
@@ -1834,6 +1836,25 @@ export default function VRAMCalculator() {
                               {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
                             </p>
                           </>
+                        );
+                      })()}
+                      {v !== 'red' && formatOk && selectedModel && selectedQuantObj && (() => {
+                        // Offered only when the speed tool can stream this model on the reader's card
+                        // (a measured or calibrated rate) — never for a bare ceiling.
+                        const href = feelTarget(profileGpu, selectedModel, selectedQuantObj, contextLen);
+                        if (!href) return null;
+                        return (
+                          <Link
+                            href={href}
+                            data-testid="feel-button"
+                            className="mt-3 flex items-center gap-3 rounded-xl border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 px-4 py-2.5 min-h-[44px] transition-colors"
+                          >
+                            <span aria-hidden className="text-violet-300 text-base">▶</span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-medium text-violet-200">{t.calc.feelThis.replace('{card}', profileGpu.name)}</span>
+                              <span className="block text-xs text-slate-400">{t.calc.feelHint}</span>
+                            </span>
+                          </Link>
                         );
                       })()}
                       {v !== 'red' && formatOk && (() => {
