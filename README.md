@@ -425,6 +425,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-02 — Patrol: llama.cpp b12032; no model
+
+- **Runtimes:** llama.cpp tags b12027–b12032 (10-31 / 11-01); b12032's asset list carries every zip
+  `llamaCppWindows()` names (40 assets) → `LLAMACPP_BUILD` b12024 → b12032. Ollama v0.40.13 Latest,
+  vLLM v0.32.0, ExLlamaV3 1.6.6 — unchanged.
+- **Models:** no new commit in llama.cpp `src/models` since 10-31; search found no new open-weight
+  release (HF trending digest for 11-01 lists only already-indexed or out-of-scope models). Dory 1.0 4B:
+  llama.cpp PR #30306 still an open draft — `/pending/` re-dated. Kimi K3.1 Pro weights still only promised (by 11-04).
+
 ### 2026-11-01 — Patrol: llama.cpp b12024, ExLlamaV3 1.6.6; no model
 
 - **Runtimes:** llama.cpp tags b12018–b12025 (all 10-31). b12025 had only source archives when read, so

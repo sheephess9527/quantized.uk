@@ -106,7 +106,7 @@ export const pendingModels: PendingModel[] = [
       zh: '循环结构（nGPT 风格）的 4B 模型。上次核对时，llama.cpp 的支持仍是一个未合并的草稿 PR（#30306）。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-11-01',
+    checkedAt: '2026-11-02',
   },
   {
     id: 'glm-5-3-flash',
