@@ -425,7 +425,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-11-03 (iii) — Owner answers: Qwen3.8 27B back to 27.78, Qwen3-VL 30B-A3B context 262,144, Gemma 4 31B MTP files named
+### 2026-11-03 (iii) — Owner answers: Qwen3.8 27B back to 27.78, Qwen3-VL 8B / 30B-A3B context 262,144, Gemma 4 31B MTP files named
 
 - **Qwen3.8 27B `params` 27.33 → 27.78.** Owner read `Qwen/Qwen3.8-27B`: Hub safetensors total 27,781,427,952 (BF16),
   index `total_size` 55,562,855,904 = ×2. It includes the MTP head — 15 `mtp.*` tensors in shard 18, 424,699,392
@@ -435,8 +435,9 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   Sizes move ≤ 0.04 GB; no count, guide figure or table changed. This is a deliberate exception to "params from the
   publisher's BF16 ÷ 2" — the official total wins when the owner has read it.
 - **Qwen3-VL 30B-A3B `contextLength` 40,960 → 262,144** from `text_config.max_position_embeddings` (README: "Native 256K
-  context, expandable to 1M"). 40,960 appears in neither; its origin is unknown. Qwen3-VL 8B also says 40,960 and was
-  not checked — left alone.
+  context, expandable to 1M"). 40,960 appears in neither; its origin is unknown. **Qwen3-VL 8B** likewise 40,960 →
+  262,144 from `Qwen/Qwen3-VL-8B-Instruct` `config.json` (owner-pulled the same day; its 36 L / 32 heads / 8 KV × 128
+  already matched the index).
 - **Gemma 4 31B description** now names bartowski's two MTP draft-head files (`mtp-google_gemma-4-31B-it-Q4_0.gguf`
   349,161,984 B, `…-Q8_0.gguf` 514,705,920 B) as speculative-decoding extras not counted in the sizes; not levels.
 

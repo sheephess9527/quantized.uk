@@ -22,7 +22,7 @@ export const extraModels8: QuantModel[] = [
     paramLabel: '8B',
     categories: ['multimodal', 'instruct', 'general'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
-    contextLength: 40960,
+    contextLength: 262144, // config text_config.max_position_embeddings (owner-checked 2026-11-03; was 40960, unsourced)
     arch: { layers: 36, attHeads: 32, kvHeads: 8, headDim: 128 },
     addedAt: ADDED,
     description: {

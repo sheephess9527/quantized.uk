@@ -91,8 +91,8 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-03',
-    en: 'Qwen3-VL 30B-A3B\'s context window is now listed as 256K, as its own configuration states; it had been shown as 40K. Qwen3.8 27B is back to its official parameter count of 27.78B, which changes its sizes by under 0.1 GB, and the Gemma 4 31B page now explains the two small draft-head files in its download repository.',
-    zh: 'Qwen3-VL 30B-A3B 的上下文窗口改为 256K，与它自己的配置一致；之前显示为 40K。Qwen3.8 27B 的参数量改回官方的 27.78B，显存变化不到 0.1 GB；Gemma 4 31B 页面补充说明了下载仓库里的两个小型草稿头文件。',
+    en: 'Qwen3-VL 8B and 30B-A3B now list a 256K context window, as their own configurations state; both had been shown as 40K. Qwen3.8 27B is back to its official parameter count of 27.78B, which changes its sizes by under 0.1 GB, and the Gemma 4 31B page now explains the two small draft-head files in its download repository.',
+    zh: 'Qwen3-VL 8B 和 30B-A3B 的上下文窗口改为 256K，与它们自己的配置一致；之前都显示为 40K。Qwen3.8 27B 的参数量改回官方的 27.78B，显存变化不到 0.1 GB；Gemma 4 31B 页面补充说明了下载仓库里的两个小型草稿头文件。',
   },
   {
     date: '2026-11-03',
