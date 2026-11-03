@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-02';
+export const dataLastUpdated = '2026-11-03';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,10 +71,10 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-02',
+  checkedAt: '2026-11-03',
   current: {
     llamacpp: LLAMACPP_BUILD,
-    vllm: 'v0.32.0',
+    vllm: 'v0.33.0',
     ollama: 'v0.40.13',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-03',
+    en: 'vLLM 0.33 is out, and its Docker images now need an NVIDIA R580 or newer driver because they are built on CUDA 13; the generated Docker commands say so. The AMD install comment now names ROCm 10.0, the new default. The Windows commands download llama.cpp b12061.',
+    zh: 'vLLM 0.33 发布，它的 Docker 镜像改为基于 CUDA 13，需要 R580 或更新的 NVIDIA 驱动，生成的 Docker 命令已注明这一点。AMD 安装命令的注释改为 ROCm 10.0（新的默认版本）。Windows 启动命令改为下载 llama.cpp b12061。',
+  },
   {
     date: '2026-11-02',
     en: 'The calculator now puts the speed player right under its speed estimate. Once you pick a card, a button below the tok/s figure plays a sentence at that card\'s speed beside a second card, so the number turns into a wait you can see.',

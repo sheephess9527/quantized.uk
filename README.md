@@ -425,6 +425,23 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-03 — Patrol: vLLM v0.33.0 (CUDA 13 images, ROCm 10.0 default), llama.cpp b12061; Clover pending
+
+- **vLLM v0.33.0** (tagged 11-01, Latest): release notes say release wheels and images are CUDA 13.0 only
+  (no more `-cu129`), and the default ROCm wheels/images move to ROCm 10.0 (7.2 still as `-rocm72`). v0.33.0's
+  own `gpu.cuda.inc.md` still documents `uv pip install vllm --torch-backend=auto` (and still says "compiled with
+  CUDA 12.9" — docs and notes disagree; the command is unchanged either way), so the native install line stays.
+  Its Docker section says CUDA 13 images need an **R580+** driver (compat mode only on professional/datacentre
+  cards) → the CLI's NVIDIA Docker/compose note now says so (en + zh). `gpu.rocm.inc.md`: "ROCm 10.0 (the
+  default) and ROCm 7.2", same `--extra-index-url https://wheels.vllm.ai/rocm/` → only the CLI comment changed
+  ("ROCm 7.0" was stale). No guide uses the vLLM Docker image.
+- **llama.cpp b12061** (11-02): asset list has every Windows zip `llamaCppWindows()` names → `LLAMACPP_BUILD`.
+  New model commit #31306 "add Clover support" (merged 11-02): DiffuSpace Clover-35B-A3B-Preview, a block-diffusion
+  model on Qwen3.6-35B-A3B with extra GDN parameters; llama.cpp runs it in AR mode only. Config/GGUF bytes
+  unreadable (HF blocked) → `/pending/` `awaiting-data`.
+- Ollama v0.40.13, ExLlamaV3 1.6.6 unchanged. Dory PR #30306 still draft (re-dated). Kimi K3.1 Pro weights still
+  only promised for 11-04 (a third-party "unrestricted" repo claiming them is not Moonshot's — ignored).
+
 ### 2026-11-02 (ii) — Calculator: speed player promoted to a button under the speed line
 
 - Owner-reported traffic: `/tools/feel/` was the most-viewed page on 11-02 (318 views / 111 visits, but mostly

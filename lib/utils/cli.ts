@@ -680,7 +680,7 @@ volumes:
   huggingface_cache:`;
 
     const command = `# Start vLLM server\ndocker compose up -d\n\n# Test the API\ncurl http://localhost:${port}/v1/models`;
-    return { command, compose, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
+    return { command, compose, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit and an R580 or newer driver: vLLM\'s images are built on CUDA 13 since v0.33.0', '需要 NVIDIA Container Toolkit 和 R580 或更新的驱动：vLLM 镜像自 v0.33.0 起基于 CUDA 13'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   if (env === 'docker') {
@@ -701,14 +701,14 @@ volumes:
       `  --gpu-memory-utilization 0.85 \\`,
       `  --port ${port}${apiKeyFlag}`,
     ].join('\n');
-    return { command, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit', '需要 NVIDIA Container Toolkit'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
+    return { command, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit and an R580 or newer driver: vLLM\'s images are built on CUDA 13 since v0.33.0', '需要 NVIDIA Container Toolkit 和 R580 或更新的驱动：vLLM 镜像自 v0.33.0 起基于 CUDA 13'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
   }
 
   const command = [
     // Install and entrypoint as vLLM's quickstart documents them: uv picks the
     // torch build for the CUDA driver; AMD installs from vLLM's ROCm index.
     ...(rocm
-      ? [`# Install vLLM's ROCm build (Python 3.12, ROCm 7.0)`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`]
+      ? [`# Install vLLM's ROCm build (Python 3.12; ROCm 10.0 wheels by default, which bring the ROCm SDK from pip)`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/`]
       : [`# Install vLLM in a fresh venv (uv picks the torch build for your CUDA driver)`, `pip install --upgrade uv`, `uv venv --python 3.12 --seed && source .venv/bin/activate`, `uv pip install vllm --torch-backend=auto`]),
     ``,
     ...mirrorLines(lang),

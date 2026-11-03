@@ -760,7 +760,7 @@ line is `load_tensors: offloaded N/N layers to GPU` (not `llm_load_tensors:`); H
 inside the container) — every command here must keep passing `--port` explicitly; never write "8080 by default".
 
 **Server-stack commands go stale faster than anything else here.** Verified 2026-09-12 against the
-projects' own docs: vLLM's entrypoint is **`vllm serve`** (not `python -m
+projects' own docs: vLLM's entrypoint is **`vllm serve`** (since v0.33.0, 2026-11-01, its Docker images are CUDA 13 → host driver R580+; default ROCm wheels are ROCm 10.0) (not `python -m
 vllm.entrypoints.openai.api_server`) and it installs with `uv pip install vllm --torch-backend=auto`;
 it ships official **ROCm** wheels plus XPU/TPU backends. ExLlamaV2 now lives at
 **`turboderp-org/exllamav2`** and its example passes `-gs auto`. **TabbyAPI's own README says it is
@@ -1160,6 +1160,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-03 | **Patrol** — vLLM v0.33.0 (images CUDA 13 → R580+ driver note in CLI Docker output; ROCm 10.0 default → CLI comment), llama.cpp b12061; Clover-35B-A3B (diffusion, llama.cpp AR-only) → `/pending/` awaiting data |
 | 2026-11-02 (ii) | **Calculator → speed player as a button** — under the speed line when a card is picked (same `streamTokS` gate via `feelTarget()`, not on red); bottom text link kept only with no card; en/zh/390 px checked |
 | 2026-11-02 | **Patrol** — llama.cpp b12032 (all Windows zips present); Ollama/vLLM/ExLlamaV3 unchanged; no new arch or model; Dory PR still draft |
 | 2026-11-01 | **Patrol** — llama.cpp b12024 (b12025 had no binaries yet), ExLlamaV3 1.6.6; Ollama/vLLM unchanged; no new llama.cpp arch, no model |

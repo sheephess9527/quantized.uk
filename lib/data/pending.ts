@@ -25,6 +25,18 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'clover-35b-a3b-preview',
+    name: 'Clover-35B-A3B-Preview',
+    vendor: 'DiffuSpace',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'A diffusion language model built on Qwen3.6-35B-A3B (35B total, about 3B active per token, Apache 2.0, up to 131,072 tokens), with extra Gated DeltaNet parameters for block diffusion. llama.cpp added it on 2 November, in ordinary left-to-right mode with self-speculative decoding, not block diffusion. Its config and any GGUF file sizes could not be read here, and the extra parameters mean Qwen3.6 35B-A3B\'s sizes cannot simply be reused.',
+      zh: '一个基于 Qwen3.6-35B-A3B 的扩散语言模型（总参数 35B，每个 token 约激活 3B，Apache 2.0，最长 131,072 个 token），为块扩散额外加了 Gated DeltaNet 参数。llama.cpp 于 11 月 2 日加入支持，但只按普通的从左到右方式生成（带自推测解码），不是块扩散。这里读不到它的配置和 GGUF 文件大小，而且多出的参数意味着不能直接套用 Qwen3.6 35B-A3B 的体积。',
+    },
+    recheck: { en: 'When its config.json and a GGUF file listing are available.', zh: '拿到它的 config.json 和 GGUF 文件列表时。' },
+    checkedAt: '2026-11-03',
+  },
+  {
     id: 'minimax-m3-1-flash',
     name: 'MiniMax M3.1 Flash',
     vendor: 'MiniMax',
@@ -106,7 +118,7 @@ export const pendingModels: PendingModel[] = [
       zh: '循环结构（nGPT 风格）的 4B 模型。上次核对时，llama.cpp 的支持仍是一个未合并的草稿 PR（#30306）。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-11-02',
+    checkedAt: '2026-11-03',
   },
   {
     id: 'glm-5-3-flash',
