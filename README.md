@@ -425,6 +425,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-03 (iii) — Owner answers: Qwen3.8 27B back to 27.78, Qwen3-VL 30B-A3B context 262,144, Gemma 4 31B MTP files named
+
+- **Qwen3.8 27B `params` 27.33 → 27.78.** Owner read `Qwen/Qwen3.8-27B`: Hub safetensors total 27,781,427,952 (BF16),
+  index `total_size` 55,562,855,904 = ×2. It includes the MTP head — 15 `mtp.*` tensors in shard 18, 424,699,392
+  elements by their header shapes — so the trunk is 27.36B, not the 27.33 that bartowski's BF16 ÷ 2 gave (that file
+  carries no MTP). Owner's decision: use the official total. bpw re-derived as bytes × 8 / 27.78e9: Q3_K_M 3.86, Q4_K_M
+  5.02, Q5_K_M 6.03, Q6_K 6.87, Q8_0 8.38 (below ~8.5 *because* the GGUF lacks the MTP tensors the denominator counts).
+  Sizes move ≤ 0.04 GB; no count, guide figure or table changed. This is a deliberate exception to "params from the
+  publisher's BF16 ÷ 2" — the official total wins when the owner has read it.
+- **Qwen3-VL 30B-A3B `contextLength` 40,960 → 262,144** from `text_config.max_position_embeddings` (README: "Native 256K
+  context, expandable to 1M"). 40,960 appears in neither; its origin is unknown. Qwen3-VL 8B also says 40,960 and was
+  not checked — left alone.
+- **Gemma 4 31B description** now names bartowski's two MTP draft-head files (`mtp-google_gemma-4-31B-it-Q4_0.gguf`
+  349,161,984 B, `…-Q8_0.gguf` 514,705,920 B) as speculative-decoding extras not counted in the sizes; not levels.
+
 ### 2026-11-03 (ii) — Owner-pulled HF listings: 10 models sized from files (+8 levels), +1 model (129): LFM3-VL 2B; Clover pending updated
 
 Source: the owner's 2026-11-03 pull from Hugging Face (config.json, safetensors index, tree API listings), handed over as
@@ -468,9 +483,7 @@ a task list with every byte count and file name verbatim. huggingface.co is stil
 - **Clover-35B-A3B-Preview** `/pending/` entry rewritten from its config + safetensors total (69,322,701,696 B ≈ 34.7B,
   Qwen3.6 35B-A3B layout); the "extra Gated DeltaNet parameters" claim was not in the config and is gone. Still no GGUF
   from bartowski / unsloth / ggml-org → stays `awaiting-data`.
-- **Left for the owner:** whether 27.78 had another source (e.g. MTP layers counted) — if so Qwen3.8 27B goes back to it
-  with Q4_K_M 5.02; Qwen3-VL 30B-A3B's `contextLength` 40,960 is unverified (no config in this pull); whether Gemma 4 31B's
-  page should mention the MTP draft files.
+- **Left for the owner** — answered the same day, see (iii).
 
 ### 2026-11-03 — Patrol: vLLM v0.33.0 (CUDA 13 images, ROCm 10.0 default), llama.cpp b12061; Clover pending
 

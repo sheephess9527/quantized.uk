@@ -54,14 +54,16 @@ export const extraModels9: QuantModel[] = [
     ],
   },
   {
-    // Sizes from bartowski/Qwen3.8-27B-GGUF (owner-pulled tree listing, 2026-11-03): BF16 54,657,734,144 B in 2 parts
-    // ÷ 2 = 27.33B (the same total as Qwen3.6 27B, same shape); Q8_0 29,116,388,960 B → 8.52 bpw confirms it.
-    // Replaces 27.78B / 4.74 bpw from a "published 15.33 GiB" Q4_K_M whose source is unclear — bartowski's
-    // Q4_K_M is 16.24 GiB; 15.2x GiB is what Q4_K_S / Q4_0 weigh. mmproj (f16) 927,607,008 B separate.
+    // params 27.78 = the official safetensors total, 27,781,427,952 (index total_size 55,562,855,904 = ×2),
+    // owner-checked 2026-11-03. It includes the MTP head: 15 `mtp.*` tensors, 424,699,392 elements, so the
+    // trunk alone is 27.36B. bartowski's GGUFs (owner-pulled tree listing, 2026-11-03) carry no MTP tensors,
+    // which is why their Q8_0 works out at 8.38 bpw over 27.78, not ~8.5. bpw below = bytes × 8 / 27.78e9.
+    // An earlier "published 15.33 GiB" Q4_K_M figure had no traceable source and is replaced by the
+    // listing. mmproj (f16) 927,607,008 B separate.
     id: 'qwen3-8-27b',
     name: 'Qwen3.8 27B',
     family: 'Alibaba Qwen3.8',
-    params: 27.33,
+    params: 27.78,
     paramLabel: '27B',
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
@@ -101,11 +103,11 @@ export const extraModels9: QuantModel[] = [
     // Every GGUF row is bartowski's file (see the note above the id). Unsloth's dynamic (UD) builds
     // are different quantizations and are not mixed in.
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.11, vramGB: 15.3, hfSearchUrl: hf('Qwen3.8-27B GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q4_K_M.gguf', bytes: 17_442_399_968, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.92, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q3_K_M.gguf', bytes: 13_404_051_168, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.12, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q5_K_M.gguf', bytes: 20_923_877_088, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
-      { format: 'GGUF', level: 'Q6_K',   bpw: 6.98, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q6_K.gguf', bytes: 23_860_565_728, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q8_0.gguf', bytes: 29_116_388_960, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 15.3, hfSearchUrl: hf('Qwen3.8-27B GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q4_K_M.gguf', bytes: 17_442_399_968, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.86, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q3_K_M.gguf', bytes: 13_404_051_168, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.03, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q5_K_M.gguf', bytes: 20_923_877_088, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.87, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q6_K.gguf', bytes: 23_860_565_728, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.38, vramGB: 0, hfSearchUrl: hf('Qwen3.8-27B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/Qwen3.8-27B-GGUF', file: 'Qwen3.8-27B-Q8_0.gguf', bytes: 29_116_388_960, mmprojBytes: 927_607_008, checkedAt: '2026-11-03' } },
     ],
   },
 ];

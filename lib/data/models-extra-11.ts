@@ -72,7 +72,8 @@ export const extraModels11: QuantModel[] = [
   {
     // Q3/Q4_K_M/Q5/Q8 from bartowski/google_gemma-4-31B-it-GGUF (owner-pulled tree listing, 2026-11-03): BF16
     // 61,413,189,920 B in 2 parts ÷ 2 = 30.71B, consistent with 30.70; Q8_0 → 8.50 bpw. mmproj (f16)
-    // 1,198,956,736 B. The Q4_0 row stays Google's QAT file; bartowski's MTP draft files are not indexed.
+    // 1,198,956,736 B. The Q4_0 row stays Google's QAT file; bartowski's MTP draft files
+    // (mtp-…-Q4_0 349,161,984 B / Q8_0 514,705,920 B) are mentioned in the description, not indexed as levels.
     id: 'gemma-4-31b',
     name: 'Gemma 4 31B IT',
     family: 'Google Gemma 4',
@@ -101,8 +102,8 @@ export const extraModels11: QuantModel[] = [
     },
     addedAt: ADDED,
     description: {
-      en: 'Google\'s dense Gemma 4 flagship: about 31B parameters, a 256K window and image input. Only 10 of its 60 layers cache the full context, and those use four wide KV heads, so 128K of context adds about 11 GB of cache where a conventional 60-layer design would need about 120 GB. At Q4_K_M it needs about 22.1 GB at 4K, tight on a 24 GB card; Q3_K_M is about 18.3 GB at 4K. A 32 GB card holds Q4_K_M at 32K comfortably. Google also publishes its own quantization-aware (QAT) Q4_0 build, a single 17.7 GB file: about 20.1 GB at 4K, comfortable on 24 GB up to 16K. Its 1.2 GB vision encoder is a separate file, and with it loaded even 4K is tight on 24 GB. The other levels are sized from bartowski\'s GGUF files, and no per-level quality loss has been published.',
-      zh: 'Google Gemma 4 的稠密旗舰：约 31B 参数，256K 上下文，支持图像输入。60 层中只有 10 层缓存完整上下文，而且这些层只用 4 个宽 KV 头，所以 128K 上下文只增加约 11 GB 缓存，常规的 60 层结构则要约 120 GB。Q4_K_M 在 4K 下约需 22.1 GB，在 24 GB 显卡上偏紧；Q3_K_M 在 4K 下约 18.3 GB。32 GB 显卡跑 Q4_K_M 的 32K 很从容。Google 还发布了官方的量化感知训练（QAT）Q4_0 版本，单个 17.7 GB 文件：4K 下约 20.1 GB，24 GB 显卡宽裕地跑到 16K。它的视觉编码器是另外一个 1.2 GB 的文件，加载后在 24 GB 上连 4K 都偏紧。其余档位按 bartowski 的 GGUF 文件计算，各档位的质量损失未公布。',
+      en: 'Google\'s dense Gemma 4 flagship: about 31B parameters, a 256K window and image input. Only 10 of its 60 layers cache the full context, and those use four wide KV heads, so 128K of context adds about 11 GB of cache where a conventional 60-layer design would need about 120 GB. At Q4_K_M it needs about 22.1 GB at 4K, tight on a 24 GB card; Q3_K_M is about 18.3 GB at 4K. A 32 GB card holds Q4_K_M at 32K comfortably. Google also publishes its own quantization-aware (QAT) Q4_0 build, a single 17.7 GB file: about 20.1 GB at 4K, comfortable on 24 GB up to 16K. Its 1.2 GB vision encoder is a separate file, and with it loaded even 4K is tight on 24 GB. The other levels are sized from bartowski\'s GGUF files, and no per-level quality loss has been published. That repository also carries two MTP draft-head files (349 MB at Q4_0, 515 MB at Q8_0) for speculative decoding; they are not the model itself and are not counted in these sizes.',
+      zh: 'Google Gemma 4 的稠密旗舰：约 31B 参数，256K 上下文，支持图像输入。60 层中只有 10 层缓存完整上下文，而且这些层只用 4 个宽 KV 头，所以 128K 上下文只增加约 11 GB 缓存，常规的 60 层结构则要约 120 GB。Q4_K_M 在 4K 下约需 22.1 GB，在 24 GB 显卡上偏紧；Q3_K_M 在 4K 下约 18.3 GB。32 GB 显卡跑 Q4_K_M 的 32K 很从容。Google 还发布了官方的量化感知训练（QAT）Q4_0 版本，单个 17.7 GB 文件：4K 下约 20.1 GB，24 GB 显卡宽裕地跑到 16K。它的视觉编码器是另外一个 1.2 GB 的文件，加载后在 24 GB 上连 4K 都偏紧。其余档位按 bartowski 的 GGUF 文件计算，各档位的质量损失未公布。该仓库另有两个用于推测解码的 MTP 草稿头文件（Q4_0 为 349 MB，Q8_0 为 515 MB），它们不是模型本体，不计入这里的显存。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.11, vramGB: 18.6, hfSearchUrl: hf('gemma-4-31B-it GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/google_gemma-4-31B-it-GGUF', file: 'google_gemma-4-31B-it-Q4_K_M.gguf', bytes: 19_598_489_952, mmprojBytes: 1_198_956_736, checkedAt: '2026-11-03' } },
