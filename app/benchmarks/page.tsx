@@ -7,6 +7,7 @@ import { matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
 import BenchDataTables from '@/components/benchmarks/BenchDataTables';
 import CoverageSection from '@/components/benchmarks/CoverageSection';
+import RunStandard from '@/components/benchmarks/RunStandard';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { measuredCards, TOTAL_RUNS } from '@/lib/utils/bench-coverage';
@@ -156,6 +157,8 @@ export default function BenchmarksPage() {
             </table>
           </div>
         </section>
+
+        <RunStandard />
 
         <MethodologyPanel />
       </div>

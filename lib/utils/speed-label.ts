@@ -58,7 +58,7 @@ const ROW_ALIASES: Record<string, string> = {
   r1distillllama8b: 'deepseekr1distillllama8b',
 };
 
-function sameModel(modelName: string, rowModel: string): boolean {
+export function sameModel(modelName: string, rowModel: string): boolean {
   const b = norm(rowModel);
   if (!b) return false;
   const target = ROW_ALIASES[b] ?? b;
@@ -66,7 +66,7 @@ function sameModel(modelName: string, rowModel: string): boolean {
   return a === target || a.replace(/instruct$/, '') === target;
 }
 
-function sameQuant(rowQuant: string, quant: QuantVariant): boolean {
+export function sameQuant(rowQuant: string, quant: QuantVariant): boolean {
   const rq = rowQuant.toLowerCase();
   const level = quant.level.toLowerCase();
   if (quant.format === 'GGUF') return rq.startsWith('gguf') && rq.endsWith(level);

@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-03',
+    en: 'The benchmarks page now spells out what counts as a measured run, and the bandwidth check behind it is enforced on every row. Beside each run it shows what the VRAM calculator would have estimated, so you can see how close the estimates elsewhere on the site come to real runs. It also explains how to send a run from your own card, with the one llama-bench command it has to come from.',
+    zh: '实测页面现在写明了怎样才算"实测"，背后的带宽检查对每一行都强制执行。每次运行旁边还列出了显存计算器的估算值，可以直接看到站内估算和真实运行差多少。页面也说明了怎样提交你自己显卡的成绩，以及必须使用的那条 llama-bench 命令。',
+  },
+  {
+    date: '2026-11-03',
     en: 'Qwen3-VL 8B and 30B-A3B now list a 256K context window, as their own configurations state; both had been shown as 40K. Qwen3.8 27B is back to its official parameter count of 27.78B, which changes its sizes by under 0.1 GB, and the Gemma 4 31B page now explains the two small draft-head files in its download repository.',
     zh: 'Qwen3-VL 8B 和 30B-A3B 的上下文窗口改为 256K，与它们自己的配置一致；之前都显示为 40K。Qwen3.8 27B 的参数量改回官方的 27.78B，显存变化不到 0.1 GB；Gemma 4 31B 页面补充说明了下载仓库里的两个小型草稿头文件。',
   },

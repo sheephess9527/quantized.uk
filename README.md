@@ -425,7 +425,30 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-11-03 (iii) — Owner answers: Qwen3.8 27B back to 27.78, Qwen3-VL 8B / 30B-A3B context 262,144, Gemma 4 31B MTP files named
+### 2026-11-03 (iv) — /benchmarks/: published run rules, recorded VRAM vs the calculator, reader-run submission
+
+Prompted by a look at localmaxxing (a public local-inference leaderboard; only its companion repo
+`Datura-ai/lium-localmaxxing` was readable from here — the site itself does not resolve in this environment).
+Taken from it: state what makes a run count, show each run's conditions, and accept outside runs only in a
+checkable form. Not taken: cost per million tokens, datacentre leaderboards, accounts / online submission
+(no backend here).
+
+- **Rules section** (`components/benchmarks/RunStandard.tsx`): batch / prompt / gen / context printed from
+  `benchmarkMethodology`; the bandwidth rule from `CEILING_TOLERANCE` (1.15) in the new
+  `lib/utils/bench-calibration.ts`; MoE exempt; states plainly that these runs kept no raw output or full flags.
+- **Build gate `benchRowProblems()`** (validate.ts): every `matrixData` row must resolve to a `gpuDatabase` card, and
+  a dense row the index can size must be ≤ `rooflineTokS` × 1.15 — the rule the page publishes, using the same
+  ceiling the GPU pages quote (no second ceiling on the site). Proven by perturbation (148 → 300 tok/s fails).
+  Current worst: Llama 3.1 8B EXL2 on the RTX 4090 at 103% of 228 (that ceiling runs ~7% low; the page says so).
+- **Recorded VRAM vs `calcVRAM`** at the runs' 4K context, joined with the speed quotes' exact-name matchers
+  (`sameModel` / `sameQuant`, now exported from `speed-label.ts`): 15 of 16 rows resolve (DeepSeek-R1 14B is not an
+  index entry); median gap 0.2 GB; largest Phi-4 14B Q4_K_M, calculator 10.2 vs recorded 9.1 GB (over-estimate).
+- **Reader runs:** one fixed command (`llama-bench -m <model-file>.gguf -p 512 -n 128 -ngl 99`), required items
+  (unedited output with build line, exact GGUF file + repo, card / driver / OS), checked against the same ceiling,
+  marked as reader runs because tg128 starts from an empty context. Mail body shown before the `mailto:` button,
+  address only in the href. No reader row exists yet; `MatrixRow` gets a marker field when the first one arrives.
+
+: Qwen3.8 27B back to 27.78, Qwen3-VL 8B / 30B-A3B context 262,144, Gemma 4 31B MTP files named
 
 - **Qwen3.8 27B `params` 27.33 → 27.78.** Owner read `Qwen/Qwen3.8-27B`: Hub safetensors total 27,781,427,952 (BF16),
   index `total_size` 55,562,855,904 = ×2. It includes the MTP head — 15 `mtp.*` tensors in shard 18, 424,699,392

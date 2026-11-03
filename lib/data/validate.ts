@@ -12,6 +12,7 @@ import { prefillData } from '@/lib/data/prefill';
 import { sourceBpw } from '@/lib/utils/quant-source';
 import { pendingModels } from '@/lib/data/pending';
 import { runtimeErrors } from '@/lib/data/errors';
+import { calibrationRows, CEILING_TOLERANCE } from '@/lib/utils/bench-calibration';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -120,6 +121,7 @@ export function dataProblems(): string[] {
   out.push(...sourceAndPendingProblems());
   out.push(...guideModelCountProblems());
   out.push(...errorEntryProblems());
+  out.push(...benchRowProblems());
   return out;
 }
 
@@ -127,6 +129,24 @@ export function dataProblems(): string[] {
  * `/errors/` entries are hand-written and cross-reference guides and each
  * other; a renamed guide or a dropped entry would leave a link to a 404.
  */
+/**
+ * /benchmarks/ publishes the rule a measured run must pass; this is that rule.
+ * Every matrix row must name a card in the GPU index, and a dense row that the
+ * index can size must sit under the card's bandwidth ceiling × CEILING_TOLERANCE
+ * — the check that removed three RTX 4060 Ti rows by hand on 2026-09-11.
+ */
+function benchRowProblems(): string[] {
+  const out: string[] = [];
+  for (const c of calibrationRows()) {
+    const id = `${c.row.model} / ${c.row.hardware} / ${c.row.quant}`;
+    if (!c.gpu) out.push(`benchmark row ${id}: hardware matches no card in gpuDatabase`);
+    if (c.ceiling !== undefined && c.row.speedTokSec > c.ceiling * CEILING_TOLERANCE) {
+      out.push(`benchmark row ${id}: ${c.row.speedTokSec} tok/s is over ${CEILING_TOLERANCE} × the card's ${c.ceiling} tok/s bandwidth ceiling`);
+    }
+  }
+  return out;
+}
+
 function errorEntryProblems(): string[] {
   const out: string[] = [];
   const ids = new Set<string>();

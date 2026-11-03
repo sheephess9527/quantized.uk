@@ -495,6 +495,12 @@ Instruct/StarCoder2 15B legacy immediately made them start winning the `code` sl
 `fitsOnGpu` itself stays untouched, since "does this fit" and "what should you run" are different
 questions and a legacy model's own GPU page should still say honestly that it fits.
 
+**A benchmark row must pass the rule /benchmarks/ prints** (2026-11-03): `benchRowProblems()` (validate.ts) fails the build if a
+`matrixData` row's hardware matches no card or a dense row exceeds `rooflineTokS` × `CEILING_TOLERANCE`
+(`lib/utils/bench-calibration.ts`, the one constant the page also prints). A reader-submitted run is accepted only as
+unedited `llama-bench` output with build line, exact GGUF file and card, and is marked as a reader run (tg128 is not
+the 128/128 method); add a marker field to `MatrixRow` with the first one rather than mixing it in unlabelled.
+
 **A slot or heading that says "measured" must filter on `quantConfidence() === 'measured'`, never on `speedRTX4090 != null`** — most of those figures are estimates; `homePicks`' fastest slot did this and put a 0.5B model under "highest measured throughput" (2026-10-28). Homepage sample rows are looked up by key (`MeasuredCases`): a removed `matrixData` row silently shrinks the sample — check its row count in `out/` after touching benchmarks.
 
 **Measured confidence** — models in the site-side benchmark set (see `MEASURED_MODEL_IDS` in
@@ -1160,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-03 (iv) | **/benchmarks/ run rules + calibration + reader runs** — rules printed from `benchmarkMethodology`; `benchRowProblems()` gates every matrix row (card must exist; dense ≤ `rooflineTokS` × `CEILING_TOLERANCE` 1.15); recorded VRAM vs `calcVRAM` per run (15/16 resolve, median gap 0.2 GB, Phi-4 +1.1); reader runs only as unedited `llama-bench` output via a shown mailto |
 | 2026-11-03 (iii) | **Owner answers** — Qwen3.8 27B params back to the official safetensors total 27.78 (incl. 0.42B MTP head the GGUFs lack → Q8_0 8.38 bpw; Q4_K_M 5.02); Qwen3-VL 8B + 30B-A3B context 40,960 → 262,144 (configs); Gemma 4 31B description names bartowski's MTP draft files (not levels) |
 | 2026-11-03 (ii) | **Owner-pulled HF listings: 10 models from files, +8 levels, +1 model (129): LFM3-VL 2B** — params = publisher BF16 ÷ 2 (Qwen3.8 27B 27.78 → 27.33, old 15.33 GiB figure untraceable; Gemma 3 27B 27.4 → 27.01, vision in mmproj); 22 rows get `source`; Gemma 4 31B Q4_K_M 22.1 GB @4K → tight on 24 GB (QAT Q4_0 still green); 9 `hfRepoMap` → GGUF repos (Gemma 4 31B kept: QAT row); Clover pending rewritten; 11 guides re-counted |
 | 2026-11-03 | **Patrol** — vLLM v0.33.0 (images CUDA 13 → R580+ driver note in CLI Docker output; ROCm 10.0 default → CLI comment), llama.cpp b12061; Clover-35B-A3B (diffusion, llama.cpp AR-only) → `/pending/` awaiting data |
