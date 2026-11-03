@@ -29,10 +29,12 @@ export const extraModels5: QuantModel[] = [
     ],
   },
   {
+    // Sizes from unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 61,095,806,048 B in 2 parts ÷ 2 = 30.55B. Text-only model, no mmproj.
     id: 'qwen3-coder-30b-a3b',
     name: 'Qwen3-Coder 30B-A3B Instruct',
     family: 'Alibaba Qwen3',
-    params: 30.5,
+    params: 30.55,
     paramLabel: '30B-A3B',
     addedAt: '2026-06-26',
     categories: ['code', 'instruct'],
@@ -45,8 +47,8 @@ export const extraModels5: QuantModel[] = [
       zh: 'Agentic 代码 MoE，3.3B 激活参数，原生 256K 上下文。16–24GB 显卡上最强开源代码模型之一。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 19.2, pplLossPercent: 2.3, speedRTX4090: 92, hfSearchUrl: hf('Qwen3-Coder-30B-A3B GGUF Q4_K_M bartowski') },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 22.0, pplLossPercent: 1.0, speedRTX4090: 80, hfSearchUrl: hf('Qwen3-Coder-30B-A3B GGUF Q5_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.86, vramGB: 19.2, pplLossPercent: 2.3, speedRTX4090: 92, hfSearchUrl: hf('Qwen3-Coder-30B-A3B GGUF Q4_K_M bartowski'), source: { repo: 'unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF', file: 'Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf', bytes: 18_556_689_568, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.69, vramGB: 22.0, pplLossPercent: 1.0, speedRTX4090: 80, hfSearchUrl: hf('Qwen3-Coder-30B-A3B GGUF Q5_K_M'), source: { repo: 'unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF', file: 'Qwen3-Coder-30B-A3B-Instruct-Q5_K_M.gguf', bytes: 21_725_584_544, checkedAt: '2026-11-03' } },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 17.8, pplLossPercent: 3.2, speedRTX4090: 115, hfSearchUrl: hf('Qwen3-Coder-30B-A3B AWQ') },
     ],
   },

@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **128** in index (`models-extra` … `models-extra-12`) |
+| Models | **129** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 590 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 592 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1160,6 +1160,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-03 (ii) | **Owner-pulled HF listings: 10 models from files, +8 levels, +1 model (129): LFM3-VL 2B** — params = publisher BF16 ÷ 2 (Qwen3.8 27B 27.78 → 27.33, old 15.33 GiB figure untraceable; Gemma 3 27B 27.4 → 27.01, vision in mmproj); 22 rows get `source`; Gemma 4 31B Q4_K_M 22.1 GB @4K → tight on 24 GB (QAT Q4_0 still green); 9 `hfRepoMap` → GGUF repos (Gemma 4 31B kept: QAT row); Clover pending rewritten; 11 guides re-counted |
 | 2026-11-03 | **Patrol** — vLLM v0.33.0 (images CUDA 13 → R580+ driver note in CLI Docker output; ROCm 10.0 default → CLI comment), llama.cpp b12061; Clover-35B-A3B (diffusion, llama.cpp AR-only) → `/pending/` awaiting data |
 | 2026-11-02 (ii) | **Calculator → speed player as a button** — under the speed line when a card is picked (same `streamTokS` gate via `feelTarget()`, not on red); bottom text link kept only with no card; en/zh/390 px checked |
 | 2026-11-02 | **Patrol** — llama.cpp b12032 (all Windows zips present); Ollama/vLLM/ExLlamaV3 unchanged; no new arch or model; Dory PR still draft |

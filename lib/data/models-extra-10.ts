@@ -27,13 +27,15 @@ const ADDED = '2026-09-30';
  */
 export const extraModels10: QuantModel[] = [
   {
+    // Sizes from bartowski/zai-org_GLM-4.7-Flash-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 59,908,837,184 B in 2 parts ÷ 2 = 29.95B, matching the layer-by-layer count below; Q8_0 → 8.51 bpw.
     id: 'glm-4.7-flash',
     name: 'GLM-4.7-Flash',
     family: 'Zhipu GLM-4.7',
     // 29.94B computed layer by layer from Glm4MoeLiteConfig (vocab 154880,
     // hidden 2048, 47 layers, 1 dense + 46 MoE of 64 experts × 1536, 1 shared,
     // MLA q_lora 768 / kv_lora 512), matching the vendor's "30B-A3B".
-    params: 29.94,
+    params: 29.95,
     paramLabel: '30B-A3B',
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
@@ -45,12 +47,12 @@ export const extraModels10: QuantModel[] = [
     arch: { layers: 47, attHeads: 20, kvHeads: 1, headDim: 288, moe: { expertParams: 27.78, experts: 64, perToken: 4, moeLayers: 46, denseLead: 1 } },
     addedAt: ADDED,
     description: {
-      en: 'Zhipu\'s lightweight member of GLM-4.7: 30B total, about 3B active per token, MIT licence. Its attention is MLA, which caches one compressed 576-value vector per token per layer instead of full keys and values — so at 32K context the cache is under 2 GB where a conventional 47-layer model would need several times that. llama.cpp runs it as a DeepSeek-2-style model. Sizes below use the calculator\'s generic Q4_K_M/Q8_0 rates: no GGUF file size could be checked, and quality loss per level has not been published.',
-      zh: '智谱 GLM-4.7 系列的轻量款：总参数 30B，每 token 激活约 3B，MIT 许可。注意力采用 MLA，每层每个 token 只缓存一个 576 维的压缩向量，而不是完整的 K 和 V——所以 32K 上下文下缓存不到 2 GB，常规 47 层模型需要的是它的好几倍。llama.cpp 按 DeepSeek-2 类模型运行它。下方体积使用计算器通用的 Q4_K_M / Q8_0 比特率：未能核对到 GGUF 文件大小，各档位的质量损失也未公布。',
+      en: 'Zhipu\'s lightweight member of GLM-4.7: 30B total, about 3B active per token, MIT licence. Its attention is MLA, which caches one compressed 576-value vector per token per layer instead of full keys and values — so at 32K context the cache is under 2 GB where a conventional 47-layer model would need several times that. llama.cpp runs it as a DeepSeek-2-style model. Sizes below come from bartowski\'s GGUF files; quality loss per level has not been published.',
+      zh: '智谱 GLM-4.7 系列的轻量款：总参数 30B，每 token 激活约 3B，MIT 许可。注意力采用 MLA，每层每个 token 只缓存一个 576 维的压缩向量，而不是完整的 K 和 V——所以 32K 上下文下缓存不到 2 GB，常规 47 层模型需要的是它的好几倍。llama.cpp 按 DeepSeek-2 类模型运行它。下方体积按 bartowski 的 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 18.2, hfSearchUrl: hf('GLM-4.7-Flash GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 31.8, hfSearchUrl: hf('GLM-4.7-Flash GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.93, vramGB: 18.2, hfSearchUrl: hf('GLM-4.7-Flash GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/zai-org_GLM-4.7-Flash-GGUF', file: 'zai-org_GLM-4.7-Flash-Q4_K_M.gguf', bytes: 18_474_983_296, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 31.8, hfSearchUrl: hf('GLM-4.7-Flash GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/zai-org_GLM-4.7-Flash-GGUF', file: 'zai-org_GLM-4.7-Flash-Q8_0.gguf', bytes: 31_842_799_488, checkedAt: '2026-11-03' } },
     ],
   },
   {

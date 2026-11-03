@@ -30,10 +30,13 @@ export const pendingModels: PendingModel[] = [
     vendor: 'DiffuSpace',
     reason: 'awaiting-data',
     detail: {
-      en: 'A diffusion language model built on Qwen3.6-35B-A3B (35B total, about 3B active per token, Apache 2.0, up to 131,072 tokens), with extra Gated DeltaNet parameters for block diffusion. llama.cpp added it on 2 November, in ordinary left-to-right mode with self-speculative decoding, not block diffusion. Its config and any GGUF file sizes could not be read here, and the extra parameters mean Qwen3.6 35B-A3B\'s sizes cannot simply be reused.',
-      zh: '一个基于 Qwen3.6-35B-A3B 的扩散语言模型（总参数 35B，每个 token 约激活 3B，Apache 2.0，最长 131,072 个 token），为块扩散额外加了 Gated DeltaNet 参数。llama.cpp 于 11 月 2 日加入支持，但只按普通的从左到右方式生成（带自推测解码），不是块扩散。这里读不到它的配置和 GGUF 文件大小，而且多出的参数意味着不能直接套用 Qwen3.6 35B-A3B 的体积。',
+      en: 'A block-diffusion language model built on Qwen3.6-35B-A3B (Apache 2.0, up to 131,072 tokens). Its config has now been read and has the same layout as Qwen3.6 35B-A3B: 40 layers, 30 of them Gated DeltaNet and 10 full attention with 2 KV heads × 256, and 256 experts with 8 routed plus 1 shared per token. The official weights total 69,322,701,696 bytes in BF16, roughly 34.7B parameters. llama.cpp added it on 2 November, in ordinary left-to-right mode with self-speculative decoding, not block diffusion. No GGUF has been published by bartowski, unsloth or ggml-org yet, so there is no file to size it from.',
+      zh: '一个基于 Qwen3.6-35B-A3B 的块扩散语言模型（Apache 2.0，最长 131,072 个 token）。它的配置现已读到，结构与 Qwen3.6 35B-A3B 相同：40 层，其中 30 层 Gated DeltaNet、10 层全注意力（2 个 KV 头 × 256 维），256 个专家，每个 token 用 8 个路由专家加 1 个共享专家。官方 BF16 权重共 69,322,701,696 字节，约 34.7B 参数。llama.cpp 于 11 月 2 日加入支持，但只按普通的从左到右方式生成（带自推测解码），不是块扩散。bartowski、unsloth、ggml-org 都还没有发布 GGUF，所以没有可以用来计算显存的文件。',
     },
-    recheck: { en: 'When its config.json and a GGUF file listing are available.', zh: '拿到它的 config.json 和 GGUF 文件列表时。' },
+    recheck: {
+      en: 'When a GGUF from a widely used publisher can be read with its byte counts.',
+      zh: '能读到常用量化者 GGUF 的文件列表和字节数时。',
+    },
     checkedAt: '2026-11-03',
   },
   {

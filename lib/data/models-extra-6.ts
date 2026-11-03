@@ -9,10 +9,13 @@ const ADDED = '2026-07-22';
 /** Freshness batch: Gemma 3 27B, R1 Llama-8B distill, Phi-4, Qwen3 1.7B edge */
 export const extraModels6: QuantModel[] = [
   {
+    // Sizes from bartowski/google_gemma-3-27b-it-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 54,027,274,816 B in 2 parts ÷ 2 = 27.01B for the text decoder (was 27.4, which included the vision
+    // tower — it ships as the mmproj, 857,739,168 B at f16, as with Gemma 4 12B).
     id: 'gemma-3-27b-it',
     name: 'Gemma 3 27B IT',
     family: 'Google Gemma 3',
-    params: 27.4,
+    params: 27.01,
     paramLabel: '27B',
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'pro-gpu'],
@@ -36,12 +39,12 @@ export const extraModels6: QuantModel[] = [
     },
     addedAt: ADDED,
     description: {
-      en: 'Gemma 3 large instruct with long context and multimodal support. Q4 ~16GB — dual-GPU or 24GB card with short ctx.',
-      zh: 'Gemma 3 大杯指令版，长上下文 + 多模态。Q4 约 16GB，适合 24GB 卡或双卡短上下文。',
+      en: 'Gemma 3 large instruct with long context and multimodal support. At Q4_K_M it needs about 18.3 GB at 4K, comfortable on a 24 GB card. The vision encoder is a separate 0.9 GB file.',
+      zh: 'Gemma 3 大杯指令版，长上下文 + 多模态。Q4_K_M 在 4K 下约需 18.3 GB，24 GB 显卡可以从容运行。视觉编码器是另外一个 0.9 GB 的文件。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 16.2, pplLossPercent: 2.8, speedRTX4090: 48, hfSearchUrl: hf('gemma-3-27b-it GGUF Q4_K_M bartowski'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 13.0, pplLossPercent: 5.5, speedRTX4090: 55, hfSearchUrl: hf('gemma-3-27b-it GGUF Q3_K_M') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.90, vramGB: 16.2, pplLossPercent: 2.8, speedRTX4090: 48, hfSearchUrl: hf('gemma-3-27b-it GGUF Q4_K_M bartowski'), confidence: 'community', source: { repo: 'bartowski/google_gemma-3-27b-it-GGUF', file: 'google_gemma-3-27b-it-Q4_K_M.gguf', bytes: 16_546_404_992, mmprojBytes: 857_739_168, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.98, vramGB: 13.0, pplLossPercent: 5.5, speedRTX4090: 55, hfSearchUrl: hf('gemma-3-27b-it GGUF Q3_K_M'), source: { repo: 'bartowski/google_gemma-3-27b-it-GGUF', file: 'google_gemma-3-27b-it-Q3_K_M.gguf', bytes: 13_437_356_672, mmprojBytes: 857_739_168, checkedAt: '2026-11-03' } },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 14.5, pplLossPercent: 3.8, speedRTX4090: 62, hfSearchUrl: hf('gemma-3-27b-it AWQ') },
     ],
   },

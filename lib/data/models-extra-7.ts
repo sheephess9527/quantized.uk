@@ -125,10 +125,12 @@ export const extraModels7: QuantModel[] = [
     ],
   },
   {
+    // Sizes from bartowski/mistralai_Devstral-Small-2507-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 47,153,525,408 B ÷ 2 = 23.58B; mmproj (f16) 878,054,144 B separate.
     id: 'devstral-small-2507',
     name: 'Devstral Small 1.1 24B',
     family: 'Mistral Devstral',
-    params: 23.6,
+    params: 23.58,
     paramLabel: '24B',
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
@@ -136,13 +138,13 @@ export const extraModels7: QuantModel[] = [
     arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 128 },
     addedAt: ADDED,
     description: {
-      en: 'Mistral + All Hands agentic coding model on a Mistral Small 3.1 base. Built for repo-scale tool use rather than single-file completion. Q4 ~14GB fits a 16GB card.',
-      zh: 'Mistral 与 All Hands 合作的 Agent 编码模型，基于 Mistral Small 3.1。面向仓库级工具调用而非单文件补全。Q4 约 14GB，16GB 显卡可跑。',
+      en: 'Mistral + All Hands agentic coding model on a Mistral Small 3.1 base. Built for repo-scale tool use rather than single-file completion. At Q4_K_M it needs about 15.7 GB at 4K, tight on a 16 GB card and comfortable on 20 GB.',
+      zh: 'Mistral 与 All Hands 合作的 Agent 编码模型，基于 Mistral Small 3.1。面向仓库级工具调用而非单文件补全。Q4_K_M 在 4K 下约需 15.7 GB，在 16 GB 显卡上偏紧，20 GB 起就宽裕。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 14.3, pplLossPercent: 2.9, speedRTX4090: 62, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 55, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q5_K_M') },
-      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 48, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q6_K') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.86, vramGB: 14.3, pplLossPercent: 2.9, speedRTX4090: 62, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/mistralai_Devstral-Small-2507-GGUF', file: 'mistralai_Devstral-Small-2507-Q4_K_M.gguf', bytes: 14_333_916_096, mmprojBytes: 878_054_144, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.69, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 55, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q5_K_M'), source: { repo: 'bartowski/mistralai_Devstral-Small-2507-GGUF', file: 'mistralai_Devstral-Small-2507-Q5_K_M.gguf', bytes: 16_763_990_976, mmprojBytes: 878_054_144, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 48, hfSearchUrl: hf('Devstral-Small-2507 GGUF Q6_K'), source: { repo: 'bartowski/mistralai_Devstral-Small-2507-GGUF', file: 'mistralai_Devstral-Small-2507-Q6_K.gguf', bytes: 19_345_945_536, mmprojBytes: 878_054_144, checkedAt: '2026-11-03' } },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 13.0, pplLossPercent: 4.0, speedRTX4090: 78, hfSearchUrl: hf('Devstral-Small-2507 AWQ') },
       { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, hfSearchUrl: hf('Devstral-Small-2507 exl2 4.65') },
     ],

@@ -16,7 +16,7 @@ export const dataLastUpdated = '2026-11-03';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-10-29';
+export const sizingChangedAt = '2026-11-03';
 
 export const dataSources = {
   models: {
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-03',
+    en: 'Ten models are now sized from their real download files, and each size names the exact file it comes from. The biggest changes: Gemma 4 31B and Qwen3.8 27B at Q4_K_M are each about 1 GB larger than before, so Gemma 4 31B\'s Q4_K_M build is now tight on a 24 GB card (Google\'s own Q4_0 build still fits comfortably); Qwen3-VL 30B-A3B at Q3_K_M is 0.7 GB smaller. Qwen3.8 27B, Gemma 4 31B and Qwen3.5 9B gained more quantization levels, and LFM3-VL 2B, Liquid AI\'s small vision model, joins the index. Clover-35B-A3B stays on the not-yet-runnable list until a GGUF is published.',
+    zh: '十个模型改为按真实下载文件计算显存，每个尺寸都标明了对应的文件名。变化最大的是：Gemma 4 31B 和 Qwen3.8 27B 的 Q4_K_M 各比之前大约 1 GB，Gemma 4 31B 的 Q4_K_M 在 24 GB 显卡上变为「偏紧」（Google 官方的 Q4_0 版本仍能宽松装下）；Qwen3-VL 30B-A3B 的 Q3_K_M 小了 0.7 GB。Qwen3.8 27B、Gemma 4 31B 和 Qwen3.5 9B 增加了更多量化档位，Liquid AI 的小型视觉模型 LFM3-VL 2B 加入模型库。Clover-35B-A3B 仍在「暂不可运行」列表里，等有人发布 GGUF。',
+  },
   {
     date: '2026-11-03',
     en: 'vLLM 0.33 is out, and its Docker images now need an NVIDIA R580 or newer driver because they are built on CUDA 13; the generated Docker commands say so. The AMD install comment now names ROCm 10.0, the new default. The Windows commands download llama.cpp b12061.',

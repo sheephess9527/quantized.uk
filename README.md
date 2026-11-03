@@ -425,6 +425,53 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-03 (ii) — Owner-pulled HF listings: 10 models sized from files (+8 levels), +1 model (129): LFM3-VL 2B; Clover pending updated
+
+Source: the owner's 2026-11-03 pull from Hugging Face (config.json, safetensors index, tree API listings), handed over as
+a task list with every byte count and file name verbatim. huggingface.co is still blocked here; nothing was re-fetched.
+
+- **`params` from each publisher's BF16 GGUF ÷ 2** (vision towers stay in the mmproj, as Gemma 4 12B):
+  Qwen3.8 27B 27.78 → **27.33** (54,657,734,144 B; same total as Qwen3.6 27B, same shape), Qwen3-Coder 30B-A3B 30.5 → 30.55
+  (unsloth, 61,095,806,048), Qwen3-VL 30B-A3B 30.5 → 30.55 (61,095,804,032), GLM-4.7-Flash 29.94 → 29.95 (59,908,837,184),
+  Gemma 3 27B 27.4 → **27.01** (54,027,274,816 — 27.4 included the vision tower; mmproj 857,739,168), Magistral Small 2509 /
+  Devstral Small 2507 23.6 → 23.58 (47,153,521,344 / 47,153,525,408); unchanged: Gemma 4 31B 30.7 (61,413,189,920 → 30.71),
+  Qwen3.5 9B 9.22 (18,407,321,344 → 9.20), Granite 4.2 8B 8.79 (17,587,421,312).
+- **22 GGUF rows now carry `source`** (one publisher per row, mmproj = the f16 file). bpw moves that matter: Qwen3.8 27B
+  Q4_K_M 4.74 → 5.11, Gemma 4 31B Q4_K_M 4.85 → 5.11, Granite 4.2 8B Q4_K_M 4.87 → 5.04, Qwen3-VL Q3_K_M 3.87 → 3.69;
+  the rest move ≤ 0.08. AWQ / EXL2 rows, `confidence`, `pplLossPercent`, `speedRTX4090` untouched.
+- **Qwen3.8 27B's old figure had no traceable source.** Its comment said bpw came from a "published 15.33 GiB" Q4_K_M;
+  bartowski's Q4_K_M is 17,442,399,968 B = 16.24 GiB, and 15.2x GiB is what Q4_K_S / Q4_0 weigh. Replaced by the listing.
+- **Sizes @4K → @32K:** Qwen3.8 27B Q4_K_M 17.5 → 18.5 / 19.4 → 20.4; Gemma 4 31B Q4_K_M 21.1 → 22.1 / 23.5 → 24.5 (now
+  **tight on 24 GB**, 92%; Google's QAT Q4_0 stays green at 20.1); Qwen3-VL Q3_K_M 15.8 → 15.1 / 18.7 → 18.0; GLM-4.7-Flash
+  19.2 → 19.5; Granite 4.2 8B 6.3 → 6.5 (11.1 → 11.3 @32K); everything else ≤ 0.2 GB. Seven model descriptions rewritten from
+  `calcVRAM` (Qwen3-VL, Gemma 3 27B, Gemma 4 31B, GLM-4.7-Flash, Magistral, Devstral, Granite) — the "Q4 ~14GB fits a 16GB card"
+  lines for Magistral/Devstral were already wrong before this change (15.7 GB @4K, tight on 16 GB).
+- **+8 levels** from the same listings (`estimated`, no loss figure): Qwen3.8 27B Q3_K_M 3.92 / Q5_K_M 6.12 / Q6_K 6.98 /
+  Q8_0 8.52 (was the index's only single-level model), Gemma 4 31B Q3_K_M 4.15 / Q5_K_M 5.89, Qwen3.5 9B Q5_K_M 6.17 / Q6_K
+  6.91. `referenceQuant()` unchanged (Q4_K_M; Gemma 4 31B too). Qwen3.8 27B Q3_K_M (14.3 GB @4K) is tight on 16 GB cards.
+- **`hfRepoMap` → GGUF repos** for 9 models (Qwen3-Coder → unsloth; Gemma 3 27B, Devstral, Qwen3-VL, Magistral, Qwen3.8
+  27B, GLM-4.7-Flash, Qwen3.5 9B, Granite 4.2 8B → bartowski), so the CLI names real files. `generateCLI` swept over every
+  model × GGUF level × llama.cpp/Ollama × en/zh × Linux/Windows: 240/240 name the listed file, zh keeps `HF_ENDPOINT`.
+  **Gemma 4 31B deliberately not remapped**: its Q4_0 row is Google's QAT file; mapped to bartowski, the CLI would fetch
+  bartowski's plain `google_gemma-4-31B-it-Q4_0.gguf` (18,076,264,800 B, not QAT) for that row. The MTP draft files in
+  bartowski's repo (349,161,984 / 514,705,920 B) are not indexed.
+- **+1 model (129): LFM3-VL 2B** (`lfm3-vl-2b`, Liquid AI) — text model = LFM3 1.7B's shape (24 L: 13 conv + 6 full + 5
+  SWA-256 → 768 cells; 16 heads / 4 KV × 128), context **128,000** (not 1.7B's 262,144); BF16 3,466,626,336 B → 1.73B;
+  Q4_K_M 5.08 / Q5_K_M 5.82 / Q6_K 6.60 / Q8_0 8.54 (text bytes identical to LFM3 1.7B's, same tensor shapes); mmproj F16
+  378,996,032 B. `LFM3-VL-2B-QAD-Q4_0.gguf` not indexed (name is not `<repo>-<level>`, the CLI could not name it). No `todayFeed`.
+- **Counts:** every card's comfortable count +1 (the new model; Gemma 4 31B stays green on 24 GB via QAT Q4_0); 16 GB
+  tight +2, 24 GB Macs comfortable +2. Guides re-counted en + zh (128 → 129): 24 GB 96 → 97 (102 load), 5090 102 → 103,
+  12 GB 64 → 65 (67 load), 16 GB 70 → 71, Spark 110/115 → 111/116, M3 Max 48G 102 → 103, Q4_K_M 120 → **122** (was stale at
+  121), AWQ 53. Stale numbers the gate cannot see: the Intel guide's A770/B570/A750 (en 62/52/43, zh 64/54/45; real 67/57/48),
+  the Spark guide's zh "5090 100" (103), the 8GB guide's image models "eight" (ten). Tables in the 5090 / 24 GB guides and
+  the Qwen Coder 4090 guide re-run. 11 guides get `updatedAt` 2026-11-03. `sizingChangedAt` → 2026-11-03.
+- **Clover-35B-A3B-Preview** `/pending/` entry rewritten from its config + safetensors total (69,322,701,696 B ≈ 34.7B,
+  Qwen3.6 35B-A3B layout); the "extra Gated DeltaNet parameters" claim was not in the config and is gone. Still no GGUF
+  from bartowski / unsloth / ggml-org → stays `awaiting-data`.
+- **Left for the owner:** whether 27.78 had another source (e.g. MTP layers counted) — if so Qwen3.8 27B goes back to it
+  with Q4_K_M 5.02; Qwen3-VL 30B-A3B's `contextLength` 40,960 is unverified (no config in this pull); whether Gemma 4 31B's
+  page should mention the MTP draft files.
+
 ### 2026-11-03 — Patrol: vLLM v0.33.0 (CUDA 13 images, ROCm 10.0 default), llama.cpp b12061; Clover pending
 
 - **vLLM v0.33.0** (tagged 11-01, Latest): release notes say release wheels and images are CUDA 13.0 only

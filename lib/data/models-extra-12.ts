@@ -254,6 +254,8 @@ export const extraModels12: QuantModel[] = [
     // untied embeddings, vocab 248320, plus an MTP layer. Params from bartowski's Q8_0 (9.80 GB →
     // 9.22B; the config arithmetic gives ~9.2B, the large vocabulary is ~2B of it); Q4_K_M 6.17 GB →
     // 5.35 bpw. Context 262144 from the Qwen3.5 config. llama.cpp `qwen35`.
+    // File names and bytes from bartowski/Qwen_Qwen3.5-9B-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 18,407,321,344 B ÷ 2 = 9.20B, consistent with 9.22; mmproj (f16) 918,165,952 B separate.
     id: 'qwen3-5-9b',
     name: 'Qwen3.5 9B',
     family: 'Alibaba Qwen3.5',
@@ -269,8 +271,10 @@ export const extraModels12: QuantModel[] = [
       zh: 'Qwen 最新的小尺寸模型，8 到 16 GB 显卡的常见选择。32 层中只有 8 层保留会增长的 KV 缓存，所以在普通硬件上也能用长上下文。Q4_K_M 在 4K 下约需 6.6 GB，16K 下约 7.0 GB，8 GB 显卡就能从容运行；32K（7.5 GB）在 8 GB 卡上偏紧，10 GB 起才宽裕；用满 256K 窗口约需 15.2 GB。Q8_0 约需 10.4 GB，12 GB 起就很宽裕。Qwen3.5 的小尺寸默认关闭推理模式；它通过单独的视觉编码器读取图像。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.35, vramGB: 6.6,  hfSearchUrl: hf('Qwen3.5-9B GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.4, hfSearchUrl: hf('Qwen3.5-9B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.35, vramGB: 6.6,  hfSearchUrl: hf('Qwen3.5-9B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen_Qwen3.5-9B-GGUF', file: 'Qwen_Qwen3.5-9B-Q4_K_M.gguf', bytes: 6_169_341_984, mmprojBytes: 918_165_952, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 10.4, hfSearchUrl: hf('Qwen3.5-9B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Qwen_Qwen3.5-9B-GGUF', file: 'Qwen_Qwen3.5-9B-Q8_0.gguf', bytes: 9_804_541_984, mmprojBytes: 918_165_952, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.17, vramGB: 0, hfSearchUrl: hf('Qwen3.5-9B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Qwen_Qwen3.5-9B-GGUF', file: 'Qwen_Qwen3.5-9B-Q5_K_M.gguf', bytes: 7_111_487_520, mmprojBytes: 918_165_952, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.91, vramGB: 0, hfSearchUrl: hf('Qwen3.5-9B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'bartowski/Qwen_Qwen3.5-9B-GGUF', file: 'Qwen_Qwen3.5-9B-Q6_K.gguf', bytes: 7_958_818_848, mmprojBytes: 918_165_952, checkedAt: '2026-11-03' } },
     ],
   },
   {
@@ -413,6 +417,8 @@ export const extraModels12: QuantModel[] = [
     // embedding 4096, MLP 12800, 128K. 8.79B = that shape with a 100,352 vocab and untied
     // embeddings — what the Hub's "9B" and the 4.1 8B's 8.8B both reconcile with.
     // Q4_K_M bpw from a published file: 5,347,917,888 bytes → 4.87. Q8_0 at the format's 8.5.
+    // Sizes from bartowski/granite-4.2-8b-GGUF (owner-pulled tree listing, 2026-11-03): BF16 17,587,421,312 B
+    // ÷ 2 = 8.79B. Replaces the earlier Q4_K_M figure (5,347,917,888 B → 4.87, publisher not recorded).
     id: 'granite-4.2-8b',
     name: 'Granite 4.2 8B',
     family: 'IBM Granite',
@@ -424,12 +430,12 @@ export const extraModels12: QuantModel[] = [
     arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 128 },
     addedAt: ADDED_GRANITE42,
     description: {
-      en: 'IBM\'s dense 8B reasoning model from the Granite 4.2 family (3B, 8B, 30B), released in August under Apache 2.0. Thinking is on by default; a non-thinking and a low-effort mode are chosen through the chat template. Unlike Granite 4.0\'s hybrid models it is a plain transformer, so llama.cpp runs it as `granite` and every one of its 40 layers keeps a full cache: about 6.3 GB at Q4_K_M with a 4K context, 11.1 GB at 32K and 27.6 GB across the whole 128K window. That makes it an 8 GB card model at short contexts and a 16 GB one for long documents. The Q4_K_M size comes from a published GGUF file; IBM publishes no perplexity by quantization level, so no quality-loss figure is shown.',
-      zh: 'IBM Granite 4.2 系列（3B、8B、30B）中的 8B 稠密推理模型，8 月以 Apache 2.0 发布。默认开启思考，可通过聊天模板切换为不思考或低强度模式。它不是 Granite 4.0 那种混合架构，而是普通 Transformer，llama.cpp 以 `granite` 架构运行，40 层全部保留完整缓存：Q4_K_M 在 4K 上下文下约 6.3 GB，32K 约 11.1 GB，用满 128K 窗口约 27.6 GB。所以短上下文用 8 GB 显卡就够，处理长文档需要 16 GB。Q4_K_M 体积按已发布的 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
+      en: 'IBM\'s dense 8B reasoning model from the Granite 4.2 family (3B, 8B, 30B), released in August under Apache 2.0. Thinking is on by default; a non-thinking and a low-effort mode are chosen through the chat template. Unlike Granite 4.0\'s hybrid models it is a plain transformer, so llama.cpp runs it as `granite` and every one of its 40 layers keeps a full cache: about 6.5 GB at Q4_K_M with a 4K context, 11.3 GB at 32K and 27.8 GB across the whole 128K window. That makes it an 8 GB card model at short contexts and a 16 GB one for long documents. Sizes come from bartowski\'s GGUF files; IBM publishes no perplexity by quantization level, so no quality-loss figure is shown.',
+      zh: 'IBM Granite 4.2 系列（3B、8B、30B）中的 8B 稠密推理模型，8 月以 Apache 2.0 发布。默认开启思考，可通过聊天模板切换为不思考或低强度模式。它不是 Granite 4.0 那种混合架构，而是普通 Transformer，llama.cpp 以 `granite` 架构运行，40 层全部保留完整缓存：Q4_K_M 在 4K 上下文下约 6.5 GB，32K 约 11.3 GB，用满 128K 窗口约 27.8 GB。所以短上下文用 8 GB 显卡就够，处理长文档需要 16 GB。体积按 bartowski 的 GGUF 文件计算；IBM 没有公布各量化档位的困惑度，所以不显示质量损失。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.87, vramGB: 6.3,  hfSearchUrl: hf('granite-4.2-8b GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 10.5, hfSearchUrl: hf('granite-4.2-8b GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.04, vramGB: 6.3,  hfSearchUrl: hf('granite-4.2-8b GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/granite-4.2-8b-GGUF', file: 'granite-4.2-8b-Q4_K_M.gguf', bytes: 5_539_283_360, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 10.5, hfSearchUrl: hf('granite-4.2-8b GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/granite-4.2-8b-GGUF', file: 'granite-4.2-8b-Q8_0.gguf', bytes: 9_345_614_240, checkedAt: '2026-11-03' } },
     ],
   },
   {
@@ -1249,6 +1255,47 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.82, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q5_K_M.gguf', bytes: 1_258_663_200, checkedAt: '2026-10-29' } },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.60, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q6_K.gguf', bytes: 1_427_638_304, checkedAt: '2026-10-29' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('LFM3-1.7B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-1.7B-GGUF', file: 'LFM3-1.7B-Q8_0.gguf', bytes: 1_846_238_496, checkedAt: '2026-10-29' } },
+    ],
+  },
+  {
+    // LFM3-VL 2B (Liquid AI). Owner-pulled config.json (2026-11-03): Lfm3VlForConditionalGeneration, text
+    // model `lfm3` with the same shape as LFM3 1.7B — 24 layers = 13 conv + 6 full_attention + 5 sliding_attention
+    // (window 256 → 768 cells in llama.cpp), 16 heads / 4 KV × 128, hidden 2048, vocab 128000,
+    // max_position_embeddings 128000. Vision tower (14 layers, hidden 1024) ships as a separate mmproj.
+    // Params from Liquid's BF16 GGUF: 3,466,626,336 B ÷ 2 = 1.73B; Q8_0 1,846,238,496 B → 8.54 bpw confirms it.
+    // Text-weight file sizes equal LFM3 1.7B's byte for byte (same tensor shapes, different weights).
+    // LFM3-VL-2B-QAD-Q4_0.gguf (1,049,615,648 B) not indexed: its name is not `<repo>-<level>`, so the CLI
+    // could not name it.
+    id: 'lfm3-vl-2b',
+    name: 'LFM3-VL 2B',
+    family: 'Liquid AI LFM3',
+    params: 1.73,
+    paramLabel: '2B',
+    categories: ['multimodal', 'general'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 128000,
+    arch: {
+      layers: 24, attHeads: 16, kvHeads: 4, headDim: 128,
+      attention: {
+        fullLayers: 6,
+        windowLayers: 5,
+        windowTokens: 768,
+        note: {
+          en: 'Only 6 of 24 layers are global attention with a cache that grows with context; 5 use a 256-token sliding window and the other 13 are short convolutions with a fixed state.',
+          zh: '24 层中只有 6 层是全局注意力、缓存随上下文增长；5 层是 256 token 滑动窗口，其余 13 层是短卷积，状态大小固定。',
+        },
+      },
+    },
+    addedAt: '2026-11-03',
+    description: {
+      en: 'The vision-language member of Liquid AI\'s LFM3 family, with the same 24-layer text model shape as LFM3 1.7B. A 14-layer vision encoder ships as a separate projector file (379 MB at F16, loaded alongside the model). Only 6 of the 24 text layers keep a cache that grows with context; 5 use a 256-token sliding window and 13 are short convolutions. Its text window is 128,000 tokens, half of LFM3 1.7B\'s. llama.cpp and Ollama both run it.',
+      zh: 'Liquid AI LFM3 系列的视觉语言模型：文本部分与 LFM3 1.7B 结构相同（24 层），另带一个 14 层视觉编码器，以单独的投影文件发布（F16 为 379 MB，与模型一起加载）。24 个文本层中只有 6 层的缓存随上下文增长，5 层是 256 token 滑动窗口，13 层是短卷积。文本窗口为 128,000 token，是 LFM3 1.7B 的一半。llama.cpp 和 Ollama 都能运行它。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.08, vramGB: 0, hfSearchUrl: hf('LFM3-VL-2B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-VL-2B-GGUF', file: 'LFM3-VL-2B-Q4_K_M.gguf', bytes: 1_099_627_808, mmprojBytes: 378_996_032, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.82, vramGB: 0, hfSearchUrl: hf('LFM3-VL-2B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-VL-2B-GGUF', file: 'LFM3-VL-2B-Q5_K_M.gguf', bytes: 1_258_663_200, mmprojBytes: 378_996_032, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.60, vramGB: 0, hfSearchUrl: hf('LFM3-VL-2B GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-VL-2B-GGUF', file: 'LFM3-VL-2B-Q6_K.gguf', bytes: 1_427_638_304, mmprojBytes: 378_996_032, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.54, vramGB: 0, hfSearchUrl: hf('LFM3-VL-2B GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'LiquidAI/LFM3-VL-2B-GGUF', file: 'LFM3-VL-2B-Q8_0.gguf', bytes: 1_846_238_496, mmprojBytes: 378_996_032, checkedAt: '2026-11-03' } },
     ],
   },
   {

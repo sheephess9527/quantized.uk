@@ -87,7 +87,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'mac-ollama-setup': {
-    updatedAt: '2026-10-29',
+    updatedAt: '2026-11-03',
     verifiedAt: undefined,
     content: [
       {
@@ -100,8 +100,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Pull a model and run it',
         headingZh: '拉一个模型跑起来',
-        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 102 of the 128 models here comfortably — the largest being Kimi Linear 48B-A3B at about 31.2 GB.',
-        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 128 个模型中的 102 个 —— 最大的是约 31.2 GB 的 Kimi Linear 48B-A3B。',
+        body: 'Start with an 8B at Q4_K_M. On this index’s numbers Llama 3.1 8B needs 5.6 GB at 4K context and Qwen3 8B needs 5.8 GB, so either is comfortable even on a 16GB Mac. A 48GB M3 Max gives the GPU about 36 GB of its memory and runs 103 of the 129 models here comfortably — the largest being Kimi Linear 48B-A3B at about 31.2 GB.',
+        bodyZh: '从 Q4_K_M 的 8B 开始。按本索引的数字，Llama 3.1 8B 在 4K 上下文下需要 5.6 GB，Qwen3 8B 需要 5.8 GB，所以即使是 16GB 的 Mac 也很从容。48GB 的 M3 Max 能分给 GPU 的大约是 36 GB，能从容运行本站 129 个模型中的 103 个 —— 最大的是约 31.2 GB 的 Kimi Linear 48B-A3B。',
         code: { lang: 'bash', content: 'ollama pull llama3.1:8b\nollama run llama3.1:8b "Summarise the difference between Q4_K_M and Q5_K_M."' },
       },
       {
@@ -136,8 +136,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Does a Mac’s unified memory count as VRAM for Ollama?',
         qZh: 'Mac 的统一内存对 Ollama 来说算显存吗？',
-        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 102 of the 128 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
-        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 128 个模型中有 102 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
+        a: 'Mostly. The GPU addresses the same pool as the CPU, so a 48GB Mac holds models a 24GB discrete card cannot — 103 of the 129 models in this index fit an M3 Max 48G comfortably. What is not true is that all of it is available: macOS reserves part of the pool and caps what one process may wire down, so budget meaningfully below the figure on the box.',
+        aZh: '大体上算。GPU 和 CPU 寻址同一块内存池，所以 48GB 的 Mac 能装下 24GB 独显装不下的模型 —— 本索引 129 个模型中有 103 个能从容装进 M3 Max 48G。不成立的是「全部可用」：macOS 会保留一部分，并限制单个进程能锁定多少，所以请按明显低于标称的容量规划。',
       },
       {
         q: 'How do I tell whether Ollama used the GPU on a Mac?',
@@ -432,7 +432,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'vllm-awq-production': {
-    updatedAt: '2026-10-29',
+    updatedAt: '2026-11-03',
     verifiedAt: undefined,
     relatedModelIds: ['qwen2.5-7b', 'llama-3.1-8b'],
     verifiedStack: {
@@ -490,8 +490,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Is AWQ the right format for serving?',
         qZh: '做服务端该用 AWQ 吗？',
-        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 128 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
-        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 128 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
+        a: 'It is what this stack is built around: AWQ quantizes with the activation distribution in hand and is a first-class citizen in vLLM. 53 of the 129 models in this index ship an AWQ build. AutoAWQ, the tool most existing AWQ checkpoints were made with, is deprecated — vLLM\u2019s docs point new quantizations to its `llm-compressor` project — but existing AWQ checkpoints still load. If your model has no AWQ build, that is a real constraint rather than something a conversion solves — going from one lossy format to another stacks a second round of loss on the first.',
+        aZh: '这套技术栈就是围绕它构建的：AWQ 在量化时掌握激活分布，并且在 vLLM 里是一等公民。本索引 129 个模型中有 53 个提供 AWQ 版本。现有 AWQ 权重大多是用 AutoAWQ 做的，而它已被弃用 —— vLLM 文档让新的量化改用它自己的 `llm-compressor` 项目 —— 但已有的 AWQ 权重仍能正常加载。如果你的模型没有 AWQ 版本，那是一个真实的约束，而不是靠格式转换能解决的问题 —— 从一种有损格式转到另一种，只是在第一次损失之上再叠一次。',
       },
     ],
   },
@@ -726,7 +726,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     // Re-derived 2026-10-03 from calcVRAM on both models' own rows. Added: per-context verdicts
     // (the old stack line said "4K–16K" while GGUF is 104% at 16K), the EXL2 build the index ships,
     // Qwen3-Coder 30B-A3B as the long-context option on 24 GB, and `--host 127.0.0.1` on vLLM.
-    updatedAt: '2026-10-21',
+    updatedAt: '2026-11-03',
     verifiedAt: undefined,
     relatedModelIds: ['qwen2.5-coder-32b', 'qwen3-coder-30b-a3b', 'north-mini-code-1.0'],
     verifiedStack: {
@@ -751,8 +751,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'If you need long context: the MoE coders',
         headingZh: '如果你需要长上下文：MoE 代码模型',
-        body: 'For coding across whole files or repositories, the 32B dense model runs out of room on 24GB before the context gets useful. Qwen3-Coder 30B-A3B, also in this index, is the one that stretches. Qwen3-Coder 30B-A3B at GGUF Q4_K_M is about 19.7 GB at 4K context (82%, comfortable) and 22.6 GB at 32K (94%, tight). Qwen3-Coder 30B-A3B at AWQ INT4 is about 16.4 GB at 4K context and 19.2 GB at 32K, 80% of the card and still comfortable. It is a mixture-of-experts model that reads only about 3B active parameters per token, so its bandwidth ceiling is far higher than a dense 32B. This site has no measured run of it, and runs no coding benchmarks to say which model writes better code. A newer option, added in October, goes further as GGUF: North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K context, comfortable, and about 23.5 GB at 128K, still only tight. Only 13 of its 49 layers keep a growing cache, which is why its context costs so little.',
-        bodyZh: '如果要跨整个文件甚至整个仓库写代码，32B 稠密模型在 24GB 上还没到实用的上下文长度就没空间了。本索引里的 Qwen3-Coder 30B-A3B 能撑得更长：Qwen3-Coder 30B-A3B 的 GGUF Q4_K_M 在 4K 上下文下约 19.7 GB（82%，宽裕），32K 下约 22.6 GB（94%，偏紧）；AWQ INT4 在 4K 上下文下约 16.4 GB，32K 下约 19.2 GB，占显卡 80%，仍然宽裕。它是混合专家模型，每个 token 只读取约 3B 激活参数，所以带宽上限比 32B 稠密模型高得多。本站没有它的实测数据，也不跑代码能力评测，无法判断哪个模型写代码更好。10 月新增的一个选择用 GGUF 就能走得更远：North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 上下文下约 20.8 GB，宽裕；128K 下约 23.5 GB，也只是偏紧。它 49 层中只有 13 层保留增长的缓存，所以上下文几乎不占地方。',
+        body: 'For coding across whole files or repositories, the 32B dense model runs out of room on 24GB before the context gets useful. Qwen3-Coder 30B-A3B, also in this index, is the one that stretches. Qwen3-Coder 30B-A3B at GGUF Q4_K_M is about 19.8 GB at 4K context (83%, comfortable) and 22.7 GB at 32K (95%, tight). Qwen3-Coder 30B-A3B at AWQ INT4 is about 16.4 GB at 4K context and 19.2 GB at 32K, 80% of the card and still comfortable. It is a mixture-of-experts model that reads only about 3B active parameters per token, so its bandwidth ceiling is far higher than a dense 32B. This site has no measured run of it, and runs no coding benchmarks to say which model writes better code. A newer option, added in October, goes further as GGUF: North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K context, comfortable, and about 23.5 GB at 128K, still only tight. Only 13 of its 49 layers keep a growing cache, which is why its context costs so little.',
+        bodyZh: '如果要跨整个文件甚至整个仓库写代码，32B 稠密模型在 24GB 上还没到实用的上下文长度就没空间了。本索引里的 Qwen3-Coder 30B-A3B 能撑得更长：Qwen3-Coder 30B-A3B 的 GGUF Q4_K_M 在 4K 上下文下约 19.8 GB（83%，宽裕），32K 下约 22.7 GB（95%，偏紧）；AWQ INT4 在 4K 上下文下约 16.4 GB，32K 下约 19.2 GB，占显卡 80%，仍然宽裕。它是混合专家模型，每个 token 只读取约 3B 激活参数，所以带宽上限比 32B 稠密模型高得多。本站没有它的实测数据，也不跑代码能力评测，无法判断哪个模型写代码更好。10 月新增的一个选择用 GGUF 就能走得更远：North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 上下文下约 20.8 GB，宽裕；128K 下约 23.5 GB，也只是偏紧。它 49 层中只有 13 层保留增长的缓存，所以上下文几乎不占地方。',
         code: { lang: 'bash', content: '# GGUF, long context, works on Windows too:\nollama run hf.co/bartowski/North-Mini-Code-1.0-GGUF:Q4_K_M\n/set parameter num_ctx 32768\n\n# Long-context coding on one 24GB card (Linux / WSL2).\n# Substitute a real AWQ conversion — this site could not confirm\n# which repo publishes one, so it does not guess a name.\nvllm serve <an-AWQ-build-of-Qwen3-Coder-30B-A3B-Instruct> \\\n  --max-model-len 32768 \\\n  --host 127.0.0.1 --port 8000\n\n# Or GGUF Q4_K_M at 32K (tight) through llama.cpp:\n# llama-server -m <Qwen3-Coder-30B-A3B Q4_K_M .gguf> -ngl all -c 32768' },
       },
       {
@@ -785,8 +785,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         q: 'Which coding model in this index handles 32K context on a 24GB card?',
         qZh: '本索引里哪个代码模型能在 24GB 显卡上跑 32K 上下文？',
-        a: 'Two. Qwen3-Coder 30B-A3B at AWQ INT4 is about 19.2 GB at 32K, 80% of the card and comfortable; at GGUF Q4_K_M it is 22.6 GB at 32K, which is tight but fits. North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K, comfortable without vLLM. Qwen2.5-Coder 32B does not fit 32K in AWQ or GGUF on this card. This site runs no coding benchmarks, so it does not rank these models by quality, only by whether they fit.',
-        aZh: '有两个。Qwen3-Coder 30B-A3B 的 AWQ INT4 在 32K 下约 19.2 GB，占显卡 80%，宽裕；GGUF Q4_K_M 在 32K 下为 22.6 GB，偏紧但放得下。North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 下约 20.8 GB，不用 vLLM 也宽裕。Qwen2.5-Coder 32B 的 AWQ 和 GGUF 在这张卡上都放不下 32K。本站不跑代码能力评测，所以不按质量给这些模型排序，只比较放不放得下。',
+        a: 'Two. Qwen3-Coder 30B-A3B at AWQ INT4 is about 19.2 GB at 32K, 80% of the card and comfortable; at GGUF Q4_K_M it is 22.7 GB at 32K, which is tight but fits. North Mini Code 1.0 30B-A3B at GGUF Q4_K_M is about 20.8 GB at 32K, comfortable without vLLM. Qwen2.5-Coder 32B does not fit 32K in AWQ or GGUF on this card. This site runs no coding benchmarks, so it does not rank these models by quality, only by whether they fit.',
+        aZh: '有两个。Qwen3-Coder 30B-A3B 的 AWQ INT4 在 32K 下约 19.2 GB，占显卡 80%，宽裕；GGUF Q4_K_M 在 32K 下为 22.7 GB，偏紧但放得下。North Mini Code 1.0 30B-A3B 的 GGUF Q4_K_M 在 32K 下约 20.8 GB，不用 vLLM 也宽裕。Qwen2.5-Coder 32B 的 AWQ 和 GGUF 在这张卡上都放不下 32K。本站不跑代码能力评测，所以不按质量给这些模型排序，只比较放不放得下。',
       },
       {
         q: 'How many tokens per second should I expect?',
@@ -861,7 +861,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'quantize-own-model-gguf': {
-    updatedAt: '2026-10-29',
+    updatedAt: '2026-11-03',
     verifiedAt: undefined,
     content: [
       {
@@ -881,8 +881,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Quantize it',
         headingZh: '量化',
-        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16 (across the 79 models that report one), and 120 of the 128 models here ship it — the exceptions are released only in other forms, such as a native MXFP4 or 2-bit build or ggml-org\'s Q4_0.',
-        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%（基于公布了该数字的 79 个模型），本站 128 个模型中有 120 个提供这个档位 —— 例外的几个只以其他形式发布，例如原生 MXFP4、2-bit 版本或 ggml-org 的 Q4_0。',
+        body: 'The quantization binary is `llama-quantize` — the bare `quantize` name from older tutorials was renamed along with the rest of the CLI tools. Q4_K_M is the level almost everyone should start with: this index’s own median published quality loss at that level is 2.9% against FP16 (across the 79 models that report one), and 122 of the 129 models here ship it — the exceptions are released only in other forms, such as a native MXFP4 or 2-bit build or ggml-org\'s Q4_0.',
+        bodyZh: '量化的可执行文件是 `llama-quantize` —— 旧教程里那个裸 `quantize` 的名字随着 CLI 工具的重命名一起变了。Q4_K_M 是几乎所有人都该从这里开始的档位：本索引在这个档位上公布的质量损失中位数相对 FP16 是 2.9%（基于公布了该数字的 79 个模型），本站 129 个模型中有 122 个提供这个档位 —— 例外的几个只以其他形式发布，例如原生 MXFP4、2-bit 版本或 ggml-org 的 Q4_0。',
         code: { lang: 'bash', content: './build/bin/llama-quantize my-model-bf16.gguf my-model-Q4_K_M.gguf Q4_K_M' },
       },
       {

@@ -37,10 +37,13 @@ export const extraModels8: QuantModel[] = [
     ],
   },
   {
+    // Sizes from bartowski/Qwen_Qwen3-VL-30B-A3B-Instruct-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 61,095,804,032 B in 2 parts ÷ 2 = 30.55B (the vision tower is the mmproj, 1,083,499,680 B at f16);
+    // Q8_0 32,483,933,408 B → 8.51 bpw confirms it.
     id: 'qwen3-vl-30b-a3b',
     name: 'Qwen3-VL 30B-A3B Instruct',
     family: 'Alibaba Qwen3-VL',
-    params: 30.5,
+    params: 30.55,
     paramLabel: '30B-A3B',
     categories: ['multimodal', 'instruct', 'general'],
     hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
@@ -49,21 +52,23 @@ export const extraModels8: QuantModel[] = [
     arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128, moe: { expertParams: 28.99, experts: 128, perToken: 8, moeLayers: 48 } },
     addedAt: ADDED,
     description: {
-      en: 'Multimodal MoE with only ~3B active parameters, so it stays responsive on Apple unified memory and survives CPU offload far better than a dense 30B. Q4 ~19GB — a 24GB card holds it outright.',
-      zh: '多模态 MoE,激活参数仅约 3B,因此在苹果统一内存上依然跟手,CPU 卸载的表现也远好于稠密 30B。Q4 约 19GB,24GB 显卡可完整放下。',
+      en: 'Multimodal MoE with only ~3B active parameters, so it stays responsive on Apple unified memory and survives CPU offload far better than a dense 30B. At Q4_K_M it needs about 19.9 GB at 4K, comfortable on a 24 GB card; Q3_K_M brings that to 15.1 GB. The vision encoder is a separate 1.1 GB file.',
+      zh: '多模态 MoE,激活参数仅约 3B,因此在苹果统一内存上依然跟手,CPU 卸载的表现也远好于稠密 30B。Q4_K_M 在 4K 下约需 19.9 GB，24 GB 显卡可以从容运行；Q3_K_M 降到 15.1 GB。视觉编码器是另外一个 1.1 GB 的文件。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 19.0, pplLossPercent: 2.6, speedRTX4090: 95, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 15.2, pplLossPercent: 5.4, speedRTX4090: 104, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q3_K_M') },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 32.6, pplLossPercent: 0.3, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q8_0') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.88, vramGB: 19.0, pplLossPercent: 2.6, speedRTX4090: 95, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/Qwen_Qwen3-VL-30B-A3B-Instruct-GGUF', file: 'Qwen_Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf', bytes: 18_632_185_056, mmprojBytes: 1_083_499_680, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.69, vramGB: 15.2, pplLossPercent: 5.4, speedRTX4090: 104, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q3_K_M'), source: { repo: 'bartowski/Qwen_Qwen3-VL-30B-A3B-Instruct-GGUF', file: 'Qwen_Qwen3-VL-30B-A3B-Instruct-Q3_K_M.gguf', bytes: 14_076_804_320, mmprojBytes: 1_083_499_680, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 32.6, pplLossPercent: 0.3, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct GGUF Q8_0'), source: { repo: 'bartowski/Qwen_Qwen3-VL-30B-A3B-Instruct-GGUF', file: 'Qwen_Qwen3-VL-30B-A3B-Instruct-Q8_0.gguf', bytes: 32_483_933_408, mmprojBytes: 1_083_499_680, checkedAt: '2026-11-03' } },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 17.2, pplLossPercent: 3.7, speedRTX4090: 112, hfSearchUrl: hf('Qwen3-VL-30B-A3B-Instruct AWQ') },
     ],
   },
   {
+    // Sizes from bartowski/mistralai_Magistral-Small-2509-GGUF (owner-pulled tree listing, 2026-11-03): BF16
+    // 47,153,521,344 B ÷ 2 = 23.58B.
     id: 'magistral-small-2509',
     name: 'Magistral Small 1.2 24B',
     family: 'Mistral Magistral',
-    params: 23.6,
+    params: 23.58,
     paramLabel: '24B',
     categories: ['general', 'instruct', 'multimodal'],
     hardwareTags: ['consumer-gpu', 'mac'],
@@ -71,13 +76,13 @@ export const extraModels8: QuantModel[] = [
     arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 128 },
     addedAt: ADDED,
     description: {
-      en: 'Mistral\'s reasoning model on a Mistral Small 3.2 base, with reasoning wrapped in [THINK] tags. Q4 ~14GB puts explicit chain-of-thought on a 16GB card — the level below the 70B-class reasoners most guides assume.',
-      zh: 'Mistral 基于 Mistral Small 3.2 的推理模型,思维链包在 [THINK] 标签内。Q4 约 14GB,让显式思维链落到 16GB 显卡上 —— 比多数教程默认的 70B 级推理模型低一档。',
+      en: 'Mistral\'s reasoning model on a Mistral Small 3.2 base, with reasoning wrapped in [THINK] tags. At Q4_K_M it needs about 15.7 GB at 4K, tight on a 16 GB card and comfortable on 20 GB — explicit chain-of-thought a level below the 70B-class reasoners most guides assume.',
+      zh: 'Mistral 基于 Mistral Small 3.2 的推理模型,思维链包在 [THINK] 标签内。Q4_K_M 在 4K 下约需 15.7 GB，在 16 GB 显卡上偏紧，20 GB 起就宽裕 —— 让显式思维链落到比多数教程默认的 70B 级推理模型低一档的硬件上。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 14.3, pplLossPercent: 2.9, speedRTX4090: 60, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 54, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q5_K_M') },
-      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 47, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q6_K') },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.86, vramGB: 14.3, pplLossPercent: 2.9, speedRTX4090: 60, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q4_K_M'), confidence: 'community', source: { repo: 'bartowski/mistralai_Magistral-Small-2509-GGUF', file: 'mistralai_Magistral-Small-2509-Q4_K_M.gguf', bytes: 14_333_912_032, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.69, vramGB: 16.8, pplLossPercent: 1.4, speedRTX4090: 54, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q5_K_M'), source: { repo: 'bartowski/mistralai_Magistral-Small-2509-GGUF', file: 'mistralai_Magistral-Small-2509-Q5_K_M.gguf', bytes: 16_763_986_912, checkedAt: '2026-11-03' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.56, vramGB: 19.4, pplLossPercent: 0.6, speedRTX4090: 47, hfSearchUrl: hf('Magistral-Small-2509 GGUF Q6_K'), source: { repo: 'bartowski/mistralai_Magistral-Small-2509-GGUF', file: 'mistralai_Magistral-Small-2509-Q6_K.gguf', bytes: 19_345_941_472, checkedAt: '2026-11-03' } },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 13.0, pplLossPercent: 4.0, speedRTX4090: 76, hfSearchUrl: hf('Magistral-Small-2509 AWQ') },
       { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 13.9, pplLossPercent: 2.5, hfSearchUrl: hf('Magistral-Small-2509 exl2 4.65') },
     ],
