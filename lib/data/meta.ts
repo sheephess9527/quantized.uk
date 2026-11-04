@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-03';
+export const dataLastUpdated = '2026-11-04';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,11 +71,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-03',
+  checkedAt: '2026-11-04',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
-    ollama: 'v0.40.13',
+    ollama: 'v0.40.14',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-04',
+    en: 'Metis-1.6, two small Apache-licensed models from Lernex, joins the list of released models not yet sized here. llama.cpp can run them since 3 November, but they run their layers twice per token and their file sizes could not be checked yet. The Windows commands now download llama.cpp b12086, and the runtime versions show Ollama 0.40.14.',
+    zh: 'Lernex 的两个 Apache 许可小模型 Metis-1.6 加入「已发布但暂未计算」列表。llama.cpp 从 11 月 3 日起可以运行它们，但它们每个 token 会把整组层跑两遍，文件大小也还没能核对。Windows 启动命令改为下载 llama.cpp b12086，运行时版本显示 Ollama 0.40.14。',
+  },
   {
     date: '2026-11-03',
     en: 'The benchmarks page now spells out what counts as a measured run, and the bandwidth check behind it is enforced on every row. Beside each run it shows what the VRAM calculator would have estimated, so you can see how close the estimates elsewhere on the site come to real runs. It also explains how to send a run from your own card, with the one llama-bench command it has to come from.',

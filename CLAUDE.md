@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-04 | **Patrol** — llama.cpp b12086 (b12087–89 source-only), Ollama v0.40.14 Latest; new llama.cpp arch `metis16` → Metis-1.6 Praxis 3B / Logos 10B (Lernex, Apache 2.0, two-pass looped Mamba-2 + attention) on `/pending/` awaiting config + GGUF bytes; Kimi K3.1 Pro weights unconfirmed |
 | 2026-11-03 (iv) | **/benchmarks/ run rules + calibration + reader runs** — rules printed from `benchmarkMethodology`; `benchRowProblems()` gates every matrix row (card must exist; dense ≤ `rooflineTokS` × `CEILING_TOLERANCE` 1.15); recorded VRAM vs `calcVRAM` per run (15/16 resolve, median gap 0.2 GB, Phi-4 +1.1); reader runs only as unedited `llama-bench` output via a shown mailto |
 | 2026-11-03 (iii) | **Owner answers** — Qwen3.8 27B params back to the official safetensors total 27.78 (incl. 0.42B MTP head the GGUFs lack → Q8_0 8.38 bpw; Q4_K_M 5.02); Qwen3-VL 8B + 30B-A3B context 40,960 → 262,144 (configs); Gemma 4 31B description names bartowski's MTP draft files (not levels) |
 | 2026-11-03 (ii) | **Owner-pulled HF listings: 10 models from files, +8 levels, +1 model (129): LFM3-VL 2B** — params = publisher BF16 ÷ 2 (Qwen3.8 27B 27.78 → 27.33, old 15.33 GiB figure untraceable; Gemma 3 27B 27.4 → 27.01, vision in mmproj); 22 rows get `source`; Gemma 4 31B Q4_K_M 22.1 GB @4K → tight on 24 GB (QAT Q4_0 still green); 9 `hfRepoMap` → GGUF repos (Gemma 4 31B kept: QAT row); Clover pending rewritten; 11 guides re-counted |

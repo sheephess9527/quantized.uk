@@ -425,7 +425,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-11-03 (iv) — /benchmarks/: published run rules, recorded VRAM vs the calculator, reader-run submission
+### 2026-11-04 — Patrol: llama.cpp b12086, Ollama v0.40.14; Metis-1.6 (`metis16`) → /pending/
+
+- **Runtimes** (release / tag pages read 2026-11-04): llama.cpp tags run to b12089, but b12087–b12089 had only
+  source archives; **b12086** lists every Windows zip `llamaCppWindows()` names (cpu / vulkan / cuda-12.4 / cuda-13.4 x64,
+  rocm-10.0, sycl, cudart 12.4 / 13.4) → `LLAMACPP_BUILD`. Ollama **v0.40.14** is Latest (v0.40.15-rc0 is a
+  pre-release, skipped); its notes include OpenAI-compatible endpoints no longer overriding a model's packaged sampler
+  defaults — no site command sets those, nothing to change. vLLM v0.33.0 and ExLlamaV3 1.6.6 unchanged.
+- **llama.cpp arch list** vs 10-31: +`clover_moe` (Clover, already on /pending/) and +`metis16`. Metis-1.6 (Lernex,
+  PR #31134, merged 11-03): Praxis ~2.94B and Logos ~10.2B, Mamba-2 + GQA hybrid, two passes over the layer stack
+  ("KV carries between passes"), Apache 2.0, public 11-01, Lernex's own GGUF repos. Layer counts, KV layout, context and
+  GGUF bytes not readable here (huggingface.co, arxiv.org blocked) → `/pending/` `awaiting-data`. The feature request's
+  "+39% perplexity at Q4_K_M" was seen only in a search summary, not read — not used.
+- **Skipped:** Kimi K3.1 Pro (open weights "promised by 11-04", unconfirmed; far beyond single-machine hardware anyway).
+
+ /benchmarks/: published run rules, recorded VRAM vs the calculator, reader-run submission
 
 Prompted by a look at localmaxxing (a public local-inference leaderboard; only its companion repo
 `Datura-ai/lium-localmaxxing` was readable from here — the site itself does not resolve in this environment).
