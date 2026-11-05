@@ -425,6 +425,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-05 — Patrol: llama.cpp b12119 (+ v0.9.0); no model
+
+- llama.cpp tags to b12119 + **v0.9.0** (Latest, 11-04): API additions only per its notes (`LLAMA_FTYPE_MOSTLY_F8_E4M3`,
+  new `mtmd.h` functions, batched copy API superseding `_2d`); no CLI flag / port / binary change, so no site command
+  moves. FP8 GGUF is not a tracked level (0 models ship it). b12119 lists every Windows zip `llamaCppWindows()` names
+  → `LLAMACPP_BUILD`. Ollama v0.40.14 (v0.40.15-rc0 still pre-release), vLLM v0.33.0, ExLlamaV3 1.6.6 unchanged.
+- llama.cpp arch list unchanged since 11-04 (170). HF trending digest 11-02: every LLM already indexed or on /pending/;
+  LFM3-Omni-2B skipped (speech model, out of scope); Kimi K3.1 Pro weights still unconfirmed.
+
 ### 2026-11-04 — Patrol: llama.cpp b12086, Ollama v0.40.14; Metis-1.6 (`metis16`) → /pending/
 
 - **Runtimes** (release / tag pages read 2026-11-04): llama.cpp tags run to b12089, but b12087–b12089 had only

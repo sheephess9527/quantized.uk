@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-04';
+export const dataLastUpdated = '2026-11-05';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-04',
+  checkedAt: '2026-11-05',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-05',
+    en: 'The Windows commands now download llama.cpp b12119. llama.cpp also tagged version 0.9.0, which adds an FP8 file type and changes nothing in the commands this site generates; Ollama, vLLM and ExLlamaV3 have no new releases.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12119。llama.cpp 同时发布了 0.9.0 版本，新增了一种 FP8 文件类型，对本站生成的命令没有影响；Ollama、vLLM 和 ExLlamaV3 没有新版本。',
+  },
   {
     date: '2026-11-04',
     en: 'Metis-1.6, two small Apache-licensed models from Lernex, joins the list of released models not yet sized here. llama.cpp can run them since 3 November, but they run their layers twice per token and their file sizes could not be checked yet. The Windows commands now download llama.cpp b12086, and the runtime versions show Ollama 0.40.14.',
