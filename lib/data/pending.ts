@@ -25,22 +25,6 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
-    id: 'metis-1-6',
-    name: 'Metis-1.6 Praxis 3B / Logos 10B',
-    vendor: 'Lernex',
-    announced: '2026-11-01',
-    reason: 'awaiting-data',
-    detail: {
-      en: 'Two small looped models released on 1 November under Apache 2.0: Praxis (about 2.94B parameters) and Logos (about 10.2B), a hybrid of Mamba-2 and attention layers that runs the whole layer stack twice per token. llama.cpp added the architecture as `metis16` on 3 November, and Lernex publishes its own GGUF files. Its attention cache carries over from one pass to the next, a layout this site has not sized before, and the layer counts and GGUF file sizes could not be read here.',
-      zh: '两个小型循环结构模型，11 月 1 日以 Apache 2.0 发布：Praxis（约 2.94B 参数）和 Logos（约 10.2B），由 Mamba-2 层和注意力层混合组成，每个 token 会把整组层跑两遍。llama.cpp 于 11 月 3 日以 `metis16` 架构加入支持，Lernex 也发布了自己的 GGUF 文件。它的注意力缓存会从第一遍延续到第二遍，本站还没有计算过这种结构；而且这里读不到它的层数配置和 GGUF 文件大小。',
-    },
-    recheck: {
-      en: 'When its config.json and the GGUF file listing with byte counts are available.',
-      zh: '拿到它的 config.json 和带字节数的 GGUF 文件列表时。',
-    },
-    checkedAt: '2026-11-04',
-  },
-  {
     id: 'clover-35b-a3b-preview',
     name: 'Clover-35B-A3B-Preview',
     vendor: 'DiffuSpace',

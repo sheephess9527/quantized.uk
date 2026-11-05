@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **129** in index (`models-extra` … `models-extra-12`) |
+| Models | **131** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 592 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 596 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-05 (ii) | **+2 models (131): Metis-1.6 Praxis / Logos** — owner-pulled configs + Lernex GGUF bytes; looped `metis16`: llama.cpp gives each pass's attention layer its own cache (4 / 6 caches); params = BF16 ÷ 2 (2.95 / 10.24); `activeParams` 1.09 / 2.57 derived (2 passes re-read the trunk), no `arch.moe`; IQ4_XS level added; Logos IQ4_XS 6.4 GB green on 8 GB; 10 guides re-counted (4060 Ti guide had drifted) |
 | 2026-11-05 | **Patrol** — llama.cpp b12119 (Windows zips present) + v0.9.0 (API-only: FP8 ftype, mtmd functions; no command change); other runtimes unchanged; no new arch, no model (LFM3-Omni-2B speech, out of scope) |
 | 2026-11-04 | **Patrol** — llama.cpp b12086 (b12087–89 source-only), Ollama v0.40.14 Latest; new llama.cpp arch `metis16` → Metis-1.6 Praxis 3B / Logos 10B (Lernex, Apache 2.0, two-pass looped Mamba-2 + attention) on `/pending/` awaiting config + GGUF bytes; Kimi K3.1 Pro weights unconfirmed |
 | 2026-11-03 (iv) | **/benchmarks/ run rules + calibration + reader runs** — rules printed from `benchmarkMethodology`; `benchRowProblems()` gates every matrix row (card must exist; dense ≤ `rooflineTokS` × `CEILING_TOLERANCE` 1.15); recorded VRAM vs `calcVRAM` per run (15/16 resolve, median gap 0.2 GB, Phi-4 +1.1); reader runs only as unedited `llama-bench` output via a shown mailto |

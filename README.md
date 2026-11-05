@@ -425,6 +425,27 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-05 (ii) — +2 models (131): Metis-1.6 Praxis + Logos; IQ4_XS level
+
+- **Source**: owner-pulled `config.json`s, Hub `safetensors.total` and both GGUF tree listings (2026-11-04; Lernex's own
+  `Lernex/Metis-1.6-{Praxis,Logos}-GGUF` — no bartowski / unsloth / ggml-org conversion exists). `/pending/` entry removed.
+- **Shape** (`metis16`): Praxis 12 layers (attention at 4, 8; 32 heads / 8 KV × 64, hidden 2048), Logos 20 layers
+  (attention at 5, 10, 15; 40 / 10 KV × 64, hidden 2560); the rest Mamba-2; latent MoE (latent 1024) on every layer,
+  128 × 512 / 192 × 768 routed + 1 shared, 4 per token; vocab 65536 tied; 131072 positions; `num_passes` 2.
+- **Cache**, read in llama.cpp `src/models/metis16.cpp` + `llama-memory-hybrid.cpp`: the graph indexes layers as
+  `pass · n_layer + layer` and the hybrid memory's default filter gives every non-recurrent virtual layer its own KV cache
+  — so 2 × 2 = **4** caches (Praxis, 8 KB/token) and 3 × 2 = **6** (Logos, 15 KB/token), encoded as `fullLayers` 4 / 6.
+  The 11-04 pending text guessed "carries over between passes"; the source says each pass has its own.
+- **Params** = BF16 GGUF ÷ 2: 2.95B / 10.24B (Hub safetensors 3.08B / 10.39B count the tied lm_head twice). bpw from the
+  files: IQ4_XS 4.98 / 4.74, Q4_K_M 5.48 / 5.27, Q5_K_M 6.31 / 6.12, Q6_K 7.04 / 6.91, Q8_0 8.74 / 8.68.
+- **MoE**: `paramLabel` '3B MoE' / '10B MoE' (for `isMoE`); `activeParams` 1.09 / 2.57 is **derived, not vendor-stated**:
+  weight reads per token = 2 passes × (trunk + 4/N of routed experts) + tied output once. No `arch.moe` — what
+  `--n-cpu-moe N` means on a looped stack is unchecked.
+- **Fit**: Praxis Q4_K_M 2.2 GB @4K / 3.2 @128K; Logos IQ4_XS 6.4 GB @4K (green on 8 GB), Q4_K_M 7.1 (tight on 8 GB),
+  Q8_0 11.7. Every card +2 comfortable except the 8 GB Macs (+1: 6 GB usable). 10 guides re-counted and `updatedAt`
+  11-05; the 4060 Ti guide had drifted (70 / 82 vs 71 / 84 before this batch → now 73 / 86).
+- **IQ4_XS** added to `quantBPW` (4.25, block rate) + `quantGroups`. `sizingChangedAt` → 11-05.
+
 ### 2026-11-05 — Patrol: llama.cpp b12119 (+ v0.9.0); no model
 
 - llama.cpp tags to b12119 + **v0.9.0** (Latest, 11-04): API additions only per its notes (`LLAMA_FTYPE_MOSTLY_F8_E4M3`,

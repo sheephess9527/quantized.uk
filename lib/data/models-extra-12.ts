@@ -29,6 +29,7 @@ const ADDED_BOLT_E4B = '2026-10-24';
 const ADDED_1026 = '2026-10-26';
 const ADDED_1029 = '2026-10-29';
 const ADDED_1030 = '2026-10-30';
+const ADDED_1105 = '2026-11-05';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1366,6 +1367,86 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q2_K',    bpw: 2.90, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q2_K'),    confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 380_706_433_472, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
       { format: 'GGUF', level: 'Q4_K_M',  bpw: 4.84, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q4_K_M'),  confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 634_802_244_608, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
       { format: 'GGUF', level: 'Q8_0',    bpw: 8.50, vramGB: 0, hfSearchUrl: hf('Mistral-Large-4-1T-A52B GGUF Q8_0'),    confidence: 'estimated', source: { repo: 'ggml-org/Mistral-Large-4-1T-A52B-GGUF', bytes: 1_115_150_340_608, mmprojBytes: 3_444_696_416, checkedAt: '2026-10-30' } },
+    ],
+  },
+  {
+    // Metis-1.6 Praxis (Lernex, 2026-11-01, Apache 2.0). Owner-pulled config.json + GGUF tree (2026-11-04):
+    // `metis16`, 12 layers (Mamba-2 except attention at indices 4 and 8), 32 heads / 8 KV × 64, hidden 2048,
+    // vocab 65536 (tied), 131072 positions, num_passes 2. Every layer carries a latent MoE (latent 1024,
+    // 128 routed experts × 512 + one shared, 4 per token).
+    // Cache, from llama.cpp src/models/metis16.cpp + llama-memory-hybrid.cpp: the graph runs the stack twice with
+    // il = pass·n_layer + layer, and the hybrid memory's default filter gives every non-recurrent virtual layer its
+    // own KV cache — so 2 attention layers × 2 passes = 4 caches. Encoded as fullLayers 4 (of the 12 physical
+    // layers). Mamba state is fixed-size (~2 MB a layer), not sized.
+    // Params: Lernex's BF16 GGUF 5,897,524,608 B ÷ 2 = 2.95B (the Hub's safetensors total, 3.08B, counts the tied
+    // lm_head a second time). bpw from Lernex's own files; no other publisher has GGUFs.
+    // activeParams is derived here, not vendor-stated: weights read per token = 2 passes × (0.40B non-expert
+    // trunk + 4/128 of 2.42B routed experts) + the 0.13B output projection once = 1.09B. A pass re-reads the
+    // same weights, which is what the speed ceiling needs.
+    id: 'metis-1-6-praxis',
+    name: 'Metis-1.6 Praxis',
+    family: 'Metis',
+    params: 2.95,
+    paramLabel: '3B MoE',
+    activeParams: 1.09,
+    categories: ['general'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: {
+      layers: 12, attHeads: 32, kvHeads: 8, headDim: 64,
+      attention: {
+        fullLayers: 4,
+        windowLayers: 0,
+        note: {
+          en: 'Looped hybrid: 10 of 12 layers are Mamba-2 with a fixed state and 2 are attention, and the stack runs twice per token. Each pass keeps its own attention cache, so 4 caches grow with context — about 8 KB per token.',
+          zh: '循环混合结构：12 层中 10 层是状态固定的 Mamba-2，2 层是注意力，每个 token 把整组层跑两遍。每一遍都有自己的注意力缓存，所以共有 4 份缓存随上下文增长，每个 token 约 8 KB。',
+        },
+      },
+    },
+    addedAt: ADDED_1105,
+    description: { en: 'The smaller of Lernex\'s two Metis-1.6 models, released on 1 November under Apache 2.0. It is a looped hybrid: 12 layers, mostly Mamba-2 with two attention layers and a small mixture-of-experts block on every layer, and the whole stack runs twice per token, so each token reads about 1.1B parameters\' worth of weights from a 2.95B model. Each pass keeps its own attention cache, about 8 KB per token in total, which makes its 128K window cheap. At Q4_K_M it needs about 2.2 GB at 4K and 3.2 GB at 128K, comfortable on a 4 GB card. Q8_0 needs about 4.5 GB at 128K, comfortable on a 6 GB card. llama.cpp runs it since 3 November. Sizes come from Lernex\'s own GGUF files, and no per-level quality loss has been published.', zh: 'Lernex 的两个 Metis-1.6 模型中较小的一个，11 月 1 日以 Apache 2.0 发布。它是循环混合结构：12 层以 Mamba-2 为主，其中 2 层是注意力，每层都带一个小型混合专家模块，每个 token 把整组层跑两遍，因此 2.95B 的模型每个 token 约读取 1.1B 参数的权重。每一遍都有自己的注意力缓存，合计每个 token 约 8 KB，所以 128K 上下文很便宜。Q4_K_M 在 4K 下约需 2.2 GB，128K 下约需 3.2 GB，4 GB 显卡可以从容运行。Q8_0 在 128K 下约需 4.5 GB，6 GB 显卡可以从容运行。llama.cpp 自 11 月 3 日起支持运行。体积按 Lernex 自己发布的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'IQ4_XS', bpw: 4.98, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Praxis GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Praxis-GGUF', file: 'Metis-1.6-Praxis-IQ4_XS.gguf', bytes: 1_836_154_464, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.48, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Praxis GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Praxis-GGUF', file: 'Metis-1.6-Praxis-Q4_K_M.gguf', bytes: 2_019_139_168, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.31, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Praxis GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Praxis-GGUF', file: 'Metis-1.6-Praxis-Q5_K_M.gguf', bytes: 2_325_706_336, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 7.04, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Praxis GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Praxis-GGUF', file: 'Metis-1.6-Praxis-Q6_K.gguf', bytes: 2_597_131_872, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.74, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Praxis GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Praxis-GGUF', file: 'Metis-1.6-Praxis-Q8_0.gguf', bytes: 3_224_393_312, checkedAt: '2026-11-04' } },
+    ],
+  },
+  {
+    // Metis-1.6 Logos (Lernex, 2026-11-01, Apache 2.0). Same sources as Praxis: 20 layers, attention at 5 / 10 / 15,
+    // 40 heads / 10 KV × 64, hidden 2560, vocab 65536 (tied), 131072 positions, 2 passes; latent MoE on every
+    // layer (latent 1024, 192 routed × 768 + one shared, 4 per token). 3 attention layers × 2 passes = 6 caches.
+    // Params: BF16 GGUF 20,470,411,392 B ÷ 2 = 10.24B (safetensors total 10.39B counts the tied lm_head twice).
+    // activeParams derived: 2 × (1.01B trunk + 4/192 of 9.06B routed) + 0.17B output once = 2.57B.
+    id: 'metis-1-6-logos',
+    name: 'Metis-1.6 Logos',
+    family: 'Metis',
+    params: 10.24,
+    paramLabel: '10B MoE',
+    activeParams: 2.57,
+    categories: ['general'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 131072,
+    arch: {
+      layers: 20, attHeads: 40, kvHeads: 10, headDim: 64,
+      attention: {
+        fullLayers: 6,
+        windowLayers: 0,
+        note: {
+          en: 'Looped hybrid: 17 of 20 layers are Mamba-2 with a fixed state and 3 are attention, and the stack runs twice per token. Each pass keeps its own attention cache, so 6 caches grow with context — about 15 KB per token.',
+          zh: '循环混合结构：20 层中 17 层是状态固定的 Mamba-2，3 层是注意力，每个 token 把整组层跑两遍。每一遍都有自己的注意力缓存，所以共有 6 份缓存随上下文增长，每个 token 约 15 KB。',
+        },
+      },
+    },
+    addedAt: ADDED_1105,
+    description: { en: 'The larger of Lernex\'s two Metis-1.6 models, released on 1 November under Apache 2.0. It is a looped hybrid: 20 layers, mostly Mamba-2 with three attention layers and a mixture-of-experts block on every layer, and the whole stack runs twice per token, so each token reads about 2.6B parameters\' worth of weights from a 10.24B model. Each pass keeps its own attention cache, about 15 KB per token in total. IQ4_XS needs about 6.4 GB at 4K and 6.9 GB at 32K, comfortable on an 8 GB card. Q4_K_M needs about 7.1 GB at 4K, tight on an 8 GB card and comfortable from 10 GB up; at 128K it needs about 9.1 GB, comfortable on a 12 GB card. Q8_0 needs about 11.7 GB at 4K, comfortable on a 16 GB card. llama.cpp runs it since 3 November. Sizes come from Lernex\'s own GGUF files, and no per-level quality loss has been published.', zh: 'Lernex 的两个 Metis-1.6 模型中较大的一个，11 月 1 日以 Apache 2.0 发布。它是循环混合结构：20 层以 Mamba-2 为主，其中 3 层是注意力，每层都带一个混合专家模块，每个 token 把整组层跑两遍，因此 10.24B 的模型每个 token 约读取 2.6B 参数的权重。每一遍都有自己的注意力缓存，合计每个 token 约 15 KB。IQ4_XS 在 4K 下约需 6.4 GB，32K 下约需 6.9 GB，8 GB 显卡可以从容运行。Q4_K_M 在 4K 下约需 7.1 GB，在 8 GB 卡上偏紧，10 GB 起才宽裕；128K 下约需 9.1 GB，12 GB 显卡可以从容运行。Q8_0 在 4K 下约需 11.7 GB，16 GB 显卡可以从容运行。llama.cpp 自 11 月 3 日起支持运行。体积按 Lernex 自己发布的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'IQ4_XS', bpw: 4.74, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-IQ4_XS.gguf', bytes: 6_065_003_936, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.27, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q4_K_M.gguf', bytes: 6_744_975_776, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.12, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q5_K_M.gguf', bytes: 7_834_279_776, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.91, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q6_K.gguf', bytes: 8_847_425_376, checkedAt: '2026-11-04' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.68, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q8_0.gguf', bytes: 11_105_534_816, checkedAt: '2026-11-04' } },
     ],
   },
 ];

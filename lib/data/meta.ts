@@ -16,7 +16,7 @@ export const dataLastUpdated = '2026-11-05';
  * version told IndexNow 354 of 460 URLs had changed. Bump it only when such a
  * change ships; `dataProblems()` rejects a date later than `dataLastUpdated`.
  */
-export const sizingChangedAt = '2026-11-03';
+export const sizingChangedAt = '2026-11-05';
 
 export const dataSources = {
   models: {
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-05',
+    en: 'Metis-1.6 Praxis and Logos, Lernex\'s two looped models, are now in the index, sized from Lernex\'s own GGUF files. They run their layers twice per token, and each pass keeps its own attention cache, which this site now counts. Praxis needs about 2.2 GB at Q4_K_M and Logos about 6.4 GB at IQ4_XS, so both run on an 8 GB card; the calculator also gains the IQ4_XS level.',
+    zh: 'Lernex 的两个循环结构模型 Metis-1.6 Praxis 和 Logos 已加入索引，体积按 Lernex 自己发布的 GGUF 文件计算。它们每个 token 会把整组层跑两遍，每一遍都有自己的注意力缓存，本站现在按这种方式计算。Praxis 的 Q4_K_M 约需 2.2 GB，Logos 的 IQ4_XS 约需 6.4 GB，8 GB 显卡都能运行；计算器也新增了 IQ4_XS 档位。',
+  },
   {
     date: '2026-11-05',
     en: 'The Windows commands now download llama.cpp b12119. llama.cpp also tagged version 0.9.0, which adds an FP8 file type and changes nothing in the commands this site generates; Ollama, vLLM and ExLlamaV3 have no new releases.',

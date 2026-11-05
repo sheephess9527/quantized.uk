@@ -133,7 +133,9 @@ export interface QuantModel {
   /**
    * Active parameters per token, in billions — MoE models whose `paramLabel`
    * does not carry it (`21B MoE`). Labels like `30B-A3B` are parsed instead;
-   * read it through `activeParamsB()`, never directly. Vendor-stated figure.
+   * read it through `activeParamsB()`, never directly. Vendor-stated figure, or —
+   * when the vendor states none — weight reads per token counted from the config, with
+   * the arithmetic in a comment (Metis-1.6's looped stack re-reads its trunk each pass).
    */
   activeParams?: number;
   categories: string[];
