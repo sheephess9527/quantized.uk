@@ -425,6 +425,21 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-06 — Patrol: llama.cpp b12138; Xing4.0 + Ripple-65B (`xing4_0`, `ricursive`) → /pending/
+
+- **Runtimes** (release / tag pages read 2026-11-06): llama.cpp tags run to b12140, but b12140 had only source
+  archives; **b12138** lists every Windows zip `llamaCppWindows()` names (cpu / vulkan / cuda-12.4 / cuda-13.4 x64,
+  rocm-10.0, sycl, cudart 12.4 / 13.4) → `LLAMACPP_BUILD`. Ollama v0.40.14 Latest (v0.40.15 pre-release), vLLM v0.33.0,
+  ExLlamaV3 1.6.6 unchanged.
+- **llama.cpp arch list** vs 11-05: +`xing4_0` (PR #31589, merged 11-05: 40 layers, MLA as deepseek2, dsv4
+  hyper-connection ops, MTP head; vendor not named in the PR — TeleAI / China Telecom and the September weights date come
+  from third-party listings only; the 10-11 audit skipped it for unclear provenance) and +`ricursive` (PR #31692, merged
+  11-05: ricursiveAI/Ripple-65B-Preview, dense 65B, Apache 2.0, 80 layers SWA:full 4:1, NoPE globals, value residual;
+  GGUFs by AtomicChat). Both → /pending/ `awaiting-data`: configs and GGUF listings unreachable (huggingface.co,
+  modelscope.cn and openrouter.ai blocked). Xing4.0 is the one to ask the owner for first — a 29B-A4B MoE is a
+  16–24 GB card model.
+- Also in the window, skipped: chatterbox TTS (speech, out of scope).
+
 ### 2026-11-05 (ii) — +2 models (131): Metis-1.6 Praxis + Logos; IQ4_XS level
 
 - **Source**: owner-pulled `config.json`s, Hub `safetensors.total` and both GGUF tree listings (2026-11-04; Lernex's own

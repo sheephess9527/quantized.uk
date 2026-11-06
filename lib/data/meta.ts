@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-05';
+export const dataLastUpdated = '2026-11-06';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-05',
+  checkedAt: '2026-11-06',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-06',
+    en: 'Xing4.0 29B-A4B and Ripple-65B-Preview join the list of released models not yet sized here. llama.cpp added both on 5 November, but their configurations and file sizes could not be read yet. The Windows commands now download llama.cpp b12138; Ollama, vLLM and ExLlamaV3 have no new releases.',
+    zh: 'Xing4.0 29B-A4B 和 Ripple-65B-Preview 加入「已发布但暂未计算」列表。llama.cpp 于 11 月 5 日同时加入了对它们的支持，但这里还读不到它们的配置和文件大小。Windows 启动命令改为下载 llama.cpp b12138；Ollama、vLLM 和 ExLlamaV3 没有新版本。',
+  },
   {
     date: '2026-11-05',
     en: 'Metis-1.6 Praxis and Logos, Lernex\'s two looped models, are now in the index, sized from Lernex\'s own GGUF files. They run their layers twice per token, and each pass keeps its own attention cache, which this site now counts. Praxis needs about 2.2 GB at Q4_K_M and Logos about 6.4 GB at IQ4_XS, so both run on an 8 GB card; the calculator also gains the IQ4_XS level.',

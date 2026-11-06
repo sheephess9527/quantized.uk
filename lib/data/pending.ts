@@ -25,6 +25,36 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'xing4-0-29b-a4b',
+    name: 'Xing4.0 29B-A4B',
+    vendor: 'TeleAI (China Telecom)',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'A 29B mixture-of-experts model with about 4B parameters active per token, under Apache 2.0; third-party listings date its open weights to mid-September and attribute it to China Telecom\'s TeleAI lab. llama.cpp added the architecture as `xing4_0` on 5 November: 40 layers, MLA attention composed as in DeepSeek-V2, DeepSeek-V4-style hyper-connections and a multi-token-prediction head. The MLA cache shape and the expert counts are not stated in that change, and neither the configuration nor a GGUF file listing could be read here.',
+      zh: '一个 29B 混合专家模型，每个 token 约激活 4B 参数，Apache 2.0 许可；第三方模型目录把它的开放权重时间记为 9 月中旬，并归于中国电信 TeleAI 实验室。llama.cpp 于 11 月 5 日以 `xing4_0` 架构加入支持：40 层，MLA 注意力的组合方式与 DeepSeek-V2 相同，带 DeepSeek-V4 式超连接和多 token 预测头。该改动没有写明 MLA 缓存的尺寸和专家数量，这里也读不到它的配置和 GGUF 文件列表。',
+    },
+    recheck: {
+      en: 'When its config.json and a GGUF file listing with byte counts are available.',
+      zh: '拿到它的 config.json 和带字节数的 GGUF 文件列表时。',
+    },
+    checkedAt: '2026-11-06',
+  },
+  {
+    id: 'ripple-65b-preview',
+    name: 'Ripple-65B-Preview',
+    vendor: 'ricursiveAI',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'A dense 65B model with its own architecture, under Apache 2.0. llama.cpp added it on 5 November: 80 layers in a 4:1 pattern of sliding-window and full-attention layers with grouped-query attention, no position encoding on the full layers, and a per-layer value residual. AtomicChat has published GGUF files. The window size, KV head count and file sizes could not be read here; at a typical 4-bit level the weights alone come to about 39 GB.',
+      zh: '一个 65B 稠密模型，自有架构，Apache 2.0 许可。llama.cpp 于 11 月 5 日加入支持：80 层，滑动窗口层与全注意力层按 4:1 排列，使用分组查询注意力，全注意力层不加位置编码，并带逐层的 value 残差。AtomicChat 已发布 GGUF 文件。这里读不到它的窗口大小、KV 头数和文件大小；按常见的 4-bit 档位，仅权重就约 39 GB。',
+    },
+    recheck: {
+      en: 'When its config.json and a GGUF file listing with byte counts are available.',
+      zh: '拿到它的 config.json 和带字节数的 GGUF 文件列表时。',
+    },
+    checkedAt: '2026-11-06',
+  },
+  {
     id: 'clover-35b-a3b-preview',
     name: 'Clover-35B-A3B-Preview',
     vendor: 'DiffuSpace',

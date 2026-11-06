@@ -6,4 +6,4 @@
  * download this build's prebuilt zips by name, so bump it only to a build whose
  * release page lists the `llama-<build>-bin-win-*` assets (patrols re-check it).
  */
-export const LLAMACPP_BUILD = 'b12119';
+export const LLAMACPP_BUILD = 'b12138';
