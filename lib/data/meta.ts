@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-06';
+export const dataLastUpdated = '2026-11-07';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,11 +71,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-06',
+  checkedAt: '2026-11-07',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
-    ollama: 'v0.40.14',
+    ollama: 'v0.40.15',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-07',
+    en: 'The Windows commands now download llama.cpp b12180, whose RTX 50 build moved to CUDA 13.5, and the runtime versions show Ollama 0.40.15. Kimi K3.1 Pro joins the list of models not yet sized here: llama.cpp can load it, but its open weights have not appeared, and at 3T-class it is beyond any single machine in this index.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12180，其中 RTX 50 系列用的版本改为 CUDA 13.5；运行时版本显示 Ollama 0.40.15。Kimi K3.1 Pro 加入「暂未计算」列表：llama.cpp 已能加载它，但开放权重还没有发布，而且它是 3T 级模型，本站收录的任何单台机器都装不下。',
+  },
   {
     date: '2026-11-06',
     en: 'Xing4.0 29B-A4B and Ripple-65B-Preview join the list of released models not yet sized here. llama.cpp added both on 5 November, but their configurations and file sizes could not be read yet. The Windows commands now download llama.cpp b12138; Ollama, vLLM and ExLlamaV3 have no new releases.',

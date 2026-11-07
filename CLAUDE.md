@@ -599,7 +599,7 @@ file in `sources`, read on `checkedAt`; a message found only in forums or memory
 "no kernel image" was left out for that reason). Fixes name real flags from the project's docs. Add an
 entry's id to `GROUP_OF` in `components/errors/ErrorViews.tsx`; `errorEntryProblems()` gates links.
 **Chinese CLI output downloads through `HF_ENDPOINT=https://hf-mirror.com`** (2026-10-28, `HF_MIRROR` / `mirrorLines()` in `cli.ts`) — zh only, always labelled a third-party mirror; English never gets it. Ollama's `hf.co/` pulls do not read `HF_ENDPOINT`, so never present it as fixing them. ModelScope ids are not derivable from `hfRepoMap` — do not guess them.
-**Windows commands (`env: 'windows'`, 2026-10-28) download llama.cpp's prebuilt zips for `LLAMACPP_BUILD`** (`lib/data/runtime-build.ts`, the one place the build is typed; `runtimeVersions` reads it). A patrol that bumps it must first see `llama-<build>-bin-win-*` on that release's asset list (`/releases/expanded_assets/<build>`) — the zip names are typed into `llamaCppWindows()`. PowerShell output: one command per line, no `^`, no bare `curl`, no `echo >` for files (UTF-16 in 5.1).
+**Windows commands (`env: 'windows'`, 2026-10-28) download llama.cpp's prebuilt zips for `LLAMACPP_BUILD`** (`lib/data/runtime-build.ts`, the one place the build is typed; `runtimeVersions` reads it). A patrol that bumps it must first see `llama-<build>-bin-win-*` on that release's asset list (`/releases/expanded_assets/<build>`) — the zip names are typed into `llamaCppWindows()`, and they change: the CUDA 13 zips went 13.4 → 13.5 at b12180, so compare the names, not just their presence. PowerShell output: one command per line, no `^`, no bare `curl`, no `echo >` for files (UTF-16 in 5.1).
 **The quick-answer pages (`/tools/speed|which-quant|context-length/`) compute nothing themselves** —
 `question-pages.ts` may only call the calculator's functions; a new column means a new call, never a formula.
 
@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-07 | **Patrol** — llama.cpp b12180: Windows CUDA 13 zips renamed 13.4 → 13.5 (`llamaCppWindows()` updated; re-read asset names on every bump), Ollama v0.40.15 Latest; llama.cpp `kimi-k31` → Kimi K3.1 Pro `/pending/` no-weights |
 | 2026-11-06 | **Patrol** — llama.cpp b12138 (b12140 source-only); other runtimes unchanged; new llama.cpp archs `xing4_0` (Xing4.0 29B-A4B, MLA + hyper-connections) and `ricursive` (Ripple-65B-Preview, dense SWA 4:1) → `/pending/` awaiting configs + GGUF bytes |
 | 2026-11-05 (ii) | **+2 models (131): Metis-1.6 Praxis / Logos** — owner-pulled configs + Lernex GGUF bytes; looped `metis16`: llama.cpp gives each pass's attention layer its own cache (4 / 6 caches); params = BF16 ÷ 2 (2.95 / 10.24); `activeParams` 1.09 / 2.57 derived (2 passes re-read the trunk), no `arch.moe`; IQ4_XS level added; Logos IQ4_XS 6.4 GB green on 8 GB; 10 guides re-counted (4060 Ti guide had drifted) |
 | 2026-11-05 | **Patrol** — llama.cpp b12119 (Windows zips present) + v0.9.0 (API-only: FP8 ftype, mtmd functions; no command change); other runtimes unchanged; no new arch, no model (LFM3-Omni-2B speech, out of scope) |

@@ -410,7 +410,8 @@ function ollamaIntelNote(lang: Lang): string {
  * the URL pattern is the one winget's `ggml.llamacpp` manifest downloads. Every backend zip
  * carries the CPU zip's executables at its root (`.github/workflows/release-publish.yml` injects
  * them), and the cudart DLLs go next to them (`release.yml`: "extract next to the binaries").
- * CUDA 12.4 for NVIDIA except Blackwell (RTX 50), which gets the CUDA 13.4 zip;
+ * CUDA 12.4 for NVIDIA except Blackwell (RTX 50), which gets the CUDA 13 zip (13.5 from
+ * b12180; it was 13.4 through b12138 — re-read the asset names when bumping the build);
  * Vulkan for AMD and Intel, the build winget installs. PowerShell rules from
  * this repo: one command per line, no `^`, no `curl` alias.
  */
@@ -421,7 +422,7 @@ function llamaCppWindows(
   const { gpuLayers, contextLen, port, apiKey } = opts;
   const { lang, backend } = f;
   const blackwell = /RTX 50\d\d/i.test(opts.gpuName ?? '');
-  const cuda = backend === 'cuda' ? (blackwell ? 'cuda-13.4' : 'cuda-12.4') : undefined;
+  const cuda = backend === 'cuda' ? (blackwell ? 'cuda-13.5' : 'cuda-12.4') : undefined;
   const flavour = cuda ?? (backend === 'cpu' ? 'cpu' : 'vulkan');
   const modelPath = f.sharded
     ? `(Get-ChildItem models -Recurse -Filter "${f.filePattern}" | Sort-Object FullName | Select-Object -First 1).FullName`

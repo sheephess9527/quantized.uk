@@ -425,6 +425,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-07 — Patrol: llama.cpp b12180 (Windows CUDA 13.4 → 13.5), Ollama v0.40.15; Kimi K3.1 Pro → /pending/
+
+- **Runtimes** (release / tag pages read 2026-11-07): llama.cpp tags to b12181 (source-only); **b12180** lists every
+  Windows zip, but the CUDA 13 assets are now `…-bin-win-cuda-13.5-x64.zip` / `cudart-llama-bin-win-cuda-13.5-x64.zip`
+  (b12138 had 13.4) → `llamaCppWindows()` RTX 50 flavour `cuda-13.5`, `LLAMACPP_BUILD` b12180. A build bump must
+  re-read the asset names, not only check that zips exist. Ollama **v0.40.15** now Latest (MiMo V2.6 `mimo-v2.6`,
+  "a 9B model built for code and agent workflows" — probably the indexed Distill-Qwen-9B, not confirmed, so its
+  description is unchanged; AutoTrust decision models skipped, out of scope; Qwen3/3.5 YaRN). vLLM v0.33.0 and
+  ExLlamaV3 1.6.6 unchanged.
+- **llama.cpp arch list** vs 11-06: +`kimi-k31` (PR #31779, merged 11-06: K3 skeleton with DSA + lightning indexer on 24
+  of 93 layers, KDA elsewhere, MXFP4 experts; tested on `tiny-random/kimi-k3.1-pro` only). Moonshot's weights (promised
+  11-04) not found in any report by 11-07 → /pending/ `no-weights`. 3T-class: ~770 GB even at IQ2_XXS, over the 512 GB Mac.
+
 ### 2026-11-06 — Patrol: llama.cpp b12138; Xing4.0 + Ripple-65B (`xing4_0`, `ricursive`) → /pending/
 
 - **Runtimes** (release / tag pages read 2026-11-06): llama.cpp tags run to b12140, but b12140 had only source
