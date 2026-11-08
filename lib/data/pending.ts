@@ -29,16 +29,16 @@ export const pendingModels: PendingModel[] = [
     name: 'Kimi K3.1 Pro',
     vendor: 'Moonshot AI',
     announced: '2026-10-23',
-    reason: 'no-weights',
+    reason: 'not-sized',
     detail: {
-      en: 'Moonshot\'s 3T-class mixture-of-experts model, available through its API since 23 October with open weights promised for 4 November; as of 7 November no weights or licence could be confirmed. llama.cpp added the text model as `kimi_k31` on 6 November, tested only on a tiny random checkpoint: 93 layers that mix linear-attention (KDA) layers with 24 sparse-attention layers carrying an indexer, and routed experts kept in MXFP4. Even at 2 bits per weight it would need more memory than the largest machine in this index.',
-      zh: '月之暗面的 3T 级混合专家模型，10 月 23 日起通过 API 提供，并承诺 11 月 4 日开放权重；截至 11 月 7 日仍无法确认权重或许可证已发布。llama.cpp 于 11 月 6 日以 `kimi_k31` 加入其文本模型，只用一个很小的随机权重测试过：93 层，线性注意力（KDA）层与 24 个带索引器的稀疏注意力层混合，路由专家保持 MXFP4。即使按每权重 2 bit 计算，它也超出本站收录的最大机器的内存。',
+      en: 'Moonshot\'s 3T-class mixture-of-experts model, available through its API since 23 October with open weights promised for 4 November. Two reports say the weights went up on Hugging Face on 5 November (about 1.56 TB in 96 files, under a modified MIT licence); the repository itself could not be read here, and no GGUF conversion was reported. llama.cpp added the text model as `kimi_k31` on 6 November, tested only on a tiny random checkpoint: 93 layers that mix linear-attention (KDA) layers with 24 sparse-attention layers carrying an indexer, and routed experts kept in MXFP4. Even at 2 bits per weight it would need more memory than the largest machine in this index.',
+      zh: '月之暗面的 3T 级混合专家模型，10 月 23 日起通过 API 提供，并承诺 11 月 4 日开放权重。有两篇报道称权重已于 11 月 5 日上传到 Hugging Face（约 1.56 TB、96 个文件，采用修改版 MIT 许可证）；这里读不到该仓库本身，也没有看到 GGUF 转换的报道。llama.cpp 于 11 月 6 日以 `kimi_k31` 加入其文本模型，只用一个很小的随机权重测试过：93 层，线性注意力（KDA）层与 24 个带索引器的稀疏注意力层混合，路由专家保持 MXFP4。即使按每权重 2 bit 计算，它也超出本站收录的最大机器的内存。',
     },
     recheck: {
-      en: 'When Moonshot publishes the weights, with a config and a GGUF file listing.',
-      zh: '月之暗面发布权重、并能读到配置和 GGUF 文件列表时。',
+      en: 'When its config and a GGUF file listing can be read.',
+      zh: '能读到它的配置和 GGUF 文件列表时。',
     },
-    checkedAt: '2026-11-07',
+    checkedAt: '2026-11-08',
   },
   {
     id: 'xing4-0-29b-a4b',

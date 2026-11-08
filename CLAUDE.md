@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-08 | **Patrol** — llama.cpp b12194 (b12195 source-only; asset names as b12180); other runtimes unchanged; Kimi K3.1 Pro weights reportedly out 11-05 (1.56 TB, unread here) → `/pending/` not-sized |
 | 2026-11-07 | **Patrol** — llama.cpp b12180: Windows CUDA 13 zips renamed 13.4 → 13.5 (`llamaCppWindows()` updated; re-read asset names on every bump), Ollama v0.40.15 Latest; llama.cpp `kimi-k31` → Kimi K3.1 Pro `/pending/` no-weights |
 | 2026-11-06 | **Patrol** — llama.cpp b12138 (b12140 source-only); other runtimes unchanged; new llama.cpp archs `xing4_0` (Xing4.0 29B-A4B, MLA + hyper-connections) and `ricursive` (Ripple-65B-Preview, dense SWA 4:1) → `/pending/` awaiting configs + GGUF bytes |
 | 2026-11-05 (ii) | **+2 models (131): Metis-1.6 Praxis / Logos** — owner-pulled configs + Lernex GGUF bytes; looped `metis16`: llama.cpp gives each pass's attention layer its own cache (4 / 6 caches); params = BF16 ÷ 2 (2.95 / 10.24); `activeParams` 1.09 / 2.57 derived (2 passes re-read the trunk), no `arch.moe`; IQ4_XS level added; Logos IQ4_XS 6.4 GB green on 8 GB; 10 guides re-counted (4060 Ti guide had drifted) |

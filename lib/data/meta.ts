@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-07';
+export const dataLastUpdated = '2026-11-08';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-07',
+  checkedAt: '2026-11-08',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-08',
+    en: 'The Windows commands now download llama.cpp b12194; Ollama, vLLM and ExLlamaV3 have no new releases. Reports say Kimi K3.1 Pro\'s open weights went up on 5 November, and its entry in the not-yet-sized list now says so; at about 1.56 TB it is still beyond any single machine in this index.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12194；Ollama、vLLM 和 ExLlamaV3 没有新版本。有报道称 Kimi K3.1 Pro 的开放权重已于 11 月 5 日发布，「暂未计算」列表里的条目已相应更新；它约 1.56 TB，本站收录的任何单台机器仍然装不下。',
+  },
   {
     date: '2026-11-07',
     en: 'The Windows commands now download llama.cpp b12180, whose RTX 50 build moved to CUDA 13.5, and the runtime versions show Ollama 0.40.15. Kimi K3.1 Pro joins the list of models not yet sized here: llama.cpp can load it, but its open weights have not appeared, and at 3T-class it is beyond any single machine in this index.',

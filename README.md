@@ -425,6 +425,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-08 — Patrol: llama.cpp b12194; Kimi K3.1 Pro pending entry updated
+
+- **Runtimes** (release / tag pages read 2026-11-08): llama.cpp tags to b12195 (source-only); **b12194** lists every
+  Windows zip with the same names as b12180 (CUDA 13.5) → `LLAMACPP_BUILD`. Ollama v0.40.15, vLLM v0.33.0, ExLlamaV3
+  1.6.6 unchanged. llama.cpp arch list unchanged since 11-07 (173); no new model-support commit since #31779.
+- **Kimi K3.1 Pro**: two reports (search results only — labmemo.com / aiweekly.co do not resolve here) say the weights
+  appeared at `moonshotai/Kimi-K3.1-Pro` on 11-05, ~1.56 TB in 96 safetensors shards, modified MIT. Not read first-hand,
+  so /pending/ reason `no-weights` → `not-sized` with the claim attributed to reports. No GGUF reported; ~770 GB even at
+  2 bits, beyond the 512 GB Mac.
+
 ### 2026-11-07 — Patrol: llama.cpp b12180 (Windows CUDA 13.4 → 13.5), Ollama v0.40.15; Kimi K3.1 Pro → /pending/
 
 - **Runtimes** (release / tag pages read 2026-11-07): llama.cpp tags to b12181 (source-only); **b12180** lists every
