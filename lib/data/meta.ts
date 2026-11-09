@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-08';
+export const dataLastUpdated = '2026-11-09';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-08',
+  checkedAt: '2026-11-09',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-09',
+    en: 'The Windows commands now download llama.cpp b12211. Ollama, vLLM and ExLlamaV3 have no new releases, and no new model architecture reached llama.cpp this weekend.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12211。Ollama、vLLM 和 ExLlamaV3 没有新版本，这个周末 llama.cpp 也没有新增模型架构。',
+  },
   {
     date: '2026-11-08',
     en: 'The Windows commands now download llama.cpp b12194; Ollama, vLLM and ExLlamaV3 have no new releases. Reports say Kimi K3.1 Pro\'s open weights went up on 5 November, and its entry in the not-yet-sized list now says so; at about 1.56 TB it is still beyond any single machine in this index.',

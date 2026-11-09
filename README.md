@@ -425,6 +425,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-09 — Patrol: llama.cpp b12211; no model
+
+- llama.cpp tags to **b12211**, whose asset list carries every Windows zip with the b12180 names (CUDA 12.4 / 13.5) →
+  `LLAMACPP_BUILD`. Ollama v0.40.15, vLLM v0.33.0, ExLlamaV3 1.6.6 unchanged; llama.cpp arch list unchanged (173).
+  Search turned up no new official open-weight release in the window. The 11-08 Cloudflare Pages build of `eda8774`
+  failed while local and clean-clone builds of the same commit pass; logs are not reachable from here — this build is
+  the re-check.
+
 ### 2026-11-08 — Patrol: llama.cpp b12194; Kimi K3.1 Pro pending entry updated
 
 - **Runtimes** (release / tag pages read 2026-11-08): llama.cpp tags to b12195 (source-only); **b12194** lists every
