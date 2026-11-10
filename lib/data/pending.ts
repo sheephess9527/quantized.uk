@@ -61,14 +61,14 @@ export const pendingModels: PendingModel[] = [
     vendor: 'ricursiveAI',
     reason: 'awaiting-data',
     detail: {
-      en: 'A dense 65B model with its own architecture, under Apache 2.0. llama.cpp added it on 5 November: 80 layers in a 4:1 pattern of sliding-window and full-attention layers with grouped-query attention, no position encoding on the full layers, and a per-layer value residual. AtomicChat has published GGUF files. The window size, KV head count and file sizes could not be read here; at a typical 4-bit level the weights alone come to about 39 GB.',
-      zh: '一个 65B 稠密模型，自有架构，Apache 2.0 许可。llama.cpp 于 11 月 5 日加入支持：80 层，滑动窗口层与全注意力层按 4:1 排列，使用分组查询注意力，全注意力层不加位置编码，并带逐层的 value 残差。AtomicChat 已发布 GGUF 文件。这里读不到它的窗口大小、KV 头数和文件大小；按常见的 4-bit 档位，仅权重就约 39 GB。',
+      en: 'A dense 65B model with its own architecture, under Apache 2.0. llama.cpp added it on 5 November: 80 layers in a 4:1 pattern of sliding-window and full-attention layers with grouped-query attention, no position encoding on the full layers, and a per-layer value residual. AtomicChat has published GGUF files, and Ollama 0.40.16 (9 November) runs it as `ripple-preview`. The window size, KV head count and file sizes could not be read here; at a typical 4-bit level the weights alone come to about 39 GB.',
+      zh: '一个 65B 稠密模型，自有架构，Apache 2.0 许可。llama.cpp 于 11 月 5 日加入支持：80 层，滑动窗口层与全注意力层按 4:1 排列，使用分组查询注意力，全注意力层不加位置编码，并带逐层的 value 残差。AtomicChat 已发布 GGUF 文件，Ollama 0.40.16（11 月 9 日）也以 `ripple-preview` 支持运行。这里读不到它的窗口大小、KV 头数和文件大小；按常见的 4-bit 档位，仅权重就约 39 GB。',
     },
     recheck: {
       en: 'When its config.json and a GGUF file listing with byte counts are available.',
       zh: '拿到它的 config.json 和带字节数的 GGUF 文件列表时。',
     },
-    checkedAt: '2026-11-06',
+    checkedAt: '2026-11-10',
   },
   {
     id: 'clover-35b-a3b-preview',

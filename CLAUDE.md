@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-10 | **Patrol** — llama.cpp b12239 (b12240 source-only), Ollama v0.40.16 (adds Ripple Preview → `/pending/` entry updated, still unsized); no model |
 | 2026-11-09 | **Patrol** — llama.cpp b12211; other runtimes and arch list unchanged; no model |
 | 2026-11-08 | **Patrol** — llama.cpp b12194 (b12195 source-only; asset names as b12180); other runtimes unchanged; Kimi K3.1 Pro weights reportedly out 11-05 (1.56 TB, unread here) → `/pending/` not-sized |
 | 2026-11-07 | **Patrol** — llama.cpp b12180: Windows CUDA 13 zips renamed 13.4 → 13.5 (`llamaCppWindows()` updated; re-read asset names on every bump), Ollama v0.40.15 Latest; llama.cpp `kimi-k31` → Kimi K3.1 Pro `/pending/` no-weights |

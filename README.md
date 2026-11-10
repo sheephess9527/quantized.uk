@@ -425,6 +425,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-10 — Patrol: llama.cpp b12239, Ollama v0.40.16 (Ripple Preview); no model
+
+- llama.cpp tags to b12240 (source-only); **b12239** carries every Windows zip with the b12180 names → `LLAMACPP_BUILD`.
+  **Ollama v0.40.16** Latest (11-09): only new model is Ripple Preview (ricursiveAI, 65B dense, `ollama run
+  ripple-preview`) → /pending/ Ripple entry notes it and is re-dated; still unsized (config + GGUF bytes unread;
+  ollama.com does not resolve here, so its tag sizes could not be read either). vLLM v0.33.0, ExLlamaV3 1.6.6
+  unchanged; llama.cpp arch list unchanged (173).
+
 ### 2026-11-09 — Patrol: llama.cpp b12211; no model
 
 - llama.cpp tags to **b12211**, whose asset list carries every Windows zip with the b12180 names (CUDA 12.4 / 13.5) →

@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-09';
+export const dataLastUpdated = '2026-11-10';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,11 +71,11 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-09',
+  checkedAt: '2026-11-10',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
-    ollama: 'v0.40.15',
+    ollama: 'v0.40.16',
     // ExLlamaV2 has stalled at v0.3.2 (2025-07-13) — see the `note` below for
     // where the project's actual activity moved to. Keeping this key as
     // `exllama` (matching `benchmarkMethodology.frameworks.exllama` above) so
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-10',
+    en: 'Ollama 0.40.16 adds Ripple Preview, the dense 65B model already on our list of models not yet sized; it stays there until its configuration and file sizes can be read. The Windows commands now download llama.cpp b12239, and the runtime versions show Ollama 0.40.16.',
+    zh: 'Ollama 0.40.16 新增 Ripple Preview，这个 65B 稠密模型已在本站「暂未计算」列表中；在读到它的配置和文件大小之前仍留在那里。Windows 启动命令改为下载 llama.cpp b12239，运行时版本显示 Ollama 0.40.16。',
+  },
   {
     date: '2026-11-09',
     en: 'The Windows commands now download llama.cpp b12211. Ollama, vLLM and ExLlamaV3 have no new releases, and no new model architecture reached llama.cpp this weekend.',
