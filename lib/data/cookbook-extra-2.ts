@@ -975,8 +975,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Speed: 273 GB/s is the ceiling for both',
         headingZh: '速度：两款的上限都是 273 GB/s',
-        body: 'Generation reads the active weights once per token, so bandwidth divided by the bytes read is a hard ceiling. For a dense model that is the whole file: Llama 3.3 70B at Q4_K_M tops out around 7 tok/s on either Spark. That is the trade the machine makes — an RTX 5090 moves 1,792 GB/s, about 6.6× more, on anything it can hold. Mixture-of-experts models read only their active experts, which is why GPT-OSS and GLM-4.5-Air are the natural fit here. This site has no measured run on a Spark and publishes no tok/s figure for one; measure your own with llama-bench.',
-        bodyZh: '生成每个 token 都要把激活的权重读一遍，所以带宽除以读取的字节数就是硬上限。稠密模型要读整个文件：Llama 3.3 70B（Q4_K_M）在任一款 Spark 上的上限约 7 tok/s。这正是这台机器的取舍——对于它能装下的模型，RTX 5090 的 1,792 GB/s 约快 6.6 倍。混合专家模型只读取激活的专家，所以 GPT-OSS 和 GLM-4.5-Air 才是这台机器的天然搭档。本站没有 Spark 的实测记录，不公布它的 tok/s 数字；请用 llama-bench 自己测。',
+        body: 'Generation reads the active weights once per token, so bandwidth divided by the bytes read is a hard ceiling. For a dense model that is the whole file: Llama 3.3 70B at Q4_K_M tops out around 7 tok/s on either Spark (weights only; with a 4K KV cache read too it is about 6.5). That is the trade the machine makes — an RTX 5090 moves 1,792 GB/s, about 6.6× more, on anything it can hold. Mixture-of-experts models read only their active experts, which is why GPT-OSS and GLM-4.5-Air are the natural fit here. This site has no measured run on a Spark and publishes no tok/s figure for one; measure your own with llama-bench.',
+        bodyZh: '生成每个 token 都要把激活的权重读一遍，所以带宽除以读取的字节数就是硬上限。稠密模型要读整个文件：Llama 3.3 70B（Q4_K_M）在任一款 Spark 上的上限约 7 tok/s（只算权重；4K 时把 KV 缓存也算上约 6.5）。这正是这台机器的取舍——对于它能装下的模型，RTX 5090 的 1,792 GB/s 约快 6.6 倍。混合专家模型只读取激活的专家，所以 GPT-OSS 和 GLM-4.5-Air 才是这台机器的天然搭档。本站没有 Spark 的实测记录，不公布它的 tok/s 数字；请用 llama-bench 自己测。',
       },
       {
         heading: 'Setup: Ollama or llama.cpp',

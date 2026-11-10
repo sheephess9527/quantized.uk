@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-10',
+    en: 'The dual RTX 3090 guide now says plainly that Llama 3.3 70B at Q4_K_M does not fit at 8K context. Two 24 GB cards give llama.cpp about 46 GB to work with, not 48, and 8K needs about 47.5 GB. The guide also shows what a quantized KV cache buys: q8_0 halves the cache and brings 8K to about 46.2 GB, still at the edge, so stretching context means shrinking the cache, not the weights. The DGX Spark guide adds that its roughly 7 tok/s ceiling for a 70B is weights only, and about 6.5 once the cache is read at 4K.',
+    zh: '双 RTX 3090 指南现在明确写出：Llama 3.3 70B 在 Q4_K_M 下，8K 上下文放不下。两张 24 GB 的卡实际给 llama.cpp 用的约 46 GB，而不是 48 GB，8K 需要约 47.5 GB。指南还加入了量化 KV 缓存的效果：q8_0 把缓存减半，8K 降到约 46.2 GB，仍在预算边缘，所以想拉长上下文该压缓存而不是权重。DGX Spark 指南补充说明：70B 约 7 tok/s 的上限只算权重，4K 时把缓存也算上约 6.5。',
+  },
+  {
+    date: '2026-11-10',
     en: 'Two models added: Xing4.0 29B-A4B and Ripple-65B-Preview. Xing4.0 is a 29B mixture-of-experts model with about 4B active per token; its IQ4_XS build is 19.0 GB at 4K context, comfortable on a 24 GB card. Ripple-65B-Preview is a dense 65B model whose cache stays small because most layers use a 1,024-token window; at 2-bit (IQ2_XXS) it is 21.6 GB at 4K, tight on 24 GB, and a 4-bit build needs about 41 GB. Sizes come from the published file sizes. Neither has a published quality loss, so none is shown. Both leave the list of models not yet sized, and the calculator gains four more 2-bit and 3-bit GGUF levels.',
     zh: '新增两个模型：Xing4.0 29B-A4B 和 Ripple-65B-Preview。Xing4.0 是 29B 混合专家模型，每个 token 约激活 4B；IQ4_XS 版本在 4K 上下文下 19.0 GB，24 GB 显卡可以舒适运行。Ripple-65B-Preview 是 65B 稠密模型，大部分层只用 1,024 token 的滑动窗口，缓存很小；2 比特（IQ2_XXS）在 4K 下 21.6 GB，24 GB 显卡属于紧张，4 比特版本约需 41 GB。大小取自公布的文件体积，两者都没有公布质量损失，因此不显示。两者已从「暂未计算」列表移出，计算器新增四个 2、3 比特 GGUF 档位。',
   },

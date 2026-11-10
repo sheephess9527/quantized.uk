@@ -84,7 +84,7 @@ export const extraArticles: Article[] = [
     // check, not a run on a two-card machine — so no `verifiedAt`.
     // `gpuPreset` names a single 3090 deliberately — the calculator has no
     // combined-card entry, and inventing one would misrepresent the split.
-    updatedAt: '2026-10-02',
+    updatedAt: '2026-11-10',
     verifiedStack: {
       en: '2× RTX 3090 24G (48GB total) · Linux · llama.cpp CUDA, --split-mode layer · 70B GGUF Q4_K_M',
       zh: '2× RTX 3090 24G（合计 48GB）· Linux · llama.cpp CUDA，--split-mode layer · 70B GGUF Q4_K_M',
@@ -93,11 +93,11 @@ export const extraArticles: Article[] = [
       {
         heading: 'What actually fits on 48GB',
         headingZh: '48GB 到底装得下什么',
-        body: 'A 70B at Q4_K_M is about 40.7GB of weights; with a 4K KV cache and the activation buffer the estimate lands near 46GB against 48GB of combined VRAM. That is 96% of the pair — it loads, but it is the amber band, not a comfortable fit, and it leaves nothing for a desktop session on either card. At 8K context the same model is around 47.5GB. Treat 70B Q4_K_M on 48GB as a headless configuration, and know that llama.cpp\'s own defaults will not even try to fit it entirely: its auto-fit keeps 1 GiB free on each card, which puts the pair\'s budget at about 46GB before the model is weighed.',
-        bodyZh: '70B 的 Q4_K_M 权重约 40.7GB；加上 4K 的 KV 缓存和激活缓冲，估算约 46GB，而两张卡合计 48GB。这是 96% —— 能加载，但属于"偏紧"区间，不是从容运行，任何一张卡上都没有余量再跑桌面。8K 上下文时同一个模型约 47.5GB。请把 48GB 上跑 70B Q4_K_M 当成无显示器的配置来对待，并且要知道 llama.cpp 的默认设置甚至不会尝试把它整个放上去：它的自动适配会在每张卡上留出 1 GiB，于是还没开始算模型，两张卡的预算就只剩约 46GB。',
+        body: 'A 70B at Q4_K_M is about 40.7GB of weights; with a 4K KV cache and the activation buffer the estimate lands near 46GB against 48GB of combined VRAM. That is 96% of the pair — but 48GB is not the real budget. llama.cpp\'s auto-fit keeps 1 GiB free on each card, so two 24GB cards give about 46GB to work with. At 4K the estimate sits right on that line (no margin, nothing left for a desktop session). At 8K the same model is around 47.5GB, which is over the budget: it does not fit with default settings. Only about 5.3GB is left after the weights, and the activation buffer takes roughly 4GB of that, so what remains holds a KV cache of about 4K tokens (the cache costs about 0.33GB per 1K tokens at fp16). To stretch the context, shrink the KV precision rather than switch to a smaller weight quantization: --cache-type-k q8_0 --cache-type-v q8_0 roughly halves the cache, which brings 8K to about 46.2GB, still at the edge of the budget, and 16K is out of reach either way. Treat 70B Q4_K_M on 48GB as a headless, short-context configuration.',
+        bodyZh: '70B 的 Q4_K_M 权重约 40.7GB；加上 4K 的 KV 缓存和激活缓冲，估算约 46GB，而两张卡合计 48GB。这是 96% —— 但 48GB 不是真实的预算。llama.cpp 的自动适配会在每张卡上留出 1 GiB，所以两张 24GB 卡实际能用的约 46GB。4K 时估算正好压在这条线上（没有余量，也没法再跑桌面）。8K 时同一个模型约 47.5GB，超出预算：默认设置下放不下。权重之后只剩约 5.3GB，激活缓冲就占去约 4GB，剩下的只够约 4K token 的 KV 缓存（fp16 下每 1K token 约 0.33GB）。想拉长上下文，该压的是 KV 精度，而不是换更小的权重量化：--cache-type-k q8_0 --cache-type-v q8_0 大约能把缓存减半，8K 降到约 46.2GB，仍在预算边缘；16K 无论如何都放不下。请把 48GB 上跑 70B Q4_K_M 当成无显示器、短上下文的配置来对待。',
         code: {
           lang: 'text',
-          content: 'Llama 3.3 70B  Q4_K_M  @4K ctx   ≈ 46.1 GB of 48 GB   amber — loads, no margin\nLlama 3.3 70B  Q4_K_M  @8K ctx   ≈ 47.5 GB of 48 GB   amber — at the ceiling\nLlama 3.3 70B  Q3_K_M* @8K ctx   ≈ 38.4 GB of 48 GB   comfortable\nSeed-OSS 36B   Q4_K_M  @8K ctx   ≈ 25.0 GB of 48 GB   comfortable\n\n(estimates from this site’s calculator: weights + KV cache + 10% activations)\n* generic Q3_K_M rate — this index lists no Q3_K_M build of Llama 3.3 70B',
+          content: 'Llama 3.3 70B  Q4_K_M  @4K ctx   ≈ 46.1 GB of 46 GB   at the budget — no margin\nLlama 3.3 70B  Q4_K_M  @8K ctx   ≈ 47.5 GB of 46 GB   over budget — does not fit\n  ...same, with a q8_0 KV cache, 8K ≈ 46.2 GB of 46 GB   at the edge — cache halved, still no margin\nLlama 3.3 70B  Q3_K_M* @8K ctx   ≈ 38.4 GB of 48 GB   comfortable\nSeed-OSS 36B   Q4_K_M  @8K ctx   ≈ 25.0 GB of 48 GB   comfortable\n\n(estimates from this site’s calculator: weights + KV cache + 10% activations; budget = 2 × 24 GB minus llama.cpp’s 1 GiB per card ≈ 46 GB)\n* generic Q3_K_M rate — this index lists no Q3_K_M build of Llama 3.3 70B',
         },
       },
       {

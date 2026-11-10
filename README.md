@@ -425,6 +425,8 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-10 (iii) — Dual-3090 guide: 8K row exceeded the real budget; KV-precision row; Spark ceiling with KV
+
 ### 2026-11-10 (ii) — +2 models (133): Xing4.0 29B-A4B + Ripple-65B-Preview; four GGUF levels
 
 - Owner-pulled configs, safetensors totals and GGUF listings (huggingface.co is blocked here). Both leave `/pending/`.
