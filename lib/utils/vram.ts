@@ -66,6 +66,12 @@ export const quantBPW: Record<string, number> = {
   // 2-bit build uses it for the experts; its whole file runs 2.38 (see models-extra-12.ts).
   'IQ2_XXS':  2.06,
   'IQ1_M':    1.75,
+  // Block rates from ggml-common.h (bytes per 256 weights ÷ 32): IQ2_XS 74, IQ2_S 82, IQ3_XXS 98, IQ3_S 110.
+  // AtomicChat's Ripple-65B files of these names run larger (mixed precision, models-extra-12.ts).
+  'IQ2_XS':   2.31,
+  'IQ2_S':    2.56,
+  'IQ3_XXS':  3.06,
+  'IQ3_S':    3.44,
   'AWQ INT4': 4.0,
   'GPTQ INT4':4.0,
   'GPTQ INT8':8.0,
@@ -83,7 +89,7 @@ export const quantBPW: Record<string, number> = {
 };
 
 export const quantGroups: Record<string, string[]> = {
-  'GGUF': ['IQ2_XXS', 'Q2_K', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
+  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
   'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 3.5bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],

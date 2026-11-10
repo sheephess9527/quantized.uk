@@ -30,6 +30,7 @@ const ADDED_1026 = '2026-10-26';
 const ADDED_1029 = '2026-10-29';
 const ADDED_1030 = '2026-10-30';
 const ADDED_1105 = '2026-11-05';
+const ADDED_1110 = '2026-11-10';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1447,6 +1448,93 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M', bpw: 6.12, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q5_K_M.gguf', bytes: 7_834_279_776, checkedAt: '2026-11-04' } },
       { format: 'GGUF', level: 'Q6_K',   bpw: 6.91, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q6_K'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q6_K.gguf', bytes: 8_847_425_376, checkedAt: '2026-11-04' } },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.68, vramGB: 0, hfSearchUrl: hf('Metis-1.6-Logos GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'Lernex/Metis-1.6-Logos-GGUF', file: 'Metis-1.6-Logos-Q8_0.gguf', bytes: 11_105_534_816, checkedAt: '2026-11-04' } },
+    ],
+  },
+  {
+    // Xing4.0 29B-A4B (XingChen-AGI, Apache 2.0 per the Hub card). Owner-pulled config.json + safetensors total +
+    // bartowski's GGUF listing (2026-11-10). llama.cpp `xing4_0` (src/models/xing4-0.cpp): MLA exactly as
+    // DeepSeek-V2 (q_lora 768, kv_lora 512, qk_rope 64, 32 heads; cache K-only, 512 + 64 = 576 values per layer and
+    // token, `build_attn_inp_k`, wk_b / wv_b required so it is the absorbed form) and DeepSeek-V4-style hyper-connections
+    // (4 residual streams: compute only, nothing cached). 40 trunk layers, the first 2 dense (intermediate 9216),
+    // the other 38 with 64 routed experts (top 4, hidden 1024) + 1 shared. Encoded as kvHeads 1 × headDim 288.
+    // Params: bartowski's bf16 GGUF 62,451,868,480 B ÷ 2 = 31.23B (safetensors 31.215B). Counted from the config, the
+    // 40-layer trunk is 29.5B (the vendor's "29B": attention 1.14B + dense 0.20B + 38 × (64 × 11.0M routed + 11.0M
+    // shared) 27.20B + embeddings 0.94B) and the other 1.71B is the multi-token-prediction block (one more MoE layer
+    // + its own embedding and output matrices), which llama.cpp skips unless asked (`load_mtp`). `params` keeps the file
+    // total, so weights are sized ~5% high (conservative), as Gemma's PLE tables.
+    // Active per token, read the same way: attention 1.14B + dense 0.20B + shared 0.43B + 4/64 of 26.78B routed 1.67B +
+    // output 0.47B = 3.9B, which is the "A4B" in the name; `paramLabel` carries it, so no `activeParams`.
+    id: 'xing4-0-29b-a4b',
+    name: 'Xing4.0 29B-A4B',
+    family: 'Xing',
+    params: 31.23,
+    paramLabel: '29B-A4B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: {
+      layers: 40, attHeads: 32, kvHeads: 1, headDim: 288,
+      moe: { expertParams: 26.78, experts: 64, perToken: 4, moeLayers: 38, denseLead: 2 },
+    },
+    addedAt: ADDED_1110,
+    description: { en: 'A 29B mixture-of-experts text model from XingChen-AGI under Apache 2.0 that reads about 4B parameters per token. Attention is DeepSeek-style MLA with a compressed cache of about 46 KB per token, so context is cheap next to the weights: at Q4_K_M a 32K window adds only 1.4 GB. At Q4_K_M it needs about 21.2 GB at 4K, tight on a 24 GB card. IQ4_XS needs about 19.0 GB at 4K, comfortable on a 24 GB card. Q3_K_M needs about 17.0 GB at 4K, comfortable on a 20 GB card. Q2_K needs about 13.6 GB at 4K, comfortable on a 16 GB card. The full 262,144-token window at Q4_K_M needs about 33.3 GB at 256K. Each GGUF file also carries a 1.7B-parameter multi-token-prediction block that llama.cpp skips unless speculative decoding asks for it, so real use is about 1 GB under these figures at Q4_K_M. Sizes come from bartowski\'s GGUF files, and no per-level quality loss has been published.', zh: 'XingChen-AGI 发布的 40 层混合专家文本模型，Apache 2.0 许可：64 个路由专家、每个 token 用 4 个，所以 29B 的模型每个 token 只读取约 4B 参数。注意力是 DeepSeek 式的 MLA，缓存经过压缩，每个 token 约 46 KB，和权重相比上下文很便宜：Q4_K_M 下 32K 窗口只多占 1.4 GB。Q4_K_M 在 4K 下约需 21.2 GB，24 GB 显卡偏紧。IQ4_XS 在 4K 下约需 19.0 GB，24 GB 显卡可以从容运行。Q3_K_M 在 4K 下约需 17.0 GB，20 GB 显卡可以从容运行。Q2_K 在 4K 下约需 13.6 GB，16 GB 显卡可以从容运行。用满 262,144 token 的窗口，Q4_K_M 在 256K 下约需 33.3 GB。每个 GGUF 文件还带一个 1.7B 参数的多 token 预测模块，llama.cpp 默认不加载它（只有推测解码才会用到），所以 Q4_K_M 的实际占用比上面的数字低约 1 GB。体积按 bartowski 发布的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'Q8_0',    bpw: 8.51, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q8_0.gguf', bytes: 33_222_310_848, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q6_K',    bpw: 6.97, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q6_K.gguf', bytes: 27_191_114_688, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q5_K_M',  bpw: 6.15, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q5_K_M.gguf', bytes: 24_000_035_776, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q4_K_M',  bpw: 5.14, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q4_K_M.gguf', bytes: 20_056_603_584, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ4_XS',  bpw: 4.61, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-IQ4_XS.gguf', bytes: 17_982_561_216, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q3_K_M',  bpw: 4.12, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q3_K_M.gguf', bytes: 16_100_834_240, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ3_XXS', bpw: 3.70, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF IQ3_XXS'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-IQ3_XXS.gguf', bytes: 14_433_573_824, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q2_K',    bpw: 3.29, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF Q2_K'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-Q2_K.gguf', bytes: 12_841_507_776, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.64, vramGB: 0, hfSearchUrl: hf('Xing4.0-29B-A4B GGUF IQ2_XXS'), confidence: 'estimated', source: { repo: 'bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF', file: 'XingChen-AGI_Xing4.0-29B-A4B-IQ2_XXS.gguf', bytes: 10_317_247_424, checkedAt: '2026-11-10' } },
+    ],
+  },
+  {
+    // Ripple-65B-Preview (ricursiveAI, Apache 2.0 per the Hub card). Owner-pulled config.json + safetensors total +
+    // AtomicChat's GGUF listing (2026-11-10). Dense 65B, llama.cpp `ricursive` (src/models/ricursive.cpp): 80 layers,
+    // full attention iff i % 5 == 4 (16 global, no RoPE) and the other 64 sliding-window 1024 with RoPE; 80 heads /
+    // 8 KV × 128, hidden 5120, FFN 40960, gated attention + value residual (graph-only, nothing cached), 2,097,152
+    // positions. iSWA keeps pad256(1024 + 512) = 1536 cells per window layer. Params: BF16 GGUF
+    // 129,572,324,928 B ÷ 2 = 64.79B (safetensors 64.78B); Q8_0 lands on 8.50 bpw.
+    // Files: AtomicChat names most levels `AD-<level>` (a larger mixed-precision build than the plain type of that
+    // name: AD-Q4_K_M is 40.43 GB beside the plain Q4_K_M's 38.80 GB) and splits Q6_K / Q8_0 / BF16, so the CLI's
+    // <repo>-<level>.gguf does not apply and `hfRepoMap` points at the original weights (placeholder). Each level is
+    // one file: plain Q4_K_M and Q8_0, `AD-` for the rest; AD-Q4_K_M is not indexed.
+    id: 'ripple-65b-preview',
+    name: 'Ripple-65B-Preview',
+    family: 'Ripple',
+    params: 64.79,
+    paramLabel: '65B',
+    categories: ['code', 'general'],
+    hardwareTags: ['pro-gpu', 'mac'],
+    contextLength: 2097152,
+    arch: {
+      layers: 80, attHeads: 80, kvHeads: 8, headDim: 128,
+      attention: {
+        fullLayers: 16,
+        windowLayers: 64,
+        windowTokens: 1536,
+        note: {
+          en: 'Every fifth layer (16 of 80) is global attention with a cache that grows with context — 64 KB per token; the other 64 use a 1,024-token sliding window, a fixed 0.4 GB in total.',
+          zh: '每 5 层有 1 层（80 层中 16 层）是全局注意力，缓存随上下文增长，每个 token 64 KB；其余 64 层是 1,024 token 的滑动窗口，合计固定约 0.4 GB。',
+        },
+      },
+    },
+    addedAt: ADDED_1110,
+    description: { en: 'A dense 65B preview model from ricursiveAI under Apache 2.0, built for agentic coding. Only every fifth layer (16 of 80) is global attention, and its cache is the one that grows: 64 KB per token, so a 32K window adds 1.9 GB and 128K adds about 8.5 GB. The other 64 layers use a 1,024-token sliding window, a fixed 0.4 GB in total, and the window is 2,097,152 tokens. AtomicChat\'s files named AD are larger than the plain type of the same name (its IQ2_XXS is 20.0 GB, 2.47 bits per weight). IQ1_M needs about 20.0 GB at 4K, comfortable on a 24 GB card. At IQ2_XXS it needs about 21.6 GB at 4K, tight on a 24 GB card. IQ2_S needs about 27.2 GB at 4K, comfortable on a 32 GB card. At Q4_K_M, the plain 38.8 GB file, it needs about 41.2 GB at 4K, comfortable on a 48 GB card. Sizes come from AtomicChat\'s GGUF files, and no per-level quality loss has been published.', zh: 'ricursiveAI 发布的 65B 稠密模型，Apache 2.0 许可，目前是预览版；Ollama 0.40.16 的发布说明称它面向智能体编程，运行名为 `ripple-preview`。只有每 5 层中的 1 层（80 层中 16 层）是全局注意力，缓存增长的就是这部分：每个 token 64 KB，32K 窗口多占 1.9 GB，128K 多占约 8.5 GB。其余 64 层是 1,024 token 的滑动窗口，合计固定约 0.4 GB；窗口长度为 2,097,152 token。AtomicChat 名为 AD 的文件比同名的标准档位更大（它的 IQ2_XXS 是 20.0 GB，每权重 2.47 bit）。IQ1_M 在 4K 下约需 20.0 GB，24 GB 显卡可以从容运行。IQ2_XXS 在 4K 下约需 21.6 GB，24 GB 显卡偏紧。IQ2_S 在 4K 下约需 27.2 GB，32 GB 显卡可以从容运行。Q4_K_M 是 38.8 GB 的标准文件，在 4K 下约需 41.2 GB，48 GB 显卡可以从容运行。体积按 AtomicChat 发布的 GGUF 文件计算，各档位的质量损失未公布。' },
+    quants: [
+      { format: 'GGUF', level: 'IQ1_M',   bpw: 2.28, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ1_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ1_M.gguf', bytes: 18_493_392_352, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.47, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ2_XXS'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ2_XXS.gguf', bytes: 20_007_273_952, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ2_XS',  bpw: 2.73, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ2_XS'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ2_XS.gguf', bytes: 22_120_482_272, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ2_S',   bpw: 3.13, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ2_S'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ2_S.gguf', bytes: 25_310_774_752, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ3_XXS', bpw: 3.45, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ3_XXS'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ3_XXS.gguf', bytes: 27_964_982_752, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ3_S',   bpw: 4.00, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ3_S'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ3_S.gguf', bytes: 32_411_600_352, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'IQ4_XS',  bpw: 4.78, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-IQ4_XS.gguf', bytes: 38_722_143_712, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q4_K_M',  bpw: 4.79, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-Q4_K_M.gguf', bytes: 38_798_820_576, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q5_K_M',  bpw: 5.92, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-Q5_K_M.gguf', bytes: 47_929_624_032, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q6_K',    bpw: 7.12, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q6_K'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', bytes: 57_666_225_856, parts: 2, checkedAt: '2026-11-10' } },
+      { format: 'GGUF', level: 'Q8_0',    bpw: 8.50, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q8_0'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', bytes: 68_840_113_568, parts: 2, checkedAt: '2026-11-10' } },
     ],
   },
 ];

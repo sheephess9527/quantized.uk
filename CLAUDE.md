@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **131** in index (`models-extra` … `models-extra-12`) |
+| Models | **133** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-10 (ii) | **+2 models (133): Xing4.0 29B-A4B, Ripple-65B-Preview** — owner-pulled configs + bartowski / AtomicChat bytes; Xing MLA K-only cache 46 KB/token, MTP block excluded (29.5B trunk); Ripple 16 global + 64 SWA-1024 layers; IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S added to the calculator tables; both `/pending/` entries removed; guides re-counted |
 | 2026-11-10 | **Patrol** — llama.cpp b12239 (b12240 source-only), Ollama v0.40.16 (adds Ripple Preview → `/pending/` entry updated, still unsized); no model |
 | 2026-11-09 | **Patrol** — llama.cpp b12211; other runtimes and arch list unchanged; no model |
 | 2026-11-08 | **Patrol** — llama.cpp b12194 (b12195 source-only; asset names as b12180); other runtimes unchanged; Kimi K3.1 Pro weights reportedly out 11-05 (1.56 TB, unread here) → `/pending/` not-sized |

@@ -425,6 +425,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-10 (ii) — +2 models (133): Xing4.0 29B-A4B + Ripple-65B-Preview; four GGUF levels
+
+- Owner-pulled configs, safetensors totals and GGUF listings (huggingface.co is blocked here). Both leave `/pending/`.
+- **Xing4.0 29B-A4B** (XingChen-AGI, Apache 2.0): MLA absorbed K-only cache, 46,080 B/token over 40 layers (encoded `kvHeads 1`, `fullHeadDim` from llama.cpp's `xing4_0` graph); params = trunk 29.5B (the 1.71B MTP block is skipped by llama.cpp unless `load_mtp`); `arch.moe` counted from the config; active ≈ 3.9B (A4B label). Bytes from bartowski's files (`source` on every GGUF row). IQ4_XS 19.0 GB @4K green on 24 GB; Q4_K_M 21.2 GB tight.
+- **Ripple-65B-Preview** (ricursiveAI, Apache 2.0): dense; 16 global (no RoPE) layers at 64 KB/token + 64 SWA(1024) layers (1536 cells, ~0.4 GB fixed). AtomicChat's `AD-` filenames, so `hfRepoMap` points at the original weights and the CLI prints a placeholder. IQ2_XXS 21.6 GB @4K tight on 24 GB; Q4_K_M 41.2 GB.
+- No perplexity loss published for either: `pplLossPercent` left out.
+- `lib/utils/vram.ts`: `IQ2_XS 2.31`, `IQ2_S 2.56`, `IQ3_XXS 3.06`, `IQ3_S 3.44` added to `quantBPW`; `IQ1_M` and these in `quantGroups.GGUF` (rows that ship them could not be selected otherwise).
+- Guides re-counted (131 → 133, per-card counts re-run), `updatedAt` 2026-11-10; `todayFeed` ids 31, 32.
+
 ### 2026-11-10 — Patrol: llama.cpp b12239, Ollama v0.40.16 (Ripple Preview); no model
 
 - llama.cpp tags to b12240 (source-only); **b12239** carries every Windows zip with the b12180 names → `LLAMACPP_BUILD`.

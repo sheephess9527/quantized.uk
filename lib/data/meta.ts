@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-10',
+    en: 'Two models added: Xing4.0 29B-A4B and Ripple-65B-Preview. Xing4.0 is a 29B mixture-of-experts model with about 4B active per token; its IQ4_XS build is 19.0 GB at 4K context, comfortable on a 24 GB card. Ripple-65B-Preview is a dense 65B model whose cache stays small because most layers use a 1,024-token window; at 2-bit (IQ2_XXS) it is 21.6 GB at 4K, tight on 24 GB, and a 4-bit build needs about 41 GB. Sizes come from the published file sizes. Neither has a published quality loss, so none is shown. Both leave the list of models not yet sized, and the calculator gains four more 2-bit and 3-bit GGUF levels.',
+    zh: '新增两个模型：Xing4.0 29B-A4B 和 Ripple-65B-Preview。Xing4.0 是 29B 混合专家模型，每个 token 约激活 4B；IQ4_XS 版本在 4K 上下文下 19.0 GB，24 GB 显卡可以舒适运行。Ripple-65B-Preview 是 65B 稠密模型，大部分层只用 1,024 token 的滑动窗口，缓存很小；2 比特（IQ2_XXS）在 4K 下 21.6 GB，24 GB 显卡属于紧张，4 比特版本约需 41 GB。大小取自公布的文件体积，两者都没有公布质量损失，因此不显示。两者已从「暂未计算」列表移出，计算器新增四个 2、3 比特 GGUF 档位。',
+  },
+  {
+    date: '2026-11-10',
     en: 'Ollama 0.40.16 adds Ripple Preview, the dense 65B model already on our list of models not yet sized; it stays there until its configuration and file sizes can be read. The Windows commands now download llama.cpp b12239, and the runtime versions show Ollama 0.40.16.',
     zh: 'Ollama 0.40.16 新增 Ripple Preview，这个 65B 稠密模型已在本站「暂未计算」列表中；在读到它的配置和文件大小之前仍留在那里。Windows 启动命令改为下载 llama.cpp b12239，运行时版本显示 Ollama 0.40.16。',
   },
