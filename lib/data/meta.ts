@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-10';
+export const dataLastUpdated = '2026-11-11';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-10',
+  checkedAt: '2026-11-11',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-11',
+    en: 'The Windows launch commands now download llama.cpp b12262. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12262。Ollama 0.40.16、vLLM 0.33.0 和 ExLlamaV3 1.6.6 仍是当前版本，今天没有新增模型。',
+  },
   {
     date: '2026-11-10',
     en: 'The dual RTX 3090 guide now says plainly that Llama 3.3 70B at Q4_K_M does not fit at 8K context. Two 24 GB cards give llama.cpp about 46 GB to work with, not 48, and 8K needs about 47.5 GB. The guide also shows what a quantized KV cache buys: q8_0 halves the cache and brings 8K to about 46.2 GB, still at the edge, so stretching context means shrinking the cache, not the weights. The DGX Spark guide adds that its roughly 7 tok/s ceiling for a 70B is weights only, and about 6.5 once the cache is read at 4K.',
