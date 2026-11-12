@@ -431,6 +431,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - New row: `--cache-type-k/-v q8_0` (q8_0 = 1.0625 B/value; llama.cpp has no FP8 cache type) → 8K = 46.2 GB by `calcVRAM` with `kvBytesPerValue`, i.e. still at the edge, **not** a clean fit (the suggestion that it fits was not reproduced); 16K = 47.7 GB over. The text says to shrink KV precision rather than the weight quant, and that the result stays borderline. The row omits model + level on purpose: `guideFigureProblems()` reads "model level @ctx N GB" sentences against fp16 `calcVRAM` and would flag the q8_0 figure.
 - DGX Spark guide: 7 tok/s is weights only (273 / 40.66); with a 4K KV read (273 / 41.9) it is ≈ 6.5. `updatedAt` 2026-11-10 on the dual-GPU guide.
 
+### 2026-11-12 — Patrol: llama.cpp b12292; no model
+
+- llama.cpp b12292 (11-11 20:15): Windows zips verified on that release (names unchanged: `cuda-12.4`, `cuda-13.5`, `vulkan`, `cpu`) → `LLAMACPP_BUILD` b12292. Ollama v0.40.16 still Latest (v0.40.17 is a pre-release: Vulkan iGPU mmap, MLX concurrent generation, llama.cpp bump — skipped). vLLM v0.33.0 and ExLlamaV3 1.6.6 unchanged.
+- llama.cpp `LLM_ARCH_NAMES` tail identical to 11-11 (no new architecture). No candidate model found in the window beyond ones already indexed or on `/pending/`.
+
 ### 2026-11-11 — Patrol: llama.cpp b12262; no model
 
 - llama.cpp b12262 (23:04 on 11-10; b12252–b12262 are all builds of the last day, the page marks them pre-release like the earlier ones we took): Windows zips verified on b12262 and b12257 — names unchanged (`cuda-12.4`, `cuda-13.5`, `vulkan`, `cpu`), so `LLAMACPP_BUILD` → b12262. Ollama v0.40.16 still Latest (v0.40.17-rc0 pre-release skipped; it bumps llama.cpp to b12257, MLX concurrent generation, mmap for Vulkan iGPUs — no site command affected). vLLM v0.33.0 and ExLlamaV3 1.6.6 unchanged.

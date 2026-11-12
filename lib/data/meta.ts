@@ -5,7 +5,7 @@ export interface ChangelogEntry {
   zh: string;
 }
 
-export const dataLastUpdated = '2026-11-11';
+export const dataLastUpdated = '2026-11-12';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -71,7 +71,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-11',
+  checkedAt: '2026-11-12',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',
@@ -89,6 +89,11 @@ export const runtimeVersions = {
 } as const;
 
 export const changelog: ChangelogEntry[] = [
+  {
+    date: '2026-11-12',
+    en: 'The Windows launch commands now download llama.cpp b12292. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12292。Ollama 0.40.16、vLLM 0.33.0 和 ExLlamaV3 1.6.6 仍是当前版本，今天没有新增模型。',
+  },
   {
     date: '2026-11-11',
     en: 'The Windows launch commands now download llama.cpp b12262. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',

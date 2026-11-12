@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-12 | **Patrol** — llama.cpp b12292 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17 pre-release skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |
 | 2026-11-11 | **Patrol** — llama.cpp b12262 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17-rc0 pre-release skipped), vLLM / ExLlamaV3 unchanged; no new arch of interest, no model |
 | 2026-11-10 (iii) | **Dual-3090 guide budget** — 48 GB nameplate is ~46 GB under llama.cpp's 1 GiB-per-card auto-fit: 70B Q4_K_M @8K (47.5) is over budget, not "amber"; q8_0 KV row (8K 46.2, still edge); Spark 70B ceiling 7 → 6.5 with KV |
 | 2026-11-10 (ii) | **+2 models (133): Xing4.0 29B-A4B, Ripple-65B-Preview** — owner-pulled configs + bartowski / AtomicChat bytes; Xing MLA K-only cache 46 KB/token, MTP block excluded (29.5B trunk); Ripple 16 global + 64 SWA-1024 layers; IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S added to the calculator tables; both `/pending/` entries removed; guides re-counted |
