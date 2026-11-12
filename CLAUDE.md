@@ -25,7 +25,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **133** in index (`models-extra` … `models-extra-12`) |
+| Models | **135** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
@@ -1166,6 +1166,7 @@ Newest first. Times are CST (UTC+8).
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-12 (ii) | **+2 models (135): Hy-Memory-30B-A3B, Kolibri-1 78B-A3.5B** — owner-pulled configs + tencent / bartowski bytes; Hy routed width is `expert_hidden_dim` 768 (not `moe_intermediate_size`), Q8_0-expsIQ2_XXS / IQ1_M mixed levels added to the calculator tables; Kolibri now has a llama.cpp arch (10 full + 40 SWA-513, 384 experts), IQ1_M 20.9 GB green on 24 GB; both `/pending/` entries removed; guides re-counted 133 → 135 |
 | 2026-11-12 | **Patrol** — llama.cpp b12292 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17 pre-release skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |
 | 2026-11-11 | **Patrol** — llama.cpp b12262 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17-rc0 pre-release skipped), vLLM / ExLlamaV3 unchanged; no new arch of interest, no model |
 | 2026-11-10 (iii) | **Dual-3090 guide budget** — 48 GB nameplate is ~46 GB under llama.cpp's 1 GiB-per-card auto-fit: 70B Q4_K_M @8K (47.5) is over budget, not "amber"; q8_0 KV row (8K 46.2, still edge); Spark 70B ceiling 7 → 6.5 with KV |

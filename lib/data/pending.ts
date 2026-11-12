@@ -114,19 +114,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-10-20',
   },
   {
-    id: 'kolibri-1',
-    name: 'Kolibri-1',
-    vendor: 'Aleph Alpha',
-    announced: '2026-10-03',
-    reason: 'no-runtime',
-    detail: {
-      en: 'Reported as a 78B mixture-of-experts model with about 3.5B active. llama.cpp master has no Kolibri architecture; the only GGUF is a community one that needs a patched llama.cpp.',
-      zh: '据报道是 78B 混合专家模型，约激活 3.5B。llama.cpp 主线没有 Kolibri 架构；唯一的 GGUF 是社区版，需要打过补丁的 llama.cpp。',
-    },
-    recheck: { en: 'When upstream llama.cpp supports it.', zh: 'llama.cpp 主线支持它时。' },
-    checkedAt: '2026-10-20',
-  },
-  {
     id: 'dory-1-0-4b',
     name: 'Nemotron-Labs Dory 1.0 4B',
     vendor: 'NVIDIA',
@@ -151,18 +138,5 @@ export const pendingModels: PendingModel[] = [
     },
     recheck: { en: 'When its cache layout has been read in llama.cpp\'s source and a standard 4-bit GGUF exists.', zh: '在 llama.cpp 源码里核实它的缓存结构、并且有标准 4-bit GGUF 时。' },
     checkedAt: '2026-10-29',
-  },
-  {
-    id: 'hy-memory-30b-a3b',
-    name: 'Hy-Memory-30B-A3B',
-    vendor: 'Tencent',
-    announced: '2026-10-15',
-    reason: 'community-only',
-    detail: {
-      en: 'A memory-writing model for agents rather than a chat model. Only community GGUFs exist, from uploaders whose files this site has not checked.',
-      zh: '给智能体写记忆用的模型，不是对话模型。只有社区上传的 GGUF，本站没有核对过这些文件。',
-    },
-    recheck: { en: 'When an official or widely used GGUF is published.', zh: '有官方或常用量化者发布的 GGUF 时。' },
-    checkedAt: '2026-10-17',
   },
 ];

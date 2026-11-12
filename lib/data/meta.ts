@@ -91,6 +91,11 @@ export const runtimeVersions = {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-12',
+    en: 'Two models added: Hy-Memory-30B-A3B and Kolibri-1 78B-A3.5B. Hy-Memory is Tencent\'s 30B mixture-of-experts model for writing agent memories, with its own official GGUF files; its Q4_K_M build is 19.5 GB at 4K context, comfortable on a 24 GB card, and two mixed builds keep the experts at 2 bits or less to fit a 12 GB card. Kolibri-1 is Aleph Alpha\'s 78B mixture-of-experts model with about 3.5B active per token, now supported by llama.cpp; only 10 of its 50 layers grow a cache, and its IQ1_M build is 20.9 GB at 4K, comfortable on a 24 GB card. Neither has a published quality loss, so none is shown. Both leave the list of models not yet sized, and the calculator gains two mixed Hy-Memory levels.',
+    zh: '新增两个模型：Hy-Memory-30B-A3B 和 Kolibri-1 78B-A3.5B。Hy-Memory 是腾讯用于写入智能体记忆的 30B 混合专家模型，有官方 GGUF 文件；Q4_K_M 版本在 4K 上下文下 19.5 GB，24 GB 显卡可以舒适运行，另有两个混合版本把专家压到 2 比特或更低，12 GB 显卡也能放下。Kolibri-1 是 Aleph Alpha 的 78B 混合专家模型，每个 token 约激活 3.5B，llama.cpp 现已支持；50 层中只有 10 层的缓存随上下文增长，IQ1_M 版本在 4K 下 20.9 GB，24 GB 显卡可以舒适运行。两者都没有公布质量损失，因此不显示。两者已从「暂未计算」列表移出，计算器新增两个 Hy-Memory 混合档位。',
+  },
+  {
+    date: '2026-11-12',
     en: 'The Windows launch commands now download llama.cpp b12292. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',
     zh: 'Windows 启动命令改为下载 llama.cpp b12292。Ollama 0.40.16、vLLM 0.33.0 和 ExLlamaV3 1.6.6 仍是当前版本，今天没有新增模型。',
   },

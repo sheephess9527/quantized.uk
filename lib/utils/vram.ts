@@ -69,6 +69,9 @@ export const quantBPW: Record<string, number> = {
   // Block rates from ggml-common.h (bytes per 256 weights ÷ 32): IQ2_XS 74, IQ2_S 82, IQ3_XXS 98, IQ3_S 110.
   // AtomicChat's Ripple-65B files of these names run larger (mixed precision, models-extra-12.ts).
   'IQ2_XS':   2.31,
+  // Tencent's mixed builds: Q8_0 attention/embeddings, routed experts at IQ2_XXS / IQ1_M (Hy-Memory-30B-A3B file sizes).
+  'Q8_0-expsIQ2_XXS': 2.43,
+  'Q8_0-expsIQ1_M':   2.14,
   'IQ2_S':    2.56,
   'IQ3_XXS':  3.06,
   'IQ3_S':    3.44,
@@ -89,7 +92,7 @@ export const quantBPW: Record<string, number> = {
 };
 
 export const quantGroups: Record<string, string[]> = {
-  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
+  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q8_0-expsIQ1_M', 'Q8_0-expsIQ2_XXS', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
   'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 3.5bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],

@@ -31,6 +31,7 @@ const ADDED_1029 = '2026-10-29';
 const ADDED_1030 = '2026-10-30';
 const ADDED_1105 = '2026-11-05';
 const ADDED_1110 = '2026-11-10';
+const ADDED_1112 = '2026-11-12';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1535,6 +1536,81 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'Q5_K_M',  bpw: 5.92, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', file: 'Ripple-65B-Preview-AD-Q5_K_M.gguf', bytes: 47_929_624_032, checkedAt: '2026-11-10' } },
       { format: 'GGUF', level: 'Q6_K',    bpw: 7.12, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q6_K'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', bytes: 57_666_225_856, parts: 2, checkedAt: '2026-11-10' } },
       { format: 'GGUF', level: 'Q8_0',    bpw: 8.50, vramGB: 0, hfSearchUrl: hf('Ripple-65B-Preview GGUF Q8_0'), confidence: 'estimated', source: { repo: 'AtomicChat/Ripple-65B-Preview-GGUF', bytes: 68_840_113_568, parts: 2, checkedAt: '2026-11-10' } },
+    ],
+  },
+  {
+    // Tencent Hy-Memory-30B-A3B (announced 2026-10-15, Apache 2.0). Owner-pulled config.json + safetensors
+    // total + tencent's own GGUF listing (2026-11-12). llama.cpp arch `hy_v3` (src/models/hy-v3.cpp): plain
+    // KV cache on every layer (no SWA, no NoPE, no sharing), 48 layers = LLM_TYPE_30B_A3B, MTP blocks
+    // exist only when num_nextn_predict_layers > 0 (it is 0). Shape: 48 layers, 32 heads / 4 KV × 128,
+    // hidden 2048, layer 0 dense (6912), layers 1-47 routed: 128 experts, 8 per token, 1 shared expert.
+    // The routed width is `expert_hidden_dim` 768, not `moe_intermediate_size` 1536 (that would count
+    // 56.8B routed against a 30.06B total): 47 × 128 × 3 × 2048 × 768 = 28.39B routed + attention 0.91B
+    // + shared experts 0.22B + dense layer 0.04B + untied 120832-token embeddings 0.50B = 30.05B, the
+    // safetensors total (30,064,725,888). Active per token: 8/128 of 28.39B + the rest minus the input
+    // embedding ≈ 3.2B (the name says A3B). Q8_0 31,985,728,896 B → 8.51 bpw confirms the count.
+    // The two `Q8_0-exps…` files are tencent's own mixed builds (Q8_0 everywhere except the routed
+    // experts, at IQ2_XXS / IQ1_M); no perplexity figure exists for any level.
+    id: 'hy-memory-30b-a3b',
+    name: 'Hy-Memory-30B-A3B',
+    family: 'Tencent Hy',
+    params: 30.06,
+    paramLabel: '30B-A3B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 48, attHeads: 32, kvHeads: 4, headDim: 128, moe: { expertParams: 28.39, experts: 128, perToken: 8, moeLayers: 47, denseLead: 1 } },
+    addedAt: ADDED_1112,
+    description: {
+      en: 'Tencent\'s memory-writing model for agents, released in October under Apache 2.0: it is built to turn an agent\'s history into stored memories, not to chat. It is a 30B mixture-of-experts model with 128 experts, 8 used per token, so about 3B parameters are read for each token. Every layer keeps a full cache, 96 KB per token. Tencent publishes its own GGUF files, including two mixed builds that keep everything at Q8_0 except the experts, which are stored at IQ2_XXS or IQ1_M. No quality loss has been published for any build.',
+      zh: '腾讯面向智能体的记忆写入模型，10 月以 Apache 2.0 发布：它的用途是把智能体的历史整理成存储的记忆，而不是聊天。它是 30B 的混合专家模型，128 个专家、每个 token 用 8 个，所以每个 token 只读取约 3B 参数。每一层都保留完整缓存，每个 token 96 KB。腾讯自己发布了 GGUF 文件，其中有两个混合版本：除专家外全部保持 Q8_0，专家用 IQ2_XXS 或 IQ1_M 存储。所有版本都没有公布质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.84, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q3_K_M.gguf', bytes: 14446329600, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q4_K_M.gguf', bytes: 18236702464, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q6_K', bpw: 6.57, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q6_K'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q6_K.gguf', bytes: 24707464960, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q8_0.gguf', bytes: 31985728896, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q8_0-expsIQ2_XXS', bpw: 2.43, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q8_0-expsIQ2_XXS'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q8_0-expsIQ2_XXS.gguf', bytes: 9143025408, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q8_0-expsIQ1_M', bpw: 2.14, vramGB: 0, hfSearchUrl: hf('Hy-Memory-30B-A3B GGUF Q8_0-expsIQ1_M'), confidence: 'estimated', source: { repo: 'tencent/Hy-Memory-30B-A3B-GGUF', file: 'Hy-Memory-30B-A3B-Q8_0-expsIQ1_M.gguf', bytes: 8034156288, checkedAt: '2026-11-12' } },
+    ],
+  },
+  {
+    // Aleph Alpha Kolibri-1 (announced 2026-10-03, Apache 2.0). Owner-pulled config.json + safetensors
+    // total + bartowski's GGUF listing (2026-11-12). llama.cpp now has arch `kolibri1`
+    // (src/models/kolibri1.cpp; 50 layers = LLM_TYPE_78B_A3_5B): iSWA with a per-layer pattern read from
+    // the GGUF — config layer_types gives 10 full (every fifth) + 40 sliding-window layers, window 513
+    // → pad256(513 + 512) = 1280 cells (same arithmetic as Flint); 4 KV × 128 on every layer; no cache
+    // sharing, no MTP. Global layers are NoPE in llama.cpp (does not change the size). MoE: 384 routed
+    // experts, 6 per token, ONE shared expert, all 50 layers. Params: safetensors total 78,103,074,560
+    // (FP8 experts, 1 B each → equal to the parameter count; BF16 0.705B). Counted: routed
+    // 50 × 384 × 3 × 2560 × 512 = 75.50B + shared 0.20B + attention 1.71B + routers 0.05B + untied
+    // 128000-token embeddings 0.66B = 78.11B. Files: bartowski Q8_0 83,135,393,696 B (3 parts) → 8.52 bpw
+    // and BF16 156,310,433,856 B → 16.01 bpw confirm it. Active per token ≈ 1.18B routed + 0.20 + 1.71
+    // + 0.05 + 0.33 head = 3.5B. bartowski's Q4_K_M is one 49.8 GB file (past SHARD_GB, so the CLI
+    // matches it by pattern). No perplexity figure exists for any level.
+    id: 'kolibri-1-78b-a3-5b',
+    name: 'Kolibri-1 78B-A3.5B',
+    family: 'Aleph Alpha Kolibri',
+    params: 78.1,
+    paramLabel: '78B-A3.5B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: { layers: 50, attHeads: 48, kvHeads: 4, headDim: 128, attention: { fullLayers: 10, windowLayers: 40, windowTokens: 1280, note: { en: '40 of 50 layers use a 513-token sliding window (llama.cpp keeps the window plus one 512-token batch, padded to 1,280); only every fifth layer grows a cache with context.', zh: '50 层中 40 层使用 513 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，补齐到 1,280），只有每五层中的一层缓存随上下文增长。' } }, moe: { expertParams: 75.50, experts: 384, perToken: 6, moeLayers: 50 } },
+    addedAt: ADDED_1112,
+    description: {
+      en: 'Aleph Alpha\'s 78B mixture-of-experts model under Apache 2.0, reading about 3.5B parameters per token. It has 384 experts per layer, 6 used per token plus one shared expert. Only 10 of its 50 layers grow a cache with context; the other 40 use a 513-token window, so long context is cheap for its size. The weights ship in FP8; the sizes here come from bartowski\'s GGUF files. No quality loss has been published for any build.',
+      zh: 'Aleph Alpha 的 78B 混合专家模型，Apache 2.0，每个 token 读取约 3.5B 参数。每层 384 个专家，每个 token 用 6 个，外加 1 个共享专家。50 层中只有 10 层的缓存随上下文增长，其余 40 层使用 513 token 的窗口，所以相对体量来说长上下文很省。权重以 FP8 发布；这里的大小取自 bartowski 的 GGUF 文件。所有版本都没有公布质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'IQ1_M', bpw: 2.03, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ1_M'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ1_M.gguf', bytes: 19774226304, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.33, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ2_XXS'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ2_XXS.gguf', bytes: 22774013824, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'IQ2_XS', bpw: 2.49, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ2_XS'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ2_XS.gguf', bytes: 24339996544, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'IQ3_XXS', bpw: 3.45, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ3_XXS'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ3_XXS.gguf', bytes: 33653829504, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-Q3_K_M.gguf', bytes: 37620641664, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'IQ4_XS', bpw: 4.47, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ4_XS.gguf', bytes: 43632914304, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.1, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-Q4_K_M.gguf', bytes: 49759219584, checkedAt: '2026-11-12' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', bytes: 83135393696, parts: 3, checkedAt: '2026-11-12' } },
     ],
   },
 ];
