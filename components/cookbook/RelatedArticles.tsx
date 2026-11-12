@@ -3,7 +3,7 @@
 import Link from '@/components/i18n/LocalLink';
 import { Clock, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { getRelatedArticles } from '@/lib/utils/related';
+import { getRelatedArticles } from '@/lib/utils/related-articles';
 import { cn } from '@/lib/utils/cn';
 import { readingMinutes } from '@/lib/utils/reading-time';
 

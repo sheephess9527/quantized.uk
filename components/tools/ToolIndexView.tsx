@@ -1,7 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge, Cpu, Layers, Zap, ListChecks, Ruler, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';

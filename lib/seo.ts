@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { toEnPath, toZhPath } from '@/lib/i18n/routing';
 
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
 
 /**
  * The model count, from the index itself.
@@ -15,25 +14,8 @@ import { gpuDatabase } from '@/lib/data/gpus';
  */
 export const MODEL_COUNT = models.length;
 
-/** Same rule as `MODEL_COUNT`: the GPU count was typed into five more strings. */
-/**
- * Cards and Macs only. `gpuDatabase` also carries four CPU-only RAM rows
- * (`isCPU`), which let the calculator answer "no GPU" but are not GPUs — every
- * surface that says "N GPUs" / "N 张显卡" uses this. List lengths that must
- * match the rows actually rendered (the /gpu/ ItemList, the calculator's
- * show-all) keep `gpuDatabase.length`.
- */
-export const GPU_COUNT = gpuDatabase.filter(g => !g.isCPU).length;
-export const CPU_ROW_COUNT = gpuDatabase.length - GPU_COUNT;
-
-export const SITE_URL = 'https://quantized.uk';
-export const SITE_NAME = 'quantized.uk';
-/**
- * The one contact address on the site — Footer, /about/, the 404 page, the run-feedback mailto,
- * JSON-LD `contactPoint` and /llms.txt all use it. The site owner's own mailbox (2026-10-03); the
- * earlier `hello@` was never confirmed to receive mail, so it was retired rather than kept beside it.
- */
-export const FEEDBACK_EMAIL = 'zjy@quantized.uk';
+export { GPU_COUNT, CPU_ROW_COUNT, SITE_URL, SITE_NAME, FEEDBACK_EMAIL, canonical } from '@/lib/site';
+import { SITE_URL, SITE_NAME, GPU_COUNT, canonical } from '@/lib/site';
 
 /** Search engine HTML-tag verification codes (public in page source). */
 export const GOOGLE_SITE_VERIFICATION = 'CZnvhc9YKq3-RNY280Bmc8rTje2SAKWtFR_-6dxbkmE';
@@ -63,11 +45,6 @@ export function pageOgImage(path: string, alt: string) {
 }
 
 /** Trailing-slash canonical URL (matches next.config trailingSlash: true). */
-export function canonical(path = ''): string {
-  if (!path || path === '/') return `${SITE_URL}/`;
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  return `${SITE_URL}${normalized.endsWith('/') ? normalized : `${normalized}/`}`;
-}
 
 export const defaultRobots = {
   index: true,

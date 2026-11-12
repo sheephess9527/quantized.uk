@@ -34,7 +34,7 @@ import { rigPrefillSeconds } from '@/lib/utils/prefill';
 import { prefillData } from '@/lib/data/prefill';
 import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 
 type Mode = 'forward' | 'reverse' | 'finetune';
 type VerdictColor = 'green' | 'yellow' | 'red';

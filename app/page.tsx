@@ -1,4 +1,6 @@
 import HeroSection from '@/components/home/HeroSection';
+import { changelog } from '@/lib/data/changelog';
+import { articles } from '@/lib/data/cookbook';
 import HomeMatch from '@/components/home/HomeMatch';
 import PopularStarts from '@/components/home/PopularStarts';
 import JobPaths from '@/components/home/JobPaths';
@@ -63,7 +65,7 @@ export default function HomePage() {
         this page — collapsed — because `#changelog` is linked from the hero,
         the About page and off-site.
       */}
-      <HeroSection />
+      <HeroSection latestDate={changelog[0]?.date} />
       <HomeMatch />
       <StatsBar />
 
@@ -92,11 +94,11 @@ export default function HomePage() {
             <QuickAccess />
           </div>
           <div className="lg:col-span-2">
-            <ExploreStrip />
+            <ExploreStrip guideCount={articles.length} />
           </div>
         </div>
 
-        <DataChangelog />
+        <DataChangelog latest={changelog[0]} total={changelog.length} />
       </div>
     </>
   );

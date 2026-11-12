@@ -1,6 +1,7 @@
 import { models } from '@/lib/data/models';
-import { changelog, dataLastUpdated } from '@/lib/data/meta';
-import { SITE_URL } from '@/lib/seo';
+import { dataLastUpdated } from '@/lib/data/meta';
+import { changelog } from '@/lib/data/changelog';
+import { SITE_URL } from '@/lib/site';
 import { isRecentModel } from '@/lib/utils/model-meta';
 import type { Lang } from '@/lib/i18n/translations';
 

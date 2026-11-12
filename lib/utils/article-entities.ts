@@ -1,7 +1,7 @@
 import type { Article } from '@/lib/data/cookbook';
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
-import { canonical } from '@/lib/seo';
+import { canonical } from '@/lib/site';
 
 /**
  * `about` and `mentions` for a cookbook guide's Article schema.

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import { ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { gpuDatabase, POPULAR_GPU_IDS } from '@/lib/data/gpus';

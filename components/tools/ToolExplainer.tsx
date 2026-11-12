@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/lib/i18n/context';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical } from '@/lib/seo';
+import { canonical } from '@/lib/site';
 import { localizeHref } from '@/lib/i18n/routing';
 import type { ToolContent } from '@/lib/data/tool-content';
 

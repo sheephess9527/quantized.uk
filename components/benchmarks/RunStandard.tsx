@@ -5,7 +5,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { benchmarkMethodology } from '@/lib/data/meta';
 import { calibrationRows, CEILING_TOLERANCE } from '@/lib/utils/bench-calibration';
 import { measuredCards } from '@/lib/utils/bench-coverage';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { FEEDBACK_EMAIL } from '@/lib/site';
 import CopyButton from '@/components/ui/CopyButton';
 
 /** The one command a reader run must come from: llama-bench's own pp512 / tg128 table. */

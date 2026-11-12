@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from '@/components/i18n/LocalLink';
 import { Mail, MessageSquareWarning } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { FEEDBACK_EMAIL } from '@/lib/site';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 
 const CONTACT = FEEDBACK_EMAIL;

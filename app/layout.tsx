@@ -6,7 +6,7 @@ import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Plausible from '@/components/analytics/Plausible';
-import { SiteJsonLd } from '@/components/seo/JsonLd';
+import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
 import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
 
 const inter = Inter({

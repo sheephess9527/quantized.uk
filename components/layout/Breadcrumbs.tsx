@@ -3,7 +3,7 @@
 import Link from '@/components/i18n/LocalLink';
 import { ChevronRight } from 'lucide-react';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical } from '@/lib/seo';
+import { canonical } from '@/lib/site';
 import { useLanguage } from '@/lib/i18n/context';
 import { localizeHref } from '@/lib/i18n/routing';
 

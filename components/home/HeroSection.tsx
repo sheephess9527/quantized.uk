@@ -3,7 +3,6 @@
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { changelog } from '@/lib/data/meta';
 import { quantFormats } from '@/lib/data/formats';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 
@@ -21,9 +20,8 @@ const formatBadges = quantFormats
     color: `${f.bgClass.replace('/10', '/15')} ${f.textClass} ${f.borderClass.replace('/20', '/25')}`,
   }));
 
-export default function HeroSection() {
+export default function HeroSection({ latestDate }: { latestDate?: string }) {
   const { t, lang } = useLanguage();
-  const latest = changelog[0];
 
   return (
     // Deliberately not a 70vh hero any more: the panel directly below it is the
@@ -63,13 +61,13 @@ export default function HeroSection() {
             one page carried the same paragraph three times, with a truncated
             copy of it occupying the first screen above the picker.
           */}
-          {latest && (
+          {latestDate && (
             <Link
               href="/changelog/"
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors"
             >
               <Sparkles size={12} className="shrink-0" />
-              <span className="text-cyan-500/70 font-mono">{latest.date}</span>
+              <span className="text-cyan-500/70 font-mono">{latestDate}</span>
               {t.home.hero.changelogLink}
             </Link>
           )}

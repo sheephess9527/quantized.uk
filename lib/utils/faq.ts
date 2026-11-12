@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { countModelsFitting, usableCapacityGB, ALLOWED_FORMATS, backendFor } from '@/lib/utils/gpu-page';

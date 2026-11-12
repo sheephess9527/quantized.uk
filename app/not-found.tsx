@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import NotFoundContent from '@/components/layout/NotFoundContent';
+import { models } from '@/lib/data/models';
+import { articles } from '@/lib/data/cookbook';
 
 /**
  * A server component so it can carry its own metadata. Inheriting the root
@@ -16,5 +18,6 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
-  return <NotFoundContent />;
+  // Counts are passed down so the client component does not import the data itself.
+  return <NotFoundContent counts={{ models: models.length, guides: articles.length }} />;
 }

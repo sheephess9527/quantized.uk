@@ -3,7 +3,7 @@ import type { GPU } from '@/lib/data/gpus';
 import type { Article } from '@/lib/data/cookbook';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
-import { extendDescription, fitDescription, modelPageDescription } from '@/lib/seo';
+import { DESCRIPTION_BUDGET, displayWidth, extendDescription, fitDescription, modelPageDescription } from '@/lib/seo';
 import { isSuperseded } from '@/lib/utils/model-meta';
 import { referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -31,7 +31,15 @@ export function modelMetaDescription(model: QuantModel, lang: Lang): string {
   const smallest = cardsFitting(total, ref.format)[0];
   const level = quantLevelKey(ref);
   const ctx = contextLabel(model.contextLength);
-  const base = modelPageDescription(model.description[lang], isSuperseded(model), lang);
+  const fitted = modelPageDescription(model.description[lang], isSuperseded(model), lang);
+  // `fitDescription` keeps whole sentences, so a first sentence that is itself over the budget comes
+  // back too long and failed the build on two model batches (2026-11-10, 11-12). Lead with a derived
+  // sentence instead of asking whoever adds the model to re-write its description for the meta tag.
+  const base = displayWidth(fitted) <= DESCRIPTION_BUDGET
+    ? fitted
+    : lang === 'zh'
+      ? `${model.name} 是 ${model.family} 系列的 ${model.paramLabel} 模型。`
+      : `${model.name} is a ${model.paramLabel} model in the ${model.family} family.`;
   return lang === 'zh'
     ? extendDescription(base, [
         `在 ${level}、4K 上下文下约需 ${total.toFixed(1)} GB。`,

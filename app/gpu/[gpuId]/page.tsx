@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import GpuPageContent from '@/components/gpu/GpuPageContent';
+import { guidesForGpu } from '@/lib/utils/guide-references';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 import { countModelsFitting, fitsOnGpu, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
@@ -87,7 +88,7 @@ export default function GpuPage({ params, lang = 'en' }: { params: { gpuId: stri
           }}
         />
       )}
-      <GpuPageContent gpu={gpu} />
+      <GpuPageContent gpu={gpu} guides={guidesForGpu(gpu).map(a => ({ id: a.id, title: a.title, titleZh: a.titleZh }))} />
     </>
   );
 }

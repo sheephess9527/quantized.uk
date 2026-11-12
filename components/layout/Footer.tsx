@@ -7,7 +7,7 @@ import { mirrorPath } from '@/lib/i18n/routing';
 import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { FEEDBACK_EMAIL } from '@/lib/site';
 import EmailOffGuard from '@/components/ui/EmailOffGuard';
 
 export default function Footer() {

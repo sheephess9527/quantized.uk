@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 

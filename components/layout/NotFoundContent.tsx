@@ -1,16 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import Link from '@/components/i18n/LocalLink';
 import { Home, Search, BookOpen, Cpu, Wrench, HelpCircle, Sliders, Mail } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { localizeHref } from '@/lib/i18n/routing';
-import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
-import { articles } from '@/lib/data/cookbook';
-import { notFoundSuggestions } from '@/lib/utils/not-found';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import type { NotFoundSuggestion } from '@/lib/utils/not-found';
+import { FEEDBACK_EMAIL } from '@/lib/site';
 import { trackEvent } from '@/lib/analytics';
 
 /**
@@ -21,7 +18,7 @@ import { trackEvent } from '@/lib/analytics';
  * a fuzzy match against every real slug, a real search, and the six section
  * entry points with live counts.
  */
-export default function NotFoundContent() {
+export default function NotFoundContent({ counts }: { counts: { models: number; guides: number } }) {
   const { t, lang } = useLanguage();
   const n = t.notFound;
 
@@ -34,14 +31,29 @@ export default function NotFoundContent() {
     setRequestedPath(window.location.pathname);
   }, []);
 
-  const suggestions = requestedPath ? notFoundSuggestions(requestedPath, lang) : [];
+  // The slug match needs every model, card and guide. This component is part of every page's
+  // bundle (Next ships the not-found boundary with each route), so importing those here cost every
+  // page ~290 kB of JavaScript; they are fetched only when a 404 is actually shown.
+  const [suggestions, setSuggestions] = useState<NotFoundSuggestion[]>([]);
+  useEffect(() => {
+    if (!requestedPath) return;
+    let cancelled = false;
+    import('@/lib/utils/not-found')
+      .then(m => {
+        if (!cancelled) setSuggestions(m.notFoundSuggestions(requestedPath, lang));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [requestedPath, lang]);
 
   const sections = [
-    { href: '/quant-hub/', icon: Search, label: n.models.replace('{n}', String(models.length)) },
+    { href: '/quant-hub/', icon: Search, label: n.models.replace('{n}', String(counts.models)) },
     { href: '/gpu/', icon: Cpu, label: n.gpus.replace('{n}', String(GPU_COUNT)) },
     { href: '/best/', icon: Sliders, label: n.bestByVram },
     { href: '/tools/', icon: Wrench, label: n.tools },
-    { href: '/cookbook/', icon: BookOpen, label: n.guides.replace('{n}', String(articles.length)) },
+    { href: '/cookbook/', icon: BookOpen, label: n.guides.replace('{n}', String(counts.guides)) },
     { href: '/faq/', icon: HelpCircle, label: n.faq },
   ];
 

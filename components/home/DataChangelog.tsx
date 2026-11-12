@@ -3,7 +3,8 @@
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { changelog, dataLastUpdated } from '@/lib/data/meta';
+import { dataLastUpdated } from '@/lib/data/meta';
+import type { ChangelogEntry } from '@/lib/data/changelog';
 
 /**
  * A pointer, not a third copy.
@@ -17,10 +18,10 @@ import { changelog, dataLastUpdated } from '@/lib/data/meta';
  * and any external link all point at it, and an anchor that silently stops
  * resolving is worse than a redundant section.
  */
-export default function DataChangelog() {
+/** The entry and the count are passed from the server page: importing the changelog here shipped all of it (~205 kB) with the homepage. */
+export default function DataChangelog({ latest, total }: { latest?: ChangelogEntry; total: number }) {
   const { t, lang } = useLanguage();
   const c = t.home.changelog;
-  const latest = changelog[0];
 
   return (
     <div id="changelog" className="glass rounded-2xl p-5 scroll-mt-28">
@@ -33,7 +34,7 @@ export default function DataChangelog() {
           href="/changelog/"
           className="inline-flex items-center gap-1 min-h-[44px] text-xs font-medium text-violet-400 hover:text-violet-300"
         >
-          {c.showAll.replace('{n}', String(changelog.length))} <ArrowRight size={12} />
+          {c.showAll.replace('{n}', String(total))} <ArrowRight size={12} />
         </Link>
       </div>
 

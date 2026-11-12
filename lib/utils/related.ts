@@ -1,4 +1,3 @@
-import { articles, type Article } from '@/lib/data/cookbook';
 import { models, type QuantModel } from '@/lib/data/models';
 
 function paramBucket(params: number): string {
@@ -19,15 +18,6 @@ function similarityScore(a: QuantModel, b: QuantModel): number {
   return score;
 }
 
-function relatedScore(current: Article, other: Article): number {
-  if (current.id === other.id) return -1;
-  let score = 0;
-  if (current.category === other.category) score += 5;
-  score += current.tags.filter(t => other.tags.includes(t)).length * 2;
-  if (current.difficulty === other.difficulty) score += 1;
-  return score;
-}
-
 export function getSimilarModels(modelId: string, limit = 4): QuantModel[] {
   const current = models.find(m => m.id === modelId);
   if (!current) return [];
@@ -38,16 +28,4 @@ export function getSimilarModels(modelId: string, limit = 4): QuantModel[] {
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(({ model }) => model);
-}
-
-export function getRelatedArticles(articleId: string, limit = 3): Article[] {
-  const current = articles.find(a => a.id === articleId);
-  if (!current) return [];
-
-  return articles
-    .map(a => ({ article: a, score: relatedScore(current, a) }))
-    .filter(({ score }) => score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map(({ article }) => article);
 }

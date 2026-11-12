@@ -4,7 +4,6 @@ import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, Layers, BookOpen, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { getSiteStats } from '@/lib/stats';
-import { articles } from '@/lib/data/cookbook';
 
 const stats = getSiteStats();
 
@@ -14,7 +13,7 @@ const featuredCookbook = [
   { id: 'docker-ollama-gpu', titleKey: 'guideDocker' as const },
 ];
 
-export default function ExploreStrip() {
+export default function ExploreStrip({ guideCount }: { guideCount: number }) {
   const { t } = useLanguage();
   const e = t.home.explore;
 
@@ -55,7 +54,7 @@ export default function ExploreStrip() {
             ))}
           </ul>
           <Link href="/cookbook/" className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300">
-            {e.cookbookCta.replace('{count}', String(articles.length))} <ChevronRight size={12} />
+            {e.cookbookCta.replace('{count}', String(guideCount))} <ChevronRight size={12} />
           </Link>
         </div>
 

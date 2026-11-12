@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
-import { canonical, FEEDBACK_EMAIL } from '@/lib/seo';
+import { canonical, FEEDBACK_EMAIL } from '@/lib/site';
 import { localizeHref } from '@/lib/i18n/routing';
 import { runtimeErrors, errorById, type RuntimeErrorEntry } from '@/lib/data/errors';
 

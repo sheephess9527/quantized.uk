@@ -3,7 +3,8 @@
 import Link from '@/components/i18n/LocalLink';
 import { Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { changelog, dataLastUpdated, dataSources } from '@/lib/data/meta';
+import { dataLastUpdated, dataSources } from '@/lib/data/meta';
+import { changelog } from '@/lib/data/changelog';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 /**

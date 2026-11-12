@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { dataLastUpdated } from '@/lib/data/meta';
-import { SITE_URL } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site';
 import { quantConfidence, activeParamsB, isMoE, isSuperseded } from '@/lib/utils/model-meta';
 import { referenceQuant } from '@/lib/utils/quality';
 import { sizingBasis } from '@/lib/utils/quant-source';

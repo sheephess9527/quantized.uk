@@ -7,7 +7,7 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ToolExplainer from '@/components/tools/ToolExplainer';
 import { speedQContent, quantQContent, contextQContent } from '@/lib/data/tool-content';
 import type { GPU } from '@/lib/data/gpus';
-import { GPU_COUNT } from '@/lib/seo';
+import { GPU_COUNT } from '@/lib/site';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatLoss } from '@/lib/utils/quality';
 import { cn } from '@/lib/utils/cn';

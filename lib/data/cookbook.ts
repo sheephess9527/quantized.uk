@@ -60,6 +60,7 @@ interface Section {
 }
 
 import { cookbookRewrites } from '@/lib/data/cookbook-rewrites';
+import { resolveGuideTokensDeep } from '@/lib/utils/guide-tokens';
 
 const baseArticles: Article[] = [
   {
@@ -277,4 +278,5 @@ const merged: Article[] = [...baseArticles, ...extraArticles, ...extraArticles2]
   return rewrite ? { ...a, ...rewrite } : a;
 });
 
-export const articles: Article[] = merged;
+/** Counts in guide prose are tokens (`{{fit:rtx4090}}`, `{{models}}`) filled from the index — `lib/utils/guide-tokens.ts`. */
+export const articles: Article[] = merged.map(resolveGuideTokensDeep);

@@ -11,7 +11,6 @@ import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, 
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
-import { guidesForGpu } from '@/lib/utils/guide-references';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { speedQuote, playablePick, feelHref, type SpeedQuote } from '@/lib/utils/speed-label';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
@@ -23,7 +22,8 @@ import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
  * derived from `gpuDatabase` + the model index at build time, so these pages
  * cost no new data and cannot disagree with the calculator.
  */
-export default function GpuPageContent({ gpu }: { gpu: GPU }) {
+/** `guides` come from the server page (`guidesForGpu`), titles only — importing the guide data here shipped every guide's full text with each GPU page. */
+export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id: string; title: string; titleZh: string }[] }) {
   const { t, lang } = useLanguage();
   const g = t.gpuPage;
 
@@ -38,7 +38,6 @@ export default function GpuPageContent({ gpu }: { gpu: GPU }) {
     .filter((x): x is { sib: typeof x.sib; pick: NonNullable<typeof x.pick> } => !!x.pick)
     .slice(0, 3);
   const stepPick = step ? playablePick([gpu, step.gpu], fits, GPU_PAGE_CONTEXT) : undefined;
-  const guides = guidesForGpu(gpu);
   // The system-RAM entry at this same capacity, if one exists.
   const ramTwin = gpu.isCPU ? undefined : gpuDatabase.find(o => o.isCPU && o.vram === gpu.vram);
   const measured = measuredRowsFor(gpu);

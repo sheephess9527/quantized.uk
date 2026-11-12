@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils/cn';
-import { FEEDBACK_EMAIL } from '@/lib/seo';
+import { FEEDBACK_EMAIL } from '@/lib/site';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 
 const CONTACT = FEEDBACK_EMAIL;

@@ -1,6 +1,6 @@
 import GpuIndexContent from '@/components/gpu/GpuIndexContent';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical } from '@/lib/seo';
+import { canonical } from '@/lib/site';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 
