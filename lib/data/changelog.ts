@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-13',
+    en: 'Clover-35B-A3B-Preview is in the index, sized from bartowski\'s GGUF files. It is DiffuSpace\'s block-diffusion model on the Qwen3.6-35B-A3B backbone, reading about 3B parameters per token, and only 10 of its 40 layers grow a cache with context, so long context is cheap for its size. Its Q4_K_M build needs 23.4 GB at 4K context, tight on a 24 GB card; the Q3_K_M build needs 18.2 GB, comfortable on a 24 GB card and still comfortable at the full 128K window. No quality loss has been published for any build.',
+    zh: 'Clover-35B-A3B-Preview 已加入索引，体积按 bartowski 发布的 GGUF 文件计算。它是 DiffuSpace 基于 Qwen3.6-35B-A3B 骨干的块扩散模型，每个 token 约读取 3B 参数，40 层中只有 10 层的缓存随上下文增长，所以相对体量来说长上下文很省。Q4_K_M 版本在 4K 上下文下需 23.4 GB，24 GB 显卡偏紧；Q3_K_M 版本需 18.2 GB，24 GB 显卡可以舒适运行，跑满 128K 也仍然舒适。各档位都没有公布质量损失。',
+  },
+  {
+    date: '2026-11-13',
     en: 'The Windows launch commands now download llama.cpp b12340. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',
     zh: 'Windows 启动命令改为下载 llama.cpp b12340。Ollama 0.40.16、vLLM 0.33.0 和 ExLlamaV3 1.6.6 仍是当前版本，今天没有新增模型。',
   },

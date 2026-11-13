@@ -425,6 +425,32 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-13 (ii) — +1 model (136): Clover-35B-A3B-Preview
+
+- DiffuSpace **Clover-35B-A3B-Preview** leaves `/pending/` (`awaiting-data` since 11-03). Read 2026-11-13 on
+  huggingface.co: `Diffuspace/Clover-35B-A3B-Preview` `config.json` + `model.safetensors.index.json`, and
+  `bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF` file tree. Every byte count below is the listing's own size.
+  llama.cpp arch `clover_moe` (commit #31306, merged 11-02) was already recorded by the 11-03 patrol; it runs the
+  model left to right with self-speculative decoding, block diffusion only in DiffuSpace's SGLang path.
+- **Params 34.66B** = safetensors `total_size` 69,322,701,696 B ÷ 2; the GGUF header agrees (`total`
+  34,660,610,688). Routed experts 40 × 256 × 3 × 2048 × 512 = 32.21B reconciles with that total (the rest is
+  GDN/attention, 0.13B shared experts and 1.02B untied embeddings) → `arch.moe`; active ≈ 3B from the `-A3B` label.
+- **Shape**: 40 layers, `full_attention_interval` 4 → 10 full-attention layers (16 heads / 2 KV × 256 =
+  20,480 B/token) and 30 Gated DeltaNet layers holding a fixed state → `attention.fullLayers: 10`; 131,072
+  positions. Same backbone as Qwen3.6 35B-A3B.
+- **Levels** (bpw = bytes × 8 / 34.66e9): Q3_K_M 17,344,330,656 B → 4.00, Q4_0 19,942,611,872 → 4.60, Q4_K_M
+  22,318,513,056 → 5.15, Q5_K_M 26,984,676,256 → 6.22, Q8_0 36,914,690,976 → 8.51. bartowski also ships IQ3_M
+  (18,958,220,192) and IQ3_XS (16,318,692,256); neither rung is in `quantBPW`, so **no level was added to the
+  calculator tables** — Q3_K_M carries the 3-bit end instead.
+- **Fit** (`calcVRAM`, f16 cache): Q4_K_M 23.4 GB @4K (tight on 24 GB, green on 32 GB) / 24.0 @32K; Q4_0 20.9 @4K
+  green on 24 GB / 21.5 @32K tight; Q3_K_M 18.2 @4K green on 24 GB and 20.9 @128K still green on 24 GB; Q5_K_M
+  28.3 @4K; Q8_0 38.6 @4K. No perplexity figure published for any level → `pplLossPercent` absent.
+- **`hfRepoMap`** → `bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF`: bartowski names files after the source repo
+  (`Diffuspace_Clover-35B-A3B-Preview-<level>.gguf`), so without the entry the CLI would print
+  `bartowski/Clover-35B-A3B-Preview-GGUF` and `--include` would match nothing.
+- `todayFeed` id 35 (Q3_K_M). Guide prose needs no edit: every count is a `{{models}}` / `{{fit:…}}` token now, so
+  they re-resolve from the index (a 24 GB card's comfortable count rises by one at 4K).
+
 ### 2026-11-10 (iii) — Dual-3090 guide: 8K row exceeded the real budget; KV-precision row; Spark ceiling with KV
 
 - `dual-gpu-70b-llamacpp`: the table rated Llama 3.3 70B Q4_K_M @8K "amber, 47.5 of 48 GB", but llama.cpp's auto-fit keeps 1 GiB free per card, so the pair's budget is ~46 GB (the guide's own text already said so). 4K (46.1) is now "at the budget", 8K (47.5) "over budget — does not fit". Reader arithmetic: 46 − 40.7 = 5.3 GB for KV + buffers; buffer ~4.2 GB (`calcVRAM`) leaves ~4K of cache (320 KiB/token at fp16).
