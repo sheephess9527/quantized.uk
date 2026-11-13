@@ -32,6 +32,7 @@ const ADDED_1030 = '2026-10-30';
 const ADDED_1105 = '2026-11-05';
 const ADDED_1110 = '2026-11-10';
 const ADDED_1112 = '2026-11-12';
+const ADDED_1113 = '2026-11-13';
 
 /**
  * Two models picked for constrained hardware (8 GB cards / CPU, and 16 GB cards / Macs), both with
@@ -1611,6 +1612,57 @@ export const extraModels12: QuantModel[] = [
       { format: 'GGUF', level: 'IQ4_XS', bpw: 4.47, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF IQ4_XS'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-IQ4_XS.gguf', bytes: 43632914304, checkedAt: '2026-11-12' } },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.1, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', file: 'Kolibri-1-Q4_K_M.gguf', bytes: 49759219584, checkedAt: '2026-11-12' } },
       { format: 'GGUF', level: 'Q8_0', bpw: 8.52, vramGB: 0, hfSearchUrl: hf('Kolibri-1 GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/Kolibri-1-GGUF', bytes: 83135393696, parts: 3, checkedAt: '2026-11-12' } },
+    ],
+  },
+  {
+    // DiffuSpace Clover-35B-A3B-Preview (Apache 2.0, preview; config, safetensors total and bartowski's
+    // GGUF listing read 2026-11-13 from huggingface.co). Derived from Qwen3.6-35B-A3B: config.json has
+    // 40 layers with layer_types full_attention on every fourth (i % 4 == 3 → 10 of 40) and Gated
+    // DeltaNet on the other 30, full_attention_interval 4, 16 heads / 2 KV × 256, 256 routed experts
+    // top-8 plus 1 shared, moe_intermediate_size 512, hidden 2048, untied 248320-token embeddings,
+    // 131,072 positions, block_size 32 (block diffusion in the HF/SGLang paths only).
+    // llama.cpp arch `clover_moe` (commit #31306, merged 11-02) runs it left to right with
+    // self-speculative decoding. Params 34.66B: safetensors total 69,322,701,696 B ÷ 2, and the GGUF
+    // header agrees (34,660,610,688). Routed experts 40 × 256 × 3 × 2048 × 512 = 32.21B, which
+    // reconciles with that total (rest: attention, 0.13B shared experts, 1.02B embeddings); active per
+    // token ≈ 3B — the A3B in the name.
+    // Cache: only the 10 full layers grow with context, 2 × 2 KV × 256 × 2 B = 20,480 B/token; the 30
+    // linear layers hold a fixed recurrent state that is not counted. Same shape as Qwen3.6 35B-A3B.
+    // Files: bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF, one file per level, named after the
+    // source repo (`Diffuspace_Clover-35B-A3B-Preview-<level>.gguf`) → `hfRepoMap` is what makes the CLI
+    // print the right repo and file. bpw = bytes × 8 / 34.66e9. No perplexity figure for any level.
+    // bartowski also publishes IQ3_M (18,958,220,192 B) and IQ3_XS (16,318,692,256 B); neither rung is in
+    // quantBPW, so Q3_K_M carries the 3-bit end instead.
+    id: 'clover-35b-a3b-preview',
+    name: 'Clover-35B-A3B-Preview',
+    family: 'DiffuSpace Clover',
+    params: 34.66,
+    paramLabel: '35B-A3B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 131072,
+    arch: {
+      layers: 40, attHeads: 16, kvHeads: 2, headDim: 256,
+      attention: {
+        fullLayers: 10,
+        note: {
+          en: '10 of 40 layers use full attention (full_attention_interval 4); the rest are Gated DeltaNet linear attention with a fixed recurrent state, so the KV cache grows at a quarter of the usual rate — 20 KB per token. Same backbone shape as Qwen3.6 35B-A3B.',
+          zh: '40 层中有 10 层是全注意力（full_attention_interval 为 4），其余是 Gated DeltaNet 线性注意力、只保留固定大小的循环状态，因此 KV 缓存的增长只有常规架构的四分之一 —— 每个 token 20 KB。骨干结构与 Qwen3.6 35B-A3B 相同。',
+        },
+      },
+      moe: { expertParams: 32.21, experts: 256, perToken: 8, moeLayers: 40 },
+    },
+    addedAt: ADDED_1113,
+    description: {
+      en: 'DiffuSpace\'s 35B block-diffusion model, built on the Qwen3.6-35B-A3B backbone under Apache 2.0 with a 128K window: 256 experts, 8 used for each token, so about 3B parameters are read per token. Only 10 of its 40 layers keep a cache that grows with context — the other 30 are Gated DeltaNet linear attention — so each token adds about 20 KB, a quarter of the usual shape. llama.cpp has run it left to right with self-speculative decoding since 2 November; block diffusion itself needs DiffuSpace\'s own SGLang path. Sizes here come from bartowski\'s GGUF files: Q4_K_M is 23.4 GB at 4K, tight on a 24 GB card, while Q3_K_M is 18.2 GB at 4K, comfortable on a 24 GB card and still comfortable at its full window. No quality loss has been published for any level.',
+      zh: 'DiffuSpace 基于 Qwen3.6-35B-A3B 骨干构建的 35B 块扩散模型，Apache 2.0，128K 上下文：256 个专家、每个 token 用 8 个，因此每个 token 只读取约 3B 参数。40 层中只有 10 层的缓存随上下文增长，其余 30 层是 Gated DeltaNet 线性注意力，每个 token 只增加约 20 KB，是常规架构的四分之一。llama.cpp 自 11 月 2 日起支持它，按从左到右方式生成并带自推测解码；块扩散本身要走 DiffuSpace 自己的 SGLang 推理路径。体积取自 bartowski 发布的 GGUF：Q4_K_M 在 4K 下约需 23.4 GB，24 GB 显卡偏紧；Q3_K_M 在 4K 下约需 18.2 GB，24 GB 显卡可以舒适运行，跑满 128K 也仍然舒适。各档位都没有公布质量损失。',
+    },
+    quants: [
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 4.00, vramGB: 0, hfSearchUrl: hf('Clover-35B-A3B-Preview GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF', file: 'Diffuspace_Clover-35B-A3B-Preview-Q3_K_M.gguf', bytes: 17344330656, checkedAt: '2026-11-13' } },
+      { format: 'GGUF', level: 'Q4_0',   bpw: 4.60, vramGB: 0, hfSearchUrl: hf('Clover-35B-A3B-Preview GGUF Q4_0'),   confidence: 'estimated', source: { repo: 'bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF', file: 'Diffuspace_Clover-35B-A3B-Preview-Q4_0.gguf',   bytes: 19942611872, checkedAt: '2026-11-13' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.15, vramGB: 0, hfSearchUrl: hf('Clover-35B-A3B-Preview GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF', file: 'Diffuspace_Clover-35B-A3B-Preview-Q4_K_M.gguf', bytes: 22318513056, checkedAt: '2026-11-13' } },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 6.22, vramGB: 0, hfSearchUrl: hf('Clover-35B-A3B-Preview GGUF Q5_K_M'), confidence: 'estimated', source: { repo: 'bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF', file: 'Diffuspace_Clover-35B-A3B-Preview-Q5_K_M.gguf', bytes: 26984676256, checkedAt: '2026-11-13' } },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 0, hfSearchUrl: hf('Clover-35B-A3B-Preview GGUF Q8_0'),   confidence: 'estimated', source: { repo: 'bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF', file: 'Diffuspace_Clover-35B-A3B-Preview-Q8_0.gguf',   bytes: 36914690976, checkedAt: '2026-11-13' } },
     ],
   },
 ];

@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-11-12):**
+**Live snapshot (2026-11-13):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **135** in index (`models-extra` … `models-extra-12`) |
+| Models | **136** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 606 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 608 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1183,6 +1183,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-13 (ii) | **+1 model (136): Clover-35B-A3B-Preview** — DiffuSpace block-diffusion model on the Qwen3.6-35B-A3B backbone, read from its config + bartowski's GGUF bytes; params 34.66B (safetensors ÷ 2), 10 of 40 layers cache (30 GDN), `arch.moe` 32.21B routed; Q4_K_M 23.4 GB @4K tight on 24 GB, Q3_K_M 18.2 GB @4K green and green at 128K; IQ3_M not indexed (rung not in `quantBPW`); `/pending/` entry removed, `hfRepoMap` added, `todayFeed` id 35 |
 | 2026-11-13 | **Patrol** — llama.cpp b12340 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17-rc0 skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |
 | 2026-11-12 (iii) | **Maintenance pass** — guide counts are tokens filled from the index (`guide-tokens.ts`); model meta descriptions fall back to a derived lead when the first sentence is over budget; first-load JS cut on every page (legal 292 → 157 kB, home 466 → 260, model page 468 → 262, GPU page 452 → 237) by keeping data out of layout-level client components; changelog moved to `lib/data/changelog.ts`; this table's pre-November rows moved to README §9a |
 | 2026-11-12 (ii) | **+2 models (135): Hy-Memory-30B-A3B, Kolibri-1 78B-A3.5B** — owner-pulled configs + tencent / bartowski bytes; Hy routed width is `expert_hidden_dim` 768 (not `moe_intermediate_size`), Q8_0-expsIQ2_XXS / IQ1_M mixed levels added to the calculator tables; Kolibri now has a llama.cpp arch (10 full + 40 SWA-513, 384 experts), IQ1_M 20.9 GB green on 24 GB; both `/pending/` entries removed; guides re-counted 133 → 135 |

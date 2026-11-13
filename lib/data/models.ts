@@ -264,6 +264,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 35, type: 'new', modelId: 'clover-35b-a3b-preview', level: 'Q3_K_M', note: { en: 'Diffusion 35B MoE, 10 of 40 layers cache', zh: '扩散 35B MoE，40 层中仅 10 层缓存' }, quantizer: 'bartowski' },
   { id: 31, type: 'new', modelId: 'xing4-0-29b-a4b', level: 'IQ4_XS', note: { en: '29B MoE, 24 GB card', zh: '29B MoE，24 GB 显卡可跑' }, quantizer: 'bartowski' },
   { id: 33, type: 'new', modelId: 'hy-memory-30b-a3b', level: 'Q4_K_M', note: { en: 'Tencent 30B MoE, 24 GB card', zh: '腾讯 30B MoE，24 GB 显卡可跑' }, quantizer: 'Tencent' },
   { id: 34, type: 'new', modelId: 'kolibri-1-78b-a3-5b', level: 'IQ1_M', note: { en: '78B MoE at 1-bit, 24 GB card', zh: '78B MoE 1 比特，24 GB 显卡可跑' }, quantizer: 'bartowski' },
