@@ -1183,6 +1183,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-13 | **Patrol** — llama.cpp b12340 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17-rc0 skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |
 | 2026-11-12 (iii) | **Maintenance pass** — guide counts are tokens filled from the index (`guide-tokens.ts`); model meta descriptions fall back to a derived lead when the first sentence is over budget; first-load JS cut on every page (legal 292 → 157 kB, home 466 → 260, model page 468 → 262, GPU page 452 → 237) by keeping data out of layout-level client components; changelog moved to `lib/data/changelog.ts`; this table's pre-November rows moved to README §9a |
 | 2026-11-12 (ii) | **+2 models (135): Hy-Memory-30B-A3B, Kolibri-1 78B-A3.5B** — owner-pulled configs + tencent / bartowski bytes; Hy routed width is `expert_hidden_dim` 768 (not `moe_intermediate_size`), Q8_0-expsIQ2_XXS / IQ1_M mixed levels added to the calculator tables; Kolibri now has a llama.cpp arch (10 full + 40 SWA-513, 384 experts), IQ1_M 20.9 GB green on 24 GB; both `/pending/` entries removed; guides re-counted 133 → 135 |
 | 2026-11-12 | **Patrol** — llama.cpp b12292 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17 pre-release skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |

@@ -431,6 +431,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - New row: `--cache-type-k/-v q8_0` (q8_0 = 1.0625 B/value; llama.cpp has no FP8 cache type) → 8K = 46.2 GB by `calcVRAM` with `kvBytesPerValue`, i.e. still at the edge, **not** a clean fit (the suggestion that it fits was not reproduced); 16K = 47.7 GB over. The text says to shrink KV precision rather than the weight quant, and that the result stays borderline. The row omits model + level on purpose: `guideFigureProblems()` reads "model level @ctx N GB" sentences against fp16 `calcVRAM` and would flag the q8_0 figure.
 - DGX Spark guide: 7 tok/s is weights only (273 / 40.66); with a 4K KV read (273 / 41.9) it is ≈ 6.5. `updatedAt` 2026-11-10 on the dual-GPU guide.
 
+### 2026-11-13 — Patrol: llama.cpp b12340; no model
+
+- llama.cpp b12340 (11-13): Windows zips verified on that release, names unchanged → `LLAMACPP_BUILD` b12340. Ollama v0.40.16 still Latest (v0.40.17-rc0 pre-release skipped), vLLM v0.33.0 unchanged; llama.cpp `LLM_ARCH_NAMES` tail identical to 11-12 (no new architecture). No candidate model in the window. The branch also carries the 11-12 maintenance pass (§9 above); fast-forwarded to `main` together.
+
 ### 2026-11-12 (iii) — Maintenance pass: derived guide counts, meta-description fallback, first-load JS, changelog module
 
 - **Guide counts are tokens.** `{{models}}`, `{{fit:<gpuId>}}`, `{{load:<gpuId>}}`, `{{ships:<level|AWQ>}}` in guide strings, resolved once in `lib/data/cookbook.ts` (`lib/utils/guide-tokens.ts`; unknown token or card throws). 28 sentence pairs converted; the resolved `articles` JSON was byte-identical before and after.

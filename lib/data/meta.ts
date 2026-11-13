@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-12';
+export const dataLastUpdated = '2026-11-13';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU
@@ -66,7 +66,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-12',
+  checkedAt: '2026-11-13',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',

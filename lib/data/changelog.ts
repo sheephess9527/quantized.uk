@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-13',
+    en: 'The Windows launch commands now download llama.cpp b12340. Ollama 0.40.16, vLLM 0.33.0 and ExLlamaV3 1.6.6 are still the current releases, and no new model was added today.',
+    zh: 'Windows 启动命令改为下载 llama.cpp b12340。Ollama 0.40.16、vLLM 0.33.0 和 ExLlamaV3 1.6.6 仍是当前版本，今天没有新增模型。',
+  },
+  {
     date: '2026-11-12',
     en: 'Pages now load much less JavaScript. Every page used to download the whole model index, every guide and this changelog whether it needed them or not; the home page, model pages and GPU pages now load a little over half of what they did, and text pages about half. Nothing on the pages changes.',
     zh: '页面现在加载的 JavaScript 少了很多。以前每个页面都会下载完整的模型索引、全部指南和这份更新日志，不管用不用得上；现在首页、模型页和显卡页的加载量只有原来的一半多一点，纯文字页面约为一半。页面内容没有变化。',
