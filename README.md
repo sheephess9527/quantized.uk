@@ -33,8 +33,8 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial) |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
-| **Cookbook** | `/cookbook` | 23 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 43 real GPUs (incl. AMD Radeon) |
+| **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
+| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 78 real GPUs (incl. AMD Radeon) |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
@@ -96,15 +96,15 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   79 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-8 (packs)
+    models.ts               #   136 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-12 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
-    cookbook*.ts            #   cookbook + extras (23 guides; verifiedAt on key articles)
+    cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   43 GPUs (NVIDIA consumer/pro, AMD Radeon/ROCm, Apple Silicon, CPU RAM)
+    gpus.ts                 #   78 GPUs + 4 CPU-only RAM rows (NVIDIA consumer/pro, AMD Radeon/ROCm, Intel Arc, Apple Silicon, DGX Spark)
     meta.ts                 #   dataLastUpdated + sizingChangedAt
     model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
@@ -517,6 +517,8 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - **HF stats refreshed** (`npm run fetch-hf`, from `fetchedAt` 2026-10-17): 116 models fetched, 20 failed (gated or renamed repos) and kept their previous figures by the script's merge. `modelCount` in `hf-stats.json` 89 → 116.
 - **Repo cleanup.** Draft PRs **#11** (Recursive Flint 40B-A2.5B, "118 models") and **#12** (Nemotron 3.5 Bolt E4B, "123 models") closed as stale: both batches are long on `main` (`flint-40b-a2-5b`, `nemotron-3.5-bolt-e4b`, `nemotron-3.5-bolt-74b-a9b`, `nemotron-3.5-super-vl-120b-a12b`). The repo has no open PRs.
 - **17 remote branches deleted** with `git push origin --delete` (`gh` branch deletion 403s here): `claude/comprehensive-review-upgrade-8g70rt`, `claude/quantized-uk-platform-yxfz9v`, `claude/website-traffic-validation-rqaxcq`, `feature/add-clover-35b`, `grokbot/{calc-launch-commands,calc-measured-speed,calc-reverse-reach,calc-share-card,changelog}`, `model-tracker/2026-10-{14,15,16,17,28}`, `seo/ctr-2026-10-26`, `tracker/2026-10-22-flint`, `tracker/2026-10-24-bolt-e4b`. Each was checked before deletion with `compare/main...<branch>` and `git diff --name-status main origin/<branch>`: the `ahead_by` figures are meaningless after a squash merge (the branch's commits never enter `main`'s history), so the test was content — no branch adds a file `main` lacks, except two `claude/*` branches holding `FormatRadar.tsx`, `app/robots.ts` and `public/llms.txt`, all artifacts `main` had already removed or replaced with a generated route. Only `main` remains; nothing was force-pushed.
+
+- Stale counts in §1 and §3 corrected while editing them: models 79 → **136**, packs through `models-extra-12`, guides 23 → **28**, GPUs 43 → **78 + 4 CPU-only rows**. §1's Internationalisation note was wrong too (it described `localStorage` and "no URL-based routing") and now describes the URL-based tree.
 
 ### 2026-11-13 (ii) — +1 model (136): Clover-35B-A3B-Preview
 
