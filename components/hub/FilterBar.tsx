@@ -27,10 +27,11 @@ interface Props {
   count: number;
   total: number;
   profileFilterActive?: boolean;
+  gpuFilterId: string | null;
   legacyCount: number;
 }
 
-export default function FilterBar({ filters, onChange, count, total, profileFilterActive, legacyCount }: Props) {
+export default function FilterBar({ filters, onChange, count, total, profileFilterActive, gpuFilterId, legacyCount }: Props) {
   const { t, lang } = useLanguage();
 
   const set = (key: keyof HubFilters) => (val: string) =>
@@ -96,7 +97,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
 
         This is as far as a static export goes: there is no server to render a
         pre-filtered document per query, so `?q=` is honoured after mount by
-        `useUrlQuery()`. The URL is real, shareable and crawlable either way.
+        `HubQueryObserver`. The URL is real, shareable and crawlable either way.
       */}
       <form role="search" action={localizeHref('/quant-hub/', lang)} method="get" className="relative">
         <label htmlFor="hub-search" className="sr-only">{t.hub.search}</label>
@@ -113,6 +114,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           onChange={e => set('search')(e.target.value)}
           className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
         />
+        {gpuFilterId && <input type="hidden" name="gpu" value={gpuFilterId} />}
         {filters.paramRange && <input type="hidden" name="size" value={filters.paramRange} />}
         {filters.category && <input type="hidden" name="cat" value={filters.category} />}
         {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}

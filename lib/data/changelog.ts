@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-14',
+    en: 'Quant Hub filters now follow same-page navigation and browser back/forward, keeping the search, selected filters and shared URL in sync. Submitting a search with Enter also keeps the selected GPU.',
+    zh: '量化模型库的搜索和筛选现在会跟随页内跳转及浏览器前进、后退同步更新，显示结果与分享链接保持一致。按回车提交搜索也会保留已选显卡。',
+  },
+  {
+    date: '2026-11-14',
     en: 'The Quant Hub can now be filtered by licence and by what a model accepts as input. Each of the 134 models whose licence could be read is sorted into commercial, restricted (a user or revenue ceiling, a registration, or a separate licence to serve it as a product) or non-commercial, from the model\'s own licence — and every card now names the licence it is. The input filter separates text-only models from the 36 that take images. The Windows launch commands now download llama.cpp b12376.',
     zh: '量化模型库现在可以按许可协议和输入类型筛选。134 个能读到许可协议的模型被分为「可商用」「有条件」（设有用户数或营收门槛、需要登记，或以服务形式对外提供需另行取得许可）和「不可商用」，依据是各模型自己的许可协议，每张模型卡上也会标出它用的是哪个协议。输入类型筛选把纯文本模型与 36 个可输入图像的模型分开。Windows 启动命令改为下载 llama.cpp b12376。',
   },

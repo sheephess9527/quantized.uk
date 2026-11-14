@@ -30,7 +30,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | Feature | Route | What it does |
 |---|---|---|
 | **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, quick links to tools (format heat ranking lives on `/formats/`; the radar chart was removed 2026-10-03) |
-| **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial) |
+| **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial). Filters follow same-page navigation and back/forward; Enter search preserves the GPU. |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
@@ -43,7 +43,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 - **Dark-mode first**, glassmorphism surfaces (`.glass`, `.glass-hover`)
 - Violet / cyan accent palette, glow effects (`.glow-purple`, `.glow-cyan`)
 - High information density — data-rich cards over whitespace
-- Framer Motion for hero animations and floating format badges
+- CSS hero animations (visible before JavaScript loads)
 
 ### Internationalisation
 
@@ -59,7 +59,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 - **TypeScript** throughout
 - **Tailwind CSS** for styling, custom animations in `tailwind.config.ts`
 - **Recharts** — bar (speed), line (perplexity); the format radar was removed 2026-10-03 (typed scores, no source)
-- **Framer Motion** — hero + micro-interactions
+- **CSS animations** — hero + micro-interactions
 - **lucide-react** icons, `clsx` + `tailwind-merge` (`cn()` helper)
 
 > **Zero API calls / zero backend.** Every dataset is a static TypeScript constant under `lib/data/`. This is what makes the whole thing deployable as flat files on a CDN.
@@ -457,6 +457,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-14 (iii) — Hub navigation keeps filters and results in sync
+
+- Replaced the Hub's mount-only query snapshot with `HubQueryObserver`, a null-rendering leaf inside its own `Suspense` boundary. Next navigation and back/forward now reapply all parsed filters, including GPU, input, licence and legacy visibility. The model cards, headings and search form remain outside the boundary and still prerender in both languages.
+- The GET search form now carries the selected `gpu` in a hidden input, alongside the other filters, so Enter does not silently drop the hardware constraint. Legacy-only filtered URLs also receive `noindex, follow`.
+- Refreshed the existing Hugging Face statistics snapshot through the normal prebuild task: 116 repositories returned data; 20 unavailable/gated repositories supplied no new stats.
+- The other tools retain `useUrlQuery()` and their existing initialization behaviour; this change is limited to the Hub. Updated stale Framer Motion references in the stack/design overview to match the CSS animation implementation.
+- Validation: `npm run lint` and full `npm run build` passed, including all postbuild localization/SEO/data checks. Chromium against the exported static files passed EN/ZH navigation, back/forward, result updates, clearing, legacy-only noindex and Enter preserving GPU/input/licence. Both Hub HTML files still contain the heading and 116 active model cards before JavaScript.
 
 ### 2026-11-14 (ii) — Quant Hub: licence and input filters, licence on every card
 

@@ -25,7 +25,7 @@ import { useEffect } from 'react';
  * removed again on unmount. There is no path here that can mark the unfiltered
  * `/quant-hub/` noindex — that would deindex the Hub itself.
  */
-const FILTER_PARAMS = ['q', 'size', 'cat', 'hw', 'fmt', 'input', 'lic', 'recency', 'gpu'];
+const FILTER_PARAMS = ['q', 'size', 'cat', 'hw', 'fmt', 'input', 'lic', 'recency', 'gpu', 'legacy'];
 
 export default function QueryNoindex() {
   useEffect(() => {

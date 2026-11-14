@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { Suspense, useState, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link2, FileDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -12,6 +12,7 @@ import QueryNoindex from '@/components/seo/QueryNoindex';
 import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
 import GpuQuickChips from '@/components/hub/GpuQuickChips';
+import HubQueryObserver from '@/components/hub/HubQueryObserver';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import Link from '@/components/i18n/LocalLink';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
@@ -27,7 +28,6 @@ import { buildHubMarkdown } from '@/lib/utils/hub-export';
 import { matchesParamRange, paramBucketCounts, type ParamRange } from '@/lib/utils/param-buckets';
 import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 import { cn } from '@/lib/utils/cn';
-import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { trackEvent } from '@/lib/analytics';
 import DataFreshness from '@/components/home/DataFreshness';
 import { modelMatchesQuery } from '@/lib/utils/model-search';
@@ -43,7 +43,6 @@ const HUB_STATS = (() => {
 export default function QuantHubContent() {
   const { t, lang } = useLanguage();
   const { gpu: profileGpu, hasProfile } = useHardwareProfile();
-  const searchParams = useUrlQuery();
   const router = useRouter();
   const hydrated = useRef(false);
 
@@ -52,13 +51,12 @@ export default function QuantHubContent() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [exportCopied, setExportCopied] = useState(false);
 
-  useEffect(() => {
-    if (!searchParams) return;
-    const parsed = parseHubSearchParams(searchParams);
+  const applyQuery = useCallback((query: string) => {
+    const parsed = parseHubSearchParams(new URLSearchParams(query));
     setGpuFilterId(parsed.gpuFilterId);
     setFilters(parsed.filters);
     hydrated.current = true;
-  }, [searchParams]);
+  }, []);
 
   const syncUrl = useCallback((gpu: string | null, f: HubFilters) => {
     if (!hydrated.current) return;
@@ -190,6 +188,9 @@ export default function QuantHubContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <Suspense fallback={null}>
+        <HubQueryObserver onChange={applyQuery} />
+      </Suspense>
       <QueryNoindex />
       <Breadcrumbs
         items={[
@@ -294,6 +295,7 @@ export default function QuantHubContent() {
           count={filtered.length}
           total={total}
           profileFilterActive={!!gpuFilterModelIds}
+          gpuFilterId={gpuFilterId}
           legacyCount={HUB_STATS.legacyCount}
         />
       </div>

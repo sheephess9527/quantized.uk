@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-14T09:55:49.939Z",
+  "fetchedAt": "2026-11-14T12:32:15.971Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 116,
   "models": {
@@ -66,7 +66,7 @@
     "qwen2.5-coder-7b": {
       "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
       "downloads": 376541,
-      "likes": 655,
+      "likes": 656,
       "lastModified": "2024-11-12T07:59:32.000Z"
     },
     "qwen2.5-coder-32b": {
@@ -336,7 +336,7 @@
     "qwen3-vl-8b": {
       "repo": "Qwen/Qwen3-VL-8B-Instruct",
       "downloads": 7086033,
-      "likes": 1253,
+      "likes": 1254,
       "lastModified": "2025-10-15T16:16:59.000Z"
     },
     "qwen3-vl-30b-a3b": {
@@ -365,7 +365,7 @@
     },
     "qwen3-8-27b": {
       "repo": "bartowski/Qwen3.8-27B-GGUF",
-      "downloads": 311015,
+      "downloads": 313548,
       "likes": 233,
       "lastModified": "2026-10-13T15:05:45.000Z"
     },
@@ -425,14 +425,14 @@
     },
     "muse-glimmer-30b": {
       "repo": "meta-models/Muse-Glimmer-30B",
-      "downloads": 159160,
+      "downloads": 153222,
       "likes": 2148,
       "lastModified": "2026-10-22T02:06:52.000Z"
     },
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
-      "downloads": 3098083,
-      "likes": 7102,
+      "downloads": 3031222,
+      "likes": 7110,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -473,67 +473,67 @@
     },
     "mimo-v2-6-pro": {
       "repo": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
-      "downloads": 24621,
+      "downloads": 24989,
       "likes": 821,
       "lastModified": "2026-10-28T14:16:57.000Z"
     },
     "mellum2-1-12b-a2-5b": {
       "repo": "JetBrains/Mellum2.1-12B-A2.5B-Thinking",
-      "downloads": 16276,
+      "downloads": 18043,
       "likes": 199,
       "lastModified": "2026-10-07T23:08:12.000Z"
     },
     "granite-4.2-8b": {
       "repo": "bartowski/granite-4.2-8b-GGUF",
-      "downloads": 4524,
+      "downloads": 4529,
       "likes": 11,
       "lastModified": "2026-08-25T16:02:02.000Z"
     },
     "muse-spark-open-816b-a42b": {
       "repo": "meta-models/Muse-Spark-Open-816B-A42B",
-      "downloads": 14810,
+      "downloads": 14855,
       "likes": 756,
       "lastModified": "2026-11-10T18:55:51.000Z"
     },
     "nemotron-3.5-bolt-74b-a9b": {
       "repo": "unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF",
-      "downloads": 83815,
+      "downloads": 75544,
       "likes": 99,
       "lastModified": "2026-10-16T13:25:22.000Z"
     },
     "nemotron-3.5-super-vl-120b-a12b": {
       "repo": "ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF",
-      "downloads": 94686,
+      "downloads": 87898,
       "likes": 13,
       "lastModified": "2026-11-12T11:10:55.000Z"
     },
     "granite-4.2-30b": {
       "repo": "ibm-granite/granite-4.2-30b-GGUF",
-      "downloads": 248112,
+      "downloads": 247345,
       "likes": 29,
       "lastModified": "2026-09-02T22:10:21.000Z"
     },
     "granite-4.2-3b": {
       "repo": "ibm-granite/granite-4.2-3b-GGUF",
-      "downloads": 276584,
+      "downloads": 276620,
       "likes": 47,
       "lastModified": "2026-09-02T22:06:48.000Z"
     },
     "nemotron-3.5-lightning-30b-a3b": {
       "repo": "ggml-org/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
-      "downloads": 217462,
+      "downloads": 217411,
       "likes": 37,
       "lastModified": "2026-11-12T09:59:09.000Z"
     },
     "lfm2-5-24b-a2b": {
       "repo": "LiquidAI/LFM2.5-24B-A2B-GGUF",
-      "downloads": 244068,
+      "downloads": 229378,
       "likes": 260,
       "lastModified": "2026-11-06T03:22:24.000Z"
     },
     "beam-1.0-501b-a23b": {
       "repo": "reflection/Beam-1.0-501B-A23B",
-      "downloads": 13995,
+      "downloads": 14320,
       "likes": 321,
       "lastModified": "2026-11-03T21:53:13.000Z"
     },
@@ -551,151 +551,151 @@
     },
     "ling-3.1-flash": {
       "repo": "inclusionAI/Ling-3.1-flash",
-      "downloads": 7967,
+      "downloads": 7477,
       "likes": 170,
       "lastModified": "2026-11-03T10:06:31.000Z"
     },
     "minicpm-v-4-7-35b-a3b": {
       "repo": "openbmb/MiniCPM-V-4.7-35B-A3B",
-      "downloads": 742912,
-      "likes": 1119,
+      "downloads": 759669,
+      "likes": 1120,
       "lastModified": "2026-11-03T06:16:58.000Z"
     },
     "mimo-v2-6-flash": {
       "repo": "ggml-org/MiMo-V2.6-Flash-RL-GGUF",
-      "downloads": 11406,
+      "downloads": 11465,
       "likes": 21,
       "lastModified": "2026-11-01T08:41:49.000Z"
     },
     "lfm3-1-7b": {
       "repo": "LiquidAI/LFM3-1.7B-GGUF",
-      "downloads": 331122,
+      "downloads": 342860,
       "likes": 293,
       "lastModified": "2026-11-03T14:48:57.000Z"
     },
     "lfm3-vl-2b": {
       "repo": "LiquidAI/LFM3-VL-2B-GGUF",
-      "downloads": 124935,
+      "downloads": 127983,
       "likes": 74,
       "lastModified": "2026-11-03T14:49:00.000Z"
     },
     "metis-1-6-praxis": {
       "repo": "Lernex/Metis-1.6-Praxis-GGUF",
-      "downloads": 495,
+      "downloads": 502,
       "likes": 0,
       "lastModified": "2026-11-03T15:50:08.000Z"
     },
     "metis-1-6-logos": {
       "repo": "Lernex/Metis-1.6-Logos-GGUF",
-      "downloads": 1641,
+      "downloads": 1645,
       "likes": 1,
       "lastModified": "2026-11-03T15:50:07.000Z"
     },
     "xing4-0-29b-a4b": {
       "repo": "bartowski/XingChen-AGI_Xing4.0-29B-A4B-GGUF",
-      "downloads": 4308,
+      "downloads": 4581,
       "likes": 1,
       "lastModified": "2026-11-06T18:47:25.000Z"
     },
     "ripple-65b-preview": {
       "repo": "ricursiveAI/Ripple-65B-Preview",
-      "downloads": 8500,
-      "likes": 581,
+      "downloads": 10328,
+      "likes": 585,
       "lastModified": "2026-11-10T09:31:23.000Z"
     },
     "hy-memory-30b-a3b": {
       "repo": "tencent/Hy-Memory-30B-A3B-GGUF",
-      "downloads": 35209,
+      "downloads": 35808,
       "likes": 27,
       "lastModified": "2026-10-22T06:50:50.000Z"
     },
     "kolibri-1-78b-a3-5b": {
       "repo": "bartowski/Kolibri-1-GGUF",
-      "downloads": 9897,
+      "downloads": 10413,
       "likes": 5,
       "lastModified": "2026-10-18T03:32:00.000Z"
     },
     "clover-35b-a3b-preview": {
       "repo": "bartowski/Diffuspace_Clover-35B-A3B-Preview-GGUF",
-      "downloads": 9666,
+      "downloads": 9835,
       "likes": 4,
       "lastModified": "2026-11-03T17:56:36.000Z"
     },
     "mimo-v2-6-distill-qwen-9b": {
       "repo": "bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF",
-      "downloads": 971782,
+      "downloads": 967027,
       "likes": 198,
       "lastModified": "2026-09-21T22:44:19.000Z"
     },
     "k2-horizon-mova-36b-a4b": {
       "repo": "IFM/K2-Horizon-MoVA-36B-A4B-GGUF",
-      "downloads": 15410,
+      "downloads": 15531,
       "likes": 155,
       "lastModified": "2026-10-15T21:52:16.000Z"
     },
     "k2-horizon-32b": {
       "repo": "IFM/K2-Horizon-32B-GGUF",
-      "downloads": 898,
+      "downloads": 846,
       "likes": 16,
       "lastModified": "2026-10-15T21:55:51.000Z"
     },
     "k2-horizon-7b": {
       "repo": "IFM/K2-Horizon-7B-GGUF",
-      "downloads": 20616,
+      "downloads": 20828,
       "likes": 85,
       "lastModified": "2026-10-15T21:56:02.000Z"
     },
     "flint-40b-a2-5b": {
       "repo": "bartowski/RecursiveSI_flint-GGUF",
-      "downloads": 23265,
+      "downloads": 23398,
       "likes": 7,
       "lastModified": "2026-10-22T07:41:08.000Z"
     },
     "laguna-s-2-1-118b-a8b": {
       "repo": "ggml-org/Laguna-S-2.1-GGUF",
-      "downloads": 460,
+      "downloads": 464,
       "likes": 2,
       "lastModified": "2026-10-19T14:14:48.000Z"
     },
     "k2-horizon-0-9b": {
       "repo": "bartowski/K2-Horizon-0.9B-GGUF",
-      "downloads": 1801,
+      "downloads": 1720,
       "likes": 0,
       "lastModified": "2026-10-07T10:41:42.000Z"
     },
     "k2-horizon-3-7b": {
       "repo": "bartowski/K2-Horizon-3.7B-GGUF",
-      "downloads": 4930,
+      "downloads": 4716,
       "likes": 1,
       "lastModified": "2026-10-07T11:07:39.000Z"
     },
     "k2-horizon-375b-a23b": {
       "repo": "bartowski/K2-Horizon-375B-A23B-GGUF",
-      "downloads": 4130,
+      "downloads": 4144,
       "likes": 2,
       "lastModified": "2026-10-08T14:56:57.000Z"
     },
     "nanbeige4.3-33b": {
       "repo": "bartowski/Nanbeige_Nanbeige4.3-33B-GGUF",
-      "downloads": 153485,
+      "downloads": 155759,
       "likes": 33,
       "lastModified": "2026-10-25T15:32:07.000Z"
     },
     "spark-x2.6-4b": {
       "repo": "bartowski/Spark-X2.6-4B-GGUF",
-      "downloads": 27866,
+      "downloads": 34305,
       "likes": 21,
       "lastModified": "2026-10-20T21:29:26.000Z"
     },
     "mistral-large-4": {
       "repo": "ggml-org/Mistral-Large-4-1T-A52B-GGUF",
-      "downloads": 10121,
+      "downloads": 10164,
       "likes": 14,
       "lastModified": "2026-10-29T13:30:42.000Z"
     },
     "nemotron-3.5-bolt-e4b": {
       "repo": "lmstudio-community/NVIDIA-Nemotron-3.5-Bolt-E4B-GGUF",
-      "downloads": 3450,
+      "downloads": 3522,
       "likes": 0,
       "lastModified": "2026-10-20T15:28:51.000Z"
     }

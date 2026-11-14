@@ -116,6 +116,11 @@ flaky network. Never "fix" it by removing the postbuild hook.
   names. Use `useUrlQuery()` (`lib/hooks/useUrlQuery.ts`), which reads the query after mount: the
   page prerenders unfiltered and JS refines it. Check any new query-driven page with
   `grep -c '<h3' out/<path>/index.html`.
+  - **Hub exception for live navigation:** `HubQueryObserver` uses `useSearchParams()` in a
+    null-rendering leaf inside its own `<Suspense fallback={null}>`. The Hub content must stay
+    **outside** that boundary, so it still prerenders while queries update on same-page navigation
+    and back/forward. Do not move the hook into `QuantHubContent` or wrap the whole Hub in that
+    boundary. The GET search form must preserve every active filter, including `gpu`.
 - **Static-export only:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
