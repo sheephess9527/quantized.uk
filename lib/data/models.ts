@@ -12,6 +12,7 @@ import { extraModels9 } from './models-extra-9';
 import { extraModels10 } from './models-extra-10';
 import { extraModels11 } from './models-extra-11';
 import { extraModels12 } from './models-extra-12';
+import { extraModels13 } from './models-extra-13';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -247,7 +248,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -264,6 +265,10 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 36, type: 'new', modelId: 'lfm2-5-1-2b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'LiquidAI' },
+  { id: 37, type: 'new', modelId: 'lfm2-5-8b-a1b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'LiquidAI' },
+  { id: 38, type: 'new', modelId: 'ministral-3-3b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'Mistral' },
+  { id: 39, type: 'new', modelId: 'ministral-3-14b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'Mistral' },
   { id: 35, type: 'new', modelId: 'clover-35b-a3b-preview', level: 'Q3_K_M', note: { en: 'Diffusion 35B MoE, 10 of 40 layers cache', zh: '扩散 35B MoE，40 层中仅 10 层缓存' }, quantizer: 'bartowski' },
   { id: 31, type: 'new', modelId: 'xing4-0-29b-a4b', level: 'IQ4_XS', note: { en: '29B MoE, 24 GB card', zh: '29B MoE，24 GB 显卡可跑' }, quantizer: 'bartowski' },
   { id: 33, type: 'new', modelId: 'hy-memory-30b-a3b', level: 'Q4_K_M', note: { en: 'Tencent 30B MoE, 24 GB card', zh: '腾讯 30B MoE，24 GB 显卡可跑' }, quantizer: 'Tencent' },

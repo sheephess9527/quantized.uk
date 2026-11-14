@@ -315,6 +315,9 @@ function sourceAndPendingProblems(): string[] {
       const src = q.source;
       if (!src) continue;
       const tag = `${m.id} ${q.format} ${q.level}`;
+      if (src.mmprojBytes !== undefined && (!Number.isSafeInteger(src.mmprojBytes) || src.mmprojBytes <= 0)) {
+        out.push(`${tag}: mmprojBytes must be a positive integer byte count`);
+      }
       const implied = sourceBpw(m, src);
       if (Math.abs(implied - q.bpw) > 0.02) out.push(`${tag}: source bytes imply ${implied.toFixed(3)} bpw, row says ${q.bpw}`);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(src.checkedAt) || src.checkedAt > dataLastUpdated) out.push(`${tag}: source checkedAt ${src.checkedAt} is not a date on or before dataLastUpdated`);

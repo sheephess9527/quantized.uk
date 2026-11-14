@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-14',
+    en: 'Four more models are indexed from their official GGUF files: LFM2.5 1.2B Instruct and 8B-A1B, plus Ministral 3 3B and 14B Instruct. The GPU-to-model calculator now excludes models that cannot support your selected context. Choose text or image use: image recommendations include the recorded vision encoder, and that memory follows the pick into the forward calculator.',
+    zh: '按官方 GGUF 文件补录四个模型：LFM2.5 1.2B Instruct、8B-A1B，以及 Ministral 3 3B、14B Instruct。按显卡找模型时，现在会排除不支持所选上下文的模型，并可选择纯文本或读图用途；读图推荐会计入已记录的视觉编码器，点进正向计算也会保留这部分内存。',
+  },
+  {
+    date: '2026-11-14',
     en: 'Quant Hub filters now follow same-page navigation and browser back/forward, keeping the search, selected filters and shared URL in sync. Submitting a search with Enter also keeps the selected GPU.',
     zh: '量化模型库的搜索和筛选现在会跟随页内跳转及浏览器前进、后退同步更新，显示结果与分享链接保持一致。按回车提交搜索也会保留已选显卡。',
   },

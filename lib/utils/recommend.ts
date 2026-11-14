@@ -4,14 +4,18 @@ import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
+import { hasImageInput } from '@/lib/utils/model-facts';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
+export type RecommendationInput = 'text' | 'image';
 
 export interface Recommendation {
   model: QuantModel;
   quant: QuantVariant;
   totalGB: number;
   verdict: 'green' | 'yellow' | 'red';
+  /** Recorded vision encoder in GiB, included in totalGB in image mode. */
+  extraGB?: number;
 }
 
 /**
@@ -35,13 +39,24 @@ export function getRecommendations(
    * (Grok Bot, 2026-10-14).
    */
   bestPerModel = false,
+  input: RecommendationInput = 'text',
 ): Recommendation[] {
+  if (!Number.isFinite(contextLen) || contextLen <= 0 || !Number.isFinite(batchSize) || batchSize <= 0) return [];
   const results: Recommendation[] = [];
   const capacity = capacityGB(gpu, cards);
 
   for (const model of models) {
+    // Memory capacity cannot extend the model's supported attention window.
+    if (contextLen > model.contextLength) continue;
+    if (input === 'image' && !hasImageInput(model.id)) continue;
     for (const quant of model.quants) {
       if (!formatAllowed(gpu, quant.format)) continue;
+      const bytes = quant.source?.mmprojBytes;
+      // Image mode only makes a fit claim when its separate encoder is known.
+      // Missing bytes do not mean a zero-size encoder; non-GGUF layouts need
+      // their own accounting before they can join this list.
+      if (input === 'image' && (quant.format !== 'GGUF' || !bytes || !Number.isFinite(bytes) || bytes <= 0)) continue;
+      const extraGB = input === 'image' ? bytes! / 1024 ** 3 : undefined;
       const { totalGB } = calcVRAM({
         paramsB: model.params,
         layers: model.arch.layers,
@@ -52,11 +67,12 @@ export function getRecommendations(
         contextLength: contextLen,
         batchSize,
         kvBytesPerValue,
+        extraGB,
       });
       const verdict = getVerdict(totalGB, capacity, tightCeiling(gpu));
       if (verdict === 'red') continue;
       if (verdict === 'yellow' && !includeYellow) continue;
-      results.push({ model, quant, totalGB, verdict });
+      results.push({ model, quant, totalGB, verdict, ...(extraGB !== undefined ? { extraGB } : {}) });
     }
   }
 

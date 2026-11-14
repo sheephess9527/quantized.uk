@@ -15,7 +15,8 @@ import ShareCard from '@/components/tools/ShareCard';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
-import { getRecommendations, quantLevelKey, SortBy } from '@/lib/utils/recommend';
+import { getRecommendations, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
+import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
@@ -156,6 +157,7 @@ export default function VRAMCalculator() {
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
   const [bestPerModel, setBestPerModel] = useState(true);
+  const [reverseInput, setReverseInput] = useState<RecommendationInput>('text');
   const [linkCopied, setLinkCopied] = useState(false);
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
   const [modelQuery, setModelQuery] = useState('');
@@ -264,6 +266,7 @@ export default function VRAMCalculator() {
     }
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     if (searchParams.get('all') === '1') setBestPerModel(false);
+    if (searchParams.get('input') === 'image') setReverseInput('image');
     urlInitialized.current = true;
   }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
@@ -321,10 +324,11 @@ export default function VRAMCalculator() {
       params.set('sort', sortBy);
       if (!includeYellow) params.set('yellow', '0');
       if (!bestPerModel) params.set('all', '1');
+      if (reverseInput === 'image') params.set('input', 'image');
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, bestPerModel, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -370,7 +374,7 @@ export default function VRAMCalculator() {
    * for anything reading the markup. The card the reader was browsing becomes
    * the profile card, or the forward verdict would judge a different one.
    */
-  const openForward = (e: MouseEvent, modelId: string, level: string) => {
+  const openForward = (e: MouseEvent, modelId: string, level: string, extraGB?: number) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
     setMode('forward');
@@ -378,6 +382,10 @@ export default function VRAMCalculator() {
     setInvalidModelId(null);
     setSelectedQuant(level);
     setFormatGroup(findFormatGroup(level));
+    setMmprojGB(extraGB === undefined ? '' : String(extraGB));
+    setMmprojFile('');
+    setMmprojState('idle');
+    setExtraIds([]);
     if (selectedGpuId && selectedGpuId !== profileGpuId) updateConfig({ gpuId: selectedGpuId });
     rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
@@ -454,8 +462,8 @@ export default function VRAMCalculator() {
 
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel);
-  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards, bestPerModel]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput);
+  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards, bestPerModel, reverseInput]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -1022,7 +1030,7 @@ export default function VRAMCalculator() {
                 </div>
               )}
 
-              {mode === 'forward' && (selectedModel?.categories.includes('multimodal') || selectedModelId === 'custom') && (() => {
+              {mode === 'forward' && ((selectedModel && hasImageInput(selectedModel.id)) || selectedModelId === 'custom') && (() => {
                 const repo = selectedModel ? hfRepoMap[selectedModel.id] : undefined;
                 const gguf = !!repo && /-GGUF$/i.test(repo);
                 return (
@@ -1319,6 +1327,26 @@ export default function VRAMCalculator() {
                   {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
                 </div>
               )}
+
+              <div>
+                <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.reverseInput}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(['text', 'image'] as const).map(input => (
+                    <button
+                      key={input}
+                      type="button"
+                      aria-pressed={reverseInput === input}
+                      onClick={() => setReverseInput(input)}
+                      className={cn('px-3 py-1.5 rounded-lg text-xs border transition-colors', reverseInput === input
+                        ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
+                        : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                    >
+                      {input === 'text' ? t.calc.reverseText : t.calc.reverseImage}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{reverseInput === 'image' ? t.calc.reverseImageNote : t.calc.reverseTextNote}</p>
+              </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.sortBy}</label>
@@ -2039,12 +2067,16 @@ export default function VRAMCalculator() {
                 <p className="text-sm text-slate-600 text-center py-8">{t.calc.reverseEmpty}</p>
               ) : (
                 <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
-                  {recommendations.map(({ model, quant, totalGB, verdict }) => {
+                  {recommendations.map(({ model, quant, totalGB, verdict, extraGB }) => {
                     const level = quantLevelKey(quant);
                     const cfg = verdictConfig[verdict];
+                    const forwardParams = new URLSearchParams({ mode: 'forward', model: model.id, quant: level, ctx: String(contextLen), batch: String(batchSize), cache: kvType, cards: String(canStack(selectedGpu!) ? cards : 1) });
+                    if (selectedGpuId) forwardParams.set('gpu', selectedGpuId);
+                    if (extraGB !== undefined) forwardParams.set('mmproj', String(extraGB));
                     return (
                       <div
                         key={`${model.id}-${quant.format}-${quant.level}`}
+                        data-model-id={model.id}
                         className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                       >
                         <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', cfg.dot)} />
@@ -2055,10 +2087,10 @@ export default function VRAMCalculator() {
                               {quant.format} {quant.level}
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
-                            <span className="font-mono">{totalGB.toFixed(1)} GB</span>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5 text-xs text-slate-500">
+                            <span className="font-mono">{totalGB.toFixed(1)} {t.calc.gbUnit}</span>
                             {(() => {
-                              const r = contextReach(modelShape(model, batchSize, KV_CACHE_TYPES[kvType]), quant.bpw, selectedGpu!, model.contextLength, canStack(selectedGpu!) ? cards : 1);
+                              const r = contextReach(modelShape(model, batchSize, KV_CACHE_TYPES[kvType], extraGB), quant.bpw, selectedGpu!, model.contextLength, canStack(selectedGpu!) ? cards : 1);
                               const best = r.comfortable || r.tight;
                               return best ? <span>{t.calc.reverseMaxCtx.replace('{ctx}', contextLabel(best))}</span> : null;
                             })()}
@@ -2069,6 +2101,7 @@ export default function VRAMCalculator() {
                             })()}
                             {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
+                          {extraGB !== undefined && <p className="text-[11px] text-slate-600 mt-1">{t.calc.reverseEncoder.replace('{gb}', extraGB.toFixed(2))}</p>}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <Link
@@ -2078,8 +2111,8 @@ export default function VRAMCalculator() {
                             {t.calc.viewModel}
                           </Link>
                           <Link
-                            href={`/tools/vram-calc/?mode=forward&model=${model.id}&quant=${encodeURIComponent(level)}&ctx=${contextLen}&batch=${batchSize}${selectedGpuId ? `&gpu=${selectedGpuId}` : ''}`}
-                            onClick={e => openForward(e, model.id, level)}
+                            href={`/tools/vram-calc/?${forwardParams}`}
+                            onClick={e => openForward(e, model.id, level, extraGB)}
                             className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
                           >
                             {t.hub.detail.calc}

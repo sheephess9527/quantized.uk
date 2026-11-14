@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-11-14T12:32:15.971Z",
+  "fetchedAt": "2026-11-14T13:03:55.067Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 116,
+  "modelCount": 120,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -318,7 +318,7 @@
     "gpt-oss-120b": {
       "repo": "openai/gpt-oss-120b",
       "downloads": 2431461,
-      "likes": 5515,
+      "likes": 5516,
       "lastModified": "2025-08-26T17:25:03.000Z"
     },
     "glm-4.5-air": {
@@ -432,7 +432,7 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 3031222,
-      "likes": 7110,
+      "likes": 7111,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -456,7 +456,7 @@
     "qwen3-5-4b": {
       "repo": "Qwen/Qwen3.5-4B",
       "downloads": 5051721,
-      "likes": 1230,
+      "likes": 1231,
       "lastModified": "2026-03-02T00:52:52.000Z"
     },
     "qwen3-5-2b": {
@@ -698,6 +698,30 @@
       "downloads": 3522,
       "likes": 0,
       "lastModified": "2026-10-20T15:28:51.000Z"
+    },
+    "lfm2-5-1-2b": {
+      "repo": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+      "downloads": 234285,
+      "likes": 243,
+      "lastModified": "2026-09-22T20:41:54.000Z"
+    },
+    "lfm2-5-8b-a1b": {
+      "repo": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+      "downloads": 115313,
+      "likes": 331,
+      "lastModified": "2026-08-24T19:41:51.000Z"
+    },
+    "ministral-3-3b": {
+      "repo": "mistralai/Ministral-3-3B-Instruct-2512-GGUF",
+      "downloads": 59780,
+      "likes": 109,
+      "lastModified": "2026-01-15T11:18:21.000Z"
+    },
+    "ministral-3-14b": {
+      "repo": "mistralai/Ministral-3-14B-Instruct-2512-GGUF",
+      "downloads": 45745,
+      "likes": 95,
+      "lastModified": "2026-01-15T11:17:42.000Z"
     }
   }
 }

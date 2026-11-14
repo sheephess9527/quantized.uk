@@ -79,6 +79,11 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'lfm2-5-1-2b': 'lfm-open-1.0',
+  'lfm2-5-8b-a1b': 'lfm-open-1.0',
+  'ministral-3-3b': 'apache-2.0',
+  'ministral-3-14b': 'apache-2.0',
+
   // No entry, therefore no licence claim: 'internlm2-7b' and 'internlm2-20b' ship no
   // licence file and their card tag is a bare `other` with no name.
   'aya-23-8b': 'cc-by-nc-4.0',
@@ -234,6 +239,8 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'ministral-3-3b',
+  'ministral-3-14b',
   'gemma-3-12b-it',
   'gemma-3-27b-it',
   'gemma-3-4b-it',

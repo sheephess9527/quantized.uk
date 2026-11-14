@@ -34,7 +34,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | Dual-mode: Model→VRAM (forward) or GPU→Models (reverse); shareable URL params; verdict against 78 real GPUs (incl. AMD Radeon) |
+| **VRAM Calculator** | `/tools/vram-calc` | Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 78 real GPUs (incl. AMD Radeon). Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
@@ -96,8 +96,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   136 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-12 (packs)
+    models.ts               #   140 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-13 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -457,6 +457,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-14 (iv) — Four official-GGUF additions; context-safe and image-aware reverse lookup
+
+- **140 models (120 active)**: new `models-extra-13.ts` adds LFM2.5 1.2B Instruct / 8B-A1B and Ministral 3 3B / 14B Instruct, three standard GGUF levels each. Each level records its official repo, filename, exact bytes and check date; no speed or perplexity figures were inferred. All four have HF mappings, feed entries and licence records; both Ministrals have image-input flags (138 licensed models, 38 image-input models). Model-guide links derive from hardware tags as usual.
+- **Sources read 2026-11-14:** the original publishers' `config.json`, HF safetensors metadata, official GGUF tree listings and licence texts. LFM configs: 16/24 layers, 6 growing-cache layers, 8 KV heads × 64; 128,000 tokens. 8B-A1B uses the Hub total **8,467,856,832**, not the card's rounded 8.3B; its card states 1.5B active, and 22 routed layers × 32 experts × 3 × 2048 × 1792 gives 7,751,073,792 routed parameters. llama.cpp `src/models/lfm2.cpp` / `lfm2moe.cpp` confirm shortconv versus attention and two dense-leading MoE layers. Fixed convolution state is not separately sized, consistent with the existing hybrid-model estimate.
+- Ministral text backbones are reconstructed from their configs: **3,429,006,336** / **13,506,078,720** language parameters, 26/40 full-attention layers, 8 KV × 128, 262,144 tokens; the vision encoder is separate. Official Q4_K_M files: **2,147,023,008 / 8,239,593,024 bytes**, projectors **841,501,856 / 879,258,784 bytes**. LFM Q4_K_M files: **730,895,168 / 5,155,564,768 bytes**. All sizes are byte-derived; `bpw` is rounded to two places.
+- `getRecommendations()` now rejects requests longer than each model's supported context and invalid/non-positive contexts or batch sizes. A 32K request previously returned Solar/Stable LM (4K) and Gemma 2 (8K); those no longer appear at 32K. The default remains text inference.
+- New reverse input control: **Text only / Text + images**, persisted as `?input=image`. Image mode requires an image-capable model, GGUF and a positive recorded `source.mmprojBytes`; unknown encoders are excluded rather than counted as zero. The encoder is included in totals, verdicts and maximum-context estimates. Image tokens consume the chosen context budget; image-processing buffers remain an estimate, not a measured promise.
+- Reverse-to-forward links preserve encoder GiB, cache type, context, batch and card count, including new-tab links; normal clicks transfer the same state and clear unrelated mixed-card/encoder state. The forward encoder input now uses the input-capability facts instead of category tags, so Qwen3.8 27B and other image-capable `general` entries expose it too. Recorded encoder byte counts are build-validated as positive safe integers.
+- Regression command: `npx tsx scripts/check-recommendations.ts` — checks every hardware profile at 4K/32K/128K in both input modes, context boundaries, reverse/forward memory parity, a verdict boundary, missing encoder data and new model file reconciliation.
+- Validation passed: full `npm run build` (616 HTML files; 614 unique titles/descriptions, 1,122 structured-data entities), lint/type checks, and **50,618** recommendation fits across 82 profiles. Chromium against `out/` passed EN/ZH input-mode persistence, over-context exclusions, same-page and freshly opened forward-link memory parity, and 390px Chinese layout without overflow. Both Hub pages export 120 active model cards; all eight new model pages and their calculator/guide links work without JavaScript. The four imported config shapes and 12 generated Windows/Linux/Mac launch-command filenames were checked against the official records. No GPU inference benchmark was claimed.
+- `dataLastUpdated` already equals today's ship date (2026-11-14); no artificial future date was introduced. The reader-facing changelog records this batch.
 
 ### 2026-11-14 (iii) — Hub navigation keeps filters and results in sync
 

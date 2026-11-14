@@ -25,13 +25,13 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **136** in index (`models-extra` … `models-extra-12`) |
+| Models | **140** in index (`models-extra` … `models-extra-13`), 120 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (136 models: 134 licensed, 36 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (140 models: 138 licensed, 38 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 608 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 616 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -71,6 +71,14 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
+  beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
+  image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
+  interpret an unknown encoder size as zero. Keep encoder GiB in the total, context reach, forward
+  state transfer and actual href (`mmproj`), with cache/batch/card settings preserved. The UI's
+  `input=image` parameter is calculator-specific; the Hub uses `input=multimodal`. Forward encoder
+  visibility uses `hasImageInput()`, not a category tag. Check with
+  `npx tsx scripts/check-recommendations.ts` after recommendation changes.
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI (the build now gates on that).
   **Reader-facing *data* fields count too** — translating only `translations.ts` left the whole
