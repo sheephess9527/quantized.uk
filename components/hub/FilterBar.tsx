@@ -13,6 +13,10 @@ export interface HubFilters {
   category: string;
   hardware: string;
   format: string;
+  /** `text` | `multimodal` — input the model accepts, not what it is for. */
+  input: string;
+  /** `commercial` | `restricted` | `noncommercial` — see lib/data/model-facts.ts. */
+  licence: string;
   recency: string;
   showLegacy: string;
 }
@@ -34,16 +38,19 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
 
   const hasActiveFilters =
     filters.search || filters.paramRange || filters.category ||
-    filters.hardware || filters.format || filters.recency || filters.showLegacy;
+    filters.hardware || filters.format || filters.input || filters.licence ||
+    filters.recency || filters.showLegacy;
 
   const clearAll = () => onChange({
-    search: '', paramRange: '', category: '', hardware: '', format: '', recency: '', showLegacy: '',
+    search: '', paramRange: '', category: '', hardware: '', format: '',
+    input: '', licence: '', recency: '', showLegacy: '',
   });
 
   const renderGroup = (
     label: string,
     key: keyof HubFilters,
-    options: { value: string; label: string }[]
+    options: { value: string; label: string }[],
+    hint?: string,
   ) => (
     <div>
       <p className="text-xs text-slate-600 mb-1.5">{label}</p>
@@ -67,6 +74,9 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           </button>
         ))}
       </div>
+      {/* The licence classes are a judgement, so the rule that made it is printed here
+          rather than left for the reader to infer from three chips. */}
+      {hint && <p className="text-[11px] leading-snug text-slate-600 mt-1">{hint}</p>}
     </div>
   );
 
@@ -107,11 +117,13 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         {filters.category && <input type="hidden" name="cat" value={filters.category} />}
         {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}
         {filters.format && <input type="hidden" name="fmt" value={filters.format} />}
+        {filters.input && <input type="hidden" name="input" value={filters.input} />}
+        {filters.licence && <input type="hidden" name="lic" value={filters.licence} />}
         {filters.recency && <input type="hidden" name="recency" value={filters.recency} />}
         {filters.showLegacy && <input type="hidden" name="legacy" value={filters.showLegacy} />}
       </form>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {renderGroup(t.hub.filters.params, 'paramRange', [
           { value: '≤3B',  label: '≤3B' },
           { value: '7B',   label: '7B'  },
@@ -138,6 +150,25 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           t.hub.filters.format,
           'format',
           SHIPPED_FORMATS.map(f => ({ value: f, label: f })),
+        )}
+
+        {/* Input and licence answer two questions the task/family filters cannot: what
+            goes in, and what the terms allow. Both are recorded per model in
+            lib/data/model-facts.ts. */}
+        {renderGroup(t.hub.filters.input, 'input', [
+          { value: 'text',       label: t.hub.input.text       },
+          { value: 'multimodal', label: t.hub.input.multimodal },
+        ])}
+
+        {renderGroup(
+          t.hub.filters.licence,
+          'licence',
+          [
+            { value: 'commercial',    label: t.hub.licenceClasses.commercial    },
+            { value: 'restricted',    label: t.hub.licenceClasses.restricted    },
+            { value: 'noncommercial', label: t.hub.licenceClasses.noncommercial },
+          ],
+          t.hub.licenceHint,
         )}
 
         {renderGroup(t.hub.filters.recency, 'recency', [

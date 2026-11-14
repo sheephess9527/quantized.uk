@@ -30,7 +30,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | Feature | Route | What it does |
 |---|---|---|
 | **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, quick links to tools (format heat ranking lives on `/formats/`; the radar chart was removed 2026-10-03) |
-| **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats |
+| **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial) |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 23 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
@@ -47,9 +47,9 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 
 ### Internationalisation
 
-- **English default UI with one-click toggle to Chinese**
-- Pure client-side i18n: React Context + `localStorage`, **no URL-based routing** (keeps static export simple)
-- The full bilingual dictionary lives in `lib/i18n/translations.ts`
+- **English at `/`, Chinese at `/zh/**`** — the URL carries the language, and the language switcher is a real `<a href>` to the mirror path (SEO: it is the only crawlable inbound link to the Chinese tree).
+- `lib/i18n/context.tsx` reads `usePathname()` at prerender, so Chinese text is baked into the static HTML and stays indexable; there is no `localStorage` language any more.
+- The full bilingual dictionary lives in `lib/i18n/translations.ts` and is imported once, by the root layout's provider — so **both** languages ship in every page's JavaScript. Splitting them per language is not possible without giving each tree its own layout (see §9, 2026-11-14 (ii)).
 
 ---
 
@@ -89,7 +89,7 @@ app/                        # Next.js App Router pages
 components/
   layout/                   # Navbar (lang + GPU profile + Tools), Footer
   home/                     # Hero, HomeMatch, PopularStarts, MeasuredCases, WeeklyUpdates, …
-  hub/                      # ModelCard, ModelDetail, ModelGuides, FilterBar (incl. recency)
+  hub/                      # ModelCard, ModelDetail, ModelGuides, FilterBar (incl. recency, input, licence)
   cookbook/                 # ArticleView, GuideNextSteps (guide → hub/calculator)
   tools/                    # VRAMCalculator, CLIGenerator, FormatWizard, ModelCompare
 
@@ -105,7 +105,8 @@ lib/
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
     gpus.ts                 #   43 GPUs (NVIDIA consumer/pro, AMD Radeon/ROCm, Apple Silicon, CPU RAM)
-    meta.ts                 #   dataLastUpdated + changelog
+    meta.ts                 #   dataLastUpdated + sizingChangedAt
+    model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
   i18n/
     translations.ts         #   EN/ZH dictionary
@@ -116,6 +117,7 @@ lib/
     model-meta.ts           #   isRecentModel, quantConfidence, superseded helpers
     model-guides.ts         #   guideLinksForModel() — model → cookbook links (hub direction)
     hub-url.ts              #   shareable Hub filter URLs
+    model-facts.ts          #   licenceOf / licenceClassOf / hasImageInput + the data gate
     cli.ts                  #   generateCLI() → llama.cpp / Ollama / vLLM / ExLlama
     cn.ts                   #   clsx + tailwind-merge helper
     question-pages.ts       #   rows for /tools/speed|which-quant|context-length (levelTable,
@@ -257,6 +259,35 @@ should branch on an explicit `lang` prop (see `app/quant-hub/[modelId]/page.tsx`
 Structured data has the same trap: JSON-LD is emitted from the shared component, so it must be
 localized too, or a Chinese page advertises a URL its own canonical tag disowns.
 
+### Hub filters: input and licence (`lib/data/model-facts.ts`)
+
+Two of the Hub's filters do not come from `QuantModel` fields, because neither fact belongs to a
+model row that is otherwise about sizing:
+
+- **Input** (`?input=text|multimodal`) — `IMAGE_INPUT_MODEL_IDS`, 36 models that accept images.
+  It is **not** `categories.includes('multimodal')`: three Qwen models (3.5-0.8B, 3.8-27B,
+  3.8-Flash-Next) declare `image-text-to-text` on their own cards and were never tagged
+  `multimodal`, while `categories` is the *task* taxonomy and also decides `homePicks`' multimodal
+  slot — so it is left as it is and the capability flag is separate. A card's `pipeline_tag` alone
+  is not evidence either: NVIDIA's Nemotron 3.5 Bolt 74B repo carries `image-text-to-text` but the
+  model is text-only (its VL sibling is the separate Super VL 120B entry).
+- **Licence** (`?lic=commercial|restricted|noncommercial`) — `MODEL_LICENCE` → `LICENCES`. Every
+  value was read from the model's own Hugging Face card (`/api/models/<repo>`: `cardData.license`
+  / `license_name`, plus the licence file where the tag is just `other`); a community GGUF copy's
+  card is not the source when the publisher's own repo is reachable. A model whose licence could
+  not be read gets **no** entry (`internlm2-7b`, `internlm2-20b`) and appears only under `all`.
+
+The class asks one question of the licence text: *can anyone use the weights commercially without
+first meeting a threshold, registering, or asking the publisher for a separate permission?* Yes →
+`commercial`; only after a gate → `restricted`; not granted → `noncommercial`. Attribution and
+acceptable-use clauses do not change the class. The same sentence is printed under the chips in
+both languages, and each model card shows the licence's short name with its full name and URL in
+the tooltip — a filter over a value the reader cannot see is not usable.
+
+`factTableProblems()` (inside `dataProblems()`) fails the build when either table names a model id
+the index does not ship, or a licence id that is not in `LICENCES` — a typo would otherwise shrink a
+filter silently.
+
 ### TypeScript / bundler gotcha
 
 `[...new Set(...)]` fails to down-level with the bundler module target. Use `Array.from(new Set(...))` instead (see `ModelCard.tsx`).
@@ -347,7 +378,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 - **Remote:** `origin` → `sheephess9527/quantized.uk`
 - **Production branch:** `main` — Cloudflare Pages builds & deploys from here on every push.
-- **Agent dev branch:** `claude/quantized-uk-platform-yxfz9v` (used for Claude-driven work).
+- **Agent branches:** one fresh branch per isolated piece of work (e.g. `feature/hub-filters-runtime-cleanup`); delete it after the PR is merged. As of 2026-11-14 the repo carries `main` only — 17 merged/stale branches were removed then (§9).
 - Pushing to `main` triggers a live deploy. Always `git push -u origin <branch>`; retry with backoff on transient network errors. Don't open a PR unless asked.
 - If a push is rejected (`fetch first`), another session pushed in parallel — `git pull --rebase origin main`, resolve, then push.
 
@@ -361,6 +392,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add/track a quant format | `lib/data/formats.ts` |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
+| Record a model's licence or image input | `lib/data/model-facts.ts` (the Hub's input + licence filters read it) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
 | Tweak generated commands | `lib/utils/cli.ts` |
@@ -420,10 +452,71 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - **Static-export limits:** no request-time data fetching, no `next/image` optimization (`images.unoptimized: true`). Everything is build-time only. `generateStaticParams()` is how dynamic routes (`[modelId]`, `[slug]`) become static pages. Static route handlers are OK only with `export const dynamic = 'force-static'` (e.g. `/feed.xml`).
 - **`trailingSlash: true`** — internal links resolve to `/path/`. Keep links consistent.
 - **HF repo map:** single source `lib/data/hf-repos.mjs` (build script + `hf-repos.ts` re-export). Edit the `.mjs` only.
+- **Licences are claims about someone else's terms.** `lib/data/model-facts.ts` records them with the repo each was read from; never fill one from memory, and never re-derive a class in a component — call `licenceClassOf()` / `hasImageInput()`.
 
 ---
 
 ## 9. Changelog
+
+### 2026-11-14 (ii) — Quant Hub: licence and input filters, licence on every card
+
+- **Two new Hub filters.** *Input* (`text` / `image input`) and *Licence* (`commercial` / `restricted` / `non-commercial`),
+  as `?input=` and `?lic=`, wired through `useUrlQuery()` + `lib/utils/hub-url.ts` (never `useSearchParams()`); the
+  search form's hidden inputs carry both, `QueryNoindex`'s param list gained them (a filtered URL is `noindex, follow`),
+  the Markdown export names them, and "Clear filters" resets them. Filter grid goes `xl:grid-cols-5` → `4` for the
+  seven groups; every group is a wrapping flex row, so the phone layout is unchanged.
+- **There was no licence data in this repo at all** — the task assumed a `license` field on `QuantModel`, and no model
+  carried one. New `lib/data/model-facts.ts` is now the single place either fact is written down:
+  `LICENCES` (26 licences with `short` / `name {en,zh}` / `class` / `url`), `MODEL_LICENCE` (134 of 136 models),
+  `IMAGE_INPUT_MODEL_IDS` (36). `lib/utils/model-facts.ts` is the only reader (`licenceOf`, `licenceClassOf`,
+  `hasImageInput`).
+- **Every licence was read from the model's own card on 2026-11-14**, via `https://huggingface.co/api/models/<repo>`
+  (`cardData.license` / `license_name`, plus the licence file where the tag was just `other`). Where `hfRepoMap` points
+  at a community GGUF conversion, the publisher's own repo of the same weights was read instead (Qwen3-8B from
+  `Qwen/Qwen3-8B`, not bartowski's copy). Two models have **no** entry rather than a guess: `internlm2-7b` and
+  `internlm2-20b` ship no licence file and their card tag is a bare `other` with no name — they appear under `all` only.
+- **Classification rule (printed in the UI under the chips):** *does the licence let anyone use the weights
+  commercially without first meeting a threshold, registering, or asking the publisher for a separate permission?*
+  Yes → `commercial` (Apache 2.0, MIT, OpenMDW 1.1, OpenRAIL-M, Gemma, Falcon, Jamba, NVIDIA Open Model, DeepSeek
+  Model, Mistral Ecosystem Open-Weight); only after a gate → `restricted` (Llama 3.x/4 700M MAU, Qwen licence / Qwen
+  Community 1.0 100M MAU and the separate licence for serving it as a product, GLM-4 registration, LFM Open revenue
+  threshold, DBRX user count); not granted → `noncommercial` (Qwen Research, Mistral Research, MNPL, CC BY-NC 4.0,
+  Stability non-commercial). Attribution and acceptable-use clauses do not move a licence's class. Split across the
+  index: **108 commercial / 19 restricted / 7 non-commercial / 2 unrecorded** (visible by default: 96 / 17 / 3).
+- Reads that were not the obvious guess, each now recorded in the data file: **Gemma 4 is `apache-2.0`**, not the Gemma
+  terms its predecessors carry; **Mistral Large 4** ships under a new "Mistral Ecosystem Open-Weight License" (MIT-based,
+  unrestricted sale included); **Mistral Large 3**'s card front matter says `apache-2.0` although the API's parse of it
+  returns `other` with no name; **Qwen2.5-3B** is under the *Qwen Research* licence (non-commercial) while its 0.5B /
+  1.5B / 7B / 14B / 32B siblings are Apache-2.0; **Codestral 22B** is MNPL, **Mistral Small 24B (2409)** is the Mistral
+  Research Licence, **StableLM 2 12B** is Stability's non-commercial research licence; **DBRX** and **WizardLM-2 7B**
+  repos now answer 401 to an anonymous read — DBRX is recorded as the Databricks Open Model Licence (restricted) and
+  WizardLM-2 as Apache-2.0 per its release; both carry a `// src:` comment saying so.
+- **Input modality is its own flag, not `categories`.** 36 models take images: the 33 already tagged `multimodal` plus
+  **Qwen3.5-0.8B, Qwen3.8-27B and Qwen3.8-Flash-Next**, whose cards declare `pipeline_tag: image-text-to-text` and
+  describe vision/video input — `categories` had missed them. `categories` was deliberately left alone (it is the task
+  taxonomy and feeds `homePicks`' `multimodal` slot); the divergence is documented in the data file. The reverse case
+  was rejected: NVIDIA's Nemotron 3.5 Bolt 74B repo declares `image-text-to-text`, but its card is text-only and its VL
+  sibling is the separate Super VL 120B entry, so a pipeline tag alone is not treated as evidence.
+- **Gate:** `factTableProblems()` (called from `dataProblems()`) fails the build on a licence or image flag for a model
+  id this index does not ship, or a licence id missing from `LICENCES`; proved by perturbation (a bogus id in
+  `MODEL_LICENCE` fails `next build` at `assertDataConsistent()`).
+- **The licence is on the card**, not only in the filter: `ModelCard` shows the short name as a badge whose tooltip
+  carries the full licence name in the reader's language and the licence's own URL. Without that, a licence filter
+  filters on a value the reader cannot see.
+- **i18n dictionary split: evaluated, not applied.** Splitting `en` / `zh` into separate modules cannot reduce what a
+  reader downloads here: `app/layout.tsx` is a single root layout serving both trees (`LanguageProvider` reads
+  `usePathname()` at prerender), and there is no `app/zh/layout.tsx`, so `translations.ts` is imported once from the
+  shared layout chunk and both dictionaries ride in it. Making each tree ship only its own needs every English page
+  moved into a route group with its own layout — ~40 page files plus their `zh` mirrors, for ~30 kB of the ~60 kB of
+  shipped UI strings measured on 11-12. That is a structural change with real static-export risk, so it is skipped
+  rather than half-done; the alternative worth doing instead is shrinking the dictionary itself.
+
+### 2026-11-14 — Patrol + repo ops: llama.cpp b12376, HF stats refresh, stale PRs closed, 17 branches deleted
+
+- **llama.cpp b12376** (11-14): the release's asset list was read before the bump — `llama-b12376-bin-win-{cpu,cuda-12.4,cuda-13.5,vulkan}-x64.zip` and the two `cudart-` zips are all present with the names `llamaCppWindows()` writes, so only `LLAMACPP_BUILD` changed. Ollama **v0.40.16** is still Latest (v0.40.17-rc0 is a pre-release, skipped), vLLM **v0.33.0**, ExLlamaV3 **1.6.7** (was 1.6.6) — `runtimeVersions.checkedAt` → 2026-11-14 and the note's ExLlamaV3 figure updated. `dataLastUpdated` → 2026-11-14.
+- **HF stats refreshed** (`npm run fetch-hf`, from `fetchedAt` 2026-10-17): 116 models fetched, 20 failed (gated or renamed repos) and kept their previous figures by the script's merge. `modelCount` in `hf-stats.json` 89 → 116.
+- **Repo cleanup.** Draft PRs **#11** (Recursive Flint 40B-A2.5B, "118 models") and **#12** (Nemotron 3.5 Bolt E4B, "123 models") closed as stale: both batches are long on `main` (`flint-40b-a2-5b`, `nemotron-3.5-bolt-e4b`, `nemotron-3.5-bolt-74b-a9b`, `nemotron-3.5-super-vl-120b-a12b`). The repo has no open PRs.
+- **17 remote branches deleted** with `git push origin --delete` (`gh` branch deletion 403s here): `claude/comprehensive-review-upgrade-8g70rt`, `claude/quantized-uk-platform-yxfz9v`, `claude/website-traffic-validation-rqaxcq`, `feature/add-clover-35b`, `grokbot/{calc-launch-commands,calc-measured-speed,calc-reverse-reach,calc-share-card,changelog}`, `model-tracker/2026-10-{14,15,16,17,28}`, `seo/ctr-2026-10-26`, `tracker/2026-10-22-flint`, `tracker/2026-10-24-bolt-e4b`. Each was checked before deletion with `compare/main...<branch>` and `git diff --name-status main origin/<branch>`: the `ahead_by` figures are meaningless after a squash merge (the branch's commits never enter `main`'s history), so the test was content — no branch adds a file `main` lacks, except two `claude/*` branches holding `FormatRadar.tsx`, `app/robots.ts` and `public/llms.txt`, all artifacts `main` had already removed or replaced with a generated route. Only `main` remains; nothing was force-pushed.
 
 ### 2026-11-13 (ii) — +1 model (136): Clover-35B-A3B-Preview
 

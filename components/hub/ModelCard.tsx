@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils/cn';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
+import { licenceOf } from '@/lib/utils/model-facts';
 
 const formatColors: Record<string, string> = {
   GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
@@ -47,6 +48,10 @@ export default function ModelCard({ model, lang }: Props) {
    */
   const refQuant = referenceQuant(model.quants);
   const bestQuant = refQuant;
+  // Shown on the card, not only reachable through the filter: a licence is the one
+  // fact a reader can act on before downloading, and the Hub's licence filter is
+  // unreadable if the value it filters on is invisible.
+  const licence = licenceOf(model.id);
 
   return (
     <Link
@@ -67,6 +72,14 @@ export default function ModelCard({ model, lang }: Props) {
           )}
           {isSuperseded(model) && (
             <span className="badge text-[10px] bg-amber-500/10 text-amber-400/90 border-amber-500/20">{t.hub.model.superseded}</span>
+          )}
+          {licence && (
+            <span
+              title={`${licence.name[lang]} — ${licence.url}`}
+              className="badge text-[10px] bg-white/[0.04] text-slate-400 border-white/[0.08]"
+            >
+              {licence.short}
+            </span>
           )}
         </div>
         <p className="text-xs text-slate-500 mb-2">{model.family}</p>
