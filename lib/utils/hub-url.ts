@@ -15,6 +15,8 @@ export const EMPTY_HUB_FILTERS: HubFilters = {
   category: '',
   hardware: '',
   format: '',
+  input: '',
+  licence: '',
   recency: '',
   showLegacy: '',
 };
@@ -23,6 +25,8 @@ const PARAM_RANGES = new Set(['≤3B', '7B', '14B', '32B', '70B+']);
 const CATEGORIES = new Set(['general', 'code', 'multimodal', 'instruct']);
 const HARDWARE = new Set(['consumer-gpu', 'mac', 'cpu-vps', 'pro-gpu']);
 const FORMATS = new Set(SHIPPED_FORMATS);
+const INPUTS = new Set(['text', 'multimodal']);
+const LICENCE_CLASSES = new Set(['commercial', 'restricted', 'noncommercial']);
 
 export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
   const gpu = params.get('gpu');
@@ -35,6 +39,8 @@ export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
 
   const recency = params.get('recency') ?? '';
   const legacy = params.get('legacy') ?? '';
+  const input = params.get('input') ?? '';
+  const licence = params.get('lic') ?? '';
 
   return {
     gpuFilterId,
@@ -44,6 +50,8 @@ export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
       category: CATEGORIES.has(cat) ? cat : '',
       hardware: HARDWARE.has(hw) ? hw : '',
       format: FORMATS.has(fmt) ? fmt : '',
+      input: INPUTS.has(input) ? input : '',
+      licence: LICENCE_CLASSES.has(licence) ? licence : '',
       recency: recency === 'recent' ? 'recent' : '',
       showLegacy: legacy === 'show' ? 'show' : '',
     },
@@ -61,6 +69,8 @@ export function buildHubSearchParams(
   if (filters.category) p.set('cat', filters.category);
   if (filters.hardware) p.set('hw', filters.hardware);
   if (filters.format) p.set('fmt', filters.format);
+  if (filters.input) p.set('input', filters.input);
+  if (filters.licence) p.set('lic', filters.licence);
   if (filters.recency) p.set('recency', filters.recency);
   if (filters.showLegacy) p.set('legacy', filters.showLegacy);
   return p;
@@ -88,6 +98,8 @@ export function hasActiveHubFilters(
     filters.category ||
     filters.hardware ||
     filters.format ||
+    filters.input ||
+    filters.licence ||
     filters.recency ||
     filters.showLegacy
   );

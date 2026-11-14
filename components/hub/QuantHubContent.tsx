@@ -31,6 +31,7 @@ import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { trackEvent } from '@/lib/analytics';
 import DataFreshness from '@/components/home/DataFreshness';
 import { modelMatchesQuery } from '@/lib/utils/model-search';
+import { hasImageInput, licenceClassOf } from '@/lib/utils/model-facts';
 
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
@@ -105,6 +106,12 @@ export default function QuantHubContent() {
       if (filters.category && !m.categories.includes(filters.category)) return false;
       if (filters.hardware && !m.hardwareTags.includes(filters.hardware)) return false;
       if (filters.format  && !m.quants.some(q => q.format === filters.format)) return false;
+      // Input kind and licence come from lib/data/model-facts.ts, not from
+      // `categories` — a model tagged `general` can still take images (three Qwen
+      // models did) and `categories` says nothing about terms at all.
+      if (filters.input === 'text' && hasImageInput(m.id)) return false;
+      if (filters.input === 'multimodal' && !hasImageInput(m.id)) return false;
+      if (filters.licence && licenceClassOf(m.id) !== filters.licence) return false;
       return true;
     });
   }, [filters, gpuFilterModelIds]);
@@ -133,6 +140,8 @@ export default function QuantHubContent() {
       category: t.hub.filters.category,
       hardware: t.hub.filters.hardware,
       format: t.hub.filters.format,
+      input: t.hub.filters.input,
+      licence: t.hub.filters.licence,
       colModel: t.hub.export.colModel,
       colParams: t.hub.export.colParams,
       colMinVram: t.hub.export.colMinVram,
@@ -140,6 +149,8 @@ export default function QuantHubContent() {
       colLink: t.hub.export.colLink,
       categoryLabels: t.hub.categories,
       hardwareLabels: t.hub.hardware,
+      inputLabels: t.hub.input,
+      licenceLabels: t.hub.licenceClasses,
     });
     try {
       await navigator.clipboard.writeText(md);

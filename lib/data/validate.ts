@@ -13,6 +13,7 @@ import { sourceBpw } from '@/lib/utils/quant-source';
 import { pendingModels } from '@/lib/data/pending';
 import { runtimeErrors } from '@/lib/data/errors';
 import { calibrationRows, CEILING_TOLERANCE } from '@/lib/utils/bench-calibration';
+import { factTableProblems } from '@/lib/utils/model-facts';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -50,6 +51,8 @@ export function dataProblems(): string[] {
   }
   // A sitemap date in the future of the data ship would be announced to IndexNow as a change tomorrow.
   if (sizingChangedAt > dataLastUpdated) out.push(`sizingChangedAt ${sizingChangedAt} is later than dataLastUpdated ${dataLastUpdated}`);
+  // Licence and image-input rows are keyed by model id; a typo would quietly shrink a filter.
+  out.push(...factTableProblems(models.map(m => m.id)));
   dupes(gpuDatabase.map(g => g.id)).forEach(id => out.push(`duplicate GPU id: ${id}`));
   dupes(gpuDatabase.map(gpuSlug)).forEach(s => out.push(`duplicate GPU slug: ${s}`));
   gpuDatabase.forEach(g => {

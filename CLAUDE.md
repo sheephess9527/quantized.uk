@@ -21,13 +21,13 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-11-13):**
+**Live snapshot (2026-11-14):**
 
 | Surface | Notes |
 |--------|--------|
 | Models | **136** in index (`models-extra` … `models-extra-12`) |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **recency** (`?recency=recent`) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (136 models: 134 licensed, 36 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
@@ -649,7 +649,36 @@ hardware tags, formats and levels, strips punctuation, and keeps a small alias m
 only when the URL carries a param the page reads — it must never be able to fire on the bare
 `/quant-hub/`, which would deindex the Hub. robots.txt stays open: a disallowed URL is never
 fetched, so its links are never followed, and `Disallow: /*?*` would also catch the calculator's
-share links.
+share links. **Adding a Hub filter means adding its param to `FILTER_PARAMS` there** (`input` and
+`lic` joined on 2026-11-14), or filtered URLs start being indexed.
+
+**A licence is a claim about someone else's terms, and it lives in one table.** `lib/data/model-facts.ts`
+(2026-11-14) is the only place: `LICENCES` (id → short label, `{en,zh}` name, class, licence URL) and
+`MODEL_LICENCE` (model id → id), read from each model's own Hugging Face card (`/api/models/<repo>`:
+`cardData.license` / `license_name`, then the licence file when the tag is a bare `other`), never from
+memory, never from a GGUF mirror's card when the publisher's repo is reachable. The class asks one
+question — *commercial use without first meeting a threshold, registering, or obtaining a separate
+permission?* — yes `commercial`, only-after-a-gate `restricted` (Llama 700M MAU, Qwen 100M MAU /
+hosting licence, GLM-4 registration, LFM revenue cap, DBRX user count), not granted `noncommercial`
+(Qwen Research, MRL, MNPL, CC BY-NC, Stability non-commercial). A model whose licence could not be
+read has **no** entry and shows only under `all` — two do (`internlm2-7b`, `internlm2-20b`). Read it
+through `licenceOf()` / `licenceClassOf()` (`lib/utils/model-facts.ts`), never re-derive a class in a
+component, and `factTableProblems()` (in `dataProblems()`) fails the build on an unknown id.
+
+**`categories` is the task taxonomy; image input is a separate flag.** `IMAGE_INPUT_MODEL_IDS`
+(`model-facts.ts`, via `hasImageInput()`) is what `?input=multimodal` and the cards read — 36 models.
+It is deliberately not `categories.includes('multimodal')`: Qwen3.5-0.8B, Qwen3.8-27B and
+Qwen3.8-Flash-Next take images per their own cards but were never tagged `multimodal`, and `categories`
+also feeds `homePicks`' multimodal slot, so it is left alone. A repo's `pipeline_tag` alone is not
+evidence either — Nemotron 3.5 Bolt 74B's repo says `image-text-to-text` while the model is text-only.
+
+**Both language dictionaries ship in every page's JavaScript, and that is structural, not an oversight.**
+`app/layout.tsx` is one root layout serving both trees (`LanguageProvider` reads `usePathname()` at
+prerender), and there is no `app/zh/layout.tsx`, so `lib/i18n/translations.ts` is imported once from the
+shared layout chunk. Splitting `en` / `zh` into separate modules saves nothing on its own; it needs every
+English page moved into a route group with its own layout (~40 page files + their `zh` mirrors) to buy
+back roughly half of the ~60 kB of shipped UI strings. Evaluated and skipped on 2026-11-14 — do not
+start it as a bundle-size fix without that restructuring.
 
 **`/best/` recommends; `/gpu/` lists. They must never disagree.** The tier picks come from
 `homePicks` — the same function behind the homepage hero — so there is one ranking implementation
@@ -1111,6 +1140,8 @@ lib/data/meta.ts            # dataLastUpdated, runtimeVersions, methodology
 lib/data/changelog.ts       # reader-facing changelog (never re-export it from meta.ts)
 lib/site.ts                 # data-free constants for client components (email, GPU_COUNT, canonical)
 lib/data/hf-repos.mjs       # HF stats map (ONLY place to edit repos)
+lib/data/model-facts.ts     # per-model licence + image-input flag (Hub filters; HF cards, 2026-11-14)
+lib/utils/model-facts.ts    # licenceOf / licenceClassOf / hasImageInput / factTableProblems
 lib/utils/model-meta.ts     # isRecentModel, quantConfidence, RECENT_DAYS
 lib/utils/hub-url.ts        # shareable Hub filters incl. recency
 lib/i18n/translations.ts    # en + zh always
@@ -1127,6 +1158,11 @@ components/home/JobPaths.tsx
 - **Pushing to `main` auto-deploys** via Cloudflare Pages (build `npm run build`, output `out`).
 - Always `git push origin main`; on `fetch first` rejection, `git pull --rebase origin main`,
   resolve conflicts, continue rebase, push again.
+- **Branches: one per piece of work, deleted after merge.** `git push origin --delete <branch>` works;
+  `gh` branch deletion 403s on this repo. Since 2026-11-14 the remote carries `main` only — check a
+  stale branch's content (`compare/main...<branch>`, `git diff --name-status main origin/<branch>`),
+  never its `ahead_by`: a squash merge leaves the branch's commits out of `main`'s history, so every
+  merged branch still reports as "ahead".
 - Don't open a PR unless asked.
 - **Do not put** private GitHub org/user links on public site pages (Footer / About / live copy).
   Repo may exist for deploy; site privacy posture is “no public source repo”.
@@ -1183,6 +1219,8 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-14 (ii) | **Hub: input + licence filters** — `lib/data/model-facts.ts` (26 licences with class + URL, 134 of 136 models read from HF cards, 36 image-input ids), `lib/utils/model-facts.ts` readers + `factTableProblems()` gate, `?input=` / `?lic=` through `hub-url.ts`, licence badge on every card; i18n dictionary split evaluated and **not** done (one root layout serves both trees — needs route groups); docs + repo ops below |
+| 2026-11-14 | **Patrol + repo cleanup** — llama.cpp b12376 (Windows names unchanged), runtimeVersions.checkedAt 11-14 (Ollama v0.40.16 / vLLM v0.33.0 / ExLlamaV3 1.6.7), HF stats refreshed (116 fetched, 20 kept), stale draft PRs #11/#12 closed, 17 merged/stale remote branches deleted (only `main` left) |
 | 2026-11-13 (ii) | **+1 model (136): Clover-35B-A3B-Preview** — DiffuSpace block-diffusion model on the Qwen3.6-35B-A3B backbone, read from its config + bartowski's GGUF bytes; params 34.66B (safetensors ÷ 2), 10 of 40 layers cache (30 GDN), `arch.moe` 32.21B routed; Q4_K_M 23.4 GB @4K tight on 24 GB, Q3_K_M 18.2 GB @4K green and green at 128K; IQ3_M not indexed (rung not in `quantBPW`); `/pending/` entry removed, `hfRepoMap` added, `todayFeed` id 35 |
 | 2026-11-13 | **Patrol** — llama.cpp b12340 (Windows zips present, names unchanged), Ollama v0.40.16 Latest (v0.40.17-rc0 skipped), vLLM / ExLlamaV3 unchanged; arch list unchanged, no model |
 | 2026-11-12 (iii) | **Maintenance pass** — guide counts are tokens filled from the index (`guide-tokens.ts`); model meta descriptions fall back to a derived lead when the first sentence is over budget; first-load JS cut on every page (legal 292 → 157 kB, home 466 → 260, model page 468 → 262, GPU page 452 → 237) by keeping data out of layout-level client components; changelog moved to `lib/data/changelog.ts`; this table's pre-November rows moved to README §9a |

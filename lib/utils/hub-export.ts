@@ -16,6 +16,8 @@ interface ExportLabels {
   category: string;
   hardware: string;
   format: string;
+  input: string;
+  licence: string;
   colModel: string;
   colParams: string;
   colMinVram: string;
@@ -23,6 +25,8 @@ interface ExportLabels {
   colLink: string;
   categoryLabels: Record<string, string>;
   hardwareLabels: Record<string, string>;
+  inputLabels: Record<string, string>;
+  licenceLabels: Record<string, string>;
 }
 
 function bestQuant(model: QuantModel) {
@@ -53,6 +57,8 @@ function filterSummary(
   if (filters.category) parts.push(`${labels.category}: ${labels.categoryLabels[filters.category] ?? filters.category}`);
   if (filters.hardware) parts.push(`${labels.hardware}: ${labels.hardwareLabels[filters.hardware] ?? filters.hardware}`);
   if (filters.format) parts.push(`${labels.format}: ${filters.format}`);
+  if (filters.input) parts.push(`${labels.input}: ${labels.inputLabels[filters.input] ?? filters.input}`);
+  if (filters.licence) parts.push(`${labels.licence}: ${labels.licenceLabels[filters.licence] ?? filters.licence}`);
   return parts;
 }
 
