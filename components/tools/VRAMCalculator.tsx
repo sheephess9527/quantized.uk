@@ -5,7 +5,9 @@ import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import QuantFileLine from '@/components/hub/QuantFileLine';
+import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
+import RelatedReports from '@/components/reports/RelatedReports';
+import RunReportForm from '@/components/feedback/RunReportForm';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
@@ -1514,12 +1516,6 @@ export default function VRAMCalculator() {
               </p>
             </div>
           )}
-          {mode === 'forward' && showForwardResult && selectedQuantObj && (
-            <p className="text-[11px] leading-relaxed mb-4 px-1">
-              <span className="text-slate-500">{t.calc.sizedFor} </span>
-              <QuantFileLine quant={selectedQuantObj} compact />
-            </p>
-          )}
           {mode === 'forward' && showForwardResult && ctxOverModel && (
             <div className="glass rounded-2xl p-4 border border-amber-500/20 mb-4">
               <p className="text-xs text-amber-300/90 leading-relaxed">
@@ -1532,6 +1528,14 @@ export default function VRAMCalculator() {
           )}
           {mode === 'forward' && showForwardResult && (
             <div className="space-y-4">
+              <CalculatorEvidence
+                quant={selectedQuantObj}
+                context={contextLen} batch={batchSize} kv={kvType} encoder={result.extraGB ?? 0}
+                calibrated={!!profileGpu && !!selectedModel && !!selectedQuantObj && !multiDevice
+                  && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)
+                  && getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) !== 'red'
+                  && !!measuredSpeed(profileGpu, selectedModel, selectedQuantObj)}
+              />
               <div className="glass rounded-2xl p-5">
                 <h3 className="text-sm font-semibold text-slate-300 mb-4">{t.calc.resultsTitle}</h3>
                 <div className="space-y-3">
@@ -1699,6 +1703,20 @@ export default function VRAMCalculator() {
                   </div>
                 )}
               </div>
+
+              {selectedModel && <RelatedReports modelId={selectedModel.id} gpuId={profileGpu?.id} />}
+              {(() => {
+                const configuration = {
+                  model: selectedModel?.name || customRepo || t.calc.customLabel,
+                  quant: selectedQuantObj ? `${selectedQuantObj.format} ${selectedQuantObj.level}` : selectedQuant,
+                  file: selectedQuantObj?.source ? `${selectedQuantObj.source.repo} / ${selectedQuantObj.source.file ?? ''}` : undefined,
+                  hardware: profileGpu ? `${rigLabel} · RAM ${RAM_SETUPS[ram].label}` : t.evidence.unknown,
+                  context: contextLen, sequences: batchSize, kv: kvType,
+                  encoderGiB: result.extraGB ?? 0, estimatedGiB: result.totalGB,
+                  sizingInput: JSON.stringify(calcInput),
+                };
+                return <RunReportForm key={JSON.stringify(configuration)} configuration={configuration} />;
+              })()}
 
               {selectedModel && levels.length > 1 && (
                 <div className="glass rounded-2xl p-5">

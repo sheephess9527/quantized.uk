@@ -13,6 +13,7 @@ import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
 import QuantFileLine from '@/components/hub/QuantFileLine';
+import RelatedReports from '@/components/reports/RelatedReports';
 import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
 import { isSuperseded, quantConfidence, supersededDiffNote } from '@/lib/utils/model-meta';
@@ -276,6 +277,7 @@ export default function ModelDetail({ model }: Props) {
         </div>
       </div>
 
+      <RelatedReports modelId={model.id} />
       <SimilarModels modelId={model.id} />
     </div>
   );

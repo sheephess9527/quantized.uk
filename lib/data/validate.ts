@@ -14,6 +14,7 @@ import { pendingModels } from '@/lib/data/pending';
 import { runtimeErrors } from '@/lib/data/errors';
 import { calibrationRows, CEILING_TOLERANCE } from '@/lib/utils/bench-calibration';
 import { factTableProblems } from '@/lib/utils/model-facts';
+import { performanceReportProblems } from '@/lib/data/performance-reports';
 
 /**
  * Invariants between hand-typed data files. Each one is a fault that shipped
@@ -28,6 +29,7 @@ export function dataProblems(): string[] {
   dupes(models.map(m => m.id)).forEach(id => out.push(`duplicate model id: ${id}`));
   // Prompt-processing rows are keyed by GPU id; a renamed card would silently lose its figure.
   const gpuIds = new Set(gpuDatabase.map(g => g.id));
+  out.push(...performanceReportProblems(modelIds, gpuIds, dataLastUpdated));
   for (const id of Object.keys(prefillData)) if (!gpuIds.has(id)) out.push(`prefill row for unknown GPU id: ${id}`);
   // The calculator's MoE speed ceiling and offload estimate read the active
   // count; a MoE model without one would silently be treated as unknown.

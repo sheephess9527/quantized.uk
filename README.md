@@ -294,6 +294,27 @@ filter silently.
 
 ---
 
+### Calculator evidence and reader reports
+
+`CalculatorEvidence.tsx` explains estimated memory, weight provenance and speed calibration
+without treating source file sizes as measured runtime memory. It reuses `QuantFileLine`.
+`RelatedReports.tsx` is shared by forward calculator results and model detail pages.
+The small reviewed index in `lib/data/performance-reports.ts` matches **exact model ids**;
+a report on another GPU is labelled accordingly. All runs are related evidence, never
+same-configuration validation. Each entry records source URL, GPU count, report/review
+dates, generation/prefill medians, bilingual configuration and missing-field caveats.
+`performanceReportProblems()` gates cross-references, dates, sources and numeric values.
+
+`RunReportForm.tsx` uses the current calculator configuration, including extra GPUs,
+KV, sequences, encoder and estimated memory. Engine/version, exact file revision,
+observed peak and its scope, speeds, actual token counts, repetitions, offload, speculation
+and notes are optional reader observations; blanks export as unknown. Outcome requires
+an explicit choice. Generate first, review, then copy/download Markdown or open a short
+email draft and attach it. No server submission, automatic sending or field analytics.
+Changing settings or editing observations clears the generated preview. Markdown fences
+protect literal logs; no memory-error percentage is inferred across different scopes.
+Run `scripts/check-calculator-evidence.ts` with tsx after changing this flow.
+
 ## 5. Local Development
 
 ```bash
@@ -457,6 +478,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-15 — Calculator evidence, related runs and structured test reports
+
+- Added bilingual result evidence, distinguishing memory estimates, published weight
+  files, calibrated speed estimates and theoretical ceilings. Sizing math is unchanged.
+- Calculator and model pages link to a manually reviewed llamaPerf Qwen3.8 27B run;
+  GSQ, MTP and missing context/revision/concurrency are explicit. No peak-memory number
+  was imported from the source's ambiguous 16 GB figure.
+- Added local Markdown report preview/copy/download and an explicit mail draft action;
+  calculator configuration follows current settings, reader observations remain optional.
+- Source review, file inventory and verification: [change record](docs/changes/2026-11-15-calculator-evidence.md).
 
 ### 2026-11-14 (iv) — Four official-GGUF additions; context-safe and image-aware reverse lookup
 

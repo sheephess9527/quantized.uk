@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-15',
+    en: 'Calculator results now explain their weight sources, memory assumptions and speed evidence. Related community runs link to their original reports with configuration differences shown. You can also preview, copy or download a structured Markdown test report with your current settings, then email it yourself.',
+    zh: '计算器结果新增权重来源、内存假设与速度依据说明。相关社区实测会标明配置差异并链接到原始报告。你还可以用当前配置生成结构化 Markdown 测试报告，检查后复制、下载或自行发邮件。',
+  },
+  {
     date: '2026-11-14',
     en: 'Four more models are indexed from their official GGUF files: LFM2.5 1.2B Instruct and 8B-A1B, plus Ministral 3 3B and 14B Instruct. The GPU-to-model calculator now excludes models that cannot support your selected context. Choose text or image use: image recommendations include the recorded vision encoder, and that memory follows the pick into the forward calculator.',
     zh: '按官方 GGUF 文件补录四个模型：LFM2.5 1.2B Instruct、8B-A1B，以及 Ministral 3 3B、14B Instruct。按显卡找模型时，现在会排除不支持所选上下文的模型，并可选择纯文本或读图用途；读图推荐会计入已记录的视觉编码器，点进正向计算也会保留这部分内存。',
