@@ -21,29 +21,29 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-11-14):**
+**Live snapshot (2026-11-15):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **140** in index (`models-extra` … `models-extra-13`), 120 active |
+| Models | **142** in index (`models-extra` … `models-extra-14`), 122 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (140 models: 138 licensed, 38 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (142 models: 140 licensed, 39 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 616 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 620 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
 
 ```bash
 npm run dev      # local dev → http://localhost:3000
-npm test         # recommendation, evidence and speed-calibration checks (also CI)
+npm test         # recommendations, evidence, speed calibration, CLI sources and RSS (also CI)
 npm run build    # type-check + lint + static export → out/   (gate before every commit)
 npm run lint
 ```
 
-`npm test` is the data-check gate (recommendations, calculator evidence, speed calibration).
+`npm test` is the data-check gate (recommendations, calculator evidence, speed calibration, exact CLI sources and RSS).
 GitHub Actions runs it on push and pull request. It does not type-check or export the site;
 `build` remains the gate before every commit and on Cloudflare Pages.
 
@@ -75,6 +75,18 @@ type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, t
 flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
+
+- **RSS source dates have day precision:** serialize at UTC day start and sort model
+  and changelog entries together by date. Never invent a noon timestamp that can put
+  a morning build in the future. `npm run check:feed` is part of `npm test`.
+
+- **Exact GGUF variants in launch commands:** pass the selected quant's verified
+  `source.repo` and single-file `source.file` as `hfRepo` / `ggufFilename`. An original
+  repo without `-GGUF` is valid only with that file evidence. Ollama supports the
+  full filename as its HF tag (HF docs); never mix TwIL balanced and verbose files.
+  Sharded rows keep the existing wildcard path. Check with `npm run check:cli`.
+  The CLI generator's `?model=` is read through `useUrlQuery()` after mount and
+  takes precedence over a stored model; invalid ids never enter generated commands.
 
 - **Official social account:** X is `@toquantized`, confirmed by the owner. Use
   `X_HANDLE` / `X_URL` from `lib/site.ts` for public links. Posting remains manual;
@@ -606,7 +618,7 @@ display with `formatLoss()` (`lib/utils/quality.ts`) — never default to a numb
 column feeds `fitsOnGpu`, the homepage picks and the compare rows, and an invented value propagates
 into all of them. `lib/stats.ts` prints the sample size beside the median for exactly this reason.
 
-**huggingface.co is blocked by the egress proxy; `raw.githubusercontent.com` is not.** For
+**Check current source access, rather than assuming Hugging Face is blocked.** Public HF APIs and resolve URLs worked in the 2026-11-15 patrol; gated/private repos can still return 401. Record the actual failure and never infer absent weights from it. If HF cannot be read, for
 architecture, read `huggingface/transformers`'s `src/transformers/models/<family>/configuration_*.py`
 — it carries each family's reference-checkpoint defaults and the real layer-type construction.
 `docs/source/en/_toctree.yml` lists every family transformers knows. Cross-check parameter counts

@@ -25,20 +25,125 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    "id": "edge0-latent-moe",
+    "name": "Edge0 120B / 145B",
+    "vendor": "Edge0",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Published packs use custom latent-MoE experts, separate skeleton/PLE files and the Strata-derived Edge0 engine. Their NVFP4 and q3k names do not establish a conventional self-contained GGUF or the resident memory needed by this calculator. The official release uses an Edge0 community licence plus upstream Qwen terms.",
+      "zh": "发布包采用自定义潜在 MoE 专家、分离的骨架和逐层嵌入文件，以及基于 Strata 的 Edge0 引擎。NVFP4、q3k 名称不能证明它们是常规单体 GGUF，也不能据此推算本计算器需要的常驻内存。官方发布同时适用 Edge0 社区许可与上游 Qwen 条款。"
+    },
+    "recheck": {
+      "en": "When the custom pack, engine and memory residency can be modelled and checked against a reproducible run.",
+      "zh": "能表达这些自定义文件包、引擎与内存驻留规则，并对照可复现运行后。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "inkling-2-small",
+    "name": "Inkling-2-Small",
+    "vendor": "Thinking Machines",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Official weights and unsloth GGUF conversions are available, and llama.cpp has inkling2. The official configuration has 48 layers and 384 routed experts, but its cache and routing/memory layout have not been audited for this calculator. Availability of a conversion is not a verified memory estimate.",
+      "zh": "已有官方权重与 unsloth GGUF 转换，llama.cpp 也有 inkling2 实现。官方配置有 48 层和 384 个路由专家，但本计算器尚未审计其缓存与路由、内存布局。有转换文件不等于已有可靠显存估算。"
+    },
+    "recheck": {
+      "en": "After checking inkling2 cache/routing implementation, complete quant file sizes and a published memory measurement.",
+      "zh": "核实 inkling2 缓存、路由实现、完整量化文件大小与公开内存实测后。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "nex-n2-6",
+    "name": "Nex-N2.6",
+    "vendor": "Nex-AGI",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Official weights and bartowski GGUFs exist. Its GLM5-next configuration combines linear attention with compressed sparse-attention caches and an indexer, the same unresolved sizing class as GLM-5.3-Flash. The calculator cannot yet express this layout accurately.",
+      "zh": "已有官方权重和 bartowski GGUF。其 GLM5-next 配置混合线性注意力、压缩稀疏注意力缓存和索引器，与 GLM-5.3-Flash 属于同一尚未解决的估算类型。计算器目前还不能准确表达这种布局。"
+    },
+    "recheck": {
+      "en": "When compressed-cache/indexer sizing is implemented and verified against actual files and memory observations.",
+      "zh": "实现压缩缓存与索引器估算，并对照实际文件和内存记录核实后。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "raon-1-nano",
+    "name": "Raon-1 nano",
+    "vendor": "KRAFTON",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The publisher provides Apache-2.0 weights and GGUFs, but its own instructions require the raon-1-nano-preview branch of KRAFTON's llama.cpp fork. Stock llama.cpp has no Raon architecture entry. Its mixed RDA/MLA and per-layer embeddings also need audited sizing.",
+      "zh": "发布者提供 Apache-2.0 权重和 GGUF，但官方说明要求使用 KRAFTON 的 llama.cpp 分支 raon-1-nano-preview。上游发行版尚无 Raon 架构条目，混合 RDA、MLA 与逐层嵌入的内存估算也仍待审计。"
+    },
+    "recheck": {
+      "en": "When upstream runtime support and audited RDA/MLA sizing are available.",
+      "zh": "上游运行时支持落地且 RDA、MLA 估算经审计后。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "mnn-pocket-0-3b",
+    "name": "MNN-Pocket 0.3B",
+    "vendor": "Alibaba MNN",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The original Qwen3-family checkpoint and Apache-2.0 metadata are readable. A Hub search found the original/base/SFT and FP8 repositories but no verifiable GGUF file listing. No per-quant memory figure is inferred from the mobile MNN package.",
+      "zh": "可读取原始 Qwen3 系列权重和 Apache-2.0 元数据。Hub 搜索找到原始、Base、SFT 和 FP8 仓库，但尚未找到可核实的 GGUF 文件列表。不从移动端 MNN 文件包推断各量化档位内存。"
+    },
+    "recheck": {
+      "en": "When a published standard-level GGUF listing with byte counts can be verified.",
+      "zh": "能核实已发布的标准档位 GGUF 文件列表和字节数时。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "klm-1-6",
+    "name": "KLM-1.6",
+    "vendor": "MinimaLabs",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The original Apache-2.0 repository describes a custom KLMForCausalLM architecture. It is not listed among stock llama.cpp architectures and no verified GGUF source was found in this patrol, so ordinary transformer memory assumptions are not applied.",
+      "zh": "原始 Apache-2.0 仓库使用自定义 KLMForCausalLM 架构。上游 llama.cpp 架构列表没有它，本次也未找到可核实 GGUF 来源，因此不套用常规 Transformer 内存公式。"
+    },
+    "recheck": {
+      "en": "When a supported runtime, audited state/cache layout and quantized files can be checked.",
+      "zh": "可核实受支持运行时、经审计的状态与缓存布局，以及量化文件后。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
+    "id": "hy4-final",
+    "name": "Hy4 (final release)",
+    "vendor": "Tencent",
+    "reason": "awaiting-data",
+    "detail": {
+      "en": "Tencent's final Hy4 repository could not be read during this patrol (the official HF API request returned 401). Existing Hy4-preview weights do not establish the final model's files or architecture. This is an access/evidence gap, not proof that final weights do not exist.",
+      "zh": "本次无法读取腾讯最终版 Hy4 的官方仓库（HF API 返回 401）。已有 Hy4-preview 权重不能证明最终版的文件或架构。这是访问和证据缺口，不能据此断言最终版权重不存在。"
+    },
+    "recheck": {
+      "en": "When the official final-checkpoint repository, config, licence and quant files can be read.",
+      "zh": "能读取官方最终版仓库、配置、许可与量化文件时。"
+    },
+    "checkedAt": "2026-11-15"
+  },
+  {
     id: 'kimi-k3-1-pro',
     name: 'Kimi K3.1 Pro',
     vendor: 'Moonshot AI',
     announced: '2026-10-23',
     reason: 'not-sized',
     detail: {
-      en: 'Moonshot\'s 3T-class mixture-of-experts model, available through its API since 23 October with open weights promised for 4 November. Two reports say the weights went up on Hugging Face on 5 November (about 1.56 TB in 96 files, under a modified MIT licence); the repository itself could not be read here, and no GGUF conversion was reported. llama.cpp added the text model as `kimi_k31` on 6 November, tested only on a tiny random checkpoint: 93 layers that mix linear-attention (KDA) layers with 24 sparse-attention layers carrying an indexer, and routed experts kept in MXFP4. Even at 2 bits per weight it would need more memory than the largest machine in this index.',
-      zh: '月之暗面的 3T 级混合专家模型，10 月 23 日起通过 API 提供，并承诺 11 月 4 日开放权重。有两篇报道称权重已于 11 月 5 日上传到 Hugging Face（约 1.56 TB、96 个文件，采用修改版 MIT 许可证）；这里读不到该仓库本身，也没有看到 GGUF 转换的报道。llama.cpp 于 11 月 6 日以 `kimi_k31` 加入其文本模型，只用一个很小的随机权重测试过：93 层，线性注意力（KDA）层与 24 个带索引器的稀疏注意力层混合，路由专家保持 MXFP4。即使按每权重 2 bit 计算，它也超出本站收录的最大机器的内存。',
+      en: 'The official Hugging Face repository and safetensors listing can now be read. llama.cpp has the kimi-k31 implementation, but this calculator has not audited its mixed KDA and sparse-attention/indexer cache or its packed expert weights. Weight availability is no longer the blocker; sizing remains unverified.',
+      zh: '现在已能读取官方 Hugging Face 仓库和 safetensors 列表。llama.cpp 已有 kimi-k31 实现，但本计算器尚未审计它混合 KDA 与稀疏注意力、索引器的缓存以及打包专家权重。权重可访问性已不再是阻碍，显存估算仍未核实。',
     },
     recheck: {
-      en: 'When its config and a GGUF file listing can be read.',
-      zh: '能读到它的配置和 GGUF 文件列表时。',
+      en: 'After auditing the cache implementation and an actual quantized-file listing, then checking against a published memory measurement.',
+      zh: '审计缓存实现和实际量化文件列表，并对照公开内存实测后。',
     },
-    checkedAt: '2026-11-08',
+    checkedAt: '2026-11-15',
   },
   {
     id: 'minimax-m3-1-flash',
@@ -90,13 +195,16 @@ export const pendingModels: PendingModel[] = [
     name: 'Step-5 Preview',
     vendor: 'StepFun',
     announced: '2026-09-20',
-    reason: 'no-weights',
+    reason: 'not-sized',
     detail: {
-      en: 'Reported as a 600B mixture-of-experts model with about 27B active. The official weight repo was reported empty, and llama.cpp has no architecture for it (its `step35` is Step 3.5).',
-      zh: '据报道是 600B 混合专家模型，约激活 27B。官方权重仓库据报道是空的，llama.cpp 也没有对应架构（现有的 `step35` 是 Step 3.5）。',
+      en: 'Official FP8 weights are now available in 28 safetensors files; the original card documents vLLM, SGLang and Transformers serving. Its Step5ForConditionalGeneration config has 92 text layers. This calculator has not audited the Step-5 cache or a compatible quantized-file listing, so it remains unsized rather than borrowing Step 3.5 assumptions. The earlier empty-repository report is obsolete.',
+      zh: '官方 FP8 权重现在已发布为 28 个 safetensors 文件，原始模型卡提供 vLLM、SGLang 和 Transformers 部署说明。Step5ForConditionalGeneration 配置有 92 层文本网络。本计算器尚未审计 Step-5 的缓存和兼容量化文件列表，因此仍不提供显存估算，也不借用 Step 3.5 假设。此前仓库为空的记录已经过时。',
     },
-    recheck: { en: 'When the official repo carries weights and llama.cpp adds the architecture.', zh: '官方仓库放出权重、llama.cpp 加入该架构时。' },
-    checkedAt: '2026-10-20',
+    recheck: {
+      en: 'When the Step-5 cache and a supported quantized-file listing have been audited and checked against a memory observation.',
+      zh: '审计 Step-5 缓存和受支持的量化文件列表，并对照内存记录后。',
+    },
+    checkedAt: '2026-11-15',
   },
   {
     id: 'dory-1-0-4b',
@@ -105,11 +213,11 @@ export const pendingModels: PendingModel[] = [
     announced: '2026-10-16',
     reason: 'no-runtime',
     detail: {
-      en: 'A looped (nGPT-style) 4B model. llama.cpp support was still an open draft pull request (#30306) when last checked.',
-      zh: '循环结构（nGPT 风格）的 4B 模型。上次核对时，llama.cpp 的支持仍是一个未合并的草稿 PR（#30306）。',
+      en: 'A looped (nGPT-style) 4B model. llama.cpp support PR #30306 is open and is no longer a draft, but it has not merged; stock release support is still pending.',
+      zh: '循环结构（nGPT 风格）的 4B 模型。llama.cpp 支持 PR #30306 已不再是草稿，但仍未合并，正式发行版支持尚待落实。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-11-03',
+    checkedAt: '2026-11-15',
   },
   {
     id: 'glm-5-3-flash',

@@ -13,6 +13,7 @@ import { extraModels10 } from './models-extra-10';
 import { extraModels11 } from './models-extra-11';
 import { extraModels12 } from './models-extra-12';
 import { extraModels13 } from './models-extra-13';
+import { extraModels14 } from './models-extra-14';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -248,7 +249,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -265,6 +266,8 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 37, type: 'new', modelId: 'twil-8b-balanced', level: 'Q4_K_M', note: { en: 'balanced checkpoint; non-commercial research only', zh: 'balanced 权重；仅非商业研究、教育' }, quantizer: 'webAI' },
+  { id: 36, type: 'new', modelId: 'arete-27b', level: 'Q4_K_M', note: { en: 'file-sized; only 16 of 64 layers grow KV', zh: '按文件估算；仅 16/64 层增长 KV' }, quantizer: 'bartowski' },
   { id: 36, type: 'new', modelId: 'lfm2-5-1-2b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'LiquidAI' },
   { id: 37, type: 'new', modelId: 'lfm2-5-8b-a1b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'LiquidAI' },
   { id: 38, type: 'new', modelId: 'ministral-3-3b', level: 'Q4_K_M', note: { en: 'Official GGUF files indexed', zh: '按官方 GGUF 文件收录' }, quantizer: 'Mistral' },

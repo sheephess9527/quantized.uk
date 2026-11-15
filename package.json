@@ -13,7 +13,9 @@
     "check:recommendations": "tsx scripts/check-recommendations.ts",
     "check:evidence": "tsx scripts/check-calculator-evidence.ts",
     "check:speed": "tsx scripts/check-measured-speed.ts",
-    "test": "tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts"
+    "test": "tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts",
+    "check:cli": "tsx scripts/check-cli-sources.ts",
+    "check:feed": "tsx scripts/check-feed.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

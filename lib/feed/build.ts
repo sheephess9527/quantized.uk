@@ -34,6 +34,8 @@ function headline(text: string, lang: Lang): string {
   return h;
 }
 
+// Editorial source dates have day precision. Midnight UTC avoids inventing a
+// noon publication time that lies in the future for morning builds.
 const CHANNEL = {
   en: {
     title: 'quantized.uk — updates',
@@ -66,31 +68,31 @@ export function buildFeed(lang: Lang): string {
   const recentModels = models
     .filter(m => isRecentModel(m) || m.addedAt)
     .sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''));
-  const items: string[] = [];
+  const items: { date: string; xml: string }[] = [];
 
   for (const entry of changelog.slice(0, 12)) {
     const text = entry[lang];
-    items.push(`
+    items.push({ date: entry.date, xml: `
     <item>
       <title>${escapeXml(headline(text, lang))}</title>
       <link>${SITE_URL}${c.base}/changelog/</link>
       <guid isPermaLink="false">changelog-${lang}-${entry.date}-${escapeXml(entry.en.slice(0, 40))}</guid>
-      <pubDate>${new Date(entry.date + 'T12:00:00Z').toUTCString()}</pubDate>
+      <pubDate>${new Date(entry.date + 'T00:00:00Z').toUTCString()}</pubDate>
       <description>${escapeXml(text)}</description>
-    </item>`);
+    </item>` });
   }
 
   for (const m of recentModels.slice(0, 20)) {
     const date = m.addedAt ?? dataLastUpdated;
     const url = `${SITE_URL}${c.base}/quant-hub/${m.id}/`;
-    items.push(`
+    items.push({ date, xml: `
     <item>
       <title>${escapeXml(`${c.modelPrefix}${m.name}`)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
-      <pubDate>${new Date(date + 'T12:00:00Z').toUTCString()}</pubDate>
+      <pubDate>${new Date(date + 'T00:00:00Z').toUTCString()}</pubDate>
       <description>${escapeXml(m.description[lang])}</description>
-    </item>`);
+    </item>` });
   }
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -100,9 +102,9 @@ export function buildFeed(lang: Lang): string {
     <link>${SITE_URL}${c.base}/</link>
     <description>${escapeXml(c.description)}</description>
     <language>${c.language}</language>
-    <lastBuildDate>${new Date(dataLastUpdated + 'T12:00:00Z').toUTCString()}</lastBuildDate>
+    <lastBuildDate>${new Date(dataLastUpdated + 'T00:00:00Z').toUTCString()}</lastBuildDate>
     <atom:link href="${SITE_URL}${selfPath}" rel="self" type="application/rss+xml"/>
-    ${items.join('\n')}
+    ${items.sort((a, b) => b.date.localeCompare(a.date)).map(item => item.xml).join('\n')}
   </channel>
 </rss>`;
 }

@@ -2,7 +2,8 @@
  * Per-model licence and input-modality facts — the data behind the Hub's two
  * extra filters.
  *
- * **Where a licence comes from.** Read on 2026-11-14 from the model's own
+ * **Where a licence comes from.** Initial table read 2026-11-14; later additions
+ * have their source/check dates in the model pack and change record. Read the model's own
  * Hugging Face repository — the card's declarative `license` / `license_name`
  * (`https://huggingface.co/api/models/<repo>`), and where that tag was just
  * `other`, the licence file it points at. The repo read is the model's
@@ -48,6 +49,7 @@ export interface LicenceInfo {
 }
 
 export const LICENCES = {
+  'webai-nc-1.0': { short: 'webAI NC', name: { en: 'webAI Non-Commercial License 1.0', zh: 'webAI 非商业许可 1.0' }, class: 'noncommercial', url: 'https://huggingface.co/webAI-Official/TwIL-8B/blob/main/LICENSE.md' },
   'apache-2.0': { short: 'Apache 2.0', name: { en: 'Apache 2.0', zh: 'Apache 2.0' }, class: 'commercial', url: 'https://www.apache.org/licenses/LICENSE-2.0' },
   'mit': { short: 'MIT', name: { en: 'MIT', zh: 'MIT' }, class: 'commercial', url: 'https://opensource.org/license/mit' },
   'bigcode-openrail-m': { short: 'OpenRAIL-M', name: { en: 'BigCode OpenRAIL-M', zh: 'BigCode OpenRAIL-M' }, class: 'commercial', url: 'https://huggingface.co/spaces/bigcode/bigcode-model-licenses/blob/main/OpenRAIL-M.md' },
@@ -79,6 +81,8 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'arete-27b': 'apache-2.0',
+  'twil-8b-balanced': 'webai-nc-1.0',
   'lfm2-5-1-2b': 'lfm-open-1.0',
   'lfm2-5-8b-a1b': 'lfm-open-1.0',
   'ministral-3-3b': 'apache-2.0',
@@ -239,6 +243,7 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'arete-27b',
   'ministral-3-3b',
   'ministral-3-14b',
   'gemma-3-12b-it',

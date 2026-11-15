@@ -66,7 +66,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-14',
+  checkedAt: '2026-11-15',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.33.0',

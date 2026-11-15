@@ -11,6 +11,7 @@ export interface CLIOptions {
   modelId: string;
   modelName: string;
   quantLevel: string;
+  /** Verified single-file GGUF path from the selected quant source, not a guessed variant. */
   ggufFilename?: string;
   /**
    * GGUF repo id from `lib/data/hf-repos.mjs`, e.g.
@@ -76,10 +77,11 @@ function mirrorLines(lang: Lang): string[] {
  * `deepseek-ai/DeepSeek-R1`) rather than a GGUF conversion. Handing one of
  * those to `hf download --include "*.gguf"` or to `ollama run
  * hf.co/…` produces a command that looks right and downloads nothing, so a
- * repo only counts here if it is actually a GGUF repo.
+ * repo only counts here if it has the GGUF suffix or a verified GGUF filename.
  */
-function ggufRepoId(hfRepo?: string): string | undefined {
-  return hfRepo && /-GGUF$/i.test(hfRepo) ? hfRepo : undefined;
+function ggufRepoId(hfRepo?: string, filename?: string): string | undefined {
+  // Some publishers (TwIL) put verified GGUFs beside original weights.
+  return hfRepo && (/-GGUF$/i.test(hfRepo) || filename?.endsWith('.gguf')) ? hfRepo : undefined;
 }
 
 /** `bartowski/Meta-Llama-3.1-8B-Instruct-GGUF` → `Meta-Llama-3.1-8B-Instruct`. */
@@ -287,15 +289,15 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const moeFlag = cpuMoe ? (cpuMoe.all ? '--cpu-moe' : `--n-cpu-moe ${cpuMoe.n}`) : '';
   const lang: Lang = opts.lang ?? 'en';
   const backend: Backend = opts.backend ?? 'cuda';
-  const hfRepo = ggufRepoId(opts.hfRepo);
+  const hfRepo = ggufRepoId(opts.hfRepo, opts.ggufFilename);
   // GGUF repos name their files after the *source* repo, not the display name:
   // bartowski/Meta-Llama-3.1-8B-Instruct-GGUF ships
   // Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf. Deriving the filename from the
   // display name drops the "Meta-" and `--include` then matches nothing —
   // `hf download` downloads zero files and exits 0.
-  const modelFile = hfRepo
+  const modelFile = opts.ggufFilename ?? (hfRepo
     ? `${ggufBase(hfRepo)}-${quantLevel}.gguf`
-    : `${modelName.replace(/[^a-zA-Z0-9._-]/g, '-')}-${quantLevel}.gguf`;
+    : `${modelName.replace(/[^a-zA-Z0-9._-]/g, '-')}-${quantLevel}.gguf`);
   const repoId = hfRepo ?? '<hf-gguf-repo-id>';
   // A build past SHARD_GB may be one file or several parts in a folder, depending on the
   // publisher: download by pattern and let the shell find the first part (llama.cpp loads the
@@ -476,7 +478,7 @@ function generateOllama(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, port } = opts;
   const lang: Lang = opts.lang ?? 'en';
   const backend: Backend = opts.backend ?? 'cuda';
-  const hfRepo = ggufRepoId(opts.hfRepo);
+  const hfRepo = ggufRepoId(opts.hfRepo, opts.ggufFilename);
   // Ollama library tags are curated and short (`qwen2.5:7b`) — they are not
   // derivable from a display name, so the old slug ("llama-3.1-8b-instruct")
   // simply 404s on pull. Ollama can run any GGUF repo straight from Hugging
@@ -486,10 +488,10 @@ function generateOllama(opts: CLIOptions): CLIOutput {
   // Split builds (past SHARD_GB) land in a publisher-specific sub-folder, so their FROM path is
   // described rather than typed; a single file gets its exact name.
   const ollamaSharded = (opts.fileGB ?? 0) > SHARD_GB;
-  const ollamaGgufPattern = hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}${ollamaSharded ? '*' : ''}.gguf` : '';
+  const ollamaGgufPattern = opts.ggufFilename ?? (hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}${ollamaSharded ? '*' : ''}.gguf` : '');
   const ollamaLocalName = hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}`.toLowerCase().replace(/[^a-z0-9._-]/g, '-') : '';
   const ollamaModel = hfRepo
-    ? `hf.co/${hfRepo}:${quantLevel}`
+    ? `hf.co/${hfRepo}:${opts.ggufFilename ?? quantLevel}`
     : modelName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '');
 
   if (env === 'compose') {

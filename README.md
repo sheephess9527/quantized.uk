@@ -97,7 +97,7 @@ lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
     models.ts               #   140 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-13 (packs)
+    models-extra*.ts        #   models-extra .. models-extra-14 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -320,7 +320,7 @@ Run `npm run check:evidence` after changing this flow.
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm test             # recommendation, evidence and speed-calibration checks
+npm test             # recommendations, evidence, speed-calibration, CLI-source and RSS checks
 npm run build        # static export → ./out
 npm run lint
 ```
@@ -370,6 +370,11 @@ pages_build_output_dir = "out"
 
 ## 7. Updating Content
 
+For launch commands, the selected quant's recorded single-file `source.file` and
+`source.repo` take precedence over repository-name inference. This is required for
+variant suffixes (TwIL balanced) and mixed original/GGUF repositories. Split rows
+keep the existing wildcard fallback. Run `npm run check:cli` after changing this path.
+
 The official X account is [@toquantized](https://x.com/toquantized), linked from
 the shared EN/ZH Footer's "Stay current" section. Its handle and profile URL live
 in `lib/site.ts` (`X_HANDLE`, `X_URL`). Posts are published manually; no embedded
@@ -418,7 +423,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-13.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-14.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -489,6 +494,29 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-15 (iv) — Evening patrol: two models, exact GGUF filenames, runtime refresh
+
+- Added Arete 27B and TwIL 8B **balanced** from primary configs/licences and exact
+  GGUF byte counts: 142 total, 122 active; 140 licences recorded, 39 image inputs.
+  Arete carries its separate projector; TwIL's non-commercial licence is explicit,
+  and verbose weights are not mixed into its Q4_K_M row. Source: `models-extra-14.ts`.
+- CLI and inline launch commands now pass the selected quant's recorded repo/file.
+  This supports verified GGUFs in original repos, pins Ollama to an exact filename,
+  and fixes invalid inferred TwIL filenames. Unknown sources and split-file fallbacks
+  retain their existing behavior. `npm run check:cli` covers the variant regression.
+- Fixed a real-browser finding: CLI generator now honours a valid `?model=` before
+  stored profile state. Unknown query ids leave the selector empty; hydration waits
+  for both the query and profile without using `useSearchParams`.
+- Windows llama.cpp → b12409 (CPU/CUDA12.4/CUDA13.5/Vulkan assets verified). Runtime
+  checked date → November 15; other stable versions retained, with the vLLM API/HTML
+  metadata discrepancy recorded rather than silently downgrading to an RC.
+- RSS now sorts model and changelog entries together, using UTC day start for date-only
+  source dates rather than a fabricated noon timestamp. `npm run check:feed` covers chronology,
+  deterministic IDs, language URLs and the two new entries.
+- Seven candidates added to `/pending/`; Kimi/Step-5 weight availability and Dory PR state corrected.
+  Detailed sources, non-inclusion reasons, file inventory and deployment:
+  [patrol record](docs/changes/2026-11-15-patrol.md).
 
 ### 2026-11-15 (iii) — Official X account in the shared footer
 

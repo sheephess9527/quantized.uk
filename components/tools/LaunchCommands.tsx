@@ -57,12 +57,14 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
   const active = levels.find(l => l.fw === fw) ?? levels[0];
   const out = useMemo(() => {
     if (!active) return null;
+    const source = model.quants.find(q => q.format === 'GGUF' && q.level === active.level)?.source;
     return generateCLI({
       framework: active.fw,
       env: mac ? 'mac' : os,
       modelId: model.id,
       modelName: model.name,
-      hfRepo: hfRepoMap[model.id as keyof typeof hfRepoMap],
+      hfRepo: source?.repo ?? hfRepoMap[model.id as keyof typeof hfRepoMap],
+      ggufFilename: (source?.parts ?? 1) === 1 ? source?.file : undefined,
       quantLevel: active.level,
       fileGB: ggufFileGB(model, active.level),
       // Expert offload applies to llama.cpp only; Ollama keeps its own layer split.

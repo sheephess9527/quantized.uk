@@ -13,6 +13,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { backendFor } from '@/lib/utils/gpu-page';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
@@ -37,6 +38,7 @@ const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli'
 export default function CLIGenerator() {
   const { t, lang } = useLanguage();
   const { config, hydrated: configReady, updateConfig } = useHardwareProfile();
+  const searchParams = useUrlQuery();
   const seeded = useRef(false);
   const [framework, setFramework] = useState<Framework>('llamacpp');
   const [env, setEnv] = useState<Env>('linux');
@@ -75,17 +77,17 @@ export default function CLIGenerator() {
     return selectedModel.quants.map(q => `${q.format} ${q.level}`);
   }, [selectedModel, framework]);
 
-  // Seed once from the shared config so arriving from the calculator does not
-  // mean re-picking the same model. URL params, when this tool gains them,
-  // would take precedence the same way the calculator does it.
+  // A linked model wins over the previously stored model. Wait for both query
+  // and profile hydration; unknown URL ids leave the selector empty.
   useEffect(() => {
-    if (seeded.current || !configReady) return;
+    if (seeded.current || !configReady || !searchParams) return;
     seeded.current = true;
-    if (config.modelId && config.modelId !== 'custom' && models.some(m => m.id === config.modelId)) {
-      setModelId(config.modelId);
+    const requested = searchParams.get('model') ?? config.modelId;
+    if (requested && requested !== 'custom' && models.some(m => m.id === requested)) {
+      setModelId(requested);
     }
     if (config.contextLen) setContextLen(config.contextLen);
-  }, [configReady, config.modelId, config.contextLen]);
+  }, [configReady, config.modelId, config.contextLen, searchParams]);
 
   useEffect(() => {
     if (!seeded.current || !modelId) return;
@@ -106,12 +108,14 @@ export default function CLIGenerator() {
 
   const output = useMemo(() => {
     if (!modelId) return null;
+    const source = selectedModel?.quants.find(q => q.format === 'GGUF' && q.level === quantLevel)?.source;
     return generateCLI({
       framework,
       env,
       modelId,
       modelName: selectedModel?.name ?? modelId,
-      hfRepo: hfRepoMap[modelId as keyof typeof hfRepoMap],
+      hfRepo: source?.repo ?? hfRepoMap[modelId as keyof typeof hfRepoMap],
+      ggufFilename: (source?.parts ?? 1) === 1 ? source?.file : undefined,
       quantLevel,
       fileGB: selectedModel ? ggufFileGB(selectedModel, quantLevel) : undefined,
       gpuLayers,
