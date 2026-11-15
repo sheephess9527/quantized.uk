@@ -71,6 +71,11 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Recurring maintenance is authorized:** every other evening, the scheduled model/site
+  patrol follows [docs/maintenance.md](docs/maintenance.md). Verified routine additions,
+  version/data updates and clear-defect fixes may be merged and deployed after checks;
+  larger redesigns remain proposals. Each run keeps a dated Markdown record.
+
 - **Community evidence:** `performance-reports.ts` is a reviewed link index, not calibration
   data. Match exact model ids; show configuration differences and missing fields. Never
   promote a related report to same-config evidence or derive memory error from capacity.

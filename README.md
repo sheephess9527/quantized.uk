@@ -369,6 +369,11 @@ pages_build_output_dir = "out"
 
 ## 7. Updating Content
 
+Recurring maintenance is scheduled every other evening (Asia/Shanghai), starting
+2026-11-15. See [the patrol schedule and execution contract](docs/maintenance.md).
+Verified routine model additions and necessary maintenance may be merged and
+deployed after the required checks; record each patrol in `docs/changes/`.
+
 All content is data-driven — no code changes required to add data:
 
 - **New model** → append to `lib/data/models.ts` (include `arch` and per-quant stats so the VRAM calculator, hub, detail page, and reverse lookup all work automatically)
@@ -478,6 +483,16 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-15 (ii) — Production merge and recurring evening patrol
+
+- User authorized merging/deploying calculator evidence commit `88a141d`; main
+  was fast-forwarded and pushed. Cloudflare Pages succeeded; live EN/ZH browser
+  checks passed for the evidence, related-report and Markdown feedback flows.
+- Created the enabled model/website patrol, every two days around 19:00 Beijing
+  time, first run November 15. Source checks, prompt model inclusion, necessary
+  site updates, validation, deployment and Markdown records are part of each run.
+- [Maintenance schedule and scope](docs/maintenance.md); [release verification](docs/changes/2026-11-15-calculator-evidence.md).
 
 ### 2026-11-15 — Calculator evidence, related runs and structured test reports
 

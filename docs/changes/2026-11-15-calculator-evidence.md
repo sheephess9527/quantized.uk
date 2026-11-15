@@ -1,6 +1,10 @@
 # Calculator evidence and reader reports — 2026-11-15
 
-Status: implemented and verified on `feature/calculator-evidence-reports`.
+Status: implemented and verified; commit `88a141d` merged into `main` and pushed
+on 2026-11-15 at approximately 00:55 UTC, explicitly authorized by the user.
+Cloudflare Pages confirmed production deployment **success**; live verification
+passed on `https://quantized.uk/` in both languages. Deployment:
+https://dash.cloudflare.com/?to=/7d5a680e05e83711c23f19702fc6480d/pages/view/quantized-uk/348d4ed1-b9cb-4b65-a112-74ef4b533ac9
 
 ## Authorized scope
 
@@ -93,12 +97,19 @@ weight bytes also remain inputs to an estimate, not measured runtime memory.
 - Visual inspection of Chinese mobile screenshot passed. Local QA screenshots:
   `/workspace/scratch/llamaperf-review/calculator-evidence-{en,zh}-390.png`.
 - `git diff --check`: passed.
+- Post-deploy Chromium verification against the real production domain: EN/ZH
+  evidence and source links, explicit outcome, current configuration, clipboard,
+  exact Markdown download, both stale-preview resets, two-card export and blank
+  observation semantics all passed. Mobile 390 px and desktop 1440 px had no
+  horizontal overflow or hydration errors. An initial probe while deployment was
+  still building saw the old version and timed out; checks were rerun successfully
+  after Cloudflare completed. No form/email was sent.
 
 ## Limits and delivery
 
 The initial reviewed index intentionally has one report, rather than claiming
 comprehensive coverage. No bulk ingestion, authenticated llamaPerf integration,
 report storage, automatic calibration or change to sizing mathematics is included.
-Branch delivery follows the repository workflow; merging into production is a
-separate deployment action. The Markdown configuration keys stay stable across
+Initial branch delivery followed the repository workflow. The user subsequently
+authorized merging and production deployment. The Markdown configuration keys stay stable across
 languages; reader-facing headings, labels and caveats are localized.
