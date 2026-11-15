@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-15',
+    en: 'You can now follow quantized.uk on X at @toquantized. The official profile is linked in the footer alongside RSS and the changelog.',
+    zh: '现在可以在 X 关注 quantized.uk 官方账号 @toquantized。网站页脚已加入官方主页入口，与 RSS 和更新日志放在一起。',
+  },
+  {
+    date: '2026-11-15',
     en: 'Calculator results now explain their weight sources, memory assumptions and speed evidence. Related community runs link to their original reports with configuration differences shown. You can also preview, copy or download a structured Markdown test report with your current settings, then email it yourself.',
     zh: '计算器结果新增权重来源、内存假设与速度依据说明。相关社区实测会标明配置差异并链接到原始报告。你还可以用当前配置生成结构化 Markdown 测试报告，检查后复制、下载或自行发邮件。',
   },

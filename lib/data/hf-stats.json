@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-15T00:39:20.352Z",
+  "fetchedAt": "2026-11-15T05:17:23.590Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 120,
   "models": {
@@ -36,7 +36,7 @@
     "qwen2.5-7b": {
       "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF",
       "downloads": 750118,
-      "likes": 215,
+      "likes": 216,
       "lastModified": "2024-09-20T06:38:28.000Z"
     },
     "qwen2.5-14b": {
@@ -144,7 +144,7 @@
     "qwen2.5-0.5b": {
       "repo": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
       "downloads": 468656,
-      "likes": 170,
+      "likes": 172,
       "lastModified": "2024-09-20T06:20:24.000Z"
     },
     "qwen2.5-1.5b": {
@@ -282,7 +282,7 @@
     "qwen3-coder-30b-a3b": {
       "repo": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
       "downloads": 483511,
-      "likes": 1223,
+      "likes": 1224,
       "lastModified": "2026-01-30T06:29:38.000Z"
     },
     "gemma-3-27b-it": {
@@ -312,7 +312,7 @@
     "gpt-oss-20b": {
       "repo": "openai/gpt-oss-20b",
       "downloads": 5641053,
-      "likes": 5314,
+      "likes": 5315,
       "lastModified": "2025-08-26T17:25:47.000Z"
     },
     "gpt-oss-120b": {
@@ -384,19 +384,19 @@
     "gemma-4-26b-a4b": {
       "repo": "google/gemma-4-26B-A4B-it",
       "downloads": 5182069,
-      "likes": 1773,
+      "likes": 1775,
       "lastModified": "2026-07-20T16:42:12.000Z"
     },
     "gemma-4-31b": {
       "repo": "google/gemma-4-31B-it",
       "downloads": 6520176,
-      "likes": 4367,
+      "likes": 4369,
       "lastModified": "2026-07-20T16:42:18.000Z"
     },
     "gemma-4-e4b": {
       "repo": "unsloth/gemma-4-E4B-it-GGUF",
       "downloads": 715115,
-      "likes": 692,
+      "likes": 693,
       "lastModified": "2026-07-17T12:49:21.000Z"
     },
     "gemma-4-e2b": {
@@ -426,13 +426,13 @@
     "muse-glimmer-30b": {
       "repo": "meta-models/Muse-Glimmer-30B",
       "downloads": 153222,
-      "likes": 2148,
+      "likes": 2149,
       "lastModified": "2026-10-22T02:06:52.000Z"
     },
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 3031222,
-      "likes": 7129,
+      "likes": 7131,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -492,7 +492,7 @@
     "muse-spark-open-816b-a42b": {
       "repo": "meta-models/Muse-Spark-Open-816B-A42B",
       "downloads": 14855,
-      "likes": 756,
+      "likes": 757,
       "lastModified": "2026-11-10T18:55:51.000Z"
     },
     "nemotron-3.5-bolt-74b-a9b": {
@@ -516,7 +516,7 @@
     "granite-4.2-3b": {
       "repo": "ibm-granite/granite-4.2-3b-GGUF",
       "downloads": 276620,
-      "likes": 48,
+      "likes": 49,
       "lastModified": "2026-09-02T22:06:48.000Z"
     },
     "nemotron-3.5-lightning-30b-a3b": {
@@ -540,7 +540,7 @@
     "gemma-4-12b": {
       "repo": "unsloth/gemma-4-12b-it-GGUF",
       "downloads": 2547979,
-      "likes": 969,
+      "likes": 971,
       "lastModified": "2026-07-17T12:52:56.000Z"
     },
     "north-mini-code-1.0": {
@@ -600,7 +600,7 @@
     "ripple-65b-preview": {
       "repo": "ricursiveAI/Ripple-65B-Preview",
       "downloads": 10328,
-      "likes": 585,
+      "likes": 584,
       "lastModified": "2026-11-10T09:31:23.000Z"
     },
     "hy-memory-30b-a3b": {

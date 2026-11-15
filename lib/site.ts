@@ -27,6 +27,9 @@ export const SITE_NAME = 'quantized.uk';
  * earlier `hello@` was never confirmed to receive mail, so it was retired rather than kept beside it.
  */
 export const FEEDBACK_EMAIL = 'zjy@quantized.uk';
+/** Owner-confirmed official X account. Keep all public references in sync. */
+export const X_HANDLE = 'toquantized';
+export const X_URL = `https://x.com/${X_HANDLE}`;
 
 export function canonical(path = ''): string {
   if (!path || path === '/') return `${SITE_URL}/`;

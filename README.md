@@ -370,6 +370,11 @@ pages_build_output_dir = "out"
 
 ## 7. Updating Content
 
+The official X account is [@toquantized](https://x.com/toquantized), linked from
+the shared EN/ZH Footer's "Stay current" section. Its handle and profile URL live
+in `lib/site.ts` (`X_HANDLE`, `X_URL`). Posts are published manually; no embedded
+social SDK, X API credentials or automatic publishing service is required.
+
 Recurring maintenance is scheduled every other evening (Asia/Shanghai), starting
 2026-11-15. See [the patrol schedule and execution contract](docs/maintenance.md).
 Verified routine model additions and necessary maintenance may be merged and
@@ -484,6 +489,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-15 (iii) — Official X account in the shared footer
+
+- Added owner-confirmed `@toquantized` to the EN/ZH "Stay current" section on all
+  pages using the shared Footer, with the official profile opening in a new tab.
+- Replaced the stale "every few weeks / three ways" introduction with wording
+  that covers model additions, corrections and site updates.
+- Centralized account constants; existing RSS, changelog and pending links stay
+  available. Posting remains manual. [Change record](docs/changes/2026-11-15-official-x.md).
 
 ### 2026-11-15 (iii) — Wire data checks into `npm test` and CI
 

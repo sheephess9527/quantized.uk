@@ -76,6 +76,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Official social account:** X is `@toquantized`, confirmed by the owner. Use
+  `X_HANDLE` / `X_URL` from `lib/site.ts` for public links. Posting remains manual;
+  a profile link does not imply an API integration or automated publishing.
+
 - **Recurring maintenance is authorized:** every other evening, the scheduled model/site
   patrol follows [docs/maintenance.md](docs/maintenance.md). Verified routine additions,
   version/data updates and clear-defect fixes may be merged and deployed after checks;

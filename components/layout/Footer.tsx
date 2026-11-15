@@ -7,7 +7,7 @@ import { mirrorPath } from '@/lib/i18n/routing';
 import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
-import { FEEDBACK_EMAIL } from '@/lib/site';
+import { FEEDBACK_EMAIL, X_HANDLE, X_URL } from '@/lib/site';
 import EmailOffGuard from '@/components/ui/EmailOffGuard';
 
 export default function Footer() {
@@ -90,6 +90,18 @@ export default function Footer() {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">{t.footer.stayCurrent}</p>
             <p className="text-xs text-slate-500 leading-relaxed mb-3">{t.footer.stayCurrentBody}</p>
             <ul className="space-y-2">
+              <li>
+                <a
+                  href={X_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-wrap items-center gap-1.5 text-sm text-slate-300 hover:text-violet-300 transition-colors"
+                >
+                  {t.footer.xLabel} <span className="text-xs">@{X_HANDLE}</span>
+                  <ExternalLink size={10} className="opacity-50" />
+                </a>
+                <p className="text-xs text-slate-600 mt-0.5">{t.footer.xDesc}</p>
+              </li>
               <li>
                 <a
                   href={feedHref}
