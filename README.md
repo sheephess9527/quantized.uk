@@ -509,8 +509,8 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   stored profile state. Unknown query ids leave the selector empty; hydration waits
   for both the query and profile without using `useSearchParams`.
 - Windows llama.cpp → b12409 (CPU/CUDA12.4/CUDA13.5/Vulkan assets verified). Runtime
-  checked date → November 15; other stable versions retained, with the vLLM API/HTML
-  metadata discrepancy recorded rather than silently downgrading to an RC.
+  checked date → November 15; other stable versions retained. PyPI independently
+  confirms vLLM 0.33.0 is published/latest despite inconsistent GitHub release APIs.
 - RSS now sorts model and changelog entries together, using UTC day start for date-only
   source dates rather than a fabricated noon timestamp. `npm run check:feed` covers chronology,
   deterministic IDs, language URLs and the two new entries.
