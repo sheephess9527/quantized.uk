@@ -16,7 +16,7 @@ import { isMoE } from '@/lib/utils/model-meta';
  * the gap to peak bandwidth) that the pure roofline throws away.
  *
  * Error range: checked against the dense llama.cpp / Ollama GGUF rows in
- * `benchmarks.ts` `matrixData` (`npx tsx scripts/check-measured-speed.ts`,
+ * `benchmarks.ts` `matrixData` (`npm run check:speed`,
  * which fails if the constant below drifts from the data). Measured ÷ this
  * figure came out 0.99–1.31 over 9 rows (2026-10-14): within 1% on 8B-class
  * models on the RTX 4090; 10–22% low on 14B–32B (bigger models run closer to

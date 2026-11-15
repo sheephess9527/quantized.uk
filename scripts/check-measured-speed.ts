@@ -1,4 +1,4 @@
-// Run: npx tsx scripts/check-measured-speed.ts — compares measuredSpeed() with every
+// Run: npm run check:speed — compares measuredSpeed() with every
 // llama.cpp/Ollama GGUF row in matrixData and prints measured ÷ predicted.
 import { matrixData } from '../lib/data/benchmarks';
 import { models } from '../lib/data/models';

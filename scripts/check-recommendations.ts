@@ -1,4 +1,4 @@
-/** Run: npx tsx scripts/check-recommendations.ts */
+/** Run: npm run check:recommendations */
 import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';

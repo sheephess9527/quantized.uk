@@ -13,7 +13,7 @@ A full-stack static intelligence website for indie developers and geeks who run 
 You're an AI agent or a new account picking this up cold. Read this box, then do the [Handoff Checklist](#8-handoff-checklist-do-this-first).
 
 - **What it is:** Next.js 14 **static-export** site. No backend, no database, no runtime API. All content is hardcoded TypeScript under `lib/data/`.
-- **Run it:** `npm install && npm run dev` → http://localhost:3000. Build: `npm run build` → static files in `out/`.
+- **Run it:** `npm install && npm run dev` → http://localhost:3000. Checks: `npm test`. Build: `npm run build` → static files in `out/`.
 - **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
 - **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
 - **Biggest footguns:** Cloudflare *Pages* not *Workers*; output dir is `out` not `.next`; Next.js ≥ 14.2.35; every UI string needs both languages. Full list in [§6](#6-deployment--cloudflare-pages).
@@ -313,13 +313,14 @@ an explicit choice. Generate first, review, then copy/download Markdown or open 
 email draft and attach it. No server submission, automatic sending or field analytics.
 Changing settings or editing observations clears the generated preview. Markdown fences
 protect literal logs; no memory-error percentage is inferred across different scopes.
-Run `scripts/check-calculator-evidence.ts` with tsx after changing this flow.
+Run `npm run check:evidence` after changing this flow.
 
 ## 5. Local Development
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
+npm test             # recommendation, evidence and speed-calibration checks
 npm run build        # static export → ./out
 npm run lint
 ```
@@ -412,7 +413,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-7.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-13.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -483,6 +484,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-15 (iii) — Wire data checks into `npm test` and CI
+
+- `npm test` runs the three existing checkers: `check:recommendations`, `check:evidence` and `check:speed`. Each also has its own script. `tsx` is now a direct devDependency, so the commands do not depend on a transitive ESLint copy.
+- GitHub Actions (`.github/workflows/checks.yml`) runs `npm test` on push and pull request. It does not replace `npm run build`: type-check, lint and the static-export gates still run locally and on Cloudflare Pages.
+- Contributor paths that still named `models-extra-6.ts` / `models-extra-7.ts` now point at `models-extra-13.ts`.
 
 ### 2026-11-15 (ii) — Production merge and recurring evening patrol
 

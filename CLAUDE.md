@@ -38,9 +38,14 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 
 ```bash
 npm run dev      # local dev → http://localhost:3000
+npm test         # recommendation, evidence and speed-calibration checks (also CI)
 npm run build    # type-check + lint + static export → out/   (gate before every commit)
 npm run lint
 ```
+
+`npm test` is the data-check gate (recommendations, calculator evidence, speed calibration).
+GitHub Actions runs it on push and pull request. It does not type-check or export the site;
+`build` remains the gate before every commit and on Cloudflare Pages.
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
@@ -89,7 +94,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   state transfer and actual href (`mmproj`), with cache/batch/card settings preserved. The UI's
   `input=image` parameter is calculator-specific; the Hub uses `input=multimodal`. Forward encoder
   visibility uses `hasImageInput()`, not a category tag. Check with
-  `npx tsx scripts/check-recommendations.ts` after recommendation changes.
+  `npm run check:recommendations` (or `npm test`) after recommendation changes.
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI (the build now gates on that).
   **Reader-facing *data* fields count too** — translating only `translations.ts` left the whole
@@ -1159,7 +1164,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-12)
+lib/data/models-extra-*.ts  # model packs (currently through extra-13)
 lib/data/meta.ts            # dataLastUpdated, runtimeVersions, methodology
 lib/data/changelog.ts       # reader-facing changelog (never re-export it from meta.ts)
 lib/site.ts                 # data-free constants for client components (email, GPU_COUNT, canonical)

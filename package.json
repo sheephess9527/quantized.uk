@@ -9,7 +9,11 @@
     "build": "next build",
     "postbuild": "node scripts/localize-export.mjs && node scripts/indexnow.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:recommendations": "tsx scripts/check-recommendations.ts",
+    "check:evidence": "tsx scripts/check-calculator-evidence.ts",
+    "check:speed": "tsx scripts/check-measured-speed.ts",
+    "test": "tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -29,6 +33,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
