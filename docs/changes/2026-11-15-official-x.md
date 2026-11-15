@@ -38,5 +38,13 @@ is part of this change. No model or sizing data is changed.
 - Mobile 390 px and desktop 1440 px: no horizontal overflow or page errors.
   Chinese mobile footer screenshot visually checked.
 - `git diff --check`: passed. No extra unit tests were added for this simple link.
-- Prepared on `feature/official-x-link` for routine website maintenance deployment.
-  Production verification follows the main-branch push.
+- EN/ZH exported feeds both include the official-account announcement.
+- GitHub Actions `data-checks` passed on the feature branch and main (existing
+  recommendation, calculator-evidence and speed-calibration checks).
+- App commit `deb292e` merged into main and pushed for routine website deployment.
+- Cloudflare Pages production deployment **succeeded**:
+  https://dash.cloudflare.com/?to=/7d5a680e05e83711c23f19702fc6480d/pages/view/quantized-uk/ed43ef1e-3e3c-44f3-8da7-3fe9babbaa05
+- Production Chromium checks against `https://quantized.uk/` passed on EN/ZH
+  homepage, model, calculator and about pages: correct/clickable X link, correct
+  external-link attributes, retained language-aware subscription/navigation links,
+  no page errors or mobile/desktop overflow. No X post was sent.
