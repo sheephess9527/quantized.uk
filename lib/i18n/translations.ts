@@ -1,5 +1,9 @@
 export const translations = {
   en: {
+    crossTools: {
+      rerankerBody: 'Building a RAG pipeline? Choose the reranker alongside your LLM.',
+      chooseReranker: 'Choose a reranker',
+    },
     evidence: {
       "title": "What this result is based on",
       "reportTitle": "quantized.uk calculator test report",
@@ -1400,6 +1404,10 @@ export const translations = {
     },
   },
   zh: {
+    crossTools: {
+      rerankerBody: '搭建 RAG？给生成模型配一个合适的重排序模型。',
+      chooseReranker: '选 reranker',
+    },
     evidence: {
       "title": "这份结果的依据",
       "reportTitle": "quantized.uk 计算器测试报告",

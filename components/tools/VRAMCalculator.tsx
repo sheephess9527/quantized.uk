@@ -6,6 +6,7 @@ import Link from '@/components/i18n/LocalLink';
 import { Calculator, Cpu, MemoryStick, Zap, ChevronDown, Copy, Check, ArrowRightLeft, Search, Wrench, Image as ImageIcon } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
+import RerankerLink from '@/components/tools/RerankerLink';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
 import VramStackBar from './VramStackBar';
@@ -655,6 +656,7 @@ export default function VRAMCalculator() {
 
   return (
     <div ref={rootRef} className="space-y-6 scroll-mt-24">
+      <RerankerLink placement="vram" />
       {/* Mode toggle + share */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">

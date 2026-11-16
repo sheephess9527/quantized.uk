@@ -76,6 +76,11 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Related RAG tools:** model pages and VRAM link to the same-owner reranker.uk
+  picker in the matching language. Use `RERANKER_URL` and `RerankerLink`, with only
+  public UTM placement labels. This is a complementary tool, not a claim that the
+  LLM calculator sizes cross-encoder activation memory.
+
 - **RSS source dates have day precision:** serialize at UTC day start and sort model
   and changelog entries together by date. Never invent a noon timestamp that can put
   a morning build in the future. `npm run check:feed` is part of `npm test`.
@@ -1099,7 +1104,8 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
   beacon runs with `{"spa":2}` (soft-navigation heuristics), so every `history.replaceState` in `syncUrl`
   is a new view in Chrome (owner-checked 2026-10-29). Trust visits, not views, for the calculator.
 - **Search traffic is Bing China, not Google.** New sessions: direct ~450, Bing ~230 (cn.bing.com
-  190), t.co ~40, Google ~10 (google.com.hk). Google indexing is the open question, not ranking.
+  190), t.co ~40, Google ~10 (google.com.hk). This historical sample alone cannot distinguish
+  indexing, search demand, ranking or click-through explanations.
 - **Readers are mostly in China, on Windows desktops.** Visits: China ~350, Singapore ~170 (likely
   includes the owner's own testing), US ~90, Japan ~30. Desktop 560 visits / 1,300 views, mobile
   180 / 900 — mobile readers go deeper per visit, so the 390 px checks matter.
@@ -1112,9 +1118,10 @@ math. Check them against the real `config.json` before shipping a model; GPT-OSS
   816 impressions, ~1–3/day in August, ~7/day early September, **20–35/day since ~09-27**. Countries
   are the mirror image of Cloudflare's — US 137, UK 72, Germany 64, Canada 47 … China 2; desktop 93%.
   **`/cookbook/amd-rocm-llamacpp/` alone is 482 (59%)**, then Qwen3-Coder 30B-A3B's model page 48,
-  `docker-ollama-gpu` 47, `m1-8gb-ollama-limits` 37, `8gb-gpu-starter-guide` 22. So Google does
-  know and cite the site; the near-zero Google visits in Cloudflare are AI answers satisfying the
-  query, not missing indexing. Consequence: the English guides Google cites are treated as
+  `docker-ollama-gpu` 47, `m1-8gb-ollama-limits` 37, `8gb-gpu-starter-guide` 22. This is historical
+  evidence that Google knew/cited those pages. It does not establish that AI answers caused low
+  visits, rule out indexing problems elsewhere, or explain a later traffic drop. Ordinary Web
+  performance and comparable visit windows are required (corrected 2026-11-16). Consequence: the English guides Google cites are treated as
   reference text by other systems — **keep the AMD ROCm guide's commands current first**, and a
   wrong figure there costs more than one elsewhere. Clicks/CTR/position need the ordinary
   Performance report, not yet seen.

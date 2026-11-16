@@ -30,6 +30,8 @@ export const FEEDBACK_EMAIL = 'zjy@quantized.uk';
 /** Owner-confirmed official X account. Keep all public references in sync. */
 export const X_HANDLE = 'toquantized';
 export const X_URL = `https://x.com/${X_HANDLE}`;
+/** Related RAG tool operated by the same owner; cross-links preserve language. */
+export const RERANKER_URL = 'https://reranker.uk';
 
 export function canonical(path = ''): string {
   if (!path || path === '/') return `${SITE_URL}/`;

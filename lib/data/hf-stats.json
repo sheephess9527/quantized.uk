@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-15T11:29:51.388Z",
+  "fetchedAt": "2026-11-16T01:23:09.507Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 122,
   "models": {
@@ -42,7 +42,7 @@
     "qwen2.5-14b": {
       "repo": "Qwen/Qwen2.5-14B-Instruct-GGUF",
       "downloads": 48793,
-      "likes": 80,
+      "likes": 81,
       "lastModified": "2024-09-20T06:43:49.000Z"
     },
     "qwen2.5-32b": {
@@ -60,13 +60,13 @@
     "qwen2.5-3b": {
       "repo": "Qwen/Qwen2.5-3B-Instruct-GGUF",
       "downloads": 306507,
-      "likes": 233,
+      "likes": 234,
       "lastModified": "2024-09-20T06:34:33.000Z"
     },
     "qwen2.5-coder-7b": {
       "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
       "downloads": 393238,
-      "likes": 659,
+      "likes": 662,
       "lastModified": "2024-11-12T07:59:32.000Z"
     },
     "qwen2.5-coder-32b": {
@@ -150,7 +150,7 @@
     "qwen2.5-1.5b": {
       "repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
       "downloads": 566120,
-      "likes": 203,
+      "likes": 204,
       "lastModified": "2024-09-20T06:31:38.000Z"
     },
     "mistral-7b-v0.3": {
@@ -204,7 +204,7 @@
     "qwen3-8b": {
       "repo": "Qwen/Qwen3-8B-GGUF",
       "downloads": 841360,
-      "likes": 392,
+      "likes": 398,
       "lastModified": "2025-05-21T06:31:50.000Z"
     },
     "qwen3-14b": {
@@ -246,7 +246,7 @@
     "deepseek-v3": {
       "repo": "deepseek-ai/DeepSeek-V3",
       "downloads": 1409220,
-      "likes": 4461,
+      "likes": 4462,
       "lastModified": "2025-03-27T04:01:45.000Z"
     },
     "deepseek-r1": {
@@ -264,7 +264,7 @@
     "qwen3-4b": {
       "repo": "Qwen/Qwen3-4B-GGUF",
       "downloads": 743914,
-      "likes": 224,
+      "likes": 226,
       "lastModified": "2025-05-21T06:32:23.000Z"
     },
     "mistral-large-3": {
@@ -312,13 +312,13 @@
     "gpt-oss-20b": {
       "repo": "openai/gpt-oss-20b",
       "downloads": 5590307,
-      "likes": 5316,
+      "likes": 5317,
       "lastModified": "2025-08-26T17:25:47.000Z"
     },
     "gpt-oss-120b": {
       "repo": "openai/gpt-oss-120b",
       "downloads": 2418465,
-      "likes": 5522,
+      "likes": 5523,
       "lastModified": "2025-08-26T17:25:03.000Z"
     },
     "glm-4.5-air": {
@@ -366,7 +366,7 @@
     "qwen3-8-27b": {
       "repo": "bartowski/Qwen3.8-27B-GGUF",
       "downloads": 316394,
-      "likes": 233,
+      "likes": 235,
       "lastModified": "2026-10-13T15:05:45.000Z"
     },
     "glm-4.7-flash": {
@@ -378,31 +378,31 @@
     "kimi-linear-48b-a3b": {
       "repo": "moonshotai/Kimi-Linear-48B-A3B-Instruct",
       "downloads": 49732,
-      "likes": 617,
+      "likes": 618,
       "lastModified": "2025-12-16T14:50:08.000Z"
     },
     "gemma-4-26b-a4b": {
       "repo": "google/gemma-4-26B-A4B-it",
       "downloads": 5137386,
-      "likes": 1777,
+      "likes": 1778,
       "lastModified": "2026-07-20T16:42:12.000Z"
     },
     "gemma-4-31b": {
       "repo": "google/gemma-4-31B-it",
       "downloads": 6435249,
-      "likes": 4371,
+      "likes": 4376,
       "lastModified": "2026-07-20T16:42:18.000Z"
     },
     "gemma-4-e4b": {
       "repo": "unsloth/gemma-4-E4B-it-GGUF",
       "downloads": 726020,
-      "likes": 693,
+      "likes": 695,
       "lastModified": "2026-07-17T12:49:21.000Z"
     },
     "gemma-4-e2b": {
       "repo": "google/gemma-4-E2B-it",
       "downloads": 2898369,
-      "likes": 1133,
+      "likes": 1134,
       "lastModified": "2026-11-03T16:10:29.000Z"
     },
     "smollm3-3b": {
@@ -432,13 +432,13 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 2997819,
-      "likes": 7138,
+      "likes": 7156,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
       "repo": "bartowski/Qwen_Qwen3.6-35B-A3B-GGUF",
       "downloads": 289430,
-      "likes": 174,
+      "likes": 175,
       "lastModified": "2026-05-20T02:50:29.000Z"
     },
     "qwen3-6-27b": {
@@ -450,25 +450,25 @@
     "qwen3-5-9b": {
       "repo": "bartowski/Qwen_Qwen3.5-9B-GGUF",
       "downloads": 182862,
-      "likes": 123,
+      "likes": 124,
       "lastModified": "2026-05-19T20:15:34.000Z"
     },
     "qwen3-5-4b": {
       "repo": "Qwen/Qwen3.5-4B",
       "downloads": 4928305,
-      "likes": 1235,
+      "likes": 1237,
       "lastModified": "2026-03-02T00:52:52.000Z"
     },
     "qwen3-5-2b": {
       "repo": "Qwen/Qwen3.5-2B",
       "downloads": 4789238,
-      "likes": 484,
+      "likes": 486,
       "lastModified": "2026-03-02T11:26:29.000Z"
     },
     "qwen3-5-0.8b": {
       "repo": "Qwen/Qwen3.5-0.8B",
       "downloads": 2992096,
-      "likes": 841,
+      "likes": 844,
       "lastModified": "2026-03-02T11:26:58.000Z"
     },
     "mimo-v2-6-pro": {
@@ -504,7 +504,7 @@
     "nemotron-3.5-super-vl-120b-a12b": {
       "repo": "ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF",
       "downloads": 76332,
-      "likes": 13,
+      "likes": 14,
       "lastModified": "2026-11-12T11:10:55.000Z"
     },
     "granite-4.2-30b": {
@@ -522,13 +522,13 @@
     "nemotron-3.5-lightning-30b-a3b": {
       "repo": "ggml-org/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
       "downloads": 222528,
-      "likes": 37,
+      "likes": 38,
       "lastModified": "2026-11-12T09:59:09.000Z"
     },
     "lfm2-5-24b-a2b": {
       "repo": "LiquidAI/LFM2.5-24B-A2B-GGUF",
       "downloads": 215618,
-      "likes": 263,
+      "likes": 265,
       "lastModified": "2026-11-06T03:22:24.000Z"
     },
     "beam-1.0-501b-a23b": {
@@ -570,7 +570,7 @@
     "lfm3-1-7b": {
       "repo": "LiquidAI/LFM3-1.7B-GGUF",
       "downloads": 357497,
-      "likes": 295,
+      "likes": 301,
       "lastModified": "2026-11-03T14:48:57.000Z"
     },
     "lfm3-vl-2b": {
@@ -600,7 +600,7 @@
     "ripple-65b-preview": {
       "repo": "ricursiveAI/Ripple-65B-Preview",
       "downloads": 10675,
-      "likes": 584,
+      "likes": 585,
       "lastModified": "2026-11-10T09:31:23.000Z"
     },
     "hy-memory-30b-a3b": {
@@ -678,7 +678,7 @@
     "nanbeige4.3-33b": {
       "repo": "bartowski/Nanbeige_Nanbeige4.3-33B-GGUF",
       "downloads": 158727,
-      "likes": 33,
+      "likes": 35,
       "lastModified": "2026-10-25T15:32:07.000Z"
     },
     "spark-x2.6-4b": {
@@ -726,13 +726,13 @@
     "arete-27b": {
       "repo": "bartowski/NousResearch_Arete-27B-GGUF",
       "downloads": 74322,
-      "likes": 46,
+      "likes": 48,
       "lastModified": "2026-11-06T22:22:09.000Z"
     },
     "twil-8b-balanced": {
       "repo": "webAI-Official/TwIL-8B",
       "downloads": 59753,
-      "likes": 409,
+      "likes": 411,
       "lastModified": "2026-11-08T09:57:35.000Z"
     }
   }

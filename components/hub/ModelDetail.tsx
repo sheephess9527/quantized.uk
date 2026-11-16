@@ -14,6 +14,7 @@ import { hfRepoMap } from '@/lib/data/hf-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import RelatedReports from '@/components/reports/RelatedReports';
+import RerankerLink from '@/components/tools/RerankerLink';
 import CopyButton from '@/components/ui/CopyButton';
 import { getSimilarModels } from '@/lib/utils/related';
 import { isSuperseded, quantConfidence, supersededDiffNote } from '@/lib/utils/model-meta';
@@ -175,6 +176,7 @@ export default function ModelDetail({ model }: Props) {
         />
       </div>
 
+      <RerankerLink placement="model" />
       <div className="glass rounded-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-lg font-semibold text-slate-200">{d.quantTable}</h2>

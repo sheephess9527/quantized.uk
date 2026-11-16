@@ -370,6 +370,11 @@ pages_build_output_dir = "out"
 
 ## 7. Updating Content
 
+`components/tools/RerankerLink.tsx` is the shared model/VRAM handoff to the related
+reranker.uk picker. Destinations preserve EN/ZH and use public UTM source/placement
+labels. `lib/site.ts` owns the origin. Reranker sizing is a separate workflow from
+this site's generation-model memory estimates.
+
 For launch commands, the selected quant's recorded single-file `source.file` and
 `source.repo` take precedence over repository-name inference. This is required for
 variant suffixes (TwIL balanced) and mixed original/GGUF repositories. Split rows
@@ -494,6 +499,18 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-16 — Related RAG tool links and Google traffic technical audit
+
+- Model pages and VRAM (all modes) now link to reranker.uk's picker using the
+  current language and public referral UTM labels; no model/hardware/user IDs are sent.
+  The reverse link explicitly scopes this site's calculator to the LLM stage.
+- Current public-page/robots/sitemap audit found sampled pages indexable and
+  serving real HTML. No current Search Console click series was available; this
+  does **not** establish a cause for the user-reported Google decline. Corrected
+  the historical inference that AI-feature impressions explained low visits.
+- [Implementation record](docs/changes/2026-11-16-cross-links.md) and
+  [technical audit / source gap](docs/audits/2026-11-16-google-traffic.md).
 
 ### 2026-11-15 (iv) — Evening patrol: two models, exact GGUF filenames, runtime refresh
 

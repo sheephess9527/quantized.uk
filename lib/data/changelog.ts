@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-16',
+    en: 'Model pages and the VRAM calculator now link to the reranker picker on reranker.uk, with the matching language. Its pages also link back to the LLM memory calculator, keeping the two stages of a RAG pipeline separate.',
+    zh: '模型页和显存计算器新增 reranker.uk 选型向导入口，并保持语言一致。reranker.uk 页面也链接回生成式 LLM 的显存计算器，方便分别规划 RAG 中的两个环节。',
+  },
+  {
     date: '2026-11-15',
     en: 'Arete 27B and TwIL 8B balanced are now indexed from published GGUF files. TwIL is licensed for non-commercial research and education only; its verbose checkpoint is separate. Launch commands now use the recorded filename, so variants are not guessed from the repository name. Windows llama.cpp downloads move to b12409, whose assets were checked, the pending list records newly reviewed candidates and their blockers, and RSS now mixes models and updates by date without arbitrary future-noon timestamps.',
     zh: '按已发布的 GGUF 文件补录 Arete 27B 和 TwIL 8B balanced。TwIL 仅允许非商业研究和教育用途，verbose 是另一套权重。启动命令现在使用已记录的确切文件名，不再从仓库名猜测变体。Windows llama.cpp 下载更新为已核实资产的 b12409；待收录页补充了新核查的候选及阻碍原因；RSS 按日期混排模型和更新，不再使用可能落在未来的固定中午时间。',
