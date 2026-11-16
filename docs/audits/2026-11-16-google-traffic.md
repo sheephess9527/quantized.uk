@@ -66,8 +66,11 @@ been corrected while retaining the historical sample and its dates.
 
 ## Evidence needed to finish the diagnosis
 
-Use the site's ordinary **Web Search** performance, separately from AI features,
-Discover, Bing and all-channel analytics. Obtain the latest three months of daily
+Use the site's **Web Search** performance with its exact reporting scope,
+separately from Discover, Bing and all-channel analytics. Some AI-feature links
+can already be included in Web performance; do not add or subtract a separately
+labeled AI report without checking its definitions and overlap. Obtain the latest
+three months of daily
 clicks/impressions/CTR/position plus page/query/country/device dimensions, property
 and filters. Compare equally long complete windows (28 days versus preceding
 28 days; also align weekdays), ending on the latest complete available day.

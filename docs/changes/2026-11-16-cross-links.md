@@ -33,7 +33,18 @@ model/GPU details, new analytics scripts or cross-site cookies are added.
   table backlinks pass in EN/ZH at 390px, with 1440px overflow checks. Correct
   destination languages, placement/source UTM labels, clickable external links
   and the LLM-versus-reranker scope text were checked. No page errors.
-- Work prepared on `feature/reranker-cross-links`; deployment checks follow.
+- Application commit `fb2c3da` was fast-forward merged into `main` and pushed.
+- GitHub `data-checks` and [Cloudflare Pages deployment](https://dash.cloudflare.com/?to=/7d5a680e05e83711c23f19702fc6480d/pages/view/quantized-uk/922f2803-6e2d-48e4-8ad7-84a544cba1ca)
+  both completed successfully.
+- Production Chromium checks passed in **both EN and ZH** after deployment:
+  model/VRAM forward links plus reranker homepage/picker/model-index backlinks,
+  destination language, public UTM parameters, actionable links, LLM scope text,
+  mobile/desktop overflow and absence of page errors. Production screenshots are
+  in the audit scratch directory; they contain public pages only.
+- Reciprocal reranker application commit `8e35f70` also passed its GitHub CI and
+  Cloudflare Workers deployment; the same production browser run checked it.
+- The follow-up commit changes Markdown delivery records only; tested application
+  sources are unchanged. Merged feature branches are removed after verification.
 - Google traffic diagnosis remains blocked on actual performance data; the public
   technical findings and exact limitation are recorded separately, not presented
   as a measured cause or a promise of SEO recovery.
