@@ -81,6 +81,9 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'botpsy-0-8b': 'apache-2.0',
+  'mnn-pocket-0-3b': 'apache-2.0',
+  'mnn-pocket-0-3b-qat': 'apache-2.0',
   'arete-27b': 'apache-2.0',
   'twil-8b-balanced': 'webai-nc-1.0',
   'lfm2-5-1-2b': 'lfm-open-1.0',

@@ -25,6 +25,66 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    "id": "quark-150m-128k-zero",
+    "name": "Quark 150M 128K Zero",
+    "vendor": "Empero AI",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The original Apache-2.0 checkpoint is readable. Its custom QuarkForCausalLM has 12 local hybrid sliding/convolution layers and four global attention layers. Stock llama.cpp has no Quark architecture entry, and the Hub search found no verified GGUF. This is not ordinary Qwen cache sizing.",
+      "zh": "可读取原始 Apache-2.0 权重。自定义 QuarkForCausalLM 包含 12 层局部滑窗、卷积混合层与 4 层全局注意力。上游 llama.cpp 没有 Quark 架构条目，Hub 搜索也未找到可核实 GGUF。不套用常规 Qwen 缓存公式。"
+    },
+    "recheck": {
+      "en": "When upstream support, quantized files and audited hybrid state/cache sizing are available.",
+      "zh": "上游支持、量化文件与经审计的混合状态、缓存估算可核实时。"
+    },
+    "checkedAt": "2026-11-17"
+  },
+  {
+    "id": "lara-4-mini-base",
+    "name": "Lara 4 Mini Base",
+    "vendor": "Translated",
+    "reason": "awaiting-data",
+    "detail": {
+      "en": "The original metadata identifies a manually gated translation checkpoint under CC BY-NC-SA 4.0. Config and model card requests return 401 in this patrol, and the search found no GGUF. Metadata alone does not verify its cache or quant sizes; an access failure does not mean weights are absent.",
+      "zh": "原始元数据表明这是需人工授权的翻译权重，采用 CC BY-NC-SA 4.0。本次读取配置和模型卡返回 401，搜索未找到 GGUF。仅凭元数据不能核实缓存或量化大小；访问失败不代表权重不存在。"
+    },
+    "recheck": {
+      "en": "When the original config, licence terms and a supported quant-file listing can be read.",
+      "zh": "能读取原始配置、许可条款及受支持的量化文件列表时。"
+    },
+    "checkedAt": "2026-11-17"
+  },
+  {
+    "id": "kormo-web-9b-11b",
+    "name": "KORMo Web 9B / 11B",
+    "vendor": "KORMo-VL",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Official Apache-2.0 browser-agent weights and configs are readable. The 9B model uses Qwen3.5 vision, while 11B uses a Llava-OneVision wrapper with a custom KORMo text backbone. The current Hub search found no verified GGUF/projector listing for either; their encoders and runtime compatibility must not be inferred from parameter labels.",
+      "zh": "可读取官方 Apache-2.0 浏览器智能体权重与配置。9B 使用 Qwen3.5 视觉架构，11B 则为 Llava-OneVision 外层加自定义 KORMo 文本骨干。本次 Hub 搜索未找到两者可核实的 GGUF、投影文件列表；不能从参数标签推断编码器大小和运行时兼容性。"
+    },
+    "recheck": {
+      "en": "When compatible GGUFs/projectors, byte counts and exact backbone runtime support are verified.",
+      "zh": "核实兼容 GGUF、投影文件及字节数，并确认具体骨干的运行时支持后。"
+    },
+    "checkedAt": "2026-11-17"
+  },
+  {
+    "id": "ernie-5-5-flash-base",
+    "name": "ERNIE 5.5 Flash Base",
+    "vendor": "Baidu",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Official FP8 weights and config are readable, with a custom ERNIE licence. The 43-layer architecture combines 37 heavily compressed attention layers with six sparse MLA/indexer layers and latent-MoE experts. No verified standard GGUF listing was found, and this calculator cannot express its compressed caches yet.",
+      "zh": "可读取官方 FP8 权重和配置，采用自定义 ERNIE 许可。43 层结构中包含 37 层高度压缩注意力、6 层稀疏 MLA 与索引器，以及潜在 MoE 专家。本次未找到可核实的标准 GGUF 文件列表，计算器也还不能表达其压缩缓存。"
+    },
+    "recheck": {
+      "en": "After auditing runtime/cache support and quant-file bytes, then comparing with a published memory observation.",
+      "zh": "审计运行时、缓存支持与量化文件字节数，并对照公开内存记录后。"
+    },
+    "checkedAt": "2026-11-17"
+  },
+  {
     "id": "edge0-latent-moe",
     "name": "Edge0 120B / 145B",
     "vendor": "Edge0",
@@ -37,7 +97,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When the custom pack, engine and memory residency can be modelled and checked against a reproducible run.",
       "zh": "能表达这些自定义文件包、引擎与内存驻留规则，并对照可复现运行后。"
     },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     "id": "inkling-2-small",
@@ -52,7 +112,7 @@ export const pendingModels: PendingModel[] = [
       "en": "After checking inkling2 cache/routing implementation, complete quant file sizes and a published memory measurement.",
       "zh": "核实 inkling2 缓存、路由实现、完整量化文件大小与公开内存实测后。"
     },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     "id": "nex-n2-6",
@@ -67,7 +127,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When compressed-cache/indexer sizing is implemented and verified against actual files and memory observations.",
       "zh": "实现压缩缓存与索引器估算，并对照实际文件和内存记录核实后。"
     },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     "id": "raon-1-nano",
@@ -82,22 +142,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When upstream runtime support and audited RDA/MLA sizing are available.",
       "zh": "上游运行时支持落地且 RDA、MLA 估算经审计后。"
     },
-    "checkedAt": "2026-11-15"
-  },
-  {
-    "id": "mnn-pocket-0-3b",
-    "name": "MNN-Pocket 0.3B",
-    "vendor": "Alibaba MNN",
-    "reason": "not-sized",
-    "detail": {
-      "en": "The original Qwen3-family checkpoint and Apache-2.0 metadata are readable. A Hub search found the original/base/SFT and FP8 repositories but no verifiable GGUF file listing. No per-quant memory figure is inferred from the mobile MNN package.",
-      "zh": "可读取原始 Qwen3 系列权重和 Apache-2.0 元数据。Hub 搜索找到原始、Base、SFT 和 FP8 仓库，但尚未找到可核实的 GGUF 文件列表。不从移动端 MNN 文件包推断各量化档位内存。"
-    },
-    "recheck": {
-      "en": "When a published standard-level GGUF listing with byte counts can be verified.",
-      "zh": "能核实已发布的标准档位 GGUF 文件列表和字节数时。"
-    },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     "id": "klm-1-6",
@@ -112,7 +157,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When a supported runtime, audited state/cache layout and quantized files can be checked.",
       "zh": "可核实受支持运行时、经审计的状态与缓存布局，以及量化文件后。"
     },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     "id": "hy4-final",
@@ -127,7 +172,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When the official final-checkpoint repository, config, licence and quant files can be read.",
       "zh": "能读取官方最终版仓库、配置、许可与量化文件时。"
     },
-    "checkedAt": "2026-11-15"
+    "checkedAt": "2026-11-17"
   },
   {
     id: 'kimi-k3-1-pro',
@@ -143,7 +188,7 @@ export const pendingModels: PendingModel[] = [
       en: 'After auditing the cache implementation and an actual quantized-file listing, then checking against a published memory measurement.',
       zh: '审计缓存实现和实际量化文件列表，并对照公开内存实测后。',
     },
-    checkedAt: '2026-11-15',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'minimax-m3-1-flash',
@@ -156,7 +201,7 @@ export const pendingModels: PendingModel[] = [
       zh: '一个 428B 的混合专家模型，每个 token 约激活 23B 参数，10 月 23 日以 MiniMax Community License 发布。它的配置现在已读到：60 层（3 层稠密、57 层各有 128 个路由专家，每个 token 用 4 个），4 个 KV 头 × 128 维，官方权重里的专家以 NVFP4 存储。llama.cpp 以 `minimax-m3` 加载它，使用带索引器的 MiniMax 稀疏注意力——本站还没有计算过这种缓存结构。目前只有 unsloth 的动态 UD-* GGUF（UD-Q4_K_XL 为 249 GB），没有标准档位，所以暂不计算显存。按这个体积，只有 512 GB 的 Mac 能装下。',
     },
     recheck: { en: 'When its cache layout has been read in llama.cpp\'s source and a standard-level GGUF exists.', zh: '在 llama.cpp 源码里核实它的缓存结构、并且有标准档位的 GGUF 时。' },
-    checkedAt: '2026-10-29',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'deepseek-v4-1-flash-1017',
@@ -172,7 +217,7 @@ export const pendingModels: PendingModel[] = [
       en: 'When the calculator models this cache and a GGUF from a widely used publisher can be read with its byte counts.',
       zh: '计算器能算这种缓存，并且能读到常用量化者 GGUF 的字节数时。',
     },
-    checkedAt: '2026-10-26',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'deepseek-v4-flash-0731',
@@ -188,7 +233,7 @@ export const pendingModels: PendingModel[] = [
       en: 'When the calculator models this cache and the result is checked against a published memory measurement.',
       zh: '计算器能算这种缓存，并且结果与一份公开的显存实测对上时。',
     },
-    checkedAt: '2026-10-21',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'step-5-preview',
@@ -204,7 +249,7 @@ export const pendingModels: PendingModel[] = [
       en: 'When the Step-5 cache and a supported quantized-file listing have been audited and checked against a memory observation.',
       zh: '审计 Step-5 缓存和受支持的量化文件列表，并对照内存记录后。',
     },
-    checkedAt: '2026-11-15',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'dory-1-0-4b',
@@ -217,7 +262,7 @@ export const pendingModels: PendingModel[] = [
       zh: '循环结构（nGPT 风格）的 4B 模型。llama.cpp 支持 PR #30306 已不再是草稿，但仍未合并，正式发行版支持尚待落实。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-11-15',
+    checkedAt: '2026-11-17',
   },
   {
     id: 'glm-5-3-flash',
@@ -230,6 +275,6 @@ export const pendingModels: PendingModel[] = [
       zh: '它的配置现在已读到：约 320B 参数（BF16 GGUF 为 641.6 GB），45 层中 34 层是线性注意力、11 层是带压缩缓存和索引器的稀疏注意力，288 个路由专家、每个 token 用 8 个。llama.cpp 以 `glm5-next` 加载它。已发布的 GGUF 是 unsloth 的动态 UD-* 版本加上 Q8_0（341 GB），没有标准的 Q4_K_M；它的缓存结构也还没对照 llama.cpp 核实，所以暂不计算显存。按这个体积，只有 512 GB 的 Mac 能装下。',
     },
     recheck: { en: 'When its cache layout has been read in llama.cpp\'s source and a standard 4-bit GGUF exists.', zh: '在 llama.cpp 源码里核实它的缓存结构、并且有标准 4-bit GGUF 时。' },
-    checkedAt: '2026-10-29',
+    checkedAt: '2026-11-17',
   },
 ];

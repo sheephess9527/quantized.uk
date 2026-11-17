@@ -53,6 +53,9 @@ export const quantBPW: Record<string, number> = {
   'Q4_K_M':   4.85,
   'Q4_K_S':   4.58,
   'Q4_0':     4.55,
+  // ggml-common.h block_q4_1: 2 FP16 scales + 16 nibble bytes per 32 weights.
+  // Pocket QAT uses exact published file bytes, not this generic 5-bit block rate.
+  'Q4_1':     5,
   // llama.cpp's IQ4_XS block rate (136 bytes per 256 weights). Metis-1.6's own files run
   // 4.74–4.98 over the whole model (embeddings and norms kept wider; models-extra-12.ts).
   'IQ4_XS':   4.25,
@@ -92,7 +95,7 @@ export const quantBPW: Record<string, number> = {
 };
 
 export const quantGroups: Record<string, string[]> = {
-  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q8_0-expsIQ1_M', 'Q8_0-expsIQ2_XXS', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
+  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q8_0-expsIQ1_M', 'Q8_0-expsIQ2_XXS', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_1', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
   'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 3.5bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],

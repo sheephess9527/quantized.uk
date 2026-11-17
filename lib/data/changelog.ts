@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-17',
+    en: 'Three lightweight checkpoints are now indexed from official GGUFs: MNN-Pocket Instruct, its distinct QAT Q4_1 checkpoint, and BotPsy for tool calling. The two Pocket checkpoints have different stored parameter counts and are kept separate. vLLM is updated to 0.34.0; pending candidates and homepage pick ordering were reviewed.',
+    zh: '按官方 GGUF 补录三个轻量权重：MNN-Pocket Instruct、独立的 QAT Q4_1 权重，以及用于工具调用的 BotPsy。两套 Pocket 权重实际存储参数量不同，分开收录。vLLM 更新至 0.34.0，并核查待收录候选、修正首页推荐排序。',
+  },
+  {
     date: '2026-11-16',
     en: 'Model pages and the VRAM calculator now link to the reranker picker on reranker.uk, with the matching language. Its pages also link back to the LLM memory calculator, keeping the two stages of a RAG pipeline separate.',
     zh: '模型页和显存计算器新增 reranker.uk 选型向导入口，并保持语言一致。reranker.uk 页面也链接回生成式 LLM 的显存计算器，方便分别规划 RAG 中的两个环节。',

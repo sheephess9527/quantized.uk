@@ -21,17 +21,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
 content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
 
-**Live snapshot (2026-11-15):**
+**Live snapshot (2026-11-17):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **142** in index (`models-extra` … `models-extra-14`), 122 active |
+| Models | **145** in index (`models-extra` … `models-extra-15`), 125 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (142 models: 140 licensed, 39 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (145 models: 143 licensed, 39 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 620 exported pages, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 626 exported pages, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -75,6 +75,19 @@ type-checks fine and ships "undefined" to Chinese readers). Unlike `prebuild`, t
 flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
+
+- **Checkpoint identity comes before quant level:** Pocket QAT Q4_1 and the
+  BF16-derived Q8_0 have different stored output-table layouts and parameter
+  counts; keep separate model entries. Read GGUF tensor metadata when original
+  repository totals include vision or duplicated/tied output tables. Q4_1 is a
+  GGUF level (20 bytes per 32 weights in upstream ggml), not a new format.
+- **Homepage picks sort by `addedAt`, then unique feed ID**, before slicing.
+  `dataProblems()` rejects duplicate feed IDs; do not reuse old IDs in new packs.
+- **Stable runtime versus binary pin:** llama.cpp v1.0.0's `nightly-tag.txt`
+  resolves to b12359. Keep the verified Windows pin explicit; newer GitHub
+  b-builds flagged prerelease are not a new stable semantic release. Runtime
+  checks record both rather than silently upgrading to a prerelease or
+  downgrading the existing b12409 pin. Recheck asset names before any pin change.
 
 - **Related RAG tools:** model pages and VRAM link to the same-owner reranker.uk
   picker in the matching language. Use `RERANKER_URL` and `RerankerLink`, with only
@@ -1187,7 +1200,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-13)
+lib/data/models-extra-*.ts  # model packs (currently through extra-15)
 lib/data/meta.ts            # dataLastUpdated, runtimeVersions, methodology
 lib/data/changelog.ts       # reader-facing changelog (never re-export it from meta.ts)
 lib/site.ts                 # data-free constants for client components (email, GPU_COUNT, canonical)

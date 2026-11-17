@@ -50,6 +50,7 @@ export function referenceQuant(quants: QuantVariant[]): QuantVariant {
     // smallest machine when Q4_0 runs on 128 GB.
     quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_S') ??
     quants.find(q => q.format === 'GGUF' && q.level === 'Q4_0') ??
+    quants.find(q => q.format === 'GGUF' && q.level === 'Q4_1') ??
     bestQuant(quants)
   );
 }

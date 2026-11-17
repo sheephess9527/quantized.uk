@@ -20,7 +20,10 @@ const typeConfig = {
  * second copy of the Hub's recency filter, which the "view all" link covers.
  */
 const PICKS_SHOWN = 6;
-const picks = [...todayFeed].sort((a, b) => b.id - a.id).slice(0, PICKS_SHOWN);
+const addedAt = new Map(models.map(m => [m.id, m.addedAt ?? '']));
+const picks = [...todayFeed].sort((a, b) =>
+  (addedAt.get(b.modelId) ?? '').localeCompare(addedAt.get(a.modelId) ?? '') || b.id - a.id
+).slice(0, PICKS_SHOWN);
 
 export default function TodayBoard() {
   const { t, lang } = useLanguage();

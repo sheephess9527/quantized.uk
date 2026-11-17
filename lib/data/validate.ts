@@ -103,6 +103,7 @@ export function dataProblems(): string[] {
     }
   }
 
+  dupes(todayFeed.map(f => String(f.id))).forEach(id => out.push(`duplicate todayFeed id: ${id}`));
   for (const f of todayFeed) {
     const m = models.find(x => x.id === f.modelId);
     if (!m) out.push(`todayFeed: '${f.modelId}' is not a model id`);

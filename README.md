@@ -96,8 +96,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   140 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-14 (packs)
+    models.ts               #   145 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-15 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -428,7 +428,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-14.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-15.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -499,6 +499,26 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-17 — Evening patrol: Pocket checkpoints, BotPsy and vLLM 0.34
+
+- Three distinct checkpoints added: MNN-Pocket 0.3B Instruct (Q8_0), MNN-Pocket
+  0.3B QAT (Q4_1), and BotPsy 0.8B (Q4_K_M / Q8_0). Official file bytes and GGUF
+  tensor metadata were read; Pocket QAT has tied embeddings while its BF16-derived
+  Q8_0 has a separate output table. No speed/PPL is invented. Index: 145 total,
+  125 active, 143 licences recorded; 39 image-capable entries remain unchanged.
+- Added GGUF Q4_1 selection (upstream block rate 5 bits/weight; actual rows use
+  exact files). QAT checkpoints remain distinct from ordinary PTQ conversions.
+- vLLM stable is 0.34.0; its new cache defaults are explained beside current
+  versions. Existing generated commands explicitly set memory utilization 0.85.
+  llama.cpp stable v1.0.0 resolves to b12359; retained previously verified b12409
+  Windows binaries, rather than silently adopting the newer prerelease b12470.
+- Removed Pocket from pending; rechecked remaining candidates and added Quark,
+  Lara Mini, KORMo Web and ERNIE 5.5 blockers. No absent-weight inference from 401.
+- Fixed duplicate homepage pick IDs and sorted picks by model addition date
+  before slicing. Added a duplicate-ID data invariant.
+- Full source decisions, file inventory, checks and production status:
+  [November 17 patrol record](docs/changes/2026-11-17-patrol.md).
 
 ### 2026-11-16 — Related RAG tool links and Google traffic technical audit
 
