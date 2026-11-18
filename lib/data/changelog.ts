@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-18',
+    en: 'The VRAM calculator puts the fit estimate and launch commands at the top of the result. When memory is tight, apply a smaller quant or shorter context with one click if it improves the fit. Ollama launch commands now set the chosen context in a local model.',
+    zh: '显存计算器在结果顶部显示适配估算和启动命令。显存偏紧时，可以一键采用经计算能改善适配的量化档位或更短上下文。Ollama 启动命令会在本地模型中设置所选上下文。',
+  },
+  {
     date: '2026-11-17',
     en: 'Three lightweight checkpoints are now indexed from official GGUFs: MNN-Pocket Instruct, its distinct QAT Q4_1 checkpoint, and BotPsy for tool calling. The two Pocket checkpoints have different stored parameter counts and are kept separate. vLLM is updated to 0.34.0; pending candidates and homepage pick ordering were reviewed.',
     zh: '按官方 GGUF 补录三个轻量权重：MNN-Pocket Instruct、独立的 QAT Q4_1 权重，以及用于工具调用的 BotPsy。两套 Pocket 权重实际存储参数量不同，分开收录。vLLM 更新至 0.34.0，并核查待收录候选、修正首页推荐排序。',

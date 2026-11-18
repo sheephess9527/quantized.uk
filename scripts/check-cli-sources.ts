@@ -33,6 +33,15 @@ for (const env of ['linux', 'windows', 'mac', 'docker', 'compose'] as Env[]) {
     }
   }
 }
+for (const env of ['linux', 'windows', 'mac'] as const) {
+  const launch = generateCLI({ ...opts, env, framework: 'ollama', ollamaSetContext: true, contextLen: 8192 });
+  assert(launch.command.includes(`FROM hf.co/${q.source!.repo}:${filename}`));
+  assert(launch.command.includes('PARAMETER num_ctx 8192'));
+  assert(launch.command.includes('ollama run quantized-twil-8b-balanced:q4_k_m-ctx8192'));
+  const standalone = generateCLI({ ...opts, env, framework: 'ollama' });
+  assert(!standalone.command.includes('PARAMETER num_ctx'));
+}
+
 const unmapped = generateCLI({ ...opts, hfRepo: 'publisher/original-weights', ggufFilename: undefined });
 assert(unmapped.command.includes('<hf-gguf-repo-id>'), 'original-weight repo without file evidence remains unverified');
 const fallback = generateCLI({ ...opts, hfRepo: 'publisher/Example-GGUF', ggufFilename: undefined, fileGB: 70 });

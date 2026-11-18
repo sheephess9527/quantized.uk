@@ -500,6 +500,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-18 — Run plan above the VRAM breakdown
+
+The calculator now previews the estimate, usable budget, headroom and launch
+commands together. Apply a quant or context change when the existing sizing
+rules predict an improved fit. Native Ollama calculator commands set
+`num_ctx` on a separate local model. See the [implementation and checks](docs/changes/2026-11-18-calculator-run-plan.md).
+
 ### 2026-11-17 — Evening patrol: Pocket checkpoints, BotPsy and vLLM 0.34
 
 - Three distinct checkpoints added: MNN-Pocket 0.3B Instruct (Q8_0), MNN-Pocket

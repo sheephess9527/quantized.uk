@@ -616,6 +616,30 @@ export default function VRAMCalculator() {
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
     : undefined;
 
+  const contextLimit = selectedModel?.contextLength ?? customCtx ?? 131072;
+  const formatOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
+  const currentVerdict = profileGpu
+    ? formatOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red'
+    : undefined;
+  const quantOptions = levels.filter(row =>
+    contextLen <= contextLimit && row.key !== selectedQuant && row.formatOk &&
+    (row.verdict === 'green' || (currentVerdict === 'red' && row.verdict === 'yellow')) &&
+    row.totalGB < result.totalGB &&
+    (!calcInput.extraGB || row.quant.format === selectedQuantObj?.format)
+  );
+  const quantFix = quantOptions.find(row => row.pick) ??
+    quantOptions.find(row => row.verdict === 'green') ?? quantOptions[quantOptions.length - 1];
+  const contextFix = profileGpu && formatOk && reach && currentVerdict !== 'green'
+    ? [reach.comfortable || (currentVerdict === 'red' ? reach.tight : 0), ...CONTEXT_PRESETS.slice().reverse()]
+        .filter(ctx => ctx > 0 && ctx < contextLen && ctx <= contextLimit)
+        .map(ctx => {
+          const totalGB = calcVRAM({ ...calcInput, contextLength: ctx }).totalGB;
+          return { ctx, totalGB, verdict: getVerdict(totalGB, rigCapacity, tightCeiling(profileGpu)) };
+        })
+        .find(row => row.totalGB < result.totalGB &&
+          (row.verdict === 'green' || (currentVerdict === 'red' && row.verdict === 'yellow')))
+    : undefined;
+
   const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
   // No model selected means no result. Allowing `selectedModelId === ''` here
   // meant the panel silently fell through to the custom-model defaults (7B /
@@ -1530,6 +1554,66 @@ export default function VRAMCalculator() {
           )}
           {mode === 'forward' && showForwardResult && (
             <div className="space-y-4">
+              <section data-testid="run-plan" className="glass min-w-0 rounded-2xl p-4 sm:p-5">
+                <h3 className="text-sm font-semibold text-slate-200">{t.calc.runPlanTitle}</h3>
+                <p className="mt-2 text-sm text-slate-300">
+                  {selectedModel?.name ?? (customRepo || t.calc.customLabel)} · {selectedQuant} · {contextLabel(contextLen)}
+                </p>
+                <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs text-slate-400" aria-live="polite">
+                  <span>{t.calc.runPlanEstimate.replace('{gb}', result.totalGB.toFixed(2))}</span>
+                  {profileGpu && <span>· {rigLabel} · {t.calc.runPlanBudget.replace('{gb}', rigCapacity.toFixed(2))}</span>}
+                  {currentVerdict && contextLen <= contextLimit && (
+                    <span className={verdictConfig[currentVerdict].label}>· {
+                      !formatOk ? t.calc.levelsNoRun :
+                      currentVerdict === 'green' ? t.calc.green :
+                      currentVerdict === 'yellow' ? t.calc.yellow : t.calc.red
+                    }</span>
+                  )}
+                  {profileGpu && formatOk && contextLen <= contextLimit && result.totalGB <= rigCapacity && (
+                    <span>· {t.calc.runPlanHeadroom.replace('{gb}', (rigCapacity - result.totalGB).toFixed(2))}</span>
+                  )}
+                </p>
+                {(currentVerdict === 'yellow' || currentVerdict === 'red') && (quantFix || contextFix) && (
+                  <div className="mt-3">
+                    <p className="text-xs font-medium text-slate-400">{t.calc.runPlanAdjust}</p>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {quantFix && (
+                        <button type="button" onClick={() => {
+                          setSelectedQuant(quantFix.key);
+                          setFormatGroup(findFormatGroup(quantFix.key));
+                        }} className="min-h-[44px] rounded-lg border border-violet-500/30 px-3 text-left text-xs text-violet-200 hover:bg-violet-500/10">
+                          {t.calc.runPlanQuant.replace('{level}', quantFix.key).replace('{gb}', quantFix.totalGB.toFixed(2))}
+                          {' · '}{quantFix.verdict === 'green' ? t.calc.green : t.calc.yellow}
+                        </button>
+                      )}
+                      {contextFix && (
+                        <button type="button" onClick={() => setContextLen(contextFix.ctx)}
+                          className="min-h-[44px] rounded-lg border border-violet-500/30 px-3 text-left text-xs text-violet-200 hover:bg-violet-500/10">
+                          {t.calc.runPlanContext.replace('{ctx}', contextLabel(contextFix.ctx)).replace('{gb}', contextFix.totalGB.toFixed(2))}
+                          {' · '}{contextFix.verdict === 'green' ? t.calc.green : t.calc.yellow}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {selectedModel && selectedQuantObj && formatOk && !ctxOverModel && (() => {
+                  const plan = profileGpu
+                    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras, selectedQuantObj.level)
+                    : undefined;
+                  if (currentVerdict === 'red' && !plan) return null;
+                  return (
+                    <LaunchCommands
+                      model={selectedModel}
+                      quant={selectedQuantObj}
+                      contextLen={contextLen}
+                      gpu={profileGpu ?? undefined}
+                      gpuLayers={plan?.gpuLayers}
+                      cpuMoe={plan?.moe && { n: plan.moe.n, all: plan.moe.all }}
+                      advanced={multiDevice || batchSize !== 1 || kvType !== 'f16' || !!calcInput.extraGB}
+                    />
+                  );
+                })()}
+              </section>
               <CalculatorEvidence
                 quant={selectedQuantObj}
                 context={contextLen} batch={batchSize} kv={kvType} encoder={result.extraGB ?? 0}
@@ -1640,21 +1724,6 @@ export default function VRAMCalculator() {
                     </div>
                   );
                 })()}
-                {selectedModel && selectedQuantObj && (() => {
-                  const plan = profileGpu && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)
-                    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras, selectedQuantObj.level)
-                    : undefined;
-                  return (
-                    <LaunchCommands
-                      model={selectedModel}
-                      quant={selectedQuantObj}
-                      contextLen={contextLen}
-                      gpu={profileGpu ?? undefined}
-                      gpuLayers={plan?.gpuLayers}
-                      cpuMoe={plan?.moe && { n: plan.moe.n, all: plan.moe.all }}
-                    />
-                  );
-                })()}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
                     {selectedQuantObj && !profileGpu && (() => {
@@ -1679,29 +1748,6 @@ export default function VRAMCalculator() {
                     >
                       {t.calc.nextGuide} →
                     </Link>
-                  </div>
-                )}
-
-                {/* Actionable when the answer is "no": the reader is told what
-                    to change and what it would cost, not just that it fails.
-                    Format mismatches get their own message below instead —
-                    halving the context does not fix a card that cannot load
-                    the format at any size. */}
-                {profileGpu && (!selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) &&
-                  getVerdict(result.totalGB, rigCapacity) !== 'green' && contextLen > 512 && (
-                  <div className="mt-4 pt-3 border-t border-white/[0.06]">
-                    <p className="text-xs font-semibold text-slate-400 mb-1.5">{t.calc.adviceTitle}</p>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      {t.calc.adviceCtx
-                        .replace('{ctx}', contextLen / 2 >= 1024 ? `${contextLen / 2048}K` : String(contextLen / 2))
-                        .replace('{gb}', calcVRAM({ ...calcInput, contextLength: contextLen / 2 }).totalGB.toFixed(2))}
-                    </p>
-                    {kvType === 'f16' && result.kvCacheGB >= 0.5 && (
-                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                        {t.calc.adviceKv.replace('{gb}', calcVRAM({ ...calcInput, kvBytesPerValue: KV_CACHE_TYPES.q8_0 }).totalGB.toFixed(2))}
-                      </p>
-                    )}
-                    <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.adviceQuant}</p>
                   </div>
                 )}
               </div>

@@ -13,7 +13,7 @@ import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { generateCLI, ggufFileGB, type Framework, type Env } from '@/lib/utils/cli';
-import { backendFor, formatAllowed } from '@/lib/utils/gpu-page';
+import { backendFor } from '@/lib/utils/gpu-page';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
 
@@ -21,6 +21,7 @@ interface Props {
   model: QuantModel;
   quant: QuantVariant;
   contextLen: number;
+  advanced: boolean;
   gpu?: GPU;
   /** From `offloadPlan` when part of the model has to sit in system RAM. */
   gpuLayers?: number;
@@ -28,22 +29,22 @@ interface Props {
   cpuMoe?: { n: number; all: boolean };
 }
 
-export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayers, cpuMoe }: Props) {
+export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayers, cpuMoe, advanced }: Props) {
   const { t, lang } = useLanguage();
+  const source = quant.format === 'GGUF' ? quant.source : undefined;
+  const repo = source?.repo ?? hfRepoMap[model.id as keyof typeof hfRepoMap];
+  const filename = (source?.parts ?? 1) === 1 ? source?.file : undefined;
   const levels = useMemo(() => {
-    const gguf = quant.format === 'GGUF' ? quant : model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M') ?? model.quants.find(q => q.format === 'GGUF');
-    const vl = quant.format === 'AWQ' || quant.format === 'GPTQ' ? quant : model.quants.find(q => q.format === 'AWQ') ?? model.quants.find(q => q.format === 'GPTQ');
     const out: { fw: Framework; label: string; level: string }[] = [];
-    if (gguf) {
-      out.push({ fw: 'llamacpp', label: 'llama.cpp', level: gguf.level });
-      out.push({ fw: 'ollama', label: 'Ollama', level: gguf.level });
+    if (quant.format === 'GGUF') {
+      out.push({ fw: 'llamacpp', label: 'llama.cpp', level: quant.level });
+      if (gpuLayers === undefined && (filename || /-GGUF$/i.test(repo ?? ''))) out.push({ fw: 'ollama', label: 'Ollama', level: quant.level });
     }
-    // vLLM only where the card's backend runs that format (CUDA, or a ROCm card
-    // on vLLM's list) — the same rule as every recommendation on the site — and
-    // not when the answer is a CPU/GPU split, which vLLM does not do.
-    if (vl && (!gpu || formatAllowed(gpu, vl.format)) && gpuLayers === undefined) out.push({ fw: 'vllm', label: 'vLLM', level: `${vl.format} ${vl.level}` });
+    if (quant.format === 'AWQ' || quant.format === 'GPTQ') {
+      out.push({ fw: 'vllm', label: 'vLLM', level: `${quant.format} ${quant.level}` });
+    }
     return out;
-  }, [model, quant, gpu, gpuLayers]);
+  }, [quant, gpuLayers, repo, filename]);
   const [fw, setFw] = useState<Framework | null>(null);
   // Most readers are on Windows desktops, and a bash block pasted into
   // PowerShell fails on its first line. Start from Linux (what the HTML was
@@ -53,18 +54,17 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
   useEffect(() => {
     try { if (/Windows/i.test(navigator.userAgent)) setOs('windows'); } catch { /* keep linux */ }
   }, []);
-  const [copied, setCopied] = useState(false);
+  const [copiedCommand, setCopiedCommand] = useState<string>();
   const active = levels.find(l => l.fw === fw) ?? levels[0];
   const out = useMemo(() => {
     if (!active) return null;
-    const source = model.quants.find(q => q.format === 'GGUF' && q.level === active.level)?.source;
     return generateCLI({
       framework: active.fw,
       env: mac ? 'mac' : os,
       modelId: model.id,
       modelName: model.name,
-      hfRepo: source?.repo ?? hfRepoMap[model.id as keyof typeof hfRepoMap],
-      ggufFilename: (source?.parts ?? 1) === 1 ? source?.file : undefined,
+      hfRepo: repo,
+      ggufFilename: filename,
       quantLevel: active.level,
       fileGB: ggufFileGB(model, active.level),
       // Expert offload applies to llama.cpp only; Ollama keeps its own layer split.
@@ -72,19 +72,20 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       cpuMoe: active.fw === 'llamacpp' ? cpuMoe : undefined,
       contextLen,
       threads: 8,
-      port: 8080,
+      port: active.fw === 'ollama' ? 11434 : 8080,
+      ollamaSetContext: active.fw === 'ollama',
       backend: gpu ? backendFor(gpu) : 'cuda',
       lang,
       gpuName: gpu?.name,
     });
-  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os]);
+  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os, repo, filename]);
   if (!active || !out) return null;
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(out.command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      setCopiedCommand(out.command);
+      setTimeout(() => setCopiedCommand(value => value === out.command ? undefined : value), 1500);
     } catch { /* clipboard blocked: the text stays selectable */ }
   };
 
@@ -128,13 +129,15 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
         </div>
       )}
       <div className="relative">
-        <pre className="text-[11px] leading-relaxed font-mono text-slate-300 bg-black/30 rounded-xl p-3 pr-12 overflow-x-auto whitespace-pre">{out.command}</pre>
+        <pre className="text-[11px] leading-relaxed font-mono text-slate-300 bg-black/30 rounded-xl p-3 pt-12 overflow-x-auto whitespace-pre">{out.command}</pre>
         <button
+          type="button"
           onClick={copy}
           aria-label={t.calc.launchCopy}
-          className="absolute top-2 right-2 p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-300"
+          className="absolute top-2 right-2 inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-[11px] bg-white/[0.06] hover:bg-white/[0.1] text-slate-300"
         >
-          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copiedCommand === out.command ? <Check size={14} /> : <Copy size={14} />}
+          {t.calc.launchCopy}
         </button>
       </div>
       <p className="text-[11px] text-slate-500 mt-1.5">
@@ -143,6 +146,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
           ? ` ${(cpuMoe.all ? t.calc.launchMoeAll : t.calc.launchMoe).replace(/\{n\}/g, String(cpuMoe.n))}`
           : gpuLayers !== undefined && ` ${t.calc.launchOffload.replace('{n}', String(gpuLayers))}`}
       </p>
+      {advanced && <p className="mt-1.5 text-xs text-amber-300/90">{t.calc.runPlanAdvanced}</p>}
       {out.notes.length > 0 && (
         <ul className="mt-1 space-y-0.5">
           {out.notes.slice(0, 3).map((n, i) => <li key={i} className="text-[11px] text-slate-600 leading-relaxed">· {n}</li>)}

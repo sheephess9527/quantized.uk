@@ -35,6 +35,8 @@ export interface CLIOptions {
    */
   cpuMoe?: { n: number; all: boolean };
   contextLen: number;
+  /** Pin num_ctx in a local Ollama model for the calculator's native commands. */
+  ollamaSetContext?: boolean;
   threads: number;
   port: number;
   apiKey?: string;
@@ -475,7 +477,7 @@ function llamaCppWindows(
 }
 
 function generateOllama(opts: CLIOptions): CLIOutput {
-  const { env, modelName, quantLevel, port } = opts;
+  const { env, modelName, quantLevel, port, contextLen } = opts;
   const lang: Lang = opts.lang ?? 'en';
   const backend: Backend = opts.backend ?? 'cuda';
   const hfRepo = ggufRepoId(opts.hfRepo, opts.ggufFilename);
@@ -493,6 +495,27 @@ function generateOllama(opts: CLIOptions): CLIOutput {
   const ollamaModel = hfRepo
     ? `hf.co/${hfRepo}:${opts.ggufFilename ?? quantLevel}`
     : modelName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '');
+  let run = [`ollama pull ${ollamaModel}`, `ollama run ${ollamaModel}`];
+  if (opts.ollamaSetContext && hfRepo && env !== 'docker' && env !== 'compose') {
+    const local = `quantized-${opts.modelId ?? ollamaLocalName}:${quantLevel.toLowerCase()}-ctx${contextLen}`.replace(/[^a-z0-9._:-]/g, '-');
+    const from = `FROM ${ollamaModel}`;
+    const context = `PARAMETER num_ctx ${contextLen}`;
+    run = env === 'windows' ? [
+      `ollama pull ${ollamaModel}`,
+      'if ($LASTEXITCODE -ne 0) { throw "ollama pull failed" }',
+      '$modelFile = New-TemporaryFile',
+      `Set-Content -LiteralPath $modelFile.FullName -Encoding ASCII -Value '${from}', '${context}'`,
+      `ollama create ${local} -f $modelFile.FullName`,
+      'Remove-Item -LiteralPath $modelFile.FullName',
+      `if ($LASTEXITCODE -eq 0) { ollama run ${local} }`,
+    ] : [
+      `if ollama pull ${ollamaModel} && model_file=$(mktemp); then`,
+      `  printf '%s\\n' '${from}' '${context}' > "$model_file" &&`,
+      `    ollama create ${local} -f "$model_file" && ollama run ${local}`,
+      'rm -f "$model_file"',
+      'fi',
+    ];
+  }
 
   if (env === 'compose') {
     const compose = `version: "3.8"
@@ -551,8 +574,7 @@ volumes:
       `irm https://ollama.com/install.ps1 | iex`,
       ``,
       L(lang, `# Pull and run ${modelName}`, `# 拉取并运行 ${modelName}`),
-      `ollama pull ${ollamaModel}`,
-      `ollama run ${ollamaModel}`,
+      ...run,
       ``,
       L(lang, `# Ollama keeps running in the background and serves the API on 127.0.0.1:11434.`, `# 安装后 Ollama 在后台运行，接口在 127.0.0.1:11434。`),
       ...(port === 11434 ? [] : [
@@ -584,8 +606,7 @@ volumes:
     installCmd,
     ``,
     `# Pull and run ${modelName}`,
-    `ollama pull ${ollamaModel}`,
-    `ollama run ${ollamaModel}`,
+    ...run,
     ``,
     env === 'mac'
       ? `# The Ollama app already serves the API on 127.0.0.1:11434 while it is open.`
