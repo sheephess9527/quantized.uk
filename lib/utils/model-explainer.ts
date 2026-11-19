@@ -31,6 +31,7 @@ export const REF_CONTEXT = 4096;
 const LONG_CONTEXT = 32768;
 
 export interface ExplainerSection {
+  sources?: { href: string; en: string; zh: string }[];
   heading: { en: string; zh: string };
   body: { en: string; zh: string };
 }
@@ -213,7 +214,14 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
 
   sections.push({
     heading: { en: 'Which build to download', zh: '该下载哪个版本' },
-    body: {
+    sources: model.id === 'arete-27b' ? [
+      { href: 'https://www.quantdiff.com/models/arete-27b/', en: 'QuantDiff results and run logs', zh: 'QuantDiff 测试结果与运行记录' },
+      { href: 'https://www.quantdiff.com/methodology/', en: 'Test methodology', zh: '测试方法' },
+    ] : undefined,
+    body: model.id === 'arete-27b' ? {
+      en: 'QuantDiff tested two bartowski GGUFs on the same 500 questions with thinking disabled. Q3_K_M scored 90.8% (454/500, 95% CI 87.9–93.0%) and Q4_K_M scored 92.2% (461/500, 95% CI 89.5–94.2%). The intervals overlap. The seven-answer gap alone does not establish a reliable quality advantage. QuantDiff reports no KLD against BF16. Its generation speeds were measured on an Apple M2 Pro with 32 GB of unified memory.',
+      zh: 'QuantDiff 关闭思考模式，用相同的 500 道题测试了 bartowski 的两份 GGUF。Q3_K_M 答对 454 题，准确率 90.8%（95% 置信区间 87.9%–93.0%）；Q4_K_M 答对 461 题，准确率 92.2%（89.5%–94.2%）。两档区间重叠，仅凭 7 题的差距不足以认定 Q4_K_M 有明确的质量优势。QuantDiff 未给出相对 BF16 的 KLD。其生成速度测自配备 32 GB 统一内存的 Apple M2 Pro。',
+    } : {
       en:
         `${formatSentenceEn} ` +
         (levels.length === 1 && best.pplLossPercent !== undefined
@@ -289,7 +297,10 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
         en: `Which quantization of ${model.name} should I use?`,
         zh: `${model.name} 该用哪个量化档位？`,
       },
-      a: {
+      a: model.id === 'arete-27b' ? {
+        en: 'On an RTX 4060 Ti 16 GB at 4,096 tokens, start with Q3_K_M. At batch 1 with f16 K/V, the calculator estimates 14.03 GiB for Q3_K_M and 18.25 GiB for Q4_K_M. With 24 GB, Q4_K_M is also a reasonable option at this context. This site has not measured peak VRAM or generation speed on the RTX 4060 Ti for either file.',
+        zh: 'RTX 4060 Ti 16 GB 在 4096 上下文下建议先试 Q3_K_M。按单序列、f16 K/V 估算，Q3_K_M 需要 14.03 GiB，Q4_K_M 需要 18.25 GiB。使用 24 GB 显卡时，同一上下文下也可考虑 Q4_K_M。本站尚未在 RTX 4060 Ti 上实测这两份文件的峰值显存或生成速度。',
+      } : {
         en:
           (levels.length === 1
             ? `${levels[0]} is the only level in the index for this model, so there is nothing to choose between here.`
