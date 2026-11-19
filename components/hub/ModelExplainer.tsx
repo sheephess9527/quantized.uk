@@ -19,6 +19,13 @@ export default function ModelExplainer({ model }: { model: QuantModel }) {
         <section key={i} className="glass rounded-2xl p-5 sm:p-6">
           <h2 className="text-lg font-bold text-slate-100 mb-2">{s.heading[lang]}</h2>
           <p className="text-sm text-slate-400 leading-relaxed">{s.body[lang]}</p>
+          {s.sources && (
+            <ul className="mt-2 flex flex-wrap gap-x-4 text-sm">
+              {s.sources.map(source => (
+                <li key={source.href}><a className="text-cyan-400 underline" href={source.href}>{source[lang]}</a></li>
+              ))}
+            </ul>
+          )}
         </section>
       ))}
 
