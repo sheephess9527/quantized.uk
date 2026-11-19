@@ -44,8 +44,8 @@ export const extraModels14: QuantModel[] = [
     },
     "addedAt": "2026-11-15",
     "description": {
-      "en": "Nous Research post-trained Qwen3.8 27B for general assistance and agentic use without changing its architecture. Only 16 of 64 layers grow a KV cache. Memory is estimated from bartowski GGUF files; the separate vision projector is optional and its bytes are recorded. Quantization quality loss and speed for these files have not been verified.",
-      "zh": "Nous Research 在 Qwen3.8 27B 上做后训练，用于通用助手和智能体任务，架构保持不变。64 层中只有 16 层的 KV 缓存随上下文增长。内存按 bartowski GGUF 文件估算；另有可选的视觉编码器，已记录字节数。尚未核实这些文件的量化质量损失和速度。"
+      "en": "Nous Research post-trained Qwen3.8 27B for general assistance and agentic use without changing its architecture. Only 16 of 64 layers grow a KV cache. Memory is estimated from bartowski GGUF files; the separate vision projector is optional and its bytes are recorded. QuantDiff tested task accuracy and tool calls for the Q3_K_M and Q4_K_M files. This site has not independently reproduced those tests.",
+      "zh": "Nous Research 在 Qwen3.8 27B 上做后训练，用于通用助手和智能体任务，架构保持不变。64 层中只有 16 层的 KV 缓存随上下文增长。内存按 bartowski GGUF 文件估算；另有可选的视觉编码器，已记录字节数。QuantDiff 已测试 Q3_K_M 和 Q4_K_M 两份文件的任务准确率和工具调用表现。本站尚未独立复测。"
     },
     "quants": [
       {
