@@ -48,5 +48,4 @@ The clipboard matched the command on screen. Advanced settings displayed the
 runtime setup note. Commands were inspected and copied in the browser.
 The model was not run on a GPU.
 
-The feature is prepared on `feature/calculator-run-plan`. Production deployment
-is outside this change record.
+The feature shipped with the follow-up. See the [production deployment record](2026-11-19-calculator-fit-followup.md#production-deployment).

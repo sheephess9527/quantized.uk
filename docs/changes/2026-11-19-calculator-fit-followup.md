@@ -60,5 +60,20 @@ capture the settings, observations and runtime logs as Markdown.
   the over-budget path on the 16 GiB card. The AWQ placeholder was clearly
   labelled a template.
 - Both Arete files were confirmed in the publisher's [GGUF file listing](https://huggingface.co/bartowski/NousResearch_Arete-27B-GGUF/tree/main).
-- The feature remains on `feature/calculator-run-plan`. Verification used
-  the local production export.
+- The feature was prepared on `feature/calculator-run-plan`. The local tests
+  used the production export.
+
+## Production deployment
+
+Application commit `34d3df9` was merged into main and deployed successfully.
+The [Cloudflare Pages build](https://dash.cloudflare.com/?to=/7d5a680e05e83711c23f19702fc6480d/pages/view/quantized-uk/052faf45-2585-487c-b347-b48b3938ceba)
+and [GitHub data checks](https://github.com/sheephess9527/quantized.uk/actions/runs/44434527224/job/135259911547)
+both passed.
+
+Chromium repeated the flow on the production domain in English and Chinese.
+It verified the 16 GiB GPU example, over-budget alternatives, collapsed CPU
+fallback, offload reserve, exact Ollama file and context, Windows and Linux
+llama.cpp flags, clipboard contents, and command template label. The mobile
+and desktop layouts passed the overflow checks. GPU load and peak-memory
+measurements still require physical hardware. The merged feature branch
+is removed after production verification.
