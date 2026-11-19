@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-19',
+    en: 'The VRAM run plan shows GPU-fit alternatives first and keeps CPU-offload commands in a separate option with their reserved memory budget. Commands with unresolved sources are marked as templates.',
+    zh: '显存计算结果优先显示可装进显卡的替代方案。CPU 卸载命令在单独选项中展示，并标明预留显存。文件来源仍待核对的命令会标注为模板。',
+  },
+  {
     date: '2026-11-18',
     en: 'The VRAM calculator puts the fit estimate and launch commands at the top of the result. When memory is tight, apply a smaller quant or shorter context with one click if it improves the fit. Ollama launch commands now set the chosen context in a local model.',
     zh: '显存计算器在结果顶部显示适配估算和启动命令。显存偏紧时，可以一键采用经计算能改善适配的量化档位或更短上下文。Ollama 启动命令会在本地模型中设置所选上下文。',

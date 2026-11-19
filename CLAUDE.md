@@ -79,7 +79,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **Calculator run plan:** use the same sizing and fit rules as the detailed
   result. Launch commands follow the selected quant and context. Settings that
   need runtime configuration show a note beside the command. Native Ollama
-  commands set `num_ctx` via a local Modelfile.
+  commands set `num_ctx` via a local Modelfile. Show CPU offload separately
+  and use its planner's reserve. A generated command with an unresolved
+  source is a template. Publication of a measured result needs a real run.
 
 - **Checkpoint identity comes before quant level:** Pocket QAT Q4_1 and the
   BF16-derived Q8_0 have different stored output-table layouts and parameter

@@ -621,23 +621,24 @@ export default function VRAMCalculator() {
   const currentVerdict = profileGpu
     ? formatOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red'
     : undefined;
+  const overBudget = !!profileGpu && formatOk && result.totalGB > rigCapacity;
   const quantOptions = levels.filter(row =>
     contextLen <= contextLimit && row.key !== selectedQuant && row.formatOk &&
-    (row.verdict === 'green' || (currentVerdict === 'red' && row.verdict === 'yellow')) &&
-    row.totalGB < result.totalGB &&
+    (row.verdict === 'green' || ((overBudget || currentVerdict === 'red') && row.verdict === 'yellow')) &&
+    row.totalGB < result.totalGB && row.totalGB <= rigCapacity &&
     (!calcInput.extraGB || row.quant.format === selectedQuantObj?.format)
   );
   const quantFix = quantOptions.find(row => row.pick) ??
     quantOptions.find(row => row.verdict === 'green') ?? quantOptions[quantOptions.length - 1];
   const contextFix = profileGpu && formatOk && reach && currentVerdict !== 'green'
-    ? [reach.comfortable || (currentVerdict === 'red' ? reach.tight : 0), ...CONTEXT_PRESETS.slice().reverse()]
+    ? [reach.comfortable || (overBudget ? reach.tight : 0), ...CONTEXT_PRESETS.slice().reverse()]
         .filter(ctx => ctx > 0 && ctx < contextLen && ctx <= contextLimit)
         .map(ctx => {
           const totalGB = calcVRAM({ ...calcInput, contextLength: ctx }).totalGB;
           return { ctx, totalGB, verdict: getVerdict(totalGB, rigCapacity, tightCeiling(profileGpu)) };
         })
-        .find(row => row.totalGB < result.totalGB &&
-          (row.verdict === 'green' || (currentVerdict === 'red' && row.verdict === 'yellow')))
+        .find(row => row.totalGB < result.totalGB && row.totalGB <= rigCapacity &&
+          (row.verdict === 'green' || ((overBudget || currentVerdict === 'red') && row.verdict === 'yellow')))
     : undefined;
 
   const modelLookupFailed = selectedModelId !== '' && selectedModelId !== 'custom' && !selectedModel;
@@ -648,6 +649,21 @@ export default function VRAMCalculator() {
   const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
     selectedModelId === 'custom' || !!selectedModel
   );
+  const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
+    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level)
+    : undefined;
+  const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
+  const launchCommands = canShowLaunch && (!overBudget || launchOffload) ? (
+    <LaunchCommands
+      model={selectedModel}
+      quant={selectedQuantObj}
+      contextLen={contextLen}
+      gpu={profileGpu ?? undefined}
+      gpuLayers={launchOffload?.gpuLayers}
+      cpuMoe={launchOffload?.moe && { n: launchOffload.moe.n, all: launchOffload.moe.all }}
+      advanced={multiDevice || batchSize !== 1 || kvType !== 'f16' || !!calcInput.extraGB}
+    />
+  ) : null;
   const showReverseResult = mode === 'reverse' && selectedGpuId !== '';
 
   // On a phone the answer sits below a long column of controls, so every
@@ -1565,7 +1581,7 @@ export default function VRAMCalculator() {
                   {currentVerdict && contextLen <= contextLimit && (
                     <span className={verdictConfig[currentVerdict].label}>· {
                       !formatOk ? t.calc.levelsNoRun :
-                      currentVerdict === 'green' ? t.calc.green :
+                      overBudget ? t.calc.runPlanOverBudget : currentVerdict === 'green' ? t.calc.green :
                       currentVerdict === 'yellow' ? t.calc.yellow : t.calc.red
                     }</span>
                   )}
@@ -1596,23 +1612,23 @@ export default function VRAMCalculator() {
                     </div>
                   </div>
                 )}
-                {selectedModel && selectedQuantObj && formatOk && !ctxOverModel && (() => {
-                  const plan = profileGpu
-                    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj.format, profileExtras, selectedQuantObj.level)
-                    : undefined;
-                  if (currentVerdict === 'red' && !plan) return null;
-                  return (
-                    <LaunchCommands
-                      model={selectedModel}
-                      quant={selectedQuantObj}
-                      contextLen={contextLen}
-                      gpu={profileGpu ?? undefined}
-                      gpuLayers={plan?.gpuLayers}
-                      cpuMoe={plan?.moe && { n: plan.moe.n, all: plan.moe.all }}
-                      advanced={multiDevice || batchSize !== 1 || kvType !== 'f16' || !!calcInput.extraGB}
-                    />
-                  );
-                })()}
+                {overBudget && !quantFix && !contextFix && (
+                  <p className="mt-3 text-xs text-slate-400">{t.calc.runPlanNoAdjustment}</p>
+                )}
+                {launchCommands && launchOffload ? (
+                  <details className="mt-3 rounded-lg border border-white/10 px-3">
+                    <summary className="cursor-pointer py-3 text-sm text-violet-200">{t.calc.runPlanOffload}</summary>
+                    <div className="pb-3">
+                      <p className="text-xs text-slate-400">
+                        {t.calc.runPlanReserve
+                          .replace('{reserve}', launchOffload.reserveGB.toFixed(2))
+                          .replace('{budget}', launchOffload.gpuBudgetGB.toFixed(2))
+                          .replace('{ram}', (launchOffload.moe?.ramGB ?? launchOffload.ramGB).toFixed(1))}
+                      </p>
+                      {launchCommands}
+                    </div>
+                  </details>
+                ) : launchCommands}
               </section>
               <CalculatorEvidence
                 quant={selectedQuantObj}
@@ -2015,7 +2031,7 @@ export default function VRAMCalculator() {
                         );
                       })()}
                       {v === 'red' && formatOk && (() => {
-                        const plan = offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level);
+                        const plan = launchOffload;
                         if (!plan) return null;
                         return (
                           <div className="mt-3 pt-2 border-t border-white/[0.05]">

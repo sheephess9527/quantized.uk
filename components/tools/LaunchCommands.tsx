@@ -80,6 +80,8 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
     });
   }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os, repo, filename]);
   if (!active || !out) return null;
+  const needsSourceCheck = !filename || /<hf-[^>]+-repo-id>|<gfx-target>/.test(out.command);
+  const copyLabel = needsSourceCheck ? t.calc.launchCopyTemplate : t.calc.launchCopy;
 
   const copy = async () => {
     try {
@@ -92,7 +94,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
   return (
     <div className="mt-4 pt-3 border-t border-white/[0.06]" data-testid="launch-commands">
       <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-        <p className="text-xs font-medium text-slate-400">{t.calc.launchTitle}</p>
+        <p className="text-xs font-medium text-slate-400">{needsSourceCheck ? t.calc.launchTemplateTitle : t.calc.launchTitle}</p>
         <div className="flex gap-1.5" role="tablist">
           {levels.map(l => (
             <button
@@ -133,11 +135,11 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
         <button
           type="button"
           onClick={copy}
-          aria-label={t.calc.launchCopy}
+          aria-label={copyLabel}
           className="absolute top-2 right-2 inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-[11px] bg-white/[0.06] hover:bg-white/[0.1] text-slate-300"
         >
           {copiedCommand === out.command ? <Check size={14} /> : <Copy size={14} />}
-          {t.calc.launchCopy}
+          {copyLabel}
         </button>
       </div>
       <p className="text-[11px] text-slate-500 mt-1.5">
@@ -146,6 +148,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
           ? ` ${(cpuMoe.all ? t.calc.launchMoeAll : t.calc.launchMoe).replace(/\{n\}/g, String(cpuMoe.n))}`
           : gpuLayers !== undefined && ` ${t.calc.launchOffload.replace('{n}', String(gpuLayers))}`}
       </p>
+      {needsSourceCheck && <p className="mt-1.5 text-xs text-amber-300/90">{t.calc.launchTemplateNote}</p>}
       {advanced && <p className="mt-1.5 text-xs text-amber-300/90">{t.calc.runPlanAdvanced}</p>}
       {out.notes.length > 0 && (
         <ul className="mt-1 space-y-0.5">

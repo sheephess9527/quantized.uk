@@ -222,6 +222,9 @@ const FIT_MARGIN_GB = 1;
 export interface OffloadPlan {
   gpuLayers: number;
   layers: number;
+  /** Headroom reserved by the estimate, summed across discrete GPUs. */
+  reserveGB: number;
+  gpuBudgetGB: number;
   /** System RAM the CPU-side layers need (weights + their KV share). */
   ramGB: number;
   /** Approximate token-generation bound with this split, if knowable. */
@@ -277,7 +280,8 @@ export function offloadPlan(
   const layers = input.layers;
   const perLayer = result.totalGB / layers;
   const devices = rigDevices(gpu, cards, extra);
-  const budget = devices.reduce((s, g) => s + usableCapacityGB(g) - FIT_MARGIN_GB, 0);
+  const reserveGB = devices.length * FIT_MARGIN_GB;
+  const budget = devices.reduce((s, g) => s + usableCapacityGB(g), 0) - reserveGB;
   const gpuLayers = Math.max(0, Math.min(layers, Math.floor(budget / perLayer)));
   if (gpuLayers >= layers) return undefined;
   const ramGB = Math.round((layers - gpuLayers) * perLayer * 10) / 10;
@@ -296,7 +300,7 @@ export function offloadPlan(
   // Interleaved layouts can only move every expert, which on a near-fit costs
   // more than moving two layers; offer the expert split only when it is not slower.
   const keep = moe && !(moe.tokS !== undefined && tokS !== undefined && moe.tokS < tokS);
-  return { gpuLayers, layers, ramGB, tokS, moe: keep ? moe : undefined, moeNoRoom: !!model?.arch.moe && !moe };
+  return { gpuLayers, layers, reserveGB, gpuBudgetGB: budget, ramGB, tokS, moe: keep ? moe : undefined, moeNoRoom: !!model?.arch.moe && !moe };
 }
 
 /**

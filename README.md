@@ -500,6 +500,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-19 — GPU fit and CPU offload in the run plan
+
+The result prioritizes changes that fit within the GPU budget. A separate
+CPU-offload option shows the reserve and estimated system RAM. Commands with
+unconfirmed source files are labelled templates. The [verification record](docs/changes/2026-11-19-calculator-fit-followup.md)
+includes the hardware calibration protocol.
+
 ### 2026-11-18 — Run plan above the VRAM breakdown
 
 The calculator now previews the estimate, usable budget, headroom and launch
