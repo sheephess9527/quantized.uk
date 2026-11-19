@@ -23,7 +23,7 @@ Analytics: Plausible defaults to domain `quantized.uk` in code (optional overrid
 
 | Area | Files | Notes |
 |------|-------|-------|
-| **Models** | `lib/data/models-extra-15.ts` (or new pack) + import in `models.ts` | Primary data moat — see below |
+| **Models** | `lib/data/models-extra-16.ts` (or new pack) + import in `models.ts` | Primary data moat — see below |
 | **HF live stats** | `lib/data/hf-repos.mjs` only | `hf-repos.ts` re-exports; do not duplicate in the fetch script |
 | **Cookbook articles** | `lib/data/cookbook.ts`, `cookbook-extra.ts`, `cookbook-extra-2.ts` | Prefer `verifiedAt` + `verifiedStack` on high-traffic guides |
 | **Benchmarks** | `lib/data/benchmarks.ts` | Speed / PPL matrix data |
@@ -38,7 +38,7 @@ Analytics: Plausible defaults to domain `quantized.uk` in code (optional overrid
 ### 1. Pick the right file
 
 - **Core / flagship models** → `lib/data/models.ts` (`baseModels`) only if truly foundational
-- **Batch additions** → latest pack (`models-extra-15.ts` as of 2026-11) or new `models-extra-N.ts` imported from `models.ts`
+- **Batch additions** → latest pack (`models-extra-16.ts` as of 2026-11) or new `models-extra-N.ts` imported from `models.ts`
 
 Keep each file manageable (~20 entries).
 

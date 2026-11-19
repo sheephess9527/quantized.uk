@@ -12,7 +12,7 @@ import { Copy, Check } from 'lucide-react';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { generateCLI, ggufFileGB, type Framework, type Env } from '@/lib/utils/cli';
+import { generateCLI, ggufFileGB, canOfferOllamaLaunch, type Framework, type Env } from '@/lib/utils/cli';
 import { backendFor } from '@/lib/utils/gpu-page';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
@@ -38,13 +38,13 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
     const out: { fw: Framework; label: string; level: string }[] = [];
     if (quant.format === 'GGUF') {
       out.push({ fw: 'llamacpp', label: 'llama.cpp', level: quant.level });
-      if (gpuLayers === undefined && (filename || /-GGUF$/i.test(repo ?? ''))) out.push({ fw: 'ollama', label: 'Ollama', level: quant.level });
+      if (gpuLayers === undefined && canOfferOllamaLaunch(model.id, repo) && (filename || /-GGUF$/i.test(repo ?? ''))) out.push({ fw: 'ollama', label: 'Ollama', level: quant.level });
     }
     if (quant.format === 'AWQ' || quant.format === 'GPTQ') {
       out.push({ fw: 'vllm', label: 'vLLM', level: `${quant.format} ${quant.level}` });
     }
     return out;
-  }, [quant, gpuLayers, repo, filename]);
+  }, [quant, gpuLayers, model.id, repo, filename]);
   const [fw, setFw] = useState<Framework | null>(null);
   // Most readers are on Windows desktops, and a bash block pasted into
   // PowerShell fails on its first line. Start from Linux (what the HTML was

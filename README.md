@@ -96,8 +96,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   145 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-15 (packs)
+    models.ts               #   148 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-16 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -428,7 +428,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-15.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-16.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -499,6 +499,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-19 — Evening patrol: DaisyRose, Apex and Bonsai
+
+Added DaisyRose 27B and Apex 35B V1.0 with four GGUF tiers each and matching
+vision projectors. Also added the official Bonsai 2 Q2_0 for upstream llama.cpp.
+The index now contains 148 checkpoints. Rechecked stable
+runtimes and Windows assets. Updated pending model evidence and reviewed the
+merged Arete quality source and calculator flow.
+[Patrol record](docs/changes/2026-11-19-patrol.md).
 
 ### 2026-11-19 — GPU fit and CPU offload in the run plan
 

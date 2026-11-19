@@ -81,6 +81,9 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'ternary-bonsai-2-27b': 'apache-2.0',
+  'daisyrose-27b': 'apache-2.0',
+  'apex-35b-v1': 'apache-2.0',
   'botpsy-0-8b': 'apache-2.0',
   'mnn-pocket-0-3b': 'apache-2.0',
   'mnn-pocket-0-3b-qat': 'apache-2.0',
@@ -246,6 +249,9 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'ternary-bonsai-2-27b',
+  'daisyrose-27b',
+  'apex-35b-v1',
   'arete-27b',
   'ministral-3-3b',
   'ministral-3-14b',

@@ -64,6 +64,7 @@ export const quantBPW: Record<string, number> = {
   'MXFP4':    4.25,
   'Q3_K_M':   3.87,
   'Q3_K_S':   3.50,
+  'Q2_0':     2.25, // ggml block_q2_0: 18 bytes per 64 weights.
   'Q2_K':     2.63,
   // llama.cpp's IQ2_XXS block rate (66 bytes per 256 weights). Nemotron 3.5 Bolt's native
   // 2-bit build uses it for the experts; its whole file runs 2.38 (see models-extra-12.ts).
@@ -95,7 +96,7 @@ export const quantBPW: Record<string, number> = {
 };
 
 export const quantGroups: Record<string, string[]> = {
-  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q8_0-expsIQ1_M', 'Q8_0-expsIQ2_XXS', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_1', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
+  'GGUF': ['IQ1_M', 'IQ2_XXS', 'IQ2_XS', 'IQ2_S', 'Q8_0-expsIQ1_M', 'Q8_0-expsIQ2_XXS', 'Q2_0', 'Q2_K', 'IQ3_XXS', 'IQ3_S', 'Q3_K_M', 'MXFP4', 'IQ4_XS', 'Q4_0', 'Q4_1', 'Q4_K_S', 'Q4_K_M', 'Q5_K_S', 'Q5_K_M', 'Q6_K', 'Q8_0'],
   'AWQ':  ['AWQ INT4'],
   'GPTQ': ['GPTQ INT4', 'GPTQ INT8'],
   'EXL2': ['EXL2 2bpw', 'EXL2 3bpw', 'EXL2 3.5bpw', 'EXL2 4bpw', 'EXL2 4.65bpw', 'EXL2 5bpw', 'EXL2 6bpw', 'EXL2 8bpw'],

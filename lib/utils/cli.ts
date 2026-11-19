@@ -166,6 +166,13 @@ export interface CLIOutput {
   notes: string[];
 }
 
+export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {
+  // The publisher verifies stock llama.cpp for this rotated GGUF. Ollama's
+  // handling of its Hadamard metadata has not been verified.
+  return modelId !== 'ternary-bonsai-2-27b' &&
+    repo?.toLowerCase() !== 'prism-ml/ternary-bonsai-2-27b-gguf';
+}
+
 export function generateCLI(opts: CLIOptions): CLIOutput {
   const { framework } = opts;
 
@@ -175,7 +182,15 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
     return { ...out, notes: [L(lang, 'There is no native Windows build of this runtime: run these commands inside WSL2 (Ubuntu), or use llama.cpp / Ollama on Windows itself', '这个运行时没有原生 Windows 版本：请在 WSL2（Ubuntu）里运行下面的命令，或者直接在 Windows 上用 llama.cpp / Ollama'), ...out.notes] };
   }
   if (framework === 'llamacpp') return generateLlamaCpp(opts);
-  if (framework === 'ollama')   return generateOllama(opts);
+  if (framework === 'ollama') {
+    if (!canOfferOllamaLaunch(opts.modelId, opts.hfRepo)) {
+      const note = L(opts.lang ?? 'en',
+        'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
+        '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
+      return { command: '# ' + note, notes: [note] };
+    }
+    return generateOllama(opts);
+  }
   if (framework === 'vllm')     return generateVLLM(opts);
   if (framework === 'exllama')  return generateExLlama(opts);
   return { command: '# Select a framework', notes: [] };

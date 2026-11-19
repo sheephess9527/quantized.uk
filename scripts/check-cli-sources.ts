@@ -42,6 +42,17 @@ for (const env of ['linux', 'windows', 'mac'] as const) {
   assert(!standalone.command.includes('PARAMETER num_ctx'));
 }
 
+const bonsai = models.find(m => m.id === 'ternary-bonsai-2-27b')!;
+const bonsaiQuant = bonsai.quants[0];
+for (const lang of ['en', 'zh'] as const) {
+  const input = { ...opts, lang, modelId: bonsai.id, modelName: bonsai.name,
+    quantLevel: bonsaiQuant.level, hfRepo: bonsaiQuant.source!.repo, ggufFilename: bonsaiQuant.source!.file };
+  assert(generateCLI(input).command.includes('Ternary-Bonsai-2-27B-Q2_0.gguf'));
+  const ollama = generateCLI({ ...input, framework: 'ollama' });
+  assert(!ollama.command.includes('ollama run') && !ollama.command.includes('ollama pull'));
+  assert(ollama.notes.some(note => note.includes('b11556')));
+}
+
 const unmapped = generateCLI({ ...opts, hfRepo: 'publisher/original-weights', ggufFilename: undefined });
 assert(unmapped.command.includes('<hf-gguf-repo-id>'), 'original-weight repo without file evidence remains unverified');
 const fallback = generateCLI({ ...opts, hfRepo: 'publisher/Example-GGUF', ggufFilename: undefined, fileGB: 70 });

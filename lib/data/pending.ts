@@ -25,6 +25,186 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    "id": "aurora2-400m",
+    "name": "Aurora2 400M-A20M",
+    "vendor": "AuroraAI Research",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The public Apache-2.0 checkpoint uses a custom aurora2 architecture. The exact-name Hub search exposed no verifiable GGUF.",
+      "zh": "Apache 2.0 公开权重使用自定义 aurora2 架构；按准确名称搜索未找到可核实的 GGUF。"
+    },
+    "recheck": {
+      "en": "Verify runtime support, exact quant files and audited memory inputs.",
+      "zh": "核实运行时支持、确切量化文件和内存估算输入。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "supra2-5-pro",
+    "name": "Supra 2.5 Pro Instruct",
+    "vendor": "SupraLabs",
+    "reason": "awaiting-data",
+    "detail": {
+      "en": "The original Apache-2.0 Qwen3 configuration is readable. The exact-name search did not find a separate quant listing.",
+      "zh": "可读取原始 Apache 2.0 Qwen3 配置，准确名称搜索未找到单独的量化文件列表。"
+    },
+    "recheck": {
+      "en": "Verify runtime support, exact quant files and audited memory inputs.",
+      "zh": "核实运行时支持、确切量化文件和内存估算输入。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "boris-2",
+    "name": "Boris 2",
+    "vendor": "OpenCerebral",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The public Apache-2.0 config names a custom boris2 architecture. Results show related checkpoints, but no audited runtime/cache and quant-file basis.",
+      "zh": "公开 Apache 2.0 配置声明自定义 boris2 架构。搜索找到同系列权重，尚无经核实的运行时、缓存和量化文件估算依据。"
+    },
+    "recheck": {
+      "en": "Verify runtime support, exact quant files and audited memory inputs.",
+      "zh": "核实运行时支持、确切量化文件和内存估算输入。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "embla1",
+    "name": "Embla1 4-bit",
+    "vendor": "Sevren AI",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The MIT repository contains a custom Embla config, model safetensors and a separate Engram table. The file name alone does not establish compatibility or memory residency.",
+      "zh": "MIT 仓库包含自定义 Embla 配置、模型 safetensors 和单独的 Engram 表。仅凭文件名无法确定运行时兼容性或内存驻留。"
+    },
+    "recheck": {
+      "en": "Verify runtime support, exact quant files and audited memory inputs.",
+      "zh": "核实运行时支持、确切量化文件和内存估算输入。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "hy4-flash",
+    "name": "Hy4 Flash",
+    "vendor": "Tencent",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The original weights, Tencent Hy licence and GGUF files are accessible. Its attention mixes sparse indexer caches with sliding windows. Some GGUFs store the separate Engram table on SSD and use a dedicated runtime port. File totals do not describe resident memory.",
+      "zh": "原始权重、腾讯 Hy 许可和 GGUF 均可访问。注意力混合稀疏索引缓存与滑窗。部分 GGUF 将独立 Engram 表留在 SSD，并采用专门的运行时移植版，文件总量不能代表常驻内存。"
+    },
+    "recheck": {
+      "en": "Verify upstream support, cache layout, Engram residency and projector memory against a documented run.",
+      "zh": "核实上游支持、缓存布局、Engram 驻留及视觉投影内存，并与有记录的运行结果对照。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "aion-1-instruct-2-3b",
+    "name": "Aion 1.0 Instruct 2.3B",
+    "vendor": "Microsoft",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The original MIT checkpoint and config are public. AtomicChat ships GGUFs, but documents a patch for its custom Aion architecture. The current upstream b12534 architecture list has no Aion Instruct entry.",
+      "zh": "MIT 原始权重和配置已公开。AtomicChat 提供 GGUF，但自定义 Aion 架构需要其补丁。上游 b12534 的架构列表没有 Aion Instruct。"
+    },
+    "recheck": {
+      "en": "Recheck when the runtime ships support and its mixed sliding/full cache can be verified.",
+      "zh": "正式运行时支持落地后，核实混合滑窗与全注意力缓存。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "sensenova-loop-9b",
+    "name": "SenseNova Loop 9B",
+    "vendor": "SenseTime",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The publisher GGUF listing contains Q4_K_M and a projector. Its card describes 32 physical layers, 56 layer executions, hybrid attention and a dedicated llama.cpp fork. The original config returns 401 without access.",
+      "zh": "发布方 GGUF 列表有 Q4_K_M 和视觉投影。模型卡显示 32 个物理层、56 次层执行、混合注意力及专用 llama.cpp 分支；原始配置未授权访问时返回 401。"
+    },
+    "recheck": {
+      "en": "Verify the looped cache and runtime support against the final checkpoint and an observed fit.",
+      "zh": "基于最终权重核实循环缓存、运行时支持和实际内存结果。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "zaya1-8b",
+    "name": "ZAYA1 8B",
+    "vendor": "Zyphra",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The public config, a community GGUF listing and new upstream zaya1 code are readable. Its hybrid attention and recurrent state need a verified sizing model, and the pinned Windows build predates that upstream implementation.",
+      "zh": "原始配置、社区 GGUF 列表及新的上游 zaya1 实现可读取。混合注意力和循环状态需要核实估算，当前 Windows 固定版本早于该上游实现。"
+    },
+    "recheck": {
+      "en": "Check a supported release and audit the cache against a reproducible memory result.",
+      "zh": "核实受支持的发行版，并用可复现实测核对缓存。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "maxwell-v1-flash",
+    "name": "Maxwell V1 Flash",
+    "vendor": "Maxwell",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The Apache-2.0 original checkpoint is public. The GGUF publisher documents a required Maxwell port and a learned block-sparse attention layout. The current upstream architecture list has no Maxwell entry.",
+      "zh": "Apache 2.0 原始权重可访问。GGUF 发布方说明需要 Maxwell 移植补丁，且模型使用学习型块稀疏注意力；当前上游架构列表无 Maxwell 条目。"
+    },
+    "recheck": {
+      "en": "Recheck stock runtime support and sparse-cache allocation.",
+      "zh": "复查上游运行时支持及稀疏缓存分配。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "marin-mochi-535b",
+    "name": "Marin Mochi 535B-A23B",
+    "vendor": "Open Athena",
+    "reason": "awaiting-data",
+    "detail": {
+      "en": "The OpenMDW 1.1 original checkpoint exposes BF16 tensors and a GrugMoe config. The exact-name search found no verified GGUF file listing.",
+      "zh": "原始权重采用 OpenMDW 1.1，提供 BF16 张量和 GrugMoe 配置。按准确名称搜索未找到可核实的 GGUF 文件列表。"
+    },
+    "recheck": {
+      "en": "Verify a supported conversion, complete file byte counts and architecture sizing.",
+      "zh": "核实受支持的转换版本、完整文件字节数和架构估算。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "whittle-next-27b",
+    "name": "Whittle Next 27B-A3B",
+    "vendor": "WhittleOrg",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The original qwen4_exp config and GGUF search results are available. The repository describes an external n-gram memory and multiple residual streams, so the ordinary Qwen MoE sizing does not cover its memory layout.",
+      "zh": "可读取原始 qwen4_exp 配置，并找到 GGUF 搜索结果。仓库描述外部 n-gram 内存及多条残差流，现有 Qwen MoE 公式无法覆盖其内存布局。"
+    },
+    "recheck": {
+      "en": "Audit the exact runtime, selected file and n-gram memory residency.",
+      "zh": "核实具体运行时、权重文件及 n-gram 内存驻留。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
+    "id": "agnes-2-5-pro-theta",
+    "name": "Agnes 2.5 Pro Theta",
+    "vendor": "Agnes AI",
+    "reason": "not-sized",
+    "detail": {
+      "en": "The original Apache-2.0 multimodal config defines a custom Agnes architecture. Search results show specialist Basalt packs. Their runtime, cache and vision memory are not yet audited here.",
+      "zh": "原始 Apache 2.0 多模态配置采用自定义 Agnes 架构。搜索结果显示专用 Basalt 文件，尚未核实运行时、缓存及视觉内存。"
+    },
+    "recheck": {
+      "en": "Verify runtime support and a complete quant and encoder sizing basis.",
+      "zh": "核实运行时，以及完整的量化和编码器估算依据。"
+    },
+    "checkedAt": "2026-11-19"
+  },
+  {
     "id": "quark-150m-128k-zero",
     "name": "Quark 150M 128K Zero",
     "vendor": "Empero AI",
@@ -172,7 +352,7 @@ export const pendingModels: PendingModel[] = [
       "en": "When the official final-checkpoint repository, config, licence and quant files can be read.",
       "zh": "能读取官方最终版仓库、配置、许可与量化文件时。"
     },
-    "checkedAt": "2026-11-17"
+    "checkedAt": "2026-11-19"
   },
   {
     id: 'kimi-k3-1-pro',

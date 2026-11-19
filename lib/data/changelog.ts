@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-19',
+    en: 'DaisyRose 27B and Apex 35B V1.0 are now indexed with recorded GGUF and image projector sizes. The official Ternary Bonsai 2 Q2_0 is indexed for upstream llama.cpp. The pending list explains the runtime or sizing gaps for Hy4 Flash, Aion and SenseNova Loop.',
+    zh: '新增 DaisyRose 27B 和 Apex 35B V1.0，记录 GGUF 与视觉投影文件大小。另收录可用上游 llama.cpp 运行的官方 Ternary Bonsai 2 Q2_0。待收录页说明 Hy4 Flash、Aion 和 SenseNova Loop 的运行时或估算缺口。',
+  },
+  {
+    date: '2026-11-19',
     en: 'The VRAM run plan shows GPU-fit alternatives first and keeps CPU-offload commands in a separate option with their reserved memory budget. Commands with unresolved sources are marked as templates.',
     zh: '显存计算结果优先显示可装进显卡的替代方案。CPU 卸载命令在单独选项中展示，并标明预留显存。文件来源仍待核对的命令会标注为模板。',
   },

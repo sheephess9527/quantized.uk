@@ -15,6 +15,7 @@ import { extraModels12 } from './models-extra-12';
 import { extraModels13 } from './models-extra-13';
 import { extraModels14 } from './models-extra-14';
 import { extraModels15 } from './models-extra-15';
+import { extraModels16 } from './models-extra-16';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -250,7 +251,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -267,6 +268,9 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 47, type: 'new', modelId: 'ternary-bonsai-2-27b', level: 'Q2_0', note: { en: 'official Q2_0 for upstream llama.cpp', zh: '适用上游 llama.cpp 的官方 Q2_0' }, quantizer: 'prism-ml' },
+  { id: 46, type: 'new', modelId: 'daisyrose-27b', level: 'Q4_K_M', note: { en: 'Qwen-based multimodal reasoning', zh: '基于 Qwen 的多模态推理模型' }, quantizer: 'bartowski' },
+  { id: 45, type: 'new', modelId: 'apex-35b-v1', level: 'Q4_K_M', note: { en: 'MoE with separate vision projector', zh: 'MoE，附独立视觉投影文件' }, quantizer: 'bartowski' },
   { id: 44, type: 'new', modelId: 'botpsy-0-8b', level: 'Q4_K_M', note: { en: 'tool calling; official text-only GGUF', zh: '工具调用；官方纯文本 GGUF' }, quantizer: 'qvac' },
   { id: 43, type: 'new', modelId: 'mnn-pocket-0-3b-qat', level: 'Q4_1', note: { en: 'official QAT checkpoint; tied embeddings', zh: '官方 QAT 权重；共享嵌入' }, quantizer: 'taobao-mnn' },
   { id: 42, type: 'new', modelId: 'mnn-pocket-0-3b', level: 'Q8_0', note: { en: 'official BF16-derived GGUF', zh: '官方 BF16 转换 GGUF' }, quantizer: 'taobao-mnn' },
