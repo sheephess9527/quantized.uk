@@ -1,3 +1,4 @@
+import { localGuideSlugs } from '@/lib/data/local-guides';
 import { MetadataRoute } from 'next';
 import { assertDataConsistent } from '@/lib/data/validate';
 import { articleModifiedAt } from '@/lib/utils/article-dates';
@@ -48,7 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the
   // tool's date here when that text changes — not `sizingChangedAt`, which
   // would re-announce every derived page.
-  const VRAM_CALC_EDITED = '2026-10-13';
+  const VRAM_CALC_EDITED = '2026-11-20';
   const QUESTIONS_EDITED = '2026-10-26';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
@@ -63,6 +64,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/best/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
   ];
   const CONTENT_INDEX: Entry[] = [
+    ...localGuideSlugs.map(slug => ({
+      path: `/${slug}/`, lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-11-20']),
+      changeFrequency: 'monthly' as const, priority: 0.7,
+    })),
     { path: '/benchmarks/', lastModified: benchDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/cookbook/', lastModified: guidesDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/faq/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
