@@ -501,7 +501,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-**2026-11-20** — Added four bilingual local LLM hardware guides, linked them from the VRAM calculator and included both languages in the sitemap. The GPU-first entry opens the existing calculator in reverse mode. Updated the English calculator title and heading.
+**2026-11-20** — Added four bilingual local LLM hardware guides, linked them from the VRAM calculator and included both languages in the sitemap. The GPU-first entry opens the existing calculator in reverse mode. Updated the English calculator title and heading. The public changelog, homepage latest-update badge and feeds now record the November 20 release.
 
 ### 2026-11-19 — Evening patrol: DaisyRose, Apex and Bonsai
 

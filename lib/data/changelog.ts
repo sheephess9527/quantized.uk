@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-20',
+    en: 'Four new local LLM guides let you look up models by GPU, compare picks for 8–32 GB cards, check memory by model size, and find GGUF options for CPU-only PCs and Apple silicon Macs.',
+    zh: '新增四篇本地大模型指南。可以按显卡查模型，比较 8 至 32 GB 显存的推荐配置，按模型规模查显存需求，也可以按内存容量为纯 CPU 电脑和苹果芯片 Mac 选 GGUF 模型。',
+  },
+  {
     date: '2026-11-19',
     en: 'DaisyRose 27B and Apex 35B V1.0 are now indexed with recorded GGUF and image projector sizes. The official Ternary Bonsai 2 Q2_0 is indexed for upstream llama.cpp. The pending list explains the runtime or sizing gaps for Hy4 Flash, Aion and SenseNova Loop.',
     zh: '新增 DaisyRose 27B 和 Apex 35B V1.0，记录 GGUF 与视觉投影文件大小。另收录可用上游 llama.cpp 运行的官方 Ternary Bonsai 2 Q2_0。待收录页说明 Hy4 Flash、Aion 和 SenseNova Loop 的运行时或估算缺口。',

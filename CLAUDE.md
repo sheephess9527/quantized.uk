@@ -14,6 +14,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
   changes (e.g. new required env var, a new "always do X" rule, a changed branch/deploy step).
 - A commit that changes behaviour but touches neither doc is **incomplete**. Before committing,
   ask: "does the README changelog reflect this? did any rule here change?"
+- Record every update in the Markdown changelog in `README.md` §9. For reader-visible releases, also prepend a dated English/Chinese entry in `lib/data/changelog.ts` and sync `dataLastUpdated` in `lib/data/meta.ts` in the same commit. After deployment, verify both homepages show the release date and both public changelogs describe the change. Keep runtime verification dates tied to actual checks.
 - Keep both accurate over comprehensive — fix stale facts (counts, file lists) when you notice them.
 
 ## What this is
