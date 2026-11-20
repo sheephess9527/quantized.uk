@@ -113,13 +113,13 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
   return 'GGUF';
 }
 
-export default function VRAMCalculator() {
+export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMode?: Mode } = {}) {
   const { t } = useLanguage();
   const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig, setGpuId } = useHardwareProfile();
   const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
-  const [mode, setMode] = useState<Mode>('forward');
+  const [mode, setMode] = useState<Mode>(defaultMode);
   const [selectedModelId, setSelectedModelId] = useState('');
   const [selectedQuant, setSelectedQuant] = useState('Q4_K_M');
   const [contextLen, setContextLen] = useState(4096);
@@ -191,7 +191,7 @@ export default function VRAMCalculator() {
   useEffect(() => {
     if (urlInitialized.current || !searchParams || !configReady) return;
     const modeParam = searchParams.get('mode');
-    const m: Mode = modeParam === 'reverse' || modeParam === 'finetune' ? modeParam : 'forward';
+    const m: Mode = modeParam === 'reverse' || modeParam === 'finetune' || modeParam === 'forward' ? modeParam : defaultMode;
     setMode(m);
     const modelParam = searchParams.get('model');
     if (modelParam) {
@@ -271,7 +271,7 @@ export default function VRAMCalculator() {
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
     urlInitialized.current = true;
-  }, [searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
+  }, [defaultMode, searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {

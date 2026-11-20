@@ -35,6 +35,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 78 real GPUs (incl. AMD Radeon). Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
+| **Local LLM hardware guides** | `/what-llm-can-i-run-locally/`, `/best-llm-to-run-locally/`, `/local-llm-gpu-requirements/`, `/local-llm-without-gpu/` | GPU-first calculator, tier picks, GPU × model-size matrix, and separate CPU/Mac memory tables. All four have Chinese mirrors. |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
@@ -499,6 +500,8 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+**2026-11-20** — Added four bilingual local LLM hardware guides, linked them from the VRAM calculator and included both languages in the sitemap. The GPU-first entry opens the existing calculator in reverse mode. Updated the English calculator title and heading.
 
 ### 2026-11-19 — Evening patrol: DaisyRose, Apex and Bonsai
 
