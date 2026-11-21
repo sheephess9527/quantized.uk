@@ -712,3 +712,54 @@ The qualifications are part of each result: these are not blanket runtime, legal
 - `npm test`: passed recommendations (58,261 fits / 82 hardware profiles), calculator evidence, speed calibration, CLI source handling and RSS. Compared with the prior 58,253-fit count, the corrected StarCoder2 cache permits eight additional fits.
 - `npm run build`: passed compile/lint/type checks, static export and postbuild gates (646 pages, 322 Chinese pages, 1,166 page entities); IndexNow skipped outside Cloudflare production. Prebuild's existing gated-repo HF API 401s were non-fatal.
 - Build-generated `lib/data/hf-stats.json` was reverted; only model data, the bilingual changelog and this correction log are committed. README and non-data code are untouched. User-facing output remains visually unverified; no deployment performed.
+
+## Pass 3 batch 2 (2026-11-21)
+
+Scope: the next 30 of the 90 older indexed models, bringing Pass 3 research coverage to 60/90. Batch 1 is merged; this batch starts from updated `origin/main` at `46abb1a`. Research was completed before implementation and remains outside the repository at `~/verify-notes-p3-2.md` and `~/data-verification-p3-2/` (saved publisher responses, GGUF metadata/tensors, per-variant candidate files/byte sums and proposed corrections). No unresolved source, parameter, licence or benchmark claims are promoted into data.
+
+### Corrections
+
+| Date | Model id | Field | Old value | New value | Official source |
+|---|---|---|---|---|---|
+| 2026-11-21 | qwen2.5-1.5b | contextLength | 131072 | 32768 | [Publisher config](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/main/config.json) and [model-specific card](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct): Full 32,768; mapped GGUF also 32768 |
+| 2026-11-21 | qwen2.5-1.5b | bilingual description context | 128K | 32K | Same publisher card/config; no model-specific 128K/YaRN instructions in this card |
+| 2026-11-21 | stablelm-2-12b | arch.attHeads | 40 | 32 | [Publisher config](https://huggingface.co/stabilityai/stablelm-2-12b-chat/blob/main/config.json) |
+| 2026-11-21 | stablelm-2-12b | arch.headDim | 128 | 160 | [Publisher modeling code](https://huggingface.co/stabilityai/stablelm-2-12b-chat/blob/main/modeling_stablelm.py): head_dim = hidden_size / num_attention_heads; config 5120 / 32 = 160 |
+| 2026-11-21 | falcon-3-10b | arch.attHeads | 32 | 12 | [Publisher config](https://huggingface.co/tiiuae/Falcon3-10B-Instruct/blob/main/config.json), corroborated by mapped GGUF |
+| 2026-11-21 | falcon-3-10b | arch.kvHeads | 8 | 4 | Same publisher config and mapped GGUF |
+| 2026-11-21 | falcon-3-10b | arch.headDim | 128 | 256 | Same publisher config: explicit head_dim 256; hidden 3072 / 12 heads |
+| 2026-11-21 | reader-facing changelog | bilingual release entry | no Batch 2 entry | prepended context and architecture/cache corrections | Publisher evidence above; lib/data/changelog.ts |
+
+The Qwen family introduction's generic “up to 128K” is not the 1.5B checkpoint's specification: its model-specific card, config and GGUF agree on 32768. StableLM's corrected head size increases its calculated KV cache by 25%, without changing weight bytes. Falcon's corrected KV product is unchanged (8 × 128 = 4 × 256); its cache estimate does not decrease just because the head count does. Neither architecture description contains a derived numerical context/size pair needing replacement. `dataLastUpdated` and `sizingChangedAt` already equal `2026-11-21`, the day of these sizing changes, so both remain synchronized without a cosmetic edit.
+
+### Qualified checked-correct list
+
+Every result is qualified by missing exact quant provenance and unverified local benchmark assertions. The external ledger records site values and official counterparts for every field and variant of all 30 models; publisher metadata/config is distinguished from conversion headers.
+
+- `phi-3-medium-14b`: MIT, nominal 14B, scalar architecture and 131072 agree with the [128K publisher checkpoint](https://huggingface.co/microsoft/Phi-3-medium-128k-instruct); generic mapped repo does not settle 4K versus 128K artifact identity.
+- `phi-4-mini`: MIT, 3.84B, scalar architecture and 131072 agree with [publisher config/API](https://huggingface.co/microsoft/Phi-4-mini-instruct).
+- `deepseek-r1-distill-qwen-7b`: MIT metadata/licence, 7.62B, scalar architecture and 131072 agree with [publisher config/API](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B), which also acknowledges its Apache-2.0 Qwen base.
+- `olmo-2-7b`: Apache 2.0, 7.3B, scalar architecture and 4096 agree with [publisher config/API](https://huggingface.co/allenai/OLMo-2-1124-7B-Instruct).
+- `openchat-3.6-8b`: Llama 3 metadata, 8.03B, scalar architecture and 8192 agree with the [dated publisher checkpoint](https://huggingface.co/openchat/openchat-3.6-8b-20240522); exact dated quant repo remains an unbound alternative.
+- `zephyr-7b-beta`: MIT, 7.24B, scalar architecture and 32768 agree with [publisher config/API](https://huggingface.co/HuggingFaceH4/zephyr-7b-beta).
+- `qwen2.5-0.5b`: Apache 2.0, 0.49B, scalar architecture and 32768 agree with [publisher config/API](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct); GGUF's extra output table is not the original parameter total.
+- `gemma-2-2b`, `gemma-2-27b`, `aya-23-8b`: publisher APIs confirm licence metadata/totals at displayed precision; mapped GGUF headers corroborate scalar geometry/context. Original raw configs are gated, so these are not independent original-config certifications. Gemma's site cache window includes its documented 512-token batch.
+- `qwen3-8b`, `qwen3-14b`, `qwen3-32b`, `qwen3-30b-a3b`: Apache 2.0, displayed counts and scalar geometry agree with publisher config/API and mapped headers; 40960 agrees with config/GGUF but not the current card's native-context wording. The 30B routed-expert formula agrees with 28.99B/128 experts/top-8. Context remains qualified below.
+- `qwen2.5-1.5b`, `stablelm-2-12b`, `falcon-3-10b`: the corrected fields agree with publisher evidence above; no blanket artifact, parameter-precision or benchmark certification.
+- `deepseek-v2-lite`, `deepseek-r1-distill-qwen-32b`, `internlm2-7b`, `internlm2-20b`, `mistral-7b-v0.3`, `llama-3.2-90b-vision`, `jamba-1.5-mini`, `dbrx-instruct`, `gemma-3-4b-it`, `gemma-3-12b-it`, `llama-4-scout-17b`, `llama-4-maverick-17b`, `llama-3.1-405b`: checked with the field-specific exceptions below and in the external ledger, not certified wholesale.
+
+### Unresolved / deliberate non-changes
+
+- **Artifacts/projectors:** all **77 variants** are search-only: **52 GGUF, 18 AWQ, 6 EXL2, 1 GPTQ**, with no recorded `source` or selected projector bytes. Mapped APIs are accessible for 18/30 models; exact-level candidates were found for 45/52 GGUF rows, including alternative-only repositories. These are candidate filenames/byte sums, not site-source matches. Twelve unbound projector candidates were recorded across inspected alternatives; missing encoder evidence stays unknown, never zero. No replacement repo or projector is guessed.
+- **InternLM identity/licence:** site names say InternLM2, mapped GGUF/search names say 2.5. Publisher cards say free commercial usage with an application form but supply no named licence file. The current GitHub Apache statement covers newer InternLM3, not demonstrated retroactive terms for these rows. Existing unknown badges and conservative config-aligned 32768 remain.
+- **Context/runtime:** current Qwen3 cards describe 32768 native/131072 YaRN, while configs/GGUFs agree with site 40960; no automatic overwrite. DeepSeek-V2's 1×288 pseudo-heads describe compressed MLA, not its literal head layout; sampled older conversion uses unsplit KV tensors. Gemma's cache caps include batch overhead. Jamba's alternative header confirms four attention layers but not measured Mamba allocation. Meta's Llama 4 reference verifies chunk/global masking patterns, not actual runtime cache allocations.
+- **Parameters:** preserve nominal versus stored-count policy. R1 32B site 32.5 versus API/GGUF 32.763876352B, Mistral v0.3 site 7.24 versus 7.248023552B, and Falcon site 10.4 versus 10.305653760B remain documented, not selectively normalized. Qwen tiny conversions duplicate output tables; vision API totals differ from language-only GGUFs; first-shard tensor sums are not full-model counts.
+- **Gating:** original raw Gemma/Meta/Aya/Jamba configs remain gated. Llama Vision's inspected alternative contains no GGUF files; inspected 405B alternatives lack the selected levels. DBRX original HF endpoints are inaccessible, but the [official introduction](https://www.databricks.com/blog/introducing-dbrx-new-state-art-open-llm) confirms 132B/36B active/32K, and [official terms](https://www.databricks.com/legal/open-model-license) confirm the >700M MAU gate; scalar architecture remains unconfirmed.
+- **Benchmarks/prices:** per-quant speed/PPL and matching Qwen3 benchmark rows were inspected; no same-configuration official experiment verifies or replaces the declared local measurements. No values invented. No applicable model/GPU price fields found. No inference, deployment or visual verification performed.
+
+### Pass 3 batch 2 local validation
+
+- Node 20.20.2. Targeted assertions passed: approved publisher geometries/context, both Qwen description strings, raw zero/4K KV formula, unchanged weights and synchronized release dates. An initial ad hoc assertion incorrectly scaled an already rounded KV result; using the raw formula resolved that test-only rounding discrepancy without any product-code change.
+- `npm test`: passed recommendations (58,088 fits / 82 profiles), calculator evidence, speed calibration, CLI sources and RSS.
+- `npm run build`: passed compile/lint/type checks, static export and localization/structured-data gates (646 pages, 322 Chinese pages, 1,166 page entities). Existing gated-repo HF 401s were non-fatal; IndexNow skipped outside Cloudflare production.
+- Generated `lib/data/hf-stats.json` reverted; `git diff --check` passed. README/non-data code untouched. User-facing changes remain visually unverified; no deployment performed.

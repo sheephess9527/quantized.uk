@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'The second older-model verification batch covers another 30 models. Qwen2.5 1.5B now shows its model-specific 32K context limit rather than 128K. StableLM 2 12B uses 32 attention heads with 160-dimensional heads, increasing its estimated KV cache by 25%. Falcon 3 10B now records 12 attention heads, 4 KV heads and 256-dimensional heads; its estimated KV-cache size is unchanged.',
+    zh: '较早模型核查的第二批覆盖另外 30 个模型。Qwen2.5 1.5B 的上下文上限按该模型规格从 128K 修正为 32K。StableLM 2 12B 修正为 32 个注意力头、每头 160 维，KV 缓存估算增加 25%。Falcon 3 10B 修正为 12 个注意力头、4 个 KV 头、每头 256 维；其 KV 缓存大小估算不变。',
+  },
+  {
+    date: '2026-11-21',
     en: 'The first batch of the older-model verification pass covers 30 models. Codestral 22B now records 48 attention heads; StarCoder2 15B records 48 attention heads and 4 KV heads, correcting its estimated KV-cache size. Ambiguous checkpoint identities and unverified artifact or benchmark claims remain documented rather than guessed.',
     zh: '较早模型核查的首批覆盖 30 个模型。Codestral 22B 的注意力头数修正为 48；StarCoder2 15B 修正为 48 个注意力头和 4 个 KV 头，同时纠正其 KV 缓存大小估算。检查点身份不明及缺乏验证的文件或基准数据保留在核查记录中，不作猜测性修改。',
   },
