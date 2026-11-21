@@ -572,3 +572,72 @@ This is a field-qualified list, not a claim that every parameter-count/runtime a
 - `npm test`: passed recommendations (58,254 fits / 82 profiles), calculator evidence, speed calibration, exact CLI sources and RSS checks.
 - `npm run build`: passed compilation, lint/type checks, static page generation (1,204/1,204), and postbuild checks (646 pages; 322 Chinese pages; 1,166 structured-data entities). IndexNow skipped because this is not a Cloudflare production build.
 - The build-generated `lib/data/hf-stats.json` changes are excluded. No deployment or visual/browser verification was performed.
+
+## Pass 2 (2026-11-21)
+
+This pass covers the 36 deferred indexed models listed above. Together with Pass 1, the review now covers **all 61 recent indexed models** in the selected addedAt scope; the earlier 36-model deferral is resolved as a review deferral, not a claim that every field is independently established. Pending-only and older records remain outside that cohort. Only clear source-backed corrections are applied; the qualifications below remain unchanged in data.
+
+### Corrections
+
+| Date | Model id | Field | Old value | New value | Source |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-21 | muse-spark-open-816b-a42b | licence mapping / name / class / link | nvidia-open-model / NVIDIA Open Model Licence / commercial / NVIDIA agreement | muse-model-license / Muse Model License (Muse 模型许可) / restricted / publisher HF page | [Publisher API](https://huggingface.co/api/models/meta-models/Muse-Spark-Open-816B-A42B?blobs=true), cardData.license_name and full licence in extra_gated_prompt; [publisher page](https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B) |
+| 2026-11-21 | mimo-v2-6-flash | Q2_K source.bytes | 126365949248 | 126365949344 | [Quant publisher API](https://huggingface.co/api/models/ggml-org/MiMo-V2.6-Flash-RL-GGUF?blobs=true) |
+| 2026-11-21 | mimo-v2-6-flash | MXFP4 source.bytes | 167369465152 | 167369465248 | [Quant publisher API](https://huggingface.co/api/models/ggml-org/MiMo-V2.6-Flash-RL-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-bolt-74b-a9b | IQ2_XXS source.bytes | 22018326528 | 22018326464 | [Quant publisher API](https://huggingface.co/api/models/unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | Q4_0 source.bytes | 71803752384 | 72101548000 | [Quant publisher API](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | Q8_0 source.bytes | 128472993728 | 128472993760 | [Quant publisher API](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q2_K source.file | `K2-Horizon-375B-A23B-Q2_K-00001-of-00004.gguf` | `K2-Horizon-375B-A23B-Q2_K/K2-Horizon-375B-A23B-Q2_K-00001-of-00004.gguf` | [Quant publisher API](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q3_K_M source.file | `K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf` | `K2-Horizon-375B-A23B-Q3_K_M/K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf` | [Quant publisher API](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q4_K_M source.file | `K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf` | `K2-Horizon-375B-A23B-Q4_K_M/K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf` | [Quant publisher API](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q8_0 source.file | `K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf` | `K2-Horizon-375B-A23B-Q8_0/K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf` | [Quant publisher API](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | Q4_0 derived bpw / legacy vramGB | 4.76 / 75.1 | 4.78 / 75.4 | [Quant publisher API](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true); bytes × 8 / unchanged 120.76B; calcVRAM at 4K |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | bilingual description: Q4_0 artifact size | 71.8 GB | 72.1 GB | [Quant publisher API](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true); 72101548000 bytes |
+| 2026-11-21 | mimo-v2-6-flash | Q2_K source.checkedAt | 2026-10-20 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/ggml-org/MiMo-V2.6-Flash-RL-GGUF?blobs=true) |
+| 2026-11-21 | mimo-v2-6-flash | MXFP4 source.checkedAt | 2026-10-20 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/ggml-org/MiMo-V2.6-Flash-RL-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-bolt-74b-a9b | IQ2_XXS source.checkedAt | 2026-10-16 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | Q4_0 source.checkedAt | 2026-10-16 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true) |
+| 2026-11-21 | nemotron-3.5-super-vl-120b-a12b | Q8_0 source.checkedAt | 2026-10-16 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q2_K source.checkedAt | 2026-10-23 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q3_K_M source.checkedAt | 2026-10-23 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q4_K_M source.checkedAt | 2026-10-23 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | k2-horizon-375b-a23b | Q8_0 source.checkedAt | 2026-10-23 | 2026-11-21 | [Rechecked listing](https://huggingface.co/api/models/bartowski/K2-Horizon-375B-A23B-GGUF?blobs=true) |
+| 2026-11-21 | site metadata | sizingChangedAt | 2026-11-05 | 2026-11-21 | Sizing changes above; dataLastUpdated already 2026-11-21 |
+| 2026-11-21 | reader-facing changelog | bilingual release entry | no Pass 2 entry | prepended Muse filter and 36-model verification entry | Publisher evidence above; lib/data/changelog.ts |
+
+Muse Model License section 3 requires a separate written agreement when a Model-as-a-Service operator and its affiliates exceed $20M aggregate gross revenue during consecutive twelve months; internal/non-MaaS use is exempt. This matches the site's restricted-class rule for revenue gates. Muse Glimmer was checked separately: its [publisher API](https://huggingface.co/api/models/meta-models/Muse-Glimmer-30B?blobs=true) and [LICENSE](https://huggingface.co/meta-models/Muse-Glimmer-30B/blob/main/LICENSE) identify Apache 2.0, so its existing mapping is retained. There are no other Muse mappings in the table.
+
+The five byte differences are current listing differences, not a determination of whether historical files changed. MiMo's totals include both shards (each differs by 96 bytes); Bolt selects the exact non-UD IQ2_XXS file. Super VL's main-model sizes exclude MTP and projector files. Its projector remains 966925568 bytes. K2's recorded part counts and all four byte sums match; only the directory prefixes change. QuantSource.file is the exact repo listing path; split-source callers in LaunchCommands and CLIGenerator deliberately omit ggufFilename when parts > 1, retaining the existing wildcard command strategy.
+
+### Qualified checked-correct list
+
+These models have agreeing licence identity, scalar publisher architecture/context and parameter figures consistent at displayed/nominal precision or the selected stored layout. This is not runtime/cache or benchmark certification; missing provenance remains qualified.
+
+- `nanbeige4.3-33b`: apache-2.0; context 524288; [publisher config](https://huggingface.co/Nanbeige/Nanbeige4.3-33B/blob/main/config.json) and [API](https://huggingface.co/api/models/Nanbeige/Nanbeige4.3-33B?blobs=true). Recorded artifact sizes match.
+- `spark-x2.6-4b`: apache-2.0; context 1048576; [publisher config](https://huggingface.co/XHToken/Spark-X2.6-4B/blob/main/config.json) and [API](https://huggingface.co/api/models/XHToken/Spark-X2.6-4B?blobs=true). Recorded artifact sizes match.
+- `k2-horizon-0-9b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/IFM/K2-Horizon-0.9B/blob/main/config.json) and [API](https://huggingface.co/api/models/IFM/K2-Horizon-0.9B?blobs=true). Recorded artifact sizes match.
+- `k2-horizon-3-7b`: apache-2.0; context 524288; [publisher config](https://huggingface.co/IFM/K2-Horizon-3.7B/blob/main/config.json) and [API](https://huggingface.co/api/models/IFM/K2-Horizon-3.7B?blobs=true). Recorded artifact sizes match.
+- `gemma-4-12b`: apache-2.0; context 262144; [publisher config](https://huggingface.co/google/gemma-4-12B-it/blob/main/config.json) and [API](https://huggingface.co/api/models/google/gemma-4-12B-it?blobs=true). Recorded bytes match current candidates; filename provenance is still omitted.
+- `granite-4.2-30b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/ibm-granite/granite-4.2-30b/blob/main/config.json) and [API](https://huggingface.co/api/models/ibm-granite/granite-4.2-30b?blobs=true). Recorded artifact sizes match.
+- `granite-4.2-3b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/ibm-granite/granite-4.2-3b/blob/main/config.json) and [API](https://huggingface.co/api/models/ibm-granite/granite-4.2-3b?blobs=true). Recorded artifact sizes match.
+- `granite-4.2-8b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/ibm-granite/granite-4.2-8b/blob/main/config.json) and [API](https://huggingface.co/api/models/ibm-granite/granite-4.2-8b?blobs=true). Recorded artifact sizes match.
+- `lfm2-5-24b-a2b`: lfm-open-1.0; context 131072; [publisher config](https://huggingface.co/LiquidAI/LFM2.5-24B-A2B/blob/main/config.json) and [API](https://huggingface.co/api/models/LiquidAI/LFM2.5-24B-A2B?blobs=true). Recorded bytes match current candidates; filename provenance is still omitted.
+- `mellum2-1-12b-a2-5b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking/blob/main/config.json) and [API](https://huggingface.co/api/models/JetBrains/Mellum2.1-12B-A2.5B-Thinking?blobs=true). Site quants remain search-only; publisher GGUF candidates were found but not attached.
+- `muse-glimmer-30b`: apache-2.0; context 131072; [publisher config](https://huggingface.co/meta-models/Muse-Glimmer-30B/blob/main/config.json) and [API](https://huggingface.co/api/models/meta-models/Muse-Glimmer-30B?blobs=true). Recorded artifact sizes match.
+
+### Unresolved / deliberate non-changes
+
+- **Context convention:** Lightning config/site are 262144, but its card and GGUF document up to 1M on larger deployments. North Mini Code's 256K card differs from its 500000 config/GGUF. Bolt E4B's site/config/card agree at 65536 despite a 131072 GGUF header. No context caps changed.
+- **Parameters and runtime representation:** exact tensor sums differ slightly from several nominal/file-size-derived counts. Qwen3.5 0.8B/2B/4B checked files contain 0.772846B/1.942653B/4.326351B versus site 0.8B/1.96B/4.35B. Original API totals can include vision, audio and MTP. Full split-model counts were not independently summed across every tensor-bearing shard. MiMo asymmetric K/V, Ling MLA pseudo-heads, and converted Qwen extra blocks are not grounds for copying conventional config scalars into cache-sizing fields.
+- **Gated/source gaps:** Muse Spark's public publisher API supplies the full licence, but publisher config/card/license-file downloads are gated; full parameter/cache verification remains qualified. Nineteen variants across Beam, Muse Spark, Mellum2.1, MiMo Pro, Qwen3.5 0.8B/2B/4B and Qwen3.8 Flash Next have no exact source records. Eight rows across North Mini Code, Gemma 4 12B, Ling Flash and LFM2.5 24B omit filenames; their candidate file/shard bytes agree. Ling's matching artifacts are AtomicChat AD variants; its standard-looking site level labels remain qualified. No missing-source fields were guessed.
+- **Projectors:** all 22 recorded positive mmprojBytes assertions match current artifacts. An absent projector size remains unknown, not zero.
+- **Benchmarks/prices:** no deferred per-quant speedRTX4090 or matching benchmarks.ts model row. MiMo Flash/Pro MXFP4 loss=0 has no identified same-config quantitative perplexity-loss evidence; a native-format reference baseline is possible but not established. No benchmark/loss values changed. No applicable model/GPU price fields were found.
+- Detailed per-field research and saved responses remain outside the repository at ~/verify-notes-36.md and ~/data-verification-36/. No inference measurements, runtime cache verification, deployment or visual verification performed.
+
+### Pass 2 local validation
+
+- `npm run check:cli`: passed; split-source wildcard behavior is retained.
+- `npm test`: passed recommendations (58,253 fits / 82 profiles), calculator evidence, speed calibration, CLI sources and RSS checks. The corrected Super VL Q4_0 sizing removes one marginal fit from the earlier count.
+- Targeted assertions passed: Muse restricted/bilingual licence, Glimmer Apache retained, nine exact artifact paths and byte totals against saved API evidence, provenance dates, and the Super VL 4K estimate.
+- `npm run build`: passed compile/lint/type checks, static export and localization/structured-data gates (646 pages, 322 Chinese pages, 1,166 page entities). IndexNow skipped outside Cloudflare production.
+- Build-generated `lib/data/hf-stats.json` was reverted. README and non-data code are untouched. No visual/browser or deployment verification performed.
