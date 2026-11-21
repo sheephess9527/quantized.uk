@@ -25,6 +25,51 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    "id": "inkling-2-mini",
+    "name": "Inkling 2 Mini",
+    "vendor": "Thinking Machines",
+    "reason": "not-sized",
+    "detail": {
+      "en": "Apache-2.0 weights and GGUFs are available. Upstream inkling2_loop expands 24 physical layers to 48 execution slots with separate KV and convolution state for loop passes. Ollama 0.40.17 lists Apple Silicon support only.",
+      "zh": "Apache 2.0 权重及 GGUF 可获取。上游 inkling2_loop 将 24 个物理层扩为 48 个执行槽，循环各次有独立 KV 和卷积状态。Ollama 0.40.17 仅列 Apple Silicon 支持。"
+    },
+    "recheck": {
+      "en": "Audit the loop cache and projector with an observed memory result before adding a sizing row.",
+      "zh": "对照实际内存结果核实循环缓存和投影后再添加估算。"
+    },
+    "checkedAt": "2026-11-21"
+  },
+  {
+    "id": "olala-mini-7a1b",
+    "name": "Olala v1.0 Mini 7A1B",
+    "vendor": "OVHaiLLM",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "Apache-2.0 weights and the publisher GGUFs use custom Olala attention; the converter requires its own llama.cpp fork. The config reports zero conventional KV heads so standard sizing cannot be assumed.",
+      "zh": "Apache 2.0 原始权重和官方 GGUF 采用自定义 Olala 注意力；发布方要求使用专用 llama.cpp 分支，配置的常规 KV 头数为零，不能套用普通估算。"
+    },
+    "recheck": {
+      "en": "Recheck upstream load support and its actual attention memory.",
+      "zh": "复查上游加载支持并核实注意力内存。"
+    },
+    "checkedAt": "2026-11-21"
+  },
+  {
+    "id": "domyn-edge-sft",
+    "name": "Domyn Edge SFT",
+    "vendor": "Domyn",
+    "reason": "no-runtime",
+    "detail": {
+      "en": "The original config and community GGUFs are accessible. domyn-edge.cpp is present on the current upstream development line; the pinned Windows build predates that support.",
+      "zh": "可读取原始配置与社区 GGUF。当前上游开发版已有 domyn-edge.cpp，本站 Windows 固定版本早于该支持。"
+    },
+    "recheck": {
+      "en": "Confirm a supported runtime and cache sizing before exposing launch commands.",
+      "zh": "核实受支持运行时和缓存估算后再提供启动命令。"
+    },
+    "checkedAt": "2026-11-21"
+  },
+  {
     "id": "aurora2-400m",
     "name": "Aurora2 400M-A20M",
     "vendor": "AuroraAI Research",
@@ -343,16 +388,16 @@ export const pendingModels: PendingModel[] = [
     "id": "hy4-final",
     "name": "Hy4 (final release)",
     "vendor": "Tencent",
-    "reason": "awaiting-data",
+    "reason": "not-sized",
     "detail": {
-      "en": "Tencent's final Hy4 repository could not be read during this patrol (the official HF API request returned 401). Existing Hy4-preview weights do not establish the final model's files or architecture. This is an access/evidence gap, not proof that final weights do not exist.",
-      "zh": "本次无法读取腾讯最终版 Hy4 的官方仓库（HF API 返回 401）。已有 Hy4-preview 权重不能证明最终版的文件或架构。这是访问和证据缺口，不能据此断言最终版权重不存在。"
+      "en": "The official Tencent Hy licence, weights and configuration are now accessible. AngelSlim provides IQ2 and STQ1_0 files plus a separate vision projector. The 78-layer model uses sparse indexer attention and the specialized packings do not have verified resident-memory estimates here.",
+      "zh": "腾讯 Hy 许可、正式版权重与配置现已可读。AngelSlim 提供 IQ2、STQ1_0 文件和独立视觉投影。78 层模型采用稀疏索引注意力，专用封装的常驻内存尚未核实。"
     },
     "recheck": {
-      "en": "When the official final-checkpoint repository, config, licence and quant files can be read.",
-      "zh": "能读取官方最终版仓库、配置、许可与量化文件时。"
+      "en": "Audit the indexer cache and the runtime memory for an exact quant and projector.",
+      "zh": "针对确切量化和投影核实索引缓存及运行内存。"
     },
-    "checkedAt": "2026-11-19"
+    "checkedAt": "2026-11-21"
   },
   {
     id: 'kimi-k3-1-pro',

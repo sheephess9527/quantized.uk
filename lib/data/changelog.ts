@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'The VRAM calculator keeps Copy command visible and folds the full startup script to bring the memory breakdown closer. Clairic, Clairic Flash and Shot Reader are indexed with exact GGUF and projector sizes. Ollama is now 0.40.17.',
+    zh: '显存计算器保留可直接使用的复制按钮，默认折叠完整启动脚本，让内存明细更靠前。新增 Clairic、Clairic Flash 和 Shot Reader，记录确切 GGUF 和投影文件大小。Ollama 更新至 0.40.17。',
+  },
+  {
+    date: '2026-11-21',
     en: 'Homepage picks now identify the largest estimated fit and name the RTX 4090 used for speed comparisons. The calculator labels memory estimates in GiB and explains what a GGUF file-size check can verify.',
     zh: '首页按预计可容纳的模型规模推荐，并在速度对比中标明测试显卡 RTX 4090。计算器以 GiB 标注显存估算，说明 GGUF 文件大小仅用于核对权重体积。',
   },

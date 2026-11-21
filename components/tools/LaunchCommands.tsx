@@ -7,7 +7,7 @@
  * fed with the calculator's own answer — the level picked, the context, and
  * the GPU-layer count from `offloadPlan` when the model does not fit whole.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import type { GPU } from '@/lib/data/gpus';
@@ -55,6 +55,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
     try { if (/Windows/i.test(navigator.userAgent)) setOs('windows'); } catch { /* keep linux */ }
   }, []);
   const [copiedCommand, setCopiedCommand] = useState<string>();
+  const scriptRef = useRef<HTMLDetailsElement>(null);
   const active = levels.find(l => l.fw === fw) ?? levels[0];
   const out = useMemo(() => {
     if (!active) return null;
@@ -88,7 +89,10 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       await navigator.clipboard.writeText(out.command);
       setCopiedCommand(out.command);
       setTimeout(() => setCopiedCommand(value => value === out.command ? undefined : value), 1500);
-    } catch { /* clipboard blocked: the text stays selectable */ }
+    } catch {
+      // Open the script for manual selection when clipboard access is blocked.
+      if (scriptRef.current) scriptRef.current.open = true;
+    }
   };
 
   return (
@@ -130,16 +134,15 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
           ))}
         </div>
       )}
-      <div className="relative">
-        <pre className="text-[11px] leading-relaxed font-mono text-slate-300 bg-black/30 rounded-xl p-3 pt-12 overflow-x-auto whitespace-pre">{out.command}</pre>
+      <div className="flex justify-start">
         <button
           type="button"
           onClick={copy}
           aria-label={copyLabel}
-          className="absolute top-2 right-2 inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-[11px] bg-white/[0.06] hover:bg-white/[0.1] text-slate-300"
+          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-violet-500/15 px-3 text-xs text-violet-200 hover:bg-violet-500/25"
         >
           {copiedCommand === out.command ? <Check size={14} /> : <Copy size={14} />}
-          {copyLabel}
+          {copiedCommand === out.command ? t.calc.launchCopied : copyLabel}
         </button>
       </div>
       <p className="text-[11px] text-slate-500 mt-1.5">
@@ -150,11 +153,20 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       </p>
       {needsSourceCheck && <p className="mt-1.5 text-xs text-amber-300/90">{t.calc.launchTemplateNote}</p>}
       {advanced && <p className="mt-1.5 text-xs text-amber-300/90">{t.calc.runPlanAdvanced}</p>}
-      {out.notes.length > 0 && (
-        <ul className="mt-1 space-y-0.5">
-          {out.notes.slice(0, 3).map((n, i) => <li key={i} className="text-[11px] text-slate-600 leading-relaxed">· {n}</li>)}
-        </ul>
+      {active.fw === 'vllm' && !mac && os === 'windows' && (
+        <p className="mt-1.5 text-xs text-amber-300/90">{out.notes[0]}</p>
       )}
+      <details ref={scriptRef} className="mt-1 min-w-0">
+        <summary className="min-h-[44px] cursor-pointer py-3 text-sm text-violet-200">
+          {t.calc.launchShowScript}
+        </summary>
+        <pre className="overflow-x-auto whitespace-pre rounded-xl bg-black/30 p-3 font-mono text-[11px] leading-relaxed text-slate-300">{out.command}</pre>
+        {out.notes.length > 0 && (
+          <ul className="mt-1 space-y-0.5">
+            {out.notes.slice(0, 3).map((n, i) => <li key={i} className="text-[11px] leading-relaxed text-slate-400">· {n}</li>)}
+          </ul>
+        )}
+      </details>
     </div>
   );
 }

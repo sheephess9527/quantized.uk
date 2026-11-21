@@ -16,6 +16,7 @@ import { extraModels13 } from './models-extra-13';
 import { extraModels14 } from './models-extra-14';
 import { extraModels15 } from './models-extra-15';
 import { extraModels16 } from './models-extra-16';
+import { extraModels17 } from './models-extra-17';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -251,7 +252,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -268,6 +269,9 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 50, type: 'new', modelId: 'clairic-flash-9b', level: 'Q4_K_M', note: { en: 'structured text and image extraction', zh: '文本和图像结构化提取' }, quantizer: 'Xylolabs' },
+  { id: 49, type: 'new', modelId: 'clairic-27b', level: 'Q4_K_M', note: { en: 'structured multimodal output', zh: '多模态结构化输出' }, quantizer: 'Xylolabs' },
+  { id: 48, type: 'new', modelId: 'shot-reader-8b', level: 'Q4_K_M', note: { en: 'structured shot description', zh: '结构化镜头描述' }, quantizer: 'mradermacher' },
   { id: 47, type: 'new', modelId: 'ternary-bonsai-2-27b', level: 'Q2_0', note: { en: 'official Q2_0 for upstream llama.cpp', zh: '适用上游 llama.cpp 的官方 Q2_0' }, quantizer: 'prism-ml' },
   { id: 46, type: 'new', modelId: 'daisyrose-27b', level: 'Q4_K_M', note: { en: 'Qwen-based multimodal reasoning', zh: '基于 Qwen 的多模态推理模型' }, quantizer: 'bartowski' },
   { id: 45, type: 'new', modelId: 'apex-35b-v1', level: 'Q4_K_M', note: { en: 'MoE with separate vision projector', zh: 'MoE，附独立视觉投影文件' }, quantizer: 'bartowski' },

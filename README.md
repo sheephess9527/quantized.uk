@@ -97,8 +97,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   148 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-16 (packs)
+    models.ts               #   151 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-17 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -429,7 +429,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-16.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-17.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -500,6 +500,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-21 — Evening patrol and calculator script disclosure
+
+The calculator keeps Copy visible and folds the full script by default.
+Added Clairic 27B, Clairic Flash 9B and Shot Reader 8B with four GGUF tiers
+and matching projectors each. Updated Ollama to 0.40.17 and refreshed the
+pending evidence for Inkling, Hy4 and other candidates.
+[Patrol record](docs/changes/2026-11-21-patrol.md).
 
 **2026-11-21** — Scoped homepage model-size and RTX 4090 speed labels. Calculator results use GiB; the GGUF file comparison checks weights only.
 
