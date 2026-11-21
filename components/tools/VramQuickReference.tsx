@@ -7,7 +7,7 @@ import { sizeClassReference } from '@/lib/utils/vram-reference';
 
 const rows = sizeClassReference();
 const range = ([lo, hi]: [number, number]) =>
-  lo === hi ? `${lo.toFixed(1)} GB` : `${lo.toFixed(1)}–${hi.toFixed(1)} GB`;
+  lo === hi ? `${lo.toFixed(1)} GiB` : `${lo.toFixed(1)}–${hi.toFixed(1)} GiB`;
 
 export default function VramQuickReference() {
   const { t } = useLanguage();
