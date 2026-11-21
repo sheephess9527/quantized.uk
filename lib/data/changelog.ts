@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'Muse Spark Open now shows its own Muse Model License and is listed under restricted in the Quant Hub licence filter: Model-as-a-Service businesses above $20M aggregate revenue over twelve months need a separate agreement. Muse Glimmer remains Apache 2.0. The second verification pass covers the remaining 36 recent models, correcting five GGUF byte totals and K2 Horizon shard paths.',
+    zh: 'Muse Spark Open 现显示独立的 Muse 模型许可，并在量化模型库的许可筛选中归为「有条件」：连续十二个月合计营收超过 2000 万美元的模型即服务业务须另签协议。Muse Glimmer 仍为 Apache 2.0。第二轮核查覆盖其余 36 个近期模型，修正五项 GGUF 字节总量及 K2 Horizon 分片路径。',
+  },
+  {
+    date: '2026-11-21',
     en: 'Mistral Large 4 is now listed under restricted rather than commercial in the Quant Hub licence filter. Its Mistral Ecosystem Open-Weight Licence requires Model-as-a-Service operators to obtain a separate commercial licence; internal use remains exempt from that requirement.',
     zh: '量化模型库的许可筛选已将 Mistral Large 4 从「可商用」调整为「有条件」。其 Mistral 生态开放权重许可要求模型即服务运营商另行取得商业许可；内部使用仍不受这一要求限制。',
   },

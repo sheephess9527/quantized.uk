@@ -596,7 +596,7 @@ export const extraModels12: QuantModel[] = [
       zh: 'NVIDIA 的 Nemotron 3.5 Bolt 是 74B 混合专家模型，每个 token 约激活 9B 参数，目标是装进 24 GB 显卡。它由 Nemotron 3.5 Super VL 压缩而来，只有一个版本，即 NVIDIA 官方原生 2-bit 文件，22.0 GB。88 层中只有 8 层的缓存随上下文增长，所以上下文很便宜：4K 约 23.1 GB，128K 约 24.1 GB，用满 256K 约 25.2 GB。这正是 NVIDIA 设计的 24 GB，但超过了本站的宽裕线，所以 24 GB 显卡判定为偏紧；32 GB 显卡或 48 GB 的 Mac 可以从容运行。图像编码器是另外 1.7 GB 的文件。基准成绩是 NVIDIA 自己报的，2-bit 版本的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated', source: { repo: 'unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS.gguf', bytes: 22_018_326_528, mmprojBytes: 1_733_692_672, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'IQ2_XXS', bpw: 2.38, vramGB: 23.1, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Bolt-74B-A9B GGUF'), confidence: 'estimated', source: { repo: 'unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF', file: 'NVIDIA-Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS.gguf', bytes: 22_018_326_464, mmprojBytes: 1_733_692_672, checkedAt: '2026-11-21' } },
     ],
   },
   {
@@ -607,7 +607,7 @@ export const extraModels12: QuantModel[] = [
     // expert 5376, vocab 131072 untied, 1,048,576 positions; one MTP layer ships as a separate GGUF.
     // Counted from that config: 120.67B total, 12.2B active; ggml-org's BF16 GGUF is
     // 241,518,661,568 B = 120.76B, which is `params` (what loads). bpw from ggml-org's single files:
-    // Q4_0 71,803,752,384 B → 4.76, Q8_0 128,472,993,728 B → 8.51 (on 8.5: the count holds). Vision
+    // Q4_0 72,101,548,000 B → 4.78, Q8_0 128,472,993,760 B → 8.51 (on 8.5: the count holds). Vision
     // mmproj Q8_0 966,925,568 B / BF16 1,733,696,768 B, separate. Mamba state as Bolt's (~0.17 GB).
     id: 'nemotron-3.5-super-vl-120b-a12b',
     name: 'Nemotron 3.5 Super VL 120B-A12B',
@@ -620,12 +620,12 @@ export const extraModels12: QuantModel[] = [
     arch: { layers: 88, attHeads: 32, kvHeads: 2, headDim: 128, attention: { fullLayers: 8, note: { en: 'Only 8 of 88 layers are attention layers with a growing KV cache (2 KV heads × 128); 40 are Mamba-2 layers with a fixed recurrent state and 40 are mixture-of-experts layers that cache nothing per token.', zh: '88 层中只有 8 层是会随上下文增长 KV 缓存的注意力层（2 个 KV 头 × 128）；40 层是状态大小固定的 Mamba-2 层，另 40 层是不缓存任何内容的混合专家层。' } } },
     addedAt: ADDED_NEMOTRON35,
     description: {
-      en: 'NVIDIA\'s Nemotron 3.5 Super VL is a 120B mixture-of-experts vision-language model with about 12B parameters active per token. It is built for coding, tool use and document work, with a context window of up to 1M tokens. Only 8 of its 88 layers keep a growing cache, so even the full window is cheap: at Q4_0 (ggml-org\'s 71.8 GB file) it needs about 75 GB at 4K and 84 GB at 1M. That runs comfortably on a 128 GB Mac or a DGX Spark 128G, and tightly on one 80 GB card. Q8_0 (128 GB) wants a 256 GB Mac. The vision encoder is a separate 1–1.7 GB file. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
-      zh: 'NVIDIA 的 Nemotron 3.5 Super VL 是 120B 混合专家视觉语言模型，每个 token 约激活 12B 参数，面向编程、工具调用和文档处理，上下文最长 100 万 token。88 层中只有 8 层的缓存随上下文增长，所以即使用满窗口也不贵：Q4_0（ggml-org 发布的 71.8 GB 文件）在 4K 下约需 75 GB，100 万上下文约 84 GB。128 GB 的 Mac 或 DGX Spark 128G 可以从容运行，单张 80 GB 显卡偏紧。Q8_0（128 GB）需要 256 GB 的 Mac。视觉编码器是另外 1–1.7 GB 的文件。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
+      en: 'NVIDIA\'s Nemotron 3.5 Super VL is a 120B mixture-of-experts vision-language model with about 12B parameters active per token. It is built for coding, tool use and document work, with a context window of up to 1M tokens. Only 8 of its 88 layers keep a growing cache, so even the full window is cheap: at Q4_0 (ggml-org\'s 72.1 GB file) it needs about 75 GB at 4K and 84 GB at 1M. That runs comfortably on a 128 GB Mac or a DGX Spark 128G, and tightly on one 80 GB card. Q8_0 (128 GB) wants a 256 GB Mac. The vision encoder is a separate 1–1.7 GB file. Sizes come from the published GGUF files; NVIDIA\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'NVIDIA 的 Nemotron 3.5 Super VL 是 120B 混合专家视觉语言模型，每个 token 约激活 12B 参数，面向编程、工具调用和文档处理，上下文最长 100 万 token。88 层中只有 8 层的缓存随上下文增长，所以即使用满窗口也不贵：Q4_0（ggml-org 发布的 72.1 GB 文件）在 4K 下约需 75 GB，100 万上下文约 84 GB。128 GB 的 Mac 或 DGX Spark 128G 可以从容运行，单张 80 GB 显卡偏紧。Q8_0（128 GB）需要 256 GB 的 Mac。视觉编码器是另外 1–1.7 GB 的文件。体积按已发布的 GGUF 文件计算；基准成绩是 NVIDIA 自己报的，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_0', bpw: 4.76, vramGB: 75.1,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q4_0.gguf', bytes: 71_803_752_384, mmprojBytes: 966_925_568, checkedAt: '2026-10-16' } },
-      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf', bytes: 128_472_993_728, mmprojBytes: 966_925_568, checkedAt: '2026-10-16' } },
+      { format: 'GGUF', level: 'Q4_0', bpw: 4.78, vramGB: 75.4,  hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q4_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q4_0.gguf', bytes: 72_101_548_000, mmprojBytes: 966_925_568, checkedAt: '2026-11-21' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.51, vramGB: 134.3, hfSearchUrl: hf('NVIDIA-Nemotron-3.5-Super-VL-120B-A12B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'ggml-org/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-GGUF', file: 'NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-Q8_0.gguf', bytes: 128_472_993_760, mmprojBytes: 966_925_568, checkedAt: '2026-11-21' } },
     ],
   },
   {
@@ -888,8 +888,8 @@ export const extraModels12: QuantModel[] = [
       zh: '小米 MiMo-V2.6 系列中较小的一款：309B 参数，每个 token 约激活 15B，MIT 许可，能读文本、图像、视频和音频。发布的权重在专家层本身就是 4 比特（MXFP4），ggml-org 的 GGUF 原样保留：4K 上下文约需 175 GB，只有 512 GB 的 Mac Studio 才宽裕，256 GB 的偏紧。Q2_K 版本（约 132 GB）在 256 GB 的 Mac 上很宽裕，在 192 GB 的 Mac 上偏紧。48 层中只有 9 层保留会增长的缓存，所以即使用满 100 万 token 窗口也只多约 25 GB。llama.cpp 以 `mimo2` 架构运行它（与 MiMo-V2.6-Pro 相同），视觉通过单独的编码器加载。体积按 ggml-org 的 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-Q2_K-00001-of-00002.gguf', bytes: 126_365_949_248, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-MXFP4-00001-of-00002.gguf', bytes: 167_369_465_152, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-10-20' } },
+      { format: 'GGUF', level: 'Q2_K',  bpw: 3.27, vramGB: 132.1, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF Q2_K'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-Q2_K-00001-of-00002.gguf', bytes: 126_365_949_344, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-11-21' } },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 175.3, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Flash-RL GGUF MXFP4'), confidence: 'estimated', source: { repo: 'ggml-org/MiMo-V2.6-Flash-RL-GGUF', file: 'MiMo-V2.6-Flash-RL-MXFP4-00001-of-00002.gguf', bytes: 167_369_465_248, parts: 2, mmprojBytes: 2_748_509_792, checkedAt: '2026-11-21' } },
     ],
   },
   {
@@ -1101,10 +1101,10 @@ export const extraModels12: QuantModel[] = [
       zh: 'MBZUAI IFM 的 K2 Horizon 系列中最大的型号，Apache 2.0 许可，训练数据一并公开：按配置算出 379B 参数，每个 token 约激活 23B。61 层每一层都保留普通缓存。Q2_K（bartowski 的 146 GB，分 4 卷）在 4K 下约需 154 GB，256 GB 的 Mac Studio 宽裕；Q4_K_M（238 GB，分 7 卷）约需 250 GB，只有 512 GB 的才宽裕。IFM 没有为这个尺寸发布 GGUF；这里的体积按 bartowski 的文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q2_K', bpw: 3.09, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q2_K'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q2_K-00001-of-00004.gguf', bytes: 146_249_929_920, parts: 4, checkedAt: '2026-10-23' } },
-      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf', bytes: 182_537_573_664, parts: 5, checkedAt: '2026-10-23' } },
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf', bytes: 237_797_004_832, parts: 7, checkedAt: '2026-10-23' } },
-      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf', bytes: 403_079_845_472, parts: 11, checkedAt: '2026-10-23' } },
+      { format: 'GGUF', level: 'Q2_K', bpw: 3.09, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q2_K'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q2_K/K2-Horizon-375B-A23B-Q2_K-00001-of-00004.gguf', bytes: 146_249_929_920, parts: 4, checkedAt: '2026-11-21' } },
+      { format: 'GGUF', level: 'Q3_K_M', bpw: 3.85, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q3_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q3_K_M/K2-Horizon-375B-A23B-Q3_K_M-00001-of-00005.gguf', bytes: 182_537_573_664, parts: 5, checkedAt: '2026-11-21' } },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.02, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q4_K_M/K2-Horizon-375B-A23B-Q4_K_M-00001-of-00007.gguf', bytes: 237_797_004_832, parts: 7, checkedAt: '2026-11-21' } },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.5, vramGB: 0, hfSearchUrl: hf('K2-Horizon-375B-A23B GGUF Q8_0'), confidence: 'estimated', source: { repo: 'bartowski/K2-Horizon-375B-A23B-GGUF', file: 'K2-Horizon-375B-A23B-Q8_0/K2-Horizon-375B-A23B-Q8_0-00001-of-00011.gguf', bytes: 403_079_845_472, parts: 11, checkedAt: '2026-11-21' } },
     ],
   },
   {
