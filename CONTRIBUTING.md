@@ -13,9 +13,16 @@ npm install
 npm run dev        # http://localhost:3000
 npm test           # recommendations, evidence, speed-calibration, CLI-source and RSS checks
 npm run build      # static export → out/
+npm run typecheck  # tsc --noEmit
+npm start          # preview out/ at http://localhost:3000 (build first)
 ```
 
 Analytics: Plausible defaults to domain `quantized.uk` in code (optional override via `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`). See `.env.example`.
+
+`npm start` uses pinned `npx --yes serve@14.2.5` to serve `out/`, not `next start`.
+The first invocation needs npm registry access; subsequent invocations can use npm's cache.
+Stop any dev server on port 3000 before previewing. `npm test` also checks the HF fetcher's
+timeout, four-worker concurrency limit and cache fallback using offline fixtures.
 
 ---
 

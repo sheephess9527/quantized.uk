@@ -209,7 +209,8 @@ Model cards in the hub link to their detail page; the HF shortcut opens in a new
 }
 ```
 
-`StatsBar` imports this at render time so the dashboard always reflects actual data.
+`StatsBar` computes this on the server at build time. Both homepage routes pass an explicit
+language through `HomeContent`, so the stats strip needs no client hydration or language hook.
 
 ### CLI generation (`lib/utils/cli.ts`)
 
@@ -330,16 +331,21 @@ npm run dev          # http://localhost:3000
 npm test             # recommendations, evidence, speed-calibration, CLI-source and RSS checks
 npm run build        # static export → ./out
 npm run lint
+npm run typecheck    # tsc --noEmit
+npm start            # preview out/ at http://localhost:3000 (build first)
 ```
 
-The production build emits flat HTML/JS/CSS into `out/`. You can preview it with any static server (`npx serve out`).
+The production build emits flat HTML/JS/CSS into `out/`. `npm start` previews it with
+`npx --yes serve@14.2.5 out -l 3000`, not a Next server. The first run needs npm registry access
+to cache the pinned preview tool; it adds no application dependency. No SPA fallback is enabled,
+so unknown paths remain 404s. Stop the dev server first if it already occupies port 3000.
 
 > **Note on `postbuild`:** `npm run build` ends with `scripts/localize-export.mjs`, which patches
 > `<html lang>` for the Chinese tree and **fails the build** if a `/zh` page links into the English
 > tree. Unlike `prebuild` this one is a gate, not a best-effort refresh — a non-zero exit here is a
 > real bug in the export (see §4, "i18n: what the build checks for you").
 
-> **Note on `prebuild`:** `npm run build` first runs `scripts/fetch-hf-stats.mjs` (via the `prebuild` hook) to refresh Hugging Face download/like counts. It fails gracefully — on any network/API error it keeps the cached `lib/data/hf-stats.json` and exits 0, so **builds work fully offline**. Run it standalone with `npm run fetch-hf`.
+> **Note on `prebuild`:** `npm run build` first runs `scripts/fetch-hf-stats.mjs` (via the `prebuild` hook) to refresh Hugging Face download/like counts. Four workers fetch with a 10-second per-request AbortController timeout (including the response body), pacing each worker by 200 ms. Failed requests keep prior model stats; if every request fails and cached stats exist, the file is left untouched. Run it standalone with `npm run fetch-hf`. `npm test` includes offline tests for parsing, errors, timeout, bounded concurrency, deterministic ordering and cache fallback.
 
 ---
 
@@ -506,6 +512,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-21 — Bounded build fetching and lighter homepage stats
+
+- Refreshed Autoprefixer 10, PostCSS 8 and tailwind-merge 2 within their existing majors; updated compatible nanoid/source-map-js transitive versions. Next's pinned nested PostCSS still needs a separately reviewed framework update.
+- Added `npm run typecheck` and changed `npm start` to preview the static export using pinned `npx serve`, without a new application dependency.
+- Bounded Hugging Face fetching to four workers with 10-second request/body timeouts, retaining cache fallback and nonfatal network failures; added offline regression tests.
+- Server-rendered `StatsBar` with an explicit language supplied by the two homepage routes via `HomeContent`.
 
 ### 2026-11-21 — Keyboard navigation and form accessibility
 

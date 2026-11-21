@@ -8,12 +8,13 @@
     "prebuild": "node scripts/fetch-hf-stats.mjs",
     "build": "next build",
     "postbuild": "node scripts/localize-export.mjs && node scripts/indexnow.mjs",
-    "start": "next start",
+    "start": "npx --yes serve@14.2.5 out -l 3000",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "check:recommendations": "tsx scripts/check-recommendations.ts",
     "check:evidence": "tsx scripts/check-calculator-evidence.ts",
     "check:speed": "tsx scripts/check-measured-speed.ts",
-    "test": "tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts",
+    "test": "tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts && node --test scripts/check-hf-stats.mjs",
     "check:cli": "tsx scripts/check-cli-sources.ts",
     "check:feed": "tsx scripts/check-feed.ts"
   },
@@ -24,16 +25,16 @@
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^2.12.7",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.6.2"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
+    "autoprefixer": "^10.7.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
-    "postcss": "^8",
+    "postcss": "^8.5.33",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.20.6",
     "typescript": "^5"
