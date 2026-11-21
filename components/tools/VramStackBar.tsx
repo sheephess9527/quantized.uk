@@ -53,13 +53,13 @@ export default function VramStackBar({
         : (total / cap <= tightCeiling ? t.calc.stackSpill : t.calc.stackOver)
             .replace('{used}', total.toFixed(1)).replace('{cap}', cap.toFixed(1)).replace('{over}', (-free).toFixed(1)))
     : formatBlocked ? t.calc.stackFormat : t.calc.stackNoCard;
-  const aria = `${segments.map(s => `${s.label} ${s.gb.toFixed(1)} GB`).join(', ')}. ${summary}`;
+  const aria = `${segments.map(s => `${s.label} ${s.gb.toFixed(1)} GiB`).join(', ')}. ${summary}`;
 
   return (
     <div className="mt-4">
       <div role="img" aria-label={aria} className="relative h-3 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
         {segments.map(s => (
-          <div key={s.label} className={`${s.cls} h-full shrink-0`} style={{ width: pct(s.gb) }} title={`${s.label} ${s.gb.toFixed(2)} GB`} />
+          <div key={s.label} className={`${s.cls} h-full shrink-0`} style={{ width: pct(s.gb) }} title={`${s.label} ${s.gb.toFixed(2)} GiB`} />
         ))}
         {cap && total > cap && (
           // Past the card: hatch the part that does not fit (amber when it only spills).

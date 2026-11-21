@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-21',
+    en: 'Homepage picks now identify the largest estimated fit and name the RTX 4090 used for speed comparisons. The calculator labels memory estimates in GiB and explains what a GGUF file-size check can verify.',
+    zh: '首页按预计可容纳的模型规模推荐，并在速度对比中标明测试显卡 RTX 4090。计算器以 GiB 标注显存估算，说明 GGUF 文件大小仅用于核对权重体积。',
+  },
+  {
     date: '2026-11-20',
     en: 'Four new local LLM guides let you look up models by GPU, compare picks for 8–32 GB cards, check memory by model size, and find GGUF options for CPU-only PCs and Apple silicon Macs.',
     zh: '新增四篇本地大模型指南。可以按显卡查模型，比较 8 至 32 GB 显存的推荐配置，按模型规模查显存需求，也可以按内存容量为纯 CPU 电脑和苹果芯片 Mac 选 GGUF 模型。',

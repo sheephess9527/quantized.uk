@@ -1815,7 +1815,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
                                 <span className="ml-1.5 badge text-[10px] bg-emerald-500/15 text-emerald-300 border-emerald-500/25">{t.calc.levelsBest}</span>
                               )}
                             </td>
-                            <td className="py-1 pr-2 text-right font-mono text-slate-300">{row.totalGB.toFixed(1)} GB</td>
+                            <td className="py-1 pr-2 text-right font-mono text-slate-300">{row.totalGB.toFixed(1)} GiB</td>
                             <td className="py-1 pr-2 text-right font-mono text-slate-500">{formatLoss(row.quant)}</td>
                             {profileGpu && (
                               <td className="py-1 text-right">
@@ -1873,7 +1873,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
                           />
                         </div>
                         <span className="font-mono text-xs text-slate-500 shrink-0">
-                          {result.totalGB.toFixed(1)} / {capacity.toFixed(1)}G
+                          {result.totalGB.toFixed(1)} / {capacity.toFixed(1)} GiB
                         </span>
                       </div>
                       {profileGpu.isUnified && (
