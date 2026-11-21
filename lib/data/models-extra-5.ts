@@ -64,20 +64,15 @@ export const extraModels5: QuantModel[] = [
     hardwareTags: ['pro-gpu'],
     contextLength: 262144,
     /**
-     * Attention is MLA, not GQA: llama.cpp converts it as `DeepseekV2Model`
-     * (arch DEEPSEEK2) and vLLM's `MistralLarge3ForCausalLM` subclasses
-     * `DeepseekV3ForCausalLM`. The layer count and kv_lora_rank are NOT
-     * verified — params.json sits on huggingface.co, which is blocked here, and
-     * Mistral's own Small 4 uses rank 256 rather than DeepSeek's 512, so the
-     * DeepSeek shape cannot simply be copied. These GQA numbers are unsourced
-     * and overstate the cache: ~8.6 GB at 32K (~2% of the total, no verdict
-     * moves) but ~69 GB at the full 256K, where the overstatement does matter.
-     * Replace with the real params.json values once readable.
+     * Publisher params.json: 61 layers, 128 heads, kv_lora_rank 512 + 64 rotary.
+     * Current llama.cpp DEEPSEEK2 conversions cache that 576-value vector with
+     * no separate V: represented as 1 × 288 in the K+V formula (see ModelArch).
+     * Older unsplit KV conversions need a larger cache; allocation is not measured.
      */
-    arch: { layers: 64, attHeads: 64, kvHeads: 8, headDim: 128 },
+    arch: { layers: 61, attHeads: 128, kvHeads: 1, headDim: 288 },
     description: {
-      en: 'Mistral 3 flagship MoE (41B active / 675B total) with vision encoder. FP8 on 8×H200; GGUF quant for research clusters only. Its attention is DeepSeek-style MLA, so the real KV cache is smaller than the figure below, which uses an unverified conventional layout. At 32K that is a rounding error beside ~390 GB of weights; at the full 256K window, treat the cache figure as an upper bound.',
-      zh: 'Mistral 3 旗舰 MoE（激活 41B / 总 675B），含视觉编码器。FP8 需 8×H200；GGUF 量化仅供研究集群。注意力为 DeepSeek 式 MLA，实际 KV 缓存比下方按常规结构（未核实）估算的数字小。32K 下相对约 390 GB 权重可忽略；用满 256K 时，请把缓存数字当作上限。',
+      en: 'Mistral 3 flagship MoE (41B active / 675B total) with vision encoder. FP8 on 8×H200; GGUF quant for research clusters only. Estimates assume current llama.cpp compressed MLA: each token caches 512 latent plus 64 rotary values per layer, without a separate V cache. Older GGUF conversions with unsplit KV tensors can use much more memory; actual cache allocation has not been measured for a selected artifact.',
+      zh: 'Mistral 3 旗舰 MoE（激活 41B / 总 675B），含视觉编码器。FP8 需 8×H200；GGUF 量化仅供研究集群。估算假设使用当前 llama.cpp 的压缩 MLA：每层每个 token 缓存 512 个潜在值加 64 个旋转位置值，不另存 V 缓存。使用未拆分 KV 张量的旧版 GGUF 转换可能占用多得多的内存；尚未对选定文件实测缓存分配。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 388.0, pplLossPercent: 2.1, hfSearchUrl: hf('Mistral-Large-3-675B GGUF Q4_K_M') },

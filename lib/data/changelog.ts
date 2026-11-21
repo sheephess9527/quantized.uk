@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'The final older-model verification batch covers 30 models, completing review of all 151 indexed models with unresolved claims documented. DeepSeek-V3 now shows the DeepSeek Model Licence rather than MIT; its commercial-use classification is unchanged. Mistral Large 3 now uses the publisher’s 61-layer, 128-head architecture and the current compressed-MLA cache convention, with a warning for older conversions and unmeasured runtime allocation.',
+    zh: '较早模型核查的最后一批覆盖 30 个模型，至此已审阅全部 151 个索引模型，未解决的数据声明均有记录。DeepSeek-V3 的许可从 MIT 修正为 DeepSeek 模型许可，可商用分类不变。Mistral Large 3 现采用官方的 61 层、128 个注意力头结构及当前压缩 MLA 缓存约定，同时保留旧版转换和未实测运行时分配的提示。',
+  },
+  {
+    date: '2026-11-21',
     en: 'The second older-model verification batch covers another 30 models. Qwen2.5 1.5B now shows its model-specific 32K context limit rather than 128K. StableLM 2 12B uses 32 attention heads with 160-dimensional heads, increasing its estimated KV cache by 25%. Falcon 3 10B now records 12 attention heads, 4 KV heads and 256-dimensional heads; its estimated KV-cache size is unchanged.',
     zh: '较早模型核查的第二批覆盖另外 30 个模型。Qwen2.5 1.5B 的上下文上限按该模型规格从 128K 修正为 32K。StableLM 2 12B 修正为 32 个注意力头、每头 160 维，KV 缓存估算增加 25%。Falcon 3 10B 修正为 12 个注意力头、4 个 KV 头、每头 256 维；其 KV 缓存大小估算不变。',
   },
