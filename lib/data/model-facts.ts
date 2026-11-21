@@ -117,7 +117,7 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
   'deepseek-r1-distill-qwen-32b': 'mit',
   'deepseek-r1-distill-qwen-7b': 'mit',
   'deepseek-v2-lite': 'deepseek-license',
-  'deepseek-v3': 'mit',
+  'deepseek-v3': 'deepseek-license',
   'devstral-small-2507': 'apache-2.0',
   'ernie-4.5-21b-a3b': 'apache-2.0',
   'falcon-3-10b': 'falcon-llm-license',

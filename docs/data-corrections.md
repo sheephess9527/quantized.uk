@@ -763,3 +763,56 @@ Every result is qualified by missing exact quant provenance and unverified local
 - `npm test`: passed recommendations (58,088 fits / 82 profiles), calculator evidence, speed calibration, CLI sources and RSS.
 - `npm run build`: passed compile/lint/type checks, static export and localization/structured-data gates (646 pages, 322 Chinese pages, 1,166 page entities). Existing gated-repo HF 401s were non-fatal; IndexNow skipped outside Cloudflare production.
 - Generated `lib/data/hf-stats.json` reverted; `git diff --check` passed. README/non-data code untouched. User-facing changes remain visually unverified; no deployment performed.
+
+## Pass 3 batch 3 (2026-11-21)
+
+Scope: the final 30 older indexed models, starting from updated `origin/main` at `e733b66` after Batch 2 merged. Research preceded implementation; complete field/site/official comparisons, source URLs and exact per-variant artifact ledgers remain in `~/verify-notes-p3-3.md` and `~/data-verification-p3-3/`. Coverage means reviewed with the qualifications below, not blanket certification of unresolved provenance, measurements or legal interpretation.
+
+### Corrections
+
+| Date | Model id | Field | Old value | New value | Official source |
+|---|---|---|---|---|---|
+| 2026-11-21 | deepseek-v3 | licence mapping | mit | deepseek-license | [Original model licence](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-MODEL), [publisher card](https://huggingface.co/deepseek-ai/DeepSeek-V3): MIT applies to code, model weights use DeepSeek Model Licence |
+| 2026-11-21 | mistral-large-3 | arch.layers | 64 | 61 | [Publisher params.json](https://huggingface.co/mistralai/Mistral-Large-3-675B-Instruct-2512/blob/main/params.json): n_layers 61 |
+| 2026-11-21 | mistral-large-3 | arch.attHeads | 64 | 128 | Same publisher params: n_heads 128 |
+| 2026-11-21 | mistral-large-3 | arch.kvHeads | 8 | 1 | Same publisher params: kv_lora_rank 512 + qk_rope_head_dim 64; current compressed MLA convention, not literal publisher head count |
+| 2026-11-21 | mistral-large-3 | arch.headDim | 128 | 288 | Same publisher params; 2 × 1 × 288 represents one 576-value K-only cache, corroborated by [llama.cpp conversion](https://github.com/ggml-org/llama.cpp/blob/master/conversion/mistral.py) and [runtime graph](https://github.com/ggml-org/llama.cpp/blob/master/src/models/deepseek2.cpp) |
+| 2026-11-21 | mistral-large-3 | geometry comment and bilingual descriptions | inaccessible/unverified params and conventional-cache upper-bound prose | publisher-backed dimensions; current compressed MLA assumption; older unsplit conversions and unmeasured allocation explicitly qualified | Same publisher params, conversion and runtime graph; sampled same-checkpoint [GGUF API](https://huggingface.co/api/models/unsloth/Mistral-Large-3-675B-Instruct-2512-GGUF?blobs=true) and header |
+| 2026-11-21 | reader-facing changelog | bilingual release entry | no Batch 3 entry | prepended licence identity, cache correction and qualified index-wide coverage | Evidence above; lib/data/changelog.ts |
+
+DeepSeek-V3's custom model licence text matches the existing DeepSeek entry's [V2 terms](https://github.com/deepseek-ai/DeepSeek-V2/blob/main/LICENSE-MODEL) after whitespace normalization; its `commercial` class is unchanged. [V3-0324](https://huggingface.co/deepseek-ai/DeepSeek-V3-0324) is MIT, but it is a distinct checkpoint, not established by this row's original-V3 mapping or unbound quant searches.
+
+Mistral's publisher params establish the geometry rather than an assumed DeepSeek shape. The sampled converted header is `deepseek2`, with key_length 576, MLA key/value dimensions 192/128 and split `attn_k_b`/`attn_v_b`. The [model factory](https://github.com/ggml-org/llama.cpp/blob/master/src/llama-model.cpp) dispatches to Deepseek2; [hparams.is_mla()](https://github.com/ggml-org/llama.cpp/blob/master/src/llama-hparams.cpp) is true for those nonzero MLA dimensions, and the graph uses a K-only cache. This verifies layout/code-path compatibility, not inference performance, measured allocation or the identity of any unbound selected artifact. Older unsplit conversions remain qualified. The new scalar formula gives 2.14 GiB KV at 32K and 17.16 GiB at 256K with FP16/batch 1; weight estimates are unchanged. Stale approximate weight/cache numbers were removed from both descriptions rather than carried into the new runtime explanation. The card-supported 262144 context cap is retained despite params/GGUF 294912.
+
+`dataLastUpdated` and `sizingChangedAt` already equal `2026-11-21`, the day of these sizing changes; both remain synchronized without inventing a later date.
+
+### Qualified checked-correct list
+
+All 30 original publisher APIs were accessible; 28 original `config.json` files were readable, Mistral Large 3 supplies `params.json`, and Gemma 3's raw config is gated. Conversion headers are not substituted for original-config certification. Every local speed/PPL claim remains subject to the measurement qualification below.
+
+- `phi-4`: MIT, nominal 14.7B, scalar geometry and 16384 agree with [publisher config/API](https://huggingface.co/microsoft/phi-4).
+- `gpt-oss-20b`, `gpt-oss-120b`: Apache 2.0, displayed totals, scalar geometry and 131072 agree with [20B](https://huggingface.co/openai/gpt-oss-20b) / [120B](https://huggingface.co/openai/gpt-oss-120b) configs/APIs. Layer types confirm 12/12 and 18/18 full/sliding splits; expert counts/top-4 agree. Padded 768-token cache allocation is not a publisher model-window value or a new measurement.
+- `smollm3-3b`: Apache 2.0, 3.08B, scalar geometry and 65536 agree with [publisher config/API](https://huggingface.co/HuggingFaceTB/SmolLM3-3B).
+- `olmo-3-7b`: Apache 2.0, 7.3B, scalar geometry/65536 and 8 full/24 sliding layers agree with [publisher config/API](https://huggingface.co/allenai/Olmo-3-7B-Instruct); the site window adds its documented 512-token batch.
+- `ernie-4.5-21b-a3b`: Apache 2.0, scalar geometry/131072 and 21.83B language weights agree with [publisher config](https://huggingface.co/baidu/ERNIE-4.5-21B-A3B-PT) / recorded GGUF tensor accounting. Both exact source-byte assertions match; routed 20.38B/64 experts/top-6/one dense lead agree.
+- `gemma-3-27b-it`: Gemma licence metadata and language count 27.01B agree with [publisher API](https://huggingface.co/api/models/google/gemma-3-27b-it?blobs=true) / GGUF accounting; original total includes vision and raw config is gated. Both exact file/projector byte assertions match; mapped header corroborates scalar geometry/context.
+- `gemma-4-31b`, `gemma-4-e4b`, `gemma-4-e2b`: Apache 2.0, language-weight totals, scalar geometry/context and config-derived full/local/cache-owner counts agree with publisher configs and mapped/alternative headers. 31B/E4B recorded file/projector bytes match; E2B remains unbound. Global/local dimensions and shared layers remain explicit, not collapsed into generic all-layer KV estimates.
+- `qwen3-coder-30b-a3b`, `devstral-small-2507`, `qwen3-vl-30b-a3b`, `magistral-small-2509`, `seed-oss-36b`: publisher licences, scalar geometry/context and all recorded artifact bytes agree, with nominal/file-derived versus direct tensor totals qualified. Devstral is explicitly text-only; the existing image-capability map correctly excludes it despite a community projector file. Magistral is vision-capable but has no selected projector.
+- `qwen3-235b-a22b`, `qwen3-4b`, `qwen3-1.7b`, `deepseek-r1`, `deepseek-r1-distill-llama-8b`, `glm-4-9b-chat`, `glm-4.5-air`, `qwen3-vl-8b`, `ministral-3-8b`, `qwen3-8-27b`, `glm-4.7-flash`, `kimi-linear-48b-a3b`, `gemma-4-26b-a4b`: reviewed with context, parameter, legal-inheritance or runtime exceptions below and in the external ledger; not certified wholesale. `deepseek-v3` and `mistral-large-3` have the corrections above, not blanket artifact certification.
+
+### Unresolved / deliberate non-changes
+
+- **Artifacts/projectors:** 91 variants: 74 GGUF, 13 AWQ and 4 EXL2. All **35 recorded source-byte assertions match** (including Seed's eight-shard AWQ aggregate), as do **22 positive projector-byte assertions**. No byte changes needed. The other **56 variants** have no exact source; inspected candidates cover 38/40 unbound GGUF rows, not verified site-source matches. No exact selected-level candidate was found for Qwen3 235B Q3_K_M or GPT-OSS 120B MXFP4 in inspected listings. Missing projector evidence stays unknown, not zero; file-size matches do not prove encoder compatibility or imply image capability.
+- **Contexts:** Qwen3 card/native limits differ from config allowances and optional YaRN limits; existing caps stay qualified. GLM-4.7-Flash's cited family 128K table covers 4.5/Air, not this checkpoint; config/GGUF 202752 does not establish that the current conservative 131072 must be raised. Its cap remains unresolved rather than called publisher-certified. Mistral Large 3's card supports the retained 256K cap.
+- **Parameters/layout:** nominal versus file-derived counts, tied/duplicated output tables, vision, MTP and partial-shard totals are distinct. Qwen3 1.7B's API/GGUF 2.031739904B includes both output and embedding tables; removing one tied table yields 1.720574976B, consistent with site/publisher naming. GLM Air and Qwen3.8 converted extra blocks include MTP, not extra inference layers. Small precision differences are not selectively normalized.
+- **Licences/runtime:** R1's MIT-tagged Llama 8B distill also acknowledges the original Llama 3.1 licence; no new single-badge inheritance interpretation. GLM-4 explicitly requires commercial registration, agreeing with restricted. DeepSeek's older sampled unsplit conversions do not validate current compressed-cache estimates. Kimi's config confirms seven full/twenty KDA layers; Gemma shared-cache counts and hybrid shapes agree with config but allocator behavior was not measured.
+- **Benchmarks/prices:** local per-quant speed/PPL assertions and matching Qwen3 4B/Coder/Phi-4 benchmark rows were inspected, but no same-configuration official experiment verifies or replaces them. Official task-quality scores are not substitutes. No applicable model/GPU prices found. No inference, visual verification or deployment performed.
+
+### Pass 3 batch 3 local validation
+
+- Node 20.20.2. Targeted assertions passed: existing DeepSeek commercial licence; publisher-backed compressed-MLA geometry; zero/32K/256K KV cache of 0/2.14/17.16 GiB; unchanged weight estimates and context cap; bilingual runtime qualifiers, synchronized dates and 151 indexed models.
+- `npm test`: passed recommendations (58,088 fits / 82 profiles), calculator evidence, speed calibration, CLI sources and RSS.
+- `npm run build`: passed compile/lint/type checks, static export and localization/structured-data gates (646 pages, 322 Chinese pages, 1,166 page entities). The 20 existing gated-repo HF API 401s were non-fatal; IndexNow skipped outside Cloudflare production.
+- Generated `lib/data/hf-stats.json` reverted; only the approved data/release changes and this log are included. README and non-data code untouched. User-facing changes remain visually unverified; no inference or deployment performed.
+
+Pass 3 covers all 90 older models; together with the 61 recent models in Passes 1–2, the whole index of 151 models is now covered, with unresolved items explicitly qualified.
