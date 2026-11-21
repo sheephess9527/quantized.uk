@@ -235,6 +235,12 @@ guide) before trusting the one in front of you.
 
 ### i18n gotcha
 
+Navbar and Footer use `LanguageSwitchLink`: its plain anchor mirrors the current route and
+preserves query/hash state, including in-place tool URL updates. The bilingual skip link targets
+the focusable `main-content` landmark. Tools navigation keeps focus within its disclosure;
+Escape closes it and returns focus to the trigger. Compare/CLI controls have associated labels,
+and Compare only confirms a copied link after the clipboard write succeeds.
+
 `translations[lang]` infers a union type that doesn't match `typeof translations.en`. The fix is an explicit cast in `context.tsx`:
 
 ```ts
@@ -500,6 +506,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-21 — Keyboard navigation and form accessibility
+
+- Associated Compare/CLI labels and option groups with their controls; copy-link confirmation now waits for clipboard success.
+- Preserved query/hash state on crawlable language-switch links in Navbar and Footer.
+- Fixed Tools dropdown focus handling, expanded/control attributes and Escape-to-trigger behavior.
+- Added a keyboard-visible English/Chinese skip-to-content link and focusable main landmark.
 
 ### 2026-11-21 — Evening patrol and calculator script disclosure
 

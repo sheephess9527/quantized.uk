@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'Compare and CLI controls now have accessible labels. Language switches keep URL settings, the Tools menu supports keyboard focus and Escape, and a skip-to-content link helps keyboard navigation. Compare only confirms a copied link after copying succeeds.',
+    zh: '模型对比与脚本生成器的控件现已关联无障碍标签。切换语言保留网址设置，工具菜单支持键盘焦点与 Escape 关闭，并新增跳转到主要内容的键盘链接。模型对比仅在复制成功后显示确认。',
+  },
+  {
+    date: '2026-11-21',
     en: 'The VRAM calculator keeps Copy command visible and folds the full startup script to bring the memory breakdown closer. Clairic, Clairic Flash and Shot Reader are indexed with exact GGUF and projector sizes. Ollama is now 0.40.17.',
     zh: '显存计算器保留可直接使用的复制按钮，默认折叠完整启动脚本，让内存明细更靠前。新增 Clairic、Clairic Flash 和 Shot Reader，记录确切 GGUF 和投影文件大小。Ollama 更新至 0.40.17。',
   },

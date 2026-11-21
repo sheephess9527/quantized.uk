@@ -1,12 +1,12 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import NextLink from 'next/link';
+import LanguageSwitchLink from '@/components/i18n/LanguageSwitchLink';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Menu, X, Zap, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { mirrorPath, toEnPath } from '@/lib/i18n/routing';
+import { toEnPath } from '@/lib/i18n/routing';
 import { cn } from '@/lib/utils/cn';
 import HardwareProfileSelector from '@/components/layout/HardwareProfileSelector';
 
@@ -36,6 +36,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const toolsTrigger = useRef<HTMLButtonElement>(null);
 
   // Nav hrefs are written in the English (canonical) form and localized by
   // LocalLink, so the active test has to compare against the de-prefixed path —
@@ -76,10 +77,19 @@ export default function Navbar() {
           ))}
 
           {/* Tools dropdown */}
-          <div className="relative">
+          <div className="relative" onBlur={event => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setToolsOpen(false);
+          }} onKeyDown={event => {
+            if (event.key === 'Escape') {
+              setToolsOpen(false);
+              toolsTrigger.current?.focus();
+            }
+          }}>
             <button
+              ref={toolsTrigger}
+              aria-expanded={toolsOpen}
+              aria-controls="navbar-tools"
               onClick={() => setToolsOpen(v => !v)}
-              onBlur={() => setTimeout(() => setToolsOpen(false), 150)}
               className={cn(
                 'flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150',
                 basePath.startsWith('/tools')
@@ -91,7 +101,7 @@ export default function Navbar() {
               <ChevronDown size={12} className={cn('transition-transform duration-150', toolsOpen && 'rotate-180')} />
             </button>
             {toolsOpen && (
-              <div className="absolute top-full right-0 mt-1 w-44 glass rounded-xl shadow-xl overflow-hidden py-1">
+              <div id="navbar-tools" className="absolute top-full right-0 mt-1 w-44 glass rounded-xl shadow-xl overflow-hidden py-1">
                 {toolLinks(t).map(({ href, label }) => (
                   <Link
                     key={href}
@@ -119,12 +129,11 @@ export default function Navbar() {
             site and were reachable only via sitemap and hreflang. A crawler
             does not click.
 
-            Deliberately a bare `next/link`, never `LocalLink` — localizing this
+            Deliberately a plain anchor, never `LocalLink` — localizing this
             href would rewrite it back into the tree the reader is already in,
             which is the one place that behaviour is wrong.
           */}
-          <NextLink
-            href={mirrorPath(pathname ?? '/')}
+          <LanguageSwitchLink
             hrefLang={lang === 'en' ? 'zh-Hans' : 'en'}
             lang={lang === 'en' ? 'zh-Hans' : 'en'}
             rel="alternate"
@@ -133,7 +142,7 @@ export default function Navbar() {
             aria-label={lang === 'en' ? '切换到中文版 / Switch to Chinese' : 'Switch to English'}
           >
             {t.nav.langToggle}
-          </NextLink>
+          </LanguageSwitchLink>
 
           <button
             className="md:hidden p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 hover:text-slate-200"

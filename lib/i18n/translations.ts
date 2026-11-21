@@ -64,6 +64,7 @@ export const translations = {
       "reset": "Changing calculator settings clears this preview. Measurements apply only to the settings shown."
 } ,
     nav: {
+      skipToContent: 'Skip to content',
       home: 'Home',
       quantHub: 'Quant Hub',
       benchmarks: 'Benchmarks',
@@ -1481,6 +1482,7 @@ export const translations = {
       "reset": "更改计算器配置会清空此预览。测量值只对应报告中列出的配置。"
 } ,
     nav: {
+      skipToContent: '跳转到主要内容',
       home: '首页',
       quantHub: '模型库',
       benchmarks: '基准测试',

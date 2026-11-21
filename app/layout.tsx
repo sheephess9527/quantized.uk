@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/lib/i18n/context';
 import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import SkipToContent from '@/components/layout/SkipToContent';
 import Plausible from '@/components/analytics/Plausible';
 import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
 import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
@@ -99,8 +100,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Plausible />
         <LanguageProvider>
           <HardwareProfileProvider>
+            <SkipToContent />
             <Navbar />
-            <main className="min-h-screen pt-[env(safe-area-inset-top)]">{children}</main>
+            <main id="main-content" tabIndex={-1} className="min-h-screen pt-[env(safe-area-inset-top)]">{children}</main>
             <Footer />
           </HardwareProfileProvider>
         </LanguageProvider>

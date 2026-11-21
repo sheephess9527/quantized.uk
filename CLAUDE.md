@@ -276,8 +276,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **The language switcher must be an `<a href>`, and it is the one link that must not be
   `LocalLink`.** It was a `<button onClick={toggleLang}>`, so the English tree had zero
   `<a href="/zh…">` and 164 Chinese pages had no crawlable inbound link at all. Use `mirrorPath()`
-  with a bare `next/link`, `rel="alternate"` and an `hreflang` matching the head — localizing this
-  href would point it back into the tree the reader is already in. The leak gate matches whole
+  with a plain anchor, `rel="alternate"` and an `hreflang` matching the head — localizing this
+  href would point it back into the tree the reader is already in. `LanguageSwitchLink` keeps a
+  crawlable mirrored href and preserves the current query/hash on activation, including tool
+  updates made with `history.replaceState`. The leak gate matches whole
   `<a>` tags so it can exempt exactly this link; keep both attributes or it will be flagged.
 - **Negative margins are a maintenance hazard here.** `-mt-*` on a section only stays correct while
   the section above it never changes. Two of them had silently gone wrong: `StatsBar`'s `-mt-8`

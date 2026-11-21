@@ -151,12 +151,13 @@ export default function CLIGenerator() {
       <div className="space-y-5">
         {/* Framework */}
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-2">{t.cli.framework}</label>
-          <div className="flex gap-2">
+          <span id="cli-framework-label" className="block text-xs font-medium text-slate-400 mb-2">{t.cli.framework}</span>
+          <div role="group" aria-labelledby="cli-framework-label" className="flex gap-2">
             {FRAMEWORKS.map(f => (
               <button
                 key={f.id}
                 onClick={() => setFramework(f.id)}
+                aria-pressed={framework === f.id}
                 className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-150 border"
                 style={
                   framework === f.id
@@ -172,8 +173,8 @@ export default function CLIGenerator() {
 
         {/* Environment */}
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-2">{t.cli.env}</label>
-          <div className="grid grid-cols-2 gap-2">
+          <span id="cli-env-label" className="block text-xs font-medium text-slate-400 mb-2">{t.cli.env}</span>
+          <div role="group" aria-labelledby="cli-env-label" className="grid grid-cols-2 gap-2">
             {ENVS.map(e => (
               <button
                 key={e.id}
@@ -194,9 +195,10 @@ export default function CLIGenerator() {
 
         {/* Model */}
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.cli.model}</label>
+          <label htmlFor="cli-model" className="block text-xs font-medium text-slate-400 mb-1.5">{t.cli.model}</label>
           <div className="relative">
             <select
+              id="cli-model"
               value={modelId}
               onChange={e => setModelId(e.target.value)}
               className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
@@ -216,12 +218,13 @@ export default function CLIGenerator() {
 
         {/* Quant */}
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.cli.quant}</label>
-          <div className="flex flex-wrap gap-1.5">
+          <span id="cli-quant-label" className="block text-xs font-medium text-slate-400 mb-1.5">{t.cli.quant}</span>
+          <div role="group" aria-labelledby="cli-quant-label" className="flex flex-wrap gap-1.5">
             {availableQuants.map(q => (
               <button
                 key={q}
                 onClick={() => setQuantLevel(q)}
+                aria-pressed={quantLevel === q}
                 className={cn(
                   'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                   quantLevel === q
@@ -245,20 +248,21 @@ export default function CLIGenerator() {
               { label: t.cli.threads,    value: threads,    setter: (v: string) => setThreads(Number(v)),    type: 'number' },
               { label: t.cli.port,       value: port,       setter: (v: string) => setPort(Number(v)),       type: 'number' },
             ].map(({ label, value, setter, type }) => (
-              <div key={label}>
-                <label className="block text-xs text-slate-500 mb-1">{label}</label>
+              <label key={label} className="block">
+                <span className="block text-xs text-slate-500 mb-1">{label}</span>
                 <input
                   type={type}
                   value={value}
                   onChange={e => setter(e.target.value)}
                   className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/40 font-mono"
                 />
-              </div>
+              </label>
             ))}
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">{t.cli.options} — API Key (optional)</label>
+            <label htmlFor="cli-api-key" className="block text-xs text-slate-500 mb-1">{t.cli.options} — API Key (optional)</label>
             <input
+              id="cli-api-key"
               type="text"
               placeholder="sk-..."
               value={apiKey}

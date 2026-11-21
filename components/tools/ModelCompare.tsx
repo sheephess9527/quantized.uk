@@ -62,10 +62,14 @@ export default function ModelCompare() {
     return compareModels(modelA, modelB, gpu ?? undefined, contextLen);
   }, [modelA, modelB, modelAId, modelBId, gpu, contextLen]);
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setLinkCopied(false);
+    }
   };
 
   const selectCls = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50';
@@ -82,10 +86,11 @@ export default function ModelCompare() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {(['a', 'b'] as const).map(side => (
           <div key={side} className="glass rounded-xl p-4">
-            <label className="block text-xs font-medium text-slate-400 mb-2">
+            <label htmlFor={`compare-model-${side}`} className="block text-xs font-medium text-slate-400 mb-2">
               {side === 'a' ? c.modelA : c.modelB}
             </label>
             <select
+              id={`compare-model-${side}`}
               value={side === 'a' ? modelAId : modelBId}
               onChange={e => side === 'a' ? setModelAId(e.target.value) : setModelBId(e.target.value)}
               className={selectCls}
@@ -106,8 +111,8 @@ export default function ModelCompare() {
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <label className="text-xs text-slate-500">{c.context}</label>
-        <div className="flex flex-wrap gap-1.5">
+        <span id="compare-context-label" className="text-xs text-slate-500">{c.context}</span>
+        <div role="group" aria-labelledby="compare-context-label" className="flex flex-wrap gap-1.5">
           {[4096, 8192, 32768, 131072, 262144].map(p => (
             <button key={p} onClick={() => setContextLen(p)} aria-pressed={contextLen === p}
               className={cn('px-2 py-1 rounded-lg text-xs font-mono border transition-all',
