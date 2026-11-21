@@ -568,6 +568,7 @@ This is a field-qualified list, not a claim that every parameter-count/runtime a
 
 ## Local validation — 2026-11-21
 
+- Follow-up: prepended a dated English/Chinese entry in `lib/data/changelog.ts` explaining the Mistral licence reclassification and Hub filter change. `lib/data/meta.ts` already has `dataLastUpdated = '2026-11-21'`, so no date edit was needed.
 - `npm test`: passed recommendations (58,254 fits / 82 profiles), calculator evidence, speed calibration, exact CLI sources and RSS checks.
 - `npm run build`: passed compilation, lint/type checks, static page generation (1,204/1,204), and postbuild checks (646 pages; 322 Chinese pages; 1,166 structured-data entities). IndexNow skipped because this is not a Cloudflare production build.
 - The build-generated `lib/data/hf-stats.json` changes are excluded. No deployment or visual/browser verification was performed.
