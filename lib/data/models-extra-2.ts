@@ -108,11 +108,11 @@ export const extraModels2: QuantModel[] = [
     paramLabel: '1.5B',
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
-    contextLength: 131072,
+    contextLength: 32768,
     arch: { layers: 28, attHeads: 12, kvHeads: 2, headDim: 128 },
     description: {
-      en: 'Tiny Qwen with 128K context. Surprisingly capable for summarisation and chat.',
-      zh: '支持 128K 上下文的微型 Qwen，摘要和对话能力出人意料。',
+      en: 'Tiny Qwen with 32K context. Surprisingly capable for summarisation and chat.',
+      zh: '支持 32K 上下文的微型 Qwen，摘要和对话能力出人意料。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 1.4, pplLossPercent: 4.0, speedRTX4090: 480, hfSearchUrl: hf('Qwen2.5-1.5B-Instruct GGUF') },
@@ -400,7 +400,7 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 4096,
-    arch: { layers: 40, attHeads: 40, kvHeads: 8, headDim: 128 },
+    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 160 },
     description: {
       en: 'Stability AI\'s 12B chat model. Solid general-purpose option for 16GB GPUs.',
       zh: 'Stability AI 12B 对话模型，16GB 显卡通用之选。',
@@ -419,7 +419,7 @@ export const extraModels2: QuantModel[] = [
     categories: ['general', 'instruct', 'code'],
     hardwareTags: ['consumer-gpu', 'mac'],
     contextLength: 32768,
-    arch: { layers: 40, attHeads: 32, kvHeads: 8, headDim: 128 },
+    arch: { layers: 40, attHeads: 12, kvHeads: 4, headDim: 256 },
     description: {
       en: 'Technology Innovation Institute\'s latest Falcon. Good multilingual and code mix.',
       zh: 'TII 最新 Falcon，多语言与代码能力均衡。',
