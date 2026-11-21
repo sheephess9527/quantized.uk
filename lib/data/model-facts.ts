@@ -22,12 +22,13 @@
  *
  * - `commercial` — yes. Permissive licences (Apache 2.0, MIT, OpenMDW) and open-
  *   model licences that attach obligations but no gate (Gemma, Falcon, Jamba,
- *   NVIDIA, DeepSeek, Mistral's open-weight licence, OpenRAIL-M). Attribution and
+ *   NVIDIA, DeepSeek, OpenRAIL-M). Attribution and
  *   acceptable-use clauses do not change the class; every licence here has some.
  * - `restricted` — only after a gate: Llama 3.x/4 and the Qwen licences inside
  *   700M / 100M monthly-active-user ceilings, Qwen 3.8-Flash-Next's separate
  *   licence for hosting it as a service, GLM-4's commercial registration,
- *   LFM Open's revenue threshold, DBRX's user-count clause.
+ *   LFM Open's revenue threshold, DBRX's user-count clause, Mistral's separate
+ *   licence for Model-as-a-Service operators.
  * - `noncommercial` — commercial use is not granted: the research licences
  *   (Qwen Research, Mistral Research), Mistral's non-production licence,
  *   CC BY-NC 4.0, and Stability's non-commercial terms.
@@ -59,7 +60,7 @@ export const LICENCES = {
   'jamba-open-model-license': { short: 'Jamba', name: { en: 'Jamba Open Model Licence', zh: 'Jamba 开放模型许可' }, class: 'commercial', url: 'https://huggingface.co/ai21labs/AI21-Jamba-Mini-1.5/blob/main/LICENSE.txt' },
   'nvidia-open-model': { short: 'NVIDIA Open', name: { en: 'NVIDIA Open Model Licence', zh: 'NVIDIA 开放模型许可' }, class: 'commercial', url: 'https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-agreement-license/' },
   'deepseek-license': { short: 'DeepSeek', name: { en: 'DeepSeek Model Licence', zh: 'DeepSeek 模型许可' }, class: 'commercial', url: 'https://github.com/deepseek-ai/DeepSeek-V2/blob/main/LICENSE-MODEL' },
-  'mistral-open-weight': { short: 'Mistral Open-Weight', name: { en: 'Mistral Ecosystem Open-Weight Licence', zh: 'Mistral 生态开放权重许可' }, class: 'commercial', url: 'https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE' },
+  'mistral-open-weight': { short: 'Mistral Open-Weight', name: { en: 'Mistral Ecosystem Open-Weight Licence', zh: 'Mistral 生态开放权重许可' }, class: 'restricted', url: 'https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE' },
   'llama3': { short: 'Llama 3', name: { en: 'Llama 3 Community Licence', zh: 'Llama 3 社区许可' }, class: 'restricted', url: 'https://www.llama.com/llama3/license/' },
   'llama3.1': { short: 'Llama 3.1', name: { en: 'Llama 3.1 Community Licence', zh: 'Llama 3.1 社区许可' }, class: 'restricted', url: 'https://www.llama.com/llama3_1/license/' },
   'llama3.2': { short: 'Llama 3.2', name: { en: 'Llama 3.2 Community Licence', zh: 'Llama 3.2 社区许可' }, class: 'restricted', url: 'https://www.llama.com/llama3_2/license/' },

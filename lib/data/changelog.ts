@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'Mistral Large 4 is now listed under restricted rather than commercial in the Quant Hub licence filter. Its Mistral Ecosystem Open-Weight Licence requires Model-as-a-Service operators to obtain a separate commercial licence; internal use remains exempt from that requirement.',
+    zh: '量化模型库的许可筛选已将 Mistral Large 4 从「可商用」调整为「有条件」。其 Mistral 生态开放权重许可要求模型即服务运营商另行取得商业许可；内部使用仍不受这一要求限制。',
+  },
+  {
+    date: '2026-11-21',
     en: 'The VRAM calculator keeps Copy command visible and folds the full startup script to bring the memory breakdown closer. Clairic, Clairic Flash and Shot Reader are indexed with exact GGUF and projector sizes. Ollama is now 0.40.17.',
     zh: '显存计算器保留可直接使用的复制按钮，默认折叠完整启动脚本，让内存明细更靠前。新增 Clairic、Clairic Flash 和 Shot Reader，记录确切 GGUF 和投影文件大小。Ollama 更新至 0.40.17。',
   },
