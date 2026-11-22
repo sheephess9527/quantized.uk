@@ -12,7 +12,7 @@ A full-stack static intelligence website for indie developers and geeks who run 
 
 You're an AI agent or a new account picking this up cold. Read this box, then do the [Handoff Checklist](#8-handoff-checklist-do-this-first).
 
-- **What it is:** Next.js 14 **static-export** site. No backend, no database, no runtime API. All content is hardcoded TypeScript under `lib/data/`.
+- **What it is:** Next.js 14 **static-export** site. No database or Next.js server. Content is typed data under `lib/data/`; narrow Cloudflare Pages Functions supply VRAM share previews.
 - **Run it:** `npm install && npm run dev` → http://localhost:3000. Checks: `npm test`. Build: `npm run build` → static files in `out/`.
 - **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
 - **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
@@ -171,11 +171,11 @@ The calculator supports two modes, toggled at the top of the page:
 
 Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
 
-**Shareable URLs** — all calculator state is synced to query params via `window.history.replaceState`:
+**Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
 ```
 # Forward: model + quant + context
-/tools/vram-calc/?mode=forward&model=llama-3.1-8b&quant=Q4_K_M&ctx=4096&batch=1
+/tools/vram-calc/?mode=forward&model=qwen3-8b&quant=Q4_K_M&ctx=4096&batch=1
 
 # Reverse: GPU + sort order
 /tools/vram-calc/?mode=reverse&gpu=rtx4060ti16&ctx=4096&batch=1&sort=quality
@@ -185,6 +185,8 @@ Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`,
 ```
 
 Supported `sort` values: `quality` (lowest PPL loss), `speed` (highest tok/s), `vram` (smallest footprint).
+
+**Copy share link** snapshots the displayed inference settings, including an example or detected card if it is the reverse result shown. The ordinary address bar does not adopt guessed inputs, and opening a snapshot does not write its settings to the recipient's profile. Forward links use `gpu=none` if no card was used, so the recipient's saved card won't turn a memory estimate into a different fit result. These links add `share=1` for localized social previews; old links and fine-tuning links still open the calculator with the generic preview. The optional repo name for an imported model travels in the copied URL, but is not printed on the preview card.
 
 ### Model detail pages (`app/quant-hub/[modelId]/`)
 
@@ -341,6 +343,10 @@ The production build emits flat HTML/JS/CSS into `out/`. `npm start` previews it
 to cache the pinned preview tool; it adds no application dependency. No SPA fallback is enabled,
 so unknown paths remain 404s. Stop the dev server first if it already occupies port 3000.
 
+To exercise the share metadata and PNG against the real export, run
+`npx --yes wrangler@4.66.0 pages dev out` from the project root after building.
+`npm start` and `next dev` serve only the static/base metadata.
+
 > **Note on `postbuild`:** `npm run build` ends with `scripts/localize-export.mjs`, which patches
 > `<html lang>` for the Chinese tree and **fails the build** if a `/zh` page links into the English
 > tree. Unlike `prebuild` this one is a gate, not a best-effort refresh — a non-zero exit here is a
@@ -369,7 +375,10 @@ The site is hosted on **Cloudflare Pages** (static hosting), connected to the Gi
 ```toml
 name = "quantized"
 pages_build_output_dir = "out"
+compatibility_date = "2026-02-17"
 ```
+
+Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy or bindings are needed. `public/_routes.json` limits execution to both calculator paths and `/api/vram-share.png`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
 
 ### Hard-won lessons (so you don't repeat them)
 
@@ -505,7 +514,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - **Bilingual completeness:** add a string to `en` but forget `zh` → the Chinese UI shows `undefined`. Always add both, and keep `zh`'s shape identical to `en` (the `t` cast in `context.tsx` hides mismatches otherwise).
 - **`Set` spread:** `[...new Set(...)]` fails to down-level under the bundler target — use `Array.from(new Set(...))`.
-- **Static-export limits:** no request-time data fetching, no `next/image` optimization (`images.unoptimized: true`). Everything is build-time only. `generateStaticParams()` is how dynamic routes (`[modelId]`, `[slug]`) become static pages. Static route handlers are OK only with `export const dynamic = 'force-static'` (e.g. `/feed.xml`).
+- **Static-export limits:** no request-time fetching in Next.js and no `next/image` optimization (`images.unoptimized: true`). `generateStaticParams()` turns dynamic pages into static files. Next.js route handlers must use `export const dynamic = 'force-static'` (e.g. `/feed.xml`). Only the Pages share-preview routes run on request.
 - **`trailingSlash: true`** — internal links resolve to `/path/`. Keep links consistent.
 - **HF repo map:** single source `lib/data/hf-repos.mjs` (build script + `hf-repos.ts` re-export). Edit the `.mjs` only.
 - **Licences are claims about someone else's terms.** `lib/data/model-facts.ts` records them with the repo each was read from; never fill one from memory, and never re-derive a class in a component — call `licenceClassOf()` / `hasImageInput()`.
@@ -517,10 +526,19 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-22 — Embeddable GPU fit cards
 
 - Review correction: a quant format unsupported by the selected GPU uses the calculator's backend-incompatible wording in both the card and Markdown link, rather than blaming memory capacity; bilingual regression coverage includes a Mac with ample memory for incompatible AWQ.
+- Embed calculator links reuse `snapshotVramLink`, including `share=1`, so Markdown links and card click-throughs receive the same result-specific social preview and non-persisting snapshot behavior as the calculator's Share link. Both features coexist in forward results.
 - Unified-memory cards show physical hardware memory separately from the usable calculator budget (e.g. `24 GB · 18 GB usable`), in both languages; discrete and mixed-card totals retain their full hardware capacity labels.
 - Forward calculator results offer a collapsed HTML iframe and Markdown link disclosure with explicit Copy actions in English and Chinese. Cards at `/embed/fit/` and `/zh/embed/fit/` reuse calculator sizing, quant, context, cache, batch, encoder and rig settings; invalid configurations link back to the calculator.
 - Cards are noindex and intentionally absent from the sitemap, with no navigation, footer or Plausible script. Only `/embed/*` and `/zh/embed/*` detach anti-framing headers; all other pages remain protected. Cloudflare Pages applies these headers; the local static preview does not emulate them.
 - `lib/utils/embed-fit.ts` owns parsing, sizing and escaped snippet URLs. `scripts/check-embed-fit.ts` runs in `npm test`. Custom models and invalid/unsupported settings cannot generate a misleading card. Copying a snippet does not persist example or guessed choices.
+
+### 2026-11-22 — Share VRAM results with social previews
+
+- Copied model-to-VRAM and GPU-to-models links reopen the displayed settings in either language without adopting them into the saved profile; crawler metadata points to a result-specific PNG. The static tools, legacy links, and downloadable result card still work independently.
+- Changes the recipient makes after opening a snapshot still carry over to other tools; simply viewing it doesn't change the saved settings.
+- Sharing from an embedded guide opens the standalone calculator in the guide's language, so that link also gets the result preview.
+- Mixed-card snapshots include only the compatible extra cards counted in the displayed result.
+- Pages Functions use the same sizing and fit logic as the calculator. Only the two calculator routes and the preview PNG invoke Functions; `npm test` covers snapshots, sizing parity, localization and invalid-link fallback.
 
 ### 2026-11-22 — Context and concurrency on home and GPU pages
 

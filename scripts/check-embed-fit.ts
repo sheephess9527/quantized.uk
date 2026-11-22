@@ -7,6 +7,8 @@ import { quantLevelKey } from '../lib/utils/recommend';
 import { models } from '../lib/data/models';
 import { referenceQuant } from '../lib/utils/quality';
 import { translations } from '../lib/i18n/translations';
+import { snapshotVramLink } from '../lib/utils/vram-link';
+import { vramPreview } from '../lib/og/vram-result';
 
 const parse = (s: string) => parseEmbedFit(new URLSearchParams(s));
 assert.equal(parseEmbedFit(null), null);
@@ -31,6 +33,15 @@ for (const [modelId, gpuId] of [['qwen3-8b', 'rtx4090'], ['qwen3-32b', 'rtx3060'
     assert.ok(s.markdown.includes(`${prefix}/tools/vram-calc/?`));
     assert.ok(s.markdown.includes(s.verdict));
     assert.ok(s.calculator.includes('utm_source=embed'));
+    const snapshotParams: URLSearchParams = new URLSearchParams(fit.query);
+    snapshotParams.set('utm_source', 'embed');
+    snapshotParams.set('mode', 'forward');
+    assert.equal(s.calculator, snapshotVramLink(new URL(`${prefix}/tools/vram-calc/`), snapshotParams, {
+      mode: 'forward', modelId: fit.model.id, gpuId: fit.gpu.id, lang,
+    }));
+    const calculatorParams = new URL(s.calculator).searchParams;
+    assert.equal(calculatorParams.get('share'), '1');
+    assert.ok(vramPreview(calculatorParams, lang));
     assert.ok(parse(new URL(s.src).search.slice(1)));
   }
 }

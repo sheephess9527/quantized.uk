@@ -6,6 +6,7 @@ import { quantLevelKey } from './recommend';
 import { capacityGB, canStack, MAX_CARDS, tightCeiling, backendFor } from './gpu-page';
 import { rigFormatAllowed } from './calc-insights';
 import { translations, type Lang } from '@/lib/i18n/translations';
+import { snapshotVramLink } from './vram-link';
 
 export function parseEmbedFit(params: URLSearchParams | null) {
   if (!params) return null;
@@ -48,7 +49,9 @@ export function buildEmbedSnippets(fit: NonNullable<ReturnType<typeof parseEmbed
   query.set('utm_source', 'embed');
   const src = `${base}/embed/fit/?${query}`;
   query.set('mode', 'forward');
-  const calculator = `${base}/tools/vram-calc/?${query}`;
+  const calculator = snapshotVramLink(new URL(`${base}/tools/vram-calc/`), query, {
+    mode: 'forward', modelId: fit.model.id, gpuId: fit.gpu.id, lang,
+  });
   const t = translations[lang];
   const verdict = fit.formatOk ? t.calc[fit.verdict] : t.calc.levelsNoRun;
   const label = `${fit.gpuLabel} · ${fit.model.name} ${quantLevelKey(fit.quant)}: ${verdict} — quantized.uk`;
