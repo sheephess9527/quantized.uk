@@ -15,6 +15,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { speedQuote, playablePick, feelHref, type SpeedQuote } from '@/lib/utils/speed-label';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
+import { pairData, pairHref } from '@/lib/utils/pair-pages';
 
 /**
  * "What can my card run" — the question the GPU data could always answer but
@@ -163,6 +164,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                             {fit.model.name}
                           </Link>
                           <span className="block text-xs text-slate-600">{fit.model.paramLabel}</span>
+                          {pairData(fit.model, gpu).eligible && <Link className="block text-xs text-violet-300" href={pairHref(fit.model, gpu)}>{t.pair.details}</Link>}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-xs text-cyan-300">{quantLevelKey(fit.quant)}</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-300">{fit.totalGB} GB</td>

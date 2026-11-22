@@ -69,6 +69,8 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 
 ## 3. Project Structure
 
+Model/GPU pages live at `app/quant-hub/[modelId]/[gpuId]/page.tsx` with a `/zh` mirror. `lib/utils/pair-pages.ts` owns eligibility, sizing and URLs; GPU slugs stay the final, dot-free segment.
+
 ```
 app/                        # Next.js App Router pages
   layout.tsx                # Root layout: Inter font + LanguageProvider + Navbar/Footer
@@ -512,6 +514,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Model × GPU answers
+
+- Added 2,244 eligible pairs (4,488 bilingual pages) at `/quant-hub/[modelId]/[gpuSlug]/`, linked from model/GPU guides and the sitemap. Pages include 4K quant sizing, context reach, measured runs, labelled speed and a prefilled calculator.
+- Eligibility in `lib/utils/pair-pages.ts`: all exact measured pairs, or current models with verified-file sizing, supported format, bandwidth and a green/yellow fit using at least 25% of usable memory. Existing model OG images are reused.
+- `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Export: 5,134 HTML files (including 404 variants); monitor Cloudflare Pages’ 20,000-file limit.
 
 ### 2026-11-22 — VRAM calculator opens on an answer
 

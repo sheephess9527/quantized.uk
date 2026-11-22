@@ -1,0 +1,61 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from '@/components/i18n/LocalLink';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import { models } from '@/lib/data/models';
+import { gpuBySlug, gpuSlug } from '@/lib/utils/gpu-page';
+import { pairData, pairHref, pairPages, pairSize } from '@/lib/utils/pair-pages';
+import { speedQuote } from '@/lib/utils/speed-label';
+import { quantLevelKey } from '@/lib/utils/recommend';
+import { translations } from '@/lib/i18n/translations';
+import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, displayWidth, extendDescription } from '@/lib/seo';
+
+type Params = { modelId: string; gpuId: string };
+const fill = (s: string, values: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k) => values[k]);
+function data(params: Params) {
+  const model = models.find(m => m.id === params.modelId);
+  const gpu = gpuBySlug(params.gpuId);
+  if (!model || !gpu) return notFound();
+  const pair = pairData(model, gpu);
+  if (!pair.eligible || !pair.recommended) return notFound();
+  return pair;
+}
+export function generateStaticParams() {
+  return pairPages().map(({ model, gpu }) => ({ modelId: model.id, gpuId: gpuSlug(gpu) }));
+}
+export function pairMetadata(params: Params, lang: 'en' | 'zh'): Metadata {
+  const { model, gpu, recommended: r } = data(params);
+  const t = translations[lang].pair;
+  const values = { model: model.name, gpu: gpu.name, quant: r.quant.level, total: r.totalGB.toFixed(1), verdict: t[r.verdict] };
+  const path = `${lang === 'zh' ? '/zh' : ''}${pairHref(model, gpu)}`;
+  let title = fill(t.title, values);
+  if (displayWidth(title) > 60) title = `${model.id}${lang === 'zh' ? ' 配 ' : ' / '}${gpuSlug(gpu)}`;
+  title = fitTitle(title);
+  const description = extendDescription(fill(t.description, values), [fill(t.metaHeadroom, { headroom: r.headroomGB.toFixed(1) }), t.metaContext, t.metaTables], lang);
+  return { title, description, robots: defaultRobots, alternates: { canonical: canonical(path), languages: languageAlternates(path), ...feedAlternates(path) }, openGraph: { title, description, url: canonical(path), ...ogLocale(path), images: [pageOgImage(`/quant-hub/${model.id}`, model.name)] } };
+}
+export function generateMetadata({ params }: { params: Params }) { return pairMetadata(params, 'en'); }
+
+export default function PairPage({ params, lang = 'en' }: { params: Params; lang?: 'en' | 'zh' }) {
+  const { model, gpu, recommended: r, rows, measured } = data(params);
+  const t = translations[lang].pair;
+  const values = { model: model.name, gpu: gpu.name, quant: `${r.quant.format} ${r.quant.level}`, total: r.totalGB.toFixed(1), headroom: r.headroomGB.toFixed(1), verdict: t[r.verdict] };
+  const quote = speedQuote(gpu, model, r.quant, 4096);
+  const related = pairPages();
+  const links = [...related.filter(p => p.model.id === model.id && p.gpu.id !== gpu.id).slice(0, 3), ...related.filter(p => p.gpu.id === gpu.id && p.model.id !== model.id).slice(0, 3)];
+  const calculator = `/tools/vram-calc/?${new URLSearchParams({ mode: 'forward', model: model.id, gpu: gpu.id, quant: quantLevelKey(r.quant), ctx: '4096', batch: '1', cache: 'f16', cards: '1' })}`;
+  return <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 space-y-8">
+    <Breadcrumbs items={[{ label: t.home, href: '/' }, { label: t.hub, href: '/quant-hub/' }, { label: model.name, href: `/quant-hub/${model.id}/` }, { label: gpu.name }]} />
+    <h1 className="text-3xl font-bold text-slate-100">{fill(t.question, values)}</h1>
+    <p className="text-xl text-violet-300">{fill(t.answer, values)}</p>
+    <p className="text-sm text-slate-400">{t.note}</p>
+    <section className="space-y-3"><h2 className="text-xl font-semibold">{t.measured}</h2>
+      {measured.length ? <div className="overflow-x-auto"><table className="w-full text-sm text-left"><thead><tr>{[t.framework, t.quant, 'tok/s', t.memory].map(h => <th className="p-2" key={h}>{h}</th>)}</tr></thead><tbody>{measured.map((row, i) => <tr key={i} className="border-t border-white/10"><td className="p-2">{row.framework}</td><td>{row.quant}</td><td>{row.speedTokSec}</td><td>{row.vramUsedGB}</td></tr>)}</tbody></table></div> : <p>{t.none}</p>}
+    </section>
+    <section className="space-y-3"><h2 className="text-xl font-semibold">{t.quants}</h2><div className="overflow-x-auto"><table className="w-full text-sm text-left"><thead><tr>{[t.quant, t.total, t.verdict, t.basis].map(h => <th key={h} className="p-2">{h}</th>)}</tr></thead><tbody>{rows.map(row => <tr key={`${row.quant.format}:${row.quant.level}`} className="border-t border-white/10"><td className="p-2">{row.quant.format} {row.quant.level}</td><td>{row.totalGB.toFixed(1)}</td><td>{t[row.verdict]}</td><td>{row.quant.source ? t.verified : t.estimated}</td></tr>)}</tbody></table></div></section>
+    <section className="space-y-3"><h2 className="text-xl font-semibold">{t.contexts} · {r.quant.format} {r.quant.level}</h2><table className="w-full text-sm text-left"><thead><tr>{[t.context, t.total, t.verdict].map(h => <th key={h} className="p-2">{h}</th>)}</tr></thead><tbody>{[4096, 16384, 32768, 131072].filter(ctx => ctx <= model.contextLength).map(ctx => { const row = pairSize(model, gpu, r.quant, ctx); return <tr key={ctx} className="border-t border-white/10"><td className="p-2">{ctx / 1024}K</td><td>{row.totalGB.toFixed(1)}</td><td>{t[row.verdict]}</td></tr>; })}</tbody></table></section>
+    <section><h2 className="text-xl font-semibold">{t.speed}</h2><p>{quote.low !== undefined ? `${quote.low}–${quote.high} tok/s` : quote.point !== undefined ? `${quote.point} tok/s` : t.unavailable} · {quote.source === 'measured' ? t.measured : quote.source === 'derived' ? t.derived : quote.source === 'other-card' ? `${t.other} (${quote.referenceCard})` : t.ceiling}</p></section>
+    <nav className="flex flex-wrap gap-5 text-violet-300"><Link href={`/quant-hub/${model.id}/`}>{t.model}</Link><Link href={`/gpu/${gpuSlug(gpu)}/`}>{t.gpu}</Link><Link href={calculator}>{t.calculator}</Link></nav>
+    <section><h2 className="text-xl font-semibold mb-3">{t.related}</h2><ul className="space-y-2 text-violet-300">{links.map(p => <li key={pairHref(p.model, p.gpu)}><Link href={pairHref(p.model, p.gpu)}>{p.model.name} · {p.gpu.name}</Link></li>)}</ul></section>
+  </div>;
+}
