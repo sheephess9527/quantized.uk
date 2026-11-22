@@ -1,5 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+import FitControls from './FitControls';
+import { contextLabel } from '@/lib/utils/context-label';
 import Link from '@/components/i18n/LocalLink';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -27,9 +30,12 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
   const { t, lang } = useLanguage();
   const g = t.gpuPage;
 
-  const fits = fitsOnGpu(gpu);
+  const [contextLength, setContextLength] = useState(GPU_PAGE_CONTEXT);
+  const [batchSize, setBatchSize] = useState(1);
+  const isBaseline = contextLength === GPU_PAGE_CONTEXT && batchSize === 1;
+  const fits = fitsOnGpu(gpu, contextLength, batchSize);
   const groups = groupFitsByBucket(fits);
-  const step = nextStepUp(gpu, fits.length);
+  const step = nextStepUp(gpu, fits.length, contextLength, batchSize);
   const siblings = sameBudgetCards(gpu);
   // Side-by-side speed links, offered only where the tool can stream something on both cards:
   // the largest model this card fits comfortably that has a measured or calibrated rate on each.
@@ -44,7 +50,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
   // Both counts, side by side with their conditions. The Hub's GPU chips use
   // the looser rule; showing only one number here left two pages disagreeing
   // (51 vs 60) with nothing on either saying why.
-  const tightExtra = countModelsFitting(gpu, 'tight') - fits.length;
+  const tightExtra = countModelsFitting(gpu, 'tight', contextLength, batchSize) - fits.length;
   // The decision summary and the FAQ. Same call the page route uses for the
   // FAQPage schema, so the visible questions and the structured ones cannot
   // drift apart.
@@ -74,9 +80,11 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{fill(g.title, { gpu: gpu.name })}</h1>
         <p className="text-slate-400 max-w-3xl">
-          {fill(g.subtitle, { count: fits.length, total, vram: gpu.vram })}
+          {fill(g.subtitle.replace('4K', contextLabel(contextLength)), { count: fits.length, total, vram: gpu.vram })}
         </p>
       </div>
+
+      <FitControls contextLength={contextLength} batchSize={batchSize} onContextChange={setContextLength} onBatchChange={setBatchSize} />
 
       {/*
         Until this block existed these 61 pages were the same page with a name
@@ -86,7 +94,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       */}
       <section className="glass rounded-2xl p-5 sm:p-6 mb-6">
         <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpu.name })}</h2>
-        <p className="text-sm text-slate-400 leading-relaxed mb-4">{x.specLine[lang]}</p>
+        <p className="text-sm text-slate-400 leading-relaxed mb-4">{!isBaseline && <span className="block text-xs text-amber-300 mb-2">{g.baselineNote}</span>}{x.specLine[lang]}</p>
 
         <dl className="space-y-3">
           {x.rows.map(row => (
@@ -133,7 +141,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       </section>
 
       {fits.length === 0 ? (
-        <p className="glass rounded-2xl p-6 text-sm text-slate-400">{fill(g.noFits, { vram: gpu.vram })}</p>
+        <p className="glass rounded-2xl p-6 text-sm text-slate-400">{fill(g.noFits.replace('4K', contextLabel(contextLength)), { vram: gpu.vram })}</p>
       ) : (
         <div className="space-y-6">
           {groups.map(group => (
@@ -181,16 +189,17 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       )}
 
       <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
+        {!isBaseline && <p className="text-xs text-amber-300 mb-2">{g.speedBaselineNote}</p>}
         <h2 className="text-lg font-bold text-slate-100 mb-3">{g.methodTitle}</h2>
-        <p className="text-sm text-slate-400 leading-relaxed">{g.methodBody}</p>
+        <p className="text-sm text-slate-400 leading-relaxed">{!isBaseline && <span className="block mb-2">{fill(g.selectedSettings, { ctx: contextLabel(contextLength), batch: batchSize })}</span>}{g.methodBody.replace('4K', contextLabel(contextLength))}</p>
         {tightExtra > 0 && (
           <p className="text-sm text-slate-500 leading-relaxed mt-3">
-            {fill(g.alsoTight, { extra: tightExtra })}
+            {fill(isBaseline ? g.alsoTight : g.alsoTightSelected, { extra: tightExtra })}
           </p>
         )}
         <div className="flex flex-wrap gap-4 mt-4">
           <Link
-            href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
+            href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=${contextLength}&batch=${batchSize}`}
             className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
           >
             {g.openCalc} <ArrowRight size={14} />
@@ -347,6 +356,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       {x.faqs.length > 0 && (
         <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
           <h2 className="text-lg font-bold text-slate-100 mb-4">{g.faqTitle}</h2>
+          {!isBaseline && <p className="text-xs text-amber-300 mb-2">{g.baselineNote}</p>}
           <div className="space-y-4">
             {x.faqs.map((f, i) => (
               <div key={i}>

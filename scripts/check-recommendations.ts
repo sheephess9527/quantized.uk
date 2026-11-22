@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM, KV_CACHE_TYPES } from '../lib/utils/vram';
+import { fitsOnGpu, countModelsFitting, nextStepUp, GPU_CONTEXT_PRESETS, GPU_BATCH_PRESETS } from '../lib/utils/gpu-page';
+import { homePicks } from '../lib/utils/home-picks';
 import { getRecommendations } from '../lib/utils/recommend';
 import { hasImageInput } from '../lib/utils/model-facts';
 import { modelShape, contextReach } from '../lib/utils/calc-insights';
@@ -15,6 +17,35 @@ const solar = models.find(m => m.id === 'solar-10.7b')!;
 assert.ok(solar);
 assert.ok(getRecommendations(gpu, solar.contextLength, 1).some(r => r.model === solar));
 assert.ok(!getRecommendations(gpu, solar.contextLength + 1, 1).some(r => r.model === solar));
+
+for (const card of gpuDatabase) {
+  assert.deepEqual(fitsOnGpu(card), fitsOnGpu(card, 4096, 1));
+  for (const ctx of GPU_CONTEXT_PRESETS) {
+    for (const batch of GPU_BATCH_PRESETS) {
+      const fits = fitsOnGpu(card, ctx, batch);
+      assert.equal(countModelsFitting(card, 'comfortable', ctx, batch), fits.length);
+      for (const fit of fits) {
+        assert.ok(fit.model.contextLength >= ctx, `${fit.model.id}: GPU page context exceeded`);
+        assert.equal(fit.totalGB, calcVRAM({
+          ...modelShape(fit.model, batch), bpw: fit.quant.bpw, contextLength: ctx,
+        }).totalGB);
+      }
+    }
+  }
+}
+assert.ok(fitsOnGpu(gpu, solar.contextLength, 1).some(r => r.model === solar));
+assert.ok(!fitsOnGpu(gpu, solar.contextLength + 1, 1).some(r => r.model === solar));
+assert.deepEqual(homePicks(gpu, 'chat'), homePicks(gpu, 'chat', 4096, 1));
+for (const ctx of [NaN, Infinity, 0, -1]) assert.deepEqual(fitsOnGpu(gpu, ctx, 1), []);
+for (const batch of [NaN, Infinity, 0, -1]) assert.deepEqual(fitsOnGpu(gpu, 4096, batch), []);
+assert.deepEqual(fitsOnGpu(gpu, 131072, 1e9), []);
+assert.deepEqual(homePicks(gpu, 'chat', 131072, 1e9), []);
+for (const pick of homePicks(gpu, 'chat', 32768, 4)) {
+  assert.ok(fitsOnGpu(gpu, 32768, 4).some(f => f.model === pick.model && f.quant === pick.quant));
+}
+const step = nextStepUp(gpu, fitsOnGpu(gpu, 32768, 4).length, 32768, 4);
+if (step) assert.equal(step.extraModels, fitsOnGpu(step.gpu, 32768, 4).length - fitsOnGpu(gpu, 32768, 4).length);
+console.log('GPU/home fits: preset contexts and concurrency, native windows, default parity, empty and invalid inputs checked.');
 
 let checked = 0;
 for (const card of gpuDatabase) {

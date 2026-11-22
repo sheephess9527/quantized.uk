@@ -513,6 +513,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Context and concurrency on home and GPU pages
+
+- Homepage picks, GPU detail lists and GPU index counts now offer 4K–128K context chips and concurrency 1/2/4/8. Fits respect native model windows; memory, headroom, groups and upgrade counts follow the selection. Calculator links retain context and batch.
+- Defaults remain 4K / batch 1 for static indexing. Editorial GPU summaries, FAQs and speed references remain explicitly labelled baseline estimates when settings differ. Choices stay local to each page, without URL encoding or persistence.
+- Shared presets and controls live in `lib/utils/gpu-page.ts` and `components/gpu/FitControls.tsx`; `npm test` covers preset combinations and default parity.
+
 ### 2026-11-22 — VRAM calculator opens on an answer
 
 - `VRAMCalculator` now defaults to reverse mode (GPU → models), listed first in the mode switch. A link that names `?model=` without `?mode=` still opens forward mode.

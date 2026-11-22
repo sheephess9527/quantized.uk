@@ -1,5 +1,7 @@
 'use client';
 
+import FitControls from '@/components/gpu/FitControls';
+import { contextLabel } from '@/lib/utils/context-label';
 import { useMemo, useState } from 'react';
 import ConfidenceTag from '@/components/ui/ConfidenceTag';
 import Link from '@/components/i18n/LocalLink';
@@ -51,16 +53,18 @@ export default function HomeMatch() {
   const { t } = useLanguage();
   const m = t.home.match;
   const { config, hydrated, updateConfig } = useHardwareProfile();
+  const [contextLength, setContextLength] = useState(GPU_PAGE_CONTEXT);
+  const [batchSize, setBatchSize] = useState(1);
   const [useCase, setUseCase] = useState<HomeUseCase>('chat');
 
   const chosen = hydrated ? gpuDatabase.find(g => g.id === config.gpuId) ?? null : null;
   const gpu = chosen ?? gpuDatabase.find(g => g.id === EXAMPLE_GPU_ID)!;
   const isExample = chosen === null;
 
-  const picks = useMemo(() => homePicks(gpu, useCase), [gpu, useCase]);
+  const picks = useMemo(() => homePicks(gpu, useCase, contextLength, batchSize), [gpu, useCase, contextLength, batchSize]);
 
   const kindLabel: Record<HomePick['kind'], { title: string; why: string }> = {
-    capable: { title: m.kindCapable, why: m.kindCapableWhy },
+    capable: { title: m.kindCapable, why: m.kindCapableWhy.replace('4K', contextLabel(contextLength)) },
     headroom: { title: m.kindHeadroom, why: m.kindHeadroomWhy },
     fastest: { title: m.kindFastest, why: m.kindFastestWhy },
   };
@@ -70,7 +74,7 @@ export default function HomeMatch() {
       <div className="glass rounded-2xl p-5 sm:p-6">
         <div className="mb-4">
           <h2 className="section-title text-lg">{m.title}</h2>
-          <p className="section-subtitle text-xs mt-0.5">{m.subtitle}</p>
+          <p className="section-subtitle text-xs mt-0.5">{m.subtitle.replace('4K', contextLabel(contextLength)).replace('batch 1', `batch ${batchSize}`)}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -113,6 +117,8 @@ export default function HomeMatch() {
           </label>
         </div>
 
+        <FitControls contextLength={contextLength} batchSize={batchSize} onContextChange={setContextLength} onBatchChange={setBatchSize} />
+
         <p className="text-xs text-slate-500 mb-3 flex flex-wrap items-center gap-2">
           {isExample && (
             <span className="badge bg-amber-500/12 text-amber-300 border-amber-500/25 text-[10px] font-semibold uppercase tracking-wider">
@@ -143,7 +149,7 @@ export default function HomeMatch() {
               const calcHref =
                 `/tools/vram-calc/?model=${encodeURIComponent(pick.model.id)}` +
                 `&quant=${encodeURIComponent(quantLevelKey(pick.quant))}` +
-                `&gpu=${encodeURIComponent(gpu.id)}&ctx=${GPU_PAGE_CONTEXT}`;
+                `&gpu=${encodeURIComponent(gpu.id)}&ctx=${contextLength}&batch=${batchSize}`;
               return (
                 <li key={pick.kind} className={`rounded-xl border bg-white/[0.02] p-4 flex flex-col ${style.ring}`}>
                   <div className={`flex items-center gap-1.5 text-xs font-semibold ${style.color}`}>
