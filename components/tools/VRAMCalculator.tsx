@@ -17,7 +17,7 @@ import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
-import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
+import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
@@ -40,6 +40,7 @@ import { prefillData } from '@/lib/data/prefill';
 import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/site';
+import { NO_SHARE_GPU, VRAM_SHARE_PARAM, readVramAttention, readVramEncoder, snapshotVramLink } from '@/lib/utils/vram-link';
 
 type Mode = 'forward' | 'reverse' | 'finetune';
 type VerdictColor = 'green' | 'yellow' | 'red';
@@ -131,7 +132,18 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 
 export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMode?: Mode } = {}) {
   const { t } = useLanguage();
-  const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig, setGpuId } = useHardwareProfile();
+  const { gpuId: savedGpuId, gpu: savedGpu, config, hydrated: configReady, updateConfig, setGpuId: saveGpuId } = useHardwareProfile();
+  const [ignoredGpuId, setIgnoredGpuId] = useState<string | null>(null);
+  const gpuIgnored = ignoredGpuId === savedGpuId;
+  const profileGpuId = gpuIgnored ? '' : savedGpuId;
+  const profileGpu = gpuIgnored ? null : savedGpu;
+  const setGpuId = useCallback((id: string) => {
+    setIgnoredGpuId(null);
+    saveGpuId(id);
+  }, [saveGpuId]);
+  useEffect(() => {
+    if (ignoredGpuId !== null && !gpuIgnored) setIgnoredGpuId(null);
+  }, [ignoredGpuId, gpuIgnored]);
   const searchParams = useUrlQuery();
   const urlInitialized = useRef(false);
 
@@ -185,6 +197,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [bestPerModel, setBestPerModel] = useState(true);
   const [reverseInput, setReverseInput] = useState<RecommendationInput>('text');
   const [linkCopied, setLinkCopied] = useState(false);
+  const [uncopiedLink, setUncopiedLink] = useState('');
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
   const [modelQuery, setModelQuery] = useState('');
   /** A multimodal model's vision encoder, in GB — entered or read, never assumed. */
@@ -265,7 +278,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     const sq = Number(searchParams.get('seq')); if (sq >= 256 && sq <= 131072) setFtSeq(sq);
     const mb = Number(searchParams.get('mb')); if (mb >= 1 && mb <= 64) setFtBatch(mb);
     if (searchParams.get('gc') === '0') setFtCkpt(false);
-    const mm = Number(searchParams.get('mmproj')); if (mm > 0 && mm < 50) setMmprojGB(String(mm));
+    const mm = readVramEncoder(searchParams.get('mmproj')); if (mm !== undefined) setMmprojGB(String(mm));
     const hid = searchParams.get('hidden'); if (hid && Number(hid) > 0) setFtHidden(hid);
     const voc = searchParams.get('vocab'); if (voc && Number(voc) > 0) setFtVocab(voc);
     // A custom model is only shareable if its shape travels with the link —
@@ -277,10 +290,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       const hd = searchParams.get('hd'); if (hd) setCustomHeadDim(hd);
       // An imported shape travels as numbers, never as a re-fetch: the
       // recipient sees what the sender saw even if the repo has changed.
-      const full = Number(searchParams.get('full'));
-      const win = Number(searchParams.get('win'));
-      const wt = Number(searchParams.get('wt'));
-      if (full > 0 || win > 0) setCustomAttention({ fullLayers: full || 0, ...(win > 0 && wt > 0 ? { windowLayers: win, windowTokens: wt } : {}) });
+      setCustomAttention(readVramAttention(searchParams));
       const mctx = Number(searchParams.get('mctx')); if (mctx > 0) setCustomCtx(mctx);
       const repo = searchParams.get('repo'); if (repo && /^[\w.-]+\/[\w.-]+$/.test(repo)) setCustomRepo(repo);
     }
@@ -292,6 +302,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     // rather than kept: reverse mode used to answer "no models fit this GPU"
     // about a card that does not exist.
     const rawGpu = searchParams.get('gpu');
+    if (m === 'forward' && rawGpu === NO_SHARE_GPU && searchParams.get(VRAM_SHARE_PARAM) === '1') {
+      setIgnoredGpuId(savedGpuId);
+    }
     const gpuParam = rawGpu && gpuDatabase.some(g => g.id === rawGpu) ? rawGpu : null;
     if (gpuParam) {
       setSelectedGpuId(gpuParam);
@@ -317,7 +330,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
     urlInitialized.current = true;
-  }, [defaultMode, searchParams, profileGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
+  }, [defaultMode, searchParams, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
@@ -325,8 +338,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
   }, [selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample]);
 
-  const syncUrl = useCallback(() => {
-    if (!urlInitialized.current) return;
+  const resultParams = useCallback(() => {
     const params = new URLSearchParams();
     params.set('mode', mode);
     params.set('ctx', String(contextLen));
@@ -377,11 +389,19 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       if (!bestPerModel) params.set('all', '1');
       if (reverseInput === 'image') params.set('input', 'image');
     }
-    const qs = params.toString();
-    window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
+    return params;
   }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
-  useEffect(() => { syncUrl(); }, [syncUrl]);
+  const sharedLink = searchParams?.get(VRAM_SHARE_PARAM) === '1';
+  useEffect(() => {
+    if (!urlInitialized.current) return;
+    const params = resultParams();
+    if (sharedLink && mode !== 'finetune') {
+      params.set(VRAM_SHARE_PARAM, '1');
+      if (mode === 'forward' && gpuIgnored) params.set('gpu', NO_SHARE_GPU);
+    }
+    window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
+  }, [resultParams, sharedLink, mode, gpuIgnored]);
 
   /**
    * Changing the model must not leave the previous model's quant level
@@ -440,7 +460,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     setExtraIds([]);
     setModelIsExample(false);
     // Asking for the detail of a fit on this card adopts the card, guessed or not.
-    if (selectedGpuId && selectedGpuId !== profileGpuId) updateConfig({ gpuId: selectedGpuId });
+    if (selectedGpuId && selectedGpuId !== profileGpuId) setGpuId(selectedGpuId);
     setGpuHint(null);
     rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
@@ -639,13 +659,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const profileCards = profileGpu && canStack(profileGpu) ? cards : 1;
   // Extra cards only count beside a discrete card on the same backend — one
   // llama.cpp/vLLM build drives them all — and the rig stays within MAX_CARDS.
-  const profileExtras = useMemo(() => {
-    if (!profileGpu || !canStack(profileGpu)) return [];
-    return extraIds
-      .map(id => gpuDatabase.find(g => g.id === id))
-      .filter((g): g is GPU => !!g && canStack(g) && backendFor(g) === backendFor(profileGpu))
-      .slice(0, Math.max(0, MAX_CARDS - profileCards));
-  }, [extraIds, profileGpu, profileCards]);
+  const profileExtras = useMemo(() => rigExtras(profileGpu, extraIds, profileCards), [extraIds, profileGpu, profileCards]);
   const rigLabel = profileGpu
     ? [`${profileCards > 1 ? `${profileCards}× ` : ''}${profileGpu.name}`, ...profileExtras.map(g => g.name)].join(' + ')
     : '';
@@ -762,11 +776,22 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     return () => io.disconnect();
   }, []);
 
-  const copyShareLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setLinkCopied(true);
-    trackEvent('VRAM Share', { mode });
-    setTimeout(() => setLinkCopied(false), 2000);
+  const copyShareLink = async () => {
+    const url = snapshotVramLink(new URL(window.location.href), resultParams(), {
+      mode,
+      modelId: selectedModelId,
+      gpuId: mode === 'reverse' ? selectedGpuId : profileGpuId,
+    });
+    setUncopiedLink('');
+    setLinkCopied(false);
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      trackEvent('VRAM Share', { mode });
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setUncopiedLink(url);
+    }
   };
 
   const formatColors: Record<string, string> = {
@@ -802,12 +827,19 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         </div>
         <button
           onClick={copyShareLink}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-colors"
+          disabled={!configReady || (mode === 'reverse' && !showReverseResult) || (mode === 'forward' && !showForwardResult)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-colors disabled:opacity-50"
         >
           {linkCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           {linkCopied ? t.calc.shareCopied : t.calc.shareLink}
         </button>
       </div>
+      {uncopiedLink && (
+        <label className="block text-xs text-slate-300">
+          {t.calc.shareCopyFailed}
+          <input readOnly value={uncopiedLink} onFocus={e => e.currentTarget.select()} className="mt-1 w-full rounded-lg border border-white/10 bg-transparent p-2" />
+        </label>
+      )}
 
       <p className="text-sm text-slate-500 -mt-2">
         {mode === 'forward' ? t.calc.modeForwardDesc : mode === 'reverse' ? t.calc.modeReverseDesc : t.calc.modeFinetuneDesc}

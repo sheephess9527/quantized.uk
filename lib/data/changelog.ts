@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Copy a VRAM inference result link to share the exact model, quant, card and context you were looking at. The recipient opens the same settings, and apps that show link previews get a result card in English or Chinese.',
+    zh: '复制显存计算器的推理结果链接，可分享当前的模型、量化、显卡和上下文设置。收件人打开后看到同一组设置，支持链接预览的应用也会展示对应语言的结果卡片。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The VRAM calculator now opens on "what can my GPU run": it guesses your card from the browser (asking which memory size when the chip comes in several) or shows an example card, so the first visit starts with an answer. The model-first mode starts on an example model, and shared links and saved settings still take precedence.',
     zh: '显存计算器现在默认打开"我的显卡能跑什么"：根据浏览器推测你的显卡（同一芯片有多种显存时会请你选择），或显示一张示例显卡，首次访问即可看到结果。按模型估算模式默认显示一个示例模型；分享链接与已保存的设置仍然优先。',
   },
