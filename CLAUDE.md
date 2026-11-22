@@ -84,6 +84,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Embedding:** only `/embed/*` and `/zh/embed/*` may be framed (Cloudflare `_headers` detach exceptions). Keep embed pages noindex, out of the sitemap and free of site chrome/analytics. Fit cards and snippets reuse `lib/utils/embed-fit.ts` and calculator sizing; never persist guessed/example choices when copying.
+
 - **Calculator run plan:** use the same sizing and fit rules as the detailed
   result. Launch commands follow the selected quant and context. Settings that
   need runtime configuration show a note beside the command. Native Ollama

@@ -15,6 +15,7 @@ import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
+import EmbedSnippets from '@/components/tools/EmbedSnippets';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
@@ -822,6 +823,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     GPTQ: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
     HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
   };
+
+  const embedParams = resultParams();
+  embedParams.set('model', selectedModel?.id ?? '');
+  embedParams.set('gpu', profileGpuId);
+  embedParams.set('cards', String(profileCards));
+  embedParams.set('extra', profileExtras.map(g => g.id).join(','));
 
   return (
     <div ref={rootRef} className="space-y-6 scroll-mt-24">
@@ -1765,6 +1772,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     <span>· {t.calc.runPlanHeadroom.replace('{gb}', (rigCapacity - result.totalGB).toFixed(2))}</span>
                   )}
                 </p>
+                <EmbedSnippets query={embedParams.toString()} />
                 {(currentVerdict === 'yellow' || currentVerdict === 'red') && (quantFix || contextFix) && (
                   <div className="mt-3">
                     <p className="text-xs font-medium text-slate-400">{t.calc.runPlanAdjust}</p>
