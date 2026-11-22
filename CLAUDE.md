@@ -142,7 +142,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `scripts/check-calculator-evidence.ts` checks references and export semantics. Reader
   reports stay local until an explicit copy/download/mail-draft action; no automatic sending.
 
-- **Calculator progressive controls:** advanced controls live in the More options disclosure, which auto-opens on non-default advanced settings. Disclosure open state is never URL or profile state.
+- **Calculator progressive controls:** advanced controls live in the More options disclosure, which auto-opens on non-default advanced settings and only closes via its toggle button, never automatically. Disclosure open state is never URL or profile state.
 - **Calculator first load:** reverse mode is the default. Precedence is URL, then saved profile,
   then a browser guess (`lib/utils/gpu-detect.ts`, WebGL renderer; never sent or stored), then the
   example card/model. Ambiguous memory sizes, Macs and single rows named with a size start on the smallest row and

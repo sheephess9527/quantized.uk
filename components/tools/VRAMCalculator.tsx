@@ -829,7 +829,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   const advancedChanged = changedAdvancedSettings(mode, { cards, extraIds, kvType, batchSize, mmprojGB, reverseInput, sortBy, includeYellow, bestPerModel });
   useEffect(() => {
-    if (urlInitialized) setMoreOpen(advancedChanged > 0);
+    if (urlInitialized && advancedChanged > 0) setMoreOpen(true);
   }, [urlInitialized, mode, advancedChanged]);
   const showAllQuants = allQuantsOpen || findFormatGroup(selectedQuant) !== 'GGUF';
   const commonQuants = commonQuantLevels(selectedQuant, selectedModel ? quantLevelKey(referenceQuant(selectedModel.quants)) : undefined);

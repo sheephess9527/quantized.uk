@@ -536,6 +536,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Simpler calculator controls
 
+- More options only auto-opens; resetting advanced settings to defaults or switching modes never closes it. Only its toggle button closes the panel.
 - Both languages now lead with common inference choices and tuck advanced settings into More options, automatically opened for non-default settings with a changed count. Forward quant chips show common levels first, with all levels still available. Existing URLs, share snapshots, profiles and saved rigs retain their settings; sizing and benchmark data are unchanged.
 
 ### 2026-11-22 — Generation speed beside the VRAM fit verdict
