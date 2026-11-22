@@ -173,10 +173,12 @@ The calculator supports two modes, toggled at the top of the page:
 
 | Mode | Direction | Use case |
 |---|---|---|
-| **Forward** (`mode=forward`) | Model → VRAM | Pick a model + quant + context → see memory breakdown and per-GPU verdict |
+| **Forward** (`mode=forward`) | Model → VRAM | Pick a model + quant + context → see memory breakdown, per-GPU verdict and generation speed where available |
 | **Reverse** (`mode=reverse`) | GPU → Models | Pick your GPU + context → list all compatible model×quant configs |
 
 Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
+
+For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
 **Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
@@ -538,6 +540,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - The browser needs a laptop/mobile/Max-Q marker for GeForce models that share desktop names; Radeon mobile model numbers are distinct. RTX 3050, 3080 and 5070 Laptop GPUs prompt for the memory configuration, starting with the smaller one. Masked renderers still require manual selection.
 - Radeon mobile models do not inherit desktop vLLM support; this release recommends GGUF, not AWQ or GPTQ, on those models.
 - Bandwidth is included only where the linked spec publishes it. Laptop fit tables omit the speed column without same-card evidence. The calculator uses one GPU for laptops, offers CPU offload only for GGUF (including custom models), and omits desktop speed references and speed sorting. No laptop performance was measured.
+
+### 2026-11-22 — Generation speed beside the VRAM fit verdict
+
+- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. Configurations that require offload do not get an all-GPU speed quote.
 
 ### 2026-11-22 — Pair pages and embed integration
 

@@ -18,6 +18,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'The VRAM calculator now shows generation speed beside the fit verdict: a linked measurement when the model, quant and GPU match a benchmark, otherwise a labelled estimate or bandwidth ceiling where available.',
+    zh: '显存计算器现在会在适配判定旁显示生成速度。模型、量化和显卡与跑分匹配时，显示带链接的实测值；否则在有数据时显示明确标注的估算速度或带宽上限。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
     zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
   },
