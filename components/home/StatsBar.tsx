@@ -1,6 +1,4 @@
-'use client';
-
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { getSiteStats } from '@/lib/stats';
 
 const siteStats = getSiteStats();
@@ -12,8 +10,8 @@ const stats = [
   { value: siteStats.q4PplRise,         keyName: 'accuracy' },
 ] as const;
 
-export default function StatsBar() {
-  const { t } = useLanguage();
+export default function StatsBar({ lang }: { lang: Lang }) {
+  const t = translations[lang];
 
   return (
     // `-mt-8 relative z-10` used to make this card straddle the bottom of the

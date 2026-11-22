@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import HomeContent from '@/components/home/HomeContent';
 import { pageMetadata, MODEL_COUNT } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -8,4 +9,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh',
 });
 
-export { default } from '../page';
+export default function ZhHomePage() {
+  return <HomeContent lang="zh" />;
+}

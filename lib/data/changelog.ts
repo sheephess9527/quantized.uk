@@ -13,6 +13,16 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-21',
+    en: 'Homepage statistics are now rendered at build time without a client component. Build-time Hugging Face requests have timeouts and bounded parallelism, with cached counts retained on failure. Static preview and type-check commands are documented, and compatible dependencies have been refreshed.',
+    zh: '首页统计现于构建时生成，无需客户端组件。构建时获取 Hugging Face 数据采用超时与有限并发，失败时保留缓存统计。新增静态预览与类型检查命令说明，并更新兼容依赖。',
+  },
+  {
+    date: '2026-11-21',
+    en: 'Compare and CLI controls now have accessible labels. Language switches keep URL settings, the Tools menu supports keyboard focus and Escape, and a skip-to-content link helps keyboard navigation. Compare only confirms a copied link after copying succeeds.',
+    zh: '模型对比与脚本生成器的控件现已关联无障碍标签。切换语言保留网址设置，工具菜单支持键盘焦点与 Escape 关闭，并新增跳转到主要内容的键盘链接。模型对比仅在复制成功后显示确认。',
+  },
+  {
+    date: '2026-11-21',
     en: 'The final older-model verification batch covers 30 models, completing review of all 151 indexed models with unresolved claims documented. DeepSeek-V3 now shows the DeepSeek Model Licence rather than MIT; its commercial-use classification is unchanged. Mistral Large 3 now uses the publisher’s 61-layer, 128-head architecture and the current compressed-MLA cache convention, with a warning for older conversions and unmeasured runtime allocation.',
     zh: '较早模型核查的最后一批覆盖 30 个模型，至此已审阅全部 151 个索引模型，未解决的数据声明均有记录。DeepSeek-V3 的许可从 MIT 修正为 DeepSeek 模型许可，可商用分类不变。Mistral Large 3 现采用官方的 61 层、128 个注意力头结构及当前压缩 MLA 缓存约定，同时保留旧版转换和未实测运行时分配的提示。',
   },

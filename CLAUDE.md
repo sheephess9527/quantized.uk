@@ -42,6 +42,8 @@ npm run dev      # local dev → http://localhost:3000
 npm test         # recommendations, evidence, speed calibration, CLI sources and RSS (also CI)
 npm run build    # type-check + lint + static export → out/   (gate before every commit)
 npm run lint
+npm run typecheck # tsc --noEmit
+npm start        # static out/ preview on :3000, build first (pinned npx serve)
 ```
 
 `npm test` is the data-check gate (recommendations, calculator evidence, speed calibration, exact CLI sources and RSS).
@@ -50,6 +52,11 @@ GitHub Actions runs it on push and pull request. It does not type-check or expor
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
+The fetcher uses four workers, a 10-second AbortController timeout per request/body and
+200 ms pacing per worker. `npm test` includes offline fetcher regression tests. `npm start`
+uses `npx --yes serve@14.2.5 out -l 3000`; first use needs registry access, not a Next server.
+Homepage server content lives in `components/home/HomeContent.tsx`; each route passes its
+language explicitly so `StatsBar` stays server-rendered. Do not restore its client language hook.
 
 `build` fails on **data invariants** too: `app/sitemap.ts` calls `assertDataConsistent()`
 (`lib/data/validate.ts`) — broken `supersededBy`, a `todayFeed` level the model does not ship, a
@@ -276,8 +283,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **The language switcher must be an `<a href>`, and it is the one link that must not be
   `LocalLink`.** It was a `<button onClick={toggleLang}>`, so the English tree had zero
   `<a href="/zh…">` and 164 Chinese pages had no crawlable inbound link at all. Use `mirrorPath()`
-  with a bare `next/link`, `rel="alternate"` and an `hreflang` matching the head — localizing this
-  href would point it back into the tree the reader is already in. The leak gate matches whole
+  with a plain anchor, `rel="alternate"` and an `hreflang` matching the head — localizing this
+  href would point it back into the tree the reader is already in. `LanguageSwitchLink` keeps a
+  crawlable mirrored href and preserves the current query/hash on activation, including tool
+  updates made with `history.replaceState`. The leak gate matches whole
   `<a>` tags so it can exempt exactly this link; keep both attributes or it will be flagged.
 - **Negative margins are a maintenance hazard here.** `-mt-*` on a section only stays correct while
   the section above it never changes. Two of them had silently gone wrong: `StatsBar`'s `-mt-8`

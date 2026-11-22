@@ -1,9 +1,7 @@
 'use client';
 
 import Link from '@/components/i18n/LocalLink';
-import NextLink from 'next/link';
-import { usePathname } from 'next/navigation';
-import { mirrorPath } from '@/lib/i18n/routing';
+import LanguageSwitchLink from '@/components/i18n/LanguageSwitchLink';
 import { Zap, ExternalLink, Mail, Rss } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { trackEvent } from '@/lib/analytics';
@@ -12,7 +10,6 @@ import EmailOffGuard from '@/components/ui/EmailOffGuard';
 
 export default function Footer() {
   const { t, lang } = useLanguage();
-  const pathname = usePathname();
 
   const sections = [
     {
@@ -184,15 +181,14 @@ export default function Footer() {
               this one element is 164 inbound links to the other language —
               which had none at all while the switcher was a `<button>`.
             */}
-            <NextLink
-              href={mirrorPath(pathname ?? '/')}
+            <LanguageSwitchLink
               hrefLang={lang === 'en' ? 'zh-Hans' : 'en'}
               lang={lang === 'en' ? 'zh-Hans' : 'en'}
               rel="alternate"
               className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
             >
               {t.nav.langFooter}
-            </NextLink>
+            </LanguageSwitchLink>
           </div>
         </div>
       </div>
