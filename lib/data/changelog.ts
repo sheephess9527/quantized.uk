@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Find models for your GPU with minimum estimated speed and required image, tool-calling or code features. Requirements combine; unknown speed or unrecorded tool support does not pass. Speed ceilings are estimates, not measurements; filters travel in links, not saved hardware profiles.',
+    zh: '按最低估算速度及图像、工具调用、代码必需功能筛选适合 GPU 的模型。多项条件须同时满足；未知速度或未记录的工具支持不计入。速度上限是估算而非实测；筛选随链接分享，不写入硬件配置。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

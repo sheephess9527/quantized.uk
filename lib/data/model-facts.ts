@@ -39,6 +39,12 @@
 
 export type LicenceClass = 'commercial' | 'restricted' | 'noncommercial';
 
+/** Positive evidence only: original publisher tokenizer_config.json chat_template
+ * references `tools`, read via HF resolve/main on 2026-11-22. Unknown is omitted.
+ * Sources: https://huggingface.co/Qwen/{Qwen3-8B,Qwen3-4B,Qwen3-32B}/resolve/main/tokenizer_config.json
+ */
+export const TOOL_CALLING_MODEL_IDS: readonly string[] = ['qwen3-8b', 'qwen3-4b', 'qwen3-32b'];
+
 export interface LicenceInfo {
   /** Short label for a card badge, e.g. `Llama 3.1`. */
   short: string;

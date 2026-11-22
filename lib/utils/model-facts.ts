@@ -1,5 +1,9 @@
-import { LICENCES, MODEL_LICENCE, IMAGE_INPUT_MODEL_IDS } from '@/lib/data/model-facts';
+import { LICENCES, MODEL_LICENCE, IMAGE_INPUT_MODEL_IDS, TOOL_CALLING_MODEL_IDS } from '@/lib/data/model-facts';
 import type { LicenceClass, LicenceInfo } from '@/lib/data/model-facts';
+
+export function hasToolCalling(id: string): boolean {
+  return TOOL_CALLING_MODEL_IDS.includes(id);
+}
 
 /**
  * The Hub's two capability/terms lookups.
@@ -41,6 +45,9 @@ export function licenceClassOf(modelId: string): LicenceClass | null {
 export function factTableProblems(modelIds: readonly string[]): string[] {
   const out: string[] = [];
   const known = new Set(modelIds);
+  for (const id of TOOL_CALLING_MODEL_IDS) {
+    if (!known.has(id)) out.push(`model-facts: tool-calling flag for unknown model id '${id}'`);
+  }
 
   for (const id of Object.keys(MODEL_LICENCE)) {
     if (!known.has(id)) out.push(`model-facts: licence recorded for unknown model id '${id}'`);

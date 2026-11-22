@@ -156,8 +156,13 @@ flaky network. Never "fix" it by removing the postbuild hook.
   GeForce laptop matches require a renderer marker; Radeon mobile SKUs have distinct names.
   Don't show desktop speed references as substitutes for laptop speed data.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
-- **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
-  beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
+- **Reverse fits must respect both context and input.** `getRecommendations()` supports
+  URL-only `minTok=10|20|40` and `feat=tools,code` filters (AND).
+  Speed filtering, sorting and the displayed ceiling share `recommendationSpeed`, a single-card
+  roofline / active-MoE bound even when stacking adds capacity; unknown speed fails a minimum.
+  Tool calling is positive recorded publisher-template/card evidence only in `model-facts.ts`;
+  code uses the recorded category. Image remains `input=image`; none of these filters enters profiles.
+  It excludes contexts beyond each model's supported limit. Its `input` argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
   interpret an unknown encoder size as zero. Keep encoder GiB in the total, context reach, forward
   state transfer and actual href (`mmproj`), with cache/batch/card settings preserved. The UI's

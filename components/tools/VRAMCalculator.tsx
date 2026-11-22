@@ -19,7 +19,7 @@ import EmbedSnippets from '@/components/tools/EmbedSnippets';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
-import { getRecommendations, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
+import { getRecommendations, recommendationSpeed, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { commonQuantLevels, changedAdvancedSettings } from '@/lib/utils/calc-simplify';
@@ -203,6 +203,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [includeYellow, setIncludeYellow] = useState(true);
   const [bestPerModel, setBestPerModel] = useState(true);
   const [reverseInput, setReverseInput] = useState<RecommendationInput>('text');
+  const [minTok, setMinTok] = useState(0);
+  const [requireTools, setRequireTools] = useState(false);
+  const [requireCode, setRequireCode] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [uncopiedLink, setUncopiedLink] = useState('');
   const [invalidModelId, setInvalidModelId] = useState<string | null>(null);
@@ -338,6 +341,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
+    const minSpeed = Number(searchParams.get('minTok'));
+    if ([10, 20, 40].includes(minSpeed)) setMinTok(minSpeed);
+    const features = searchParams.get('feat')?.split(',') ?? [];
+    setRequireTools(features.includes('tools'));
+    setRequireCode(features.includes('code'));
     setUrlInitialized(true);
   }, [urlInitialized, defaultMode, searchParams, sharedLink, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
@@ -411,9 +419,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       if (!includeYellow) params.set('yellow', '0');
       if (!bestPerModel) params.set('all', '1');
       if (reverseInput === 'image') params.set('input', 'image');
+      if (minTok) params.set('minTok', String(minTok));
+      const features = [requireTools && 'tools', requireCode && 'code'].filter(Boolean);
+      if (features.length) params.set('feat', features.join(','));
     }
     return params;
-  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, minTok, requireTools, requireCode, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => {
     if (!urlInitialized) return;
@@ -560,8 +571,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const recommendationSort = selectedGpu?.isLaptop && sortBy === 'speed' ? 'quality' : sortBy;
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput);
-  }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput, { minTok, tools: requireTools, code: requireCode });
+  }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, minTok, requireTools, requireCode]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -840,7 +851,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
   };
 
-  const advancedChanged = changedAdvancedSettings(mode, { cards, extraIds, kvType, batchSize, mmprojGB, reverseInput, sortBy, includeYellow, bestPerModel });
+  const advancedChanged = changedAdvancedSettings(mode, { cards, extraIds, kvType, batchSize, mmprojGB, reverseInput, sortBy, includeYellow, bestPerModel }) + (mode === 'reverse' ? Number(minTok > 0) + Number(requireTools) + Number(requireCode) : 0);
   useEffect(() => {
     if (urlInitialized && advancedChanged > 0) setMoreOpen(true);
   }, [urlInitialized, mode, advancedChanged]);
@@ -1691,23 +1702,31 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               )}
 
               <div>
-                <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.reverseInput}</p>
+                <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.requiredFeatures}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {(['text', 'image'] as const).map(input => (
-                    <button
-                      key={input}
-                      type="button"
-                      aria-pressed={reverseInput === input}
-                      onClick={() => setReverseInput(input)}
-                      className={cn('px-3 py-1.5 rounded-lg text-xs border transition-colors', reverseInput === input
-                        ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                        : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
-                    >
-                      {input === 'text' ? t.calc.reverseText : t.calc.reverseImage}
-                    </button>
+                  {[
+                    { label: t.calc.reverseImage, checked: reverseInput === 'image', change: (value: boolean) => setReverseInput(value ? 'image' : 'text') },
+                    { label: t.calc.toolCalling, checked: requireTools, change: setRequireTools },
+                    { label: t.calc.codeFeature, checked: requireCode, change: setRequireCode },
+                  ].map(feature => (
+                    <label key={feature.label} className="flex items-center gap-2 text-xs text-slate-400">
+                      <input type="checkbox" checked={feature.checked} onChange={e => feature.change(e.target.checked)} className="accent-cyan-500" />
+                      {feature.label}
+                    </label>
                   ))}
                 </div>
                 <p className="text-[11px] text-slate-600 leading-relaxed mt-1.5">{reverseInput === 'image' ? t.calc.reverseImageNote : t.calc.reverseTextNote}</p>
+                <p className="text-[11px] text-slate-600 mt-1.5">{t.calc.featuresNote}</p>
+              </div>
+
+              <div>
+                <label className="block text-xs text-slate-400">
+                  {t.calc.minimumSpeed}
+                  <select value={minTok} onChange={e => setMinTok(Number(e.target.value))} className="ml-2 rounded bg-slate-900 p-2">
+                    {[0, 10, 20, 40].map(n => <option key={n} value={n}>{n ? `≥${n} tok/s` : t.calc.anySpeed}</option>)}
+                  </select>
+                </label>
+                <p className="text-[11px] text-slate-600 mt-1.5">{t.calc.speedFilterNote}</p>
               </div>
 
               <div>
@@ -2444,7 +2463,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               </div>
 
               {recommendations.length === 0 ? (
-                <p className="text-sm text-slate-600 text-center py-8">{t.calc.reverseEmpty}</p>
+                <div className="text-sm text-slate-500 text-center py-8">
+                  <p>{minTok || requireTools || requireCode || reverseInput === 'image' ? t.calc.filteredEmpty : t.calc.reverseEmpty}</p>
+                  <button type="button" className="mt-3 text-cyan-300" onClick={() => { setMinTok(0); setRequireTools(false); setRequireCode(false); setReverseInput('text'); setIncludeYellow(true); setBestPerModel(true); }}>{t.calc.resetFilters}</button>
+                </div>
               ) : (
                 <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
                   {recommendations.map(({ model, quant, totalGB, verdict, extraGB }) => {
@@ -2469,6 +2491,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           </div>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} {t.calc.gbUnit}</span>
+                            {(() => {
+                              const speed = recommendationSpeed(selectedGpu!, model, quant);
+                              return speed !== undefined ? <span>{t.calc.reverseEstimate.replace('{n}', String(speed))}</span> : null;
+                            })()}
                             {(() => {
                               const r = contextReach(modelShape(model, batchSize, KV_CACHE_TYPES[kvType], extraGB), quant.bpw, selectedGpu!, model.contextLength, canStack(selectedGpu!) ? cards : 1);
                               const best = r.comfortable || r.tight;
