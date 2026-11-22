@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { matchesParamRange, type ParamRange } from '@/lib/utils/param-buckets';
+import { matchesParamRange, PARAM_RANGES, PARAM_RANGE_LABEL, type ParamRange } from '@/lib/utils/param-buckets';
 import type { QuantModel } from '@/lib/data/types';
 
 /**
@@ -13,11 +13,12 @@ import type { QuantModel } from '@/lib/data/types';
  * the platform pickers on iOS and Android, all of which a hand-rolled listbox
  * has to reimplement and usually gets wrong.
  */
-export const MODEL_GROUP_ORDER: ParamRange[] = ['≤3B', '7B', '14B', '32B', '70B+'];
+export const MODEL_GROUP_ORDER: ParamRange[] = PARAM_RANGES;
 
-export function groupedModels(): { bucket: ParamRange; models: QuantModel[] }[] {
+export function groupedModels(): { bucket: ParamRange; label: string; models: QuantModel[] }[] {
   return MODEL_GROUP_ORDER.map(bucket => ({
     bucket,
+    label: PARAM_RANGE_LABEL[bucket],
     models: models
       .filter(m => matchesParamRange(m.params, bucket))
       .sort((a, b) => a.name.localeCompare(b.name)),

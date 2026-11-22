@@ -515,6 +515,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Pair-page integration with current main
+
+- Merged the context/concurrency controls and parameter-bucket updates without changing pair-page eligibility or its fixed 4K / batch 1 baseline. Kept both pair-page and parameter-bucket checks in `npm test` and retained both release histories.
+
 ### 2026-11-22 — Pair-page presentation refinements
 
 - Aligned table body/header padding, prefer question-form search titles when they fit, and lead speed summaries with exact measured runs before the recommended quant's labelled estimate. Reformatted pair-page code for maintenance.
@@ -524,6 +528,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Added 2,244 eligible pairs (4,488 bilingual pages) at `/quant-hub/[modelId]/[gpuSlug]/`, linked from model/GPU guides and the sitemap. Pages include 4K quant sizing, context reach, measured runs, labelled speed and a prefilled calculator.
 - Eligibility in `lib/utils/pair-pages.ts`: all exact measured pairs, or current models with verified-file sizing, supported format, bandwidth and a green/yellow fit using at least 25% of usable memory. Existing model OG images are reused.
 - `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Export: 5,134 HTML files (including 404 variants); monitor Cloudflare Pages’ 20,000-file limit.
+
+### 2026-11-22 — Context and concurrency on home and GPU pages
+
+- Homepage picks, GPU detail lists and GPU index counts now offer 4K–128K context chips and concurrency 1/2/4/8. Fits respect native model windows; memory, headroom, groups and upgrade counts follow the selection. Calculator links retain context and batch.
+- Defaults remain 4K / batch 1 for static indexing. Editorial GPU summaries, FAQs and speed references remain explicitly labelled baseline estimates when settings differ. Choices stay local to each page, without URL encoding or persistence.
+- Shared presets and controls live in `lib/utils/gpu-page.ts` and `components/gpu/FitControls.tsx`; `npm test` covers preset combinations and default parity.
+
+### 2026-11-22 — Parameter-size buckets match their labels
+
+- The size classes were labelled `≤3B / 7B / 14B / 32B / 70B+` but bounded at ≤4 / ≤9 / ≤20 / ≤50 / >50B, so the GPU requirements page (both languages) put Qwen3 4B under "≤3B", Gemma 2 9B and Qwen3.5 9B under "14B", GPT-OSS 20B under "32B" and Jamba 1.5 Mini (52B) under "70B+".
+- `lib/utils/param-buckets.ts` now holds half-open bounds `[0,4) [4,10) [10,20) [20,50) [50,∞)` and derives the reader-facing labels from them: `<4B / 4–10B / 10–20B / 20–50B / 50B+`, in both languages. Used by the requirements table, Hub filter and stat pills, GPU pages, model pickers and the VRAM quick reference. Hub `?size=` keys (`≤3B`, `7B`, …) are unchanged, so old links still filter. Moved: Qwen3 4B (4.0B) from the smallest class to 4–10B; K2 Horizon 7B, Qwen3.5 9B and Gemma 2 9B (9.01–9.24B) from the old "14B" class to 4–10B.
+- The requirements table's data moved to `lib/utils/gpu-requirements.ts` (`gpuRequirementsTable()`).
+- `npm test` adds `scripts/check-param-buckets.ts` (`npm run check:param-buckets`): bounds tile with no gap, each label reads back as its bounds, and every model's `paramLabel` and name size sit inside its bucket in the index, the pickers and the requirements table. Published sizes that are not total parameters are listed in `NAME_SIZE_EXCEPTIONS` with a reason (K2 Horizon 3.7B, Llama 4 Scout/Maverick 17B).
+- `sizingChangedAt` → 2026-11-22 (GPU page groupings changed).
 
 ### 2026-11-22 — VRAM calculator opens on an answer
 

@@ -23,6 +23,16 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'Homepage and GPU pages now let you choose 4K–128K context and concurrency 1, 2, 4 or 8. Model picks, fit counts, memory headroom and upgrade suggestions update together, and calculator links keep those settings. Static pages still start at 4K / batch 1; editorial summaries and speed references remain labelled baselines.',
+    zh: '首页与显卡页面现可选择 4K–128K 上下文及 1、2、4、8 并发。模型推荐、可运行数量、显存余量与升级建议同步更新，计算器链接保留这些设置。静态页面仍默认 4K / batch 1；编辑摘要与速度参考值保留基线标注。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Model size classes now say exactly what they hold: <4B, 4–10B, 10–20B, 20–50B and 50B+ by total parameters. The GPU requirements table had listed Qwen3 4B under "≤3B" and 9B models under "14B"; the same ranges now label the Quant Hub filter, GPU pages and model pickers, and a build check keeps every model inside its column.',
+    zh: '模型规模分档现在与实际一致：按总参数量分为 <4B、4–10B、10–20B、20–50B 和 50B+。此前显卡需求表把 Qwen3 4B 列在"≤3B"、把 9B 模型列在"14B"；量化模型库筛选、显卡页面和模型选择器现在使用同一套区间，并有构建检查确保每个模型都落在所属列中。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The VRAM calculator now opens on "what can my GPU run": it guesses your card from the browser (asking which memory size when the chip comes in several) or shows an example card, so the first visit starts with an answer. The model-first mode starts on an example model, and shared links and saved settings still take precedence.',
     zh: '显存计算器现在默认打开"我的显卡能跑什么"：根据浏览器推测你的显卡（同一芯片有多种显存时会请你选择），或显示一张示例显卡，首次访问即可看到结果。按模型估算模式默认显示一个示例模型；分享链接与已保存的设置仍然优先。',
   },

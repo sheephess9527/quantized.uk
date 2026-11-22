@@ -100,6 +100,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   counts; keep separate model entries. Read GGUF tensor metadata when original
   repository totals include vision or duplicated/tied output tables. Q4_1 is a
   GGUF level (20 bytes per 32 weights in upstream ggml), not a new format.
+- **Home/GPU fit controls:** share context presets (4K–128K) and concurrency (1/2/4/8) from `gpu-page.ts`. Static defaults remain 4K / batch 1; runtime choices are page-local, not URL/profile state. Native context limits apply to fits. Editorial summaries and speed comparisons remain 4K / batch 1 baselines.
 - **Homepage picks sort by `addedAt`, then unique feed ID**, before slicing.
   `dataProblems()` rejects duplicate feed IDs; do not reuse old IDs in new packs.
 - **Stable runtime versus binary pin:** llama.cpp v1.0.0's `nightly-tag.txt`
@@ -156,6 +157,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `input=image` parameter is calculator-specific; the Hub uses `input=multimodal`. Forward encoder
   visibility uses `hasImageInput()`, not a category tag. Check with
   `npm run check:recommendations` (or `npm test`) after recommendation changes.
+- **Size buckets come from one place.** Bounds and labels live in `lib/utils/param-buckets.ts`;
+  display `PARAM_RANGE_LABEL[key]`, never the key (`≤3B`, `7B` … are Hub URL values only) and never a
+  hand-typed size label. A model whose published size is not its total parameter count goes in
+  `NAME_SIZE_EXCEPTIONS` in `scripts/check-param-buckets.ts` with its reason (`npm test` runs it).
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI (the build now gates on that).
   **Reader-facing *data* fields count too** — translating only `translations.ts` left the whole

@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { matchesParamRange, type ParamRange } from '@/lib/utils/param-buckets';
+import { matchesParamRange, PARAM_RANGES, type ParamRange } from '@/lib/utils/param-buckets';
 import { qualityRank } from '@/lib/utils/quality';
 import { isSuperseded } from '@/lib/utils/model-meta';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
@@ -24,6 +24,8 @@ export function gpuBySlug(slug: string): GPU | undefined {
 
 /** Context length the landing pages size against — the calculator's own default. */
 export const GPU_PAGE_CONTEXT = 4096;
+export const GPU_CONTEXT_PRESETS = [4096, 8192, 16384, 32768, 65536, 131072] as const;
+export const GPU_BATCH_PRESETS = [1, 2, 4, 8] as const;
 
 /**
  * The runtime a GPU's own drivers give it access to. Derived from `type`
@@ -174,11 +176,13 @@ export function tightCeiling(gpu: GPU): number {
  */
 export type FitLevel = 'comfortable' | 'tight';
 
-export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GPU_PAGE_CONTEXT): number {
+export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GPU_PAGE_CONTEXT, batchSize = 1): number {
+  if (!Number.isFinite(contextLength) || contextLength <= 0 || !Number.isFinite(batchSize) || batchSize <= 0) return 0;
   const allowed = level === 'comfortable' ? ['green'] : ['green', 'yellow'];
   const capacity = usableCapacityGB(gpu);
   let n = 0;
   for (const model of models) {
+    if (contextLength > model.contextLength) continue;
     const fits = model.quants.some(quant => {
       if (!formatAllowed(gpu, quant.format)) return false;
       const { totalGB } = calcVRAM({
@@ -189,7 +193,7 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
         attention: model.arch.attention,
         bpw: quant.bpw,
         contextLength,
-        batchSize: 1,
+        batchSize,
       });
       return allowed.includes(getVerdict(totalGB, capacity, tightCeiling(gpu)));
     });
@@ -275,11 +279,13 @@ export interface GpuFit {
  * the card — so the list stays honest about the difference between fitting and
  * only just fitting.
  */
-export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] {
+export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT, batchSize = 1): GpuFit[] {
   const out: GpuFit[] = [];
+  if (!Number.isFinite(contextLength) || contextLength <= 0 || !Number.isFinite(batchSize) || batchSize <= 0) return out;
   const capacity = usableCapacityGB(gpu);
 
   for (const model of models) {
+    if (contextLength > model.contextLength) continue;
     let best: GpuFit | undefined;
     for (const quant of model.quants) {
       if (!formatAllowed(gpu, quant.format)) continue;
@@ -291,7 +297,7 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] 
         attention: model.arch.attention,
         bpw: quant.bpw,
         contextLength,
-        batchSize: 1,
+        batchSize,
       });
       if (getVerdict(totalGB, capacity, tightCeiling(gpu)) !== 'green') continue;
       // Lower perplexity loss wins; ties break toward the smaller footprint.
@@ -305,7 +311,7 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): GpuFit[] 
   return out.sort((a, b) => b.model.params - a.model.params);
 }
 
-export const GPU_PAGE_BUCKETS: ParamRange[] = ['70B+', '32B', '14B', '7B', '≤3B'];
+export const GPU_PAGE_BUCKETS: ParamRange[] = [...PARAM_RANGES].reverse();
 
 export function groupFitsByBucket(fits: GpuFit[]) {
   return GPU_PAGE_BUCKETS
@@ -317,13 +323,13 @@ export function groupFitsByBucket(fits: GpuFit[]) {
  * The next card up that meaningfully changes what you can run — the cheapest
  * step that unlocks more models, not simply the next card in the list.
  */
-export function nextStepUp(gpu: GPU, fitCount: number): { gpu: GPU; extraModels: number } | undefined {
+export function nextStepUp(gpu: GPU, fitCount: number, contextLength = GPU_PAGE_CONTEXT, batchSize = 1): { gpu: GPU; extraModels: number } | undefined {
   const candidates = gpuDatabase
     .filter(g => g.vram > gpu.vram && g.type === gpu.type)
     .sort((a, b) => a.vram - b.vram);
 
   for (const candidate of candidates) {
-    const extra = fitsOnGpu(candidate).length - fitCount;
+    const extra = fitsOnGpu(candidate, contextLength, batchSize).length - fitCount;
     if (extra > 0) return { gpu: candidate, extraModels: extra };
   }
   return undefined;
