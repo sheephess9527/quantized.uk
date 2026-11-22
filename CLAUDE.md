@@ -47,8 +47,8 @@ npm start        # static out/ preview on :3000, build first (pinned npx serve)
 ```
 
 `npm test` is the data-check gate (recommendations, calculator evidence, speed calibration, exact CLI sources and RSS).
-GitHub Actions runs it on push and pull request. It does not type-check or export the site;
-`build` remains the gate before every commit and on Cloudflare Pages.
+GitHub Actions runs it (`data-checks`) and `npm run build` (`build`) on push and pull request,
+so a broken export fails the PR. `build` remains the local gate before every commit.
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
