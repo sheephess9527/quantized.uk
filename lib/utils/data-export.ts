@@ -109,6 +109,8 @@ export function gpusExport() {
       tightCeiling: tightCeiling(g),
       ...(g.bandwidth !== undefined ? { bandwidthGBs: g.bandwidth } : {}),
       ...(g.memType ? { memType: g.memType } : {}),
+      ...(g.isLaptop ? { laptop: true } : {}),
+      ...(g.specUrl ? { specUrl: g.specUrl } : {}),
       ...(g.isCPU ? { cpuOnly: true } : {}),
       url: `${SITE_URL}/gpu/${gpuSlug(g)}/`,
     })),

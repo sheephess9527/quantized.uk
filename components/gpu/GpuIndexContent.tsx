@@ -11,7 +11,7 @@ import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { fitsOnGpu, gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 
-const TYPE_ORDER: GPU['type'][] = ['nvidia-consumer', 'nvidia-unified', 'nvidia-pro', 'amd', 'intel', 'apple', 'cpu'];
+const TYPE_ORDER: (GPU['type'] | 'laptop')[] = ['nvidia-consumer', 'laptop', 'nvidia-unified', 'nvidia-pro', 'amd', 'intel', 'apple', 'cpu'];
 const TYPE_LABEL: Record<GPU['type'], { en: string; zh: string }> = {
   'nvidia-consumer': { en: 'NVIDIA consumer', zh: 'NVIDIA 消费级' },
   'nvidia-unified': { en: 'NVIDIA DGX Spark (unified memory)', zh: 'NVIDIA DGX Spark（统一内存）' },
@@ -47,11 +47,11 @@ export default function GpuIndexContent() {
 
       <div className="space-y-6">
         {TYPE_ORDER.map(type => {
-          const cards = gpuDatabase.filter(gpu => gpu.type === type);
+          const cards = gpuDatabase.filter(gpu => (gpu.isLaptop ? 'laptop' : gpu.type) === type);
           if (cards.length === 0) return null;
           return (
             <section key={type} className="glass rounded-2xl p-5 sm:p-6">
-              <h2 className="text-lg font-bold text-slate-100 mb-4">{TYPE_LABEL[type][lang]}</h2>
+              <h2 className="text-lg font-bold text-slate-100 mb-4">{type === 'laptop' ? t.calc.gpuGroupLaptop : TYPE_LABEL[type][lang]}</h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {cards.map(gpu => (
                   <li key={gpu.id}>

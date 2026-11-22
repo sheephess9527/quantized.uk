@@ -8,11 +8,27 @@ import { fitsOnGpu, countModelsFitting, nextStepUp, GPU_CONTEXT_PRESETS, GPU_BAT
 import { homePicks } from '../lib/utils/home-picks';
 import { getRecommendations } from '../lib/utils/recommend';
 import { hasImageInput } from '../lib/utils/model-facts';
-import { modelShape, contextReach } from '../lib/utils/calc-insights';
+import { modelShape, contextReach, offloadPlan } from '../lib/utils/calc-insights';
 import { sourceBpw } from '../lib/utils/quant-source';
 import { dataProblems } from '../lib/data/validate';
 
 const gpu = gpuDatabase.find(g => g.id === 'rtx4090')!;
+const laptop = gpuDatabase.find(g => g.id === 'rx7700s')!;
+const qwen32b = models.find(m => m.id === 'qwen3-32b')!;
+const gguf32b = qwen32b.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M')!;
+const laptopShape = { ...modelShape(qwen32b, 1), bpw: gguf32b.bpw, contextLength: 4096 };
+const laptopResult = calcVRAM(laptopShape);
+const laptopOffload = offloadPlan(laptopShape, laptopResult, laptop, 2, 'ddr5-5600', gguf32b.format, qwen32b);
+assert.ok(laptopOffload && laptopOffload.gpuLayers > 0 && laptopOffload.gpuLayers < laptopShape.layers);
+assert.equal(laptopOffload.gpuBudgetGB, laptop.vram - laptopOffload.reserveGB);
+assert.equal(laptopOffload.reserveGB, 1);
+assert.ok(laptopOffload.ramGB > 0);
+assert.equal(laptopOffload.tokS, undefined);
+const laptop4060 = gpuDatabase.find(g => g.id === 'rtx4060-laptop')!;
+assert.ok(offloadPlan(laptopShape, laptopResult, laptop4060, 1, 'ddr5-5600', 'GGUF'));
+assert.equal(offloadPlan(laptopShape, laptopResult, laptop4060, 1, 'ddr5-5600', 'AWQ'), undefined);
+assert.equal(offloadPlan(laptopShape, laptopResult, laptop4060, 1, 'ddr5-5600', undefined), undefined);
+
 const qwen = models.find(m => m.id === 'qwen3-8-27b')!;
 const solar = models.find(m => m.id === 'solar-10.7b')!;
 assert.ok(solar);

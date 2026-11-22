@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The hardware index and VRAM calculator now list 27 laptop GPU configurations from the GeForce RTX 30, 40 and 50 series and Radeon RX 7000 mobile series. Each GPU page links to its hardware specifications. When the browser names a supported laptop GPU, the calculator can suggest it and ask which memory size you have if more than one was sold.',
+    zh: '显卡列表和显存计算器新增 27 种笔记本显卡配置，覆盖 GeForce RTX 30、40、50 系列和 Radeon RX 7000 移动系列。各显卡页面均提供硬件规格来源。浏览器能识别受支持的笔记本显卡时，计算器会推荐该型号；若有多个显存版本，则请你选择实际容量。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The VRAM calculator now shows generation speed beside the fit verdict: a linked measurement when the model, quant and GPU match a benchmark, otherwise a labelled estimate or bandwidth ceiling where available.',
     zh: '显存计算器现在会在适配判定旁显示生成速度。模型、量化和显卡与跑分匹配时，显示带链接的实测值；否则在有数据时显示明确标注的估算速度或带宽上限。',
   },

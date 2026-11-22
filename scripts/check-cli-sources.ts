@@ -1,8 +1,19 @@
 import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
+import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM } from '../lib/utils/vram';
+import { formatAllowed, vllmRocmSupported } from '../lib/utils/gpu-page';
 import { generateCLI, type CLIOptions, type Env } from '../lib/utils/cli';
 import { licenceClassOf, hasImageInput } from '../lib/utils/model-facts';
+
+for (const gpu of gpuDatabase.filter(g => g.isLaptop && g.type === 'amd')) {
+  assert.equal(vllmRocmSupported(gpu.name), false, gpu.name);
+  assert.equal(formatAllowed(gpu, 'AWQ'), false, gpu.name);
+  assert.equal(formatAllowed(gpu, 'GPTQ'), false, gpu.name);
+  assert.equal(formatAllowed(gpu, 'GGUF'), true, gpu.name);
+}
+const rx7700xt = gpuDatabase.find(g => g.id === 'rx7700xt')!;
+assert.equal(formatAllowed(rx7700xt, 'AWQ'), true, rx7700xt.name);
 
 const twil = models.find(m => m.id === 'twil-8b-balanced')!;
 const arete = models.find(m => m.id === 'arete-27b')!;

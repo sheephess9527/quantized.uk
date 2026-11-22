@@ -54,16 +54,16 @@ const verdictConfig: Record<VerdictColor, { bar: string; label: string; dot: str
 
 const CONTEXT_PRESETS = [512, 2048, 4096, 8192, 16384, 32768, 65536, 131072];
 
-/** The card list grouped the way a reader looks for their card — by vendor line. */
-const GPU_GROUPS: { types: GPU['type'][]; key: 'gpuGroupNvidia' | 'gpuGroupPro' | 'gpuGroupUnified' | 'gpuGroupAmd' | 'gpuGroupIntel' | 'gpuGroupApple' | 'gpuGroupCpu' }[] = [
-  { types: ['nvidia-consumer'], key: 'gpuGroupNvidia' },
-  { types: ['nvidia-pro'], key: 'gpuGroupPro' },
-  { types: ['nvidia-unified'], key: 'gpuGroupUnified' },
-  { types: ['amd'], key: 'gpuGroupAmd' },
-  { types: ['intel'], key: 'gpuGroupIntel' },
-  { types: ['apple'], key: 'gpuGroupApple' },
-  { types: ['cpu'], key: 'gpuGroupCpu' },
-];
+const GPU_GROUPS = [
+  ['nvidia-consumer', 'gpuGroupNvidia'],
+  ['laptop', 'gpuGroupLaptop'],
+  ['nvidia-pro', 'gpuGroupPro'],
+  ['nvidia-unified', 'gpuGroupUnified'],
+  ['amd', 'gpuGroupAmd'],
+  ['intel', 'gpuGroupIntel'],
+  ['apple', 'gpuGroupApple'],
+  ['cpu', 'gpuGroupCpu'],
+] as const;
 
 /**
  * What a first-time reader sees before choosing anything, so the page opens on
@@ -103,11 +103,11 @@ function indexedModelFor(shape: ImportedShape) {
 }
 
 /** Both card pickers (forward verdict, reverse lookup) list the same groups. */
-function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number]['key']) => string) {
-  return GPU_GROUPS.map(group => {
-    const rows = gpuDatabase.filter(g => group.types.includes(g.type));
+function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number][1]) => string) {
+  return GPU_GROUPS.map(([type, key]) => {
+    const rows = gpuDatabase.filter(g => (g.isLaptop ? 'laptop' : g.type) === type);
     return rows.length === 0 ? null : (
-      <optgroup key={group.key} label={label(group.key)}>
+      <optgroup key={key} label={label(key)}>
         {rows.map(g => (
           <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
         ))}
@@ -553,10 +553,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   );
   const smallestGreen = greenGpus[0];
 
+  const recommendationSort = selectedGpu?.isLaptop && sortBy === 'speed' ? 'quality' : sortBy;
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, sortBy, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput);
-  }, [selectedGpu, contextLen, batchSize, sortBy, includeYellow, kvType, cards, bestPerModel, reverseInput]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput);
+  }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -735,11 +736,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
     selectedModelId === 'custom' || !!selectedModel
   );
-  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj
-    ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
-    : undefined;
+  const offloadFormat = selectedQuantObj?.format ?? (quantGroups.GGUF.includes(selectedQuant) ? 'GGUF' : undefined);
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
-    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level)
+    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, offloadFormat, selectedModel, profileExtras, selectedQuantObj?.level)
+    : undefined;
+  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj && !launchOffload
+    ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
     : undefined;
   const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
   const launchCommands = canShowLaunch && (!overBudget || launchOffload) ? (
@@ -1571,14 +1573,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     { id: 'quality' as SortBy, label: t.calc.sortQuality },
                     { id: 'speed' as SortBy,   label: t.calc.sortSpeed },
                     { id: 'vram' as SortBy,    label: t.calc.sortVram },
-                  ]).map(s => (
+                  ]).filter(s => !selectedGpu?.isLaptop || s.id !== 'speed').map(s => (
                     <button
                       key={s.id}
                       onClick={() => setSortBy(s.id)}
-                      aria-pressed={sortBy === s.id}
+                      aria-pressed={recommendationSort === s.id}
                       className={cn(
                         'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
-                        sortBy === s.id
+                        recommendationSort === s.id
                           ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
                           : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
                       )}
@@ -2101,7 +2103,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           )}
                         </div>
                       )}
-                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && profileGpu.bandwidth && (() => {
+                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && !launchOffload && profileGpu.bandwidth && (() => {
                         const bound = rigSpeedCeiling(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, v);
                         if (!bound) return null;
                         const text = bound.basis === 'moe'
@@ -2127,12 +2129,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               </p>
                             )}
                             <p className="text-xs text-slate-500 leading-relaxed mt-2">
-                              {text}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
+                              {text}{bound.basis === 'moe' && !profileGpu.isLaptop && ` ${t.calc.speedMoEReference}`}{multiDevice && ` ${profileExtras.length ? t.calc.speedMixedNote : t.calc.speedMultiNote}`}
                             </p>
                           </>
                         );
                       })()}
-                      {v !== 'red' && formatOk && selectedModel && selectedQuantObj && (() => {
+                      {v !== 'red' && !launchOffload && formatOk && selectedModel && selectedQuantObj && (() => {
                         // Offered only when the speed tool can stream this model on the reader's card
                         // (a measured or calibrated rate) — never for a bare ceiling.
                         const href = feelTarget(profileGpu, selectedModel, selectedQuantObj, contextLen);
@@ -2365,7 +2367,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               const sp = verdict !== 'red' && !(canStack(selectedGpu!) && cards > 1) ? measuredSpeed(selectedGpu!, model, quant) : undefined;
                               return sp ? <span className="text-emerald-300/80">{t.calc.reverseSpeed.replace('{n}', String(sp.tokS))}</span> : null;
                             })()}
-                            {quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
+                            {!selectedGpu?.isLaptop && quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
                           {extraGB !== undefined && <p className="text-[11px] text-slate-600 mt-1">{t.calc.reverseEncoder.replace('{gb}', extraGB.toFixed(2))}</p>}
                         </div>
