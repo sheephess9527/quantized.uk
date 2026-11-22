@@ -534,6 +534,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - `npm test` rejects missing versions, invalid/future publication dates and runtime disagreements between overlapping matrix/chart records. Regression cases perturb and restore those fields.
 
 
+### 2026-11-22 — Site build runs on every PR
+
+- `.github/workflows/checks.yml` adds a `build` job (`npm ci && npm run build`) beside `data-checks`, so type-check, lint, static export and the postbuild gates run on every push and pull request instead of first failing on the Cloudflare Pages deploy of main. The HF-stats prebuild stays non-fatal offline; IndexNow only pings on Cloudflare production builds, so CI never submits URLs.
+
 ### 2026-11-22 — Share VRAM results with social previews
 
 - Copied model-to-VRAM and GPU-to-models links reopen the displayed settings in either language without adopting them into the saved profile; crawler metadata points to a result-specific PNG. The static tools, legacy links, and downloadable result card still work independently.
@@ -680,7 +684,7 @@ rules predict an improved fit. Native Ollama calculator commands set
 ### 2026-11-15 (iii) — Wire data checks into `npm test` and CI
 
 - `npm test` runs the three existing checkers: `check:recommendations`, `check:evidence` and `check:speed`. Each also has its own script. `tsx` is now a direct devDependency, so the commands do not depend on a transitive ESLint copy.
-- GitHub Actions (`.github/workflows/checks.yml`) runs `npm test` on push and pull request. It does not replace `npm run build`: type-check, lint and the static-export gates still run locally and on Cloudflare Pages.
+- GitHub Actions (`.github/workflows/checks.yml`) runs two jobs on push and pull request: `data-checks` (`npm test`) and `build` (`npm run build`: type-check, lint, static export and the postbuild gates, as on Cloudflare Pages). A change that breaks the export now fails its PR instead of the main deploy. `npm run build` is still the local gate before every commit.
 - Contributor paths that still named `models-extra-6.ts` / `models-extra-7.ts` now point at `models-extra-13.ts`.
 
 ### 2026-11-15 (ii) — Production merge and recurring evening patrol
