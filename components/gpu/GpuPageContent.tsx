@@ -9,6 +9,7 @@ import { Cpu, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
+import { prefillData } from '@/lib/data/prefill';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
@@ -50,6 +51,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
   // The system-RAM entry at this same capacity, if one exists.
   const ramTwin = gpu.isCPU ? undefined : gpuDatabase.find(o => o.isCPU && o.vram === gpu.vram);
   const measured = measuredRowsFor(gpu);
+  const showSpeed = !gpu.isLaptop || !!gpu.bandwidth || !!prefillData[gpu.id] || measured.length > 0;
   // Both counts, side by side with their conditions. The Hub's GPU chips use
   // the looser rule; showing only one number here left two pages disagreeing
   // (51 vs 60) with nothing on either saying why.
@@ -98,6 +100,11 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       <section className="glass rounded-2xl p-5 sm:p-6 mb-6">
         <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpu.name })}</h2>
         <p className="text-sm text-slate-400 leading-relaxed mb-4">{!isBaseline && <span className="block text-xs text-amber-300 mb-2">{g.baselineNote}</span>}{x.specLine[lang]}</p>
+        {gpu.specUrl && (
+          <a href={gpu.specUrl} className="inline-block mb-4 text-sm text-violet-400 hover:text-violet-300 underline">
+            {g.specSource}
+          </a>
+        )}
 
         <dl className="space-y-3">
           {x.rows.map(row => (
@@ -163,7 +170,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                       <th className="text-left py-2 px-3 font-semibold">{g.tableQuant}</th>
                       <th className="text-right py-2 px-3 font-semibold">{g.tableVram}</th>
                       <th className="text-right py-2 px-3 font-semibold">{g.tableHeadroom}</th>
-                      <th className="text-right py-2 px-3 font-semibold">{g.tableSpeed}</th>
+                      {showSpeed && <th className="text-right py-2 px-3 font-semibold">{g.tableSpeed}</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -179,9 +186,11 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                         <td className="py-2.5 px-3 font-mono text-xs text-cyan-300">{quantLevelKey(fit.quant)}</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-300">{fit.totalGB} GB</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-emerald-400">+{fit.headroomGB} GB</td>
-                        <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-400">
-                          <SpeedCell gpu={gpu} model={fit.model} quant={fit.quant} labels={t.speed} />
-                        </td>
+                        {showSpeed && (
+                          <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-400">
+                            <SpeedCell gpu={gpu} model={fit.model} quant={fit.quant} labels={t.speed} />
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -193,9 +202,13 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       )}
 
       <section className="glass rounded-2xl p-5 sm:p-6 mt-6">
-        {!isBaseline && <p className="text-xs text-amber-300 mb-2">{g.speedBaselineNote}</p>}
+        {!isBaseline && showSpeed && <p className="text-xs text-amber-300 mb-2">{g.speedBaselineNote}</p>}
         <h2 className="text-lg font-bold text-slate-100 mb-3">{g.methodTitle}</h2>
-        <p className="text-sm text-slate-400 leading-relaxed">{!isBaseline && <span className="block mb-2">{fill(g.selectedSettings, { ctx: contextLabel(contextLength), batch: batchSize })}</span>}{g.methodBody.replace('4K', contextLabel(contextLength))}</p>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          {!isBaseline && <span className="block mb-2">{fill(g.selectedSettings, { ctx: contextLabel(contextLength), batch: batchSize })}</span>}
+          {g.methodBody.replace('4K', contextLabel(contextLength))}
+          {showSpeed && <>{' '}{gpu.isLaptop ? g.methodSpeed : `${g.methodSpeed} ${g.methodSpeedReference}`}</>}
+        </p>
         {tightExtra > 0 && (
           <p className="text-sm text-slate-500 leading-relaxed mt-3">
             {fill(isBaseline ? g.alsoTight : g.alsoTightSelected, { extra: tightExtra })}
@@ -208,12 +221,14 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           >
             {g.openCalc} <ArrowRight size={14} />
           </Link>
-          <Link
-            href={`/tools/feel/?left=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
-          >
-            {g.feelSpeed} <ArrowRight size={14} />
-          </Link>
+          {(!gpu.isLaptop || !!prefillData[gpu.id] || measured.length > 0) && (
+            <Link
+              href={`/tools/feel/?left=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
+              className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+            >
+              {g.feelSpeed} <ArrowRight size={14} />
+            </Link>
+          )}
           <Link
             href="/quant-hub/"
             className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-300"
@@ -260,7 +275,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
             </div>
           </>
         ) : (
-          <p className="text-sm text-slate-400 leading-relaxed">{fill(g.measuredNone, { gpu: gpu.name })}</p>
+          <p className="text-sm text-slate-400 leading-relaxed">{fill(gpu.isLaptop ? g.measuredNoneLaptop : g.measuredNone, { gpu: gpu.name })}</p>
         )}
       </section>
 
