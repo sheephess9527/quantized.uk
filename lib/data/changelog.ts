@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Paste an Ollama tag such as qwen3:8b-q4_K_M or llama3.1:8b into the VRAM calculator search box to select the matching model and quantization. Tags the site does not index, or that serve a different checkpoint, show a message instead of a guess.',
+    zh: '在显存计算器的搜索框粘贴 Ollama 标签（如 qwen3:8b-q4_K_M 或 llama3.1:8b），即可自动选中对应模型和量化。本站未收录的标签或指向其他检查点的标签会给出提示，不会猜测。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The hardware index and VRAM calculator now list 27 laptop GPU configurations from the GeForce RTX 30, 40 and 50 series and Radeon RX 7000 mobile series. Each GPU page links to its hardware specifications. When the browser names a supported laptop GPU, the calculator can suggest it and ask which memory size you have if more than one was sold.',
     zh: '显卡列表和显存计算器新增 27 种笔记本显卡配置，覆盖 GeForce RTX 30、40、50 系列和 Radeon RX 7000 移动系列。各显卡页面均提供硬件规格来源。浏览器能识别受支持的笔记本显卡时，计算器会推荐该型号；若有多个显存版本，则请你选择实际容量。',
   },

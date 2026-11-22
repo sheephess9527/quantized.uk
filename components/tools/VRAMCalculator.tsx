@@ -41,6 +41,7 @@ import { prefillData } from '@/lib/data/prefill';
 import { finetuneMemory, type FtMethod, type FtOptimizer, type FtShape } from '@/lib/utils/finetune';
 import { bySmallestCard, sizeAt } from '@/lib/utils/model-explainer';
 import { GPU_COUNT } from '@/lib/site';
+import { resolveOllamaTag, type OllamaTagResult } from '@/lib/utils/ollama-tag';
 import { NO_SHARE_GPU, VRAM_SHARE_PARAM, readVramAttention, readVramEncoder, snapshotVramLink } from '@/lib/utils/vram-link';
 
 type Mode = 'forward' | 'reverse' | 'finetune';
@@ -575,6 +576,16 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     }
     setModelQuery('');
   };
+  // An Ollama tag pasted into the search box selects the indexed model and quant
+  // it downloads; anything the index cannot vouch for gets a message, never a guess.
+  const tagResult = useMemo(() => resolveOllamaTag(modelQuery), [modelQuery]);
+  const [tagApplied, setTagApplied] = useState<Extract<OllamaTagResult, { kind: 'match' }> | null>(null);
+  const applyTag = (r: Extract<OllamaTagResult, { kind: 'match' }>) => {
+    chooseModel(r.modelId, r.level);
+    setTagApplied(r);
+    trackEvent('Ollama Tag', { result: 'match' });
+  };
+  const tagModelName = (id: string) => models.find(m => m.id === id)?.name ?? id;
 
   const runImport = async (raw?: string) => {
     const input = raw ?? hfInput;
@@ -917,13 +928,56 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <input
                     type="search"
                     value={modelQuery}
-                    onChange={e => setModelQuery(e.target.value)}
+                    onChange={e => { setModelQuery(e.target.value); setTagApplied(null); }}
+                    onPaste={e => {
+                      const r = resolveOllamaTag(e.clipboardData.getData('text'));
+                      if (r?.kind === 'match') {
+                        e.preventDefault();
+                        applyTag(r);
+                      } else if (r) {
+                        trackEvent('Ollama Tag', { result: r.kind });
+                      }
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && tagResult?.kind === 'match') applyTag(tagResult);
+                    }}
                     aria-label={t.calc.searchLabel}
                     placeholder={t.calc.searchPlaceholder}
                     className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                   />
                 </div>
-                {modelQuery.trim() ? (
+                {modelQuery.trim() && tagResult ? (
+                  tagResult.kind === 'match' ? (
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-300">
+                      <span>
+                        {t.calc.ollamaFound.replace('{tag}', tagResult.tag).replace('{model}', tagModelName(tagResult.modelId)).replace('{quant}', tagResult.level)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => applyTag(tagResult)}
+                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg border border-violet-500/40 text-violet-200 hover:bg-violet-500/10"
+                      >
+                        {t.calc.ollamaUse}
+                      </button>
+                    </div>
+                  ) : (
+                    <div role="alert" className="mt-2 text-xs text-amber-300/90 space-y-1.5">
+                      <p>
+                        {tagResult.kind === 'unknownLibrary' ? t.calc.ollamaUnknownLibrary.replace('{name}', tagResult.name)
+                          : tagResult.kind === 'unknownTag' ? t.calc.ollamaUnknownTag.replace('{tag}', tagResult.tag).replace('{name}', tagResult.name).replace('{known}', tagResult.known.join(', '))
+                          : tagResult.kind === 'unknownQuant' ? t.calc.ollamaUnknownQuant.replace('{quant}', tagResult.quant)
+                          : tagResult.kind === 'community' ? t.calc.ollamaCommunity.replace('{tag}', tagResult.tag)
+                          : tagResult.kind === 'hfNotIndexed' ? t.calc.ollamaHfNotIndexed.replace('{repo}', tagResult.repo)
+                          : t.calc.ollamaHfNeedsQuant.replace('{repo}', tagResult.repo)}
+                      </p>
+                      {tagResult.kind === 'hfNotIndexed' && (
+                        <button type="button" onClick={() => runImport(tagResult.repo)} className="text-violet-300 hover:text-violet-200">
+                          {t.calc.hfLabel}: {tagResult.repo} →
+                        </button>
+                      )}
+                    </div>
+                  )
+                ) : modelQuery.trim() ? (
                   searchHits.length === 0 ? (
                     <p className="text-xs text-slate-500 mt-2">{t.calc.searchNone.replace('{q}', modelQuery.trim())}</p>
                   ) : (
@@ -976,6 +1030,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                             </button>
                           ))}
                     </div>
+                  </div>
+                )}
+                {tagApplied && selectedModelId === tagApplied.modelId && selectedQuant === tagApplied.level && (
+                  <div role="status" className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-xs text-emerald-200/90 space-y-1">
+                    <p>{t.calc.ollamaApplied.replace('{tag}', tagApplied.tag).replace('{model}', tagModelName(tagApplied.modelId)).replace('{quant}', tagApplied.level)}</p>
+                    {!tagApplied.quantFromTag && <p className="text-slate-400">{t.calc.ollamaDefaultQuant.replace('{quant}', tagApplied.level)}</p>}
+                    {tagApplied.newerCheckpoint && <p className="text-slate-400">{t.calc.ollamaNewer}</p>}
                   </div>
                 )}
                 <button
