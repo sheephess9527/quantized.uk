@@ -69,6 +69,8 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 
 ## 3. Project Structure
 
+Model/GPU pages live at `app/quant-hub/[modelId]/[gpuId]/page.tsx` with a `/zh` mirror. `lib/utils/pair-pages.ts` owns eligibility, sizing and URLs; GPU slugs stay the final, dot-free segment.
+
 ```
 app/                        # Next.js App Router pages
   layout.tsx                # Root layout: Inter font + LanguageProvider + Navbar/Footer
@@ -528,13 +530,38 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Pair pages and embed integration
+
+- Retained both pair-page and embeddable-fit-card features when merging main, including both bilingual string groups and all test gates. Embed pages remain noindex and outside the sitemap; model/GPU pages remain indexed.
+
+### 2026-11-22 — Pair pages and result-preview integration
+
+- Merged calculator result previews while preserving pair pages' model OG images, sitemap entries and legacy prefilled calculator links. Result-specific previews remain opt-in via copied snapshot links (`share=1`). Both pair coverage and VRAM sharing checks remain in `npm test`.
+
+### 2026-11-22 — Benchmark alias coverage
+
+- Matched the benchmark's abbreviated `DeepSeek-R1 14B` to `deepseek-r1-distill-qwen-14b` in the shared exact-model alias table. Its RTX 4090 pair now has a page and its EXL2 GPU-page speed is correctly labelled measured. All benchmark rows must map to exactly one indexed model; removing the alias proves the new check fails.
+- Inventory is now 2,245 pairs / 4,490 bilingual pair pages, with 5,136 HTML files including 404 variants.
+
+### 2026-11-22 — Pair-page integration with current main
+
+- Merged the context/concurrency controls and parameter-bucket updates without changing pair-page eligibility or its fixed 4K / batch 1 baseline. Kept both pair-page and parameter-bucket checks in `npm test` and retained both release histories.
+
+### 2026-11-22 — Pair-page presentation refinements
+
+- Aligned table body/header padding, prefer question-form search titles when they fit, and lead speed summaries with exact measured runs before the recommended quant's labelled estimate. Reformatted pair-page code for maintenance.
+
+### 2026-11-22 — Model × GPU answers
+
+- Added 2,244 eligible pairs (4,488 bilingual pages) at `/quant-hub/[modelId]/[gpuSlug]/`, linked from model/GPU guides and the sitemap. Pages include 4K quant sizing, context reach, measured runs, labelled speed and a prefilled calculator.
+- Eligibility in `lib/utils/pair-pages.ts`: all exact measured pairs, or current models with verified-file sizing, supported format, bandwidth and a green/yellow fit using at least 25% of usable memory. Existing model OG images are reused.
+- `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Export: 5,134 HTML files (including 404 variants); monitor Cloudflare Pages’ 20,000-file limit.
+
 ### 2026-11-22 — Historical benchmark versions and publication-date bounds
 
 - All 16 matrix rows now record `runtimeVersion` and `firstPublishedAt`; benchmark and calibration tables, homepage samples and GPU measured tables show both in English and Chinese. Exact run dates were not retained: dates are first-publication bounds, not new measurement claims. No runs were repeated.
 - M2 Ultra is consistently Ollama 0.3.14. The only recorded llama.cpp version is `b4217 (CUDA backend)`, which cannot describe a Mac run; Ollama 0.3.14 is the recorded Mac runtime (M3 Max). This is an editorial reconciliation of incomplete historical provenance, not recovered raw run evidence.
 - `npm test` rejects missing versions, invalid/future publication dates and runtime disagreements between overlapping matrix/chart records. Regression cases perturb and restore those fields.
-
-
 ### 2026-11-22 — Embeddable GPU fit cards
 
 - Review correction: a quant format unsupported by the selected GPU uses the calculator's backend-incompatible wording in both the card and Markdown link, rather than blaming memory capacity; bilingual regression coverage includes a Mac with ample memory for incompatible AWQ.
@@ -543,7 +570,6 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Forward calculator results offer a collapsed HTML iframe and Markdown link disclosure with explicit Copy actions in English and Chinese. Cards at `/embed/fit/` and `/zh/embed/fit/` reuse calculator sizing, quant, context, cache, batch, encoder and rig settings; invalid configurations link back to the calculator.
 - Cards are noindex and intentionally absent from the sitemap, with no navigation, footer or Plausible script. Only `/embed/*` and `/zh/embed/*` detach anti-framing headers; all other pages remain protected. Cloudflare Pages applies these headers; the local static preview does not emulate them.
 - `lib/utils/embed-fit.ts` owns parsing, sizing and escaped snippet URLs. `scripts/check-embed-fit.ts` runs in `npm test`. Custom models and invalid/unsupported settings cannot generate a misleading card. Copying a snippet does not persist example or guessed choices.
-
 ### 2026-11-22 — Site build runs on every PR
 
 - `.github/workflows/checks.yml` adds a `build` job (`npm ci && npm run build`) beside `data-checks`, so type-check, lint, static export and the postbuild gates run on every push and pull request instead of first failing on the Cloudflare Pages deploy of main. The HF-stats prebuild stays non-fatal offline; IndexNow only pings on Cloudflare production builds, so CI never submits URLs.

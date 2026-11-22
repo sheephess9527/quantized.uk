@@ -14,6 +14,7 @@ import { FORMAT_PAGES } from '@/lib/utils/format-page';
 import { BEST_TIERS } from '@/lib/utils/best-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
+import { pairPages, pairHref } from '@/lib/utils/pair-pages';
 
 // `/tools/`, `/changelog/`, `/faq/` shipped as real pages and were never added
 // here, so pages existed that the sitemap did not mention. Adding a route
@@ -86,6 +87,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const entries: Entry[] = [
+    ...pairPages().map(({ model, gpu }) => ({ path: pairHref(model, gpu), lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-11-22']), changeFrequency: 'monthly' as const, priority: 0.6 })),
     { path: '', lastModified: siteDate, changeFrequency: 'weekly', priority: 1 },
     ...HUB_INDEX,
     ...CONTENT_INDEX,

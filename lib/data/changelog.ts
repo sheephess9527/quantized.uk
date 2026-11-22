@@ -13,6 +13,21 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
+    zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Model/GPU pages now lead speed summaries with measured runs before estimates, align table cells consistently and use question-form search titles when space allows.',
+    zh: '模型与显卡组合页面的速度摘要现优先展示实测，再列出估算；统一表格单元格间距，并在长度允许时使用问句形式的搜索标题。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'New model/GPU answers cover 2,244 pairs with measured runs or complete verified-file sizing. Each bilingual page shows quant memory, context capacity, labelled speed and a calculator link; find them from model and GPU guides.',
+    zh: '新增 2,244 个模型与显卡组合的双语解答，仅收录有实测或完整已核验文件容量依据的组合。页面展示各量化显存、上下文容量、标明来源的速度与计算器链接，可从模型和显卡指南进入。',
+  },
+  {
+    date: '2026-11-22',
     en: 'All 16 benchmark runs now show their historical runtime version and a measurement-date upper bound on the benchmark, homepage and GPU tables. Exact run dates were not recorded, so dates mean first publication, not a new measurement. The M2 Ultra runtime label is now consistently Ollama 0.3.14.',
     zh: '全部 16 条基准记录现于基准页、首页与显卡实测表中显示历史运行时版本及测试日期上限。未记录确切测试日期，所示日期代表首次发布，并非重新测量。M2 Ultra 的运行时标签统一为 Ollama 0.3.14。',
   },
