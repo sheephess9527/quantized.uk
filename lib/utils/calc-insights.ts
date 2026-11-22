@@ -2,7 +2,7 @@ import type { QuantModel, QuantVariant } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict, type CalcInput } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, rigDevices, MAX_CARDS, backendFor } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling, canStack, hasDedicatedVram, capacityGB, rigDevices, MAX_CARDS, backendFor } from '@/lib/utils/gpu-page';
 export { canStack, capacityGB, rigDevices, MAX_CARDS };
 import { qualityRank } from '@/lib/utils/quality';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
@@ -283,7 +283,7 @@ export function offloadPlan(
   extra: GPU[] = [],
   level?: string,
 ): OffloadPlan | undefined {
-  if (!canStack(gpu) || (format && format !== 'GGUF')) return undefined;
+  if (!hasDedicatedVram(gpu) || (format && format !== 'GGUF')) return undefined;
   const layers = input.layers;
   const perLayer = result.totalGB / layers;
   const devices = rigDevices(gpu, cards, extra);

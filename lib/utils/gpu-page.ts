@@ -122,12 +122,16 @@ export function usableCapacityGB(gpu: GPU): number {
   return gpu.isUnified ? gpu.vram * MAC_UNIFIED_USABLE_FRACTION : gpu.vram;
 }
 
+export function hasDedicatedVram(gpu: GPU): boolean {
+  return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
+}
+
 /**
  * Desktop cards can be stacked; a laptop, Mac, DGX Spark or RAM row describes
  * a single system, not an add-in card that can be repeated in the same rig.
  */
 export function canStack(gpu: GPU): boolean {
-  return !gpu.isLaptop && (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel');
+  return !gpu.isLaptop && hasDedicatedVram(gpu);
 }
 
 export const MAX_CARDS = 4;

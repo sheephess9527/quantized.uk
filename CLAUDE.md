@@ -154,6 +154,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   published specifications with `specUrl`. Never copy desktop bandwidth figures.
   GeForce laptop matches require a renderer marker; Radeon mobile SKUs have distinct names.
   Don't show desktop speed references as substitutes for laptop speed data.
+  A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
   beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
