@@ -49,7 +49,7 @@
 # and no preload — both are hard to undo and this zone's other records were not audited for them.
 # If HSTS is later switched on in the Cloudflare dashboard (SSL/TLS → Edge Certificates), remove this.
 #
-# Anti-framing (same scan): no page on this site is meant to be embedded, so other origins may not frame it.
+# Anti-framing: only /embed/* and /zh/embed/* may be framed by other origins.
 # X-Frame-Options for old browsers, CSP frame-ancestors for current ones. The CSP deliberately carries ONLY
 # frame-ancestors: a script-src policy would have to allow Next's inline bootstrap scripts, the Cloudflare
 # Web Analytics beacon and Plausible, and a wrong one blanks the site — not worth it for a static site with
@@ -58,3 +58,13 @@
   Strict-Transport-Security: max-age=31536000
   X-Frame-Options: DENY
   Content-Security-Policy: frame-ancestors 'none'
+
+/embed/*
+  ! X-Frame-Options
+  ! Content-Security-Policy
+  Content-Security-Policy: frame-ancestors *
+
+/zh/embed/*
+  ! X-Frame-Options
+  ! Content-Security-Policy
+  Content-Security-Policy: frame-ancestors *
