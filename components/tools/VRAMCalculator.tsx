@@ -578,17 +578,18 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (!selectedGpu) return [];
     return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput, { minTok: effectiveMinTok, tools: requireTools, code: requireCode });
   }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode]);
+  const scoredRecommendations = recommendations.filter(({ model }) => liveBenchScores.has(model.id));
+  const visibleRecommendations = scoredOnly ? scoredRecommendations : recommendations;
   const emptyRecovery = useMemo(() => {
-    if (!selectedGpu || recommendations.length) return { speed: false, features: false };
+    if (!selectedGpu || visibleRecommendations.length) return { speed: false, features: false };
     const without = (input: RecommendationInput, min: number, tools: boolean, code: boolean) =>
-      getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, input, { minTok: min, tools, code }).length > 0;
+      getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, input, { minTok: min, tools, code })
+        .some(({ model }) => !scoredOnly || liveBenchScores.has(model.id));
     return {
       speed: effectiveMinTok > 0 && without(reverseInput, 0, requireTools, requireCode),
       features: (reverseInput === 'image' || requireTools || requireCode) && without('text', effectiveMinTok, false, false),
     };
-  }, [selectedGpu, recommendations.length, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode]);
-  const scoredRecommendations = recommendations.filter(({ model }) => liveBenchScores.has(model.id));
-  const visibleRecommendations = scoredOnly ? scoredRecommendations : recommendations;
+  }, [selectedGpu, visibleRecommendations.length, scoredOnly, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -2494,16 +2495,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               </div>
 
               {visibleRecommendations.length === 0 ? (
-                recommendations.length > 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-8">{t.calc.modelQualityEmpty}</p>
-                ) : (
-                  <div className="text-sm text-slate-500 text-center py-8">
-                    {emptyRecovery.speed && <p>{t.calc.speedEmpty} <button type="button" className="text-cyan-300" onClick={() => setMinTok(0)}>{t.calc.clearSpeed}</button></p>}
-                    {emptyRecovery.features && <p>{t.calc.featuresEmpty} <button type="button" className="text-cyan-300" onClick={() => { setReverseInput('text'); setRequireTools(false); setRequireCode(false); }}>{t.calc.clearFeatures}</button></p>}
-                    {!emptyRecovery.speed && !emptyRecovery.features && <p>{effectiveMinTok || requireTools || requireCode || reverseInput === 'image' ? t.calc.filteredEmpty : t.calc.reverseEmpty}</p>}
-                    <button type="button" className="mt-3 text-cyan-300" onClick={() => { setMinTok(0); setRequireTools(false); setRequireCode(false); setReverseInput('text'); setIncludeYellow(true); setBestPerModel(true); }}>{t.calc.resetFilters}</button>
-                  </div>
-                )
+                <div className="text-sm text-slate-500 text-center py-8">
+                  {recommendations.length > 0 && <p>{t.calc.modelQualityEmpty}</p>}
+                  {emptyRecovery.speed && <p>{t.calc.speedEmpty} <button type="button" className="text-cyan-300" onClick={() => setMinTok(0)}>{t.calc.clearSpeed}</button></p>}
+                  {emptyRecovery.features && <p>{t.calc.featuresEmpty} <button type="button" className="text-cyan-300" onClick={() => { setReverseInput('text'); setRequireTools(false); setRequireCode(false); }}>{t.calc.clearFeatures}</button></p>}
+                  {!recommendations.length && !emptyRecovery.speed && !emptyRecovery.features && <p>{effectiveMinTok || requireTools || requireCode || reverseInput === 'image' ? t.calc.filteredEmpty : t.calc.reverseEmpty}</p>}
+                  <button type="button" className="mt-3 text-cyan-300" onClick={() => { setMinTok(0); setRequireTools(false); setRequireCode(false); setReverseInput('text'); setIncludeYellow(true); setBestPerModel(true); setScoredOnly(false); }}>{t.calc.resetFilters}</button>
+                </div>
               ) : (
                 <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
                   {visibleRecommendations.map(({ model, quant, totalGB, verdict, extraGB }) => {

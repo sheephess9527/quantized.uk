@@ -188,7 +188,7 @@ Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`,
 
 For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
-The forward run plan and reverse rows show published [LiveBench Overall scores](https://livebench.ai/) only for exact benchmarked checkpoints. These are model scores, not measurements of the selected quant. Each score links to its own release, and scores from different releases are not directly comparable. Reverse mode can show only scored results without changing fit or sort rules; the checkbox is local to the view. The calculator reads the pinned values in `lib/data/model-quality.ts` without a runtime request.
+The forward run plan and reverse rows show published [LiveBench Overall scores](https://livebench.ai/) only for exact benchmarked checkpoints. These are model scores, not measurements of the selected quant. Each score links to its own release, and scores from different releases are not directly comparable. Reverse mode can show only scored results without changing fit or sort rules; the checkbox is local to the view. Empty-result actions preserve that choice when clearing an individual filter, and **Reset filters** turns it off. The calculator reads the pinned values in `lib/data/model-quality.ts` without a runtime request.
 
 **Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
