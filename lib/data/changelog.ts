@@ -23,6 +23,26 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-21',
+    en: 'The final older-model verification batch covers 30 models, completing review of all 151 indexed models with unresolved claims documented. DeepSeek-V3 now shows the DeepSeek Model Licence rather than MIT; its commercial-use classification is unchanged. Mistral Large 3 now uses the publisher’s 61-layer, 128-head architecture and the current compressed-MLA cache convention, with a warning for older conversions and unmeasured runtime allocation.',
+    zh: '较早模型核查的最后一批覆盖 30 个模型，至此已审阅全部 151 个索引模型，未解决的数据声明均有记录。DeepSeek-V3 的许可从 MIT 修正为 DeepSeek 模型许可，可商用分类不变。Mistral Large 3 现采用官方的 61 层、128 个注意力头结构及当前压缩 MLA 缓存约定，同时保留旧版转换和未实测运行时分配的提示。',
+  },
+  {
+    date: '2026-11-21',
+    en: 'The second older-model verification batch covers another 30 models. Qwen2.5 1.5B now shows its model-specific 32K context limit rather than 128K. StableLM 2 12B uses 32 attention heads with 160-dimensional heads, increasing its estimated KV cache by 25%. Falcon 3 10B now records 12 attention heads, 4 KV heads and 256-dimensional heads; its estimated KV-cache size is unchanged.',
+    zh: '较早模型核查的第二批覆盖另外 30 个模型。Qwen2.5 1.5B 的上下文上限按该模型规格从 128K 修正为 32K。StableLM 2 12B 修正为 32 个注意力头、每头 160 维，KV 缓存估算增加 25%。Falcon 3 10B 修正为 12 个注意力头、4 个 KV 头、每头 256 维；其 KV 缓存大小估算不变。',
+  },
+  {
+    date: '2026-11-21',
+    en: 'The first batch of the older-model verification pass covers 30 models. Codestral 22B now records 48 attention heads; StarCoder2 15B records 48 attention heads and 4 KV heads, correcting its estimated KV-cache size. Ambiguous checkpoint identities and unverified artifact or benchmark claims remain documented rather than guessed.',
+    zh: '较早模型核查的首批覆盖 30 个模型。Codestral 22B 的注意力头数修正为 48；StarCoder2 15B 修正为 48 个注意力头和 4 个 KV 头，同时纠正其 KV 缓存大小估算。检查点身份不明及缺乏验证的文件或基准数据保留在核查记录中，不作猜测性修改。',
+  },
+  {
+    date: '2026-11-21',
+    en: 'Muse Spark Open now shows its own Muse Model License and is listed under restricted in the Quant Hub licence filter: Model-as-a-Service businesses above $20M aggregate revenue over twelve months need a separate agreement. Muse Glimmer remains Apache 2.0. The second verification pass covers the remaining 36 recent models, correcting five GGUF byte totals and K2 Horizon shard paths.',
+    zh: 'Muse Spark Open 现显示独立的 Muse 模型许可，并在量化模型库的许可筛选中归为「有条件」：连续十二个月合计营收超过 2000 万美元的模型即服务业务须另签协议。Muse Glimmer 仍为 Apache 2.0。第二轮核查覆盖其余 36 个近期模型，修正五项 GGUF 字节总量及 K2 Horizon 分片路径。',
+  },
+  {
+    date: '2026-11-21',
     en: 'Mistral Large 4 is now listed under restricted rather than commercial in the Quant Hub licence filter. Its Mistral Ecosystem Open-Weight Licence requires Model-as-a-Service operators to obtain a separate commercial licence; internal use remains exempt from that requirement.',
     zh: '量化模型库的许可筛选已将 Mistral Large 4 从「可商用」调整为「有条件」。其 Mistral 生态开放权重许可要求模型即服务运营商另行取得商业许可；内部使用仍不受这一要求限制。',
   },

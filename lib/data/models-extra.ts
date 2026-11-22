@@ -194,7 +194,7 @@ export const extraModels: QuantModel[] = [
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu', 'pro-gpu'],
     contextLength: 32768,
-    arch: { layers: 56, attHeads: 32, kvHeads: 8, headDim: 128 },
+    arch: { layers: 56, attHeads: 48, kvHeads: 8, headDim: 128 },
     description: {
       en: 'Mistral\'s dedicated code model. 80+ language support, Fill-in-the-Middle capable.',
       zh: 'Mistral 专用代码模型，支持 80+ 编程语言，支持 Fill-in-the-Middle。',
@@ -307,7 +307,7 @@ export const extraModels: QuantModel[] = [
     categories: ['code', 'instruct'],
     hardwareTags: ['consumer-gpu'],
     contextLength: 16384,
-    arch: { layers: 40, attHeads: 40, kvHeads: 8, headDim: 128 },
+    arch: { layers: 40, attHeads: 48, kvHeads: 4, headDim: 128 },
     description: {
       en: 'BigCode\'s open code model trained on 600+ languages. Great for polyglot dev.',
       zh: 'BigCode 开源代码模型，训练覆盖 600+ 语言，适合多语言开发。',
