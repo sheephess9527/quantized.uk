@@ -543,7 +543,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Generation speed beside the VRAM fit verdict
 
-- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. Configurations that require offload do not get an all-GPU speed quote.
+- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. If the launch plan offloads to CPU, including when the GGUF reserve tips a close fit over budget, it does not get an all-GPU speed quote.
 
 ### 2026-11-22 — Pair pages and embed integration
 

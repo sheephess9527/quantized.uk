@@ -737,11 +737,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     selectedModelId === 'custom' || !!selectedModel
   );
   const offloadFormat = selectedQuantObj?.format ?? (quantGroups.GGUF.includes(selectedQuant) ? 'GGUF' : undefined);
-  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj
-    ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
-    : undefined;
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
     ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, offloadFormat, selectedModel, profileExtras, selectedQuantObj?.level)
+    : undefined;
+  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj && !launchOffload
+    ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
     : undefined;
   const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
   const launchCommands = canShowLaunch && (!overBudget || launchOffload) ? (
@@ -2103,7 +2103,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           )}
                         </div>
                       )}
-                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && profileGpu.bandwidth && (() => {
+                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && !launchOffload && profileGpu.bandwidth && (() => {
                         const bound = rigSpeedCeiling(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, v);
                         if (!bound) return null;
                         const text = bound.basis === 'moe'
@@ -2134,7 +2134,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           </>
                         );
                       })()}
-                      {v !== 'red' && formatOk && selectedModel && selectedQuantObj && (() => {
+                      {v !== 'red' && !launchOffload && formatOk && selectedModel && selectedQuantObj && (() => {
                         // Offered only when the speed tool can stream this model on the reader's card
                         // (a measured or calibrated rate) — never for a bare ceiling.
                         const href = feelTarget(profileGpu, selectedModel, selectedQuantObj, contextLen);
