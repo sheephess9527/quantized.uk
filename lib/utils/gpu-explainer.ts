@@ -139,6 +139,13 @@ function ceilingText(gpu: GPU, fits: GpuFit[], total: number): { en: string; zh:
     };
   }
 
+  if (gpu.isIntegrated) {
+    return {
+      en: `Bandwidth, not just capacity. Large models can fit in the GPU allocation, but the CPU and integrated GPU share ${bw ? `${gbs(bw)} GB/s of memory bandwidth` : 'system memory bandwidth'} — far less than high-memory discrete NVIDIA setups. Large dense models can therefore load yet generate slowly. On AMD APUs, ROCm or Vulkan support for the GPU target (such as gfx1151), operating system and runtime is a separate setup question; check that combination rather than assuming all ROCm builds support it.`,
+      zh: `瓶颈是带宽，不能只看容量。分配给 GPU 的内存可以装下大模型，但 CPU 与集成 GPU 共享${bw ? ` ${gbs(bw)} GB/s 的内存带宽` : '系统内存带宽'}，远低于大显存 NVIDIA 独显配置。因此，大型稠密模型即使能加载，生成也可能很慢。对于 AMD APU，ROCm 或 Vulkan 是否支持对应 GPU 目标（如 gfx1151）、操作系统与运行时，是另一个配置问题；请核对具体组合，不要假定所有 ROCm 构建都支持它。`,
+    };
+  }
+
   if (gpu.type === 'amd') {
     return {
       en: `Backend coverage, not capacity. At ${bw ? `${gbs(bw)} GB/s` : 'this bandwidth'} the memory system is competitive with NVIDIA cards of the same size; what varies is whether your runtime has a working ROCm build for your kernel and card. llama.cpp and vLLM both ship official ROCm support — this is a setup question, not a hardware ceiling.`,

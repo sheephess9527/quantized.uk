@@ -111,7 +111,7 @@ lib/
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   105 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
+    gpus.ts                 #   122 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
     meta.ts                 #   dataLastUpdated + sizingChangedAt
     model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
@@ -510,6 +510,8 @@ interface GPU {
   type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
   isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
   isLaptop?: boolean;      // separate mobile group; does not change the runtime backend
+  isIntegrated?: boolean;  // non-stackable APU; vram is its documented GPU allocation, not system RAM
+  cudaComputeCapability?: number; // recorded CUDA CC; AWQ requires 7.5+ where known
   specUrl?: string;        // published hardware specifications; required for laptop entries
 }
 
@@ -550,14 +552,35 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Added `/zh/llms.txt` in Simplified Chinese. Both static routes use `lib/llms.ts`, with shared page links and live model/GPU/guide counts; Chinese links stay under `/zh/`, while the sitemap and public JSON remain shared. Each summary links to both language versions, and robots.txt advertises both.
 - `npm test` checks bilingual link and numeric parity, Chinese route existence and text responses. Added the bilingual public release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
 
-### 2026-11-22 — KORMo-Web-4B
+### 2026-11-22 — Gate AWQ on pre-Turing CUDA hardware
 
-- Added [KORMo-Web-4B](https://huggingface.co/KORMo-VL/KORMo-Web-4B) (Apache 2.0) with four [bartowski GGUF files](https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF) and the matching BF16 vision projector. Memory estimates use the verified file sizes and eight full-attention layers; no runtime measurements are claimed.
+- Added optional CUDA compute capability metadata and excluded AWQ on recorded pre-7.5 cards: GTX 1080 Ti (6.1), V100 16/32 GB (7.0), P100 (6.0) and P40 (6.1), using [NVIDIA's legacy GPU table](https://developer.nvidia.com/cuda/gpus/legacy). [vLLM's AWQ kernel](https://docs.vllm.ai/en/v0.23.0/api/vllm/model_executor/layers/quantization/awq/) requires Turing/SM75 or newer.
+- The shared format predicate gates GPU fits and calculator recommendations; launch-command vLLM choices now use that same predicate. Tests cover all five rows, retained GGUF support, the 7.5 boundary and omitted metadata. This is an AWQ kernel restriction, not a claim of universal compatibility for other formats.
+
+### 2026-11-22 — Keep RTX 2060 Super out of base-card detection
+
+- Browser detection no longer maps the unindexed 8 GB RTX 2060 Super to the base RTX 2060's 6/12 GB rows. RTX 2070 Super and RTX 2080 Super retain their capacity-equivalent 8 GB fallback. Renderer regression cases cover all three.
+
+### 2026-11-22 — Integrated-APU bandwidth caveat and exact RTX 2080 Ti source
+
+- Integrated GPU pages now distinguish capacity from shared-memory bandwidth: large dense models may load but generate slowly. English and Chinese text treats ROCm/Vulkan GPU-target support (including gfx1151), OS and runtime compatibility as a separate setup check. The branch uses `isIntegrated`, not a model id; tests cover both indexed APUs, an unnamed-bandwidth APU and the unchanged discrete-AMD branch.
+- RTX 2080 Ti now links directly to its TechPowerUp GPU database specification. Audited the other new source links against their named hardware; TechPowerUp serves bot checks to automated readers, while its returned page titles identify the exact cards. AMD processor specs cover the APU/bus; its VGM FAQ linked above covers allocation limits. V100's datasheet covers both PCIe capacities, and the mod articles describe the unofficial capacities rather than official NVIDIA SKUs.
+
+### 2026-11-22 — Older GeForce, workstation and unified-memory hardware
+
+- Added 17 sourced configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), GTX 1080 Ti, RTX 2060 6/12 GB, 2070, 2080, 2080 Ti, 3060 Ti, 3050 8 GB, V100 PCIe 16/32 GB, T4, RTX A6000 and RTX 6000 Ada, plus explicitly unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB modifications. Mod bandwidth uses the stock memory rate, not a benchmark; bilingual notes warn about seller-dependent firmware and warranty.
+- Integrated AMD rows retain the AMD runtime backend but cannot stack. Their capacities already represent Windows GPU allocations; do not apply the Apple-only `isUnified` cap again. LPDDR5X-8000 bandwidth is 256 GB/s on a shared 256-bit bus. Published specs are linked on every new GPU page. `dataLastUpdated` stays synchronized at `2026-11-22`.
+- AMD's [Variable Graphics Memory FAQ](https://www.amd.com/en/blogs/2025/faqs-amd-variable-graphics-memory-vram-ai-model-sizes-quantization-mcp-more.html) documents the 48/96 GB allocations; [AMD's processor specification](https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html) documents LPDDR5X-8000 and the 256-bit bus.
+- Renderer matching recognizes Radeon 8060S and the added cards, keeps Ti models distinct, and asks for memory size when stock and modified cards report the same renderer. Normal, ambiguous, unsupported and empty renderer cases are covered by `check:gpu-detect`.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 
 - Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.
 - Added the bilingual reader-facing release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
+
+### 2026-11-22 — KORMo-Web-4B
+
+- Added [KORMo-Web-4B](https://huggingface.co/KORMo-VL/KORMo-Web-4B) (Apache 2.0) with four [bartowski GGUF files](https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF) and the matching BF16 vision projector. Memory estimates use the verified file sizes and eight full-attention layers; no runtime measurements are claimed.
 
 ### 2026-11-22 — Ollama tag paste in the calculator
 
