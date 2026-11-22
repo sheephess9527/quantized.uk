@@ -75,6 +75,7 @@ Model/GPU pages live at `app/quant-hub/[modelId]/[gpuId]/page.tsx` with a `/zh` 
 app/                        # Next.js App Router pages
   layout.tsx                # Root layout: Inter font + LanguageProvider + Navbar/Footer
   page.tsx                  # Dashboard
+  embed/fit/page.tsx         # Noindex, chrome-free GPU fit card; /zh/embed/fit mirror
   quant-hub/page.tsx        # Model index (client: filter state)
   quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
     page.tsx
@@ -524,6 +525,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Pair pages and embed integration
+
+- Retained both pair-page and embeddable-fit-card features when merging main, including both bilingual string groups and all test gates. Embed pages remain noindex and outside the sitemap; model/GPU pages remain indexed.
+
 ### 2026-11-22 — Pair pages and result-preview integration
 
 - Merged calculator result previews while preserving pair pages' model OG images, sitemap entries and legacy prefilled calculator links. Result-specific previews remain opt-in via copied snapshot links (`share=1`). Both pair coverage and VRAM sharing checks remain in `npm test`.
@@ -547,6 +552,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Eligibility in `lib/utils/pair-pages.ts`: all exact measured pairs, or current models with verified-file sizing, supported format, bandwidth and a green/yellow fit using at least 25% of usable memory. Existing model OG images are reused.
 - `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Export: 5,134 HTML files (including 404 variants); monitor Cloudflare Pages’ 20,000-file limit.
 
+### 2026-11-22 — Embeddable GPU fit cards
+
+- Review correction: a quant format unsupported by the selected GPU uses the calculator's backend-incompatible wording in both the card and Markdown link, rather than blaming memory capacity; bilingual regression coverage includes a Mac with ample memory for incompatible AWQ.
+- Embed calculator links reuse `snapshotVramLink`, including `share=1`, so Markdown links and card click-throughs receive the same result-specific social preview and non-persisting snapshot behavior as the calculator's Share link. Both features coexist in forward results.
+- Unified-memory cards show physical hardware memory separately from the usable calculator budget (e.g. `24 GB · 18 GB usable`), in both languages; discrete and mixed-card totals retain their full hardware capacity labels.
+- Forward calculator results offer a collapsed HTML iframe and Markdown link disclosure with explicit Copy actions in English and Chinese. Cards at `/embed/fit/` and `/zh/embed/fit/` reuse calculator sizing, quant, context, cache, batch, encoder and rig settings; invalid configurations link back to the calculator.
+- Cards are noindex and intentionally absent from the sitemap, with no navigation, footer or Plausible script. Only `/embed/*` and `/zh/embed/*` detach anti-framing headers; all other pages remain protected. Cloudflare Pages applies these headers; the local static preview does not emulate them.
+- `lib/utils/embed-fit.ts` owns parsing, sizing and escaped snippet URLs. `scripts/check-embed-fit.ts` runs in `npm test`. Custom models and invalid/unsupported settings cannot generate a misleading card. Copying a snippet does not persist example or guessed choices.
 ### 2026-11-22 — Site build runs on every PR
 
 - `.github/workflows/checks.yml` adds a `build` job (`npm ci && npm run build`) beside `data-checks`, so type-check, lint, static export and the postbuild gates run on every push and pull request instead of first failing on the Cloudflare Pages deploy of main. The HF-stats prebuild stays non-fatal offline; IndexNow only pings on Cloudflare production builds, so CI never submits URLs.

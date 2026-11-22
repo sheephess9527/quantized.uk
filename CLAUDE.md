@@ -32,7 +32,7 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 5,136 HTML files including 404 variants and 2,245 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 5,138 HTML files including 404 variants and 2,245 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -86,6 +86,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 - **Model/GPU pairs:** `lib/utils/pair-pages.ts` owns eligibility for routes, sitemap and links. Exact measured pairs always qualify; otherwise require current models, verified-file green/yellow fits and at least 25% of usable memory. Keep GPU slugs last and reuse model OG images. `npm test` checks pair coverage/sizing; monitor the 20,000-file export limit.
 
+- **Embedding:** only `/embed/*` and `/zh/embed/*` may be framed (Cloudflare `_headers` detach exceptions). Keep embed pages noindex, out of the sitemap and free of site chrome/analytics. Fit cards and snippets reuse `lib/utils/embed-fit.ts` and calculator sizing; never persist guessed/example choices when copying.
 - **Calculator run plan:** use the same sizing and fit rules as the detailed
   result. Launch commands follow the selected quant and context. Settings that
   need runtime configuration show a note beside the command. Native Ollama
