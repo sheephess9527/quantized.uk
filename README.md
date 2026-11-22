@@ -110,7 +110,7 @@ lib/
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   105 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
+    gpus.ts                 #   122 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
     meta.ts                 #   dataLastUpdated + sizingChangedAt
     model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
@@ -509,6 +509,7 @@ interface GPU {
   type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
   isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
   isLaptop?: boolean;      // separate mobile group; does not change the runtime backend
+  isIntegrated?: boolean;  // non-stackable APU; vram is its documented GPU allocation, not system RAM
   specUrl?: string;        // published hardware specifications; required for laptop entries
 }
 
@@ -537,6 +538,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Older GeForce, workstation and unified-memory hardware
+
+- Added 17 sourced configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), GTX 1080 Ti, RTX 2060 6/12 GB, 2070, 2080, 2080 Ti, 3060 Ti, 3050 8 GB, V100 PCIe 16/32 GB, T4, RTX A6000 and RTX 6000 Ada, plus explicitly unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB modifications. Mod bandwidth uses the stock memory rate, not a benchmark; bilingual notes warn about seller-dependent firmware and warranty.
+- Integrated AMD rows retain the AMD runtime backend but cannot stack. Their capacities already represent Windows GPU allocations; do not apply the Apple-only `isUnified` cap again. LPDDR5X-8000 bandwidth is 256 GB/s on a shared 256-bit bus. Published specs are linked on every new GPU page. `dataLastUpdated` stays synchronized at `2026-11-22`.
+- AMD's [Variable Graphics Memory FAQ](https://www.amd.com/en/blogs/2025/faqs-amd-variable-graphics-memory-vram-ai-model-sizes-quantization-mcp-more.html) documents the 48/96 GB allocations; [AMD's processor specification](https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html) documents LPDDR5X-8000 and the 256-bit bus.
+- Renderer matching recognizes Radeon 8060S and the added cards, keeps Ti models distinct, and asks for memory size when stock and modified cards report the same renderer. Normal, ambiguous, unsupported and empty renderer cases are covered by `check:gpu-detect`.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 

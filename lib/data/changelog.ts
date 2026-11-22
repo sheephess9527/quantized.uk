@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Added 17 hardware configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), older GeForce cards from GTX 1080 Ti through RTX 3060 Ti, V100, T4, RTX A6000 and RTX 6000 Ada. Unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB memory mods are clearly labelled with source links and caveats. Browser detection asks for memory size when stock and modified cards share a renderer.',
+    zh: '新增 17 种硬件配置：Ryzen AI Max+ 395 64/128 GB 整机（按 Windows 下 48/96 GB GPU 分配量估算）、GTX 1080 Ti 至 RTX 3060 Ti 等旧款 GeForce、V100、T4、RTX A6000 与 RTX 6000 Ada。RTX 2080 Ti 22 GB 和 RTX 4090 48 GB 非官方扩容卡均明确标注来源与风险。原卡和扩容卡报告相同渲染器时，浏览器识别会请你确认容量。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

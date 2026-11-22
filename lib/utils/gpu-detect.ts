@@ -31,11 +31,14 @@ function normalize(s: string): string {
 
 /** The chip part of an index name: "RTX 4060 Ti 16G" → "rtx 4060 ti", "Mac M3 Pro 36G" → "m3 pro". */
 function chipName(g: GPU): string {
-  return g.name.replace(/\s\d+\s?GB?\b/g, '').trim();
+  return g.name.replace(/\s\(Mod\/改装\)/g, '').replace(/\s\d+\s?GB?\b/g, '').trim();
 }
 
 function chipKey(g: GPU): string {
+  if (g.isIntegrated && g.id.startsWith('ryzen-ai-max-395-')) return '8060s';
   const key = normalize(chipName(g));
+  if (key.startsWith('tesla v100')) return 'v100';
+  if (key === 'tesla t4') return 't4';
   return g.isLaptop ? key.replace(/ laptop gpu$/, '') : key;
 }
 

@@ -123,6 +123,7 @@ export function usableCapacityGB(gpu: GPU): number {
 }
 
 export function hasDedicatedVram(gpu: GPU): boolean {
+  if (gpu.isIntegrated) return false;
   return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
 }
 
