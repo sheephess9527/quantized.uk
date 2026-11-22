@@ -556,7 +556,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   released format), MiniMax unsloth UD-* / AtomicChat AD-* (no standard levels).
 - Neither DeepSeek publishes an active count: `activeParams` 13.8 / 16.8 is derived from the GGUF header (non-expert
   tensors + 6 routed experts' share; V4.1 also leaves out its 196.6B `engram_embd` lookup tables), with the arithmetic
-  in a comment. Split GGUF launch commands now download by the recorded first-part name (`ggufShardStem`), so GLM-5.3 Q4_K_M (`*-Q4_K-*`) and MiniMax M3.1 (`Q2_K/` folder) match their files. Nex-N2.6 (GLM5-next fine-tune) stays pending: its layout is now expressible, its own sizes are unread.
+  in a comment. `fetch-hf-stats.mjs` writes its per-model progress to stderr like its failure lines; on stdout it made Node 20's test runner fail intermittently ("Unable to deserialize cloned data"). Split GGUF launch commands now download by the recorded first-part name (`ggufShardStem`), so GLM-5.3 Q4_K_M (`*-Q4_K-*`) and MiniMax M3.1 (`Q2_K/` folder) match their files. Nex-N2.6 (GLM5-next fine-tune) stays pending: its layout is now expressible, its own sizes are unread.
 - Not yet checked against a published KV-cache measurement; the encodings follow llama.cpp's allocation code.
 - Added the bilingual reader-facing release note; `dataLastUpdated` remains `2026-11-22`.
 

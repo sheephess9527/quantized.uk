@@ -57,7 +57,7 @@ export async function fetchStats(repoMap, existing, fetchModel = fetchRepo) {
       try {
         results[index] = await fetchModel(repo);
         ok++;
-        process.stdout.write(`  ✓ ${modelId}\n`);
+        process.stderr.write(`  ✓ ${modelId}\n`);
       } catch (err) {
         fail++;
         if (existing[modelId]) {
