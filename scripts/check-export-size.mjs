@@ -6,8 +6,9 @@
  */
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const OUT = new URL('../out/', import.meta.url).pathname;
+const OUT = fileURLToPath(new URL('../out/', import.meta.url));
 const LIMIT = 15000;
 
 function count(dir) {
