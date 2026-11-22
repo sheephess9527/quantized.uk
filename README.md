@@ -529,6 +529,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Mixed-card snapshots include only the compatible extra cards counted in the displayed result.
 - Pages Functions use the same sizing and fit logic as the calculator. Only the two calculator routes and the preview PNG invoke Functions; `npm test` covers snapshots, sizing parity, localization and invalid-link fallback.
 
+### 2026-11-22 — Parameter-size buckets match their labels
+
+- The size classes were labelled `≤3B / 7B / 14B / 32B / 70B+` but bounded at ≤4 / ≤9 / ≤20 / ≤50 / >50B, so the GPU requirements page (both languages) put Qwen3 4B under "≤3B", Gemma 2 9B and Qwen3.5 9B under "14B", GPT-OSS 20B under "32B" and Jamba 1.5 Mini (52B) under "70B+".
+- `lib/utils/param-buckets.ts` now holds half-open bounds `[0,4) [4,10) [10,20) [20,50) [50,∞)` and derives the reader-facing labels from them: `<4B / 4–10B / 10–20B / 20–50B / 50B+`, in both languages. Used by the requirements table, Hub filter and stat pills, GPU pages, model pickers and the VRAM quick reference. Hub `?size=` keys (`≤3B`, `7B`, …) are unchanged, so old links still filter. Moved: Qwen3 4B (4.0B) from the smallest class to 4–10B; K2 Horizon 7B, Qwen3.5 9B and Gemma 2 9B (9.01–9.24B) from the old "14B" class to 4–10B.
+- The requirements table's data moved to `lib/utils/gpu-requirements.ts` (`gpuRequirementsTable()`).
+- `npm test` adds `scripts/check-param-buckets.ts` (`npm run check:param-buckets`): bounds tile with no gap, each label reads back as its bounds, and every model's `paramLabel` and name size sit inside its bucket in the index, the pickers and the requirements table. Published sizes that are not total parameters are listed in `NAME_SIZE_EXCEPTIONS` with a reason (K2 Horizon 3.7B, Llama 4 Scout/Maverick 17B).
+- `sizingChangedAt` → 2026-11-22 (GPU page groupings changed).
+
 ### 2026-11-22 — VRAM calculator opens on an answer
 
 - `VRAMCalculator` now defaults to reverse mode (GPU → models), listed first in the mode switch. A link that names `?model=` without `?mode=` still opens forward mode.
