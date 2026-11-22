@@ -19,8 +19,8 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 
 ## What this is
 
-Next.js 14 **static-export** site (`output: 'export'`). No backend, no DB, no runtime API — all
-content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**.
+Next.js 14 **static-export** site (`output: 'export'`). No Next.js server or DB — content is
+typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functions for VRAM link previews.
 
 **Live snapshot (2026-11-21):**
 
@@ -209,13 +209,17 @@ flaky network. Never "fix" it by removing the postbuild hook.
     **outside** that boundary, so it still prerenders while queries update on same-page navigation
     and back/forward. Do not move the hook into `QuantHubContent` or wrap the whole Hub in that
     boundary. The GET search form must preserve every active filter, including `gpu`.
-- **Static-export only:** no request-time fetching, no `next/image` opt.
+- **Static-export only in Next.js:** no request-time fetching, no `next/image` opt.
   Dynamic routes become static via `generateStaticParams()`.
   **Allowed exception:** route handlers that are **fully static**
   (`export const dynamic = 'force-static'`) e.g. `app/feed.xml/route.ts` for RSS, and the public
   data files `app/data/v1/{models,gpus}.json` (`lib/utils/data-export.ts`). **`v1` is a contract:**
   add fields, never rename or repurpose one; never add `speedRTX4090` or a 0 for an unpublished loss.
-  **The one runtime network call** is the calculator's Hugging Face import (`lib/utils/hf-import.ts`),
+  **Pages Functions only for share previews:** keep `public/_routes.json` scoped to the two
+  calculator paths and the image endpoint. Only explicit, valid `share=1` links get dynamic OG tags.
+  Use the calculator's real sizing and fit functions, not client-supplied results; never fetch
+  Hugging Face or reflect user-written repo names into previews. Test with `wrangler pages dev out`.
+  **The runtime call to Hugging Face** is the calculator's import (`lib/utils/hf-import.ts`),
   made by the reader's browser on click, never at build or on load. Every failure path must degrade to
   "enter by hand"; a field the config does not carry stays empty — never filled with a plausible
   default. Test parser changes against index models' own `arch` (they must come out identical).
