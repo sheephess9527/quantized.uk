@@ -18,7 +18,7 @@ import ShareCard from '@/components/tools/ShareCard';
 import EmbedSnippets from '@/components/tools/EmbedSnippets';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
-import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
+import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
@@ -735,6 +735,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
     selectedModelId === 'custom' || !!selectedModel
   );
+  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj
+    ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
+    : undefined;
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
     ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level)
     : undefined;
@@ -1754,6 +1757,17 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       currentVerdict === 'yellow' ? t.calc.yellow : t.calc.red
                     }</span>
                   )}
+                  {planSpeed && (
+                    <span data-testid="run-plan-speed" className="text-slate-200">
+                      {'· '}{planSpeed.source === 'measured' ? (
+                        <Link href="/benchmarks/" className="underline decoration-slate-500 underline-offset-2">
+                          {t.calc.runPlanSpeedMeasured.replace('{n}', String(planSpeed.tokS)).replace('{runtime}', planSpeed.runtimeVersion)}
+                        </Link>
+                      ) : planSpeed.source === 'calibrated'
+                        ? t.calc.runPlanSpeedEstimated.replace('{low}', String(planSpeed.low)).replace('{high}', String(planSpeed.high))
+                        : t.calc.runPlanSpeedCeiling.replace('{n}', String(planSpeed.tokS))}
+                    </span>
+                  )}
                   {profileGpu && formatOk && contextLen <= contextLimit && result.totalGB <= rigCapacity && (
                     <span>· {t.calc.runPlanHeadroom.replace('{gb}', (rigCapacity - result.totalGB).toFixed(2))}</span>
                   )}
@@ -2087,7 +2101,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           )}
                         </div>
                       )}
-                      {selectedModel && selectedQuantObj && formatOk && profileGpu.bandwidth && (() => {
+                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && profileGpu.bandwidth && (() => {
                         const bound = rigSpeedCeiling(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, v);
                         if (!bound) return null;
                         const text = bound.basis === 'moe'
