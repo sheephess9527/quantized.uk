@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { models } from '../lib/data/models';
-import { gpuDatabase } from '../lib/data/gpus';
+import { gpuDatabase, POPULAR_GPU_IDS } from '../lib/data/gpus';
 import {
   pairData,
   pairPages,
@@ -71,6 +71,8 @@ for (const gpu of gpuDatabase)
     const pair = pairData(model, gpu);
     if (measuredRowsFor(gpu).some(row => sameModel(model.name, row.model)))
       assert(pair.eligible, `Missing measured ${model.id}/${gpu.id}`);
+    if (!pair.measured.length && !(POPULAR_GPU_IDS as readonly string[]).includes(gpu.id))
+      assert(!pair.eligible, `Unmeasured pair outside popular GPUs: ${model.id}/${gpu.id}`);
     if (!pair.eligible) continue;
     assert(pages.some(p => p.model.id === model.id && p.gpu.id === gpu.id));
     if (!pair.measured.length) {

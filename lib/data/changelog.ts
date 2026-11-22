@@ -22,6 +22,11 @@ export const changelog: ChangelogEntry[] = [
     zh: '模型 × 显卡页面现在首先展示推荐下载、权重/文件大小、预计最长从容运行上下文和含余量的显存手算过程。中英文均复用计算器的绿色适配判定，兼顾特殊缓存布局；仅能勉强运行时给出警告，无法容纳时提供卸载建议。',
   },
   {
+    date: '2026-11-23',
+    en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
+    zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
+  },
+  {
     date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',

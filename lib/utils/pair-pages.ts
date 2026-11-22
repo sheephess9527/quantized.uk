@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { calcVRAM, getVerdict, COMFORTABLE_RATIO } from '@/lib/utils/vram';
 import {
@@ -12,6 +12,11 @@ import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { sameModel } from '@/lib/utils/speed-label';
 import { isSuperseded } from '@/lib/utils/model-meta';
 import { qualityRank } from '@/lib/utils/quality';
+
+// Every pair page is four exported files (en + zh, each index.html + index.txt),
+// so unmeasured pairs are limited to the popular cards to stay well inside
+// Cloudflare Pages' 20,000-file limit.
+const PAIR_PAGE_GPU_IDS: ReadonlySet<string> = new Set(POPULAR_GPU_IDS);
 
 export function pairSize(
   model: QuantModel,
@@ -86,6 +91,7 @@ export function pairData(model: QuantModel, gpu: GPU) {
     verified.find(r => r.verdict === 'green') ??
     verified.find(r => r.verdict === 'yellow');
   const complete =
+    PAIR_PAGE_GPU_IDS.has(gpu.id) &&
     !isSuperseded(model) &&
     gpu.type !== 'cpu' &&
     !!gpu.bandwidth &&
