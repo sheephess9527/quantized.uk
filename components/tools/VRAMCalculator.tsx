@@ -178,7 +178,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const chooseGpu = useCallback((id: string) => {
     setSelectedGpuId(id);
     setGpuHint(null);
-  }, []);
+    if (id) setGpuId(id);
+  }, [setGpuId]);
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
   const [bestPerModel, setBestPerModel] = useState(true);
@@ -435,7 +436,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     setMmprojFile('');
     setMmprojState('idle');
     setExtraIds([]);
-    if (selectedGpuId && selectedGpuId !== profileGpuId && (!gpuHint || gpuHint.kind === 'detected')) updateConfig({ gpuId: selectedGpuId });
+    setModelIsExample(false);
+    // Asking for the detail of a fit on this card adopts the card, guessed or not.
+    if (selectedGpuId && selectedGpuId !== profileGpuId) updateConfig({ gpuId: selectedGpuId });
+    setGpuHint(null);
     rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
@@ -535,6 +539,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     const input = raw ?? hfInput;
     if (raw !== undefined) setHfInput(raw);
     setSelectedModelId('custom');
+    setModelIsExample(false);
     setInvalidModelId(null);
     setHfBusy(true);
     setHfError(null);
@@ -562,6 +567,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   };
   const openImport = () => {
     setSelectedModelId('custom');
+    setModelIsExample(false);
     setInvalidModelId(null);
     const pasted = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
     if (pasted) { void runImport(pasted); return; }
@@ -719,7 +725,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const resultEvent = useMemo((): Record<string, string | number> | null => {
     if (showForwardResult) {
       return {
-        mode, model: selectedModelId, quant: selectedQuant, ctx: contextLen,
+        mode, model: selectedModelId, ctx: contextLen,
+        quant: selectedQuantObj || Object.values(quantGroups).some(levels => levels.includes(selectedQuant)) ? selectedQuant : 'other',
         gpu: profileGpuId || 'none', verdict: overBudget ? 'red' : currentVerdict ?? 'none',
         start: modelIsExample ? 'example' : 'chosen',
       };
@@ -728,7 +735,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       return { mode, gpu: selectedGpuId, ctx: contextLen, fits: recommendations.length, start: gpuHint?.kind ?? 'chosen' };
     }
     return null;
-  }, [showForwardResult, showReverseResult, mode, selectedModelId, selectedQuant, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
+  }, [showForwardResult, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
   useEffect(() => {
     if (!resultEvent) return;
     const key = JSON.stringify(resultEvent);
@@ -1411,7 +1418,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 {gpuHint?.kind === 'detected' && selectedGpu && (
                   <p className="text-[11px] text-emerald-300/80 mt-1.5">{t.calc.gpuDetected.replace('{gpu}', selectedGpu.name)}</p>
                 )}
-                {gpuHint?.kind === 'pick' && gpuHint.detection && (
+                {gpuHint?.kind === 'pick' && gpuHint.detection?.candidates.length === 1 && selectedGpu && (
+                  <p className="text-[11px] text-amber-300/80 mt-1.5">{t.calc.gpuCheckSize.replace('{chip}', gpuHint.detection.label).replace('{gpu}', selectedGpu.name)}</p>
+                )}
+                {gpuHint?.kind === 'pick' && gpuHint.detection && gpuHint.detection.candidates.length > 1 && (
                   <div className="mt-2">
                     <p className="text-[11px] text-slate-400 mb-1.5">{t.calc.gpuPickSize.replace('{chip}', gpuHint.detection.label)}</p>
                     <div className="flex flex-wrap gap-1.5">

@@ -13,8 +13,9 @@ export interface GpuDetection {
   /** Index rows with that chip, smallest memory first. More than one when only the size differs. */
   candidates: GPU[];
   /**
-   * True when one row is the answer. Never for a Mac: the browser names the chip
-   * but not the unified-memory size, which is what decides the fit.
+   * True when one row is the answer. Never for a Mac (the browser names the chip,
+   * not its unified memory), nor when the only row names its size: the index
+   * names a size exactly when the chip also shipped with another one.
    */
   certain: boolean;
 }
@@ -58,7 +59,7 @@ export function matchRenderer(renderer: string): GpuDetection | null {
   }
   if (best.length === 0) return null;
   const candidates = best.sort((a, b) => a.vram - b.vram);
-  return { label: chipName(candidates[0]), candidates, certain: candidates.length === 1 && candidates[0].type !== 'apple' };
+  return { label: chipName(candidates[0]), candidates, certain: candidates.length === 1 && candidates[0].type !== 'apple' && chipName(candidates[0]) === candidates[0].name };
 }
 
 export function detectGpu(): GpuDetection | null {

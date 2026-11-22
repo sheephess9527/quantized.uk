@@ -13,6 +13,11 @@ assert.deepEqual(ids('ANGLE (AMD, AMD Radeon RX 7900 XTX Direct3D11 vs_5_0 ps_5_
 assert.deepEqual(ids('ANGLE (AMD, AMD Radeon RX 7900 XT Direct3D11 vs_5_0 ps_5_0, D3D11)'), ['rx7900xt']);
 assert.deepEqual(ids('ANGLE (Intel, Intel(R) Arc(TM) B580 Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)'), ['arc-b580']);
 
+// A single row that names its size (the index's sign of other sizes, e.g. the 8 GB A770) is not certain.
+assert.deepEqual(ids('ANGLE (Intel, Intel(R) Arc(TM) A770 Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)'), ['arc-a770-16']);
+assert.equal(matchRenderer('ANGLE (Intel, Intel(R) Arc(TM) A770 Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)')?.certain, false);
+assert.equal(matchRenderer('ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)')?.certain, false);
+
 // Same chip, several memory sizes: every size is offered, smallest first, and none is certain.
 const ti = matchRenderer('ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)');
 assert.deepEqual(ti?.candidates.map(g => g.id), ['rtx4060ti', 'rtx4060ti16']);
