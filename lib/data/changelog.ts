@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The VRAM calculator now shows generation speed beside the fit verdict: a linked measurement when the model, quant and GPU match a benchmark, otherwise a labelled estimate or bandwidth ceiling where available.',
+    zh: '显存计算器现在会在适配判定旁显示生成速度。模型、量化和显卡与跑分匹配时，显示带链接的实测值；否则在有数据时显示明确标注的估算速度或带宽上限。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Copy a VRAM inference result link to share the exact model, quant, card and context you were looking at. The recipient opens the same settings, and apps that show link previews get a result card in English or Chinese.',
     zh: '复制显存计算器的推理结果链接，可分享当前的模型、量化、显卡和上下文设置。收件人打开后看到同一组设置，支持链接预览的应用也会展示对应语言的结果卡片。',
   },

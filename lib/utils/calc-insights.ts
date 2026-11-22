@@ -7,6 +7,8 @@ export { canStack, capacityGB, rigDevices, MAX_CARDS };
 import { qualityRank } from '@/lib/utils/quality';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
+import { measuredSpeed } from '@/lib/utils/measured-speed';
+import { matchingSpeedRun } from '@/lib/utils/speed-label';
 
 /**
  * The calculator's second-order answers — the questions a reader asks once
@@ -180,6 +182,23 @@ export function rigSpeedCeiling(
     time += usableCapacityGB(g) / total / b.tokS;
   }
   return { ...first, tokS: Math.round(10 / time) / 10 };
+}
+
+export function runPlanSpeed(
+  gpu: GPU, cards: number, extra: GPU[], model: QuantModel, quant: QuantVariant,
+  totalGB: number, contextLength: number,
+) {
+  if (totalGB > capacityGB(gpu, cards, extra) || contextLength > model.contextLength
+    || !rigFormatAllowed(gpu, extra, quant.format)) return undefined;
+
+  if (cards === 1 && extra.length === 0) {
+    const run = matchingSpeedRun(gpu, model, quant);
+    if (run) return { source: 'measured' as const, tokS: run.speedTokSec, framework: run.framework };
+    const estimate = measuredSpeed(gpu, model, quant);
+    if (estimate) return { source: 'calibrated' as const, low: estimate.low, high: estimate.high };
+  }
+  const bound = rigSpeedCeiling(gpu, cards, extra, model, quant, verdictOn(totalGB, gpu, cards, extra));
+  if (bound) return { source: 'ceiling' as const, tokS: bound.tokS };
 }
 
 /**
