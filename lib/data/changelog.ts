@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The VRAM calculator now leads with common choices. More options keeps advanced settings reachable and opens for changed settings; common quant levels appear first with every level still available. Existing share links, profiles and saved rigs keep working; estimates are unchanged.',
+    zh: '显存计算器现在优先展示常用选项，高级设置收进“更多选项”，存在非默认设置时自动展开。量化优先展示常用等级，仍可选择全部等级。原有分享链接、配置和已存设备组合继续有效，估算结果不变。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The VRAM calculator now shows generation speed beside the fit verdict: a linked measurement when the model, quant and GPU match a benchmark, otherwise a labelled estimate or bandwidth ceiling where available.',
     zh: '显存计算器现在会在适配判定旁显示生成速度。模型、量化和显卡与跑分匹配时，显示带链接的实测值；否则在有数据时显示明确标注的估算速度或带宽上限。',
   },

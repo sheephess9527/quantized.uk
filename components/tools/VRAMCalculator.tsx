@@ -22,6 +22,7 @@ import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, of
 import { getRecommendations, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
+import { commonQuantLevels, changedAdvancedSettings } from '@/lib/utils/calc-simplify';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
@@ -150,6 +151,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [urlInitialized, setUrlInitialized] = useState(false);
   const lastSharedSettings = useRef<Pick<SharedConfig, 'modelId' | 'quantLevel' | 'contextLen'> | null>(null);
 
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [allQuantsOpen, setAllQuantsOpen] = useState(false);
   const [mode, setMode] = useState<Mode>(defaultMode);
   const [selectedModelId, setSelectedModelId] = useState('');
   const [selectedQuant, setSelectedQuant] = useState('Q4_K_M');
@@ -824,6 +827,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
   };
 
+  const advancedChanged = changedAdvancedSettings(mode, { cards, extraIds, kvType, batchSize, mmprojGB, reverseInput, sortBy, includeYellow, bestPerModel });
+  useEffect(() => {
+    if (urlInitialized) setMoreOpen(advancedChanged > 0);
+  }, [urlInitialized, mode, advancedChanged]);
+  const showAllQuants = allQuantsOpen || findFormatGroup(selectedQuant) !== 'GGUF';
+  const commonQuants = commonQuantLevels(selectedQuant, selectedModel ? quantLevelKey(referenceQuant(selectedModel.quants)) : undefined);
+  const quantCount = Object.values(quantGroups).flat().length;
+
   const embedParams = resultParams();
   embedParams.set('model', selectedModel?.id ?? '');
   embedParams.set('gpu', profileGpuId);
@@ -1020,104 +1031,6 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 )}
               </div>
 
-              {mode === 'forward' && profileGpu && canStack(profileGpu) && (
-                <div>
-                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {Array.from({ length: MAX_CARDS - profileExtras.length }, (_, i) => i + 1).map(n => (
-                      <button
-                        key={n}
-                        onClick={() => setCards(n)}
-                        aria-pressed={cards === n}
-                        className={cn(
-                          'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
-                          cards === n
-                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
-                        )}
-                      >
-                        {n}×
-                      </button>
-                    ))}
-                  </div>
-                  {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
-                  {/* A second, different card in the same machine — the most
-                      common hobbyist rig, which the identical-card count could
-                      not describe. Same backend only: one build drives them. */}
-                  {profileExtras.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {profileExtras.map((g, i) => (
-                        <button
-                          key={`${g.id}-${i}`}
-                          onClick={() => setExtraIds(ids => ids.filter((_, j) => j !== i))}
-                          aria-label={t.calc.extraCardRemove.replace('{gpu}', g.name)}
-                          className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-violet-500/15 text-violet-200 border-violet-500/30"
-                        >
-                          + {g.name} <span aria-hidden="true">×</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  {profileCards + profileExtras.length < MAX_CARDS && (
-                    <div className="relative mt-2">
-                      <select
-                        aria-label={t.calc.extraCardAdd}
-                        value=""
-                        onChange={e => { const id = e.target.value; if (id) setExtraIds(ids => [...ids, id]); }}
-                        className="w-full appearance-none bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-violet-500/50"
-                      >
-                        <option value="">+ {t.calc.extraCardAdd}</option>
-                        {gpuDatabase
-                          .filter(g => canStack(g) && backendFor(g) === backendFor(profileGpu))
-                          .map(g => <option key={g.id} value={g.id}>{g.name} ({g.vram} GB)</option>)}
-                      </select>
-                      <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-                    </div>
-                  )}
-                  {profileExtras.length > 0 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.extraCardNote}</p>}
-                </div>
-              )}
-
-              {mode === 'forward' && (profileGpu || savedRigs.length > 0) && (() => {
-                const nameOf = (r: { gpuId: string; cards: number; extra: string[] }) => {
-                  const g = gpuDatabase.find(x => x.id === r.gpuId);
-                  return [`${r.cards > 1 ? `${r.cards}× ` : ''}${g?.name ?? r.gpuId}`, ...r.extra.map(id => gpuDatabase.find(x => x.id === id)?.name ?? id)].join(' + ');
-                };
-                const current = profileGpu ? { gpuId: profileGpu.id, cards: profileCards, extra: profileExtras.map(g => g.id) } : null;
-                const same = (a: { gpuId: string; cards: number; extra: string[] }, b: typeof a) => a.gpuId === b.gpuId && a.cards === b.cards && a.extra.join() === b.extra.join();
-                return (
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {savedRigs.length > 0 && <span className="text-[11px] text-slate-600">{t.calc.rigSaved}</span>}
-                    {savedRigs.map((r, i) => (
-                      <span key={i} className="inline-flex items-center rounded-lg border border-white/[0.08] text-xs">
-                        <button
-                          onClick={() => { setGpuId(r.gpuId); setCards(r.cards); setExtraIds(r.extra); }}
-                          aria-pressed={!!current && same(current, r)}
-                          className={cn('px-2.5 py-1 min-h-[36px] sm:min-h-0', current && same(current, r) ? 'text-violet-200' : 'text-slate-300 hover:text-violet-200')}
-                        >
-                          {nameOf(r)}
-                        </button>
-                        <button
-                          onClick={() => storeRigs(savedRigs.filter((_, j) => j !== i))}
-                          aria-label={t.calc.rigRemove.replace('{rig}', nameOf(r))}
-                          className="px-2 py-1 text-slate-600 hover:text-slate-300 border-l border-white/[0.06]"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                    {current && !savedRigs.some(r => same(r, current)) && (
-                      <button
-                        onClick={() => storeRigs([...savedRigs, current].slice(-5))}
-                        className="px-2.5 py-1 min-h-[36px] sm:min-h-0 rounded-lg text-xs text-violet-300 border border-dashed border-violet-500/30 hover:text-violet-200"
-                      >
-                        + {t.calc.rigSave}
-                      </button>
-                    )}
-                  </div>
-                );
-              })()}
-
               {selectedModelId === 'custom' && (
                 <div className="glass rounded-xl p-4 space-y-3">
                   <div>
@@ -1221,54 +1134,23 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 </div>
               )}
 
-              {mode === 'forward' && ((selectedModel && hasImageInput(selectedModel.id)) || selectedModelId === 'custom') && (() => {
-                const repo = selectedModel ? hfRepoMap[selectedModel.id] : undefined;
-                const gguf = !!repo && /-GGUF$/i.test(repo);
-                return (
-                  <div>
-                    <label htmlFor="calc-mmproj" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.mmprojLabel}</label>
-                    <div className="flex gap-2">
-                      <input
-                        id="calc-mmproj"
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={mmprojGB}
-                        onChange={e => { setMmprojGB(e.target.value); setMmprojFile(''); }}
-                        placeholder={t.calc.mmprojPlaceholder}
-                        className="w-32 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
-                      />
-                      {gguf && (
-                        <button
-                          type="button"
-                          disabled={mmprojState === 'loading'}
-                          onClick={async () => {
-                            setMmprojState('loading');
-                            const r = await mmprojFromHub(repo!);
-                            if (!r) { setMmprojState('failed'); return; }
-                            setMmprojState('idle');
-                            setMmprojGB(r.gb.toFixed(2));
-                            setMmprojFile(r.file);
-                          }}
-                          className="px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
-                        >
-                          {mmprojState === 'loading' ? t.calc.hfLoading : t.calc.mmprojRead}
-                        </button>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
-                      {mmprojFile && Number(mmprojGB) > 0
-                        ? t.calc.mmprojFound.replace('{file}', mmprojFile).replace('{gb}', Number(mmprojGB).toFixed(2))
-                        : Number(mmprojGB) > 0 ? '' : `${t.calc.mmprojNone}${gguf ? '' : ` ${t.calc.mmprojManual}`}`}
-                    </p>
-                    {mmprojState === 'failed' && <p className="text-xs text-amber-300 mt-1">{t.calc.mmprojFailed}</p>}
-                  </div>
-                );
-              })()}
               {mode === 'forward' && (
                 <>
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.quant}</label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {commonQuants.map(q => (
+                    <button key={q} type="button" aria-pressed={selectedQuant === q}
+                      onClick={() => { setSelectedQuant(q); setFormatGroup(findFormatGroup(q)); }}
+                      className={cn('px-2.5 py-1 rounded-lg text-xs font-mono border', selectedQuant === q ? 'bg-violet-500/20 text-violet-200 border-violet-500/30' : 'text-slate-400 border-white/[0.06] hover:text-slate-200')}
+                    >{q}</button>
+                  ))}
+                </div>
+                <button type="button" aria-expanded={showAllQuants} aria-controls="calc-all-quants"
+                  onClick={() => setAllQuantsOpen(!showAllQuants)}
+                  className="min-h-[36px] text-xs text-violet-300 hover:text-violet-200 mb-2"
+                >{t.calc.allQuantLevels.replace('{n}', String(quantCount))}</button>
+                <div id="calc-all-quants" hidden={!showAllQuants}>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {(Object.keys(quantGroups) as Array<keyof typeof quantGroups>).map(g => (
                     <button
@@ -1302,6 +1184,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       {q}
                     </button>
                   ))}
+                </div>
                 </div>
               </div>
                 </>
@@ -1520,6 +1403,202 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 )}
               </div>
 
+            </>
+          )}
+
+          {mode !== 'finetune' && (
+          <>
+          {/* Shared: context + batch */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-medium text-slate-400">{t.calc.context}</label>
+              <span className="font-mono text-xs text-violet-300">
+                {contextLabel(contextLen)}
+                <span className="ml-1.5 text-[10px] font-normal text-slate-500">
+                  {contextLen.toLocaleString('en-US')} {t.calc.tokens}
+                </span>
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {CONTEXT_PRESETS.map(p => (
+                <button
+                  key={p}
+                  onClick={() => setContextLen(p)}
+                  aria-pressed={contextLen === p}
+                  // The chip is a rounded label; the exact token count is what
+                  // the number actually means, so it is the accessible name.
+                  aria-label={exactLabel(p)}
+                  title={exactLabel(p)}
+                  className={cn(
+                    'px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
+                    contextLen === p
+                      ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
+                      : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                  )}
+                >
+                  {contextLabel(p)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <button type="button" aria-expanded={moreOpen} aria-controls="calc-more-options"
+              onClick={() => setMoreOpen(!moreOpen)}
+              className="flex items-center gap-2 min-h-[44px] text-sm text-violet-300 hover:text-violet-200"
+            >
+              <ChevronDown size={14} className={moreOpen ? 'rotate-180' : ''} />
+              {t.calc.moreOptions}{advancedChanged > 0 ? ` · ${t.calc.advancedChanged.replace('{n}', String(advancedChanged))}` : ''}
+            </button>
+            <p className="text-xs text-slate-500">{t.calc.advancedDefaults}</p>
+            <div id="calc-more-options" hidden={!moreOpen}>
+              <div className="space-y-5 pt-4">
+              {mode === 'forward' && profileGpu && canStack(profileGpu) && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Array.from({ length: MAX_CARDS - profileExtras.length }, (_, i) => i + 1).map(n => (
+                      <button
+                        key={n}
+                        onClick={() => setCards(n)}
+                        aria-pressed={cards === n}
+                        className={cn(
+                          'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
+                          cards === n
+                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
+                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                        )}
+                      >
+                        {n}×
+                      </button>
+                    ))}
+                  </div>
+                  {cards > 1 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.cardCountNote.split('{n}').join(String(cards))}</p>}
+                  {/* A second, different card in the same machine — the most
+                      common hobbyist rig, which the identical-card count could
+                      not describe. Same backend only: one build drives them. */}
+                  {profileExtras.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {profileExtras.map((g, i) => (
+                        <button
+                          key={`${g.id}-${i}`}
+                          onClick={() => setExtraIds(ids => ids.filter((_, j) => j !== i))}
+                          aria-label={t.calc.extraCardRemove.replace('{gpu}', g.name)}
+                          className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-violet-500/15 text-violet-200 border-violet-500/30"
+                        >
+                          + {g.name} <span aria-hidden="true">×</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {profileCards + profileExtras.length < MAX_CARDS && (
+                    <div className="relative mt-2">
+                      <select
+                        aria-label={t.calc.extraCardAdd}
+                        value=""
+                        onChange={e => { const id = e.target.value; if (id) setExtraIds(ids => [...ids, id]); }}
+                        className="w-full appearance-none bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-violet-500/50"
+                      >
+                        <option value="">+ {t.calc.extraCardAdd}</option>
+                        {gpuDatabase
+                          .filter(g => canStack(g) && backendFor(g) === backendFor(profileGpu))
+                          .map(g => <option key={g.id} value={g.id}>{g.name} ({g.vram} GB)</option>)}
+                      </select>
+                      <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    </div>
+                  )}
+                  {profileExtras.length > 0 && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">{t.calc.extraCardNote}</p>}
+                </div>
+              )}
+
+              {mode === 'forward' && (profileGpu || savedRigs.length > 0) && (() => {
+                const nameOf = (r: { gpuId: string; cards: number; extra: string[] }) => {
+                  const g = gpuDatabase.find(x => x.id === r.gpuId);
+                  return [`${r.cards > 1 ? `${r.cards}× ` : ''}${g?.name ?? r.gpuId}`, ...r.extra.map(id => gpuDatabase.find(x => x.id === id)?.name ?? id)].join(' + ');
+                };
+                const current = profileGpu ? { gpuId: profileGpu.id, cards: profileCards, extra: profileExtras.map(g => g.id) } : null;
+                const same = (a: { gpuId: string; cards: number; extra: string[] }, b: typeof a) => a.gpuId === b.gpuId && a.cards === b.cards && a.extra.join() === b.extra.join();
+                return (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {savedRigs.length > 0 && <span className="text-[11px] text-slate-600">{t.calc.rigSaved}</span>}
+                    {savedRigs.map((r, i) => (
+                      <span key={i} className="inline-flex items-center rounded-lg border border-white/[0.08] text-xs">
+                        <button
+                          onClick={() => { setGpuId(r.gpuId); setCards(r.cards); setExtraIds(r.extra); }}
+                          aria-pressed={!!current && same(current, r)}
+                          className={cn('px-2.5 py-1 min-h-[36px] sm:min-h-0', current && same(current, r) ? 'text-violet-200' : 'text-slate-300 hover:text-violet-200')}
+                        >
+                          {nameOf(r)}
+                        </button>
+                        <button
+                          onClick={() => storeRigs(savedRigs.filter((_, j) => j !== i))}
+                          aria-label={t.calc.rigRemove.replace('{rig}', nameOf(r))}
+                          className="px-2 py-1 text-slate-600 hover:text-slate-300 border-l border-white/[0.06]"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {current && !savedRigs.some(r => same(r, current)) && (
+                      <button
+                        onClick={() => storeRigs([...savedRigs, current].slice(-5))}
+                        className="px-2.5 py-1 min-h-[36px] sm:min-h-0 rounded-lg text-xs text-violet-300 border border-dashed border-violet-500/30 hover:text-violet-200"
+                      >
+                        + {t.calc.rigSave}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
+
+
+              {mode === 'forward' && ((selectedModel && hasImageInput(selectedModel.id)) || selectedModelId === 'custom') && (() => {
+                const repo = selectedModel ? hfRepoMap[selectedModel.id] : undefined;
+                const gguf = !!repo && /-GGUF$/i.test(repo);
+                return (
+                  <div>
+                    <label htmlFor="calc-mmproj" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.mmprojLabel}</label>
+                    <div className="flex gap-2">
+                      <input
+                        id="calc-mmproj"
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={mmprojGB}
+                        onChange={e => { setMmprojGB(e.target.value); setMmprojFile(''); }}
+                        placeholder={t.calc.mmprojPlaceholder}
+                        className="w-32 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
+                      />
+                      {gguf && (
+                        <button
+                          type="button"
+                          disabled={mmprojState === 'loading'}
+                          onClick={async () => {
+                            setMmprojState('loading');
+                            const r = await mmprojFromHub(repo!);
+                            if (!r) { setMmprojState('failed'); return; }
+                            setMmprojState('idle');
+                            setMmprojGB(r.gb.toFixed(2));
+                            setMmprojFile(r.file);
+                          }}
+                          className="px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
+                        >
+                          {mmprojState === 'loading' ? t.calc.hfLoading : t.calc.mmprojRead}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
+                      {mmprojFile && Number(mmprojGB) > 0
+                        ? t.calc.mmprojFound.replace('{file}', mmprojFile).replace('{gb}', Number(mmprojGB).toFixed(2))
+                        : Number(mmprojGB) > 0 ? '' : `${t.calc.mmprojNone}${gguf ? '' : ` ${t.calc.mmprojManual}`}`}
+                    </p>
+                    {mmprojState === 'failed' && <p className="text-xs text-amber-300 mt-1">{t.calc.mmprojFailed}</p>}
+                  </div>
+                );
+              })()}
+
+                {mode === 'reverse' && (
+                  <>
               {selectedGpu && canStack(selectedGpu) && (
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.cardCount}</p>
@@ -1607,45 +1686,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 />
                 <span className="text-xs text-slate-400">{t.calc.bestPerModel}</span>
               </label>
-            </>
-          )}
 
-          {mode !== 'finetune' && (
-          <>
-          {/* Shared: context + batch */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-medium text-slate-400">{t.calc.context}</label>
-              <span className="font-mono text-xs text-violet-300">
-                {contextLabel(contextLen)}
-                <span className="ml-1.5 text-[10px] font-normal text-slate-500">
-                  {contextLen.toLocaleString('en-US')} {t.calc.tokens}
-                </span>
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {CONTEXT_PRESETS.map(p => (
-                <button
-                  key={p}
-                  onClick={() => setContextLen(p)}
-                  aria-pressed={contextLen === p}
-                  // The chip is a rounded label; the exact token count is what
-                  // the number actually means, so it is the accessible name.
-                  aria-label={exactLabel(p)}
-                  title={exactLabel(p)}
-                  className={cn(
-                    'px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
-                    contextLen === p
-                      ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                      : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
-                  )}
-                >
-                  {contextLabel(p)}
-                </button>
-              ))}
-            </div>
-          </div>
-
+                  </>
+                )}
           <div>
             <p className="text-xs font-medium text-slate-400 mb-1.5">{t.calc.kvCacheType}</p>
             <div className="flex flex-wrap gap-1.5">
@@ -1689,6 +1732,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
             />
             <div className="flex justify-between text-xs text-slate-600 mt-1">
               <span>1</span><span>4</span><span>8</span><span>16</span>
+            </div>
+          </div>
+
+              </div>
             </div>
           </div>
           </>

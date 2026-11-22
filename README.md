@@ -169,6 +169,8 @@ mostly-MXFP4 MoE weights, so its Q8_0 is 5.10 bpw, not 8.5). Reverse mode has al
 
 ### VRAM calculator modes (`components/tools/VRAMCalculator.tsx`)
 
+Inference modes lead with common controls: GPU and context in reverse; model, GPU, quant and context in forward. More options holds advanced hardware/cache/concurrency choices and opens automatically for non-default advanced settings, with a changed-settings count. Its open state stays local to the UI, not URLs or profiles. Forward quant selection starts with common GGUF levels plus the selected/model-reference levels; All quant levels retains every format and level. Pure presentation helpers live in `lib/utils/calc-simplify.ts`, checked by `scripts/check-calc-simplify.ts` in `npm test`. Sizing and persisted settings are unchanged.
+
 The calculator supports two modes, toggled at the top of the page:
 
 | Mode | Direction | Use case |
@@ -531,6 +533,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Simpler calculator controls
+
+- Both languages now lead with common inference choices and tuck advanced settings into More options, automatically opened for non-default settings with a changed count. Forward quant chips show common levels first, with all levels still available. Existing URLs, share snapshots, profiles and saved rigs retain their settings; sizing and benchmark data are unchanged.
 
 ### 2026-11-22 — Generation speed beside the VRAM fit verdict
 
