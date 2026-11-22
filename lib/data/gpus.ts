@@ -6,6 +6,8 @@ export interface GPU {
   isUnified?: boolean;
   isCPU?: boolean;
   isLaptop?: boolean;
+  isIntegrated?: boolean;
+  cudaComputeCapability?: number;
   /** Source for the published hardware specifications, when recorded. */
   specUrl?: string;
   icon: string;
@@ -47,6 +49,23 @@ const radeonLaptopLaunch = 'https://web.archive.org/web/20230516185750/https://w
 const radeonLaptopDefaults = { type: 'amd', icon: '🔴', memType: 'GDDR6', isLaptop: true, addedAt: '2026-11-22' } as const;
 
 export const gpuDatabase: GPU[] = [
+  { id: 'ryzen-ai-max-395-64', name: 'Ryzen AI Max+ 395 64G', vram: 48, type: 'amd', isIntegrated: true, icon: '🔴', bandwidth: 256, memType: 'LPDDR5X-8000', addedAt: '2026-11-22', specUrl: 'https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html', bandwidthNote: { en: '64 GB unified system memory; this row budgets up to 48 GB GPU allocation on Windows with AMD Variable Graphics Memory (OEM/BIOS dependent). Radeon 8060S shares the 256-bit bus with the CPU. Not 64 GB of dedicated VRAM.', zh: '整机统一内存 64 GB；本行按 Windows 下 AMD Variable Graphics Memory 最多分配 48 GB 给 GPU 估算（取决于厂商与 BIOS）。Radeon 8060S 与 CPU 共享 256 位总线，并非 64 GB 独立显存。' } },
+  { id: 'ryzen-ai-max-395-128', name: 'Ryzen AI Max+ 395 128G', vram: 96, type: 'amd', isIntegrated: true, icon: '🔴', bandwidth: 256, memType: 'LPDDR5X-8000', addedAt: '2026-11-22', specUrl: 'https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html', bandwidthNote: { en: '128 GB unified system memory; this row uses the Windows AMD Variable Graphics Memory ceiling of 96 GB GPU allocation, not a Linux-tuned budget. Radeon 8060S shares the 256-bit bus with the CPU. Not 128 GB of dedicated VRAM.', zh: '整机统一内存 128 GB；本行采用 Windows 下 AMD Variable Graphics Memory 最多分配 96 GB 给 GPU 的上限，不采用 Linux 调优后的容量。Radeon 8060S 与 CPU 共享 256 位总线，并非 128 GB 独立显存。' } },
+  { id: 'gtx1080ti', name: 'GTX 1080 Ti 11G', vram: 11, type: 'nvidia-consumer', cudaComputeCapability: 6.1, icon: '🟢', bandwidth: 484, memType: 'GDDR5X', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-gtx-1080-ti.c2877' },
+  { id: 'rtx2060', name: 'RTX 2060 6G', vram: 6, type: 'nvidia-consumer', icon: '🟢', bandwidth: 336, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-2060.c3310' },
+  { id: 'rtx2060-12', name: 'RTX 2060 12G', vram: 12, type: 'nvidia-consumer', icon: '🟢', bandwidth: 336, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-2060-12-gb.c3836' },
+  { id: 'rtx2070', name: 'RTX 2070 8G', vram: 8, type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-2070.c3252' },
+  { id: 'rtx2080', name: 'RTX 2080 8G', vram: 8, type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-2080.c3224' },
+  { id: 'rtx2080ti', name: 'RTX 2080 Ti 11G', vram: 11, type: 'nvidia-consumer', icon: '🟢', bandwidth: 616, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-2080-ti.c3305' },
+  { id: 'rtx3060ti', name: 'RTX 3060 Ti 8G', vram: 8, type: 'nvidia-consumer', icon: '🟢', bandwidth: 448, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-3060-ti.c3681', bandwidthNote: { en: 'Original GDDR6 version; not the later GDDR6X variant.', zh: '原版 GDDR6 配置，并非后出的 GDDR6X 版本。' } },
+  { id: 'rtx3050', name: 'RTX 3050 8G', vram: 8, type: 'nvidia-consumer', icon: '🟢', bandwidth: 224, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.techpowerup.com/gpu-specs/geforce-rtx-3050-8-gb.c3858' },
+  { id: 'v100-16', name: 'Tesla V100 PCIe 16G', vram: 16, type: 'nvidia-pro', cudaComputeCapability: 7.0, icon: '🔵', bandwidth: 900, memType: 'HBM2', addedAt: '2026-11-22', specUrl: 'https://images.nvidia.com/content/technologies/volta/pdf/tesla-volta-v100-datasheet.pdf' },
+  { id: 'v100-32', name: 'Tesla V100 PCIe 32G', vram: 32, type: 'nvidia-pro', cudaComputeCapability: 7.0, icon: '🔵', bandwidth: 900, memType: 'HBM2', addedAt: '2026-11-22', specUrl: 'https://images.nvidia.com/content/technologies/volta/pdf/tesla-volta-v100-datasheet.pdf' },
+  { id: 't4', name: 'Tesla T4 16G', vram: 16, type: 'nvidia-pro', icon: '🔵', bandwidth: 320, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-t4/t4-tensor-core-product-brief.pdf', bandwidthNote: { en: 'Peak bandwidth from the product brief; NVIDIA also lists 300 GB/s in its datasheet.', zh: '采用产品简介中的峰值带宽；NVIDIA 的数据表另列为 300 GB/s。' } },
+  { id: 'rtxa6000', name: 'RTX A6000 48G', vram: 48, type: 'nvidia-pro', icon: '🔵', bandwidth: 768, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/content/dam/en-zz/Solutions/products/workstations/nvidia-rtx-a6000-datasheet.pdf' },
+  { id: 'rtx6000-ada', name: 'RTX 6000 Ada 48G', vram: 48, type: 'nvidia-pro', icon: '🔵', bandwidth: 960, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/en-us/products/workstations/rtx-6000/' },
+  { id: 'rtx2080ti-22', name: 'RTX 2080 Ti 22G (Mod/改装)', vram: 22, type: 'nvidia-consumer', icon: '🟢', bandwidth: 616, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/pre-modded-rtx-2080-ti-cards-with-22gb-of-vram-surface-on-ebay-for-usd500-hong-kong-based-seller-offers-ai-friendly-memory-mod-for-a-reasonable-price', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 22 GB comes from the mod; bandwidth assumes stock 14 Gbps memory on the unchanged 352-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。22 GB 容量来自改装；带宽沿用原卡 14 Gbps 显存及 352 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
+  { id: 'rtx4090-48', name: 'RTX 4090 48G (Mod/改装)', vram: 48, type: 'nvidia-consumer', icon: '🟢', bandwidth: 1008, memType: 'GDDR6X', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/blower-style-rtx-4090-48gb-teardown-reveals-dual-sided-memory-configuration-pcb-design-echoes-the-rtx-3090', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 48 GB comes from a modified board; bandwidth assumes stock 21 Gbps memory on the unchanged 384-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。48 GB 容量来自改装电路板；带宽沿用原卡 21 Gbps 显存及 384 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
   /*
    * Capacities verified 2026-09-11 against vendor and press specifications.
    * VRAM is the only field the sizing math reads, and it is the only claim made
@@ -105,8 +124,8 @@ export const gpuDatabase: GPU[] = [
    * bandwidths are NVIDIA's own published specs for the cards, unchanged
    * since release; no local benchmark runs recorded on either yet.
    */
-  { id: 'p100-16',     name: 'Tesla P100 16G',        vram: 16,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 732, memType: 'HBM2', },
-  { id: 'p40-24',      name: 'Tesla P40 24G',         vram: 24,  type: 'nvidia-pro',      icon: '🔵', bandwidth: 346, memType: 'GDDR5', },
+  { id: 'p100-16',     name: 'Tesla P100 16G',        vram: 16,  type: 'nvidia-pro', cudaComputeCapability: 6.0, icon: '🔵', bandwidth: 732, memType: 'HBM2', },
+  { id: 'p40-24',      name: 'Tesla P40 24G',         vram: 24,  type: 'nvidia-pro', cudaComputeCapability: 6.1, icon: '🔵', bandwidth: 346, memType: 'GDDR5', },
   { id: 'm5-ultra-512', name: 'Mac M5 Ultra 512G',    vram: 512, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 1200, memType: 'Unified LPDDR5X', },
   { id: 'm5-ultra-256', name: 'Mac M5 Ultra 256G',    vram: 256, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 1200, memType: 'Unified LPDDR5X', },
   { id: 'm5-max-128',  name: 'Mac M5 Max 128G',       vram: 128, type: 'apple', isUnified: true, icon: '🍎', bandwidth: 614, memType: 'Unified LPDDR5X', },

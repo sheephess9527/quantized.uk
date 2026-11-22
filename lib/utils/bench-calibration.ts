@@ -5,7 +5,7 @@ import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { benchmarkMethodology } from '@/lib/data/meta';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { sameModel, sameQuant } from '@/lib/utils/speed-label';
-import { calcVRAM } from '@/lib/utils/vram';
+import { calcVRAM, KV_CACHE_TYPES } from '@/lib/utils/vram';
 import { rooflineTokS } from '@/lib/utils/roofline';
 import { isMoE } from '@/lib/utils/model-meta';
 
@@ -58,9 +58,23 @@ export function calibrationRows(): CalibrationRow[] {
       bpw: quant.bpw,
       contextLength: benchmarkMethodology.context,
       batchSize: benchmarkMethodology.batch,
+      kvBytesPerValue: KV_CACHE_TYPES.f16,
     }).totalGB;
     const moe = isMoE(model);
     const ceiling = gpu && !moe ? rooflineTokS(gpu, model, quant) : undefined;
     return { row, model, quant, gpu, estimateGB, ceiling, moe };
   });
+}
+
+export function memoryAccuracy(rows: readonly CalibrationRow[] = calibrationRows()) {
+  const gaps = rows.flatMap(({ row, estimateGB }) =>
+    estimateGB === undefined ? [] : [Math.abs(estimateGB - row.vramUsedGB)],
+  );
+  return {
+    total: rows.length,
+    compared: gaps.length,
+    hardware: new Set(rows.map(({ row }) => row.hardware)).size,
+    meanAbsoluteError: gaps.length ? gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length : null,
+    maxAbsoluteError: gaps.length ? Math.max(...gaps) : null,
+  };
 }

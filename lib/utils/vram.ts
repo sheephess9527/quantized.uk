@@ -29,6 +29,7 @@ export interface CalcInput {
     windowTokens?: number;
     fullKvHeads?: number;
     fullHeadDim?: number;
+    compressed?: { layers: number; values: number; ratio: number; pad?: number }[];
   };
 }
 
@@ -118,12 +119,15 @@ export const KV_CACHE_TYPES = {
 } as const;
 export type KvCacheType = keyof typeof KV_CACHE_TYPES;
 
+export const WEIGHT_OVERHEAD = 0.02;
+export const ACTIVATION_BUFFER = 0.10;
+
 export function calcVRAM(input: CalcInput): CalcResult {
   const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize, attention } = input;
-  const kvValueBytes = input.kvBytesPerValue ?? 2;
+  const kvValueBytes = input.kvBytesPerValue ?? KV_CACHE_TYPES.f16;
 
   // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
-  const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * 1.02;
+  const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * (1 + WEIGHT_OVERHEAD);
 
   // KV cache: 2 (K+V) × kvHeads × headDim × 2 bytes (fp16) per layer per token.
   //
@@ -144,14 +148,20 @@ export function calcVRAM(input: CalcInput): CalcResult {
   const fullLayers = attention?.fullLayers ?? layers;
   const windowLayers = attention?.windowLayers ?? 0;
   const windowSpan = Math.min(contextLength, attention?.windowTokens ?? contextLength);
+  // Compressed / index caches: one K-only row per `ratio` tokens (DeepSeek V4 CSA/HCA, sparse-attention indexers).
+  const compressedBytes = (attention?.compressed ?? []).reduce((sum, c) => {
+    const rows = Math.ceil(contextLength / c.ratio);
+    const padded = c.pad ? Math.ceil(rows / c.pad) * c.pad : rows;
+    return sum + c.layers * c.values * padded * batchSize * kvValueBytes;
+  }, 0);
   const kvBytes =
-    fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
+    fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan + compressedBytes;
   const kvCacheGB = kvBytes / (1024 ** 3);
 
   const extraGB = Math.max(0, input.extraGB ?? 0);
 
   // Activation buffer: ~10% of (weights + kvcache [+ any encoder])
-  const activationsGB = (modelWeightsGB + kvCacheGB + extraGB) * 0.10;
+  const activationsGB = (modelWeightsGB + kvCacheGB + extraGB) * ACTIVATION_BUFFER;
 
   const totalGB = modelWeightsGB + kvCacheGB + extraGB + activationsGB;
 
@@ -173,9 +183,11 @@ function round(n: number, decimals = 2) {
  * RAM behind it to absorb a small overrun; a machine whose only memory is the
  * pool being judged passes 1.0 (see `tightCeiling()` in `gpu-page.ts`).
  */
+export const COMFORTABLE_RATIO = 0.88;
+
 export function getVerdict(totalGB: number, gpuVram: number, tightCeiling = 1.05): 'green' | 'yellow' | 'red' {
   const ratio = totalGB / gpuVram;
-  if (ratio <= 0.88) return 'green';
+  if (ratio <= COMFORTABLE_RATIO) return 'green';
   if (ratio <= tightCeiling) return 'yellow';
   return 'red';
 }

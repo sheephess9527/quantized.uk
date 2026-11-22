@@ -18,6 +18,51 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'The footer now links to Methodology & accuracy. See how the calculator estimates weights, KV cache and runtime memory, where the data comes from, and how its estimates compare with recorded memory use.',
+    zh: '页脚新增“估算方法与准确性”，说明计算器如何估算模型权重、KV 缓存和运行内存，数据来自哪里，以及估算值与实测占用相差多少。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
+    zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'GTX 1080 Ti, V100, P100 and P40 recommendations no longer offer AWQ builds that require newer CUDA hardware. Calculator launch commands respect the same hardware-format restriction; GGUF choices remain available.',
+    zh: 'GTX 1080 Ti、V100、P100 与 P40 的推荐结果不再提供需要更新 CUDA 硬件的 AWQ 版本。计算器启动命令遵循相同的硬件与格式限制，GGUF 选项仍然可用。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Browser detection no longer mistakes an RTX 2060 Super for a base RTX 2060 with a different memory capacity. Unindexed 2060 Super cards now require a manual hardware choice.',
+    zh: '浏览器识别不再将 RTX 2060 Super 误认为显存容量不同的普通 RTX 2060。尚未收录的 2060 Super 现在需要手动选择硬件。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Integrated-APU GPU pages now explain that shared-memory bandwidth limits generation speed even when large models fit, and separate ROCm/Vulkan setup compatibility from capacity. The RTX 2080 Ti specification link now goes directly to its GPU database entry.',
+    zh: '集成 APU 的显卡页面现明确说明：大模型即使装得下，生成速度仍受共享内存带宽限制；ROCm/Vulkan 配置兼容性与容量是两个问题。RTX 2080 Ti 的规格链接现直接指向该显卡的数据库条目。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Added 17 hardware configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), older GeForce cards from GTX 1080 Ti through RTX 3060 Ti, V100, T4, RTX A6000 and RTX 6000 Ada. Unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB memory mods are clearly labelled with source links and caveats. Browser detection asks for memory size when stock and modified cards share a renderer.',
+    zh: '新增 17 种硬件配置：Ryzen AI Max+ 395 64/128 GB 整机（按 Windows 下 48/96 GB GPU 分配量估算）、GTX 1080 Ti 至 RTX 3060 Ti 等旧款 GeForce、V100、T4、RTX A6000 与 RTX 6000 Ada。RTX 2080 Ti 22 GB 和 RTX 4090 48 GB 非官方扩容卡均明确标注来源与风险。原卡和扩容卡报告相同渲染器时，浏览器识别会请你确认容量。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and MiniMax M3.1 Flash now have computed VRAM figures instead of sitting on the pending page. The calculator now counts compressed and sparse-attention index caches, with each layout taken from the published configs, GGUF headers and llama.cpp’s cache code.',
+    zh: 'DeepSeek-V4-Flash-0731、DeepSeek-V4.1-Flash-1017、GLM-5.3-Flash、Kimi K3.1 Pro 和 MiniMax M3.1 Flash 已有计算显存数据，不再停留在待收录页。计算器现在会计入压缩缓存和稀疏注意力索引缓存，每种布局都取自官方 config、GGUF 头和 llama.cpp 的缓存代码。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Recorded downloads in model × GPU answer boxes now show the shared file provenance line: repository link, filename, size, parts and verification date.',
+    zh: '模型 × 显卡答案框中的已记录下载现使用统一文件来源展示：仓库链接、文件名、大小、分片数和核验日期。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Model × GPU pages now open with a recommended download, weights/file size, longest comfortable estimated context and a worked memory calculation with headroom. Both languages reuse the calculator’s green-fit verdict, including unusual cache layouts, with warnings for tight-only fits and offload guidance when nothing fits.',
+    zh: '模型 × 显卡页面现在首先展示推荐下载、权重/文件大小、预计最长从容运行上下文和含余量的显存手算过程。中英文均复用计算器的绿色适配判定，兼顾特殊缓存布局；仅能勉强运行时给出警告，无法容纳时提供卸载建议。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Corrected Qwen3 14B EXL2 4.65bpw to its measured RTX 4090 speed of 118 tok/s, restoring its measured badge. Automated checks now require stored speeds with exact RTX 4090 benchmark matches to agree with those measurements.',
     zh: 'Qwen3 14B EXL2 4.65bpw 的 RTX 4090 速度已修正为实测的 118 tok/s，恢复实测标记。自动检查现要求所有具有确切 RTX 4090 基准记录的已存速度与实测值一致。',
   },
