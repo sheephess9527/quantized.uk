@@ -1,12 +1,15 @@
 'use client';
 
+import { useState } from 'react';
+import FitControls from './FitControls';
+import { contextLabel } from '@/lib/utils/context-label';
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
-import { fitsOnGpu, gpuSlug } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 
 const TYPE_ORDER: GPU['type'][] = ['nvidia-consumer', 'nvidia-unified', 'nvidia-pro', 'amd', 'intel', 'apple', 'cpu'];
 const TYPE_LABEL: Record<GPU['type'], { en: string; zh: string }> = {
@@ -22,13 +25,15 @@ const TYPE_LABEL: Record<GPU['type'], { en: string; zh: string }> = {
 export default function GpuIndexContent() {
   const { t, lang } = useLanguage();
   const g = t.gpuPage;
+  const [contextLength, setContextLength] = useState(GPU_PAGE_CONTEXT);
+  const [batchSize, setBatchSize] = useState(1);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
       <Breadcrumbs items={[{ label: t.nav.home, href: '/' }, { label: g.allGpus }]} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{g.indexTitle}</h1>
-        <p className="text-slate-400 max-w-2xl">{g.indexSubtitle}</p>
+        <p className="text-slate-400 max-w-2xl">{g.indexSubtitle.replace('4K', contextLabel(contextLength))}</p>
         {/* A card page answers "what fits"; /best/ answers "what should I run". */}
         <Link
           href="/best/"
@@ -37,6 +42,8 @@ export default function GpuIndexContent() {
           {t.best.hubTitle} <ArrowRight size={14} />
         </Link>
       </div>
+
+      <FitControls contextLength={contextLength} batchSize={batchSize} onContextChange={setContextLength} onBatchChange={setBatchSize} />
 
       <div className="space-y-6">
         {TYPE_ORDER.map(type => {
@@ -54,7 +61,7 @@ export default function GpuIndexContent() {
                     >
                       <span className="text-sm text-slate-200 font-medium">{gpu.name}</span>
                       <span className="block text-xs text-slate-600 font-mono mt-0.5">
-                        {gpu.vram}GB · {t.gpuPage.indexFitCount.replace('{n}', String(fitsOnGpu(gpu).length)).replace('{total}', String(models.length))}
+                        {gpu.vram}GB · {t.gpuPage.indexFitCount.replace('{n}', String(fitsOnGpu(gpu, contextLength, batchSize).length)).replace('{total}', String(models.length))}
                       </span>
                     </Link>
                   </li>
