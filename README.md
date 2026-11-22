@@ -188,6 +188,8 @@ Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`,
 
 For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
+The forward run plan and reverse rows show published [LiveBench Overall scores](https://livebench.ai/) only for exact benchmarked checkpoints. These are model scores, not measurements of the selected quant. Each score links to its own release, and scores from different releases are not directly comparable. Reverse mode can show only scored results without changing fit or sort rules; the checkbox is local to the view. Empty-result actions preserve that choice when clearing an individual filter, and **Reset filters** turns it off. The calculator reads the pinned values in `lib/data/model-quality.ts` without a runtime request.
+
 **Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
 ```
@@ -632,6 +634,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - URL-only `minTok=10|20|40` and `feat=tools,code` omit defaults and ignore unknown values; existing `input=image` retains verified encoder accounting. Profiles and default recommendations are unchanged.
 - Initial implementation used the single-card bandwidth/active-MoE ceiling; the follow-up above replaces filtering/display with calibrated estimates while preserving the existing sort order.
 - `lib/data/model-facts.ts` records tool evidence only for Qwen3 4B, 8B and 32B: publisher HF `tokenizer_config.json` templates fetched on this date reference `tools`. Unknown models are not asserted unsupported, merely excluded when required. Code uses the existing category.
+
+### 2026-11-22 — Published model quality scores in the VRAM calculator
+
+- Added LiveBench Overall scores beside forward and reverse results in both languages. Scores link to their dated releases and are shown only for benchmarked checkpoints, never estimated for a model or quantization. A reverse results checkbox shows just the scored matches.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 
