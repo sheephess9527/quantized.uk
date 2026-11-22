@@ -1,5 +1,6 @@
 'use client';
 
+import RunProvenance from '@/components/benchmarks/RunProvenance';
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
@@ -21,7 +22,7 @@ const SAMPLE_KEYS = [
   ['Llama 3.1 8B', 'RTX 4090 24G', 'ExLlamaV2'],
   ['Qwen3 30B-A3B', 'RTX 4090 24G', 'llama.cpp'],
   ['Qwen2.5 32B', 'RTX 4090 24G', 'llama.cpp'],
-  ['Llama 3.1 8B', 'M2 Ultra 192G', 'llama.cpp'],
+  ['Llama 3.1 8B', 'M2 Ultra 192G', 'Ollama'],
   ['Llama 3.1 8B', 'M3 Max 48G', 'Ollama'],
   ['Llama 3.1 8B', 'RTX 3090 24G', 'ExLlamaV2'],
 ] as const;
@@ -61,7 +62,7 @@ export default function MeasuredCases() {
                 <td className="py-2.5 pr-3 text-slate-200">{row.model}</td>
                 <td className="py-2.5 pr-3 text-slate-400 font-mono text-xs">{row.hardware}</td>
                 <td className="py-2.5 pr-3 text-slate-500 font-mono text-xs">
-                  {row.framework} · {row.quant}
+                  {row.quant}<RunProvenance row={row} />
                 </td>
                 <td className="py-2.5 pr-3 text-right font-mono text-emerald-300">{row.speedTokSec}</td>
                 <td className="py-2.5 text-right font-mono text-slate-400">{row.vramUsedGB} GB</td>

@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'All 16 benchmark runs now show their historical runtime version and a measurement-date upper bound on the benchmark, homepage and GPU tables. Exact run dates were not recorded, so dates mean first publication, not a new measurement. The M2 Ultra runtime label is now consistently Ollama 0.3.14.',
+    zh: '全部 16 条基准记录现于基准页、首页与显卡实测表中显示历史运行时版本及测试日期上限。未记录确切测试日期，所示日期代表首次发布，并非重新测量。M2 Ultra 的运行时标签统一为 Ollama 0.3.14。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Share a GPU fit estimate on your own site: the calculator now offers compact English and Chinese iframe cards, plus Markdown links for model cards that cannot embed an iframe. Open “Embed this result” below a model-first result to copy either snippet. Unsupported quant formats are labelled as backend incompatibilities, not memory shortages. Unified-memory cards distinguish hardware memory from the usable budget.',
     zh: '现在可以在你的网站展示显存适配估算：计算器新增紧凑的中英文嵌入卡片，以及适用于不支持 iframe 的模型卡的 Markdown 链接。在按模型估算的结果下展开“嵌入此结果”即可复制。不支持的量化格式会标明平台不兼容，而非内存不足。统一内存卡片会区分硬件总容量与可用预算。',
   },

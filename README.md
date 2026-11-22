@@ -137,6 +137,11 @@ wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 
 ## 4. Key Implementation Notes
 
+### Benchmark data schema (`lib/data/benchmarks.ts`)
+
+`MatrixRow` holds `model`, `hardware`, `framework`, `quant`, `speedTokSec`, `vramUsedGB`, bilingual `notes`, plus required `runtimeVersion` (full historical runtime label) and `firstPublishedAt` (ISO day). The latter is the first publication of the matrix result, used only as an upper bound on its unknown measurement date: 2026-06-24, 2026-06-25 or 2026-07-22 from git introduction history. Never replace historical versions with current releases or describe publication bounds as exact run dates. `RunProvenance` renders these fields with bilingual labels on every matrix-row surface. `speedBenchmarks` remains separate chart data; overlapping model/hardware/quant keys must agree on framework.
+
+
 ### VRAM calculation (`lib/utils/vram.ts`)
 
 ```
@@ -522,6 +527,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Historical benchmark versions and publication-date bounds
+
+- All 16 matrix rows now record `runtimeVersion` and `firstPublishedAt`; benchmark and calibration tables, homepage samples and GPU measured tables show both in English and Chinese. Exact run dates were not retained: dates are first-publication bounds, not new measurement claims. No runs were repeated.
+- M2 Ultra is consistently Ollama 0.3.14. The only recorded llama.cpp version is `b4217 (CUDA backend)`, which cannot describe a Mac run; Ollama 0.3.14 is the recorded Mac runtime (M3 Max). This is an editorial reconciliation of incomplete historical provenance, not recovered raw run evidence.
+- `npm test` rejects missing versions, invalid/future publication dates and runtime disagreements between overlapping matrix/chart records. Regression cases perturb and restore those fields.
+
 
 ### 2026-11-22 — Embeddable GPU fit cards
 
