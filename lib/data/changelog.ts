@@ -18,6 +18,16 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'More options in the VRAM calculator now stays open when settings return to defaults or modes change. It still opens automatically for advanced settings from a link; only its button closes it.',
+    zh: '显存计算器的“更多选项”现在会在设置恢复默认值或切换模式时保持展开。链接带有高级设置时仍会自动展开，只有点击按钮才会收起。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'The VRAM calculator now leads with common choices. More options keeps advanced settings reachable and opens for changed settings; common quant levels appear first with every level still available. Existing share links, profiles and saved rigs keep working; estimates are unchanged.',
+    zh: '显存计算器现在优先展示常用选项，高级设置收进“更多选项”，存在非默认设置时自动展开。量化优先展示常用等级，仍可选择全部等级。原有分享链接、配置和已存设备组合继续有效，估算结果不变。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The hardware index and VRAM calculator now list 27 laptop GPU configurations from the GeForce RTX 30, 40 and 50 series and Radeon RX 7000 mobile series. Each GPU page links to its hardware specifications. When the browser names a supported laptop GPU, the calculator can suggest it and ask which memory size you have if more than one was sold.',
     zh: '显卡列表和显存计算器新增 27 种笔记本显卡配置，覆盖 GeForce RTX 30、40、50 系列和 Radeon RX 7000 移动系列。各显卡页面均提供硬件规格来源。浏览器能识别受支持的笔记本显卡时，计算器会推荐该型号；若有多个显存版本，则请你选择实际容量。',
   },

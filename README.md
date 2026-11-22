@@ -169,6 +169,8 @@ mostly-MXFP4 MoE weights, so its Q8_0 is 5.10 bpw, not 8.5). Reverse mode has al
 
 ### VRAM calculator modes (`components/tools/VRAMCalculator.tsx`)
 
+Inference modes lead with common controls: GPU and context in reverse; model, GPU, quant and context in forward. More options holds advanced hardware/cache/concurrency choices and opens automatically for non-default advanced settings, with a changed-settings count. Its open state stays local to the UI, not URLs or profiles. Forward quant selection starts with common GGUF levels plus the selected/model-reference levels; All quant levels retains every format and level. Pure presentation helpers live in `lib/utils/calc-simplify.ts`, checked by `scripts/check-calc-simplify.ts` in `npm test`. Sizing and persisted settings are unchanged.
+
 The calculator supports two modes, toggled at the top of the page:
 
 | Mode | Direction | Use case |
@@ -538,6 +540,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - The VRAM calculator's model search box accepts an Ollama tag (`qwen3:8b-q4_K_M`, `llama3.1:8b`, `ollama run gpt-oss:20b`, `ollama.com/library/…` URLs, `hf.co/{repo}:{quant}`). Pasting or pressing Enter on a recognised tag selects the indexed model and quant; a tag with no quant uses the file type Ollama downloads for it, and says so. Tags the index cannot vouch for (unknown library, unlisted size, a library tag that serves another checkpoint such as `deepseek-r1:8b`, `olmo-3:7b`, `devstral:24b`, an unknown quant or one the Ollama library does not publish as a suffix, an `hf.co` quant the index does not record for that repo, community uploads, unindexed HF repos) show a bilingual message and select nothing.
 - Data: `lib/data/ollama-tags.ts` (43 libraries, 81 rows, read from registry.ollama.ai on 2026-11-22). Resolver: `lib/utils/ollama-tag.ts` (no network at runtime). `npm test` adds `scripts/check-ollama-tags.ts` (`npm run check:ollama`); `npm run verify:ollama` re-reads the registry (network, manual).
+
+### 2026-11-22 — Simpler calculator controls
+
+- Integrated Ollama-tag paste into the visible model search while retaining laptop GPU selection/detection and the progressive advanced/quant controls.
+- Integrated main's laptop GPU grouping, single-card restrictions and speed/offload safeguards without changing the visible model search or progressive-control layout.
+- More options only auto-opens; resetting advanced settings to defaults or switching modes never closes it. Only its toggle button closes the panel.
+- Both languages now lead with common inference choices and tuck advanced settings into More options, automatically opened for non-default settings with a changed count. Forward quant chips show common levels first, with all levels still available. Existing URLs, share snapshots, profiles and saved rigs retain their settings; sizing and benchmark data are unchanged.
 
 ### 2026-11-22 — Laptop GPUs in hardware lists and detection
 
