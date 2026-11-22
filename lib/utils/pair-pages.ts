@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, COMFORTABLE_RATIO } from '@/lib/utils/vram';
 import {
   formatAllowed,
   gpuSlug,
@@ -48,7 +48,7 @@ export function pairAnswer(model: QuantModel, gpu: GPU) {
   let high = model.contextLength;
   while (low < high) {
     const mid = Math.ceil((low + high) / 2);
-    if (size(mid).totalGB <= capacityGB) low = mid;
+    if (size(mid).verdict === 'green') low = mid;
     else high = mid - 1;
   }
   const a = model.arch;
@@ -56,11 +56,13 @@ export function pairAnswer(model: QuantModel, gpu: GPU) {
   const window = a.attention?.windowLayers ?? 0;
   const contextLength = low;
   const workedContext = low || 1;
-  const fullTerm = `2 × ${full} × ${a.attention?.fullKvHeads ?? a.kvHeads} × ${a.attention?.fullHeadDim ?? a.headDim} × ${workedContext} × 2`;
-  const windowTerm = `2 × ${window} × ${a.kvHeads} × ${a.headDim} × ${Math.min(workedContext, a.attention?.windowTokens ?? workedContext)} × 2`;
+  const tokens = (n: number) => n.toLocaleString('en-US');
+  const fullTerm = `2 × ${full} × ${a.attention?.fullKvHeads ?? a.kvHeads} × ${a.attention?.fullHeadDim ?? a.headDim} × ${tokens(workedContext)} × 2`;
+  const windowTerm = `2 × ${window} × ${a.kvHeads} × ${a.headDim} × ${tokens(Math.min(workedContext, a.attention?.windowTokens ?? workedContext))} × 2`;
   return {
     quant: recommended.quant,
     capacityGB,
+    comfortableLimitGB: capacityGB * COMFORTABLE_RATIO,
     contextLength,
     workedContext,
     memory: size(workedContext),

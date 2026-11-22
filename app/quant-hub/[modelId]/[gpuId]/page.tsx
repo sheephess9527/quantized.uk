@@ -105,8 +105,8 @@ export default function PairPage({
     quant: `${answer.quant.format} ${answer.quant.level}`,
     weights: answer.memory.modelWeightsGB.toFixed(2),
     file: answer.quant.source ? fill(t.fileSize, { file: (answer.quant.source.bytes / 1024 ** 3).toFixed(2) }) : '',
-    ctx: String(answer.contextLength),
-    max: String(model.contextLength),
+    ctx: answer.contextLength.toLocaleString('en-US'),
+    max: model.contextLength.toLocaleString('en-US'),
     params: String(model.params),
     bpw: String(answer.quant.bpw),
     kvFormula: answer.kvFormula,
@@ -114,6 +114,8 @@ export default function PairPage({
     activation: answer.memory.activationsGB.toFixed(2),
     total: answer.memory.totalGB.toFixed(2),
     capacity: answer.capacityGB.toFixed(2),
+    limit: answer.comfortableLimitGB.toFixed(2),
+    headroom: answer.memory.headroomGB.toFixed(2),
     comparison: answer.contextLength ? '≤' : '>',
   };
   const values = {
@@ -163,7 +165,7 @@ export default function PairPage({
           {answer.contextLength ? fill(t.download, worked) : answer.anyQuantFits ? t.noContext : t.noQuant}
         </p>
         <p>{answer.contextLength ? fill(t.longest, worked) : `${worked.quant} · ${worked.weights} GiB`}</p>
-        <p className="text-sm text-slate-300 leading-relaxed">{fill(t.calculation, { ...worked, ctx: String(answer.workedContext) })}</p>
+        <p className="text-sm text-slate-300 leading-relaxed">{fill(t.calculation, { ...worked, ctx: answer.workedContext.toLocaleString('en-US') })}</p>
         <p className="text-xs text-slate-400">{t.sizingCaveat}</p>
       </section>
       <p className="text-xl text-violet-300">{fill(t.answer, values)}</p>

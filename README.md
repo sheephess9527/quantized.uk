@@ -34,7 +34,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, quick links to tools (format heat ranking lives on `/formats/`; the radar chart was removed 2026-10-03) |
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial). Filters follow same-page navigation and back/forward; Enter search preserves the GPU. |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
-| **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest fitting context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
+| **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 105 hardware configurations, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
@@ -541,7 +541,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Answer-first model × GPU pages
 
-- Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum fitting context (binary search capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve.
+- Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
 - Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables and route eligibility are unchanged; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. `dataLastUpdated` and `sizingChangedAt` already match this release date.
 
 ### 2026-11-22 — Sourced-data homepage tagline

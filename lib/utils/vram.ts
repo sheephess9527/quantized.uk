@@ -173,9 +173,11 @@ function round(n: number, decimals = 2) {
  * RAM behind it to absorb a small overrun; a machine whose only memory is the
  * pool being judged passes 1.0 (see `tightCeiling()` in `gpu-page.ts`).
  */
+export const COMFORTABLE_RATIO = 0.88;
+
 export function getVerdict(totalGB: number, gpuVram: number, tightCeiling = 1.05): 'green' | 'yellow' | 'red' {
   const ratio = totalGB / gpuVram;
-  if (ratio <= 0.88) return 'green';
+  if (ratio <= COMFORTABLE_RATIO) return 'green';
   if (ratio <= tightCeiling) return 'yellow';
   return 'red';
 }
