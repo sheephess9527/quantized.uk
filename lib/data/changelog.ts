@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-23',
+    en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
+    zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
+  },
+  {
     date: '2026-11-22',
     en: 'DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and MiniMax M3.1 Flash now have computed VRAM figures instead of sitting on the pending page. The calculator now counts compressed and sparse-attention index caches, with each layout taken from the published configs, GGUF headers and llama.cpp’s cache code.',
     zh: 'DeepSeek-V4-Flash-0731、DeepSeek-V4.1-Flash-1017、GLM-5.3-Flash、Kimi K3.1 Pro 和 MiniMax M3.1 Flash 已有计算显存数据，不再停留在待收录页。计算器现在会计入压缩缓存和稀疏注意力索引缓存，每种布局都取自官方 config、GGUF 头和 llama.cpp 的缓存代码。',
