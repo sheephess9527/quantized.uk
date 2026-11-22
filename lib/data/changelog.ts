@@ -63,6 +63,31 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'Corrected Qwen3 14B EXL2 4.65bpw to its measured RTX 4090 speed of 118 tok/s, restoring its measured badge. Automated checks now require stored speeds with exact RTX 4090 benchmark matches to agree with those measurements.',
+    zh: 'Qwen3 14B EXL2 4.65bpw 的 RTX 4090 速度已修正为实测的 118 tok/s，恢复实测标记。自动检查现要求所有具有确切 RTX 4090 基准记录的已存速度与实测值一致。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Reverse calculator share previews now respect minimum-speed and required-feature filters. Shared page descriptions and preview images use the same filtered configuration count, including the multi-device speed-minimum exception.',
+    zh: '反向计算器的分享预览现已计入最低速度与必需功能筛选。分享页面描述和预览图使用相同的筛选后配置数，并遵循多设备暂不应用最低速度的规则。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Reverse results now show just one selected-card speed: an exact-quant measurement when available, otherwise a calibrated estimate. Multi-device rigs temporarily turn off the minimum with an explanation; empty results offer targeted filter clearing. Measured badges elsewhere now require the exact RTX 4090 quant and matching recorded speed.',
+    zh: '反向结果现在只显示一个当前显卡速度：优先使用同量化实测，否则使用校准估算。多设备时暂不应用最低速度并说明原因；空结果可单独清除导致无结果的筛选。其他页面的实测标记现须匹配 RTX 4090 的确切量化与已记录速度。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Reverse calculator tool-calling evidence now covers 113 models after checking all 151 indexed checkpoints. Minimum speed uses calibrated estimates for supported single-card dense GGUF models, not optimistic bandwidth ceilings. Unknown and stacked-card speeds do not pass a minimum; existing sort order is preserved.',
+    zh: '遍查全部 151 个模型检查点后，反向计算器的工具调用证据现覆盖 113 个模型。最低速度改用支持范围内的单卡稠密 GGUF 校准估算，不再使用偏乐观的带宽上限。未知速度与多卡不满足最低速度要求；原有排序保持不变。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Find models for your GPU with minimum estimated speed and required image, tool-calling or code features. Requirements combine; unknown speed or unrecorded tool support does not pass. Speed ceilings are estimates, not measurements; filters travel in links, not saved hardware profiles.',
+    zh: '按最低估算速度及图像、工具调用、代码必需功能筛选适合 GPU 的模型。多项条件须同时满足；未知速度或未记录的工具支持不计入。速度上限是估算而非实测；筛选随链接分享，不写入硬件配置。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

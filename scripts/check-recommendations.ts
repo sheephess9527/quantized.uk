@@ -6,13 +6,40 @@ import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM, KV_CACHE_TYPES } from '../lib/utils/vram';
 import { fitsOnGpu, countModelsFitting, nextStepUp, GPU_CONTEXT_PRESETS, GPU_BATCH_PRESETS } from '../lib/utils/gpu-page';
 import { homePicks } from '../lib/utils/home-picks';
-import { getRecommendations } from '../lib/utils/recommend';
+import { getRecommendations, recommendationSpeed } from '../lib/utils/recommend';
+import { hasToolCalling } from '../lib/utils/model-facts';
 import { hasImageInput } from '../lib/utils/model-facts';
 import { modelShape, contextReach, offloadPlan } from '../lib/utils/calc-insights';
 import { sourceBpw } from '../lib/utils/quant-source';
 import { dataProblems } from '../lib/data/validate';
+import { measuredSpeed } from '../lib/utils/measured-speed';
+import { matchingSpeedRun } from '../lib/utils/measured-runs';
 
 const gpu = gpuDatabase.find(g => g.id === 'rtx4090')!;
+const baseline = getRecommendations(gpu, 4096, 1);
+for (const row of baseline) {
+  const run = matchingSpeedRun(gpu, row.model, row.quant);
+  const estimate = measuredSpeed(gpu, row.model, row.quant);
+  assert.deepEqual(recommendationSpeed(gpu, row.model, row.quant), run ? { tokS: run.speedTokSec, source: 'measured' } : estimate ? { tokS: estimate.tokS, source: 'estimated' } : undefined);
+  assert.equal(recommendationSpeed(gpu, row.model, row.quant, 2), undefined);
+}
+assert.deepEqual(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', {}), baseline);
+const filtered = (filters: { minTok?: number; tools?: boolean; code?: boolean }) =>
+  getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', filters);
+assert.deepEqual(filtered({ minTok: 40 }), baseline.filter(r => (recommendationSpeed(gpu, r.model, r.quant)?.tokS ?? -1) >= 40));
+assert.ok(filtered({ minTok: 40 }).length > 0 && filtered({ minTok: 40 }).length < baseline.length);
+assert.equal(getRecommendations({ ...gpu, id: 'unknown-card', name: 'Unknown card' }, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 10 }).length, 0);
+assert.deepEqual(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2, false, 'text', { minTok: 10 }), getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2));
+assert.deepEqual(filtered({ tools: true }), baseline.filter(r => hasToolCalling(r.model.id)));
+assert.ok(filtered({ tools: true }).length > 0);
+assert.deepEqual(filtered({ code: true }), baseline.filter(r => r.model.categories.includes('code')));
+assert.ok(filtered({ code: true }).length > 0);
+assert.deepEqual(filtered({ tools: true, code: true }), baseline.filter(r => hasToolCalling(r.model.id) && r.model.categories.includes('code')));
+assert.equal(filtered({ minTok: Number.MAX_VALUE }).length, 0);
+assert.deepEqual(filtered({ minTok: NaN }), baseline);
+assert.deepEqual(filtered({ minTok: -1 }), baseline);
+const imageTools = getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'image', { tools: true });
+assert.ok(imageTools.every(r => hasImageInput(r.model.id) && hasToolCalling(r.model.id) && r.extraGB! > 0));
 const laptop = gpuDatabase.find(g => g.id === 'rx7700s')!;
 const qwen32b = models.find(m => m.id === 'qwen3-32b')!;
 const gguf32b = qwen32b.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M')!;

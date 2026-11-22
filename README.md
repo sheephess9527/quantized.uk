@@ -608,6 +608,31 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
 - Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables remain; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. Merged the popular-GPU eligibility restriction above without changing the answer computation; retained `dataLastUpdated` at `2026-11-23` and `sizingChangedAt` at `2026-11-22`. Release entries stay newest-first so the homepage's latest-update date remains accurate.
 
+### 2026-11-22 — Filter-aware reverse share previews
+
+- `vramPreview` now applies reverse `minTok` and `feat` using `readRecommendationFilters`, the same validated parser as the calculator. Multi-card/device links bypass only the speed minimum, as the UI does. `vramImageUrl` forwards both parameters, including in the image cache key.
+- The Cloudflare EN/ZH HTML handlers use `vramPage` → `vramPreview`/`vramImageUrl`; the PNG handler uses those same helpers directly. Filtered counts are therefore shared by page metadata and the generated image. Reverse snapshots now preserve validated extra-device ids so the speed-minimum exception survives copying. Regression checks compare list, snapshot, bilingual preview and image counts for normal, unknown and multi-device filter parameters.
+
+### 2026-11-22 — Reverse speed provenance and multi-device filtering
+
+- Reverse rows show one selected-card figure: exact model/format/level benchmark first, otherwise the calibrated estimate. `recommendationSpeed` supplies both the figure and minimum check; no other-card figure or ceiling fallback. `measuredSpeed` itself remains a calibration function and does not look up exact runs.
+- Multi-device rigs disable and bypass the minimum while preserving `minTok` in URL/state. Inline EN/ZH text explains why; returning to one card restores the minimum. Empty results test removing speed and feature requirements independently and provide targeted clear actions in addition to reset.
+- Shared exact-run matching moved to `lib/utils/measured-runs.ts` to avoid a model-meta/speed-label dependency cycle. Confidence badges on Hub/model/GPU-related callers require an exact RTX 4090 benchmark and a matching stored figure, rather than promoting every quant of a measured model. Regression checks cover wrong levels, cards and mismatched values. Stored speed data is unchanged.
+- Corrected the audit's only exact-row mismatch: Qwen3 14B EXL2 4.65bpw now stores 118 tok/s (was 125), following its measured benchmark row, and is labelled measured again. `npm test` requires every stored RTX 4090 speed with an exact benchmark match to equal that measurement.
+
+### 2026-11-22 — Reverse filter evidence and calibrated speed follow-up
+
+- Audited all 151 indexed checkpoints using publisher tokenizer templates and same-checkpoint GGUF `chat_template` metadata, with mirrors for gated publishers. Recorded 113 positive `tools` references with per-model source URLs; 33 readable templates had no reference and 5 had no readable template. Derived checkpoints never inherit a tool claim solely from a training base.
+- Minimum speed and displayed estimates now use the existing `measuredSpeed` calibrated point: single-card dense 7–33B GGUF models on cards with a reference run. Other sizes/formats, MoE, unknown cards and stacked cards have no estimate and fail a minimum; no optimistic ceiling fallback. Existing bandwidth-bound sort order remains unchanged for old links.
+- Evidence audit scratch scripts and fetched responses remain outside the repository. These are template facts, not runtime tool-use tests.
+
+### 2026-11-22 — Reverse calculator speed and required-feature filters
+
+- Reverse mode supports minimum estimated speed (Any / ≥10 / ≥20 / ≥40 tok/s) and AND-required image, tool-calling and code features, with a filtered empty state and reset action in both languages.
+- URL-only `minTok=10|20|40` and `feat=tools,code` omit defaults and ignore unknown values; existing `input=image` retains verified encoder accounting. Profiles and default recommendations are unchanged.
+- Initial implementation used the single-card bandwidth/active-MoE ceiling; the follow-up above replaces filtering/display with calibrated estimates while preserving the existing sort order.
+- `lib/data/model-facts.ts` records tool evidence only for Qwen3 4B, 8B and 32B: publisher HF `tokenizer_config.json` templates fetched on this date reference `tools`. Unknown models are not asserted unsupported, merely excluded when required. Code uses the existing category.
+
 ### 2026-11-22 — Sourced-data homepage tagline
 
 - Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.
