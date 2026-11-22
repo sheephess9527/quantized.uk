@@ -13,6 +13,9 @@ export type OllamaTagResult =
   | { kind: 'hfNeedsQuant'; tag: string; repo: string };
 
 const LEVELS = new Set(Object.values(quantGroups).flat());
+const LEVEL_BY_LOWER = new Map(Array.from(LEVELS, l => [l.toLowerCase(), l] as const));
+// Quant suffixes the Ollama library publishes; IQ and MXFP4 files only exist as bare tags.
+const LIBRARY_QUANT = /^(?:q[2-8]_(?:0|1|k(?:_[sml])?)|fp16|f16|bf16|fp32|f32)$/i;
 const QUANT_SUFFIX = /^(?:(.*)-)?(iq\d[a-z0-9_]*|q\d[a-z0-9_]*|fp16|f16|bf16|fp32|f32|mxfp4)$/i;
 const PREFIXES: RegExp[] = [
   /^ollama\s+(?:run|pull|show)\s+/i,
@@ -22,10 +25,10 @@ const PREFIXES: RegExp[] = [
 ];
 
 export function normalizeOllamaQuant(raw: string): string {
-  const u = raw.toUpperCase();
-  if (u === 'F16' || u === 'FP16') return 'FP16';
-  if (u === 'F32' || u === 'FP32') return 'FP32';
-  return u;
+  const l = raw.toLowerCase();
+  if (l === 'f16' || l === 'fp16') return 'FP16';
+  if (l === 'f32' || l === 'fp32') return 'FP32';
+  return LEVEL_BY_LOWER.get(l) ?? raw.toUpperCase();
 }
 
 /** Reads text from the model search box as an Ollama tag. Plain search words return null. */
@@ -67,7 +70,7 @@ export function resolveOllamaTag(input: string): OllamaTagResult | null {
   if (q) {
     const stem = q[1] ?? '';
     const row = entry.rows.find(r => r.quantStems.includes(stem));
-    if (row) {
+    if (row && LIBRARY_QUANT.test(q[2])) {
       const level = normalizeOllamaQuant(q[2]);
       if (!LEVELS.has(level)) return { kind: 'unknownQuant', tag, quant: q[2] };
       return { kind: 'match', tag, modelId: row.modelId, level, quantFromTag: true, newerCheckpoint: false };
@@ -83,7 +86,6 @@ function resolveHf(tag: string, repoRaw: string, tail?: string): OllamaTagResult
     .filter(c => c.quants.length > 0);
   if (candidates.length === 0) return { kind: 'hfNotIndexed', tag, repo: repoRaw };
 
-  let level: string | null = null;
   if (tail && /\.gguf$/i.test(tail)) {
     for (const c of candidates) {
       const hit = c.quants.find(qv => qv.source?.file?.toLowerCase() === tail.toLowerCase());
@@ -91,14 +93,11 @@ function resolveHf(tag: string, repoRaw: string, tail?: string): OllamaTagResult
     }
     return { kind: 'hfNeedsQuant', tag, repo: repoRaw };
   }
-  if (tail) {
-    level = normalizeOllamaQuant(tail);
-    if (!LEVELS.has(level)) return { kind: 'unknownQuant', tag, quant: tail };
-  }
-  // Without a tag Ollama downloads the repository's Q4_K_M file.
+  const level = tail ? normalizeOllamaQuant(tail) : null;
+  if (level && !LEVELS.has(level)) return { kind: 'unknownQuant', tag, quant: tail! };
+  // Only a quant the index records for this repository; without a tag Ollama downloads its Q4_K_M file.
   const wanted = level ?? 'Q4_K_M';
   const owners = candidates.filter(c => c.quants.some(qv => quantLevelKey(qv) === wanted));
-  const pick = owners.length === 1 ? owners[0] : candidates.length === 1 && level ? candidates[0] : null;
-  if (!pick) return { kind: 'hfNeedsQuant', tag, repo: repoRaw };
-  return { kind: 'match', tag, modelId: pick.model.id, level: wanted, quantFromTag: !!level, newerCheckpoint: false };
+  if (owners.length !== 1) return { kind: 'hfNeedsQuant', tag, repo: repoRaw };
+  return { kind: 'match', tag, modelId: owners[0].model.id, level: wanted, quantFromTag: !!level, newerCheckpoint: false };
 }

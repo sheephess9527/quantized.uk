@@ -58,6 +58,8 @@ kind('qwen3:3b', 'unknownTag');
 kind('llama3.1', null);
 kind('ollama run llama3.1', 'unknownTag');
 kind('qwen3:8b-q5_1', 'unknownQuant');
+kind('qwen3:8b-mxfp4', 'unknownTag');
+kind('qwen3:8b-iq4_xs', 'unknownTag');
 kind('nosuch:1b', 'unknownLibrary');
 kind('someone/model:7b', 'community');
 kind('hf.co/nobody/Nothing-GGUF:Q4_K_M', 'hfNotIndexed');
@@ -72,5 +74,10 @@ const hfModel = models.find(m => m.quants.some(q => q.source?.repo && q.source.f
 assert.ok(hfModel);
 const hfQuant = hfModel.quants.find(q => q.source?.repo && q.source.file && q.format === 'GGUF')!;
 match(`hf.co/${hfQuant.source!.repo}:${hfQuant.source!.file}`, hfModel.id, hfQuant.level);
+
+// Mixed-precision keys keep their canonical spelling; a quant the repo is not indexed with is refused.
+match('hf.co/tencent/Hy-Memory-30B-A3B-GGUF:Q8_0-expsIQ2_XXS', 'hy-memory-30b-a3b', 'Q8_0-expsIQ2_XXS');
+match('hf.co/tencent/Hy-Memory-30B-A3B-GGUF:q8_0-expsiq1_m', 'hy-memory-30b-a3b', 'Q8_0-expsIQ1_M');
+kind('hf.co/tencent/Hy-Memory-30B-A3B-GGUF:Q2_K', 'hfNeedsQuant');
 
 console.log(`check-ollama-tags: ${ollamaLibrary.length} libraries, ${ollamaLibrary.reduce((n, e) => n + e.rows.length, 0)} rows OK`);
