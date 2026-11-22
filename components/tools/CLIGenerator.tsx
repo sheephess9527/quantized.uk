@@ -205,7 +205,7 @@ export default function CLIGenerator() {
             >
               <option value="">{t.calc.modelPlaceholder}</option>
               {groupedModels().map(group => (
-                <optgroup key={group.bucket} label={group.bucket}>
+                <optgroup key={group.bucket} label={group.label}>
                   {group.models.map(m => (
                     <option key={m.id} value={m.id}>{m.name} ({m.paramLabel})</option>
                   ))}

@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
+import { PARAM_RANGE_LABEL as L } from '@/lib/utils/param-buckets';
 
 interface BucketCounts {
   small: number;
@@ -26,11 +27,11 @@ export default function HubScaleStats({ total, families, formats, buckets }: Pro
     { label: s.total.replace('{total}', String(total)), highlight: true },
     { label: s.families.replace('{count}', String(families)) },
     { label: s.formats.replace('{count}', String(formats)) },
-    { label: `${s.bucketSmall} · ${buckets.small}` },
-    { label: `${s.bucket7B} · ${buckets.mid7}` },
-    { label: `${s.bucket14B} · ${buckets.mid14}` },
-    { label: `${s.bucket32B} · ${buckets.large32}` },
-    { label: `${s.bucket70B} · ${buckets.xl}` },
+    { label: `${L['≤3B']} · ${buckets.small}` },
+    { label: `${L['7B']} · ${buckets.mid7}` },
+    { label: `${L['14B']} · ${buckets.mid14}` },
+    { label: `${L['32B']} · ${buckets.large32}` },
+    { label: `${L['70B+']} · ${buckets.xl}` },
   ];
 
   return (

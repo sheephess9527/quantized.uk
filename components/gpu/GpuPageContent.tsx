@@ -8,6 +8,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
+import { PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { BEST_TIERS } from '@/lib/utils/best-page';
@@ -139,12 +140,12 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           {groups.map(group => (
             <section key={group.bucket} className="glass rounded-2xl p-5 sm:p-6">
               <h2 className="text-lg font-bold text-slate-100 mb-4">
-                {group.bucket} <span className="text-sm font-normal text-slate-500">· {group.fits.length}</span>
+                {PARAM_RANGE_LABEL[group.bucket]} <span className="text-sm font-normal text-slate-500">· {group.fits.length}</span>
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <caption className="sr-only">
-                    {fill(g.title, { gpu: gpu.name })} — {group.bucket}
+                    {fill(g.title, { gpu: gpu.name })} — {PARAM_RANGE_LABEL[group.bucket]}
                   </caption>
                   <thead>
                     <tr className="border-b border-white/[0.06] text-xs text-slate-500 uppercase tracking-wider">
