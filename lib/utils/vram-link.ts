@@ -40,7 +40,11 @@ export function snapshotVramLink(
   } else if (mode === 'reverse' && gpuId) {
     snapshot.set(VRAM_SHARE_PARAM, '1');
     snapshot.set('gpu', gpuId);
-    snapshot.delete('extra');
+    const gpu = gpuDatabase.find(g => g.id === gpuId) ?? null;
+    const cards = gpu && canStack(gpu) ? Number(snapshot.get('cards') ?? '1') : 1;
+    const extras = rigExtras(gpu, (snapshot.get('extra') ?? '').split(','), cards);
+    if (extras.length) snapshot.set('extra', extras.map(g => g.id).join(','));
+    else snapshot.delete('extra');
   }
   if (snapshot.has(VRAM_SHARE_PARAM)) url.pathname = localizeHref('/tools/vram-calc/', lang);
   url.search = snapshot.toString();

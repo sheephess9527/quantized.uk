@@ -15,6 +15,7 @@ import { BEST_TIERS } from '@/lib/utils/best-page';
 import { canonical, languageAlternates } from '@/lib/seo';
 import { toZhPath } from '@/lib/i18n/routing';
 import { pairPages, pairHref } from '@/lib/utils/pair-pages';
+import { matrixData } from '@/lib/data/benchmarks';
 
 // `/tools/`, `/changelog/`, `/faq/` shipped as real pages and were never added
 // here, so pages existed that the sitemap did not mention. Adding a route
@@ -70,6 +71,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const, priority: 0.7,
     })),
     { path: '/benchmarks/', lastModified: benchDate, changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/methodology/', lastModified: latest(['2026-11-22', sizingChangedAt, ...matrixData.map(row => row.firstPublishedAt)]), changeFrequency: 'monthly', priority: 0.7 },
     { path: '/cookbook/', lastModified: guidesDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/faq/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/formats/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },

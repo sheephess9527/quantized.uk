@@ -1,5 +1,6 @@
 # quantized.uk — an independent reference for running quantized LLMs locally.
 # LLM-readable summary: https://quantized.uk/llms.txt
+# Chinese LLM-readable summary: https://quantized.uk/zh/llms.txt
 
 User-agent: *
 Allow: /

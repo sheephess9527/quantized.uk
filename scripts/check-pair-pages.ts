@@ -7,6 +7,7 @@ import {
   pairPages,
   pairHref,
   pairSize,
+  pairAnswer,
 } from '../lib/utils/pair-pages';
 import {
   gpuSlug,
@@ -24,6 +25,41 @@ for (const row of matrixData) {
 }
 
 const pages = pairPages();
+for (const { model, gpu } of pages) {
+  const answer = pairAnswer(model, gpu)!;
+  assert.equal(answer.quant, pairData(model, gpu).recommended.quant);
+  assert(answer.contextLength <= model.contextLength);
+  if (answer.contextLength) {
+    assert.equal(answer.memory.verdict, 'green');
+    assert(answer.memory.totalGB <= answer.comfortableLimitGB);
+    assert.deepEqual(answer.memory, pairSize(model, gpu, answer.quant, answer.contextLength));
+  }
+  if (answer.contextLength < model.contextLength)
+    assert.notEqual(pairSize(model, gpu, answer.quant, answer.contextLength + 1).verdict, 'green');
+}
+const sample = models.find(m => m.id === 'llama-3.1-8b')!;
+const card = gpuDatabase.find(g => g.id === 'rtx4090')!;
+assert.equal(pairAnswer({ ...sample, quants: [] }, card), undefined);
+const tiny = pairAnswer(sample, { ...card, vram: 0.01 })!;
+assert.equal(tiny.contextLength, 0);
+assert.equal(tiny.anyQuantFits, false);
+const singleQuant = { ...sample, quants: [sample.quants[0]] };
+const oneToken = pairSize(singleQuant, card, singleQuant.quants[0], 1);
+const tightCard = { ...card, vram: oneToken.totalGB / 0.95 };
+const tightAnswer = pairAnswer(singleQuant, tightCard)!;
+assert.equal(tightAnswer.contextLength, 0);
+assert.equal(tightAnswer.anyQuantFits, true);
+assert.equal(tightAnswer.memory.verdict, 'yellow');
+assert.equal(pairAnswer(sample, { ...card, vram: 100000 })!.contextLength, sample.contextLength);
+for (const attention of [
+  { fullLayers: 4, windowLayers: 8, windowTokens: 1024, fullKvHeads: 2, fullHeadDim: 256 },
+  { fullLayers: 0 },
+]) {
+  const model = { ...sample, arch: { ...sample.arch, attention } };
+  const answer = pairAnswer(model, card)!;
+  assert.deepEqual(answer.memory, pairSize(model, card, answer.quant, answer.workedContext));
+  assert.equal(answer.kvFormula.includes(' + '), !!attention.windowLayers);
+}
 assert.equal(new Set(gpuDatabase.map(gpuSlug)).size, gpuDatabase.length);
 assert.equal(
   new Set(pages.map(p => pairHref(p.model, p.gpu))).size,

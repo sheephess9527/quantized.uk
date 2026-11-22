@@ -1,4 +1,5 @@
 import type { GPU } from '@/lib/data/gpus';
+import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { matrixData, type MatrixRow } from '@/lib/data/benchmarks';
 
 /**
@@ -17,6 +18,49 @@ import { matrixData, type MatrixRow } from '@/lib/data/benchmarks';
  * Both halves have to agree.
  */
 const SIZE_SUFFIX = /\s+(\d+)G$/;
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/**
+ * Matrix rows name models by a short display name, not an id. A substring test attributed the
+ * Llama 3.1 8B runs to "Nous Hermes 3 Llama 3.1 8B" (a different model nobody here measured), so
+ * a row now matches only the same name with a trailing "Instruct" dropped, or a listed alias for
+ * a row whose name is abbreviated.
+ */
+const ROW_ALIASES: Record<string, string> = {
+  r1distillllama8b: 'deepseekr1distillllama8b',
+  deepseekr114b: 'deepseekr1distillqwen14b',
+};
+
+export function sameModel(modelName: string, rowModel: string): boolean {
+  const b = norm(rowModel);
+  if (!b) return false;
+  const target = ROW_ALIASES[b] ?? b;
+  const a = norm(modelName);
+  return a === target || a.replace(/instruct$/, '') === target;
+}
+
+export function sameQuant(rowQuant: string, quant: QuantVariant): boolean {
+  const rq = rowQuant.toLowerCase();
+  const level = quant.level.toLowerCase();
+  if (quant.format === 'GGUF') return rq.startsWith('gguf') && rq.endsWith(level);
+  if (quant.format === 'EXL2') return rq.includes('exl2') && rq.includes(level);
+  if (quant.format === 'AWQ') return rq.includes('awq') && rq.includes(level);
+  if (quant.format === 'GPTQ') return rq.includes('gptq') && rq.includes(level);
+  return rq.includes(level);
+}
+
+function frameworkRank(framework: string): number {
+  if (/llama\.cpp/i.test(framework)) return 0;
+  if (/ollama/i.test(framework)) return 1;
+  return 2;
+}
+
+export function matchingSpeedRun(gpu: GPU, model: QuantModel, quant: QuantVariant): MatrixRow | undefined {
+  return measuredRowsFor(gpu)
+    .filter(row => sameModel(model.name, row.model) && sameQuant(row.quant, quant))
+    .sort((a, b) => frameworkRank(a.framework) - frameworkRank(b.framework))[0];
+}
 
 function normalizeHardware(name: string): { model: string; vram: number | null } {
   const stripped = name.replace(/^Mac\s+/i, '').trim();

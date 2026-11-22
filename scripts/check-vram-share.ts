@@ -4,7 +4,7 @@ import { models } from '@/lib/data/models';
 import { vramImageUrl, vramPreview } from '@/lib/og/vram-result';
 import { vramSvg } from '@/lib/og/vram-svg';
 import { modelShape } from '@/lib/utils/calc-insights';
-import { getRecommendations } from '@/lib/utils/recommend';
+import { getRecommendations, readRecommendationFilters } from '@/lib/utils/recommend';
 import { calcVRAM, KV_CACHE_TYPES } from '@/lib/utils/vram';
 import { readVramAttention, snapshotVramLink } from '@/lib/utils/vram-link';
 
@@ -57,6 +57,30 @@ const imagePreview = vramPreview(imageShare.searchParams, 'zh')!;
 assert.equal(imagePreview.answer, `${imageRows.length} 个兼容配置`);
 assert.match(imagePreview.details, /图像输入/);
 assert.match(imagePreview.hardware!, /2× · 48.00 GiB 可用/);
+
+const reverseFilterCases: Record<string, string>[] = [
+  { minTok: '20', feat: 'tools' },
+  { minTok: '40', feat: 'tools,code' },
+  { minTok: 'garbage', feat: 'unknown' },
+  { minTok: '20', feat: 'tools', cards: '2' },
+  { minTok: '20', feat: 'tools', extra: 'rtx3060' },
+];
+for (const fields of reverseFilterCases) {
+  const params = new URLSearchParams({ share: '1', mode: 'reverse', gpu: 'rtx4090', ctx: '4096', batch: '1', ...fields });
+  const filters = readRecommendationFilters(params);
+  if (params.get('cards') === '2' || params.has('extra')) filters.minTok = 0;
+  const rows = getRecommendations(gpu, 4096, 1, 'quality', true, KV_CACHE_TYPES.f16, Number(params.get('cards') ?? 1), true, 'text', filters);
+  assert.equal(vramPreview(params, 'en')!.answer, `${rows.length} compatible configs`);
+  assert.equal(vramPreview(params, 'zh')!.answer, `${rows.length} 个兼容配置`);
+  const imageUrl = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'en');
+  assert.equal(imageUrl.searchParams.get('minTok'), fields.minTok);
+  assert.equal(imageUrl.searchParams.get('feat'), fields.feat);
+  assert.equal(vramPreview(imageUrl.searchParams, 'en')!.answer, `${rows.length} compatible configs`);
+  const snapshot = new URL(snapshotVramLink(new URL('https://quantized.uk/tools/vram-calc/'), params, { mode: 'reverse', modelId: '', gpuId: 'rtx4090', lang: 'en' }));
+  assert.equal(vramPreview(snapshot.searchParams, 'en')!.answer, `${rows.length} compatible configs`);
+}
+assert.notEqual(vramPreview(new URLSearchParams('share=1&mode=reverse&gpu=rtx4090&ctx=4096&minTok=20&feat=tools'), 'en')!.answer,
+  vramPreview(new URLSearchParams('share=1&mode=reverse&gpu=rtx4090&ctx=4096'), 'en')!.answer);
 
 const custom = new URLSearchParams('share=1&mode=forward&gpu=none&model=custom&quant=Q4_K_M&ctx=4096&params=4&layers=24&kv=8&hd=128&full=0&mmproj=1.25&repo=some/repo');
 assert.deepEqual(readVramAttention(custom), { fullLayers: 0 });

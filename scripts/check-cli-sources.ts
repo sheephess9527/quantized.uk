@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM } from '../lib/utils/vram';
-import { formatAllowed, vllmRocmSupported } from '../lib/utils/gpu-page';
+import { formatAllowed, vllmRocmSupported, fitsOnGpu } from '../lib/utils/gpu-page';
+import { getRecommendations } from '../lib/utils/recommend';
 import { generateCLI, type CLIOptions, type Env } from '../lib/utils/cli';
 import { licenceClassOf, hasImageInput } from '../lib/utils/model-facts';
 
@@ -14,6 +15,17 @@ for (const gpu of gpuDatabase.filter(g => g.isLaptop && g.type === 'amd')) {
 }
 const rx7700xt = gpuDatabase.find(g => g.id === 'rx7700xt')!;
 assert.equal(formatAllowed(rx7700xt, 'AWQ'), true, rx7700xt.name);
+
+for (const id of ['gtx1080ti', 'v100-16', 'v100-32', 'p100-16', 'p40-24']) {
+  const gpu = gpuDatabase.find(g => g.id === id)!;
+  assert.ok(gpu.cudaComputeCapability! < 7.5, gpu.name);
+  assert.equal(formatAllowed(gpu, 'AWQ'), false, gpu.name);
+  assert.equal(formatAllowed(gpu, 'GGUF'), true, gpu.name);
+  assert.ok(fitsOnGpu(gpu).every(f => f.quant.format !== 'AWQ'), gpu.name);
+  assert.ok(getRecommendations(gpu, 4096, 1).every(r => r.quant.format !== 'AWQ'), gpu.name);
+  assert.equal(formatAllowed({ ...gpu, cudaComputeCapability: 7.5 }, 'AWQ'), true);
+  assert.equal(formatAllowed({ ...gpu, cudaComputeCapability: undefined }, 'AWQ'), true);
+}
 
 const twil = models.find(m => m.id === 'twil-8b-balanced')!;
 const arete = models.find(m => m.id === 'arete-27b')!;

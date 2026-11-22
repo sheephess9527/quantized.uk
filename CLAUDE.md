@@ -26,13 +26,13 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 
 | Surface | Notes |
 |--------|--------|
-| Models | **151** in index (`models-extra` … `models-extra-17`), 131 active |
+| Models | **156** in index (`models-extra` … `models-extra-18`), 136 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (151 models: 149 licensed, 45 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**105** GPU configurations, including laptops, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,346 HTML files (3,466 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,392 HTML files (3,605 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -123,7 +123,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `source.repo` and single-file `source.file` as `hfRepo` / `ggufFilename`. An original
   repo without `-GGUF` is valid only with that file evidence. Ollama supports the
   full filename as its HF tag (HF docs); never mix TwIL balanced and verbose files.
-  Sharded rows keep the existing wildcard path. Check with `npm run check:cli`.
+  Sharded rows keep the wildcard path, built from `source.file` minus `-00001-of-NNNNN.gguf` (`ggufShardStem`) when one is recorded. Check with `npm run check:cli`.
   The CLI generator's `?model=` is read through `useUrlQuery()` after mount and
   takes precedence over a stored model; invalid ids never enter generated commands.
 
@@ -156,8 +156,23 @@ flaky network. Never "fix" it by removing the postbuild hook.
   GeForce laptop matches require a renderer marker; Radeon mobile SKUs have distinct names.
   Don't show desktop speed references as substitutes for laptop speed data.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
-- **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
-  beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
+- **Integrated AMD memory:** `isIntegrated` keeps the AMD backend but disables stacking. Ryzen AI Max+ 395 rows store Windows GPU allocation (48/96 GB), not their 64/128 GB system RAM. Do not set Apple's `isUnified` flag or apply its cap again. Stock and unofficial memory mods share renderer candidates, smallest first.
+- **CUDA AWQ eligibility:** record `cudaComputeCapability` for legacy NVIDIA rows. Known values below 7.5 cannot use vLLM AWQ kernels; keep fits and launch choices behind `formatAllowed`. Omitted capability preserves the existing format policy, not a new compatibility guarantee.
+- **Reverse fits must respect both context and input.** `getRecommendations()` supports
+  URL-only `minTok=10|20|40` and `feat=tools,code` filters (AND).
+  Speed filtering and the single displayed row figure share `recommendationSpeed`: exact-card,
+  exact-model/quant benchmark first, otherwise the calibrated `measuredSpeed` point; no ceiling fallback.
+  Unknown speed fails a minimum on one device. Multi-device rigs disable and bypass the minimum,
+  keeping its URL/state selection for a return to one card. Empty states test removal of speed
+  and feature requirements separately and offer targeted clearing when that restores results.
+  `quantConfidence` may label an RTX 4090 figure measured only with an exact benchmark and matching value;
+  a measured model id never promotes its other quant levels. Matching lives in `measured-runs.ts`.
+  Existing speed sorting retains its bandwidth-bound ranking for old-link compatibility.
+  Reverse share metadata/images must use `readRecommendationFilters` and preserve `minTok`/`feat`
+  in `vramImageUrl` cache keys; preview counts obey the same multi-device bypass as the calculator.
+  Tool calling is positive recorded publisher-template/card evidence only in `model-facts.ts`;
+  code uses the recorded category. Image remains `input=image`; none of these filters enters profiles.
+  It excludes contexts beyond each model's supported limit. Its `input` argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
   interpret an unknown encoder size as zero. Keep encoder GiB in the total, context reach, forward
   state transfer and actual href (`mmproj`), with cache/batch/card settings preserved. The UI's
