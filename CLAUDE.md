@@ -26,9 +26,9 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 
 | Surface | Notes |
 |--------|--------|
-| Models | **151** in index (`models-extra` … `models-extra-17`), 131 active |
+| Models | **156** in index (`models-extra` … `models-extra-18`), 136 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (151 models: 149 licensed, 45 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**105** GPU configurations, including laptops, + 4 CPU-only RAM rows), CLI, format wizard, compare |

@@ -82,6 +82,9 @@ export function dataProblems(): string[] {
       const win = att.windowLayers ?? 0;
       if (full + win > m.arch.layers) out.push(`${m.id}: attention splits ${full} + ${win} layers but the model has ${m.arch.layers}`);
       if (win > 0 && !att.windowTokens) out.push(`${m.id}: windowLayers set with no windowTokens — the calculator would size those layers at full context`);
+      for (const c of att.compressed ?? []) {
+        if (c.layers <= 0 || c.layers > m.arch.layers || c.values <= 0 || c.ratio < 1) out.push(`${m.id}: compressed cache group ${JSON.stringify(c)} is out of range`);
+      }
     }
     for (const q of m.quants) {
       const key = quantLevelKey(q);

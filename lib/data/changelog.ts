@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and MiniMax M3.1 Flash now have computed VRAM figures instead of sitting on the pending page. The calculator now counts compressed and sparse-attention index caches, with each layout taken from the published configs, GGUF headers and llama.cpp’s cache code.',
+    zh: 'DeepSeek-V4-Flash-0731、DeepSeek-V4.1-Flash-1017、GLM-5.3-Flash、Kimi K3.1 Pro 和 MiniMax M3.1 Flash 已有计算显存数据，不再停留在待收录页。计算器现在会计入压缩缓存和稀疏注意力索引缓存，每种布局都取自官方 config、GGUF 头和 llama.cpp 的缓存代码。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

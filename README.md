@@ -538,6 +538,28 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Computed VRAM for DeepSeek V4/V4.1, GLM-5.3, Kimi K3.1 and MiniMax M3.1
+
+- **+5 models (156), pending −5:** DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and
+  MiniMax M3.1 Flash move from `pending.ts` to `models-extra-18.ts`. Every arch figure comes from the publisher's
+  `config.json`, the GGUF header (tensor counts summed over all parts) and llama.cpp's cache code; sizes are exact
+  GGUF bytes. Per-model sources, encodings and rejected builds: `docs/changes/2026-11-22-frontier-vram.md`.
+- **`ModelArch.attention.compressed`** (`lib/data/types.ts`, `calcVRAM`): `{ layers, values, ratio }[]`, each group a
+  K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, KV-cache dtype),
+  added to the full/window cache. It carries DeepSeek V4's CSA/HCA rows and V4.1's shared compressed rows, and the
+  sparse-attention indexer caches of GLM-5.3 / Kimi K3.1 (K-only) and MiniMax M3.1 (K + V, so `values` 256).
+  Fixed-size KDA / compressor state stays uncounted. `dataProblems()` bounds each group; the model explainer
+  names the groups and treats an `attention` block with every layer full as non-hybrid.
+- Licences from each publisher card: MIT (DeepSeek, GLM); Kimi K3.1-Pro License and MiniMax Community License are
+  `restricted` (revenue-triggered agreement / commercial notice). Four of the five take image input.
+- No requested model stays pending. Not tracked: Q2_K_S (no calculator level), Kimi's DevQuasar MXFP4_MOE (not the
+  released format), MiniMax unsloth UD-* / AtomicChat AD-* (no standard levels).
+- Neither DeepSeek publishes an active count: `activeParams` 13.8 / 16.8 is derived from the GGUF header (non-expert
+  tensors + 6 routed experts' share; V4.1 also leaves out its 196.6B `engram_embd` lookup tables), with the arithmetic
+  in a comment. Nex-N2.6 (GLM5-next fine-tune) stays pending: its layout is now expressible, its own sizes are unread.
+- Not yet checked against a published KV-cache measurement; the encodings follow llama.cpp's allocation code.
+- Added the bilingual reader-facing release note; `dataLastUpdated` remains `2026-11-22`.
+
 ### 2026-11-22 — Sourced-data homepage tagline
 
 - Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.

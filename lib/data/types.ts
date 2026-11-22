@@ -94,6 +94,14 @@ export interface ModelArch {
      */
     fullKvHeads?: number;
     fullHeadDim?: number;
+    /**
+     * Compressed or index caches that keep one K-only row of `values` numbers per
+     * `ratio` tokens on `layers` layers, beside any full/window cache above.
+     * DeepSeek V4's CSA/HCA layers (llama.cpp `llama_kv_cache_dsv4`: rows =
+     * ceil(context / ratio)) and the sparse-attention indexer caches of MiniMax M3
+     * (`llama_kv_cache_msa`) are sized this way. `values` is not doubled.
+     */
+    compressed?: { layers: number; values: number; ratio: number }[];
     /** Where the layer split was sourced from — shown to the reader. */
     note?: { en: string; zh: string };
   };

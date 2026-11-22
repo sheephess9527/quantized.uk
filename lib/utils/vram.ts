@@ -29,6 +29,7 @@ export interface CalcInput {
     windowTokens?: number;
     fullKvHeads?: number;
     fullHeadDim?: number;
+    compressed?: { layers: number; values: number; ratio: number }[];
   };
 }
 
@@ -144,8 +145,11 @@ export function calcVRAM(input: CalcInput): CalcResult {
   const fullLayers = attention?.fullLayers ?? layers;
   const windowLayers = attention?.windowLayers ?? 0;
   const windowSpan = Math.min(contextLength, attention?.windowTokens ?? contextLength);
+  // Compressed / index caches: one K-only row per `ratio` tokens (DeepSeek V4 CSA/HCA, sparse-attention indexers).
+  const compressedBytes = (attention?.compressed ?? []).reduce(
+    (sum, c) => sum + c.layers * c.values * Math.ceil(contextLength / c.ratio) * batchSize * kvValueBytes, 0);
   const kvBytes =
-    fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan;
+    fullPerLayerPerToken * fullLayers * contextLength + perLayerPerToken * windowLayers * windowSpan + compressedBytes;
   const kvCacheGB = kvBytes / (1024 ** 3);
 
   const extraGB = Math.max(0, input.extraGB ?? 0);

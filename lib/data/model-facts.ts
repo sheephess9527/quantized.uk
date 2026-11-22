@@ -28,7 +28,8 @@
  *   700M / 100M monthly-active-user ceilings, Qwen 3.8-Flash-Next's separate
  *   licence for hosting it as a service, GLM-4's commercial registration,
  *   LFM Open's revenue threshold, DBRX's user-count clause, Mistral's separate
- *   licence for Model-as-a-Service operators, Muse's revenue-triggered MaaS agreement.
+ *   licence for Model-as-a-Service operators, Muse's revenue-triggered MaaS agreement, Kimi K3.1-Pro's
+ *   MaaS agreement above 20M USD revenue, MiniMax Community's notice/authorisation for commercial use.
  * - `noncommercial` — commercial use is not granted: the research licences
  *   (Qwen Research, Mistral Research), Mistral's non-production licence,
  *   CC BY-NC 4.0, and Stability's non-commercial terms.
@@ -59,6 +60,8 @@ export const LICENCES = {
   'falcon-llm-license': { short: 'Falcon', name: { en: 'Falcon LLM Licence', zh: 'Falcon LLM 许可' }, class: 'commercial', url: 'https://falconllm.tii.ae/falcon-terms-and-conditions.html' },
   'jamba-open-model-license': { short: 'Jamba', name: { en: 'Jamba Open Model Licence', zh: 'Jamba 开放模型许可' }, class: 'commercial', url: 'https://huggingface.co/ai21labs/AI21-Jamba-Mini-1.5/blob/main/LICENSE.txt' },
   'nvidia-open-model': { short: 'NVIDIA Open', name: { en: 'NVIDIA Open Model Licence', zh: 'NVIDIA 开放模型许可' }, class: 'commercial', url: 'https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-agreement-license/' },
+  'kimi-k3.1-pro': { short: 'Kimi K3.1', name: { en: 'Kimi K3.1-Pro License', zh: 'Kimi K3.1-Pro 许可' }, class: 'restricted', url: 'https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/main/LICENSE' },
+  'minimax-community': { short: 'MiniMax', name: { en: 'MiniMax Community License', zh: 'MiniMax 社区许可' }, class: 'restricted', url: 'https://huggingface.co/MiniMaxAI/MiniMax-M3.1-Flash/blob/main/LICENSE' },
   'muse-model-license': { short: 'Muse', name: { en: 'Muse Model License', zh: 'Muse 模型许可' }, class: 'restricted', url: 'https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B' },
   'deepseek-license': { short: 'DeepSeek', name: { en: 'DeepSeek Model Licence', zh: 'DeepSeek 模型许可' }, class: 'commercial', url: 'https://github.com/deepseek-ai/DeepSeek-V2/blob/main/LICENSE-MODEL' },
   'mistral-open-weight': { short: 'Mistral Open-Weight', name: { en: 'Mistral Ecosystem Open-Weight Licence', zh: 'Mistral 生态开放权重许可' }, class: 'restricted', url: 'https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE' },
@@ -186,6 +189,11 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
   'mixtral-8x7b': 'apache-2.0',
   'muse-glimmer-30b': 'apache-2.0',
   'muse-spark-open-816b-a42b': 'muse-model-license',
+  'deepseek-v4-flash-0731': 'mit',
+  'deepseek-v4-1-flash-1017': 'mit',
+  'glm-5-3-flash': 'mit',
+  'kimi-k3-1-pro': 'kimi-k3.1-pro',
+  'minimax-m3-1-flash': 'minimax-community',
   'nanbeige4.3-33b': 'apache-2.0',
   'nemotron-3.5-bolt-74b-a9b': 'openmdw-1.1',
   'nemotron-3.5-bolt-e4b': 'openmdw-1.1',
@@ -254,6 +262,10 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'deepseek-v4-1-flash-1017',
+  'glm-5-3-flash',
+  'kimi-k3-1-pro',
+  'minimax-m3-1-flash',
   'clairic-27b',
   'clairic-flash-9b',
   'shot-reader-8b',
