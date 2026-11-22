@@ -4,6 +4,7 @@ import { Search, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
 import { SHIPPED_FORMATS } from '@/lib/utils/hub-url';
+import { PARAM_RANGES, PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
 import { localizeHref } from '@/lib/i18n/routing';
 import { models } from '@/lib/data/models';
 
@@ -126,13 +127,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
       </form>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {renderGroup(t.hub.filters.params, 'paramRange', [
-          { value: '≤3B',  label: '≤3B' },
-          { value: '7B',   label: '7B'  },
-          { value: '14B',  label: '14B' },
-          { value: '32B',  label: '32B' },
-          { value: '70B+', label: '70B+' },
-        ])}
+        {renderGroup(t.hub.filters.params, 'paramRange', PARAM_RANGES.map(value => ({ value, label: PARAM_RANGE_LABEL[value] })))}
 
         {renderGroup(t.hub.filters.category, 'category', [
           { value: 'general',    label: t.hub.categories.general    },

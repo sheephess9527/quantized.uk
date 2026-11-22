@@ -4,6 +4,7 @@ import Link from '@/components/i18n/LocalLink';
 import { useLanguage } from '@/lib/i18n/context';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { sizeClassReference } from '@/lib/utils/vram-reference';
+import { PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
 
 const rows = sizeClassReference();
 const range = ([lo, hi]: [number, number]) =>
@@ -30,7 +31,7 @@ export default function VramQuickReference() {
           <tbody>
             {rows.map(row => (
               <tr key={row.bucket} className="border-b border-white/[0.04] last:border-0">
-                <th scope="row" className="py-2.5 pr-3 text-left font-mono text-slate-200">{row.bucket}</th>
+                <th scope="row" className="py-2.5 pr-3 text-left font-mono text-slate-200">{PARAM_RANGE_LABEL[row.bucket]}</th>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-400">{row.count}</td>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-300">{range(row.at4k)}</td>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-300">{row.at32k ? range(row.at32k) : '—'}</td>

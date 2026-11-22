@@ -830,7 +830,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   >
                     <option value="">{t.calc.modelPlaceholder}</option>
                     {groupedModels().map(group => (
-                      <optgroup key={group.bucket} label={group.bucket}>
+                      <optgroup key={group.bucket} label={group.label}>
                         {group.models.map(m => (
                           <option key={m.id} value={m.id}>
                             {nameCarriesLabel(m.name, m.paramLabel) ? m.name : `${m.name} (${m.paramLabel})`}
