@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Browser detection no longer mistakes an RTX 2060 Super for a base RTX 2060 with a different memory capacity. Unindexed 2060 Super cards now require a manual hardware choice.',
+    zh: '浏览器识别不再将 RTX 2060 Super 误认为显存容量不同的普通 RTX 2060。尚未收录的 2060 Super 现在需要手动选择硬件。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Integrated-APU GPU pages now explain that shared-memory bandwidth limits generation speed even when large models fit, and separate ROCm/Vulkan setup compatibility from capacity. The RTX 2080 Ti specification link now goes directly to its GPU database entry.',
     zh: '集成 APU 的显卡页面现明确说明：大模型即使装得下，生成速度仍受共享内存带宽限制；ROCm/Vulkan 配置兼容性与容量是两个问题。RTX 2080 Ti 的规格链接现直接指向该显卡的数据库条目。',
   },

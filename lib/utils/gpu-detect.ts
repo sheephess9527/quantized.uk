@@ -58,6 +58,7 @@ export function matchRenderer(renderer: string): GpuDetection | null {
     const key = chipKey(g);
     const match = key ? text.indexOf(` ${key} `) : -1;
     if (match < 0) continue;
+    if (key === 'rtx 2060' && /^super\b/.test(text.slice(match + key.length + 2))) continue;
     if (g.isLaptop && /^(?:ti|super|xt|xtx|gre)\b/.test(text.slice(match + key.length + 2))) continue;
     if (key.length > bestLen) {
       best = [g];

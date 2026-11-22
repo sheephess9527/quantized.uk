@@ -25,6 +25,8 @@ for (const [renderer, expected] of [
   ['NVIDIA GeForce GTX 1080 Ti', ['gtx1080ti']],
   ['NVIDIA GeForce RTX 2060', ['rtx2060', 'rtx2060-12']],
   ['NVIDIA GeForce RTX 2070', ['rtx2070']],
+  ['NVIDIA GeForce RTX 2070 SUPER', ['rtx2070']],
+  ['NVIDIA GeForce RTX 2080 SUPER', ['rtx2080']],
   ['NVIDIA GeForce RTX 2080', ['rtx2080']],
   ['NVIDIA GeForce RTX 2080 Ti', ['rtx2080ti', 'rtx2080ti-22']],
   ['NVIDIA GeForce RTX 3060 Ti', ['rtx3060ti']],
@@ -109,5 +111,6 @@ assert.equal(ids('AMD Radeon 780M Graphics'), null);
 assert.equal(ids('Apple GPU'), null);
 assert.equal(ids('ANGLE (Intel, Intel(R) UHD Graphics 630 Direct3D11 vs_5_0 ps_5_0, D3D11)'), null);
 assert.equal(ids(''), null);
+assert.equal(ids('ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)'), null);
 
 console.log('gpu-detect: renderer matching checks out');

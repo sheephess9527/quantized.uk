@@ -539,6 +539,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Keep RTX 2060 Super out of base-card detection
+
+- Browser detection no longer maps the unindexed 8 GB RTX 2060 Super to the base RTX 2060's 6/12 GB rows. RTX 2070 Super and RTX 2080 Super retain their capacity-equivalent 8 GB fallback. Renderer regression cases cover all three.
+
 ### 2026-11-22 — Integrated-APU bandwidth caveat and exact RTX 2080 Ti source
 
 - Integrated GPU pages now distinguish capacity from shared-memory bandwidth: large dense models may load but generate slowly. English and Chinese text treats ROCm/Vulkan GPU-target support (including gfx1151), OS and runtime compatibility as a separate setup check. The branch uses `isIntegrated`, not a model id; tests cover both indexed APUs, an unnamed-bandwidth APU and the unchanged discrete-AMD branch.
