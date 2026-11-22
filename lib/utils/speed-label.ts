@@ -144,7 +144,7 @@ export function speedQuote(
     return { ...base, source: 'ceiling', point: ceiling };
   }
 
-  if (quant.speedRTX4090 != null && gpu.id !== 'rtx4090') {
+  if (!gpu.isLaptop && quant.speedRTX4090 != null && gpu.id !== 'rtx4090') {
     return { ...base, source: 'other-card', point: quant.speedRTX4090, referenceCard: 'RTX 4090' };
   }
 

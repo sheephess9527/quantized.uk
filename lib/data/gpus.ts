@@ -5,6 +5,9 @@ export interface GPU {
   type: 'nvidia-consumer' | 'nvidia-pro' | 'nvidia-unified' | 'apple' | 'amd' | 'intel' | 'cpu';
   isUnified?: boolean;
   isCPU?: boolean;
+  isLaptop?: boolean;
+  /** Source for the published hardware specifications, when recorded. */
+  specUrl?: string;
   icon: string;
   /**
    * Peak theoretical memory bandwidth in GB/s, from the vendor's own
@@ -30,6 +33,18 @@ export interface GPU {
    */
   addedAt?: string;
 }
+
+function geforceLaptops(series: 30 | 40 | 50, memType: string, models: [string, number, boolean?][]): GPU[] {
+  const specUrl = `https://www.nvidia.com/en-us/geforce/laptops/${series}-series/`;
+  return models.map(([model, vram, hasVariants]) => ({
+    id: `rtx${model.toLowerCase().replace(/ /g, '')}-laptop${hasVariants ? `-${vram}gb` : ''}`,
+    name: `RTX ${model} Laptop GPU${hasVariants ? ` ${vram}G` : ''}`,
+    vram, memType, specUrl, isLaptop: true, type: 'nvidia-consumer', icon: '🟢', addedAt: '2026-11-22',
+  }));
+}
+
+const radeonLaptopLaunch = 'https://web.archive.org/web/20230516185750/https://www.amd.com/en/graphics/amd-radeon-rx-laptops';
+const radeonLaptopDefaults = { type: 'amd', icon: '🔴', memType: 'GDDR6', isLaptop: true, addedAt: '2026-11-22' } as const;
 
 export const gpuDatabase: GPU[] = [
   /*
@@ -146,6 +161,22 @@ export const gpuDatabase: GPU[] = [
   // intel.com spec page + datasheet (2026-10-08): 32 GB GDDR6, 256-bit, 608 GB/s. A workstation card —
   // consumer/retail filters exclude "Arc Pro" by name, as they exclude Radeon PRO.
   { id: 'arc-pro-b70', name: 'Arc Pro B70 32G',       vram: 32,  type: 'intel', icon: '🔵', bandwidth: 608, memType: 'GDDR6', addedAt: '2026-10-08', },
+  ...geforceLaptops(50, 'GDDR7', [
+    ['5090', 24], ['5080', 16], ['5070 Ti', 12], ['5070', 8, true], ['5070', 12, true], ['5060', 8], ['5050', 8],
+  ]),
+  ...geforceLaptops(40, 'GDDR6', [
+    ['4090', 16], ['4080', 12], ['4070', 8], ['4060', 8], ['4050', 6],
+  ]),
+  ...geforceLaptops(30, 'GDDR6', [
+    ['3080 Ti', 16], ['3080', 8, true], ['3080', 16, true], ['3070 Ti', 8], ['3070', 8], ['3060', 6],
+    ['3050 Ti', 4], ['3050', 4, true], ['3050', 6, true],
+  ]),
+  { ...radeonLaptopDefaults, id: 'rx7900m', name: 'Radeon RX 7900M', vram: 16, specUrl: 'https://www.amd.com/en/newsroom/press-releases/2023-10-19-amd-introduces-fastest-amd-radeon-laptop-graphics-.html' },
+  { ...radeonLaptopDefaults, id: 'rx7800m', name: 'Radeon RX 7800M', vram: 12, bandwidth: 432, specUrl: 'https://www.amd.com/en/products/graphics/laptops/radeon/7000-series/amd-radeon-rx-7800m.html' },
+  { ...radeonLaptopDefaults, id: 'rx7600mxt', name: 'Radeon RX 7600M XT', vram: 8, specUrl: radeonLaptopLaunch },
+  { ...radeonLaptopDefaults, id: 'rx7600m', name: 'Radeon RX 7600M', vram: 8, specUrl: radeonLaptopLaunch },
+  { ...radeonLaptopDefaults, id: 'rx7700s', name: 'Radeon RX 7700S', vram: 8, specUrl: radeonLaptopLaunch },
+  { ...radeonLaptopDefaults, id: 'rx7600s', name: 'Radeon RX 7600S', vram: 8, specUrl: radeonLaptopLaunch },
   { id: 'cpu-128',     name: '128 GB RAM (CPU)',       vram: 128, type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-64',      name: '64 GB RAM (CPU)',        vram: 64,  type: 'cpu', isCPU: true,      icon: '💻' },
   { id: 'cpu-32',      name: '32 GB RAM (CPU)',        vram: 32,  type: 'cpu', isCPU: true,      icon: '💻' },

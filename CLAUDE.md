@@ -31,8 +31,8 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 | Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (151 models: 149 licensed, 45 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 5,138 HTML files including 404 variants and 2,245 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**105** GPU configurations, including laptops, + 4 CPU-only RAM rows), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 5,234 HTML files including 404 variants and 2,266 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -150,6 +150,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   address bar either (a reload would read it back as a choice). `VRAM Result` analytics sends index
   ids and verdicts only, once per distinct answer; anything the reader types stays out of events.
   Check renderer matching with `npm run check:gpu-detect` (in `npm test`).
+- **Laptop GPUs:** retain the vendor's runtime type, set `isLaptop` and link the
+  published specifications with `specUrl`. Never copy desktop bandwidth figures.
+  GeForce laptop matches require a renderer marker; Radeon mobile SKUs have distinct names.
+  Don't show desktop speed references as substitutes for laptop speed data.
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
   beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never

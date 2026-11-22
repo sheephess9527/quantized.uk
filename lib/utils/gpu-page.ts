@@ -122,11 +122,11 @@ export function usableCapacityGB(gpu: GPU): number {
 }
 
 /**
- * Discrete cards can be stacked; a Mac, a DGX Spark or a RAM row is one pool
- * and a second one is a second machine, not more memory for this model.
+ * Desktop cards can be stacked; a laptop, Mac, DGX Spark or RAM row describes
+ * a single system, not an add-in card that can be repeated in the same rig.
  */
 export function canStack(gpu: GPU): boolean {
-  return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
+  return !gpu.isLaptop && (gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel');
 }
 
 export const MAX_CARDS = 4;

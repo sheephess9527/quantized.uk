@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The hardware index and VRAM calculator now list 27 laptop GPU configurations from the GeForce RTX 30, 40 and 50 series and Radeon RX 7000 mobile series. Each GPU page links to its hardware specifications. When the browser names a supported laptop GPU, the calculator can suggest it and ask which memory size you have if more than one was sold.',
+    zh: '显卡列表和显存计算器新增 27 种笔记本显卡配置，覆盖 GeForce RTX 30、40、50 系列和 Radeon RX 7000 移动系列。各显卡页面均提供硬件规格来源。浏览器能识别受支持的笔记本显卡时，计算器会推荐该型号；若有多个显存版本，则请你选择实际容量。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
     zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
   },
