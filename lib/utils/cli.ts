@@ -13,6 +13,8 @@ export interface CLIOptions {
   quantLevel: string;
   /** Verified single-file GGUF path from the selected quant source, not a guessed variant. */
   ggufFilename?: string;
+  /** First-part file name of a split build minus `-00001-of-NNNNN.gguf`, when it is not `<repo base>-<level>`. */
+  ggufShardStem?: string;
   /**
    * GGUF repo id from `lib/data/hf-repos.mjs`, e.g.
    * `bartowski/Meta-Llama-3.1-8B-Instruct-GGUF`.
@@ -320,7 +322,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   // publisher: download by pattern and let the shell find the first part (llama.cpp loads the
   // rest from it). Compose cannot run a shell, so it gets a visible placeholder instead.
   const sharded = !!hfRepo && (opts.fileGB ?? 0) > SHARD_GB;
-  const filePattern = modelFile.replace(/\.gguf$/, '*.gguf');
+  const filePattern = opts.ggufShardStem ? `${opts.ggufShardStem}*.gguf` : modelFile.replace(/\.gguf$/, '*.gguf');
   const findFirst = (dir: string) => `$(find ${dir} -name '${filePattern}' | sort | head -1)`;
   const hostModelPath = sharded ? `"${findFirst('./models')}"` : `./models/${modelFile}`;
   const containerModelPath = sharded ? `"/models/$(cd models && find . -name '${filePattern}' | sort | head -1)"` : `/models/${modelFile}`;
@@ -505,7 +507,7 @@ function generateOllama(opts: CLIOptions): CLIOutput {
   // Split builds (past SHARD_GB) land in a publisher-specific sub-folder, so their FROM path is
   // described rather than typed; a single file gets its exact name.
   const ollamaSharded = (opts.fileGB ?? 0) > SHARD_GB;
-  const ollamaGgufPattern = opts.ggufFilename ?? (hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}${ollamaSharded ? '*' : ''}.gguf` : '');
+  const ollamaGgufPattern = opts.ggufFilename ?? (hfRepo ? `${ollamaSharded && opts.ggufShardStem ? opts.ggufShardStem : `${ggufBase(hfRepo)}-${quantLevel}`}${ollamaSharded ? '*' : ''}.gguf` : '');
   const ollamaLocalName = hfRepo ? `${ggufBase(hfRepo)}-${quantLevel}`.toLowerCase().replace(/[^a-z0-9._-]/g, '-') : '';
   const ollamaModel = hfRepo
     ? `hf.co/${hfRepo}:${opts.ggufFilename ?? quantLevel}`

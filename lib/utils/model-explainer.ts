@@ -130,7 +130,8 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
   const best = bestQuant(model.quants);
   const fastest = [...model.quants].filter(q => q.speedRTX4090 != null)
     .sort((a, b) => (b.speedRTX4090 ?? 0) - (a.speedRTX4090 ?? 0))[0];
-  const hybrid = model.arch.attention;
+  const att = model.arch.attention;
+  const hybrid = att && ((att.fullLayers ?? model.arch.layers) < model.arch.layers || att.windowLayers) ? att : undefined;
   const kvGrowth = atLong.kvCacheGB - at4k.kvCacheGB;
   const moe = isMoE(model);
   // "Measured here" only for rows this site actually ran; every other speed is
@@ -185,6 +186,9 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
           ? `That is gentler than the parameter count suggests: only ${hybrid.fullLayers ?? model.arch.layers} of ` +
             `${model.arch.layers} layers keep a KV cache that grows with context` +
             (hybrid.windowLayers ? `, and ${hybrid.windowLayers} more cap theirs at a sliding window` : '') +
+            (hybrid.compressed?.length
+              ? `; compressed or index caches on ${hybrid.compressed.map(c => `${c.layers} layer${c.layers === 1 ? '' : 's'} add one row per ${c.ratio === 1 ? 'token' : `${c.ratio} tokens`}`).join(', ')}`
+              : '') +
             `, so the cache scales at a fraction of the usual rate. `
           : `Weights do not move with context — only the KV cache does, and it grows linearly, so this is the number to watch when planning for long documents. `) +
         `The model's native window is ${contextLabel(model.contextLength)}; holding all of it at ${refKey} would need about ` +
@@ -195,6 +199,9 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
         (hybrid
           ? `这比参数量给人的印象要温和：${model.arch.layers} 层中只有 ${hybrid.fullLayers ?? model.arch.layers} 层的 KV 缓存会随上下文增长` +
             (hybrid.windowLayers ? `，另有 ${hybrid.windowLayers} 层被滑动窗口封顶` : '') +
+            (hybrid.compressed?.length
+              ? `；压缩或索引缓存中，${hybrid.compressed.map(c => `${c.layers} 层每 ${c.ratio === 1 ? '个 token' : `${c.ratio} 个 token`}增加一行`).join('，')}`
+              : '') +
             `，因此缓存的增速只有常规架构的一小部分。`
           : `权重不随上下文变化，只有 KV 缓存会，而且是线性增长 —— 规划长文档场景时要盯的就是这个数字。`) +
         `该模型的原生上下文是 ${contextLabel(model.contextLength)}；在 ${refKey} 下把它全部撑满约需 ` +

@@ -83,9 +83,11 @@ app/                        # Next.js App Router pages
   quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
     page.tsx
   benchmarks/page.tsx       # Charts + matrix
+  methodology/page.tsx      # Inference-memory formulas, data sources and measured error; /zh mirror
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   feed.xml/route.ts         # RSS (force-static)
+  llms.txt/route.ts         # LLM summary; /zh/llms.txt mirror shares lib/llms.ts
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   tools/speed/, tools/which-quant/, tools/context-length/
@@ -111,7 +113,7 @@ lib/
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   105 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
+    gpus.ts                 #   122 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
     meta.ts                 #   dataLastUpdated + sizingChangedAt
     model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
@@ -150,12 +152,13 @@ wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 ### VRAM calculation (`lib/utils/vram.ts`)
 
 ```
-total = model_weights + kv_cache + activation_buffer
-
-model_weights     = params × bpw / 8
-kv_cache          = 2 × layers × kvHeads × headDim × contextLen × batchSize × 2 bytes
-activation_buffer = 10% of the above
+model_weights     = params × bpw / 8 / 2³⁰ × 1.02
+kv_cache          = sum(2 × layers × kvHeads × headDim × cachedTokens × batchSize × bytesPerValue / 2³⁰)
+subtotal          = model_weights + kv_cache + optional vision_encoder
+total             = subtotal × 1.10
 ```
+
+Memory estimates are in GiB. KV cache is summed over full-attention and sliding-window layer groups, using their respective head layouts and token spans. The default f16 cache uses 2 bytes per value. The bilingual [/methodology/](https://quantized.uk/methodology/) page derives mean and maximum absolute memory error at build time from the benchmark matrix and the live calculator function via `bench-calibration.ts`. It links to the per-run comparison and keeps measurement scope separate from the estimates.
 
 `getVerdict(totalGB, gpuVram)` returns `green` / `yellow` / `red` so the calculator can colour-code each GPU.
 
@@ -510,6 +513,8 @@ interface GPU {
   type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
   isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
   isLaptop?: boolean;      // separate mobile group; does not change the runtime backend
+  isIntegrated?: boolean;  // non-stackable APU; vram is its documented GPU allocation, not system RAM
+  cudaComputeCapability?: number; // recorded CUDA CC; AWQ requires 7.5+ where known
   specUrl?: string;        // published hardware specifications; required for laptop entries
 }
 
@@ -544,6 +549,58 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Pair pages at `/quant-hub/[modelId]/[gpuSlug]/` (and `/zh`) are now generated only for exact measured pairs and for the 10 cards in `POPULAR_GPU_IDS`; the existing current-model, verified-file and 25%-of-memory rules still apply to the popular cards. Pairs drop from 2,266 to 322 and the export from 11,242 to 3,466 files, since each pair costs four files (en/zh `index.html` + `index.txt`).
 - Retired pair URLs 404; `lib/utils/not-found.ts` recognises `/quant-hub/{model}/{gpu}/` and suggests the model page and GPU page. No `_redirects` rules: the ~3,900 retired URLs would exceed Cloudflare's 2,000 static-rule limit, and Pages' splat syntax cannot express "model page" without one rule per model.
 - New `scripts/check-export-size.mjs` runs in `postbuild` and fails the build when `out/` exceeds 15,000 files. `scripts/check-pair-pages.ts` asserts no unmeasured pair outside the popular cards is eligible.
+
+### 2026-11-22 — VRAM methodology and accuracy
+
+- Added bilingual methodology pages linked from the footer and sitemap. They document inference sizing and input provenance, and recompute the error summary from the measured matrix and the calculator on every build. The detailed benchmark comparison is linked directly; no runs or sizing behavior changed.
+
+### 2026-11-22 — Chinese LLM-readable summary
+
+- Added `/zh/llms.txt` in Simplified Chinese. Both static routes use `lib/llms.ts`, with shared page links and live model/GPU/guide counts; Chinese links stay under `/zh/`, while the sitemap and public JSON remain shared. Each summary links to both language versions, and robots.txt advertises both.
+- `npm test` checks bilingual link and numeric parity, Chinese route existence and text responses. Added the bilingual public release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
+
+### 2026-11-22 — Gate AWQ on pre-Turing CUDA hardware
+
+- Added optional CUDA compute capability metadata and excluded AWQ on recorded pre-7.5 cards: GTX 1080 Ti (6.1), V100 16/32 GB (7.0), P100 (6.0) and P40 (6.1), using [NVIDIA's legacy GPU table](https://developer.nvidia.com/cuda/gpus/legacy). [vLLM's AWQ kernel](https://docs.vllm.ai/en/v0.23.0/api/vllm/model_executor/layers/quantization/awq/) requires Turing/SM75 or newer.
+- The shared format predicate gates GPU fits and calculator recommendations; launch-command vLLM choices now use that same predicate. Tests cover all five rows, retained GGUF support, the 7.5 boundary and omitted metadata. This is an AWQ kernel restriction, not a claim of universal compatibility for other formats.
+
+### 2026-11-22 — Keep RTX 2060 Super out of base-card detection
+
+- Browser detection no longer maps the unindexed 8 GB RTX 2060 Super to the base RTX 2060's 6/12 GB rows. RTX 2070 Super and RTX 2080 Super retain their capacity-equivalent 8 GB fallback. Renderer regression cases cover all three.
+
+### 2026-11-22 — Integrated-APU bandwidth caveat and exact RTX 2080 Ti source
+
+- Integrated GPU pages now distinguish capacity from shared-memory bandwidth: large dense models may load but generate slowly. English and Chinese text treats ROCm/Vulkan GPU-target support (including gfx1151), OS and runtime compatibility as a separate setup check. The branch uses `isIntegrated`, not a model id; tests cover both indexed APUs, an unnamed-bandwidth APU and the unchanged discrete-AMD branch.
+- RTX 2080 Ti now links directly to its TechPowerUp GPU database specification. Audited the other new source links against their named hardware; TechPowerUp serves bot checks to automated readers, while its returned page titles identify the exact cards. AMD processor specs cover the APU/bus; its VGM FAQ linked above covers allocation limits. V100's datasheet covers both PCIe capacities, and the mod articles describe the unofficial capacities rather than official NVIDIA SKUs.
+
+### 2026-11-22 — Older GeForce, workstation and unified-memory hardware
+
+- Added 17 sourced configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), GTX 1080 Ti, RTX 2060 6/12 GB, 2070, 2080, 2080 Ti, 3060 Ti, 3050 8 GB, V100 PCIe 16/32 GB, T4, RTX A6000 and RTX 6000 Ada, plus explicitly unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB modifications. Mod bandwidth uses the stock memory rate, not a benchmark; bilingual notes warn about seller-dependent firmware and warranty.
+- Integrated AMD rows retain the AMD runtime backend but cannot stack. Their capacities already represent Windows GPU allocations; do not apply the Apple-only `isUnified` cap again. LPDDR5X-8000 bandwidth is 256 GB/s on a shared 256-bit bus. Published specs are linked on every new GPU page. `dataLastUpdated` stays synchronized at `2026-11-22`.
+- AMD's [Variable Graphics Memory FAQ](https://www.amd.com/en/blogs/2025/faqs-amd-variable-graphics-memory-vram-ai-model-sizes-quantization-mcp-more.html) documents the 48/96 GB allocations; [AMD's processor specification](https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html) documents LPDDR5X-8000 and the 256-bit bus.
+- Renderer matching recognizes Radeon 8060S and the added cards, keeps Ti models distinct, and asks for memory size when stock and modified cards report the same renderer. Normal, ambiguous, unsupported and empty renderer cases are covered by `check:gpu-detect`.
+
+### 2026-11-22 — Computed VRAM for DeepSeek V4/V4.1, GLM-5.3, Kimi K3.1 and MiniMax M3.1
+
+- **+5 models (156), pending −5:** DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and
+  MiniMax M3.1 Flash move from `pending.ts` to `models-extra-18.ts`. Every arch figure comes from the publisher's
+  `config.json`, the GGUF header (tensor counts summed over all parts) and llama.cpp's cache code; sizes are exact
+  GGUF bytes. Per-model sources, encodings and rejected builds: `docs/changes/2026-11-22-frontier-vram.md`.
+- **`ModelArch.attention.compressed`** (`lib/data/types.ts`, `calcVRAM`): `{ layers, values, ratio }[]`, each group a
+  K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, rounded up to a multiple of the optional `pad`, KV-cache dtype; DeepSeek V4/V4.1 set `pad: 256`, matching `GGML_PAD(dsv4_comp_size(...), 256)` in llama.cpp),
+  added to the full/window cache. It carries DeepSeek V4's CSA/HCA rows and V4.1's shared compressed rows, and the
+  sparse-attention indexer caches of GLM-5.3 / Kimi K3.1 (K-only) and MiniMax M3.1 (K + V, so `values` 256).
+  Fixed-size KDA / compressor state stays uncounted. `dataProblems()` bounds each group; the model explainer
+  names the groups and treats an `attention` block with every layer full as non-hybrid.
+- Licences from each publisher card: MIT (DeepSeek, GLM); Kimi K3.1-Pro License and MiniMax Community License are
+  `restricted` (revenue-triggered agreement / commercial notice). Four of the five take image input.
+- No requested model stays pending. Not tracked: Q2_K_S (no calculator level), Kimi's DevQuasar MXFP4_MOE (not the
+  released format), MiniMax unsloth UD-* / AtomicChat AD-* (no standard levels).
+- Neither DeepSeek publishes an active count: `activeParams` 13.8 / 16.8 is derived from the GGUF header (non-expert
+  tensors + 6 routed experts' share; V4.1 also leaves out its 196.6B `engram_embd` lookup tables), with the arithmetic
+  in a comment. `fetch-hf-stats.mjs` writes its per-model progress to stderr like its failure lines; on stdout it made Node 20's test runner fail intermittently ("Unable to deserialize cloned data"). Split GGUF launch commands now download by the recorded first-part name (`ggufShardStem`), so GLM-5.3 Q4_K_M (`*-Q4_K-*`) and MiniMax M3.1 (`Q2_K/` folder) match their files. Nex-N2.6 (GLM5-next fine-tune) stays pending: its layout is now expressible, its own sizes are unread.
+- Not yet checked against a published KV-cache measurement; the encodings follow llama.cpp's allocation code.
+- Added the bilingual reader-facing release note; `dataLastUpdated` remains `2026-11-22`.
 
 ### 2026-11-22 — Answer-first model × GPU pages
 
