@@ -1,6 +1,7 @@
 import type { HubFilters } from '@/components/hub/FilterBar';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
+import { PARAM_RANGES } from '@/lib/utils/param-buckets';
 
 export { SHIPPED_FORMATS };
 
@@ -21,7 +22,7 @@ export const EMPTY_HUB_FILTERS: HubFilters = {
   showLegacy: '',
 };
 
-const PARAM_RANGES = new Set(['≤3B', '7B', '14B', '32B', '70B+']);
+const PARAM_RANGE_KEYS = new Set<string>(PARAM_RANGES);
 const CATEGORIES = new Set(['general', 'code', 'multimodal', 'instruct']);
 const HARDWARE = new Set(['consumer-gpu', 'mac', 'cpu-vps', 'pro-gpu']);
 const FORMATS = new Set(SHIPPED_FORMATS);
@@ -46,7 +47,7 @@ export function parseHubSearchParams(params: URLSearchParams): HubUrlState {
     gpuFilterId,
     filters: {
       search: params.get('q') ?? '',
-      paramRange: PARAM_RANGES.has(size) ? size : '',
+      paramRange: PARAM_RANGE_KEYS.has(size) ? size : '',
       category: CATEGORIES.has(cat) ? cat : '',
       hardware: HARDWARE.has(hw) ? hw : '',
       format: FORMATS.has(fmt) ? fmt : '',

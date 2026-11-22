@@ -154,6 +154,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `input=image` parameter is calculator-specific; the Hub uses `input=multimodal`. Forward encoder
   visibility uses `hasImageInput()`, not a category tag. Check with
   `npm run check:recommendations` (or `npm test`) after recommendation changes.
+- **Size buckets come from one place.** Bounds and labels live in `lib/utils/param-buckets.ts`;
+  display `PARAM_RANGE_LABEL[key]`, never the key (`≤3B`, `7B` … are Hub URL values only) and never a
+  hand-typed size label. A model whose published size is not its total parameter count goes in
+  `NAME_SIZE_EXCEPTIONS` in `scripts/check-param-buckets.ts` with its reason (`npm test` runs it).
 - **Bilingual:** every UI string goes in **both** `en` and `zh` in `lib/i18n/translations.ts`.
   A missing `zh` renders `undefined` in the Chinese UI (the build now gates on that).
   **Reader-facing *data* fields count too** — translating only `translations.ts` left the whole
