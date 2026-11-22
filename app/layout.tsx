@@ -3,10 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/lib/i18n/context';
 import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import SkipToContent from '@/components/layout/SkipToContent';
-import Plausible from '@/components/analytics/Plausible';
+import SiteChrome from '@/components/layout/SiteChrome';
 import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
 import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
 
@@ -97,13 +94,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-bg text-slate-100 font-sans antialiased">
         <SiteJsonLd />
-        <Plausible />
         <LanguageProvider>
           <HardwareProfileProvider>
-            <SkipToContent />
-            <Navbar />
-            <main id="main-content" tabIndex={-1} className="min-h-screen pt-[env(safe-area-inset-top)]">{children}</main>
-            <Footer />
+            <SiteChrome>{children}</SiteChrome>
           </HardwareProfileProvider>
         </LanguageProvider>
       </body>
