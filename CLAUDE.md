@@ -32,9 +32,7 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,380 HTML files (3,568 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
-| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**105** GPU configurations, including laptops, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,356 HTML files (3,496 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,392 HTML files (3,605 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
