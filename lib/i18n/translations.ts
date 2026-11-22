@@ -246,7 +246,7 @@ export const translations = {
     },
     home: {
       hero: {
-        badge: 'Open Source · Edge Deployment · Geek-First',
+        badge: 'Sourced Data · Edge Deployment · Geek-First',
         tagline: 'Quantize everything.',
         changelogLink: 'latest update',
         title1: 'Will it fit',
@@ -1744,7 +1744,7 @@ export const translations = {
     },
     home: {
       hero: {
-        badge: '开源 · 端侧部署 · 极客优先',
+        badge: '数据来源可查 · 端侧部署 · 极客优先',
         tagline: '极致量化。',
         changelogLink: '最近更新',
         title1: '这张显卡，',

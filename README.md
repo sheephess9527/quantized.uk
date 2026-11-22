@@ -25,6 +25,8 @@ You're an AI agent or a new account picking this up cold. Read this box, then do
 
 The target audience is developers running LLMs on their own hardware (RTX cards, Apple Silicon, cheap VPS). The site turns scattered, paper-grade quantization knowledge into practical, at-a-glance tooling.
 
+Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据来源可查 · 端侧部署 · 极客优先**. This describes traceable data sources, not a public source repository.
+
 ### Core features
 
 | Feature | Route | What it does |
@@ -535,6 +537,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Sourced-data homepage tagline
+
+- Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.
+- Added the bilingual reader-facing release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
 
 ### 2026-11-22 — Ollama tag paste in the calculator
 
