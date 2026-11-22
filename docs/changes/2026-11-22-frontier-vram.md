@@ -2,7 +2,7 @@
 
 Five models move from `lib/data/pending.ts` to `lib/data/models-extra-18.ts`. Their caches are not plain
 full attention, so the calculator gained `attention.compressed`: groups of `{ layers, values, ratio }`, each a
-K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, KV-cache dtype).
+K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, rounded up to a multiple of the optional `pad`, KV-cache dtype). DeepSeek V4/V4.1 groups set `pad: 256`: `llama_kv_cache_dsv4` allocates `GGML_PAD(dsv4_comp_size(kv_size, ratio), 256)` rows per compressed cache.
 
 Sources: publishers' `config.json`; GGUF headers read by HTTP range (tensor element counts summed over every
 part, `*_exps` tensors as expert params); llama.cpp `e300919` `src/llama-model.cpp` `create_memory` and the

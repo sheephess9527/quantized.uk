@@ -101,7 +101,7 @@ export interface ModelArch {
      * ceil(context / ratio)) and the sparse-attention indexer caches of MiniMax M3
      * (`llama_kv_cache_msa`) are sized this way. `values` is not doubled.
      */
-    compressed?: { layers: number; values: number; ratio: number }[];
+    compressed?: { layers: number; values: number; ratio: number; pad?: number }[];
     /** Where the layer split was sourced from — shown to the reader. */
     note?: { en: string; zh: string };
   };

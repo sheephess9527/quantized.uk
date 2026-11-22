@@ -35,12 +35,14 @@ export const extraModels18: QuantModel[] = [
           {
             "layers": 21,
             "values": 640,
-            "ratio": 4
+            "ratio": 4,
+            "pad": 256
           },
           {
             "layers": 20,
             "values": 512,
-            "ratio": 128
+            "ratio": 128,
+            "pad": 256
           }
         ],
         "note": {
@@ -125,12 +127,14 @@ export const extraModels18: QuantModel[] = [
           {
             "layers": 3,
             "values": 640,
-            "ratio": 2
+            "ratio": 2,
+            "pad": 256
           },
           {
             "layers": 1,
             "values": 640,
-            "ratio": 1
+            "ratio": 1,
+            "pad": 256
           }
         ],
         "note": {

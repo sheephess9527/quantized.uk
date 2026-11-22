@@ -545,7 +545,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   `config.json`, the GGUF header (tensor counts summed over all parts) and llama.cpp's cache code; sizes are exact
   GGUF bytes. Per-model sources, encodings and rejected builds: `docs/changes/2026-11-22-frontier-vram.md`.
 - **`ModelArch.attention.compressed`** (`lib/data/types.ts`, `calcVRAM`): `{ layers, values, ratio }[]`, each group a
-  K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, KV-cache dtype),
+  K-only row of `values` numbers per `ratio` tokens on `layers` layers (`ceil(ctx / ratio)` rows, rounded up to a multiple of the optional `pad`, KV-cache dtype; DeepSeek V4/V4.1 set `pad: 256`, matching `GGML_PAD(dsv4_comp_size(...), 256)` in llama.cpp),
   added to the full/window cache. It carries DeepSeek V4's CSA/HCA rows and V4.1's shared compressed rows, and the
   sparse-attention indexer caches of GLM-5.3 / Kimi K3.1 (K-only) and MiniMax M3.1 (K + V, so `values` 256).
   Fixed-size KDA / compressor state stays uncounted. `dataProblems()` bounds each group; the model explainer
