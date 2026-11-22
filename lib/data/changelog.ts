@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-23',
+    en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
+    zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
+  },
+  {
     date: '2026-11-22',
     en: 'The VRAM calculator shows published LiveBench Overall scores in both inference modes. Only tested models show scores, each linked to its dated release; they are not scores for the selected quantization. Use “Only show results with a model score” to find scored models that fit your GPU.',
     zh: '显存计算器的两种推理模式现可显示 LiveBench 公布的综合评分。仅已测模型有分数，并链接到对应日期的榜单版本；分数不代表所选量化版本的质量。可勾选「只显示有模型评分的结果」，查看显卡能运行的已测模型。',
