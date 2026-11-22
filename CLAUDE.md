@@ -138,6 +138,12 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `scripts/check-calculator-evidence.ts` checks references and export semantics. Reader
   reports stay local until an explicit copy/download/mail-draft action; no automatic sending.
 
+- **Calculator first load:** reverse mode is the default. Precedence is URL, then saved profile,
+  then a browser guess (`lib/utils/gpu-detect.ts`, WebGL renderer; never sent or stored), then the
+  example card/model. Ambiguous memory sizes and Macs start on the smallest row and ask; a guessed,
+  ambiguous or example value is never written to the profile. `VRAM Result` analytics sends index
+  ids and verdicts only, once per distinct answer; anything the reader types stays out of events.
+  Check renderer matching with `npm run check:gpu-detect` (in `npm test`).
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
   beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
