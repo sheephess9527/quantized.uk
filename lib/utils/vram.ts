@@ -118,12 +118,15 @@ export const KV_CACHE_TYPES = {
 } as const;
 export type KvCacheType = keyof typeof KV_CACHE_TYPES;
 
+export const WEIGHT_OVERHEAD = 0.02;
+export const ACTIVATION_BUFFER = 0.10;
+
 export function calcVRAM(input: CalcInput): CalcResult {
   const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize, attention } = input;
-  const kvValueBytes = input.kvBytesPerValue ?? 2;
+  const kvValueBytes = input.kvBytesPerValue ?? KV_CACHE_TYPES.f16;
 
   // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
-  const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * 1.02;
+  const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * (1 + WEIGHT_OVERHEAD);
 
   // KV cache: 2 (K+V) × kvHeads × headDim × 2 bytes (fp16) per layer per token.
   //
@@ -151,7 +154,7 @@ export function calcVRAM(input: CalcInput): CalcResult {
   const extraGB = Math.max(0, input.extraGB ?? 0);
 
   // Activation buffer: ~10% of (weights + kvcache [+ any encoder])
-  const activationsGB = (modelWeightsGB + kvCacheGB + extraGB) * 0.10;
+  const activationsGB = (modelWeightsGB + kvCacheGB + extraGB) * ACTIVATION_BUFFER;
 
   const totalGB = modelWeightsGB + kvCacheGB + extraGB + activationsGB;
 

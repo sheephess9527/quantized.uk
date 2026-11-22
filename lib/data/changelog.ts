@@ -18,6 +18,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'The footer now links to Methodology & accuracy. See how the calculator estimates weights, KV cache and runtime memory, where the data comes from, and how its estimates compare with recorded memory use.',
+    zh: '页脚新增“估算方法与准确性”，说明计算器如何估算模型权重、KV 缓存和运行内存，数据来自哪里，以及估算值与实测占用相差多少。',
+  },
+  {
+    date: '2026-11-22',
     en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
     zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
   },

@@ -82,6 +82,7 @@ app/                        # Next.js App Router pages
   quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
     page.tsx
   benchmarks/page.tsx       # Charts + matrix
+  methodology/page.tsx      # Inference-memory formulas, data sources and measured error; /zh mirror
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   feed.xml/route.ts         # RSS (force-static)
@@ -150,12 +151,13 @@ wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 ### VRAM calculation (`lib/utils/vram.ts`)
 
 ```
-total = model_weights + kv_cache + activation_buffer
-
-model_weights     = params × bpw / 8
-kv_cache          = 2 × layers × kvHeads × headDim × contextLen × batchSize × 2 bytes
-activation_buffer = 10% of the above
+model_weights     = params × bpw / 8 / 2³⁰ × 1.02
+kv_cache          = sum(2 × layers × kvHeads × headDim × cachedTokens × batchSize × bytesPerValue / 2³⁰)
+subtotal          = model_weights + kv_cache + optional vision_encoder
+total             = subtotal × 1.10
 ```
+
+Memory estimates are in GiB. KV cache is summed over full-attention and sliding-window layer groups, using their respective head layouts and token spans. The default f16 cache uses 2 bytes per value. The bilingual [/methodology/](https://quantized.uk/methodology/) page derives mean and maximum absolute memory error at build time from the benchmark matrix and the live calculator function via `bench-calibration.ts`. It links to the per-run comparison and keeps measurement scope separate from the estimates.
 
 `getVerdict(totalGB, gpuVram)` returns `green` / `yellow` / `red` so the calculator can colour-code each GPU.
 
@@ -546,6 +548,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Pair pages at `/quant-hub/[modelId]/[gpuSlug]/` (and `/zh`) are now generated only for exact measured pairs and for the 10 cards in `POPULAR_GPU_IDS`; the existing current-model, verified-file and 25%-of-memory rules still apply to the popular cards. Pairs drop from 2,266 to 322 and the export from 11,242 to 3,466 files, since each pair costs four files (en/zh `index.html` + `index.txt`).
 - Retired pair URLs 404; `lib/utils/not-found.ts` recognises `/quant-hub/{model}/{gpu}/` and suggests the model page and GPU page. No `_redirects` rules: the ~3,900 retired URLs would exceed Cloudflare's 2,000 static-rule limit, and Pages' splat syntax cannot express "model page" without one rule per model.
 - New `scripts/check-export-size.mjs` runs in `postbuild` and fails the build when `out/` exceeds 15,000 files. `scripts/check-pair-pages.ts` asserts no unmeasured pair outside the popular cards is eligible.
+
+### 2026-11-22 — VRAM methodology and accuracy
+
+- Added bilingual methodology pages linked from the footer and sitemap. They document inference sizing and input provenance, and recompute the error summary from the measured matrix and the calculator on every build. The detailed benchmark comparison is linked directly; no runs or sizing behavior changed.
 
 ### 2026-11-22 — Chinese LLM-readable summary
 
