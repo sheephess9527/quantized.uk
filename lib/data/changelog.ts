@@ -28,6 +28,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'Copy a VRAM inference result link to share the exact model, quant, card and context you were looking at. The recipient opens the same settings, and apps that show link previews get a result card in English or Chinese.',
+    zh: '复制显存计算器的推理结果链接，可分享当前的模型、量化、显卡和上下文设置。收件人打开后看到同一组设置，支持链接预览的应用也会展示对应语言的结果卡片。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Homepage and GPU pages now let you choose 4K–128K context and concurrency 1, 2, 4 or 8. Model picks, fit counts, memory headroom and upgrade suggestions update together, and calculator links keep those settings. Static pages still start at 4K / batch 1; editorial summaries and speed references remain labelled baselines.',
     zh: '首页与显卡页面现可选择 4K–128K 上下文及 1、2、4、8 并发。模型推荐、可运行数量、显存余量与升级建议同步更新，计算器链接保留这些设置。静态页面仍默认 4K / batch 1；编辑摘要与速度参考值保留基线标注。',
   },

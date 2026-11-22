@@ -1,8 +1,8 @@
 import type { QuantModel, QuantVariant } from '@/lib/data/models';
-import type { GPU } from '@/lib/data/gpus';
+import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict, type CalcInput } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, rigDevices, MAX_CARDS } from '@/lib/utils/gpu-page';
+import { usableCapacityGB, formatAllowed, tightCeiling, canStack, capacityGB, rigDevices, MAX_CARDS, backendFor } from '@/lib/utils/gpu-page';
 export { canStack, capacityGB, rigDevices, MAX_CARDS };
 import { qualityRank } from '@/lib/utils/quality';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
@@ -25,6 +25,13 @@ export function verdictOn(totalGB: number, gpu: GPU, cards = 1, extra: GPU[] = [
 /** A format has to load on every device of a rig, not just the first. */
 export function rigFormatAllowed(gpu: GPU, extra: GPU[], format: Parameters<typeof formatAllowed>[1]): boolean {
   return formatAllowed(gpu, format) && extra.every(g => formatAllowed(g, format));
+}
+
+export function rigExtras(gpu: GPU | null, extraIds: string[], cards: number): GPU[] {
+  if (!gpu || !canStack(gpu)) return [];
+  return extraIds.map(id => gpuDatabase.find(g => g.id === id))
+    .filter((g): g is GPU => !!g && canStack(g) && backendFor(g) === backendFor(gpu))
+    .slice(0, Math.max(0, MAX_CARDS - cards));
 }
 
 export interface LevelRow {

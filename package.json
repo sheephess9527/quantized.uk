@@ -14,13 +14,14 @@
     "check:recommendations": "tsx scripts/check-recommendations.ts",
     "check:evidence": "tsx scripts/check-calculator-evidence.ts",
     "check:speed": "tsx scripts/check-measured-speed.ts",
-    "test": "tsx scripts/check-pair-pages.ts && tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts && tsx scripts/check-gpu-detect.ts && tsx scripts/check-param-buckets.ts && node --test scripts/check-hf-stats.mjs",
+    "test": "tsx scripts/check-pair-pages.ts && tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts && tsx scripts/check-gpu-detect.ts && tsx scripts/check-param-buckets.ts && tsx scripts/check-vram-share.ts && node --test scripts/check-hf-stats.mjs",
     "check:cli": "tsx scripts/check-cli-sources.ts",
     "check:feed": "tsx scripts/check-feed.ts",
     "check:gpu-detect": "tsx scripts/check-gpu-detect.ts",
     "check:param-buckets": "tsx scripts/check-param-buckets.ts"
   },
   "dependencies": {
+    "@resvg/resvg-wasm": "2.6.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.414.0",
     "next": "14.2.35",
@@ -30,6 +31,7 @@
     "tailwind-merge": "^2.6.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "4.20260217.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
