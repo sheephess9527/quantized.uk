@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-22'; // Latest release: exact speed provenance and multi-device filters.
+export const dataLastUpdated = '2026-11-22'; // Latest release: filter-aware reverse share previews.
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

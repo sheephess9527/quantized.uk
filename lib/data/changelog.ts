@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Reverse calculator share previews now respect minimum-speed and required-feature filters. Shared page descriptions and preview images use the same filtered configuration count, including the multi-device speed-minimum exception.',
+    zh: '反向计算器的分享预览现已计入最低速度与必需功能筛选。分享页面描述和预览图使用相同的筛选后配置数，并遵循多设备暂不应用最低速度的规则。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Reverse results now show just one selected-card speed: an exact-quant measurement when available, otherwise a calibrated estimate. Multi-device rigs temporarily turn off the minimum with an explanation; empty results offer targeted filter clearing. Measured badges elsewhere now require the exact RTX 4090 quant and matching recorded speed.',
     zh: '反向结果现在只显示一个当前显卡速度：优先使用同量化实测，否则使用校准估算。多设备时暂不应用最低速度并说明原因；空结果可单独清除导致无结果的筛选。其他页面的实测标记现须匹配 RTX 4090 的确切量化与已记录速度。',
   },

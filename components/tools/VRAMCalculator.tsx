@@ -18,7 +18,7 @@ import EmbedSnippets from '@/components/tools/EmbedSnippets';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
-import { getRecommendations, recommendationSpeed, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
+import { getRecommendations, readRecommendationFilters, recommendationSpeed, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
 import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { commonQuantLevels, changedAdvancedSettings } from '@/lib/utils/calc-simplify';
@@ -340,11 +340,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
-    const minSpeed = Number(searchParams.get('minTok'));
-    if ([10, 20, 40].includes(minSpeed)) setMinTok(minSpeed);
-    const features = searchParams.get('feat')?.split(',') ?? [];
-    setRequireTools(features.includes('tools'));
-    setRequireCode(features.includes('code'));
+    const filters = readRecommendationFilters(searchParams);
+    setMinTok(filters.minTok);
+    setRequireTools(filters.tools);
+    setRequireCode(filters.code);
     setUrlInitialized(true);
   }, [urlInitialized, defaultMode, searchParams, sharedLink, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
@@ -568,7 +567,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const smallestGreen = greenGpus[0];
 
   const recommendationSort = selectedGpu?.isLaptop && sortBy === 'speed' ? 'quality' : sortBy;
-  const reverseDeviceCount = (selectedGpu && canStack(selectedGpu) ? cards : 1) + extraIds.length;
+  const reverseCards = selectedGpu && canStack(selectedGpu) ? cards : 1;
+  const reverseDeviceCount = reverseCards + rigExtras(selectedGpu ?? null, extraIds, reverseCards).length;
   const reverseSpeedDisabled = reverseDeviceCount > 1;
   const effectiveMinTok = reverseSpeedDisabled ? 0 : minTok;
   const recommendations = useMemo(() => {

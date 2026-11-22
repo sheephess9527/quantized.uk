@@ -538,6 +538,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Filter-aware reverse share previews
+
+- `vramPreview` now applies reverse `minTok` and `feat` using `readRecommendationFilters`, the same validated parser as the calculator. Multi-card/device links bypass only the speed minimum, as the UI does. `vramImageUrl` forwards both parameters, including in the image cache key.
+- The Cloudflare EN/ZH HTML handlers use `vramPage` → `vramPreview`/`vramImageUrl`; the PNG handler uses those same helpers directly. Filtered counts are therefore shared by page metadata and the generated image. Reverse snapshots now preserve validated extra-device ids so the speed-minimum exception survives copying. Regression checks compare list, snapshot, bilingual preview and image counts for normal, unknown and multi-device filter parameters.
+
 ### 2026-11-22 — Reverse speed provenance and multi-device filtering
 
 - Reverse rows show one selected-card figure: exact model/format/level benchmark first, otherwise the calibrated estimate. `recommendationSpeed` supplies both the figure and minimum check; no other-card figure or ceiling fallback. `measuredSpeed` itself remains a calibration function and does not look up exact runs.

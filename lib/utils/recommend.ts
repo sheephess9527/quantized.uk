@@ -16,6 +16,12 @@ export interface RecommendationFilters {
   code?: boolean;
 }
 
+export function readRecommendationFilters(params: Pick<URLSearchParams, 'get'>): Required<RecommendationFilters> {
+  const minimum = Number(params.get('minTok'));
+  const features = params.get('feat')?.split(',') ?? [];
+  return { minTok: [10, 20, 40].includes(minimum) ? minimum : 0, tools: features.includes('tools'), code: features.includes('code') };
+}
+
 export function recommendationSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant, cards = 1): { tokS: number; source: 'measured' | 'estimated' } | undefined {
   if (cards > 1) return undefined;
   const run = matchingSpeedRun(gpu, model, quant);

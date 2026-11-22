@@ -1,7 +1,7 @@
 import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { canStack, capacityGB, MAX_CARDS, modelShape, rigExtras, rigFormatAllowed, verdictOn } from '@/lib/utils/calc-insights';
-import { getRecommendations, quantLevelKey, type SortBy } from '@/lib/utils/recommend';
+import { getRecommendations, readRecommendationFilters, quantLevelKey, type SortBy } from '@/lib/utils/recommend';
 import { calcVRAM, KV_CACHE_TYPES, quantBPW } from '@/lib/utils/vram';
 import { NO_SHARE_GPU, readVramAttention, readVramEncoder, VRAM_SHARE_PARAM } from '@/lib/utils/vram-link';
 
@@ -70,8 +70,11 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
     const rawSort = params.get('sort');
     const sort: SortBy = rawSort === 'speed' || rawSort === 'vram' ? rawSort : 'quality';
     const input = params.get('input') === 'image' ? 'image' : 'text';
+    const filters = readRecommendationFilters(params);
+    const extras = rigExtras(gpu, (params.get('extra') ?? '').split(','), cards);
+    if (cards > 1 || extras.length > 0) filters.minTok = 0;
     const rows = getRecommendations(gpu, ctx, batch, sort, params.get('yellow') !== '0', kvBytes,
-      cards, params.get('all') !== '1', input);
+      cards, params.get('all') !== '1', input, filters);
     return {
       eyebrow: t.reverse,
       title: gpu.name,
@@ -143,7 +146,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
 const imageKeys = [
   VRAM_SHARE_PARAM, 'mode', 'ctx', 'batch', 'cache', 'gpu', 'cards',
   'model', 'quant', 'params', 'layers', 'kv', 'hd', 'full', 'win', 'wt', 'mctx', 'mmproj', 'extra',
-  'sort', 'yellow', 'all', 'input',
+  'sort', 'yellow', 'all', 'input', 'minTok', 'feat',
 ];
 
 export function vramImageUrl(url: URL, lang: Locale): URL {

@@ -166,6 +166,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `quantConfidence` may label an RTX 4090 figure measured only with an exact benchmark and matching value;
   a measured model id never promotes its other quant levels. Matching lives in `measured-runs.ts`.
   Existing speed sorting retains its bandwidth-bound ranking for old-link compatibility.
+  Reverse share metadata/images must use `readRecommendationFilters` and preserve `minTok`/`feat`
+  in `vramImageUrl` cache keys; preview counts obey the same multi-device bypass as the calculator.
   Tool calling is positive recorded publisher-template/card evidence only in `model-facts.ts`;
   code uses the recorded category. Image remains `input=image`; none of these filters enters profiles.
   It excludes contexts beyond each model's supported limit. Its `input` argument is `text` (default) or `image`:
