@@ -18,6 +18,36 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'The footer now links to Methodology & accuracy. See how the calculator estimates weights, KV cache and runtime memory, where the data comes from, and how its estimates compare with recorded memory use.',
+    zh: '页脚新增“估算方法与准确性”，说明计算器如何估算模型权重、KV 缓存和运行内存，数据来自哪里，以及估算值与实测占用相差多少。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
+    zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'GTX 1080 Ti, V100, P100 and P40 recommendations no longer offer AWQ builds that require newer CUDA hardware. Calculator launch commands respect the same hardware-format restriction; GGUF choices remain available.',
+    zh: 'GTX 1080 Ti、V100、P100 与 P40 的推荐结果不再提供需要更新 CUDA 硬件的 AWQ 版本。计算器启动命令遵循相同的硬件与格式限制，GGUF 选项仍然可用。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Browser detection no longer mistakes an RTX 2060 Super for a base RTX 2060 with a different memory capacity. Unindexed 2060 Super cards now require a manual hardware choice.',
+    zh: '浏览器识别不再将 RTX 2060 Super 误认为显存容量不同的普通 RTX 2060。尚未收录的 2060 Super 现在需要手动选择硬件。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Integrated-APU GPU pages now explain that shared-memory bandwidth limits generation speed even when large models fit, and separate ROCm/Vulkan setup compatibility from capacity. The RTX 2080 Ti specification link now goes directly to its GPU database entry.',
+    zh: '集成 APU 的显卡页面现明确说明：大模型即使装得下，生成速度仍受共享内存带宽限制；ROCm/Vulkan 配置兼容性与容量是两个问题。RTX 2080 Ti 的规格链接现直接指向该显卡的数据库条目。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Added 17 hardware configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), older GeForce cards from GTX 1080 Ti through RTX 3060 Ti, V100, T4, RTX A6000 and RTX 6000 Ada. Unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB memory mods are clearly labelled with source links and caveats. Browser detection asks for memory size when stock and modified cards share a renderer.',
+    zh: '新增 17 种硬件配置：Ryzen AI Max+ 395 64/128 GB 整机（按 Windows 下 48/96 GB GPU 分配量估算）、GTX 1080 Ti 至 RTX 3060 Ti 等旧款 GeForce、V100、T4、RTX A6000 与 RTX 6000 Ada。RTX 2080 Ti 22 GB 和 RTX 4090 48 GB 非官方扩容卡均明确标注来源与风险。原卡和扩容卡报告相同渲染器时，浏览器识别会请你确认容量。',
+  },
+  {
+    date: '2026-11-22',
     en: 'DeepSeek-V4-Flash-0731, DeepSeek-V4.1-Flash-1017, GLM-5.3-Flash, Kimi K3.1 Pro and MiniMax M3.1 Flash now have computed VRAM figures instead of sitting on the pending page. The calculator now counts compressed and sparse-attention index caches, with each layout taken from the published configs, GGUF headers and llama.cpp’s cache code.',
     zh: 'DeepSeek-V4-Flash-0731、DeepSeek-V4.1-Flash-1017、GLM-5.3-Flash、Kimi K3.1 Pro 和 MiniMax M3.1 Flash 已有计算显存数据，不再停留在待收录页。计算器现在会计入压缩缓存和稀疏注意力索引缓存，每种布局都取自官方 config、GGUF 头和 llama.cpp 的缓存代码。',
   },

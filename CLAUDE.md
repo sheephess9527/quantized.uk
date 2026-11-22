@@ -31,6 +31,8 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 | Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
+| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,380 HTML files (3,568 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**105** GPU configurations, including laptops, + 4 CPU-only RAM rows), CLI, format wizard, compare |
 | i18n | **English `/` + Chinese `/zh/**`** — 1,356 HTML files (3,496 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
@@ -156,6 +158,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   GeForce laptop matches require a renderer marker; Radeon mobile SKUs have distinct names.
   Don't show desktop speed references as substitutes for laptop speed data.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
+- **Integrated AMD memory:** `isIntegrated` keeps the AMD backend but disables stacking. Ryzen AI Max+ 395 rows store Windows GPU allocation (48/96 GB), not their 64/128 GB system RAM. Do not set Apple's `isUnified` flag or apply its cap again. Stock and unofficial memory mods share renderer candidates, smallest first.
+- **CUDA AWQ eligibility:** record `cudaComputeCapability` for legacy NVIDIA rows. Known values below 7.5 cannot use vLLM AWQ kernels; keep fits and launch choices behind `formatAllowed`. Omitted capability preserves the existing format policy, not a new compatibility guarantee.
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
   beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
