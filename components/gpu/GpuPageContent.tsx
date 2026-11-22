@@ -1,5 +1,6 @@
 'use client';
 
+import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { useState } from 'react';
 import FitControls from './FitControls';
 import { contextLabel } from '@/lib/utils/context-label';
@@ -249,7 +250,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                   {measured.map((row, i) => (
                     <tr key={i} className="border-b border-white/[0.04]">
                       <td className="py-2 pr-3 text-slate-200">{row.model}</td>
-                      <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.framework} · {row.quant}</td>
+                      <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.quant}<RunProvenance row={row} /></td>
                       <td className="py-2 pr-3 text-right font-mono text-emerald-300">{row.speedTokSec}</td>
                       <td className="py-2 text-right font-mono text-slate-400">{row.vramUsedGB} GB</td>
                     </tr>

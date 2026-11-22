@@ -1,5 +1,6 @@
 'use client';
 
+import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { ShieldCheck, Mail } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { benchmarkMethodology } from '@/lib/data/meta';
@@ -92,7 +93,7 @@ export default function RunStandard() {
                 <tr key={i} className="border-b border-white/[0.03]">
                   <td className="py-2 px-3 text-xs text-slate-200">{r.row.model}</td>
                   <td className="py-2 px-3 text-xs text-slate-300 whitespace-nowrap">{r.gpu?.name ?? r.row.hardware}</td>
-                  <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">{r.row.quant} · {r.row.framework}</td>
+                  <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">{r.row.quant}<RunProvenance row={r.row} /></td>
                   <td className="py-2 px-3 text-xs font-mono text-cyan-400">{r.row.vramUsedGB.toFixed(1)} GB</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-300">
                     {r.estimateGB !== undefined ? `${r.estimateGB.toFixed(1)} GB` : <span className="text-slate-500 font-sans">{s.calNotInIndex}</span>}

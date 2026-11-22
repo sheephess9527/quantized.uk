@@ -1,3 +1,4 @@
+import { speedBenchmarks } from '@/lib/data/benchmarks';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 import { models, todayFeed } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
@@ -145,6 +146,17 @@ function benchRowProblems(): string[] {
   const out: string[] = [];
   for (const c of calibrationRows()) {
     const id = `${c.row.model} / ${c.row.hardware} / ${c.row.quant}`;
+    if (!c.row.runtimeVersion?.trim()) out.push(`benchmark row ${id}: missing runtime version`);
+    const date = c.row.firstPublishedAt;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? '') || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date || date > dataLastUpdated) {
+      out.push(`benchmark row ${id}: invalid first-publication date ${date}`);
+    }
+    const hardwareKey = (s: string) => s.replace(/\s+\d+G$/, '').toLowerCase();
+    for (const speed of speedBenchmarks) {
+      if (speed.model === c.row.model && hardwareKey(speed.hardware) === hardwareKey(c.row.hardware) && speed.quant === c.row.quant && speed.framework !== c.row.framework) {
+        out.push(`benchmark row ${id}: framework ${c.row.framework} disagrees with speedBenchmarks ${speed.framework}`);
+      }
+    }
     if (!c.gpu) out.push(`benchmark row ${id}: hardware matches no card in gpuDatabase`);
     if (c.ceiling !== undefined && c.row.speedTokSec > c.ceiling * CEILING_TOLERANCE) {
       out.push(`benchmark row ${id}: ${c.row.speedTokSec} tok/s is over ${CEILING_TOLERANCE} × the card's ${c.ceiling} tok/s bandwidth ceiling`);

@@ -562,6 +562,8 @@ export const translations = {
       calcB: 'VRAM calc (B)',
     },
     bench: {
+      measuredBy: 'Measured on or before {date}',
+      dateNote: 'The exact run dates were not recorded. Each date shown is when that result was first published, an upper bound on its measurement date.',
       tablesTitle: 'The same figures, as text',
       tablesSubtitle: 'Charts are drawn as SVG paths, so the numbers in them are not readable text. These tables carry the same data.',
       showSpeedTable: 'Throughput table',
@@ -2034,6 +2036,8 @@ export const translations = {
       calcB: '显存计算 (B)',
     },
     bench: {
+      measuredBy: '测于 {date} 或之前',
+      dateNote: '未记录确切的测试日期。所示日期为该结果首次发布的日期，即测试日期的上限。',
       tablesTitle: '同样的数据，以文本呈现',
       tablesSubtitle: '图表由 SVG 路径绘制，其中的数字并不是可读文本。下面两张表提供相同的数据。',
       showSpeedTable: '吞吐数据表',
