@@ -539,6 +539,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Integrated-APU bandwidth caveat and exact RTX 2080 Ti source
+
+- Integrated GPU pages now distinguish capacity from shared-memory bandwidth: large dense models may load but generate slowly. English and Chinese text treats ROCm/Vulkan GPU-target support (including gfx1151), OS and runtime compatibility as a separate setup check. The branch uses `isIntegrated`, not a model id; tests cover both indexed APUs, an unnamed-bandwidth APU and the unchanged discrete-AMD branch.
+- RTX 2080 Ti now links directly to its TechPowerUp GPU database specification. Audited the other new source links against their named hardware; TechPowerUp serves bot checks to automated readers, while its returned page titles identify the exact cards. AMD processor specs cover the APU/bus; its VGM FAQ linked above covers allocation limits. V100's datasheet covers both PCIe capacities, and the mod articles describe the unofficial capacities rather than official NVIDIA SKUs.
+
 ### 2026-11-22 — Older GeForce, workstation and unified-memory hardware
 
 - Added 17 sourced configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), GTX 1080 Ti, RTX 2060 6/12 GB, 2070, 2080, 2080 Ti, 3060 Ti, 3050 8 GB, V100 PCIe 16/32 GB, T4, RTX A6000 and RTX 6000 Ada, plus explicitly unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB modifications. Mod bandwidth uses the stock memory rate, not a benchmark; bilingual notes warn about seller-dependent firmware and warranty.

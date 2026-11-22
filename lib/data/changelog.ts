@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Integrated-APU GPU pages now explain that shared-memory bandwidth limits generation speed even when large models fit, and separate ROCm/Vulkan setup compatibility from capacity. The RTX 2080 Ti specification link now goes directly to its GPU database entry.',
+    zh: '集成 APU 的显卡页面现明确说明：大模型即使装得下，生成速度仍受共享内存带宽限制；ROCm/Vulkan 配置兼容性与容量是两个问题。RTX 2080 Ti 的规格链接现直接指向该显卡的数据库条目。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Added 17 hardware configurations: Ryzen AI Max+ 395 64/128 GB systems (48/96 GB Windows GPU allocations), older GeForce cards from GTX 1080 Ti through RTX 3060 Ti, V100, T4, RTX A6000 and RTX 6000 Ada. Unofficial RTX 2080 Ti 22 GB and RTX 4090 48 GB memory mods are clearly labelled with source links and caveats. Browser detection asks for memory size when stock and modified cards share a renderer.',
     zh: '新增 17 种硬件配置：Ryzen AI Max+ 395 64/128 GB 整机（按 Windows 下 48/96 GB GPU 分配量估算）、GTX 1080 Ti 至 RTX 3060 Ti 等旧款 GeForce、V100、T4、RTX A6000 与 RTX 6000 Ada。RTX 2080 Ti 22 GB 和 RTX 4090 48 GB 非官方扩容卡均明确标注来源与风险。原卡和扩容卡报告相同渲染器时，浏览器识别会请你确认容量。',
   },

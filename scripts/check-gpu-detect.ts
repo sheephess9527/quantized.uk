@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { gpuDatabase } from '../lib/data/gpus';
 import { matchRenderer } from '../lib/utils/gpu-detect';
 import { canStack, capacityGB } from '../lib/utils/gpu-page';
+import { gpuExplainer } from '../lib/utils/gpu-explainer';
 
 function ids(renderer: string): string[] | null {
   return matchRenderer(renderer)?.candidates.map(g => g.id) ?? null;
@@ -47,7 +48,17 @@ for (const gpu of gpuDatabase.filter(g => g.isIntegrated)) {
   assert.equal(canStack(gpu), false);
   assert.equal(capacityGB(gpu, 4), gpu.vram);
   assert.ok(gpu.bandwidthNote?.en && gpu.bandwidthNote.zh);
+  const wall = gpuExplainer(gpu).ceiling;
+  assert.match(wall.en, /generate slowly/);
+  assert.match(wall.zh, /生成也可能很慢/);
+  assert.match(wall.en, /gfx1151/);
+  assert.match(wall.zh, /gfx1151/);
+  assert.doesNotMatch(wall.en, /competitive with NVIDIA/);
+  const unlisted = gpuExplainer({ ...gpu, id: 'another-integrated-apu', name: 'Another integrated APU', bandwidth: undefined }).ceiling;
+  assert.match(unlisted.en, /system memory bandwidth/);
+  assert.doesNotMatch(unlisted.zh, /undefined/);
 }
+assert.match(gpuExplainer(gpuDatabase.find(g => g.id === 'rx7900xtx')!).ceiling.en, /Backend coverage/);
 for (const gpu of gpuDatabase.filter(g => g.addedAt === '2026-11-22')) {
   assert.match(gpu.specUrl ?? '', /^https:\/\//, gpu.id);
 }
