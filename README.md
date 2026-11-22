@@ -185,7 +185,7 @@ Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`,
 
 Supported `sort` values: `quality` (lowest PPL loss), `speed` (highest tok/s), `vram` (smallest footprint).
 
-**Copy share link** snapshots the displayed inference settings, including an example or detected card if it is the reverse result shown. The ordinary address bar does not adopt guessed inputs. Forward links use `gpu=none` if no card was used, so the recipient's saved card won't turn a memory estimate into a different fit result. These links add `share=1` for localized social previews; old links and fine-tuning links still open the calculator with the generic preview. The optional repo name for an imported model travels in the copied URL, but is not printed on the preview card.
+**Copy share link** snapshots the displayed inference settings, including an example or detected card if it is the reverse result shown. The ordinary address bar does not adopt guessed inputs, and opening a snapshot does not write its settings to the recipient's profile. Forward links use `gpu=none` if no card was used, so the recipient's saved card won't turn a memory estimate into a different fit result. These links add `share=1` for localized social previews; old links and fine-tuning links still open the calculator with the generic preview. The optional repo name for an imported model travels in the copied URL, but is not printed on the preview card.
 
 ### Model detail pages (`app/quant-hub/[modelId]/`)
 
@@ -524,7 +524,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Share VRAM results with social previews
 
-- Copied model-to-VRAM and GPU-to-models links reopen the displayed settings in either language; crawler metadata points to a result-specific PNG. The static tools, legacy links, and downloadable result card still work independently.
+- Copied model-to-VRAM and GPU-to-models links reopen the displayed settings in either language without adopting them into the saved profile; crawler metadata points to a result-specific PNG. The static tools, legacy links, and downloadable result card still work independently.
 - Pages Functions use the same sizing and fit logic as the calculator. Only the two calculator routes and the preview PNG invoke Functions; `npm test` covers snapshots, sizing parity, localization and invalid-link fallback.
 
 ### 2026-11-22 — VRAM calculator opens on an answer

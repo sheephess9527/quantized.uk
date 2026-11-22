@@ -133,18 +133,19 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMode?: Mode } = {}) {
   const { t } = useLanguage();
   const { gpuId: savedGpuId, gpu: savedGpu, config, hydrated: configReady, updateConfig, setGpuId: saveGpuId } = useHardwareProfile();
-  const [ignoredGpuId, setIgnoredGpuId] = useState<string | null>(null);
-  const gpuIgnored = ignoredGpuId === savedGpuId;
-  const profileGpuId = gpuIgnored ? '' : savedGpuId;
-  const profileGpu = gpuIgnored ? null : savedGpu;
+  const [linkedGpu, setLinkedGpu] = useState<{ id: string; savedId: string } | null>(null);
+  const gpuOverridden = linkedGpu !== null && linkedGpu.savedId === savedGpuId;
+  const profileGpuId = gpuOverridden ? linkedGpu.id : savedGpuId;
+  const profileGpu = gpuOverridden ? gpuDatabase.find(g => g.id === linkedGpu.id) ?? null : savedGpu;
   const setGpuId = useCallback((id: string) => {
-    setIgnoredGpuId(null);
+    setLinkedGpu(null);
     saveGpuId(id);
   }, [saveGpuId]);
   useEffect(() => {
-    if (ignoredGpuId !== null && !gpuIgnored) setIgnoredGpuId(null);
-  }, [ignoredGpuId, gpuIgnored]);
+    if (linkedGpu !== null && !gpuOverridden) setLinkedGpu(null);
+  }, [linkedGpu, gpuOverridden]);
   const searchParams = useUrlQuery();
+  const sharedLink = searchParams?.get(VRAM_SHARE_PARAM) === '1';
   const urlInitialized = useRef(false);
 
   const [mode, setMode] = useState<Mode>(defaultMode);
@@ -294,21 +295,16 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       const mctx = Number(searchParams.get('mctx')); if (mctx > 0) setCustomCtx(mctx);
       const repo = searchParams.get('repo'); if (repo && /^[\w.-]+\/[\w.-]+$/.test(repo)) setCustomRepo(repo);
     }
-    // `gpu` has to reach the shared profile, not just local state: forward
-    // mode has no GPU dropdown of its own — it judges the answer against the
-    // card in the navbar profile — so a link carrying `?gpu=` used to land on
-    // a page that computed a size and then declined to say whether it fit.
-    // An id the database does not know (a typo, a renamed card) is ignored
-    // rather than kept: reverse mode used to answer "no models fit this GPU"
-    // about a card that does not exist.
+    // A snapshot overrides the result's GPU without adopting someone else's
+    // hardware. Legacy links retain their existing profile behavior.
     const rawGpu = searchParams.get('gpu');
-    if (m === 'forward' && rawGpu === NO_SHARE_GPU && searchParams.get(VRAM_SHARE_PARAM) === '1') {
-      setIgnoredGpuId(savedGpuId);
-    }
     const gpuParam = rawGpu && gpuDatabase.some(g => g.id === rawGpu) ? rawGpu : null;
+    if (sharedLink && (gpuParam || (m === 'forward' && rawGpu === NO_SHARE_GPU))) {
+      setLinkedGpu({ id: gpuParam ?? '', savedId: savedGpuId });
+    }
     if (gpuParam) {
       setSelectedGpuId(gpuParam);
-      if (gpuParam !== config.gpuId) updateConfig({ gpuId: gpuParam });
+      if (!sharedLink && gpuParam !== config.gpuId) updateConfig({ gpuId: gpuParam });
     } else if (profileGpuId) setSelectedGpuId(profileGpuId);
     else {
       // Read once, in the browser; the renderer string never leaves it. An
@@ -330,13 +326,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
     urlInitialized.current = true;
-  }, [defaultMode, searchParams, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
+  }, [defaultMode, searchParams, sharedLink, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
-    if (!urlInitialized.current) return;
+    if (!urlInitialized.current || sharedLink) return;
     updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
-  }, [selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample]);
+  }, [selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink]);
 
   const resultParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -392,16 +388,15 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     return params;
   }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
-  const sharedLink = searchParams?.get(VRAM_SHARE_PARAM) === '1';
   useEffect(() => {
     if (!urlInitialized.current) return;
     const params = resultParams();
     if (sharedLink && mode !== 'finetune') {
       params.set(VRAM_SHARE_PARAM, '1');
-      if (mode === 'forward' && gpuIgnored) params.set('gpu', NO_SHARE_GPU);
+      if (mode === 'forward' && !profileGpuId) params.set('gpu', NO_SHARE_GPU);
     }
     window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
-  }, [resultParams, sharedLink, mode, gpuIgnored]);
+  }, [resultParams, sharedLink, mode, profileGpuId]);
 
   /**
    * Changing the model must not leave the previous model's quant level
@@ -460,7 +455,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     setExtraIds([]);
     setModelIsExample(false);
     // Asking for the detail of a fit on this card adopts the card, guessed or not.
-    if (selectedGpuId && selectedGpuId !== profileGpuId) setGpuId(selectedGpuId);
+    if (selectedGpuId && (selectedGpuId !== savedGpuId || gpuOverridden)) setGpuId(selectedGpuId);
     setGpuHint(null);
     rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
