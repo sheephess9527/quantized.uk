@@ -539,17 +539,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
-### 2026-11-22 — Answer-first model × GPU pages
-
-- Recorded recommended files use the shared `QuantFileLine` renderer in the answer box, preserving the repository link, filename, bytes, parts and verification date in the current language.
-- Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
-- Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables remain; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. Merged the popular-GPU eligibility restriction below without changing the answer computation; retained `dataLastUpdated` at `2026-11-23` and `sizingChangedAt` at `2026-11-22`.
-
 ### 2026-11-23 — Fewer model/GPU pair pages
 
 - Pair pages at `/quant-hub/[modelId]/[gpuSlug]/` (and `/zh`) are now generated only for exact measured pairs and for the 10 cards in `POPULAR_GPU_IDS`; the existing current-model, verified-file and 25%-of-memory rules still apply to the popular cards. Pairs drop from 2,266 to 322 and the export from 11,242 to 3,466 files, since each pair costs four files (en/zh `index.html` + `index.txt`).
 - Retired pair URLs 404; `lib/utils/not-found.ts` recognises `/quant-hub/{model}/{gpu}/` and suggests the model page and GPU page. No `_redirects` rules: the ~3,900 retired URLs would exceed Cloudflare's 2,000 static-rule limit, and Pages' splat syntax cannot express "model page" without one rule per model.
 - New `scripts/check-export-size.mjs` runs in `postbuild` and fails the build when `out/` exceeds 15,000 files. `scripts/check-pair-pages.ts` asserts no unmeasured pair outside the popular cards is eligible.
+
+### 2026-11-22 — Answer-first model × GPU pages
+
+- Recorded recommended files use the shared `QuantFileLine` renderer in the answer box, preserving the repository link, filename, bytes, parts and verification date in the current language.
+- Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
+- Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables remain; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. Merged the popular-GPU eligibility restriction above without changing the answer computation; retained `dataLastUpdated` at `2026-11-23` and `sizingChangedAt` at `2026-11-22`. Release entries stay newest-first so the homepage's latest-update date remains accurate.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 
