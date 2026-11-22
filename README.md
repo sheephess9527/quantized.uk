@@ -85,6 +85,7 @@ app/                        # Next.js App Router pages
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   feed.xml/route.ts         # RSS (force-static)
+  llms.txt/route.ts         # LLM summary; /zh/llms.txt mirror shares lib/llms.ts
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   tools/speed/, tools/which-quant/, tools/context-length/
@@ -537,6 +538,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Chinese LLM-readable summary
+
+- Added `/zh/llms.txt` in Simplified Chinese. Both static routes use `lib/llms.ts`, with shared page links and live model/GPU/guide counts; Chinese links stay under `/zh/`, while the sitemap and public JSON remain shared. Each summary links to both language versions, and robots.txt advertises both.
+- `npm test` checks bilingual link and numeric parity, Chinese route existence and text responses. Added the bilingual public release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 
