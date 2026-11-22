@@ -736,8 +736,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
     selectedModelId === 'custom' || !!selectedModel
   );
+  const offloadFormat = selectedQuantObj?.format ?? (quantGroups.GGUF.includes(selectedQuant) ? 'GGUF' : undefined);
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
-    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, selectedModel, selectedQuantObj?.format, profileExtras, selectedQuantObj?.level)
+    ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, offloadFormat, selectedModel, profileExtras, selectedQuantObj?.level)
     : undefined;
   const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
   const launchCommands = canShowLaunch && (!overBudget || launchOffload) ? (

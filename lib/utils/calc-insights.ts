@@ -278,12 +278,12 @@ export function offloadPlan(
   gpu: GPU,
   cards: number,
   ram: RamSetup,
+  format: string | undefined,
   model?: QuantModel,
-  format?: string,
   extra: GPU[] = [],
   level?: string,
 ): OffloadPlan | undefined {
-  if (!hasDedicatedVram(gpu) || (format && format !== 'GGUF')) return undefined;
+  if (!hasDedicatedVram(gpu) || format !== 'GGUF') return undefined;
   const layers = input.layers;
   const perLayer = result.totalGB / layers;
   const devices = rigDevices(gpu, cards, extra);

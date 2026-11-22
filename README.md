@@ -537,7 +537,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Added 27 memory configurations for GeForce RTX 30/40/50 Laptop GPUs and Radeon RX 7000M/7000S. The bilingual hardware index and calculator group them separately from desktop GPUs. Each detail page links its memory specifications; the GPU JSON export includes the source and laptop flag.
 - The browser needs a laptop/mobile/Max-Q marker for GeForce models that share desktop names; Radeon mobile model numbers are distinct. RTX 3050, 3080 and 5070 Laptop GPUs prompt for the memory configuration, starting with the smaller one. Masked renderers still require manual selection.
 - Radeon mobile models do not inherit desktop vLLM support; this release recommends GGUF, not AWQ or GPTQ, on those models.
-- Bandwidth is included only where the linked spec publishes it. Laptop fit tables omit the speed column without same-card evidence. The calculator uses one GPU for laptops, supports GGUF CPU offload, and omits desktop speed references and speed sorting. No laptop performance was measured.
+- Bandwidth is included only where the linked spec publishes it. Laptop fit tables omit the speed column without same-card evidence. The calculator uses one GPU for laptops, offers CPU offload only for GGUF (including custom models), and omits desktop speed references and speed sorting. No laptop performance was measured.
 
 ### 2026-11-22 — Pair pages and embed integration
 
