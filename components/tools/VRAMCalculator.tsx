@@ -2492,7 +2492,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} {t.calc.gbUnit}</span>
                             {(() => {
-                              const speed = recommendationSpeed(selectedGpu!, model, quant);
+                              const speed = recommendationSpeed(selectedGpu!, model, quant, canStack(selectedGpu!) ? cards : 1);
                               return speed !== undefined ? <span>{t.calc.reverseEstimate.replace('{n}', String(speed))}</span> : null;
                             })()}
                             {(() => {
@@ -2501,10 +2501,6 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               return best ? <span>{t.calc.reverseMaxCtx.replace('{ctx}', contextLabel(best))}</span> : null;
                             })()}
                             <span>PPL {quant.pplLossPercent === undefined ? formatLoss(quant) : `−${formatLoss(quant)}`}</span>
-                            {(() => {
-                              const sp = verdict !== 'red' && !(canStack(selectedGpu!) && cards > 1) ? measuredSpeed(selectedGpu!, model, quant) : undefined;
-                              return sp ? <span className="text-emerald-300/80">{t.calc.reverseSpeed.replace('{n}', String(sp.tokS))}</span> : null;
-                            })()}
                             {!selectedGpu?.isLaptop && quant.speedRTX4090 != null && <span>{t.calc.speedOn4090.replace('{n}', String(quant.speedRTX4090))}<ConfidenceTag modelId={model.id} quant={quant} /></span>}
                           </div>
                           {extraGB !== undefined && <p className="text-[11px] text-slate-600 mt-1">{t.calc.reverseEncoder.replace('{gb}', extraGB.toFixed(2))}</p>}

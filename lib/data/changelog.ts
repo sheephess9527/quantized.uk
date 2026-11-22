@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Reverse calculator tool-calling evidence now covers 113 models after checking all 151 indexed checkpoints. Minimum speed uses calibrated estimates for supported single-card dense GGUF models, not optimistic bandwidth ceilings. Unknown and stacked-card speeds do not pass a minimum; existing sort order is preserved.',
+    zh: '遍查全部 151 个模型检查点后，反向计算器的工具调用证据现覆盖 113 个模型。最低速度改用支持范围内的单卡稠密 GGUF 校准估算，不再使用偏乐观的带宽上限。未知速度与多卡不满足最低速度要求；原有排序保持不变。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Find models for your GPU with minimum estimated speed and required image, tool-calling or code features. Requirements combine; unknown speed or unrecorded tool support does not pass. Speed ceilings are estimates, not measurements; filters travel in links, not saved hardware profiles.',
     zh: '按最低估算速度及图像、工具调用、代码必需功能筛选适合 GPU 的模型。多项条件须同时满足；未知速度或未记录的工具支持不计入。速度上限是估算而非实测；筛选随链接分享，不写入硬件配置。',
   },

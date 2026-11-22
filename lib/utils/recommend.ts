@@ -4,6 +4,7 @@ import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
+import { measuredSpeed } from '@/lib/utils/measured-speed';
 import { hasImageInput, hasToolCalling } from '@/lib/utils/model-facts';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
@@ -14,8 +15,9 @@ export interface RecommendationFilters {
   code?: boolean;
 }
 
-export function recommendationSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant): number | undefined {
-  return rooflineTokS(gpu, model, quant) ?? moeRooflineTokS(gpu, model, quant);
+export function recommendationSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant, cards = 1): number | undefined {
+  if (cards > 1) return undefined;
+  return measuredSpeed(gpu, model, quant)?.tokS;
 }
 
 export interface Recommendation {
@@ -63,7 +65,7 @@ export function getRecommendations(
     if (input === 'image' && !hasImageInput(model.id)) continue;
     for (const quant of model.quants) {
       if (Number.isFinite(filters.minTok) && filters.minTok! > 0) {
-        const speed = recommendationSpeed(gpu, model, quant);
+        const speed = recommendationSpeed(gpu, model, quant, cards);
         if (speed === undefined || speed < filters.minTok!) continue;
       }
       if (!formatAllowed(gpu, quant.format)) continue;
@@ -112,7 +114,7 @@ export function getRecommendations(
   // ranking by the estimate alone left every row without one (MoE, models
   // outside its range) below the slowest row that had one. A card with no
   // stated bandwidth falls back to the RTX 4090 figure.
-  const speedOf = (r: Recommendation) => recommendationSpeed(gpu, r.model, r.quant);
+  const speedOf = (r: Recommendation) => rooflineTokS(gpu, r.model, r.quant) ?? moeRooflineTokS(gpu, r.model, r.quant);
   return rows.sort((a, b) => {
     if (sortBy === 'quality') {
       // In the one-per-model view the bigger model is the stronger answer.

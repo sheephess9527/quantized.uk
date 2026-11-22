@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-22'; // Latest reader-facing release, including reverse filters.
+export const dataLastUpdated = '2026-11-22'; // Latest release: reverse filter evidence and calibrated speed.
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

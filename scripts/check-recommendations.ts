@@ -12,19 +12,21 @@ import { hasImageInput } from '../lib/utils/model-facts';
 import { modelShape, contextReach, offloadPlan } from '../lib/utils/calc-insights';
 import { sourceBpw } from '../lib/utils/quant-source';
 import { dataProblems } from '../lib/data/validate';
+import { measuredSpeed } from '../lib/utils/measured-speed';
 
 const gpu = gpuDatabase.find(g => g.id === 'rtx4090')!;
 const baseline = getRecommendations(gpu, 4096, 1);
+for (const row of baseline) {
+  assert.equal(recommendationSpeed(gpu, row.model, row.quant), measuredSpeed(gpu, row.model, row.quant)?.tokS);
+  assert.equal(recommendationSpeed(gpu, row.model, row.quant, 2), undefined);
+}
 assert.deepEqual(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', {}), baseline);
 const filtered = (filters: { minTok?: number; tools?: boolean; code?: boolean }) =>
   getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', filters);
 assert.deepEqual(filtered({ minTok: 40 }), baseline.filter(r => (recommendationSpeed(gpu, r.model, r.quant) ?? -1) >= 40));
-const slowGpu = { ...gpu, bandwidth: 100 };
-const slowBaseline = getRecommendations(slowGpu, 4096, 1);
-const slowFiltered = getRecommendations(slowGpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 40 });
-assert.deepEqual(slowFiltered, slowBaseline.filter(r => (recommendationSpeed(slowGpu, r.model, r.quant) ?? -1) >= 40));
-assert.ok(slowFiltered.length > 0 && slowFiltered.length < slowBaseline.length);
-assert.equal(getRecommendations({ ...gpu, bandwidth: undefined }, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 10 }).length, 0);
+assert.ok(filtered({ minTok: 40 }).length > 0 && filtered({ minTok: 40 }).length < baseline.length);
+assert.equal(getRecommendations({ ...gpu, id: 'unknown-card' }, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 10 }).length, 0);
+assert.equal(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2, false, 'text', { minTok: 10 }).length, 0);
 assert.deepEqual(filtered({ tools: true }), baseline.filter(r => hasToolCalling(r.model.id)));
 assert.ok(filtered({ tools: true }).length > 0);
 assert.deepEqual(filtered({ code: true }), baseline.filter(r => r.model.categories.includes('code')));

@@ -538,11 +538,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Reverse filter evidence and calibrated speed follow-up
+
+- Audited all 151 indexed checkpoints using publisher tokenizer templates and same-checkpoint GGUF `chat_template` metadata, with mirrors for gated publishers. Recorded 113 positive `tools` references with per-model source URLs; 33 readable templates had no reference and 5 had no readable template. Derived checkpoints never inherit a tool claim solely from a training base.
+- Minimum speed and displayed estimates now use the existing `measuredSpeed` calibrated point: single-card dense 7–33B GGUF models on cards with a reference run. Other sizes/formats, MoE, unknown cards and stacked cards have no estimate and fail a minimum; no optimistic ceiling fallback. Existing bandwidth-bound sort order remains unchanged for old links.
+- Evidence audit scratch scripts and fetched responses remain outside the repository. These are template facts, not runtime tool-use tests.
+
 ### 2026-11-22 — Reverse calculator speed and required-feature filters
 
 - Reverse mode supports minimum estimated speed (Any / ≥10 / ≥20 / ≥40 tok/s) and AND-required image, tool-calling and code features, with a filtered empty state and reset action in both languages.
 - URL-only `minTok=10|20|40` and `feat=tools,code` omit defaults and ignore unknown values; existing `input=image` retains verified encoder accounting. Profiles and default recommendations are unchanged.
-- `lib/utils/recommend.ts` shares the single-card bandwidth/active-MoE ceiling across speed filtering, sorting and row estimates. Stacking increases capacity, not this estimate; unknown speed fails a minimum. This is an estimate, not a measured throughput promise.
+- Initial implementation used the single-card bandwidth/active-MoE ceiling; the follow-up above replaces filtering/display with calibrated estimates while preserving the existing sort order.
 - `lib/data/model-facts.ts` records tool evidence only for Qwen3 4B, 8B and 32B: publisher HF `tokenizer_config.json` templates fetched on this date reference `tools`. Unknown models are not asserted unsupported, merely excluded when required. Code uses the existing category.
 
 ### 2026-11-22 — Sourced-data homepage tagline
