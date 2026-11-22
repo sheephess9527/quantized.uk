@@ -2,20 +2,16 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import VRAMCalculator from '@/components/tools/VRAMCalculator';
 import { localGuides, localGuideSlugs, type LocalGuide } from '@/lib/data/local-guides';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase } from '@/lib/data/gpus';
 import { BEST_TIERS, APPLE_LADDER, bestPage } from '@/lib/utils/best-page';
-import { fitsOnGpu, gpuSlug, GPU_PAGE_BUCKETS, GPU_PAGE_CONTEXT, type GpuFit } from '@/lib/utils/gpu-page';
-import { matchesParamRange } from '@/lib/utils/param-buckets';
-import { isSuperseded } from '@/lib/utils/model-meta';
+import { gpuSlug, GPU_PAGE_CONTEXT, type GpuFit } from '@/lib/utils/gpu-page';
+import { PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
+import { activeFits, gpuRequirementsTable } from '@/lib/utils/gpu-requirements';
 
 type Lang = 'en' | 'zh';
 const panel = 'glass rounded-2xl p-5 sm:p-6 space-y-3';
 const link = 'text-cyan-300 hover:underline';
 const cell = 'px-3 py-3 align-top border-b border-white/10';
-
-function activeFits(gpu: GPU) {
-  return fitsOnGpu(gpu).filter(({ model }) => !isSuperseded(model) && model.contextLength >= GPU_PAGE_CONTEXT);
-}
 
 function ModelFit({ fit, lang }: { fit: GpuFit; lang: Lang }) {
   return <div>
@@ -40,22 +36,13 @@ function Picks({ lang }: { lang: Lang }) {
 
 function Requirements({ lang }: { lang: Lang }) {
   const zh = lang === 'zh';
-  const buckets = [...GPU_PAGE_BUCKETS].reverse();
-  const cards = ['rtx4060ti', 'rtx3060', 'rtx4060ti16', 'rtx4090', 'rtx5090'];
+  const { buckets, rows } = gpuRequirementsTable();
   return <section className={panel}>
-    <p>{zh ? '每格选一个能留出余量的模型，列出具体量化版本和预计占用。空格表示该档未找到符合条件的目录模型。' : 'Each cell shows one catalog model with headroom, its quantization and its estimated memory. A dash means no qualifying example was found in that size class.'}</p>
+    <p>{zh ? '每格选一个能留出余量的模型，列出具体量化版本和预计占用。表头为总参数量区间。空格表示该档未找到符合条件的目录模型。' : 'Each cell shows one catalog model with headroom, its quantization and its estimated memory. Column headings are total-parameter ranges. A dash means no qualifying example was found in that size class.'}</p>
     <div className="overflow-x-auto"><table className="text-sm text-left w-full min-w-[760px]">
-      <thead><tr>{[zh ? '显卡' : 'GPU', ...buckets].map(label => <th className={cell} scope="col" key={label}>{label}</th>)}</tr></thead>
-      <tbody>{cards.map(id => {
-        const gpu = gpuDatabase.find(g => g.id === id);
-        if (!gpu) return null;
-        const fits = activeFits(gpu);
-        return <tr key={id}><th scope="row" className={cell}><Link className={link} href={`${zh ? '/zh' : ''}/gpu/${gpuSlug(gpu)}/`}>{gpu.name}</Link></th>
-          {buckets.map(b => {
-            const fit = fits.find(f => matchesParamRange(f.model.params, b));
-            return <td className={cell} key={b}>{fit ? <ModelFit fit={fit} lang={lang} /> : '—'}</td>;
-          })}</tr>;
-      })}</tbody></table></div>
+      <thead><tr>{[zh ? '显卡' : 'GPU', ...buckets.map(b => PARAM_RANGE_LABEL[b])].map(label => <th className={cell} scope="col" key={label}>{label}</th>)}</tr></thead>
+      <tbody>{rows.map(({ gpu, cells }) => <tr key={gpu.id}><th scope="row" className={cell}><Link className={link} href={`${zh ? '/zh' : ''}/gpu/${gpuSlug(gpu)}/`}>{gpu.name}</Link></th>
+          {cells.map((fit, i) => <td className={cell} key={buckets[i]}>{fit ? <ModelFit fit={fit} lang={lang} /> : '—'}</td>)}</tr>)}</tbody></table></div>
   </section>;
 }
 

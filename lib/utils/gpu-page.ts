@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { matchesParamRange, type ParamRange } from '@/lib/utils/param-buckets';
+import { matchesParamRange, PARAM_RANGES, type ParamRange } from '@/lib/utils/param-buckets';
 import { qualityRank } from '@/lib/utils/quality';
 import { isSuperseded } from '@/lib/utils/model-meta';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
@@ -311,7 +311,7 @@ export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT, batchSize 
   return out.sort((a, b) => b.model.params - a.model.params);
 }
 
-export const GPU_PAGE_BUCKETS: ParamRange[] = ['70B+', '32B', '14B', '7B', '≤3B'];
+export const GPU_PAGE_BUCKETS: ParamRange[] = [...PARAM_RANGES].reverse();
 
 export function groupFitsByBucket(fits: GpuFit[]) {
   return GPU_PAGE_BUCKETS
