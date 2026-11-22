@@ -1,5 +1,6 @@
 import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
+import type { MatrixRow } from '@/lib/data/benchmarks';
 import { calcVRAM } from '@/lib/utils/vram';
 import { usableCapacityGB } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
@@ -83,6 +84,12 @@ function frameworkRank(framework: string): number {
   return 2;
 }
 
+export function matchingSpeedRun(gpu: GPU, model: QuantModel, quant: QuantVariant): MatrixRow | undefined {
+  return measuredRowsFor(gpu)
+    .filter(row => sameModel(model.name, row.model) && sameQuant(row.quant, quant))
+    .sort((a, b) => frameworkRank(a.framework) - frameworkRank(b.framework))[0];
+}
+
 function prefillShape(model: QuantModel): PrefillShape | undefined {
   const active = activeParamsB(model);
   if (active === undefined) return undefined;
@@ -127,11 +134,9 @@ export function speedQuote(
     ttftSeconds,
   };
 
-  const measured = measuredRowsFor(gpu)
-    .filter(row => sameModel(model.name, row.model) && sameQuant(row.quant, quant))
-    .sort((a, b) => frameworkRank(a.framework) - frameworkRank(b.framework));
-  if (measured.length > 0) {
-    return { ...base, source: 'measured', point: measured[0].speedTokSec };
+  const measured = matchingSpeedRun(gpu, model, quant);
+  if (measured) {
+    return { ...base, source: 'measured', point: measured.speedTokSec };
   }
 
   const derived = measuredSpeed(gpu, model, quant);

@@ -173,10 +173,12 @@ The calculator supports two modes, toggled at the top of the page:
 
 | Mode | Direction | Use case |
 |---|---|---|
-| **Forward** (`mode=forward`) | Model → VRAM | Pick a model + quant + context → see memory breakdown and per-GPU verdict |
+| **Forward** (`mode=forward`) | Model → VRAM | Pick a model + quant + context → see memory breakdown, per-GPU verdict and generation speed where available |
 | **Reverse** (`mode=reverse`) | GPU → Models | Pick your GPU + context → list all compatible model×quant configs |
 
 Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
+
+For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
 **Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
@@ -534,6 +536,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - The VRAM calculator's model search box accepts an Ollama tag (`qwen3:8b-q4_K_M`, `llama3.1:8b`, `ollama run gpt-oss:20b`, `ollama.com/library/…` URLs, `hf.co/{repo}:{quant}`). Pasting or pressing Enter on a recognised tag selects the indexed model and quant; a tag with no quant uses the file type Ollama downloads for it, and says so. Tags the index cannot vouch for (unknown library, unlisted size, a library tag that serves another checkpoint such as `deepseek-r1:8b`, `olmo-3:7b`, `devstral:24b`, an unknown quant, community uploads, unindexed HF repos) show a bilingual message and select nothing.
 - Data: `lib/data/ollama-tags.ts` (43 libraries, 81 rows, read from registry.ollama.ai on 2026-11-22). Resolver: `lib/utils/ollama-tag.ts` (no network at runtime). `npm test` adds `scripts/check-ollama-tags.ts` (`npm run check:ollama`); `npm run verify:ollama` re-reads the registry (network, manual).
+
+### 2026-11-22 — Generation speed beside the VRAM fit verdict
+
+- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. Configurations that require offload do not get an all-GPU speed quote.
 
 ### 2026-11-22 — Pair pages and embed integration
 
