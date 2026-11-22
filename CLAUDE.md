@@ -26,13 +26,13 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 
 | Surface | Notes |
 |--------|--------|
-| Models | **151** in index (`models-extra` … `models-extra-17`), 131 active |
+| Models | **156** in index (`models-extra` … `models-extra-18`), 136 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (151 models: 149 licensed, 45 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,380 HTML files (3,568 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,392 HTML files (3,605 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -123,7 +123,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `source.repo` and single-file `source.file` as `hfRepo` / `ggufFilename`. An original
   repo without `-GGUF` is valid only with that file evidence. Ollama supports the
   full filename as its HF tag (HF docs); never mix TwIL balanced and verbose files.
-  Sharded rows keep the existing wildcard path. Check with `npm run check:cli`.
+  Sharded rows keep the wildcard path, built from `source.file` minus `-00001-of-NNNNN.gguf` (`ggufShardStem`) when one is recorded. Check with `npm run check:cli`.
   The CLI generator's `?model=` is read through `useUrlQuery()` after mount and
   takes precedence over a stored model; invalid ids never enter generated commands.
 

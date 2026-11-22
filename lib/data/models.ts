@@ -17,6 +17,7 @@ import { extraModels14 } from './models-extra-14';
 import { extraModels15 } from './models-extra-15';
 import { extraModels16 } from './models-extra-16';
 import { extraModels17 } from './models-extra-17';
+import { extraModels18 } from './models-extra-18';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -252,7 +253,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17, ...extraModels18];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -269,7 +270,12 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
-  { id: 51, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
+  { id: 56, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
+  { id: 51, type: 'new', modelId: 'deepseek-v4-flash-0731', level: 'MXFP4', note: { en: 'compressed cache, 1M window', zh: '压缩缓存，100 万上下文' }, quantizer: 'ggml-org' },
+  { id: 52, type: 'new', modelId: 'deepseek-v4-1-flash-1017', level: 'Q4_K_M', note: { en: '4 cache owners for 40 layers', zh: '40 层只有 4 层持有缓存' }, quantizer: 'mrfakename' },
+  { id: 53, type: 'new', modelId: 'glm-5-3-flash', level: 'Q4_K_M', note: { en: '11 of 45 layers cache', zh: '45 层中仅 11 层缓存' }, quantizer: 'ggml-org' },
+  { id: 54, type: 'new', modelId: 'kimi-k3-1-pro', level: 'Q2_K', note: { en: '2.8T, about 1 TB at Q2_K', zh: '2.8 万亿参数，Q2_K 约 1 TB' }, quantizer: 'DevQuasar' },
+  { id: 55, type: 'new', modelId: 'minimax-m3-1-flash', level: 'Q2_K', note: { en: 'full K/V cache on all 60 layers', zh: '60 层全部保留 K/V 缓存' }, quantizer: 'smalinin' },
   { id: 50, type: 'new', modelId: 'clairic-flash-9b', level: 'Q4_K_M', note: { en: 'structured text and image extraction', zh: '文本和图像结构化提取' }, quantizer: 'Xylolabs' },
   { id: 49, type: 'new', modelId: 'clairic-27b', level: 'Q4_K_M', note: { en: 'structured multimodal output', zh: '多模态结构化输出' }, quantizer: 'Xylolabs' },
   { id: 48, type: 'new', modelId: 'shot-reader-8b', level: 'Q4_K_M', note: { en: 'structured shot description', zh: '结构化镜头描述' }, quantizer: 'mradermacher' },

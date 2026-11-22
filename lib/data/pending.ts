@@ -345,12 +345,12 @@ export const pendingModels: PendingModel[] = [
     "vendor": "Nex-AGI",
     "reason": "not-sized",
     "detail": {
-      "en": "Official weights and bartowski GGUFs exist. Its GLM5-next configuration combines linear attention with compressed sparse-attention caches and an indexer, the same unresolved sizing class as GLM-5.3-Flash. The calculator cannot yet express this layout accurately.",
-      "zh": "已有官方权重和 bartowski GGUF。其 GLM5-next 配置混合线性注意力、压缩稀疏注意力缓存和索引器，与 GLM-5.3-Flash 属于同一尚未解决的估算类型。计算器目前还不能准确表达这种布局。"
+      "en": "Official weights and bartowski GGUFs exist. Its GLM5-next configuration combines linear attention with compressed sparse-attention caches and an indexer, the same layout as GLM-5.3-Flash, which the calculator now sizes. Its own layer counts and GGUF byte counts have not been read yet.",
+      "zh": "已有官方权重和 bartowski GGUF。其 GLM5-next 配置混合线性注意力、压缩稀疏注意力缓存和索引器，与 GLM-5.3-Flash 布局相同，计算器现已能估算这类布局，但尚未读取它自己的层数和 GGUF 文件大小。"
     },
     "recheck": {
-      "en": "When compressed-cache/indexer sizing is implemented and verified against actual files and memory observations.",
-      "zh": "实现压缩缓存与索引器估算，并对照实际文件和内存记录核实后。"
+      "en": "After its config.json and complete GGUF byte counts are read.",
+      "zh": "读取其 config.json 与完整 GGUF 文件大小后。"
     },
     "checkedAt": "2026-11-17"
   },
@@ -400,67 +400,6 @@ export const pendingModels: PendingModel[] = [
     "checkedAt": "2026-11-21"
   },
   {
-    id: 'kimi-k3-1-pro',
-    name: 'Kimi K3.1 Pro',
-    vendor: 'Moonshot AI',
-    announced: '2026-10-23',
-    reason: 'not-sized',
-    detail: {
-      en: 'The official Hugging Face repository and safetensors listing can now be read. llama.cpp has the kimi-k31 implementation, but this calculator has not audited its mixed KDA and sparse-attention/indexer cache or its packed expert weights. Weight availability is no longer the blocker; sizing remains unverified.',
-      zh: '现在已能读取官方 Hugging Face 仓库和 safetensors 列表。llama.cpp 已有 kimi-k31 实现，但本计算器尚未审计它混合 KDA 与稀疏注意力、索引器的缓存以及打包专家权重。权重可访问性已不再是阻碍，显存估算仍未核实。',
-    },
-    recheck: {
-      en: 'After auditing the cache implementation and an actual quantized-file listing, then checking against a published memory measurement.',
-      zh: '审计缓存实现和实际量化文件列表，并对照公开内存实测后。',
-    },
-    checkedAt: '2026-11-17',
-  },
-  {
-    id: 'minimax-m3-1-flash',
-    name: 'MiniMax M3.1 Flash',
-    vendor: 'MiniMax',
-    announced: '2026-10-23',
-    reason: 'not-sized',
-    detail: {
-      en: 'A 428B mixture-of-experts model with about 23B parameters active per token, released on 23 October under the MiniMax Community License. Its config has now been read: 60 layers (3 dense, 57 with 128 routed experts, 4 per token), 4 KV heads × 128, and experts stored in NVFP4 in the official weights. llama.cpp loads it as `minimax-m3`, with MiniMax Sparse Attention and an indexer — a cache layout this site has not sized before. The only GGUFs are unsloth\'s dynamic UD-* builds (UD-Q4_K_XL is 249 GB), with no standard level, so it is not sized yet. At these sizes only a 512 GB Mac could hold it.',
-      zh: '一个 428B 的混合专家模型，每个 token 约激活 23B 参数，10 月 23 日以 MiniMax Community License 发布。它的配置现在已读到：60 层（3 层稠密、57 层各有 128 个路由专家，每个 token 用 4 个），4 个 KV 头 × 128 维，官方权重里的专家以 NVFP4 存储。llama.cpp 以 `minimax-m3` 加载它，使用带索引器的 MiniMax 稀疏注意力——本站还没有计算过这种缓存结构。目前只有 unsloth 的动态 UD-* GGUF（UD-Q4_K_XL 为 249 GB），没有标准档位，所以暂不计算显存。按这个体积，只有 512 GB 的 Mac 能装下。',
-    },
-    recheck: { en: 'When its cache layout has been read in llama.cpp\'s source and a standard-level GGUF exists.', zh: '在 llama.cpp 源码里核实它的缓存结构、并且有标准档位的 GGUF 时。' },
-    checkedAt: '2026-11-17',
-  },
-  {
-    id: 'deepseek-v4-1-flash-1017',
-    name: 'DeepSeek-V4.1-Flash-1017',
-    vendor: 'DeepSeek',
-    announced: '2026-10-17',
-    reason: 'not-sized',
-    detail: {
-      en: 'llama.cpp now lists the architecture (`deepseek41`), and community GGUF conversions are appearing, but no official or widely used GGUF with a file listing has been checked here. Like DeepSeek-V4-Flash, it compresses its cache in ways the calculator cannot express yet, so there is no memory figure rather than a wrong one.',
-      zh: 'llama.cpp 现在已列出这个架构（`deepseek41`），社区 GGUF 转换也开始出现，但本站还没核对过官方或常用量化者带文件列表的 GGUF。它和 DeepSeek-V4-Flash 一样会压缩缓存，计算器还表达不了，所以这里宁可不给显存数字，也不给一个错的。',
-    },
-    recheck: {
-      en: 'When the calculator models this cache and a GGUF from a widely used publisher can be read with its byte counts.',
-      zh: '计算器能算这种缓存，并且能读到常用量化者 GGUF 的字节数时。',
-    },
-    checkedAt: '2026-11-17',
-  },
-  {
-    id: 'deepseek-v4-flash-0731',
-    name: 'DeepSeek-V4-Flash-0731',
-    vendor: 'DeepSeek',
-    announced: '2026-07-31',
-    reason: 'not-sized',
-    detail: {
-      en: 'Downloadable today: llama.cpp runs it (`deepseek4`), and ggml-org publishes MXFP4 (155.0 GB in 2 parts) and Q2_K (117.3 GB) GGUFs, with Unsloth UD tiers alongside. What is missing is on this site\'s side: its cache is compressed per layer (4× or 128× plus a 128-token window), which the calculator cannot express yet, so there is no memory figure rather than a wrong one.',
-      zh: '现在就能下载：llama.cpp 能运行（`deepseek4`），ggml-org 发布了 MXFP4（155.0 GB，分 2 卷）和 Q2_K（117.3 GB）GGUF，Unsloth 也有 UD 系列。缺的是本站这边：它的缓存按层压缩（4 倍或 128 倍，外加 128 token 窗口），计算器还表达不了，所以这里宁可不给显存数字，也不给一个错的。',
-    },
-    recheck: {
-      en: 'When the calculator models this cache and the result is checked against a published memory measurement.',
-      zh: '计算器能算这种缓存，并且结果与一份公开的显存实测对上时。',
-    },
-    checkedAt: '2026-11-17',
-  },
-  {
     id: 'step-5-preview',
     name: 'Step-5 Preview',
     vendor: 'StepFun',
@@ -487,19 +426,6 @@ export const pendingModels: PendingModel[] = [
       zh: '循环结构（nGPT 风格）的 4B 模型。llama.cpp 支持 PR #30306 已不再是草稿，但仍未合并，正式发行版支持尚待落实。',
     },
     recheck: { en: 'When that pull request is merged.', zh: '该 PR 合并后。' },
-    checkedAt: '2026-11-17',
-  },
-  {
-    id: 'glm-5-3-flash',
-    name: 'GLM-5.3-Flash',
-    vendor: 'Z.ai',
-    announced: '2026-08-26',
-    reason: 'not-sized',
-    detail: {
-      en: 'Its config has now been read: about 320B parameters (the BF16 GGUF is 641.6 GB), 45 layers of which 34 are linear attention and 11 are sparse attention with a compressed cache plus an indexer, 288 routed experts with 8 per token. llama.cpp loads it as `glm5-next`. The published GGUFs are unsloth\'s dynamic UD-* builds plus Q8_0 (341 GB) — no standard Q4_K_M — and its cache layout has not been checked against llama.cpp yet, so it is not sized. At these sizes only a 512 GB Mac could hold it.',
-      zh: '它的配置现在已读到：约 320B 参数（BF16 GGUF 为 641.6 GB），45 层中 34 层是线性注意力、11 层是带压缩缓存和索引器的稀疏注意力，288 个路由专家、每个 token 用 8 个。llama.cpp 以 `glm5-next` 加载它。已发布的 GGUF 是 unsloth 的动态 UD-* 版本加上 Q8_0（341 GB），没有标准的 Q4_K_M；它的缓存结构也还没对照 llama.cpp 核实，所以暂不计算显存。按这个体积，只有 512 GB 的 Mac 能装下。',
-    },
-    recheck: { en: 'When its cache layout has been read in llama.cpp\'s source and a standard 4-bit GGUF exists.', zh: '在 llama.cpp 源码里核实它的缓存结构、并且有标准 4-bit GGUF 时。' },
     checkedAt: '2026-11-17',
   },
 ];
