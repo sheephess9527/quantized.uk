@@ -1,5 +1,6 @@
 'use client';
 
+import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { useState } from 'react';
 import FitControls from './FitControls';
 import { contextLabel } from '@/lib/utils/context-label';
@@ -19,6 +20,7 @@ import { quantLevelKey } from '@/lib/utils/recommend';
 import { speedQuote, playablePick, feelHref, type SpeedQuote } from '@/lib/utils/speed-label';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
+import { pairData, pairHref } from '@/lib/utils/pair-pages';
 
 /**
  * "What can my card run" — the question the GPU data could always answer but
@@ -172,6 +174,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                             {fit.model.name}
                           </Link>
                           <span className="block text-xs text-slate-600">{fit.model.paramLabel}</span>
+                          {pairData(fit.model, gpu).eligible && <Link className="block text-xs text-violet-300" href={pairHref(fit.model, gpu)}>{t.pair.details}</Link>}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-xs text-cyan-300">{quantLevelKey(fit.quant)}</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-300">{fit.totalGB} GB</td>
@@ -247,7 +250,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                   {measured.map((row, i) => (
                     <tr key={i} className="border-b border-white/[0.04]">
                       <td className="py-2 pr-3 text-slate-200">{row.model}</td>
-                      <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.framework} · {row.quant}</td>
+                      <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.quant}<RunProvenance row={row} /></td>
                       <td className="py-2 pr-3 text-right font-mono text-emerald-300">{row.speedTokSec}</td>
                       <td className="py-2 text-right font-mono text-slate-400">{row.vramUsedGB} GB</td>
                     </tr>

@@ -1,5 +1,6 @@
 'use client';
 
+import RunProvenance from '@/components/benchmarks/RunProvenance';
 import dynamic from 'next/dynamic';
 import { GPU_COUNT } from '@/lib/seo';
 import { useLanguage } from '@/lib/i18n/context';
@@ -115,6 +116,7 @@ export default function BenchmarksPage() {
       <div className="space-y-10">
         <BenchCharts />
         <BenchDataTables />
+        <p className="text-sm text-slate-400">{t.bench.dateNote}</p>
         <CoverageSection />
 
         {/* Matrix table */}
@@ -142,7 +144,7 @@ export default function BenchmarksPage() {
                   <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                     <td className="py-2.5 px-3 text-slate-200 text-xs font-medium">{row.model}</td>
                     <td className="py-2.5 px-3 text-slate-300 text-xs">{row.hardware}</td>
-                    <td className="py-2.5 px-3 text-slate-400 text-xs font-mono">{row.framework}</td>
+                    <td className="py-2.5 px-3 text-slate-400 text-xs font-mono"><RunProvenance row={row} /></td>
                     <td className="py-2.5 px-3">
                       <span className="badge bg-violet-500/10 text-violet-300 border-violet-500/20 text-xs font-mono">
                         {row.quant}

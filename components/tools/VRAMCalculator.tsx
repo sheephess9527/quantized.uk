@@ -1761,7 +1761,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     <span data-testid="run-plan-speed" className="text-slate-200">
                       {'· '}{planSpeed.source === 'measured' ? (
                         <Link href="/benchmarks/" className="underline decoration-slate-500 underline-offset-2">
-                          {t.calc.runPlanSpeedMeasured.replace('{n}', String(planSpeed.tokS)).replace('{framework}', planSpeed.framework)}
+                          {t.calc.runPlanSpeedMeasured.replace('{n}', String(planSpeed.tokS)).replace('{runtime}', planSpeed.runtimeVersion)}
                         </Link>
                       ) : planSpeed.source === 'calibrated'
                         ? t.calc.runPlanSpeedEstimated.replace('{low}', String(planSpeed.low)).replace('{high}', String(planSpeed.high))

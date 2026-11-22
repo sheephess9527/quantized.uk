@@ -57,6 +57,7 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
  */
 const ROW_ALIASES: Record<string, string> = {
   r1distillllama8b: 'deepseekr1distillllama8b',
+  deepseekr114b: 'deepseekr1distillqwen14b',
 };
 
 export function sameModel(modelName: string, rowModel: string): boolean {

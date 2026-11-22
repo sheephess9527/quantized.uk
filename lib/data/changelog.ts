@@ -18,6 +18,26 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
+    zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'Model/GPU pages now lead speed summaries with measured runs before estimates, align table cells consistently and use question-form search titles when space allows.',
+    zh: '模型与显卡组合页面的速度摘要现优先展示实测，再列出估算；统一表格单元格间距，并在长度允许时使用问句形式的搜索标题。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'New model/GPU answers cover 2,244 pairs with measured runs or complete verified-file sizing. Each bilingual page shows quant memory, context capacity, labelled speed and a calculator link; find them from model and GPU guides.',
+    zh: '新增 2,244 个模型与显卡组合的双语解答，仅收录有实测或完整已核验文件容量依据的组合。页面展示各量化显存、上下文容量、标明来源的速度与计算器链接，可从模型和显卡指南进入。',
+  },
+  {
+    date: '2026-11-22',
+    en: 'All 16 benchmark runs now show their historical runtime version and a measurement-date upper bound on the benchmark, homepage and GPU tables. Exact run dates were not recorded, so dates mean first publication, not a new measurement. The M2 Ultra runtime label is now consistently Ollama 0.3.14.',
+    zh: '全部 16 条基准记录现于基准页、首页与显卡实测表中显示历史运行时版本及测试日期上限。未记录确切测试日期，所示日期代表首次发布，并非重新测量。M2 Ultra 的运行时标签统一为 Ollama 0.3.14。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Share a GPU fit estimate on your own site: the calculator now offers compact English and Chinese iframe cards, plus Markdown links for model cards that cannot embed an iframe. Open “Embed this result” below a model-first result to copy either snippet. Unsupported quant formats are labelled as backend incompatibilities, not memory shortages. Unified-memory cards distinguish hardware memory from the usable budget.',
     zh: '现在可以在你的网站展示显存适配估算：计算器新增紧凑的中英文嵌入卡片，以及适用于不支持 iframe 的模型卡的 Markdown 链接。在按模型估算的结果下展开“嵌入此结果”即可复制。不支持的量化格式会标明平台不兼容，而非内存不足。统一内存卡片会区分硬件总容量与可用预算。',
   },

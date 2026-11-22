@@ -35,7 +35,7 @@ const rtx5090 = gpuDatabase.find(g => g.id === 'rtx5090')!;
 const mac = gpuDatabase.find(g => g.id === 'm4-pro-24')!;
 
 assert.deepEqual(runPlanSpeed(rtx4090, 1, [], dense, gguf(dense), 6, 4096), {
-  source: 'measured', tokS: 148, framework: 'llama.cpp',
+  source: 'measured', tokS: 148, runtimeVersion: 'llama.cpp b4217',
 });
 const calibrated = measuredSpeed(rtx5090, dense, gguf(dense))!;
 assert.deepEqual(runPlanSpeed(rtx5090, 1, [], dense, gguf(dense), 6, 4096), {

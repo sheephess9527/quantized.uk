@@ -193,7 +193,7 @@ export function runPlanSpeed(
 
   if (cards === 1 && extra.length === 0) {
     const run = matchingSpeedRun(gpu, model, quant);
-    if (run) return { source: 'measured' as const, tokS: run.speedTokSec, framework: run.framework };
+    if (run) return { source: 'measured' as const, tokS: run.speedTokSec, runtimeVersion: run.runtimeVersion };
     const estimate = measuredSpeed(gpu, model, quant);
     if (estimate) return { source: 'calibrated' as const, low: estimate.low, high: estimate.high };
   }

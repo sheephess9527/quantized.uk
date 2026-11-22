@@ -1,4 +1,5 @@
 /** Run: npm run check:recommendations */
+import { matrixData } from '../lib/data/benchmarks';
 import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
@@ -90,6 +91,21 @@ try {
   source.mmprojBytes = -1;
   assert.ok(dataProblems().some(problem => problem.includes('mmprojBytes must be a positive integer')));
 } finally { source.mmprojBytes = original; }
+assert.deepEqual(dataProblems(), []);
+const benchmark = matrixData.find(row => row.hardware === 'M2 Ultra 192G')!;
+const savedBenchmark = { ...benchmark };
+try {
+  benchmark.runtimeVersion = '';
+  assert.ok(dataProblems().some(problem => problem.includes('missing runtime version')));
+  benchmark.runtimeVersion = savedBenchmark.runtimeVersion;
+  for (const date of ['', '2026-02-30', 'not-a-date', '2099-01-01']) {
+    benchmark.firstPublishedAt = date;
+    assert.ok(dataProblems().some(problem => problem.includes('invalid first-publication date')));
+  }
+  benchmark.firstPublishedAt = savedBenchmark.firstPublishedAt;
+  benchmark.framework = 'llama.cpp';
+  assert.ok(dataProblems().some(problem => problem.includes('framework llama.cpp disagrees with speedBenchmarks Ollama')));
+} finally { Object.assign(benchmark, savedBenchmark); }
 assert.deepEqual(dataProblems(), []);
 
 for (const ctx of [NaN, Infinity, 0, -1]) assert.deepEqual(getRecommendations(gpu, ctx, 1), []);
