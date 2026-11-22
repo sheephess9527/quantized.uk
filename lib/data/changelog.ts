@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Recorded downloads in model × GPU answer boxes now show the shared file provenance line: repository link, filename, size, parts and verification date.',
+    zh: '模型 × 显卡答案框中的已记录下载现使用统一文件来源展示：仓库链接、文件名、大小、分片数和核验日期。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Model × GPU pages now open with a recommended download, weights/file size, longest comfortable estimated context and a worked memory calculation with headroom. Both languages reuse the calculator’s green-fit verdict, including unusual cache layouts, with warnings for tight-only fits and offload guidance when nothing fits.',
     zh: '模型 × 显卡页面现在首先展示推荐下载、权重/文件大小、预计最长从容运行上下文和含余量的显存手算过程。中英文均复用计算器的绿色适配判定，兼顾特殊缓存布局；仅能勉强运行时给出警告，无法容纳时提供卸载建议。',
   },

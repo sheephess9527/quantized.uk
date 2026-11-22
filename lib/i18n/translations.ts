@@ -1,8 +1,7 @@
 export const translations = {
   en: {
     pair: {
-      download: 'Download {quant}: estimated weights {weights} GiB{file}.',
-      fileSize: '; published file {file} GiB',
+      download: 'Download {quant}: estimated weights {weights} GiB.',
       longest: 'Longest comfortable estimated context: {ctx} tokens (model maximum {max}); batch 1, FP16 KV cache, no offload.',
       noContext: 'This recommendation has no comfortable context, even at 1 token. A tight fit may be possible; check the calculator or try a smaller quant / CPU offload.',
       noQuant: 'No supported quant fits entirely in this GPU at any context. Use CPU offload or a smaller model.',
@@ -1506,8 +1505,7 @@ export const translations = {
   },
   zh: {
     pair: {
-      download: '下载 {quant}：估算权重 {weights} GiB{file}。',
-      fileSize: '；已发布文件 {file} GiB',
+      download: '下载 {quant}：估算权重 {weights} GiB。',
       longest: '预计最长从容运行上下文：{ctx} 词元（模型上限 {max}）；批量 1、FP16 KV 缓存、不卸载。',
       noContext: '此推荐量化即使在 1 词元时也无法从容运行。可能仍能在显存紧张状态下运行；请查看计算器，或尝试更小量化 / CPU 卸载。',
       noQuant: '所有受支持量化在任何上下文下都无法完全放入此显卡。请使用 CPU 卸载或更小模型。',

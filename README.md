@@ -541,6 +541,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Answer-first model × GPU pages
 
+- Recorded recommended files use the shared `QuantFileLine` renderer in the answer box, preserving the repository link, filename, bytes, parts and verification date in the current language.
 - Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
 - Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables and route eligibility are unchanged; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. `dataLastUpdated` and `sizingChangedAt` already match this release date.
 

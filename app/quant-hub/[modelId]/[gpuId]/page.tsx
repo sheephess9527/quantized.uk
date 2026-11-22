@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from '@/components/i18n/LocalLink';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import QuantFileLine from '@/components/hub/QuantFileLine';
 import { models } from '@/lib/data/models';
 import { gpuBySlug, gpuSlug } from '@/lib/utils/gpu-page';
 import {
@@ -104,7 +105,6 @@ export default function PairPage({
   const worked = {
     quant: `${answer.quant.format} ${answer.quant.level}`,
     weights: answer.memory.modelWeightsGB.toFixed(2),
-    file: answer.quant.source ? fill(t.fileSize, { file: (answer.quant.source.bytes / 1024 ** 3).toFixed(2) }) : '',
     ctx: answer.contextLength.toLocaleString('en-US'),
     max: model.contextLength.toLocaleString('en-US'),
     params: String(model.params),
@@ -164,6 +164,7 @@ export default function PairPage({
         <p className="text-lg font-semibold text-violet-200">
           {answer.contextLength ? fill(t.download, worked) : answer.anyQuantFits ? t.noContext : t.noQuant}
         </p>
+        {answer.quant.source && <p className="text-sm"><QuantFileLine quant={answer.quant} /></p>}
         <p>{answer.contextLength ? fill(t.longest, worked) : `${worked.quant} · ${worked.weights} GiB`}</p>
         <p className="text-sm text-slate-300 leading-relaxed">{fill(t.calculation, { ...worked, ctx: answer.workedContext.toLocaleString('en-US') })}</p>
         <p className="text-xs text-slate-400">{t.sizingCaveat}</p>
