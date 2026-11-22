@@ -23,6 +23,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
+    zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },
