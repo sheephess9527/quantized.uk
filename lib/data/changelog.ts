@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Paste an Ollama tag such as qwen3:8b-q4_K_M or llama3.1:8b into the VRAM calculator search box to select the matching model and quantization. Tags the site does not index, or that serve a different checkpoint, show a message instead of a guess.',
+    zh: '在显存计算器的搜索框粘贴 Ollama 标签（如 qwen3:8b-q4_K_M 或 llama3.1:8b），即可自动选中对应模型和量化。本站未收录的标签或指向其他检查点的标签会给出提示，不会猜测。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
     zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
   },

@@ -226,6 +226,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   made by the reader's browser on click, never at build or on load. Every failure path must degrade to
   "enter by hand"; a field the config does not carry stays empty — never filled with a plausible
   default. Test parser changes against index models' own `arch` (they must come out identical).
+- **Ollama tags are an allow-list, not a parser guess.** `lib/data/ollama-tags.ts` lists only tags whose
+  registry file is the indexed checkpoint (`deepseek-r1:8b`, `olmo-3:7b`, `devstral:24b` are not);
+  everything else gets a message and selects nothing. No registry call at runtime. When adding a model
+  with an Ollama library tag, add its row and run `npm run verify:ollama` (network) before committing.
 - **Data-driven:** add content in `lib/data/*.ts` (satisfy `lib/data/types.ts`).
 - **`Array.from(new Set(...))`**, never `[...new Set(...)]` (bundler target won't down-level it).
 - **Fonts via `next/font` only** (self-hosted; Tailwind reads `--font-inter`/`--font-mono`).
