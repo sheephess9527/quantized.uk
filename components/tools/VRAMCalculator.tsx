@@ -26,7 +26,7 @@ import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
-import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { useHardwareProfile, type SharedConfig } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
 import { detectGpu, type GpuDetection } from '@/lib/utils/gpu-detect';
 import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/utils/model-meta';
@@ -146,7 +146,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   }, [linkedGpu, gpuOverridden]);
   const searchParams = useUrlQuery();
   const sharedLink = searchParams?.get(VRAM_SHARE_PARAM) === '1';
-  const urlInitialized = useRef(false);
+  const [urlInitialized, setUrlInitialized] = useState(false);
+  const lastSharedSettings = useRef<Pick<SharedConfig, 'modelId' | 'quantLevel' | 'contextLen'> | null>(null);
 
   const [mode, setMode] = useState<Mode>(defaultMode);
   const [selectedModelId, setSelectedModelId] = useState('');
@@ -226,7 +227,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   // other than what the sender saw. Waits for `configReady` so the stored
   // fallback is not missed on first paint.
   useEffect(() => {
-    if (urlInitialized.current || !searchParams || !configReady) return;
+    if (urlInitialized || !searchParams || !configReady) return;
     const modeParam = searchParams.get('mode');
     const modelParam = searchParams.get('model');
     // Older links name a model without a mode; they meant the forward answer.
@@ -332,14 +333,28 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('yellow') === '0') setIncludeYellow(false);
     if (searchParams.get('all') === '1') setBestPerModel(false);
     if (searchParams.get('input') === 'image') setReverseInput('image');
-    urlInitialized.current = true;
-  }, [defaultMode, searchParams, sharedLink, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
+    setUrlInitialized(true);
+  }, [urlInitialized, defaultMode, searchParams, sharedLink, profileGpuId, savedGpuId, configReady, config.modelId, config.quantLevel, config.contextLen, config.gpuId, updateConfig]);
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
-    if (!urlInitialized.current || sharedLink) return;
-    updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
-  }, [selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink]);
+    if (!urlInitialized) return;
+    const modelId = modelIsExample ? '' : selectedModelId;
+    if (sharedLink) {
+      // The initial restored values belong to the sender. Only subsequent
+      // edits carry over to the recipient's profile.
+      const previous = lastSharedSettings.current;
+      lastSharedSettings.current = { modelId, quantLevel: selectedQuant, contextLen };
+      if (!previous) return;
+      const changes: Partial<SharedConfig> = {};
+      if (previous.modelId !== modelId && !modelIsExample) changes.modelId = modelId;
+      if (previous.quantLevel !== selectedQuant || changes.modelId !== undefined) changes.quantLevel = selectedQuant;
+      if (previous.contextLen !== contextLen) changes.contextLen = contextLen;
+      if (Object.keys(changes).length) updateConfig(changes);
+    } else {
+      updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId, quantLevel: selectedQuant, contextLen });
+    }
+  }, [urlInitialized, selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink]);
 
   const resultParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -396,14 +411,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => {
-    if (!urlInitialized.current) return;
+    if (!urlInitialized) return;
     const params = resultParams();
     if (sharedLink && mode !== 'finetune') {
       params.set(VRAM_SHARE_PARAM, '1');
       if (mode === 'forward' && !profileGpuId) params.set('gpu', NO_SHARE_GPU);
     }
     window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
-  }, [resultParams, sharedLink, mode, profileGpuId]);
+  }, [urlInitialized, resultParams, sharedLink, mode, profileGpuId]);
 
   /**
    * Changing the model must not leave the previous model's quant level
