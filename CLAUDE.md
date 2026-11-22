@@ -32,7 +32,7 @@ content is hardcoded TypeScript in `lib/data/`. Deployed on Cloudflare **Pages**
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**78** GPUs/Macs/DGX Spark + 4 CPU-only RAM rows, incl. AMD RDNA 4 + Radeon AI PRO R9700, Intel Arc + Arc Pro B70, Blackwell, DGX Spark, M4/M5, Pascal datacentre), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 5,134 HTML files including 404 variants and 2,244 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 5,136 HTML files including 404 variants and 2,245 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands

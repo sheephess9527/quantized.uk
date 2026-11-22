@@ -16,6 +16,12 @@ import {
 import { measuredRowsFor } from '../lib/utils/measured-runs';
 import { sameModel } from '../lib/utils/speed-label';
 import { calcVRAM } from '../lib/utils/vram';
+import { matrixData } from '../lib/data/benchmarks';
+
+for (const row of matrixData) {
+  const matches = models.filter(model => sameModel(model.name, row.model));
+  assert.equal(matches.length, 1, `Benchmark model must map exactly once: ${row.model}`);
+}
 
 const pages = pairPages();
 assert.equal(new Set(gpuDatabase.map(gpuSlug)).size, gpuDatabase.length);

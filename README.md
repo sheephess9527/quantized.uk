@@ -515,6 +515,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Benchmark alias coverage
+
+- Matched the benchmark's abbreviated `DeepSeek-R1 14B` to `deepseek-r1-distill-qwen-14b` in the shared exact-model alias table. Its RTX 4090 pair now has a page and its EXL2 GPU-page speed is correctly labelled measured. All benchmark rows must map to exactly one indexed model; removing the alias proves the new check fails.
+- Inventory is now 2,245 pairs / 4,490 bilingual pair pages, with 5,136 HTML files including 404 variants.
+
 ### 2026-11-22 — Pair-page integration with current main
 
 - Merged the context/concurrency controls and parameter-bucket updates without changing pair-page eligibility or its fixed 4K / batch 1 baseline. Kept both pair-page and parameter-bucket checks in `npm test` and retained both release histories.

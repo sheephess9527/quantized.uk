@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The measured DeepSeek-R1-Distill-Qwen-14B / RTX 4090 run now appears on its own pair page and receives the correct measured speed label. Benchmark aliases are checked against every indexed model; coverage is now 2,245 model/GPU pairs.',
+    zh: 'DeepSeek-R1-Distill-Qwen-14B 与 RTX 4090 的实测记录现有独立组合页面，并正确标注实测速度。新增检查确保所有基准测试别名均对应索引模型；现覆盖 2,245 个模型与显卡组合。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Model/GPU pages now lead speed summaries with measured runs before estimates, align table cells consistently and use question-form search titles when space allows.',
     zh: '模型与显卡组合页面的速度摘要现优先展示实测，再列出估算；统一表格单元格间距，并在长度允许时使用问句形式的搜索标题。',
   },
