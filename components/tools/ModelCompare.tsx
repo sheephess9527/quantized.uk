@@ -97,7 +97,7 @@ export default function ModelCompare() {
             >
               <option value="">{c.selectModel}</option>
               {groupedModels().map(group => (
-                <optgroup key={group.bucket} label={group.bucket}>
+                <optgroup key={group.bucket} label={group.label}>
                   {group.models.map(m => (
                     <option key={m.id} value={m.id} disabled={side === 'a' ? m.id === modelBId : m.id === modelAId}>
                       {m.name} ({m.paramLabel})
