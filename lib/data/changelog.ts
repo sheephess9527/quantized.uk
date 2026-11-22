@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'All 16 benchmark runs now show their historical runtime version and a measurement-date upper bound on the benchmark, homepage and GPU tables. Exact run dates were not recorded, so dates mean first publication, not a new measurement. The M2 Ultra runtime label is now consistently Ollama 0.3.14.',
+    zh: '全部 16 条基准记录现于基准页、首页与显卡实测表中显示历史运行时版本及测试日期上限。未记录确切测试日期，所示日期代表首次发布，并非重新测量。M2 Ultra 的运行时标签统一为 Ollama 0.3.14。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Model size classes now say exactly what they hold: <4B, 4–10B, 10–20B, 20–50B and 50B+ by total parameters. The GPU requirements table had listed Qwen3 4B under "≤3B" and 9B models under "14B"; the same ranges now label the Quant Hub filter, GPU pages and model pickers, and a build check keeps every model inside its column.',
     zh: '模型规模分档现在与实际一致：按总参数量分为 <4B、4–10B、10–20B、20–50B 和 50B+。此前显卡需求表把 Qwen3 4B 列在"≤3B"、把 9B 模型列在"14B"；量化模型库筛选、显卡页面和模型选择器现在使用同一套区间，并有构建检查确保每个模型都落在所属列中。',
   },
