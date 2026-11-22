@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The footer now links to Methodology & accuracy. See how the calculator estimates weights, KV cache and runtime memory, where the data comes from, and how its estimates compare with recorded memory use.',
+    zh: '页脚新增“估算方法与准确性”，说明计算器如何估算模型权重、KV 缓存和运行内存，数据来自哪里，以及估算值与实测占用相差多少。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

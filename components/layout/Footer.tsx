@@ -20,6 +20,7 @@ export default function Footer() {
         { label: t.gpuPage.allGpus, href: '/gpu/' },
         { label: t.formatCompare.allComparisons, href: '/formats/' },
         { label: t.nav.benchmarks, href: '/benchmarks/' },
+        { label: t.methodology.title, href: '/methodology/' },
         { label: t.nav.cookbook,   href: '/cookbook/' },
         { label: t.faq.title,      href: '/faq/' },
         { label: t.about.linkLabel, href: '/about/' },

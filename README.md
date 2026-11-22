@@ -82,6 +82,7 @@ app/                        # Next.js App Router pages
   quant-hub/[modelId]/      # Per-model detail pages (SSG via generateStaticParams)
     page.tsx
   benchmarks/page.tsx       # Charts + matrix
+  methodology/page.tsx      # Inference-memory formulas, data sources and measured error; /zh mirror
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   feed.xml/route.ts         # RSS (force-static)
@@ -149,12 +150,13 @@ wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 ### VRAM calculation (`lib/utils/vram.ts`)
 
 ```
-total = model_weights + kv_cache + activation_buffer
-
-model_weights     = params × bpw / 8
-kv_cache          = 2 × layers × kvHeads × headDim × contextLen × batchSize × 2 bytes
-activation_buffer = 10% of the above
+model_weights     = params × bpw / 8 / 2³⁰ × 1.02
+kv_cache          = sum(2 × layers × kvHeads × headDim × cachedTokens × batchSize × bytesPerValue / 2³⁰)
+subtotal          = model_weights + kv_cache + optional vision_encoder
+total             = subtotal × 1.10
 ```
+
+Memory estimates are in GiB. KV cache is summed over full-attention and sliding-window layer groups, using their respective head layouts and token spans. The default f16 cache uses 2 bytes per value. The bilingual [/methodology/](https://quantized.uk/methodology/) page derives mean and maximum absolute memory error at build time from the benchmark matrix and the live calculator function via `bench-calibration.ts`. It links to the per-run comparison and keeps measurement scope separate from the estimates.
 
 `getVerdict(totalGB, gpuVram)` returns `green` / `yellow` / `red` so the calculator can colour-code each GPU.
 
@@ -537,6 +539,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — VRAM methodology and accuracy
+
+- Added bilingual methodology pages linked from the footer and sitemap. They document inference sizing and input provenance, and recompute the error summary from the measured matrix and the calculator on every build. The detailed benchmark comparison is linked directly; no runs or sizing behavior changed.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 

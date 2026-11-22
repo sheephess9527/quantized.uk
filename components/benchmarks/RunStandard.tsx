@@ -63,7 +63,7 @@ export default function RunStandard() {
         <p className="text-sm text-slate-500 mt-4 leading-relaxed">{s.rulesLimit}</p>
       </section>
 
-      <section className="glass rounded-2xl p-6 overflow-x-auto">
+      <section id="memory-calibration" className="glass rounded-2xl p-6 overflow-x-auto scroll-mt-24">
         <h2 className="text-xl font-bold text-slate-100">{s.calTitle}</h2>
         <p className="text-sm text-slate-500 mt-1">{fill(s.calSubtitle, { ctx: m.context })}</p>
         <p className="text-sm text-slate-300 mt-3 mb-4 leading-relaxed">
@@ -94,12 +94,12 @@ export default function RunStandard() {
                   <td className="py-2 px-3 text-xs text-slate-200">{r.row.model}</td>
                   <td className="py-2 px-3 text-xs text-slate-300 whitespace-nowrap">{r.gpu?.name ?? r.row.hardware}</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">{r.row.quant}<RunProvenance row={r.row} /></td>
-                  <td className="py-2 px-3 text-xs font-mono text-cyan-400">{r.row.vramUsedGB.toFixed(1)} GB</td>
+                  <td className="py-2 px-3 text-xs font-mono text-cyan-400">{r.row.vramUsedGB} GB</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-300">
-                    {r.estimateGB !== undefined ? `${r.estimateGB.toFixed(1)} GB` : <span className="text-slate-500 font-sans">{s.calNotInIndex}</span>}
+                    {r.estimateGB !== undefined ? `${r.estimateGB.toFixed(2)} GB` : <span className="text-slate-500 font-sans">{s.calNotInIndex}</span>}
                   </td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-400">
-                    {diff === undefined ? '—' : Math.abs(diff) < 0.05 ? '0.0' : `${diff > 0 ? '+' : '−'}${Math.abs(diff).toFixed(1)}`}
+                    {diff === undefined ? '—' : Math.abs(diff) < 0.005 ? '0.00' : `${diff > 0 ? '+' : '−'}${Math.abs(diff).toFixed(2)}`}
                   </td>
                   <td className="py-2 px-3 text-xs font-mono text-emerald-400">{r.row.speedTokSec}</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">
