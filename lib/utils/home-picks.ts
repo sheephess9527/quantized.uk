@@ -18,8 +18,8 @@ const CATEGORY_FOR: Record<HomeUseCase, string[]> = {
 };
 
 /**
- * Three picks from the models that fit the reader's card comfortably at 4K
- * context (`fitsOnGpu` — a green verdict, at most 88% of the card).
+ * Three picks from the models that fit the reader's card comfortably at the selected
+ * context and concurrency (`fitsOnGpu` — a green verdict, at most 88% of the card).
  *
  * `capable`  — the largest model that fits. The reader's actual question.
  * `headroom` — the largest that fits in 60% of the card, so context or batch
@@ -56,14 +56,14 @@ export interface HomePick {
  */
 export const HEADROOM_BUDGET = 0.6;
 
-export function homePicks(gpu: GPU, useCase: HomeUseCase): HomePick[] {
+export function homePicks(gpu: GPU, useCase: HomeUseCase, contextLength?: number, batchSize?: number): HomePick[] {
   const wanted = CATEGORY_FOR[useCase];
   // A recommendation is the one place a legacy model must never land — the
   // whole point of `status: 'superseded'` is "this index would not suggest
   // this today", and homePicks is exactly what suggests things. `fitsOnGpu`
   // still lists these models on their own GPU page (they do, technically,
   // fit), which is a different question from what gets recommended.
-  const fits: GpuFit[] = fitsOnGpu(gpu).filter(f =>
+  const fits: GpuFit[] = fitsOnGpu(gpu, contextLength, batchSize).filter(f =>
     !isSuperseded(f.model) && f.model.categories.some(c => wanted.includes(c)),
   );
   if (fits.length === 0) return [];

@@ -522,6 +522,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Cards are noindex and intentionally absent from the sitemap, with no navigation, footer or Plausible script. Only `/embed/*` and `/zh/embed/*` detach anti-framing headers; all other pages remain protected. Cloudflare Pages applies these headers; the local static preview does not emulate them.
 - `lib/utils/embed-fit.ts` owns parsing, sizing and escaped snippet URLs. `scripts/check-embed-fit.ts` runs in `npm test`. Custom models and invalid/unsupported settings cannot generate a misleading card. Copying a snippet does not persist example or guessed choices.
 
+### 2026-11-22 — Context and concurrency on home and GPU pages
+
+- Homepage picks, GPU detail lists and GPU index counts now offer 4K–128K context chips and concurrency 1/2/4/8. Fits respect native model windows; memory, headroom, groups and upgrade counts follow the selection. Calculator links retain context and batch.
+- Defaults remain 4K / batch 1 for static indexing. Editorial GPU summaries, FAQs and speed references remain explicitly labelled baseline estimates when settings differ. Choices stay local to each page, without URL encoding or persistence.
+- Shared presets and controls live in `lib/utils/gpu-page.ts` and `components/gpu/FitControls.tsx`; `npm test` covers preset combinations and default parity.
+
 ### 2026-11-22 — Parameter-size buckets match their labels
 
 - The size classes were labelled `≤3B / 7B / 14B / 32B / 70B+` but bounded at ≤4 / ≤9 / ≤20 / ≤50 / >50B, so the GPU requirements page (both languages) put Qwen3 4B under "≤3B", Gemma 2 9B and Qwen3.5 9B under "14B", GPT-OSS 20B under "32B" and Jamba 1.5 Mini (52B) under "70B+".
