@@ -34,6 +34,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
   const source = quant.format === 'GGUF' ? quant.source : undefined;
   const repo = source?.repo ?? hfRepoMap[model.id as keyof typeof hfRepoMap];
   const filename = (source?.parts ?? 1) === 1 ? source?.file : undefined;
+  const shardStem = (source?.parts ?? 1) > 1 ? source?.file?.split('/').pop()?.replace(/-\d+-of-\d+\.gguf$/, '') : undefined;
   const levels = useMemo(() => {
     const out: { fw: Framework; label: string; level: string }[] = [];
     if (quant.format === 'GGUF') {
@@ -66,6 +67,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       modelName: model.name,
       hfRepo: repo,
       ggufFilename: filename,
+      ggufShardStem: shardStem,
       quantLevel: active.level,
       fileGB: ggufFileGB(model, active.level),
       // Expert offload applies to llama.cpp only; Ollama keeps its own layer split.

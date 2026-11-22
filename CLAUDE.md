@@ -123,7 +123,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   `source.repo` and single-file `source.file` as `hfRepo` / `ggufFilename`. An original
   repo without `-GGUF` is valid only with that file evidence. Ollama supports the
   full filename as its HF tag (HF docs); never mix TwIL balanced and verbose files.
-  Sharded rows keep the existing wildcard path. Check with `npm run check:cli`.
+  Sharded rows keep the wildcard path, built from `source.file` minus `-00001-of-NNNNN.gguf` (`ggufShardStem`) when one is recorded. Check with `npm run check:cli`.
   The CLI generator's `?model=` is read through `useUrlQuery()` after mount and
   takes precedence over a stored model; invalid ids never enter generated commands.
 
