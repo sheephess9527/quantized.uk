@@ -18,6 +18,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
+    zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
+  },
+  {
+    date: '2026-11-22',
     en: 'GTX 1080 Ti, V100, P100 and P40 recommendations no longer offer AWQ builds that require newer CUDA hardware. Calculator launch commands respect the same hardware-format restriction; GGUF choices remain available.',
     zh: 'GTX 1080 Ti、V100、P100 与 P40 的推荐结果不再提供需要更新 CUDA 硬件的 AWQ 版本。计算器启动命令遵循相同的硬件与格式限制，GGUF 选项仍然可用。',
   },
