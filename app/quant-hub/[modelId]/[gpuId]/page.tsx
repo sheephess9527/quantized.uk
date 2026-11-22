@@ -9,6 +9,7 @@ import {
   pairHref,
   pairPages,
   pairSize,
+  pairAnswer,
 } from '@/lib/utils/pair-pages';
 import { speedQuote } from '@/lib/utils/speed-label';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -99,6 +100,22 @@ export default function PairPage({
 }) {
   const { model, gpu, recommended: r, rows, measured } = data(params);
   const t = translations[lang].pair;
+  const answer = pairAnswer(model, gpu)!;
+  const worked = {
+    quant: `${answer.quant.format} ${answer.quant.level}`,
+    weights: answer.memory.modelWeightsGB.toFixed(2),
+    file: answer.quant.source ? fill(t.fileSize, { file: (answer.quant.source.bytes / 1024 ** 3).toFixed(2) }) : '',
+    ctx: String(answer.contextLength),
+    max: String(model.contextLength),
+    params: String(model.params),
+    bpw: String(answer.quant.bpw),
+    kvFormula: answer.kvFormula,
+    kv: answer.memory.kvCacheGB.toFixed(2),
+    activation: answer.memory.activationsGB.toFixed(2),
+    total: answer.memory.totalGB.toFixed(2),
+    capacity: answer.capacityGB.toFixed(2),
+    comparison: answer.contextLength ? '≤' : '>',
+  };
   const values = {
     model: model.name,
     gpu: gpu.name,
@@ -141,6 +158,14 @@ export default function PairPage({
       <h1 className="text-3xl font-bold text-slate-100">
         {fill(t.question, values)}
       </h1>
+      <section className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-5 space-y-3" aria-label={t.details}>
+        <p className="text-lg font-semibold text-violet-200">
+          {answer.contextLength ? fill(t.download, worked) : answer.anyQuantFits ? t.noContext : t.noQuant}
+        </p>
+        <p>{answer.contextLength ? fill(t.longest, worked) : `${worked.quant} · ${worked.weights} GiB`}</p>
+        <p className="text-sm text-slate-300 leading-relaxed">{fill(t.calculation, { ...worked, ctx: String(answer.workedContext) })}</p>
+        <p className="text-xs text-slate-400">{t.sizingCaveat}</p>
+      </section>
       <p className="text-xl text-violet-300">{fill(t.answer, values)}</p>
       <p className="text-sm text-slate-400">{t.note}</p>
       <section className="space-y-3">

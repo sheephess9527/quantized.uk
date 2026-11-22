@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Model × GPU pages now open with a recommended download, weights/file size, longest estimated context and a worked memory calculation. Both languages reuse calculator sizing, including unusual cache layouts, with offload guidance when nothing fits.',
+    zh: '模型 × 显卡页面现在首先展示推荐下载、权重/文件大小、预计最长上下文和显存手算过程。中英文均复用计算器容量逻辑，兼顾特殊缓存布局；无法容纳时提供卸载建议。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

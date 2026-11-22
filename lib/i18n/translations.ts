@@ -1,6 +1,13 @@
 export const translations = {
   en: {
     pair: {
+      download: 'Download {quant}: estimated weights {weights} GiB{file}.',
+      fileSize: '; published file {file} GiB',
+      longest: 'Longest estimated context: {ctx} tokens (model maximum {max}); batch 1, FP16 KV cache, no offload.',
+      noContext: 'This recommendation does not fit even at 1 token. Try a smaller quant or CPU offload in the calculator.',
+      noQuant: 'No supported quant fits entirely in this GPU at any context. Use CPU offload or a smaller model.',
+      calculation: 'Hand calculation at {ctx} tokens: weights {params}B × 10⁹ × {bpw} bpw ÷ 8 ÷ 2³⁰ × 1.02 = {weights} GiB + KV cache {kvFormula} bytes ÷ 2³⁰ = {kv} GiB + activations 10% of (weights + cache) = {activation} GiB → total ≈ {total} GiB {comparison} {capacity} GiB usable.',
+      sizingCaveat: 'Estimates, not measurements; components round independently. Weights include 2% overhead and all MoE experts. Cache uses the recorded full/window attention layout; fixed recurrent state is not counted. GB tables below use the same binary units.',
       "question": "Can {gpu} run {model}?",
       measuredSpeed: 'Measured',
       metaHeadroom: 'Headroom: {headroom} GB.',
@@ -1499,6 +1506,13 @@ export const translations = {
   },
   zh: {
     pair: {
+      download: '下载 {quant}：估算权重 {weights} GiB{file}。',
+      fileSize: '；已发布文件 {file} GiB',
+      longest: '预计最长上下文：{ctx} 词元（模型上限 {max}）；批量 1、FP16 KV 缓存、不卸载。',
+      noContext: '此推荐量化即使在 1 词元时也无法完全放入显存。请在计算器中尝试更小量化或 CPU 卸载。',
+      noQuant: '所有受支持量化在任何上下文下都无法完全放入此显卡。请使用 CPU 卸载或更小模型。',
+      calculation: '{ctx} 词元手算：权重 {params}B × 10⁹ × {bpw} bpw ÷ 8 ÷ 2³⁰ × 1.02 = {weights} GiB + KV 缓存 {kvFormula} 字节 ÷ 2³⁰ = {kv} GiB + 激活缓冲（权重 + 缓存）的 10% = {activation} GiB → 总计 ≈ {total} GiB {comparison} 可用 {capacity} GiB。',
+      sizingCaveat: '以上为估算而非实测，各项独立四舍五入。权重含 2% 开销及 MoE 全部专家。缓存按记录的全局/滑窗注意力布局计算，不计固定循环状态。下方 GB 表格使用相同的二进制单位。',
       "question": "{gpu} 能跑 {model} 吗？",
       measuredSpeed: '实测',
       metaHeadroom: '显存余量 {headroom} GB。',
