@@ -32,7 +32,7 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 6,208 HTML files including 404 variants and 2,736 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,380 HTML files (3,568 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -84,7 +84,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
-- **Model/GPU pairs:** `lib/utils/pair-pages.ts` owns eligibility for routes, sitemap and links. Exact measured pairs always qualify; otherwise require current models, verified-file green/yellow fits and at least 25% of usable memory. Keep GPU slugs last and reuse model OG images. `npm test` checks pair coverage/sizing; monitor the 20,000-file export limit.
+- **Model/GPU pairs:** `lib/utils/pair-pages.ts` owns eligibility for routes, sitemap and links. Exact measured pairs always qualify; otherwise require a GPU in `POPULAR_GPU_IDS`, current models, verified-file green/yellow fits and at least 25% of usable memory. Each pair is four exported files, so don't widen this without counting `out/`. Keep GPU slugs last and reuse model OG images. `npm test` checks pair coverage/sizing; `postbuild` (`scripts/check-export-size.mjs`) fails above 15,000 files, under Cloudflare Pages' 20,000-file Free limit.
 
 - **Embedding:** only `/embed/*` and `/zh/embed/*` may be framed (Cloudflare `_headers` detach exceptions). Keep embed pages noindex, out of the sitemap and free of site chrome/analytics. Fit cards and snippets reuse `lib/utils/embed-fit.ts` and calculator sizing; never persist guessed/example choices when copying.
 - **Calculator run plan:** use the same sizing and fit rules as the detailed

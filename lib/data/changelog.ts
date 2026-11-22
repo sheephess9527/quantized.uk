@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-23',
+    en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
+    zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
+  },
+  {
     date: '2026-11-22',
     en: 'GTX 1080 Ti, V100, P100 and P40 recommendations no longer offer AWQ builds that require newer CUDA hardware. Calculator launch commands respect the same hardware-format restriction; GGUF choices remain available.',
     zh: 'GTX 1080 Ti、V100、P100 与 P40 的推荐结果不再提供需要更新 CUDA 硬件的 AWQ 版本。计算器启动命令遵循相同的硬件与格式限制，GGUF 选项仍然可用。',
