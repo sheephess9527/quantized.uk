@@ -536,8 +536,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Ollama tag paste in the calculator
+
+- The VRAM calculator's model search box accepts an Ollama tag (`qwen3:8b-q4_K_M`, `llama3.1:8b`, `ollama run gpt-oss:20b`, `ollama.com/library/…` URLs, `hf.co/{repo}:{quant}`). Pasting or pressing Enter on a recognised tag selects the indexed model and quant; a tag with no quant uses the file type Ollama downloads for it, and says so. Tags the index cannot vouch for (unknown library, unlisted size, a library tag that serves another checkpoint such as `deepseek-r1:8b`, `olmo-3:7b`, `devstral:24b`, an unknown quant or one the Ollama library does not publish as a suffix, an `hf.co` quant the index does not record for that repo, community uploads, unindexed HF repos) show a bilingual message and select nothing.
+- Data: `lib/data/ollama-tags.ts` (43 libraries, 81 rows, read from registry.ollama.ai on 2026-11-22). Resolver: `lib/utils/ollama-tag.ts` (no network at runtime). `npm test` adds `scripts/check-ollama-tags.ts` (`npm run check:ollama`); `npm run verify:ollama` re-reads the registry (network, manual).
+
 ### 2026-11-22 — Simpler calculator controls
 
+- Integrated Ollama-tag paste into the visible model search while retaining laptop GPU selection/detection and the progressive advanced/quant controls.
 - Integrated main's laptop GPU grouping, single-card restrictions and speed/offload safeguards without changing the visible model search or progressive-control layout.
 - More options only auto-opens; resetting advanced settings to defaults or switching modes never closes it. Only its toggle button closes the panel.
 - Both languages now lead with common inference choices and tuck advanced settings into More options, automatically opened for non-default settings with a changed count. Forward quant chips show common levels first, with all levels still available. Existing URLs, share snapshots, profiles and saved rigs retain their settings; sizing and benchmark data are unchanged.
@@ -2517,6 +2523,7 @@ Not changed: command comments inside generated scripts are English in both trees
 
 ### 2026-10-13 (c) — Calculator: import any Hugging Face repo
 
+- `lib/utils/ollama-tag.ts`: `resolveOllamaTag` reads the calculator search box as an Ollama tag against `lib/data/ollama-tags.ts` (bare tags → Ollama's default file type; `<stem>-<quant>` tags → that quant; `hf.co/{repo}` → the indexed quant whose `source.repo` / `source.file` match). Plain search text returns null. Only tags whose registry file was checked to be the indexed checkpoint are listed; re-check with `npm run verify:ollama`.
 - `lib/utils/hf-import.ts`: `parseRepoInput` (org/name, hf.co / huggingface.co URLs incl. `/tree/main`, `hf download …` lines), `shapeFromConfig` (layers / KV heads / head dim, nested `text_config`-style configs, MLA → `kvHeads 1, headDim (kv_lora_rank + rope)/2`, `layer_types` full/sliding/linear counts, `full_attention_interval`, Gemma-3-style `sliding_window_pattern`, windows sized at llama.cpp's `pad256(window + 512)`; a `sliding_window` with no per-layer pattern is **not** applied and says so — upper bound; MoE expert counts reported), `importFromHub` (`/api/models/{repo}` → `safetensors.total` or `gguf.total` for params; `resolve/main/config.json`; a GGUF repo with no config falls back to `cardData.base_model`; gated → note, never a guess).
 - **Validated offline** against the index's own hand-checked arch fields: Llama 3.1 8B, GPT-OSS 20B (12 + 12 / 768), Gemma 3 27B (10 + 52 / 1536), DeepSeek V3 (MLA 1 × 288), Qwen3.6 27B (16 full, linear rest), Mellum2.1 (7 + 21 / 1536), Qwen2.5 7B (`use_sliding_window: false` ignored) — all identical. Mocked-fetch tests cover GGUF→base, gated, 404, network failure.
 - UI: "import" link under the model search (a pasted HF URL in the search box imports directly); import box in the custom panel; notes in the reader's language; "this model is in the index" chip via a reverse `hfRepoMap` lookup; editing layers by hand drops the imported attention shape. Share links carry the imported shape as numbers (`full`, `win`, `wt`, `mctx`, `repo`) — no re-fetch, so a link shows what the sender saw. Browser-tested with intercepted Hub responses (390 px, zh).

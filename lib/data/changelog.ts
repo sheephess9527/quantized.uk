@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Paste an Ollama tag such as qwen3:8b-q4_K_M or llama3.1:8b into the VRAM calculator search box to select the matching model and quantization. Tags the site does not index, or that serve a different checkpoint, show a message instead of a guess.',
+    zh: '在显存计算器的搜索框粘贴 Ollama 标签（如 qwen3:8b-q4_K_M 或 llama3.1:8b），即可自动选中对应模型和量化。本站未收录的标签或指向其他检查点的标签会给出提示，不会猜测。',
+  },
+  {
+    date: '2026-11-22',
     en: 'More options in the VRAM calculator now stays open when settings return to defaults or modes change. It still opens automatically for advanced settings from a link; only its button closes it.',
     zh: '显存计算器的“更多选项”现在会在设置恢复默认值或切换模式时保持展开。链接带有高级设置时仍会自动展开，只有点击按钮才会收起。',
   },
