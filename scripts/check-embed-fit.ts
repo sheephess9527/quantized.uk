@@ -6,6 +6,7 @@ import { capacityGB, tightCeiling } from '../lib/utils/gpu-page';
 import { quantLevelKey } from '../lib/utils/recommend';
 import { models } from '../lib/data/models';
 import { referenceQuant } from '../lib/utils/quality';
+import { translations } from '../lib/i18n/translations';
 
 const parse = (s: string) => parseEmbedFit(new URLSearchParams(s));
 assert.equal(parseEmbedFit(null), null);
@@ -32,6 +33,17 @@ for (const [modelId, gpuId] of [['qwen3-8b', 'rtx4090'], ['qwen3-32b', 'rtx3060'
   }
 }
 const headers = readFileSync('public/_headers', 'utf8');
+const incompatible = parse('model=llama-3.1-8b&gpu=m4-pro-24&quant=AWQ+INT4');
+assert.ok(incompatible);
+assert.equal(incompatible.formatOk, false);
+assert.equal(incompatible.verdict, 'red');
+assert.ok(incompatible.result.totalGB < incompatible.capacity);
+for (const lang of ['en', 'zh'] as const) {
+  const snippets = buildEmbedSnippets(incompatible, lang);
+  assert.equal(snippets.verdict, translations[lang].calc.levelsNoRun);
+  assert.ok(snippets.markdown.includes(translations[lang].calc.levelsNoRun));
+  assert.ok(!snippets.markdown.includes(translations[lang].calc.red));
+}
 const advanced = parse('model=qwen3-8b&gpu=rtx4090&ctx=8192&batch=2&cache=q8_0&cards=2&extra=rtx3060&mmproj=1.5');
 assert.ok(advanced);
 assert.equal(advanced.result.totalGB, calcVRAM({ paramsB: advanced.model.params, ...advanced.model.arch, bpw: advanced.quant.bpw, contextLength: 8192, batchSize: 2, kvBytesPerValue: 34 / 32, extraGB: 1.5 }).totalGB);

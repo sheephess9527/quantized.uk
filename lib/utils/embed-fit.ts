@@ -28,10 +28,11 @@ export function parseEmbedFit(params: URLSearchParams | null) {
   const result = calcVRAM({ paramsB: model.params, ...model.arch, bpw: quant.bpw, contextLength: ctx,
     batchSize: batch, kvBytesPerValue: KV_CACHE_TYPES[cache as keyof typeof KV_CACHE_TYPES], extraGB: mmproj });
   const capacity = capacityGB(gpu, cards, extras);
-  const verdict = rigFormatAllowed(gpu, extras, quant.format) ? getVerdict(result.totalGB, capacity, tightCeiling(gpu)) : 'red';
+  const formatOk = rigFormatAllowed(gpu, extras, quant.format);
+  const verdict = formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(gpu)) : 'red';
   const query = new URLSearchParams({ model: model.id, gpu: gpu.id, quant: quantLevelKey(quant), ctx: String(ctx), batch: String(batch), cache, cards: String(cards), mmproj: String(mmproj) });
   if (extras.length) query.set('extra', extras.map(g => g.id).join(','));
-  return { model, gpu, quant, ctx, result, capacity, verdict, query,
+  return { model, gpu, quant, ctx, result, capacity, formatOk, verdict, query,
     gpuLabel: [`${cards > 1 ? `${cards}× ` : ''}${gpu.name}`, ...extras.map(g => g.name)].join(' + ') };
 }
 
@@ -43,7 +44,7 @@ export function buildEmbedSnippets(fit: NonNullable<ReturnType<typeof parseEmbed
   query.set('mode', 'forward');
   const calculator = `${base}/tools/vram-calc/?${query}`;
   const t = translations[lang];
-  const verdict = t.calc[fit.verdict];
+  const verdict = fit.formatOk ? t.calc[fit.verdict] : t.calc.levelsNoRun;
   const label = `${fit.gpuLabel} · ${fit.model.name} ${quantLevelKey(fit.quant)}: ${verdict} — quantized.uk`;
   const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return { src, calculator, verdict,

@@ -516,6 +516,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Embeddable GPU fit cards
 
+- Review correction: a quant format unsupported by the selected GPU uses the calculator's backend-incompatible wording in both the card and Markdown link, rather than blaming memory capacity; bilingual regression coverage includes a Mac with ample memory for incompatible AWQ.
 - Forward calculator results offer a collapsed HTML iframe and Markdown link disclosure with explicit Copy actions in English and Chinese. Cards at `/embed/fit/` and `/zh/embed/fit/` reuse calculator sizing, quant, context, cache, batch, encoder and rig settings; invalid configurations link back to the calculator.
 - Cards are noindex and intentionally absent from the sitemap, with no navigation, footer or Plausible script. Only `/embed/*` and `/zh/embed/*` detach anti-framing headers; all other pages remain protected. Cloudflare Pages applies these headers; the local static preview does not emulate them.
 - `lib/utils/embed-fit.ts` owns parsing, sizing and escaped snippet URLs. `scripts/check-embed-fit.ts` runs in `npm test`. Custom models and invalid/unsupported settings cannot generate a misleading card. Copying a snippet does not persist example or guessed choices.
