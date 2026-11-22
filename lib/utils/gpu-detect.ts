@@ -35,21 +35,27 @@ function chipName(g: GPU): string {
 }
 
 function chipKey(g: GPU): string {
-  return normalize(chipName(g));
+  const key = normalize(chipName(g));
+  return g.isLaptop ? key.replace(/ laptop gpu$/, '') : key;
 }
 
 export function matchRenderer(renderer: string): GpuDetection | null {
-  if (!renderer || /laptop|mobile|max-q|\bmx\d/i.test(renderer)) return null;
+  if (!renderer) return null;
   // ANGLE wraps the device: "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 (0x00002684) Direct3D11 …)",
   // "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)".
   const inner = renderer.replace(/^ANGLE \(/, '').replace(/\(0x[0-9a-f]+\)/gi, ' ');
   const text = ` ${normalize(inner)} `;
+  const laptop = /\b(?:laptop|mobile|max q|mx\d+)\b/.test(text);
   let best: GPU[] = [];
   let bestLen = 0;
   for (const g of gpuDatabase) {
-    if (g.isCPU) continue;
+    if (g.isCPU || (laptop && !g.isLaptop)) continue;
+    // GeForce laptop names overlap desktop names. Radeon mobile SKUs (e.g. RX 7700S) are distinct.
+    if (g.isLaptop && g.type === 'nvidia-consumer' && !laptop) continue;
     const key = chipKey(g);
-    if (!key || !text.includes(` ${key} `)) continue;
+    const match = key ? text.indexOf(` ${key} `) : -1;
+    if (match < 0) continue;
+    if (g.isLaptop && /^(?:ti|super|xt|xtx|gre)\b/.test(text.slice(match + key.length + 2))) continue;
     if (key.length > bestLen) {
       best = [g];
       bestLen = key.length;

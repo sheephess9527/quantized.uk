@@ -103,6 +103,13 @@ function ceilingText(gpu: GPU, fits: GpuFit[], total: number): { en: string; zh:
   const twin = fasterTwin(gpu);
   const bw = gpu.bandwidth;
 
+  if (gpu.isLaptop) {
+    return {
+      en: 'Laptop cooling and power limits affect performance even between laptops with the same GPU. Use the listed VRAM for fit, not desktop benchmark results for speed.',
+      zh: '即使显卡型号相同，不同笔记本的散热和功耗限制也会影响实际速度。请按标称显存判断能否装下模型，不要用同名桌面显卡的跑分推断速度。',
+    };
+  }
+
   if (gpu.isCPU) {
     return {
       en: `Speed, not capacity. Every model on this page "fits" in ${gpu.vram} GB of system memory, but CPU inference reads the weights over DDR channels rather than a graphics bus — typically well under a tenth of a discrete card's bandwidth, and dependent on your DIMM configuration rather than on the RAM total. That is why no bandwidth figure is listed here. Treat the smaller entries as the usable range and the large ones as "will load".`,
@@ -201,7 +208,10 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
 
   const bwPhrase = gpu.bandwidth
     ? { en: `${gbs(gpu.bandwidth)} GB/s${gpu.memType ? ` ${gpu.memType}` : ''}`, zh: `${gbs(gpu.bandwidth)} GB/s${gpu.memType ? ` ${gpu.memType}` : ''}` }
-    : { en: 'bandwidth not listed', zh: '带宽未列出' };
+    : {
+      en: `${gpu.memType ? `${gpu.memType}, ` : ''}bandwidth not listed`,
+      zh: `${gpu.memType ? `${gpu.memType}，` : ''}带宽未列出`,
+    };
 
   const specLine = {
     en: `${gpu.vram} GB, ${bwPhrase.en}${gpu.bandwidthNote ? ` (${gpu.bandwidthNote.en})` : ''}. ${fits.length} of ${total} models in this index fit comfortably at ${GPU_PAGE_CONTEXT / 1024}K context; ${tight} load at all.`,

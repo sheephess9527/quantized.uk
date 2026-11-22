@@ -85,7 +85,8 @@ const VLLM_ONLY_ON_ROCM: ReadonlyArray<string> = ['AWQ', 'GPTQ'];
 export function vllmRocmSupported(gpuName?: string): boolean {
   if (!gpuName) return true;
   // R9700 added 2026-10-08: listed by name in vLLM's platforms/rocm.py (gfx1201, as RX 9070 XT).
-  return /RX 9\d{3}|RX 7(900|800|700)|W7900|R9700|MI[23]\d{2}/.test(gpuName);
+  // Radeon laptop suffixes are separate SKUs, not the desktop parts in AMD's ROCm matrix.
+  return /RX (?:9\d{3}|7(?:900|800|700))\b|W7900|R9700|MI[23]\d{2}/.test(gpuName);
 }
 
 /**
@@ -121,12 +122,16 @@ export function usableCapacityGB(gpu: GPU): number {
   return gpu.isUnified ? gpu.vram * MAC_UNIFIED_USABLE_FRACTION : gpu.vram;
 }
 
+export function hasDedicatedVram(gpu: GPU): boolean {
+  return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
+}
+
 /**
- * Discrete cards can be stacked; a Mac, a DGX Spark or a RAM row is one pool
- * and a second one is a second machine, not more memory for this model.
+ * Desktop cards can be stacked; a laptop, Mac, DGX Spark or RAM row describes
+ * a single system, not an add-in card that can be repeated in the same rig.
  */
 export function canStack(gpu: GPU): boolean {
-  return gpu.type === 'nvidia-consumer' || gpu.type === 'nvidia-pro' || gpu.type === 'amd' || gpu.type === 'intel';
+  return !gpu.isLaptop && hasDedicatedVram(gpu);
 }
 
 export const MAX_CARDS = 4;

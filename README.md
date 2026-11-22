@@ -34,7 +34,7 @@ The target audience is developers running LLMs on their own hardware (RTX cards,
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 78 real GPUs (incl. AMD Radeon). Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
+| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 105 hardware configurations, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
 | **Local LLM hardware guides** | `/what-llm-can-i-run-locally/`, `/best-llm-to-run-locally/`, `/local-llm-gpu-requirements/`, `/local-llm-without-gpu/` | GPU-first calculator, tier picks, GPU × model-size matrix, and separate CPU/Mac memory tables. All four have Chinese mirrors. |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
@@ -108,7 +108,7 @@ lib/
     hf-stats.json           #   cached HF download/like counts (refreshed on prebuild)
     formats.ts              #   5 formats (GGUF/AWQ/EXL2/GPTQ/HQQ)
     benchmarks.ts           #   speed + perplexity + matrix datasets
-    gpus.ts                 #   78 GPUs + 4 CPU-only RAM rows (NVIDIA consumer/pro, AMD Radeon/ROCm, Intel Arc, Apple Silicon, DGX Spark)
+    gpus.ts                 #   105 GPUs (incl. laptop variants) + 4 CPU-only RAM rows
     meta.ts                 #   dataLastUpdated + sizingChangedAt
     model-facts.ts          #   per-model licence + image-input flag (Hub's two extra filters)
     errors.ts               #   /errors/ entries — message quoted from cited source, { en, zh }
@@ -506,6 +506,8 @@ interface GPU {
   vram: number;             // GB (Apple = unified memory)
   type: 'nvidia-consumer' | 'nvidia-pro' | 'apple' | 'amd' | 'cpu';
   isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
+  isLaptop?: boolean;      // separate mobile group; does not change the runtime backend
+  specUrl?: string;        // published hardware specifications; required for laptop entries
 }
 
 // lib/data/cookbook.ts → `articles` (note: flat *Zh fields, not nested {en,zh})
@@ -536,12 +538,20 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-22 — Simpler calculator controls
 
+- Integrated main's laptop GPU grouping, single-card restrictions and speed/offload safeguards without changing the visible model search or progressive-control layout.
 - More options only auto-opens; resetting advanced settings to defaults or switching modes never closes it. Only its toggle button closes the panel.
 - Both languages now lead with common inference choices and tuck advanced settings into More options, automatically opened for non-default settings with a changed count. Forward quant chips show common levels first, with all levels still available. Existing URLs, share snapshots, profiles and saved rigs retain their settings; sizing and benchmark data are unchanged.
 
+### 2026-11-22 — Laptop GPUs in hardware lists and detection
+
+- Added 27 memory configurations for GeForce RTX 30/40/50 Laptop GPUs and Radeon RX 7000M/7000S. The bilingual hardware index and calculator group them separately from desktop GPUs. Each detail page links its memory specifications; the GPU JSON export includes the source and laptop flag.
+- The browser needs a laptop/mobile/Max-Q marker for GeForce models that share desktop names; Radeon mobile model numbers are distinct. RTX 3050, 3080 and 5070 Laptop GPUs prompt for the memory configuration, starting with the smaller one. Masked renderers still require manual selection.
+- Radeon mobile models do not inherit desktop vLLM support; this release recommends GGUF, not AWQ or GPTQ, on those models.
+- Bandwidth is included only where the linked spec publishes it. Laptop fit tables omit the speed column without same-card evidence. The calculator uses one GPU for laptops, offers CPU offload only for GGUF (including custom models), and omits desktop speed references and speed sorting. No laptop performance was measured.
+
 ### 2026-11-22 — Generation speed beside the VRAM fit verdict
 
-- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. Configurations that require offload do not get an all-GPU speed quote.
+- The bilingual inference run plan links to exact single-card benchmark results, or labels the generation rate as a calibrated estimate or estimated bandwidth ceiling. If the launch plan offloads to CPU, including when the GGUF reserve tips a close fit over budget, it does not get an all-GPU speed quote.
 
 ### 2026-11-22 — Pair pages and embed integration
 
