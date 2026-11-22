@@ -369,7 +369,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       )}
 
       <p className="sr-only" lang={lang === 'zh' ? 'zh-Hans' : 'en'}>
-        {fill(g.subtitle, { count: fits.length, total, vram: gpu.vram })}
+        {fill(g.subtitle.replace('4K', contextLabel(contextLength)), { count: fits.length, total, vram: gpu.vram })}
       </p>
 
       <div className="mt-6">
