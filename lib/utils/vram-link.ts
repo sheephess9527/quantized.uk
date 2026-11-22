@@ -1,6 +1,8 @@
 import type { ModelArch } from '@/lib/data/types';
+import { gpuDatabase } from '@/lib/data/gpus';
 import { localizeHref } from '@/lib/i18n/routing';
 import type { Lang } from '@/lib/i18n/translations';
+import { canStack, rigExtras } from '@/lib/utils/calc-insights';
 
 export const VRAM_SHARE_PARAM = 'share';
 export const NO_SHARE_GPU = 'none';
@@ -30,9 +32,15 @@ export function snapshotVramLink(
     snapshot.set(VRAM_SHARE_PARAM, '1');
     snapshot.set('model', modelId);
     snapshot.set('gpu', gpuId || NO_SHARE_GPU);
+    const gpu = gpuDatabase.find(g => g.id === gpuId) ?? null;
+    const cards = gpu && canStack(gpu) ? Number(snapshot.get('cards') ?? '1') : 1;
+    const extras = rigExtras(gpu, (snapshot.get('extra') ?? '').split(','), cards);
+    if (extras.length) snapshot.set('extra', extras.map(g => g.id).join(','));
+    else snapshot.delete('extra');
   } else if (mode === 'reverse' && gpuId) {
     snapshot.set(VRAM_SHARE_PARAM, '1');
     snapshot.set('gpu', gpuId);
+    snapshot.delete('extra');
   }
   if (snapshot.has(VRAM_SHARE_PARAM)) url.pathname = localizeHref('/tools/vram-calc/', lang);
   url.search = snapshot.toString();

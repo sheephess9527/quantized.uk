@@ -35,6 +35,12 @@ assert.match(ctxOver.answer, /Context exceeds model limit/);
 assert.doesNotMatch(ctxOver.answer, /Comfortable fit/);
 const rig = vramPreview(update(copied.searchParams, { cards: '2', extra: 'rtx3060' }), 'en')!;
 assert.match(rig.hardware!, /^2× RTX 4090 \+ RTX 3060/);
+const mixedRig = update(copied.searchParams, { cards: '2', extra: 'rtx3060,rtx4090,rtx3060,rx7900xt,rx7900gre,rx7900xtx' });
+const copiedRig = new URL(snapshotVramLink(forward, mixedRig, {
+  mode: 'forward', modelId: 'qwen3-8b', gpuId: 'rx7900xtx', lang: 'en',
+}));
+assert.equal(copiedRig.searchParams.get('extra'), 'rx7900xt,rx7900gre');
+assert.match(vramPreview(copiedRig.searchParams, 'en')!.hardware!, /^2× Radeon RX 7900 XTX \+ Radeon RX 7900 XT \+ Radeon RX 7900 GRE$/);
 
 const noGpu = new URL(snapshotVramLink(forward, copied.searchParams, { mode: 'forward', modelId: 'qwen3-8b', gpuId: '', lang: 'en' }));
 assert.equal(noGpu.searchParams.get('gpu'), 'none');

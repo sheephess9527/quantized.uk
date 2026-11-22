@@ -267,10 +267,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (searchParams.get('batch')) setBatchSize(Number(searchParams.get('batch')) || 1);
     const cacheParam = searchParams.get('cache');
     if (cacheParam === 'q8_0' || cacheParam === 'q4_0') setKvType(cacheParam);
-    const extraParam = searchParams.get('extra');
-    if (extraParam) setExtraIds(extraParam.split(',').filter(id => gpuDatabase.some(g => g.id === id)).slice(0, MAX_CARDS - 1));
     const cardsParam = Number(searchParams.get('cards'));
-    if (Number.isInteger(cardsParam) && cardsParam >= 1 && cardsParam <= MAX_CARDS) setCards(cardsParam);
+    const linkedCards = Number.isInteger(cardsParam) && cardsParam >= 1 && cardsParam <= MAX_CARDS ? cardsParam : 1;
+    setCards(linkedCards);
     const ramParam = searchParams.get('ram');
     if (ramParam && ramParam in RAM_SETUPS) setRam(ramParam as RamSetup);
     const ftm = searchParams.get('ft'); if (ftm === 'qlora' || ftm === 'lora' || ftm === 'full') setFtMethod(ftm);
@@ -298,7 +297,15 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     // A snapshot overrides the result's GPU without adopting someone else's
     // hardware. Legacy links retain their existing profile behavior.
     const rawGpu = searchParams.get('gpu');
-    const gpuParam = rawGpu && gpuDatabase.some(g => g.id === rawGpu) ? rawGpu : null;
+    const urlGpu = gpuDatabase.find(g => g.id === rawGpu) ?? null;
+    const gpuParam = urlGpu?.id;
+    const extraParam = searchParams.get('extra');
+    if (extraParam) {
+      const ids = extraParam.split(',');
+      setExtraIds(sharedLink
+        ? rigExtras(urlGpu, ids, linkedCards).map(g => g.id)
+        : ids.filter(id => gpuDatabase.some(g => g.id === id)).slice(0, MAX_CARDS - 1));
+    }
     if (sharedLink && (gpuParam || (m === 'forward' && rawGpu === NO_SHARE_GPU))) {
       setLinkedGpu({ id: gpuParam ?? '', savedId: savedGpuId });
     }

@@ -526,6 +526,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Copied model-to-VRAM and GPU-to-models links reopen the displayed settings in either language without adopting them into the saved profile; crawler metadata points to a result-specific PNG. The static tools, legacy links, and downloadable result card still work independently.
 - Sharing from an embedded guide opens the standalone calculator in the guide's language, so that link also gets the result preview.
+- Mixed-card snapshots include only the compatible extra cards counted in the displayed result.
 - Pages Functions use the same sizing and fit logic as the calculator. Only the two calculator routes and the preview PNG invoke Functions; `npm test` covers snapshots, sizing parity, localization and invalid-link fallback.
 
 ### 2026-11-22 — VRAM calculator opens on an answer
