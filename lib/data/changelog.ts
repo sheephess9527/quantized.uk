@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Share a GPU fit estimate on your own site: the calculator now offers compact English and Chinese iframe cards, plus Markdown links for model cards that cannot embed an iframe. Open “Embed this result” below a model-first result to copy either snippet.',
+    zh: '现在可以在你的网站展示显存适配估算：计算器新增紧凑的中英文嵌入卡片，以及适用于不支持 iframe 的模型卡的 Markdown 链接。在按模型估算的结果下展开“嵌入此结果”即可复制。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The VRAM calculator now opens on "what can my GPU run": it guesses your card from the browser (asking which memory size when the chip comes in several) or shows an example card, so the first visit starts with an answer. The model-first mode starts on an example model, and shared links and saved settings still take precedence.',
     zh: '显存计算器现在默认打开"我的显卡能跑什么"：根据浏览器推测你的显卡（同一芯片有多种显存时会请你选择），或显示一张示例显卡，首次访问即可看到结果。按模型估算模式默认显示一个示例模型；分享链接与已保存的设置仍然优先。',
   },

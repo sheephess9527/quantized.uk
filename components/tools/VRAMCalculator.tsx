@@ -15,6 +15,7 @@ import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
+import EmbedSnippets from '@/components/tools/EmbedSnippets';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
@@ -1701,6 +1702,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     <span>· {t.calc.runPlanHeadroom.replace('{gb}', (rigCapacity - result.totalGB).toFixed(2))}</span>
                   )}
                 </p>
+                <EmbedSnippets query={new URLSearchParams({ model: selectedModel?.id ?? '', gpu: profileGpu?.id ?? '', quant: selectedQuant, ctx: String(contextLen), batch: String(batchSize), cache: kvType, cards: String(profileCards), extra: profileExtras.map(g => g.id).join(','), mmproj: mmprojGB || '0' }).toString()} />
                 {(currentVerdict === 'yellow' || currentVerdict === 'red') && (quantFix || contextFix) && (
                   <div className="mt-3">
                     <p className="text-xs font-medium text-slate-400">{t.calc.runPlanAdjust}</p>
