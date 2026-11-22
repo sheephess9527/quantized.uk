@@ -184,6 +184,8 @@ Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`,
 
 For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
+The forward run plan and reverse rows show published [LiveBench Overall scores](https://livebench.ai/) only for exact benchmarked checkpoints. These are model scores, not measurements of the selected quant. Each score links to its own release, and scores from different releases are not directly comparable. Reverse mode can show only scored results without changing fit or sort rules; the checkbox is local to the view. The calculator reads the pinned values in `lib/data/model-quality.ts` without a runtime request.
+
 **Shareable URLs** — calculator choices are synced to query params via `window.history.replaceState`:
 
 ```
@@ -537,6 +539,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Published model quality scores in the VRAM calculator
+
+- Added LiveBench Overall scores beside forward and reverse results in both languages. Scores link to their dated releases and are shown only for benchmarked checkpoints, never estimated for a model or quantization. A reverse results checkbox shows just the scored matches.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 

@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'The VRAM calculator shows published LiveBench Overall scores in both inference modes. Only tested models show scores, each linked to its dated release; they are not scores for the selected quantization. Use “Only show results with a model score” to find scored models that fit your GPU.',
+    zh: '显存计算器的两种推理模式现可显示 LiveBench 公布的综合评分。仅已测模型有分数，并链接到对应日期的榜单版本；分数不代表所选量化版本的质量。可勾选「只显示有模型评分的结果」，查看显卡能运行的已测模型。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

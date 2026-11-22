@@ -11,11 +11,13 @@ import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
+import { liveBenchScores } from '@/lib/data/model-quality';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
 import EmbedSnippets from '@/components/tools/EmbedSnippets';
+import { ModelQualityNote, ModelQualityScore } from '@/components/tools/ModelQuality';
 import { speedQuote, streamTokS, feelHref, feelContext } from '@/lib/utils/speed-label';
 import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
@@ -202,6 +204,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
   const [bestPerModel, setBestPerModel] = useState(true);
+  const [scoredOnly, setScoredOnly] = useState(false);
   const [reverseInput, setReverseInput] = useState<RecommendationInput>('text');
   const [linkCopied, setLinkCopied] = useState(false);
   const [uncopiedLink, setUncopiedLink] = useState('');
@@ -562,6 +565,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (!selectedGpu) return [];
     return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput);
   }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput]);
+  const scoredRecommendations = recommendations.filter(({ model }) => liveBenchScores.has(model.id));
+  const visibleRecommendations = scoredOnly ? scoredRecommendations : recommendations;
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -1885,7 +1890,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   {profileGpu && formatOk && contextLen <= contextLimit && result.totalGB <= rigCapacity && (
                     <span>· {t.calc.runPlanHeadroom.replace('{gb}', (rigCapacity - result.totalGB).toFixed(2))}</span>
                   )}
+                  {selectedModel && <ModelQualityScore modelId={selectedModel.id} />}
                 </p>
+                <div className="mt-2"><ModelQualityNote /></div>
                 <EmbedSnippets query={embedParams.toString()} />
                 {(currentVerdict === 'yellow' || currentVerdict === 'red') && (quantFix || contextFix) && (
                   <div className="mt-3">
@@ -2436,18 +2443,32 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
           {mode === 'reverse' && showReverseResult && (
             <div className="glass rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-slate-300">{t.calc.reverseTitle}</h3>
                 <span className="text-xs text-slate-500">
-                  {t.calc.reverseResults.replace('{count}', String(recommendations.length))}
+                  {t.calc.reverseResults.replace('{count}', String(visibleRecommendations.length))}
                 </span>
               </div>
+              <div className="mb-4 space-y-1">
+                <ModelQualityNote />
+                <label className="flex min-h-8 w-fit cursor-pointer items-center gap-2 text-xs text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={scoredOnly}
+                    onChange={e => setScoredOnly(e.target.checked)}
+                    className="accent-violet-500"
+                  />
+                  {t.calc.modelQualityFilter.replace('{count}', String(scoredRecommendations.length))}
+                </label>
+              </div>
 
-              {recommendations.length === 0 ? (
-                <p className="text-sm text-slate-600 text-center py-8">{t.calc.reverseEmpty}</p>
+              {visibleRecommendations.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-8">
+                  {recommendations.length > 0 ? t.calc.modelQualityEmpty : t.calc.reverseEmpty}
+                </p>
               ) : (
                 <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
-                  {recommendations.map(({ model, quant, totalGB, verdict, extraGB }) => {
+                  {visibleRecommendations.map(({ model, quant, totalGB, verdict, extraGB }) => {
                     const level = quantLevelKey(quant);
                     const cfg = verdictConfig[verdict];
                     const forwardParams = new URLSearchParams({ mode: 'forward', model: model.id, quant: level, ctx: String(contextLen), batch: String(batchSize), cache: kvType, cards: String(canStack(selectedGpu!) ? cards : 1) });
@@ -2466,6 +2487,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                             <span className={cn('badge text-xs font-mono', formatColors[quant.format])}>
                               {quant.format} {quant.level}
                             </span>
+                            <ModelQualityScore modelId={model.id} />
                           </div>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5 text-xs text-slate-500">
                             <span className="font-mono">{totalGB.toFixed(1)} {t.calc.gbUnit}</span>
