@@ -131,7 +131,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
 }
 
 export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMode?: Mode } = {}) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { gpuId: savedGpuId, gpu: savedGpu, config, hydrated: configReady, updateConfig, setGpuId: saveGpuId } = useHardwareProfile();
   const [linkedGpu, setLinkedGpu] = useState<{ id: string; savedId: string } | null>(null);
   const gpuOverridden = linkedGpu !== null && linkedGpu.savedId === savedGpuId;
@@ -774,6 +774,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const copyShareLink = async () => {
     const url = snapshotVramLink(new URL(window.location.href), resultParams(), {
       mode,
+      lang,
       modelId: selectedModelId,
       gpuId: mode === 'reverse' ? selectedGpuId : profileGpuId,
     });

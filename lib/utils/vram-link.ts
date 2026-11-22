@@ -1,4 +1,6 @@
 import type { ModelArch } from '@/lib/data/types';
+import { localizeHref } from '@/lib/i18n/routing';
+import type { Lang } from '@/lib/i18n/translations';
 
 export const VRAM_SHARE_PARAM = 'share';
 export const NO_SHARE_GPU = 'none';
@@ -20,7 +22,7 @@ export function readVramEncoder(raw: string | null): number | undefined {
 export function snapshotVramLink(
   url: URL,
   params: URLSearchParams,
-  { mode, modelId, gpuId }: { mode: 'forward' | 'reverse' | 'finetune'; modelId: string; gpuId: string },
+  { mode, modelId, gpuId, lang }: { mode: 'forward' | 'reverse' | 'finetune'; modelId: string; gpuId: string; lang: Lang },
 ): string {
   const snapshot = new URLSearchParams(params);
   // Only an explicit copy includes an example model or a detected/example card.
@@ -32,6 +34,7 @@ export function snapshotVramLink(
     snapshot.set(VRAM_SHARE_PARAM, '1');
     snapshot.set('gpu', gpuId);
   }
+  if (snapshot.has(VRAM_SHARE_PARAM)) url.pathname = localizeHref('/tools/vram-calc/', lang);
   url.search = snapshot.toString();
   url.hash = '';
   return url.href;

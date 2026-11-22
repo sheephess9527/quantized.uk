@@ -10,7 +10,7 @@ import { readVramAttention, snapshotVramLink } from '@/lib/utils/vram-link';
 
 const forward = new URL('https://quantized.uk/tools/vram-calc/?mode=forward&ctx=8192&batch=2&cache=q8_0&quant=Q4_K_M#result');
 const copied = new URL(snapshotVramLink(forward, forward.searchParams, {
-  mode: 'forward', modelId: 'qwen3-8b', gpuId: 'rtx4090',
+  mode: 'forward', modelId: 'qwen3-8b', gpuId: 'rtx4090', lang: 'en',
 }));
 assert.equal(copied.hash, '');
 assert.equal(copied.searchParams.get('gpu'), 'rtx4090');
@@ -36,13 +36,13 @@ assert.doesNotMatch(ctxOver.answer, /Comfortable fit/);
 const rig = vramPreview(update(copied.searchParams, { cards: '2', extra: 'rtx3060' }), 'en')!;
 assert.match(rig.hardware!, /^2× RTX 4090 \+ RTX 3060/);
 
-const noGpu = new URL(snapshotVramLink(forward, copied.searchParams, { mode: 'forward', modelId: 'qwen3-8b', gpuId: '' }));
+const noGpu = new URL(snapshotVramLink(forward, copied.searchParams, { mode: 'forward', modelId: 'qwen3-8b', gpuId: '', lang: 'en' }));
 assert.equal(noGpu.searchParams.get('gpu'), 'none');
 assert.equal(vramPreview(noGpu.searchParams, 'en')?.hardware, undefined);
 assert.equal(vramPreview(noGpu.searchParams, 'en')?.answer, `${sizing.totalGB.toFixed(2)} GiB estimated`);
 
-const reverse = new URL('https://quantized.uk/zh/tools/vram-calc/?mode=reverse&ctx=4096&batch=1&cards=2&cache=q4_0&sort=speed&yellow=0&input=image');
-const imageShare = new URL(snapshotVramLink(reverse, reverse.searchParams, { mode: 'reverse', modelId: '', gpuId: 'rtx4090' }));
+const reverse = new URL('https://quantized.uk/zh/what-llm-can-i-run-locally/?mode=reverse&ctx=4096&batch=1&cards=2&cache=q4_0&sort=speed&yellow=0&input=image');
+const imageShare = new URL(snapshotVramLink(reverse, reverse.searchParams, { mode: 'reverse', modelId: '', gpuId: 'rtx4090', lang: 'zh' }));
 assert.equal(imageShare.pathname, '/zh/tools/vram-calc/');
 const gpu = gpuDatabase.find(g => g.id === 'rtx4090')!;
 const imageRows = getRecommendations(gpu, 4096, 1, 'speed', false, KV_CACHE_TYPES.q4_0, 2, true, 'image');
