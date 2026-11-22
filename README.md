@@ -34,6 +34,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Dashboard** | `/` | Hero, data-driven stats, "Today" feed, quick links to tools (format heat ranking lives on `/formats/`; the radar chart was removed 2026-10-03) |
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial). Filters follow same-page navigation and back/forward; Enter search preserves the GPU. |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
+| **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 105 hardware configurations, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
@@ -600,6 +601,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   in a comment. `fetch-hf-stats.mjs` writes its per-model progress to stderr like its failure lines; on stdout it made Node 20's test runner fail intermittently ("Unable to deserialize cloned data"). Split GGUF launch commands now download by the recorded first-part name (`ggufShardStem`), so GLM-5.3 Q4_K_M (`*-Q4_K-*`) and MiniMax M3.1 (`Q2_K/` folder) match their files. Nex-N2.6 (GLM5-next fine-tune) stays pending: its layout is now expressible, its own sizes are unread.
 - Not yet checked against a published KV-cache measurement; the encodings follow llama.cpp's allocation code.
 - Added the bilingual reader-facing release note; `dataLastUpdated` remains `2026-11-22`.
+
+### 2026-11-22 — Answer-first model × GPU pages
+
+- Recorded recommended files use the shared `QuantFileLine` renderer in the answer box, preserving the repository link, filename, bytes, parts and verification date in the current language.
+- Added a bilingual answer box immediately below each pair H1: existing recommended quant, weights and recorded file size, maximum comfortable context (binary search using the shared green verdict, capped at model limit), and worked calculator arithmetic including 2% weight overhead and 10% activation reserve. The comparison names the comfortable limit and usable capacity, with headroom; token counts use thousands separators and parameter arithmetic uses billions only once. Tight-only recommendations show a warning.
+- Reuses `pairSize`/`calcVRAM`, respects full/window cache layouts and all MoE weights, and explains no-fit/offload cases. Existing tables remain; no new benchmark claims or routes. Extended `check-pair-pages.ts` with context-boundary, empty, no-fit and unusual-layout checks. Merged the popular-GPU eligibility restriction above without changing the answer computation; retained `dataLastUpdated` at `2026-11-23` and `sizingChangedAt` at `2026-11-22`. Release entries stay newest-first so the homepage's latest-update date remains accurate.
 
 ### 2026-11-22 — Sourced-data homepage tagline
 
