@@ -28,12 +28,18 @@ export function parseEmbedFit(params: URLSearchParams | null) {
   const result = calcVRAM({ paramsB: model.params, ...model.arch, bpw: quant.bpw, contextLength: ctx,
     batchSize: batch, kvBytesPerValue: KV_CACHE_TYPES[cache as keyof typeof KV_CACHE_TYPES], extraGB: mmproj });
   const capacity = capacityGB(gpu, cards, extras);
+  const hardwareGB = gpu.vram * cards + extras.reduce((sum, g) => sum + g.vram, 0);
   const formatOk = rigFormatAllowed(gpu, extras, quant.format);
   const verdict = formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(gpu)) : 'red';
   const query = new URLSearchParams({ model: model.id, gpu: gpu.id, quant: quantLevelKey(quant), ctx: String(ctx), batch: String(batch), cache, cards: String(cards), mmproj: String(mmproj) });
   if (extras.length) query.set('extra', extras.map(g => g.id).join(','));
-  return { model, gpu, quant, ctx, result, capacity, formatOk, verdict, query,
+  return { model, gpu, quant, ctx, result, capacity, hardwareGB, formatOk, verdict, query,
     gpuLabel: [`${cards > 1 ? `${cards}× ` : ''}${gpu.name}`, ...extras.map(g => g.name)].join(' + ') };
+}
+
+export function embedMemoryLabel(fit: NonNullable<ReturnType<typeof parseEmbedFit>>, lang: Lang) {
+  return fit.hardwareGB === fit.capacity ? `${fit.hardwareGB} GB` : translations[lang].embed.memory
+    .replace('{total}', String(fit.hardwareGB)).replace('{usable}', String(fit.capacity));
 }
 
 export function buildEmbedSnippets(fit: NonNullable<ReturnType<typeof parseEmbedFit>>, lang: Lang) {

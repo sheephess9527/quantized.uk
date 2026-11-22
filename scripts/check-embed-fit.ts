@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parseEmbedFit, buildEmbedSnippets } from '../lib/utils/embed-fit';
+import { parseEmbedFit, buildEmbedSnippets, embedMemoryLabel } from '../lib/utils/embed-fit';
 import { calcVRAM, getVerdict } from '../lib/utils/vram';
 import { capacityGB, tightCeiling } from '../lib/utils/gpu-page';
 import { quantLevelKey } from '../lib/utils/recommend';
@@ -18,6 +18,8 @@ for (const [modelId, gpuId] of [['qwen3-8b', 'rtx4090'], ['qwen3-32b', 'rtx3060'
   assert.equal(quantLevelKey(fit.quant), quantLevelKey(referenceQuant(model.quants)));
   const expected = calcVRAM({ paramsB: model.params, ...model.arch, bpw: fit.quant.bpw, contextLength: 4096, batchSize: 1 });
   assert.equal(fit.result.totalGB, expected.totalGB);
+  assert.equal(embedMemoryLabel(fit, 'en'), `${fit.gpu.vram} GB`);
+  assert.equal(embedMemoryLabel(fit, 'zh'), `${fit.gpu.vram} GB`);
   assert.equal(fit.verdict, getVerdict(expected.totalGB, capacityGB(fit.gpu), tightCeiling(fit.gpu)));
   for (const lang of ['en', 'zh'] as const) {
     const s = buildEmbedSnippets(fit, lang);
@@ -37,6 +39,10 @@ const incompatible = parse('model=llama-3.1-8b&gpu=m4-pro-24&quant=AWQ+INT4');
 assert.ok(incompatible);
 assert.equal(incompatible.formatOk, false);
 assert.equal(incompatible.verdict, 'red');
+assert.equal(incompatible.hardwareGB, 24);
+assert.equal(incompatible.capacity, 18);
+assert.equal(embedMemoryLabel(incompatible, 'en'), '24 GB · 18 GB usable');
+assert.equal(embedMemoryLabel(incompatible, 'zh'), '24 GB · 可用 18 GB');
 assert.ok(incompatible.result.totalGB < incompatible.capacity);
 for (const lang of ['en', 'zh'] as const) {
   const snippets = buildEmbedSnippets(incompatible, lang);
@@ -48,6 +54,7 @@ const advanced = parse('model=qwen3-8b&gpu=rtx4090&ctx=8192&batch=2&cache=q8_0&c
 assert.ok(advanced);
 assert.equal(advanced.result.totalGB, calcVRAM({ paramsB: advanced.model.params, ...advanced.model.arch, bpw: advanced.quant.bpw, contextLength: 8192, batchSize: 2, kvBytesPerValue: 34 / 32, extraGB: 1.5 }).totalGB);
 assert.equal(advanced.capacity, capacityGB(advanced.gpu, 2, [parse('model=qwen3-8b&gpu=rtx3060')!.gpu]));
+assert.equal(advanced.hardwareGB, 60);
 assert.equal(parse('model=qwen3-8b&gpu=rtx4090&extra=rx7900xtx'), null);
 for (const path of ['/embed/*', '/zh/embed/*']) assert.ok(headers.includes(`${path}\n  ! X-Frame-Options\n  ! Content-Security-Policy\n  Content-Security-Policy: frame-ancestors *`));
 assert.ok(headers.includes("X-Frame-Options: DENY\n  Content-Security-Policy: frame-ancestors 'none'"));

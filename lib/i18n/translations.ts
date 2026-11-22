@@ -4,6 +4,7 @@ export const translations = {
       title: 'Model GPU memory fit', disclosure: 'Embed this result', copy: 'Copy', copied: 'Copied', failed: 'Copy failed — select the snippet to copy.',
       invalid: 'Choose a valid model and GPU in the calculator to create a fit card.',
       check: 'Check on quantized.uk ↗', needed: '{gb} GB needed (estimate)', tokens: 'tokens',
+      memory: '{total} GB · {usable} GB usable',
       unavailable: 'Embed cards require an indexed model, a supported quant and a valid GPU configuration.',
     },
     crossTools: {
@@ -1428,6 +1429,7 @@ export const translations = {
       title: '模型显存适配卡片', disclosure: '嵌入此结果', copy: '复制', copied: '已复制', failed: '复制失败，请选中代码手动复制。',
       invalid: '请在计算器中选择有效的模型和显卡，生成适配卡片。',
       check: '在 quantized.uk 查看 ↗', needed: '预计需要 {gb} GB', tokens: '词元',
+      memory: '{total} GB · 可用 {usable} GB',
       unavailable: '嵌入卡片需要索引中的模型、支持的量化以及有效的显卡配置。',
     },
     crossTools: {
