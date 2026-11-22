@@ -37,6 +37,21 @@ interface Candidate {
 }
 
 /**
+ * Model/GPU pair pages exist only for measured pairs and popular cards; an
+ * older `/quant-hub/{model}/{gpu}/` URL points readers at both halves instead.
+ */
+function pairSuggestions(segments: string[], lang: Lang): NotFoundSuggestion[] {
+  if (segments.length !== 3 || segments[0] !== 'quant-hub') return [];
+  const model = models.find(m => m.id === segments[1]);
+  const gpu = gpuDatabase.find(g => gpuSlug(g) === segments[2]);
+  if (!model || !gpu) return [];
+  return [
+    { label: model.name, href: localizeHref(`/quant-hub/${model.id}/`, lang) },
+    { label: gpu.name, href: localizeHref(`/gpu/${gpuSlug(gpu)}/`, lang) },
+  ];
+}
+
+/**
  * QTZ-030: a missing page's last path segment is usually an almost-right
  * guess at a real slug (`/quant-hub/qwen3-8` for `qwen3-8b`), not a random
  * string. Matched against every model, GPU and guide slug this index has —
@@ -45,6 +60,8 @@ interface Candidate {
  */
 export function notFoundSuggestions(requestedPath: string, lang: Lang): NotFoundSuggestion[] {
   const segments = requestedPath.split('/').filter(Boolean);
+  const pair = pairSuggestions(segments[0] === 'zh' ? segments.slice(1) : segments, lang);
+  if (pair.length) return pair;
   const slug = (segments[segments.length - 1] ?? '').toLowerCase();
   if (slug.length < 2) return [];
 

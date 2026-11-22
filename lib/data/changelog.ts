@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-23',
+    en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
+    zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
+  },
+  {
     date: '2026-11-22',
     en: 'The footer now links to Methodology & accuracy. See how the calculator estimates weights, KV cache and runtime memory, where the data comes from, and how its estimates compare with recorded memory use.',
     zh: '页脚新增“估算方法与准确性”，说明计算器如何估算模型权重、KV 缓存和运行内存，数据来自哪里，以及估算值与实测占用相差多少。',

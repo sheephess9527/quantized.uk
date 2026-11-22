@@ -540,6 +540,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — Fewer model/GPU pair pages
+
+- Pair pages at `/quant-hub/[modelId]/[gpuSlug]/` (and `/zh`) are now generated only for exact measured pairs and for the 10 cards in `POPULAR_GPU_IDS`; the existing current-model, verified-file and 25%-of-memory rules still apply to the popular cards. Pairs drop from 2,266 to 322 and the export from 11,242 to 3,466 files, since each pair costs four files (en/zh `index.html` + `index.txt`).
+- Retired pair URLs 404; `lib/utils/not-found.ts` recognises `/quant-hub/{model}/{gpu}/` and suggests the model page and GPU page. No `_redirects` rules: the ~3,900 retired URLs would exceed Cloudflare's 2,000 static-rule limit, and Pages' splat syntax cannot express "model page" without one rule per model.
+- New `scripts/check-export-size.mjs` runs in `postbuild` and fails the build when `out/` exceeds 15,000 files. `scripts/check-pair-pages.ts` asserts no unmeasured pair outside the popular cards is eligible.
+
 ### 2026-11-22 — VRAM methodology and accuracy
 
 - Added bilingual methodology pages linked from the footer and sitemap. They document inference sizing and input provenance, and recompute the error summary from the measured matrix and the calculator on every build. The detailed benchmark comparison is linked directly; no runs or sizing behavior changed.
@@ -597,7 +603,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Added 2,244 eligible pairs (4,488 bilingual pages) at `/quant-hub/[modelId]/[gpuSlug]/`, linked from model/GPU guides and the sitemap. Pages include 4K quant sizing, context reach, measured runs, labelled speed and a prefilled calculator.
 - Eligibility in `lib/utils/pair-pages.ts`: all exact measured pairs, or current models with verified-file sizing, supported format, bandwidth and a green/yellow fit using at least 25% of usable memory. Existing model OG images are reused.
-- `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Export: 5,134 HTML files (including 404 variants); monitor Cloudflare Pages’ 20,000-file limit.
+- `scripts/check-pair-pages.ts` runs in `npm test`, checking measured coverage (including Qwen3 32B / RTX 4090), eligibility, unique slugs, calculator totals and the Chinese route mirror. Unmeasured pairs are limited to `POPULAR_GPU_IDS`: 322 pairs, 3,466 exported files (1,346 HTML). `scripts/check-export-size.mjs` fails `postbuild` above 15,000 files, below Cloudflare Pages’ 20,000-file Free limit.
 
 ### 2026-11-22 — Historical benchmark versions and publication-date bounds
 
