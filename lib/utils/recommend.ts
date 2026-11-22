@@ -5,6 +5,7 @@ import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
 import { measuredSpeed } from '@/lib/utils/measured-speed';
+import { matchingSpeedRun } from '@/lib/utils/measured-runs';
 import { hasImageInput, hasToolCalling } from '@/lib/utils/model-facts';
 
 export type SortBy = 'quality' | 'speed' | 'vram';
@@ -15,9 +16,12 @@ export interface RecommendationFilters {
   code?: boolean;
 }
 
-export function recommendationSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant, cards = 1): number | undefined {
+export function recommendationSpeed(gpu: GPU, model: QuantModel, quant: QuantVariant, cards = 1): { tokS: number; source: 'measured' | 'estimated' } | undefined {
   if (cards > 1) return undefined;
-  return measuredSpeed(gpu, model, quant)?.tokS;
+  const run = matchingSpeedRun(gpu, model, quant);
+  if (run) return { tokS: run.speedTokSec, source: 'measured' };
+  const estimate = measuredSpeed(gpu, model, quant);
+  return estimate ? { tokS: estimate.tokS, source: 'estimated' } : undefined;
 }
 
 export interface Recommendation {
@@ -64,9 +68,9 @@ export function getRecommendations(
     if (contextLen > model.contextLength) continue;
     if (input === 'image' && !hasImageInput(model.id)) continue;
     for (const quant of model.quants) {
-      if (Number.isFinite(filters.minTok) && filters.minTok! > 0) {
+      if (cards === 1 && Number.isFinite(filters.minTok) && filters.minTok! > 0) {
         const speed = recommendationSpeed(gpu, model, quant, cards);
-        if (speed === undefined || speed < filters.minTok!) continue;
+        if (speed === undefined || speed.tokS < filters.minTok!) continue;
       }
       if (!formatAllowed(gpu, quant.format)) continue;
       const bytes = quant.source?.mmprojBytes;

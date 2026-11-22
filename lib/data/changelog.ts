@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Reverse results now show just one selected-card speed: an exact-quant measurement when available, otherwise a calibrated estimate. Multi-device rigs temporarily turn off the minimum with an explanation; empty results offer targeted filter clearing. Measured badges elsewhere now require the exact RTX 4090 quant and matching recorded speed.',
+    zh: '反向结果现在只显示一个当前显卡速度：优先使用同量化实测，否则使用校准估算。多设备时暂不应用最低速度并说明原因；空结果可单独清除导致无结果的筛选。其他页面的实测标记现须匹配 RTX 4090 的确切量化与已记录速度。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Reverse calculator tool-calling evidence now covers 113 models after checking all 151 indexed checkpoints. Minimum speed uses calibrated estimates for supported single-card dense GGUF models, not optimistic bandwidth ceilings. Unknown and stacked-card speeds do not pass a minimum; existing sort order is preserved.',
     zh: '遍查全部 151 个模型检查点后，反向计算器的工具调用证据现覆盖 113 个模型。最低速度改用支持范围内的单卡稠密 GGUF 校准估算，不再使用偏乐观的带宽上限。未知速度与多卡不满足最低速度要求；原有排序保持不变。',
   },

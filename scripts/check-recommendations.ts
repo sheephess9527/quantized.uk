@@ -13,20 +13,23 @@ import { modelShape, contextReach, offloadPlan } from '../lib/utils/calc-insight
 import { sourceBpw } from '../lib/utils/quant-source';
 import { dataProblems } from '../lib/data/validate';
 import { measuredSpeed } from '../lib/utils/measured-speed';
+import { matchingSpeedRun } from '../lib/utils/measured-runs';
 
 const gpu = gpuDatabase.find(g => g.id === 'rtx4090')!;
 const baseline = getRecommendations(gpu, 4096, 1);
 for (const row of baseline) {
-  assert.equal(recommendationSpeed(gpu, row.model, row.quant), measuredSpeed(gpu, row.model, row.quant)?.tokS);
+  const run = matchingSpeedRun(gpu, row.model, row.quant);
+  const estimate = measuredSpeed(gpu, row.model, row.quant);
+  assert.deepEqual(recommendationSpeed(gpu, row.model, row.quant), run ? { tokS: run.speedTokSec, source: 'measured' } : estimate ? { tokS: estimate.tokS, source: 'estimated' } : undefined);
   assert.equal(recommendationSpeed(gpu, row.model, row.quant, 2), undefined);
 }
 assert.deepEqual(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', {}), baseline);
 const filtered = (filters: { minTok?: number; tools?: boolean; code?: boolean }) =>
   getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 1, false, 'text', filters);
-assert.deepEqual(filtered({ minTok: 40 }), baseline.filter(r => (recommendationSpeed(gpu, r.model, r.quant) ?? -1) >= 40));
+assert.deepEqual(filtered({ minTok: 40 }), baseline.filter(r => (recommendationSpeed(gpu, r.model, r.quant)?.tokS ?? -1) >= 40));
 assert.ok(filtered({ minTok: 40 }).length > 0 && filtered({ minTok: 40 }).length < baseline.length);
-assert.equal(getRecommendations({ ...gpu, id: 'unknown-card' }, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 10 }).length, 0);
-assert.equal(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2, false, 'text', { minTok: 10 }).length, 0);
+assert.equal(getRecommendations({ ...gpu, id: 'unknown-card', name: 'Unknown card' }, 4096, 1, 'quality', true, undefined, 1, false, 'text', { minTok: 10 }).length, 0);
+assert.deepEqual(getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2, false, 'text', { minTok: 10 }), getRecommendations(gpu, 4096, 1, 'quality', true, undefined, 2));
 assert.deepEqual(filtered({ tools: true }), baseline.filter(r => hasToolCalling(r.model.id)));
 assert.ok(filtered({ tools: true }).length > 0);
 assert.deepEqual(filtered({ code: true }), baseline.filter(r => r.model.categories.includes('code')));

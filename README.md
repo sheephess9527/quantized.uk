@@ -538,6 +538,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Reverse speed provenance and multi-device filtering
+
+- Reverse rows show one selected-card figure: exact model/format/level benchmark first, otherwise the calibrated estimate. `recommendationSpeed` supplies both the figure and minimum check; no other-card figure or ceiling fallback. `measuredSpeed` itself remains a calibration function and does not look up exact runs.
+- Multi-device rigs disable and bypass the minimum while preserving `minTok` in URL/state. Inline EN/ZH text explains why; returning to one card restores the minimum. Empty results test removing speed and feature requirements independently and provide targeted clear actions in addition to reset.
+- Shared exact-run matching moved to `lib/utils/measured-runs.ts` to avoid a model-meta/speed-label dependency cycle. Confidence badges on Hub/model/GPU-related callers require an exact RTX 4090 benchmark and a matching stored figure, rather than promoting every quant of a measured model. Regression checks cover wrong levels, cards and mismatched values. Stored speed data is unchanged.
+- Audit found one exact-row mismatch: Qwen3 14B EXL2 4.65bpw stores 125 tok/s versus 118 measured; it is now labelled estimated where that stored figure is shown.
+
 ### 2026-11-22 — Reverse filter evidence and calibrated speed follow-up
 
 - Audited all 151 indexed checkpoints using publisher tokenizer templates and same-checkpoint GGUF `chat_template` metadata, with mirrors for gated publishers. Recorded 113 positive `tools` references with per-model source URLs; 33 readable templates had no reference and 5 had no readable template. Derived checkpoints never inherit a tool claim solely from a training base.

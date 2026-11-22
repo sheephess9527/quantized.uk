@@ -158,9 +158,13 @@ flaky network. Never "fix" it by removing the postbuild hook.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
 - **Reverse fits must respect both context and input.** `getRecommendations()` supports
   URL-only `minTok=10|20|40` and `feat=tools,code` filters (AND).
-  Speed filtering and the displayed estimate share `recommendationSpeed`, using the calibrated
-  `measuredSpeed` point for single-card dense 7–33B GGUF rows only; unknown speed fails a minimum.
-  No ceiling fallback: MoE, uncalibrated cards/formats/sizes and stacked cards have no estimate.
+  Speed filtering and the single displayed row figure share `recommendationSpeed`: exact-card,
+  exact-model/quant benchmark first, otherwise the calibrated `measuredSpeed` point; no ceiling fallback.
+  Unknown speed fails a minimum on one device. Multi-device rigs disable and bypass the minimum,
+  keeping its URL/state selection for a return to one card. Empty states test removal of speed
+  and feature requirements separately and offer targeted clearing when that restores results.
+  `quantConfidence` may label an RTX 4090 figure measured only with an exact benchmark and matching value;
+  a measured model id never promotes its other quant levels. Matching lives in `measured-runs.ts`.
   Existing speed sorting retains its bandwidth-bound ranking for old-link compatibility.
   Tool calling is positive recorded publisher-template/card evidence only in `model-facts.ts`;
   code uses the recorded category. Image remains `input=image`; none of these filters enters profiles.
