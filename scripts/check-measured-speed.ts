@@ -1,8 +1,8 @@
 // Run: npm run check:speed — compares measuredSpeed() with every
 // llama.cpp/Ollama GGUF row in matrixData and prints measured ÷ predicted.
 import assert from 'node:assert/strict';
-import { speedQuote } from '../lib/utils/speed-label';
 import { matrixData } from '../lib/data/benchmarks';
+import { speedQuote } from '../lib/utils/speed-label';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { measuredSpeed, CALIBRATION_ERROR } from '../lib/utils/measured-speed';
