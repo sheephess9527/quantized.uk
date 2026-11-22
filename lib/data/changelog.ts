@@ -18,6 +18,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'A Simplified Chinese LLM-readable site summary is now available at /zh/llms.txt, linking to Chinese pages. Both summaries share their page list and live data counts, and link to each other.',
+    zh: '新增简体中文版 LLM 站点摘要 /zh/llms.txt，链接直达中文页面。中英文摘要共用页面列表和实时数据统计，并提供互相跳转的链接。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Added KORMo-Web-4B to the Quant Hub and VRAM calculator, with four GGUF levels and a separate BF16 projector for image input. Memory figures are estimates from the published files.',
     zh: '量化中心和显存计算器新增 KORMo-Web-4B，提供四档 GGUF，图像输入使用独立的 BF16 投影文件。内存数字基于公开文件估算。',
   },

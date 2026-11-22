@@ -85,6 +85,7 @@ app/                        # Next.js App Router pages
   cookbook/page.tsx         # Recipe index (links to /cookbook/[slug]/)
   cookbook/[slug]/page.tsx    # Standalone article pages (SSG)
   feed.xml/route.ts         # RSS (force-static)
+  llms.txt/route.ts         # LLM summary; /zh/llms.txt mirror shares lib/llms.ts
   tools/vram-calc/page.tsx  # VRAM calculator wrapper (Suspense boundary for URL params)
   tools/cli-gen/page.tsx    # CLI generator wrapper
   tools/speed/, tools/which-quant/, tools/context-length/
@@ -543,6 +544,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Pair pages at `/quant-hub/[modelId]/[gpuSlug]/` (and `/zh`) are now generated only for exact measured pairs and for the 10 cards in `POPULAR_GPU_IDS`; the existing current-model, verified-file and 25%-of-memory rules still apply to the popular cards. Pairs drop from 2,266 to 322 and the export from 11,242 to 3,466 files, since each pair costs four files (en/zh `index.html` + `index.txt`).
 - Retired pair URLs 404; `lib/utils/not-found.ts` recognises `/quant-hub/{model}/{gpu}/` and suggests the model page and GPU page. No `_redirects` rules: the ~3,900 retired URLs would exceed Cloudflare's 2,000 static-rule limit, and Pages' splat syntax cannot express "model page" without one rule per model.
 - New `scripts/check-export-size.mjs` runs in `postbuild` and fails the build when `out/` exceeds 15,000 files. `scripts/check-pair-pages.ts` asserts no unmeasured pair outside the popular cards is eligible.
+
+### 2026-11-22 — Chinese LLM-readable summary
+
+- Added `/zh/llms.txt` in Simplified Chinese. Both static routes use `lib/llms.ts`, with shared page links and live model/GPU/guide counts; Chinese links stay under `/zh/`, while the sitemap and public JSON remain shared. Each summary links to both language versions, and robots.txt advertises both.
+- `npm test` checks bilingual link and numeric parity, Chinese route existence and text responses. Added the bilingual public release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
 
 ### 2026-11-22 — KORMo-Web-4B
 
