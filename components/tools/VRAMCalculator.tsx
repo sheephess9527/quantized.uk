@@ -347,7 +347,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     }
     if (mode === 'forward' && Number(mmprojGB) > 0) params.set('mmproj', mmprojGB);
     if (mode === 'forward' || mode === 'finetune') {
-      if (selectedModelId) params.set('model', selectedModelId);
+      // An example model or guessed card stays out of the address bar: a reload
+      // would read it back as the reader's own choice and save it.
+      if (selectedModelId && !modelIsExample) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
         params.set('params', customParams);
         params.set('layers', customLayers);
@@ -369,7 +371,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       // sharing.
       if (profileGpuId) params.set('gpu', profileGpuId);
     } else {
-      if (selectedGpuId) params.set('gpu', selectedGpuId);
+      if (selectedGpuId && !gpuHint) params.set('gpu', selectedGpuId);
       params.set('sort', sortBy);
       if (!includeYellow) params.set('yellow', '0');
       if (!bestPerModel) params.set('all', '1');
@@ -377,7 +379,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 

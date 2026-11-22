@@ -142,7 +142,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
   then a browser guess (`lib/utils/gpu-detect.ts`, WebGL renderer; never sent or stored), then the
   example card/model. Ambiguous memory sizes, Macs and single rows named with a size start on the smallest row and
   ask or warn; a guessed or example value reaches the profile only when the reader picks a card
-  or model, imports one, or clicks Calculate on a recommendation. `VRAM Result` analytics sends index
+  or model, imports one, or clicks Calculate on a recommendation. Neither goes into the rewritten
+  address bar either (a reload would read it back as a choice). `VRAM Result` analytics sends index
   ids and verdicts only, once per distinct answer; anything the reader types stays out of events.
   Check renderer matching with `npm run check:gpu-detect` (in `npm test`).
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
