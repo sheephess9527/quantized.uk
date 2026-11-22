@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Corrected Qwen3 14B EXL2 4.65bpw to its measured RTX 4090 speed of 118 tok/s, restoring its measured badge. Automated checks now require stored speeds with exact RTX 4090 benchmark matches to agree with those measurements.',
+    zh: 'Qwen3 14B EXL2 4.65bpw 的 RTX 4090 速度已修正为实测的 118 tok/s，恢复实测标记。自动检查现要求所有具有确切 RTX 4090 基准记录的已存速度与实测值一致。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Reverse calculator share previews now respect minimum-speed and required-feature filters. Shared page descriptions and preview images use the same filtered configuration count, including the multi-device speed-minimum exception.',
     zh: '反向计算器的分享预览现已计入最低速度与必需功能筛选。分享页面描述和预览图使用相同的筛选后配置数，并遵循多设备暂不应用最低速度的规则。',
   },
