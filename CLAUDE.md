@@ -157,6 +157,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   Don't show desktop speed references as substitutes for laptop speed data.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
 - **Integrated AMD memory:** `isIntegrated` keeps the AMD backend but disables stacking. Ryzen AI Max+ 395 rows store Windows GPU allocation (48/96 GB), not their 64/128 GB system RAM. Do not set Apple's `isUnified` flag or apply its cap again. Stock and unofficial memory mods share renderer candidates, smallest first.
+- **CUDA AWQ eligibility:** record `cudaComputeCapability` for legacy NVIDIA rows. Known values below 7.5 cannot use vLLM AWQ kernels; keep fits and launch choices behind `formatAllowed`. Omitted capability preserves the existing format policy, not a new compatibility guarantee.
 - **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
   beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never

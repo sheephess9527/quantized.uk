@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'GTX 1080 Ti, V100, P100 and P40 recommendations no longer offer AWQ builds that require newer CUDA hardware. Calculator launch commands respect the same hardware-format restriction; GGUF choices remain available.',
+    zh: 'GTX 1080 Ti、V100、P100 与 P40 的推荐结果不再提供需要更新 CUDA 硬件的 AWQ 版本。计算器启动命令遵循相同的硬件与格式限制，GGUF 选项仍然可用。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Browser detection no longer mistakes an RTX 2060 Super for a base RTX 2060 with a different memory capacity. Unindexed 2060 Super cards now require a manual hardware choice.',
     zh: '浏览器识别不再将 RTX 2060 Super 误认为显存容量不同的普通 RTX 2060。尚未收录的 2060 Super 现在需要手动选择硬件。',
   },

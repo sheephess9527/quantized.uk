@@ -98,6 +98,7 @@ export function vllmRocmSupported(gpuName?: string): boolean {
 export function formatAllowed(gpu: GPU, format: string): boolean {
   const backend = backendFor(gpu);
   if (!(ALLOWED_FORMATS[backend] as readonly string[]).includes(format)) return false;
+  if (backend === 'cuda' && format === 'AWQ' && gpu.cudaComputeCapability !== undefined && gpu.cudaComputeCapability < 7.5) return false;
   return backend !== 'rocm' || !VLLM_ONLY_ON_ROCM.includes(format) || vllmRocmSupported(gpu.name);
 }
 

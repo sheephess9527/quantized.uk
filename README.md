@@ -510,6 +510,7 @@ interface GPU {
   isUnified?: boolean; isCPU?: boolean; icon: string;  // emoji
   isLaptop?: boolean;      // separate mobile group; does not change the runtime backend
   isIntegrated?: boolean;  // non-stackable APU; vram is its documented GPU allocation, not system RAM
+  cudaComputeCapability?: number; // recorded CUDA CC; AWQ requires 7.5+ where known
   specUrl?: string;        // published hardware specifications; required for laptop entries
 }
 
@@ -538,6 +539,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-22 — Gate AWQ on pre-Turing CUDA hardware
+
+- Added optional CUDA compute capability metadata and excluded AWQ on recorded pre-7.5 cards: GTX 1080 Ti (6.1), V100 16/32 GB (7.0), P100 (6.0) and P40 (6.1), using [NVIDIA's legacy GPU table](https://developer.nvidia.com/cuda/gpus/legacy). [vLLM's AWQ kernel](https://docs.vllm.ai/en/v0.23.0/api/vllm/model_executor/layers/quantization/awq/) requires Turing/SM75 or newer.
+- The shared format predicate gates GPU fits and calculator recommendations; launch-command vLLM choices now use that same predicate. Tests cover all five rows, retained GGUF support, the 7.5 boundary and omitted metadata. This is an AWQ kernel restriction, not a claim of universal compatibility for other formats.
 
 ### 2026-11-22 — Keep RTX 2060 Super out of base-card detection
 
