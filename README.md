@@ -515,6 +515,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — Pair-page presentation refinements
+
+- Aligned table body/header padding, prefer question-form search titles when they fit, and lead speed summaries with exact measured runs before the recommended quant's labelled estimate. Reformatted pair-page code for maintenance.
+
 ### 2026-11-22 — Model × GPU answers
 
 - Added 2,244 eligible pairs (4,488 bilingual pages) at `/quant-hub/[modelId]/[gpuSlug]/`, linked from model/GPU guides and the sitemap. Pages include 4K quant sizing, context reach, measured runs, labelled speed and a prefilled calculator.

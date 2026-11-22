@@ -2,6 +2,7 @@ export const translations = {
   en: {
     pair: {
       "question": "Can {gpu} run {model}?",
+      measuredSpeed: 'Measured',
       metaHeadroom: 'Headroom: {headroom} GB.',
       metaContext: 'Text input, batch 1, FP16 KV cache.',
       metaTables: 'Compare quant memory and context limits.',
@@ -1465,6 +1466,7 @@ export const translations = {
   zh: {
     pair: {
       "question": "{gpu} 能跑 {model} 吗？",
+      measuredSpeed: '实测',
       metaHeadroom: '显存余量 {headroom} GB。',
       metaContext: '文本输入、批量 1、FP16 KV 缓存。',
       metaTables: '对比各量化显存及上下文容量。',

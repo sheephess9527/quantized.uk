@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Model/GPU pages now lead speed summaries with measured runs before estimates, align table cells consistently and use question-form search titles when space allows.',
+    zh: '模型与显卡组合页面的速度摘要现优先展示实测，再列出估算；统一表格单元格间距，并在长度允许时使用问句形式的搜索标题。',
+  },
+  {
+    date: '2026-11-22',
     en: 'New model/GPU answers cover 2,244 pairs with measured runs or complete verified-file sizing. Each bilingual page shows quant memory, context capacity, labelled speed and a calculator link; find them from model and GPU guides.',
     zh: '新增 2,244 个模型与显卡组合的双语解答，仅收录有实测或完整已核验文件容量依据的组合。页面展示各量化显存、上下文容量、标明来源的速度与计算器链接，可从模型和显卡指南进入。',
   },
