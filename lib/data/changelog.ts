@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-22',
+    en: 'Added KORMo-Web-4B to the Quant Hub and VRAM calculator, with four GGUF levels and a separate BF16 projector for image input. Memory figures are estimates from the published files.',
+    zh: '量化中心和显存计算器新增 KORMo-Web-4B，提供四档 GGUF，图像输入使用独立的 BF16 投影文件。内存数字基于公开文件估算。',
+  },
+  {
+    date: '2026-11-22',
     en: 'The homepage tagline now reads “Sourced Data · Edge Deployment · Geek-First”, reflecting traceable data sources rather than implying the site repository is public.',
     zh: '首页标语现为“数据来源可查 · 端侧部署 · 极客优先”，强调数据来源可追溯，避免暗示本站代码仓库公开。',
   },

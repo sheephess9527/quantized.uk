@@ -269,6 +269,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 51, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
   { id: 50, type: 'new', modelId: 'clairic-flash-9b', level: 'Q4_K_M', note: { en: 'structured text and image extraction', zh: '文本和图像结构化提取' }, quantizer: 'Xylolabs' },
   { id: 49, type: 'new', modelId: 'clairic-27b', level: 'Q4_K_M', note: { en: 'structured multimodal output', zh: '多模态结构化输出' }, quantizer: 'Xylolabs' },
   { id: 48, type: 'new', modelId: 'shot-reader-8b', level: 'Q4_K_M', note: { en: 'structured shot description', zh: '结构化镜头描述' }, quantizer: 'mradermacher' },

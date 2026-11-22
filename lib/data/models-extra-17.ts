@@ -1,7 +1,6 @@
 import type { QuantModel } from './types';
 
-/** Original cards, configs and GGUF headers/tree sizes checked 2026-11-21.
- * See docs/changes/2026-11-21-patrol.md for exact sources and sizing scope. */
+/** See docs/changes/2026-11-21-patrol.md for the November 21 entries' sources and sizing. */
 export const extraModels17: QuantModel[] = [
   {
     "id": "clairic-27b",
@@ -275,6 +274,90 @@ export const extraModels17: QuantModel[] = [
           "bytes": 8709520736,
           "mmprojBytes": 1159030560,
           "checkedAt": "2026-11-21"
+        }
+      }
+    ]
+  },
+  {
+    "id": "kormo-web-4b",
+    "name": "KORMo-Web-4B",
+    "family": "KORMo-Web",
+    "params": 4.841450496,
+    "paramLabel": "4B",
+    "categories": ["instruct", "multimodal"],
+    "hardwareTags": ["consumer-gpu", "mac", "cpu-vps"],
+    "contextLength": 262144,
+    "arch": {
+      "layers": 32,
+      "attHeads": 16,
+      "kvHeads": 4,
+      "headDim": 256,
+      "attention": { "fullLayers": 8 }
+    },
+    "addedAt": "2026-11-22",
+    "description": {
+      "en": "KORMo-VL fine-tuned Qwen3.5-4B to understand browser screenshots in Korean and English. The GGUFs store 4.84B language parameters; image input uses a separate BF16 projector. Only 8 of 32 layers grow the main KV cache. The calculator estimates model memory, not memory for the publisher’s browser harness.",
+      "zh": "KORMo-VL 在 Qwen3.5-4B 基础上微调了这款模型，用于理解韩语和英语网页截图。GGUF 存有约 48.4 亿语言参数；图像输入另需 BF16 投影文件。32 层中只有 8 层的主 KV 缓存随上下文增长。计算器估算的是模型内存，不含发布方的浏览器工具。"
+    },
+    "quants": [
+      {
+        "format": "GGUF",
+        "level": "Q3_K_M",
+        "bpw": 4.01,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+          "file": "KORMo-VL_KORMo-Web-4B-Q3_K_M.gguf",
+          "bytes": 2427130688,
+          "mmprojBytes": 675569408,
+          "checkedAt": "2026-11-22"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q4_K_M",
+        "bpw": 5.23,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+          "file": "KORMo-VL_KORMo-Web-4B-Q4_K_M.gguf",
+          "bytes": 3166776128,
+          "mmprojBytes": 675569408,
+          "checkedAt": "2026-11-22"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q5_K_M",
+        "bpw": 6.15,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+          "file": "KORMo-VL_KORMo-Web-4B-Q5_K_M.gguf",
+          "bytes": 3720637248,
+          "mmprojBytes": 675569408,
+          "checkedAt": "2026-11-22"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q8_0",
+        "bpw": 8.52,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "bartowski/KORMo-VL_KORMo-Web-4B-GGUF",
+          "file": "KORMo-VL_KORMo-Web-4B-Q8_0.gguf",
+          "bytes": 5157831488,
+          "mmprojBytes": 675569408,
+          "checkedAt": "2026-11-22"
         }
       }
     ]

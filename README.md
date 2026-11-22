@@ -538,6 +538,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — KORMo-Web-4B
+
+- Added [KORMo-Web-4B](https://huggingface.co/KORMo-VL/KORMo-Web-4B) (Apache 2.0) with four [bartowski GGUF files](https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF) and the matching BF16 vision projector. Memory estimates use the verified file sizes and eight full-attention layers; no runtime measurements are claimed.
+
 ### 2026-11-22 — Sourced-data homepage tagline
 
 - Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.
