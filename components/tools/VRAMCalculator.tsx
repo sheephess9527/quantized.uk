@@ -28,6 +28,7 @@ import { groupedModels } from '@/lib/utils/model-groups';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { trackEvent } from '@/lib/analytics';
+import { detectGpu, type GpuDetection } from '@/lib/utils/gpu-detect';
 import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/utils/model-meta';
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
@@ -61,6 +62,21 @@ const GPU_GROUPS: { types: GPU['type'][]; key: 'gpuGroupNvidia' | 'gpuGroupPro' 
   { types: ['apple'], key: 'gpuGroupApple' },
   { types: ['cpu'], key: 'gpuGroupCpu' },
 ];
+
+/**
+ * What a first-time reader sees before choosing anything, so the page opens on
+ * an answer rather than an empty panel. Neither is written to the shared
+ * profile until the reader picks one themselves.
+ */
+const EXAMPLE_GPU_ID = 'rtx3060';
+const EXAMPLE_MODEL_IDS = ['qwen3-5-9b', 'qwen3-8b', 'qwen3-14b'];
+function exampleModelId(): string {
+  return EXAMPLE_MODEL_IDS.find(id => models.some(m => m.id === id && !isSuperseded(m)))
+    ?? models.find(m => !isSuperseded(m))?.id ?? '';
+}
+
+/** Where the reverse-mode card came from when the reader has not chosen one. */
+type GpuHint = { kind: 'detected' | 'pick' | 'example'; detection?: GpuDetection };
 
 const POPULAR_GPUS = POPULAR_GPU_IDS
   .map(id => gpuDatabase.find(g => g.id === id))
@@ -113,7 +129,7 @@ function findFormatGroup(quant: string): keyof typeof quantGroups {
   return 'GGUF';
 }
 
-export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMode?: Mode } = {}) {
+export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMode?: Mode } = {}) {
   const { t } = useLanguage();
   const { gpuId: profileGpuId, gpu: profileGpu, config, hydrated: configReady, updateConfig, setGpuId } = useHardwareProfile();
   const searchParams = useUrlQuery();
@@ -157,6 +173,13 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
   /** Per index model: config read from the Hub for the fields inference never needed. */
   const [ftHub, setFtHub] = useState<Record<string, ImportedShape | 'loading' | 'failed'>>({});
   const [selectedGpuId, setSelectedGpuId] = useState('');
+  const [gpuHint, setGpuHint] = useState<GpuHint | null>(null);
+  const [modelIsExample, setModelIsExample] = useState(false);
+  const chooseGpu = useCallback((id: string) => {
+    setSelectedGpuId(id);
+    setGpuHint(null);
+    if (id) setGpuId(id);
+  }, [setGpuId]);
   const [sortBy, setSortBy] = useState<SortBy>('quality');
   const [includeYellow, setIncludeYellow] = useState(true);
   const [bestPerModel, setBestPerModel] = useState(true);
@@ -191,9 +214,10 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
   useEffect(() => {
     if (urlInitialized.current || !searchParams || !configReady) return;
     const modeParam = searchParams.get('mode');
-    const m: Mode = modeParam === 'reverse' || modeParam === 'finetune' || modeParam === 'forward' ? modeParam : defaultMode;
-    setMode(m);
     const modelParam = searchParams.get('model');
+    // Older links name a model without a mode; they meant the forward answer.
+    const m: Mode = modeParam === 'reverse' || modeParam === 'finetune' || modeParam === 'forward' ? modeParam : modelParam ? 'forward' : defaultMode;
+    setMode(m);
     if (modelParam) {
       if (modelParam === 'custom' || models.some(md => md.id === modelParam)) {
         setSelectedModelId(modelParam);
@@ -204,6 +228,15 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
       }
     } else if (config.modelId) {
       setSelectedModelId(config.modelId);
+    } else {
+      const example = models.find(md => md.id === exampleModelId());
+      if (example) {
+        setSelectedModelId(example.id);
+        setModelIsExample(true);
+        const level = quantLevelKey(referenceQuant(example.quants));
+        setSelectedQuant(level);
+        setFormatGroup(findFormatGroup(level));
+      }
     }
     // A link naming a model but no level (the homepage picks, model placement)
     // opens at that model's reference level — GPT-OSS at its native MXFP4, as
@@ -264,6 +297,19 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
       setSelectedGpuId(gpuParam);
       if (gpuParam !== config.gpuId) updateConfig({ gpuId: gpuParam });
     } else if (profileGpuId) setSelectedGpuId(profileGpuId);
+    else {
+      // Read once, in the browser; the renderer string never leaves it. An
+      // ambiguous match starts on the smallest size, which never overstates fit.
+      const detection = detectGpu();
+      trackEvent('VRAM GPU Detect', { result: !detection ? 'none' : detection.certain ? 'certain' : 'ambiguous' });
+      if (detection) {
+        setSelectedGpuId(detection.candidates[0].id);
+        setGpuHint({ kind: detection.certain ? 'detected' : 'pick', detection });
+      } else if (gpuDatabase.some(g => g.id === EXAMPLE_GPU_ID)) {
+        setSelectedGpuId(EXAMPLE_GPU_ID);
+        setGpuHint({ kind: 'example' });
+      }
+    }
     if (searchParams.get('sort') === 'speed' || searchParams.get('sort') === 'vram') {
       setSortBy(searchParams.get('sort') as SortBy);
     }
@@ -276,8 +322,8 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
     if (!urlInitialized.current) return;
-    updateConfig({ modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
-  }, [selectedModelId, selectedQuant, contextLen, updateConfig]);
+    updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId: selectedModelId, quantLevel: selectedQuant, contextLen });
+  }, [selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample]);
 
   const syncUrl = useCallback(() => {
     if (!urlInitialized.current) return;
@@ -301,7 +347,9 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
     }
     if (mode === 'forward' && Number(mmprojGB) > 0) params.set('mmproj', mmprojGB);
     if (mode === 'forward' || mode === 'finetune') {
-      if (selectedModelId) params.set('model', selectedModelId);
+      // An example model or guessed card stays out of the address bar: a reload
+      // would read it back as the reader's own choice and save it.
+      if (selectedModelId && !modelIsExample) params.set('model', selectedModelId);
       if (selectedModelId === 'custom') {
         params.set('params', customParams);
         params.set('layers', customLayers);
@@ -323,7 +371,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
       // sharing.
       if (profileGpuId) params.set('gpu', profileGpuId);
     } else {
-      if (selectedGpuId) params.set('gpu', selectedGpuId);
+      if (selectedGpuId && !gpuHint) params.set('gpu', selectedGpuId);
       params.set('sort', sortBy);
       if (!includeYellow) params.set('yellow', '0');
       if (!bestPerModel) params.set('all', '1');
@@ -331,7 +379,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
     }
     const qs = params.toString();
     window.history.replaceState(null, '', `${window.location.pathname}?${qs}`);
-  }, [mode, selectedModelId, selectedQuant, contextLen, batchSize, selectedGpuId, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => { syncUrl(); }, [syncUrl]);
 
@@ -350,6 +398,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
    */
   const selectModel = useCallback((id: string) => {
     setSelectedModelId(id);
+    setModelIsExample(false);
     setInvalidModelId(null);
     setFtHidden('');
     setFtVocab('');
@@ -389,7 +438,10 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
     setMmprojFile('');
     setMmprojState('idle');
     setExtraIds([]);
+    setModelIsExample(false);
+    // Asking for the detail of a fit on this card adopts the card, guessed or not.
     if (selectedGpuId && selectedGpuId !== profileGpuId) updateConfig({ gpuId: selectedGpuId });
+    setGpuHint(null);
     rootRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
@@ -489,6 +541,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
     const input = raw ?? hfInput;
     if (raw !== undefined) setHfInput(raw);
     setSelectedModelId('custom');
+    setModelIsExample(false);
     setInvalidModelId(null);
     setHfBusy(true);
     setHfError(null);
@@ -516,6 +569,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
   };
   const openImport = () => {
     setSelectedModelId('custom');
+    setModelIsExample(false);
     setInvalidModelId(null);
     const pasted = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
     if (pasted) { void runImport(pasted); return; }
@@ -666,6 +720,35 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
   ) : null;
   const showReverseResult = mode === 'reverse' && selectedGpuId !== '';
 
+  // One event per distinct answer, after the inputs have been still for two
+  // seconds, so the site learns which models and cards readers actually check
+  // and which of them do not fit. Ids and verdicts only; nothing typed is sent.
+  const trackedResults = useRef(new Set<string>());
+  const resultEvent = useMemo((): Record<string, string | number> | null => {
+    if (showForwardResult) {
+      return {
+        mode, model: selectedModelId, ctx: contextLen,
+        quant: selectedQuantObj || Object.values(quantGroups).some(levels => levels.includes(selectedQuant)) ? selectedQuant : 'other',
+        gpu: profileGpuId || 'none', verdict: overBudget ? 'red' : currentVerdict ?? 'none',
+        start: modelIsExample ? 'example' : 'chosen',
+      };
+    }
+    if (showReverseResult) {
+      return { mode, gpu: selectedGpuId, ctx: contextLen, fits: recommendations.length, start: gpuHint?.kind ?? 'chosen' };
+    }
+    return null;
+  }, [showForwardResult, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
+  useEffect(() => {
+    if (!resultEvent) return;
+    const key = JSON.stringify(resultEvent);
+    if (trackedResults.current.has(key)) return;
+    const timer = setTimeout(() => {
+      trackedResults.current.add(key);
+      trackEvent('VRAM Result', resultEvent);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [resultEvent]);
+
   // On a phone the answer sits below a long column of controls, so every
   // change to the context or the level hid it. A bar pinned to the bottom
   // repeats the total and the verdict while the result panel is off-screen.
@@ -700,7 +783,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
       {/* Mode toggle + share */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
-          {(['forward', 'reverse', 'finetune'] as Mode[]).map(m => (
+          {(['reverse', 'forward', 'finetune'] as Mode[]).map(m => (
             <button
               key={m}
               onClick={() => setMode(m)}
@@ -758,6 +841,10 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
+
+                {modelIsExample && selectedModelId !== '' && (
+                  <p className="text-[11px] text-slate-500 mt-1.5">{t.calc.exampleModel}</p>
+                )}
 
                 {/* A 100-entry dropdown is slow to scan on a phone, and the
                     names readers type ("千问", "qwen 27b", "coding") are not
@@ -1322,7 +1409,7 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
                   <select
                     id="calc-reverse-card"
                     value={selectedGpuId}
-                    onChange={e => setSelectedGpuId(e.target.value)}
+                    onChange={e => chooseGpu(e.target.value)}
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.selectGpuPlaceholder}</option>
@@ -1330,14 +1417,39 @@ export default function VRAMCalculator({ defaultMode = 'forward' }: { defaultMod
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
-                {!selectedGpu && (
+                {gpuHint?.kind === 'detected' && selectedGpu && (
+                  <p className="text-[11px] text-emerald-300/80 mt-1.5">{t.calc.gpuDetected.replace('{gpu}', selectedGpu.name)}</p>
+                )}
+                {gpuHint?.kind === 'pick' && gpuHint.detection?.candidates.length === 1 && selectedGpu && (
+                  <p className="text-[11px] text-amber-300/80 mt-1.5">{t.calc.gpuCheckSize.replace('{chip}', gpuHint.detection.label).replace('{gpu}', selectedGpu.name)}</p>
+                )}
+                {gpuHint?.kind === 'pick' && gpuHint.detection && gpuHint.detection.candidates.length > 1 && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-slate-400 mb-1.5">{t.calc.gpuPickSize.replace('{chip}', gpuHint.detection.label)}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {gpuHint.detection.candidates.map(g => (
+                        <button
+                          key={g.id}
+                          onClick={() => chooseGpu(g.id)}
+                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
+                        >
+                          {g.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {gpuHint?.kind === 'example' && selectedGpu && (
+                  <p className="text-[11px] text-slate-500 mt-1.5">{t.calc.gpuExample.replace('{gpu}', selectedGpu.name)}</p>
+                )}
+                {(!selectedGpu || gpuHint?.kind === 'example') && (
                   <div className="mt-2">
                     <p className="text-[11px] text-slate-600 mb-1.5">{t.calc.popularCards}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {POPULAR_GPUS.map(g => (
                         <button
                           key={g.id}
-                          onClick={() => setSelectedGpuId(g.id)}
+                          onClick={() => chooseGpu(g.id)}
                           className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
                         >
                           {g.name}

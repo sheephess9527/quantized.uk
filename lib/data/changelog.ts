@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-22',
+    en: 'The VRAM calculator now opens on "what can my GPU run": it guesses your card from the browser (asking which memory size when the chip comes in several) or shows an example card, so the first visit starts with an answer. The model-first mode starts on an example model, and shared links and saved settings still take precedence.',
+    zh: '显存计算器现在默认打开"我的显卡能跑什么"：根据浏览器推测你的显卡（同一芯片有多种显存时会请你选择），或显示一张示例显卡，首次访问即可看到结果。按模型估算模式默认显示一个示例模型；分享链接与已保存的设置仍然优先。',
+  },
+  {
     date: '2026-11-21',
     en: 'Homepage statistics are now rendered at build time without a client component. Build-time Hugging Face requests have timeouts and bounded parallelism, with cached counts retained on failure. Static preview and type-check commands are documented, and compatible dependencies have been refreshed.',
     zh: '首页统计现于构建时生成，无需客户端组件。构建时获取 Hugging Face 数据采用超时与有限并发，失败时保留缓存统计。新增静态预览与类型检查命令说明，并更新兼容依赖。',

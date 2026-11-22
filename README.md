@@ -513,6 +513,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-22 — VRAM calculator opens on an answer
+
+- `VRAMCalculator` now defaults to reverse mode (GPU → models), listed first in the mode switch. A link that names `?model=` without `?mode=` still opens forward mode.
+- With no `?gpu=` and no saved card, reverse mode reads the browser's WebGL renderer once (`lib/utils/gpu-detect.ts`) and pre-selects the matching index row. Chips sold in several memory sizes (and every Mac) start on the smallest row and ask the reader to pick the size; a single row whose name carries a size (Arc A770 16G, RTX 3060 12G: the index names a size when another one shipped) is pre-selected with a check-your-size warning; laptop, masked and unknown renderers fall back to an example card (`RTX 3060 12G`) with the common-card chips. The renderer string never leaves the browser, and a guessed or example card is saved to the shared profile only when the reader picks a card or clicks Calculate on a recommendation. Until then the guessed card or example model is left out of the rewritten URL, so a reload or a language switch does not adopt it.
+- Forward mode with no `?model=` and no saved model starts on an example model (Qwen3.5 9B at its reference quant), labelled as an example and not saved to the profile until the reader picks, imports or opens a model.
+- Plausible events: `VRAM Result` (one per distinct answer after 2 s without changes: mode, model id, quant (`other` when not an index level), context, GPU id, verdict or fit count, and whether the input was an example, detected or chosen) and `VRAM GPU Detect` (`certain` / `ambiguous` / `none`). The privacy policy lists both.
+- `npm test` adds `scripts/check-gpu-detect.ts` (renderer matching).
+
 ### 2026-11-21 — Bounded build fetching and lighter homepage stats
 
 - Refreshed Autoprefixer 10, PostCSS 8 and tailwind-merge 2 within their existing majors; updated compatible nanoid/source-map-js transitive versions. Next's pinned nested PostCSS still needs a separately reviewed framework update.
