@@ -38,7 +38,8 @@ export const communitySpeeds: readonly CommunitySpeed[] = [];
 export const SPEED_BOUNDS = { min: 0.01, prefillMax: 10_000_000, decodeMax: 100_000 } as const;
 
 export function speedConfigurationKey(c: SpeedConfiguration): string {
-  return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, c.encoderGiB]);
+  const projectorSize = c.encoderGiB > 0 ? c.encoderGiB.toFixed(2) : null;
+  return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, projectorSize]);
 }
 
 export function matchingCommunitySpeeds(c: SpeedConfiguration, rows = communitySpeeds): CommunitySpeed[] {

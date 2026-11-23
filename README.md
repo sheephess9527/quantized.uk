@@ -408,7 +408,7 @@ Pages builds the root `functions/` directory along with `out/`; no separate Work
 Open an indexed model's forward calculator result with an indexed GPU or system, then open **Submit your speed** (Chinese: **提交你的测速结果**). Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. A missing binding, missing schema or exhausted free quota returns an error without changing the calculator.
 
 CPU-only RAM tiers require the processor model. Include that field when approving CPU-only rows so readers can distinguish processors within a RAM tier.
-For vision runs, keep the exact calculator projector size (`encoderGiB`; `0` means no projector) when approving. Runs with different projector sizes match different calculator results.
+For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no projector) when approving. Matching uses hundredths of a GiB so a rounded Hub lookup and a recommendation based on the same file's bytes agree. No projector is always separate from any positive size.
 
 **Owner setup (before enabling):**
 
@@ -605,7 +605,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Added English and Chinese speed submission forms on indexed forward calculator results. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See the setup and review steps in §6.
 - CPU-only submissions require a processor model; approved rows show it alongside the speeds.
-- Community speed results keep and match the calculator's exact vision projector size, rather than just recording whether a projector was used.
+- Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).
 
 ### 2026-11-23 — Model and site patrol
 

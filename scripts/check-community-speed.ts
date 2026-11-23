@@ -36,7 +36,12 @@ for (const overrides of [{ modelId: 'other' }, { quant: 'Q8_0' }, { gpuIds: ['rt
 const visionRun = { ...configuration, encoderGiB: 0.531 };
 const reviewedVision = { ...reviewed, ...visionRun };
 assert.deepEqual(matchingCommunitySpeeds(visionRun, [reviewed, reviewedVision]), [reviewedVision]);
-assert.deepEqual(matchingCommunitySpeeds({ ...visionRun, encoderGiB: 0.532 }, [reviewedVision]), []);
+const roundedVision = { ...visionRun, encoderGiB: 0.53 };
+assert.deepEqual(matchingCommunitySpeeds(roundedVision, [reviewedVision]), [reviewedVision]);
+const reviewedRoundedVision = { ...reviewedVision, ...roundedVision };
+assert.deepEqual(matchingCommunitySpeeds(visionRun, [reviewedRoundedVision]), [reviewedRoundedVision]);
+assert.deepEqual(matchingCommunitySpeeds({ ...visionRun, encoderGiB: 0.54 }, [reviewedVision]), []);
+assert.deepEqual(matchingCommunitySpeeds({ ...visionRun, encoderGiB: 0.001 }, [reviewed]), []);
 assert.equal(new Set(communitySpeeds.map(row => row.id)).size, communitySpeeds.length);
 for (const row of communitySpeeds) {
   assert.equal(row.source, 'community');
