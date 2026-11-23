@@ -370,6 +370,12 @@ To exercise the share metadata and PNG against the real export, run
 `npx --yes wrangler@4.66.0 pages dev out` from the project root after building.
 `npm start` and `next dev` serve only the static/base metadata.
 
+`npm run check:live` checks **https://quantized.uk**, not a local build. It uses installed
+Google Chrome (or `CHROME_PATH` pointing to a Chrome/Chromium executable) to verify that
+the calculator's memory estimate changes with context in both languages. It checks the
+main routes, one retained model/GPU pair, both result-link previews and PNGs, sitemap,
+and both `llms.txt` files. Each check prints PASS or FAIL and any failure sets a nonzero exit code.
+
 > **Note on `postbuild`:** `npm run build` ends with `scripts/localize-export.mjs`, which patches
 > `<html lang>` for the Chinese tree and **fails the build** if a `/zh` page links into the English
 > tree. Unlike `prebuild` this one is a gate, not a best-effort refresh — a non-zero exit here is a
@@ -454,6 +460,22 @@ npx --yes wrangler@4.66.0 pages dev out --d1 COMMUNITY_SPEED_DB=00000000-0000-40
 ```
 
 Use a forward result such as `/tools/vram-calc/?model=qwen3-8b&quant=Q4_K_M&gpu=rtx3060`, or prepend `/zh`. Re-run the local `d1 execute` command with the review query in `--command` instead of `--file` to check that a submission was queued.
+
+### Daily live check
+
+After merge, the **Daily live check** workflow runs at 01:23 UTC (09:23 in China)
+and can also be run from Actions → Run workflow; no repository variable is needed.
+Before merging, the owner should confirm once in [GitHub billing budgets](https://github.com/settings/billing/budgets)
+that Actions spending over the included allowance is blocked at $0. GitHub Free includes
+2,000 Actions minutes per month for private repositories, and this check is expected to
+use about 1–2 Linux runner minutes per day. If the included minutes run out, GitHub can stop
+runs, including alerts. The check uses the Chrome already on the runner and is capped at
+four minutes; the failure-only alert job is capped at two minutes. There is no paid monitor
+or new Cloudflare service.
+
+On failure, the workflow assigns the owner a GitHub issue titled **Daily live check failed**
+and mentions them with a link to the run. Further failures comment on the same open issue.
+Keep GitHub assignment/mention notifications enabled and close the issue after verifying recovery.
 
 ### Hard-won lessons (so you don't repeat them)
 
@@ -608,6 +630,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - The submit form ships off by default and can be enabled after Cloudflare setup. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
 - CPU-only submissions require a processor model; approved rows show it alongside the speeds.
 - Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).
+
+### 2026-11-23 — Daily production smoke check
+
+- Added a bilingual live check for the calculator, core pages, a retained model/GPU pair,
+  result-link previews, sitemap and `llms.txt`, with a daily GitHub Actions schedule and
+  owner-assigned failure alerts. See §6 for the zero-spend billing check before merge.
 
 ### 2026-11-23 — Model and site patrol
 
