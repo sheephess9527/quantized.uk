@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
-import { bestPage, tierCard, type BestTier } from '@/lib/utils/best-page';
+import { bestPage, tierUpgradeBaseline, type BestTier } from '@/lib/utils/best-page';
 import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import QuantFileLine from '@/components/hub/QuantFileLine';
@@ -26,6 +26,7 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
   const { t, lang } = useLanguage();
   const b = t.best;
   const { picks, cards, nearMiss, ladder, appleLadder, fitCount, faqs } = bestPage(tier);
+  const upgradeBaseline = tierUpgradeBaseline(tier);
   const total = models.length;
 
   const fill = (s: string, v: Record<string, string | number>) =>
@@ -144,10 +145,15 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
           </section>
         )}
 
-        <GpuUpgradeComparison
-          current={tierCard(tier)}
-          tierLabel={t.gpuUpgrade[tier.kind === 'apple' ? 'appleBaseline' : 'vramBaseline'].replace('{gb}', String(tier.vram))}
-        />
+        {upgradeBaseline && (
+          <GpuUpgradeComparison
+            current={upgradeBaseline}
+            tierLabel={fill(t.gpuUpgrade[tier.kind === 'apple' ? 'appleBaseline' : 'vramBaseline'], {
+              gb: tier.vram,
+              card: upgradeBaseline.name,
+            })}
+          />
+        )}
 
         {nearMiss && (
           <section className="glass rounded-2xl p-5 sm:p-6">

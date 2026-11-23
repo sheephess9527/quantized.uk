@@ -120,7 +120,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   repository totals include vision or duplicated/tied output tables. Q4_1 is a
   GGUF level (20 bytes per 32 weights in upstream ggml), not a new format.
 - **Home/GPU fit controls:** share context presets (4K–128K) and concurrency (1/2/4/8) from `gpu-page.ts`. Static defaults remain 4K / batch 1; runtime choices are page-local, not URL/profile state. Native context limits apply to fits. Editorial summaries and speed comparisons remain 4K / batch 1 baselines.
-- **GPU upgrade comparison:** compare the same context and concurrency using `fitsOnGpu`. Tier comparisons start from the same representative capacity/backend as the static picks. Context gains keep the current card's quantization fixed and use the shared pair-page comfortable boundary search. No prices, new URLs or persisted choices.
+- **GPU upgrade comparison:** compare the same context and concurrency using `fitsOnGpu`. Tier comparisons name a real card at the tier capacity, preferring the first listed popular card and otherwise the first listed at that capacity. Static picks stay independent. Context gains keep the current card's quantization fixed and use the shared pair-page comfortable boundary search. No prices, new URLs or persisted choices.
 - **Homepage picks sort by `addedAt`, then unique feed ID**, before slicing.
   `dataProblems()` rejects duplicate feed IDs; do not reuse old IDs in new packs.
 - **Stable runtime versus binary pin:** llama.cpp v1.0.0's `nightly-tag.txt`

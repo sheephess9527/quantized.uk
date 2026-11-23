@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { gpuDatabase } from '../lib/data/gpus';
-import { bestTierBySlug, tierCard } from '../lib/utils/best-page';
+import { bestTierBySlug, tierUpgradeBaseline } from '../lib/utils/best-page';
 import { fitsOnGpu, formatAllowed, gpuFitMemory, usableCapacityGB } from '../lib/utils/gpu-page';
 import { compareGpuUpgrade, defaultGpuUpgrade, gpuUpgradeChoices } from '../lib/utils/gpu-upgrade';
 import { qualityRank } from '../lib/utils/quality';
@@ -13,10 +13,25 @@ const defaultCandidate = defaultGpuUpgrade(current, choices)!;
 assert.equal(defaultCandidate.type, current.type);
 assert(usableCapacityGB(defaultCandidate) > usableCapacityGB(current));
 
-const apple = tierCard(bestTierBySlug('mac-apple-silicon')!);
+const apple = tierUpgradeBaseline(bestTierBySlug('mac-apple-silicon')!)!;
+assert.equal(apple.id, 'm4-max-36');
 assert.equal(apple.vram, 36);
 assert.equal(usableCapacityGB(apple), 27);
-assert(gpuUpgradeChoices(apple).some(g => g.id === apple.id && g.vram > apple.vram));
+assert(!gpuUpgradeChoices(apple).includes(apple));
+
+const vram16 = bestTierBySlug('16gb-vram')!;
+const tierBaseline = tierUpgradeBaseline(vram16)!;
+assert.equal(tierBaseline.id, 'rtx5060ti16');
+assert(vram16.cards.includes(tierBaseline));
+const rtx5080 = gpuDatabase.find(g => g.id === 'rtx5080')!;
+const rtx4060ti16 = gpuDatabase.find(g => g.id === 'rtx4060ti16')!;
+const tierUnlocks = compareGpuUpgrade(tierBaseline, rtx5080, 4096, 1).unlocked;
+assert.deepEqual(tierUnlocks, compareGpuUpgrade(rtx4060ti16, rtx5080, 4096, 1).unlocked);
+assert.equal(tierUnlocks.length, 0);
+
+const vram32 = bestTierBySlug('32gb-vram')!;
+const withoutPopular = vram32.cards.filter(card => card.id !== 'rtx5090');
+assert.equal(tierUpgradeBaseline({ ...vram32, cards: withoutPopular }), withoutPopular[0]);
 
 const baseline = compareGpuUpgrade(current, candidate, 4096, 1);
 assert(baseline.unlocked.length > 0);

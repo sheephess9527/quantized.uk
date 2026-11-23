@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
-    en: 'GPU and VRAM-tier pages now compare upgrades at the same context and concurrency. See what newly fits, which models can run at a better quantization, and how much longer the context can be at the same quantization.',
-    zh: '显卡页和显存档位页新增升级对比。在相同上下文和并发设置下，看看换卡后多跑哪些模型、哪些模型能用更高质量的量化，以及相同量化能多跑多长的上下文。',
+    en: 'GPU and VRAM-tier pages now compare upgrades at the same context and concurrency. Tier comparisons name the baseline device. See what newly fits, which models can run at a better quantization, and how much longer the context can be at the same quantization.',
+    zh: '显卡页和显存档位页新增升级对比，档位页会标明基准设备。在相同上下文和并发设置下，看看换卡后多跑哪些模型、哪些模型能用更高质量的量化，以及相同量化能多跑多长的上下文。',
   },
   {
     date: '2026-11-23',

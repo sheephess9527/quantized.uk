@@ -634,7 +634,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-23 — GPU upgrade comparisons
 
 - Added a collapsed comparison on existing GPU and VRAM-tier pages in English and Chinese. Compare another indexed GPU or Mac for new comfortable fits, quality-ranked quantization gains, and example context gains at the same quantization.
-- GPU comparisons follow the page's fit controls; tier comparisons use the tier's representative hardware and the same presets without changing the static picks. No new routes or title changes. [Sizing and verification](docs/changes/2026-11-23-gpu-upgrade-compare.md).
+- GPU comparisons follow the page's fit controls; tier comparisons name the actual baseline card and prefer a popular card at that capacity. They use the same presets without changing the static picks. No new routes or title changes. [Sizing and verification](docs/changes/2026-11-23-gpu-upgrade-compare.md).
 
 ### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
 
