@@ -12,7 +12,7 @@ A full-stack static intelligence website for indie developers and geeks who run 
 
 You're an AI agent or a new account picking this up cold. Read this box, then do the [Handoff Checklist](#8-handoff-checklist-do-this-first).
 
-- **What it is:** Next.js 14 **static-export** site. No database or Next.js server. Content is typed data under `lib/data/`; narrow Cloudflare Pages Functions supply VRAM share previews.
+- **What it is:** Next.js 14 **static-export** site with no Next.js server. Public content is typed data under `lib/data/`; narrow Cloudflare Pages Functions supply VRAM share previews and accept visitor speed submissions into a private review queue.
 - **Run it:** `npm install && npm run dev` → http://localhost:3000. Checks: `npm test`. Build: `npm run build` → static files in `out/`.
 - **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
 - **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
@@ -342,10 +342,15 @@ KV, sequences, encoder and estimated memory. Engine/version, exact file revision
 observed peak and its scope, speeds, actual token counts, repetitions, offload, speculation
 and notes are optional reader observations; blanks export as unknown. Outcome requires
 an explicit choice. Generate first, review, then copy/download Markdown or open a short
-email draft and attach it. No server submission, automatic sending or field analytics.
+email draft and attach it. These actions never submit data to the site or send field analytics.
 Changing settings or editing observations clears the generated preview. Markdown fences
 protect literal logs; no memory-error percentage is inferred across different scopes.
 Run `npm run check:evidence` after changing this flow.
+
+When community submissions are enabled for the result, the same form offers **Submit for review**:
+it sends the calculator configuration, runtime/version, measured speeds, CPU model when applicable,
+and any notes or public evidence URL. All other report fields stay local. The bilingual privacy
+policy describes what is stored. See §6 for setup and approval.
 
 ## 5. Local Development
 
@@ -405,7 +410,61 @@ pages_build_output_dir = "out"
 compatibility_date = "2026-02-17"
 ```
 
-Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy or bindings are needed. `public/_routes.json` limits execution to both calculator paths and `/api/vram-share.png`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
+Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy is needed. `public/_routes.json` limits execution to both calculator paths, `/api/vram-share.png` and `/api/community-speed`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
+
+### Visitor speed submissions (Pages + D1 Free)
+
+Safe to merge before setup, or leave disabled indefinitely: `COMMUNITY_SPEED_ENABLED` in `lib/data/community-speed.ts` defaults to `false`, so **Share your test result** (Chinese: **回传你的测试结果**) behaves as before and makes no availability request. Once enabled, eligible forward results with an indexed model and named hardware get a **Submit for review** (**提交审核**) action in that same form. The measured speed fields are shared with the local Markdown report; the form separates runtime and version and adds a CPU model field when applicable and an optional evidence link. Custom models and configurations without named hardware keep the local-only form. The submit endpoint writes only to D1; there is no public API to read the queue. If storage later fails or exhausts its quota, the local report actions still work.
+
+CPU-only RAM tiers require the processor model. Include that field when approving CPU-only rows so readers can distinguish processors within a RAM tier.
+For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no projector) when approving. Matching uses hundredths of a GiB so a rounded Hub lookup and a recommendation based on the same file's bytes agree. No projector is always separate from any positive size.
+
+**Owner setup (before enabling):**
+
+The [Chinese Cloudflare setup guide](docs/community-speed-setup-zh.md) can be handed directly to the owner's AI. It explains what to create on the Free plan and what to send back without sharing secrets.
+
+1. On the Cloudflare **Workers Free** plan, create the D1 databases `quantized-community-speed` and `quantized-community-speed-preview` (Workers & Pages → D1 SQL Database → Create). In each database's **Console**, execute the SQL in [scripts/community-speed.sql](scripts/community-speed.sql).
+2. In the `quantized` Pages project, go to **Settings → Variables and Secrets → Add**, choose **Secret**, and set `COMMUNITY_SPEED_RATE_SECRET` in **Production** and **Preview**. Use a different random value for each (generate each with `openssl rand -hex 32`); never commit the values.
+3. Once both databases have the schema and both secrets are set, make one commit that adds the following to `wrangler.toml` (replace both placeholders with the corresponding IDs) and changes `COMMUNITY_SPEED_ENABLED` to `true`. Pages uses the repo's Wrangler config as its source of truth for bindings. Test the preview before merging; the deployment with that commit enables the form. `npm test` catches absent or placeholder binding IDs, but cannot verify the Cloudflare secrets or the remote schema.
+
+   ```toml
+   [[env.production.d1_databases]]
+   binding = "COMMUNITY_SPEED_DB"
+   database_name = "quantized-community-speed"
+   database_id = "<production database ID>"
+
+   [[env.preview.d1_databases]]
+   binding = "COMMUNITY_SPEED_DB"
+   database_name = "quantized-community-speed-preview"
+   database_id = "<preview database ID>"
+   ```
+
+To turn off the form again, set the flag to `false` and redeploy. Remove the D1 bindings in the same commit if you also want the endpoint to stop accepting direct submissions. Published community rows do not depend on the form.
+
+**Review and publish:** In the production D1 console, run `SELECT id, received_at, payload FROM pending_speed ORDER BY received_at DESC LIMIT 100;` (paginate for older rows). Check the exact model/quant, hardware, context and benchmark conditions, and reject suspicious or unsupported figures. To approve, make a data PR adding the ID, configuration, runtime, version and speeds to `communitySpeeds` in `lib/data/community-speed.ts` with `source: 'community'`. Include a canonical public HTTPS evidence URL only after reviewing it. Leave private notes and queue metadata out of git. Record the source and review in [docs/data-corrections.md](docs/data-corrections.md). Only those reviewed rows appear after deploy, in a separate **Community / 社区数据** panel on matching calculator results; they never feed measured benchmarks, recommendations or calibration.
+
+The endpoint saves a keyed, daily rate-limit tag instead of a raw IP, and allows up to 3 accepted submissions per IP and 100 total per UTC day per database. To minimize private data retention, periodically delete old queue rows in the console, e.g. `DELETE FROM pending_speed WHERE day < date('now', '-90 days');` after reviewing them. Keep same-day rows so the limits continue to count them.
+
+**Local preview with storage:** In a local-only checkout, set `COMMUNITY_SPEED_ENABLED` to `true` before `npm run build`. Don't commit this local flag change. Save this local-only config outside the repo (e.g. `~/community-speed-local.toml`):
+
+```toml
+name = "quantized-local"
+compatibility_date = "2026-02-17"
+
+[[d1_databases]]
+binding = "COMMUNITY_SPEED_DB"
+database_name = "community-speed-local"
+database_id = "00000000-0000-4000-8000-000000000042"
+```
+
+Then run these from the repo root (omit `--remote`; storage is local):
+
+```sh
+npx --yes wrangler@4.66.0 d1 execute COMMUNITY_SPEED_DB --config "$HOME/community-speed-local.toml" --local --file scripts/community-speed.sql --persist-to "$HOME/community-speed-local"
+npx --yes wrangler@4.66.0 pages dev out --d1 COMMUNITY_SPEED_DB=00000000-0000-4000-8000-000000000042 --binding COMMUNITY_SPEED_RATE_SECRET=local-preview-only --persist-to "$HOME/community-speed-local"
+```
+
+Use a forward result such as `/tools/vram-calc/?model=qwen3-8b&quant=Q4_K_M&gpu=rtx3060`, or prepend `/zh`. Re-run the local `d1 execute` command with the review query in `--command` instead of `--file` to check that a submission was queued.
 
 ### Daily live check
 
@@ -574,6 +633,15 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - The owner's Bing Webmaster Tools export (2026-08-22 to 11-21) shows Bing is the main search source (1,710 clicks; 96% of page clicks on `/zh/`), and its biggest query shape is "<card> / N G 显存 能跑多大的模型". New `largestAtQ4()` gives the largest current model whose GGUF Q4_K_M build fits comfortably at 4K.
 - `/gpu/{card}/`, `/best/{N}gb-vram/` and their `/zh/` copies now put that answer in the title ("RTX 5060 能跑什么模型？Q4 最大约 9B"), lead the meta description with it and open the FAQ with "能跑多大的模型？" / "How big a model can … run?". No pages added; `out/` stays at 3,737 files. Queries and page numbers: `docs/changes/2026-11-23-bing-how-big-answers.md`.
+
+### 2026-11-23 — Visitor speed submissions
+
+- Added **Submit for review** to the existing English and Chinese test report form for eligible calculator results, with one set of measured speed fields shared by both actions. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See §6.
+- The review action ships off by default, leaving the local Markdown form unchanged. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
+- After a successful submission, edits to local-only report fields do not re-enable submission of the same review data.
+- Added a Chinese Cloudflare setup guide covering Free-tier resources, setup steps, and what to send back without sharing secrets.
+- CPU-only submissions require a processor model; approved rows show it alongside the speeds.
+- Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).
 
 ### 2026-11-23 — Search titles from Search Console and Cloudflare data
 

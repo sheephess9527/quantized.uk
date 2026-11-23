@@ -14,7 +14,7 @@
     "check:recommendations": "tsx scripts/check-recommendations.ts",
     "check:evidence": "tsx scripts/check-calculator-evidence.ts",
     "check:speed": "tsx scripts/check-measured-speed.ts",
-    "test": "tsx scripts/check-llms.ts && tsx scripts/check-pair-pages.ts && tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts && tsx scripts/check-gpu-detect.ts && tsx scripts/check-embed-fit.ts && tsx scripts/check-param-buckets.ts && tsx scripts/check-vram-share.ts && tsx scripts/check-calc-simplify.ts && tsx scripts/check-ollama-tags.ts && node --test scripts/check-hf-stats.mjs",
+    "test": "tsx scripts/check-llms.ts && tsx scripts/check-pair-pages.ts && tsx scripts/check-recommendations.ts && tsx scripts/check-calculator-evidence.ts && tsx scripts/check-community-speed.ts && tsx scripts/check-measured-speed.ts && tsx scripts/check-cli-sources.ts && tsx scripts/check-feed.ts && tsx scripts/check-gpu-detect.ts && tsx scripts/check-embed-fit.ts && tsx scripts/check-param-buckets.ts && tsx scripts/check-vram-share.ts && tsx scripts/check-calc-simplify.ts && tsx scripts/check-ollama-tags.ts && node --test scripts/check-hf-stats.mjs",
     "check:cli": "tsx scripts/check-cli-sources.ts",
     "check:feed": "tsx scripts/check-feed.ts",
     "check:gpu-detect": "tsx scripts/check-gpu-detect.ts",

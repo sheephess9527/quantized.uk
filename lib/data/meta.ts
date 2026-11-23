@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-23'; // Includes pair-page reduction and Qwen3 14B measured speed correction.
+export const dataLastUpdated = '2026-11-23'; // Includes the visitor speed submission release.
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

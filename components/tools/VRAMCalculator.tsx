@@ -8,6 +8,8 @@ import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
 import RerankerLink from '@/components/tools/RerankerLink';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
+import CommunitySpeedReports from '@/components/feedback/CommunitySpeedReports';
+import { COMMUNITY_SPEED_ENABLED, type SpeedConfiguration } from '@/lib/data/community-speed';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
@@ -803,6 +805,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   // seconds, so the site learns which models and cards readers actually check
   // and which of them do not fit. Ids and verdicts only; nothing typed is sent.
   const trackedResults = useRef(new Set<string>());
+  const submittedReviewKeys = useRef(new Set<string>());
   const resultEvent = useMemo((): Record<string, string | number> | null => {
     if (showForwardResult) {
       return {
@@ -2107,6 +2110,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
               {selectedModel && <RelatedReports modelId={selectedModel.id} gpuId={profileGpu?.id} />}
               {(() => {
+                const speedConfiguration: SpeedConfiguration | undefined = selectedModel && selectedQuantObj && profileGpu ? {
+                  modelId: selectedModel.id, quant: quantLevelKey(selectedQuantObj),
+                  gpuIds: rigDevices(profileGpu, profileCards, profileExtras).map(g => g.id),
+                  context: contextLen, batch: batchSize, kv: kvType, encoderGiB: calcInput.extraGB ?? 0,
+                } : undefined;
                 const configuration = {
                   model: selectedModel?.name || customRepo || t.calc.customLabel,
                   quant: selectedQuantObj ? `${selectedQuantObj.format} ${selectedQuantObj.level}` : selectedQuant,
@@ -2116,7 +2124,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   encoderGiB: result.extraGB ?? 0, estimatedGiB: result.totalGB,
                   sizingInput: JSON.stringify(calcInput),
                 };
-                return <RunReportForm key={JSON.stringify(configuration)} configuration={configuration} />;
+                return <>
+                  {speedConfiguration && <CommunitySpeedReports configuration={speedConfiguration} />}
+                  <RunReportForm key={JSON.stringify(configuration)} configuration={configuration}
+                    speedConfiguration={COMMUNITY_SPEED_ENABLED ? speedConfiguration : undefined}
+                    requiresProcessor={profileGpu?.type === 'cpu'} submittedReviewKeys={submittedReviewKeys.current} />
+                </>;
               })()}
 
               {selectedModel && levels.length > 1 && (
