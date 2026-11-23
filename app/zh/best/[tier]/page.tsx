@@ -19,7 +19,7 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const sizedTitle = q4 ? fitTitle(`${label}能跑多大的模型？Q4 最大约 ${q4.model.paramLabel}，${fitCount} 个装得下`) : undefined;
   const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
   const description = q4
-    ? `${label}能跑多大的模型：Q4_K_M 下最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)} GB）。${models.length} 个模型中有 ${fitCount} 个能在 4K 下装下，附通用、写代码、图像推荐。`
+    ? `${label}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)} GB）。${models.length} 个模型中 ${fitCount} 个能在 4K 下装下，附用途推荐。`
     : chat
     ? `${chat.model.name} 在 ${quantLevelKey(chat.quant)} 下需要 ${tier.vram} GB 中的 ${chat.totalGB.toFixed(1)} GB。${models.length} 个模型中有 ${fitCount} 个能在 4K 下装下，附通用、写代码、图像的推荐。`
     : `${models.length} 个量化模型中有 ${fitCount} 个能在 4K 上下文下装进${label}。`;

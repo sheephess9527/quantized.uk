@@ -246,6 +246,7 @@ export function sameBudgetCards(gpu: GPU): GPU[] {
  */
 export interface Q4Largest {
   model: QuantModel;
+  quant: QuantVariant;
   totalGB: number;
 }
 
@@ -273,7 +274,7 @@ export function largestAtQ4(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): Q4Large
       batchSize: 1,
     });
     if (getVerdict(totalGB, capacity, tightCeiling(gpu)) !== 'green') continue;
-    if (!best || model.params > best.model.params) best = { model, totalGB };
+    if (!best || model.params > best.model.params) best = { model, quant, totalGB };
   }
   return best;
 }
@@ -302,8 +303,8 @@ export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const q4 = largestAtQ4(gpu);
   if (q4) {
     return lang === 'zh'
-      ? `${gpu.name}${zhCap || ' '}能跑多大的模型：Q4_K_M 下最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)}GB）。4K 下 ${total} 个模型中 ${fits.length} 个可从容运行。`
-      : `How big a model can the ${gpu.name}${enCap} run? Up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ~${q4.totalGB.toFixed(1)}GB). ${fits.length} of ${total} LLMs fit at 4K.`;
+      ? `${gpu.name}${zhCap || ' '}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)}GB）。4K 下 ${total} 个模型中 ${fits.length} 个可从容运行。`
+      : `How big a model can ${gpu.name}${enCap} run? Comfortably up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ~${q4.totalGB.toFixed(1)}GB). ${fits.length} of ${total} fit at 4K.`;
   }
   return lang === 'zh'
     ? `${gpu.name}${zhCap || ' '}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`

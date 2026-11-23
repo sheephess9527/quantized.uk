@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const sizedTitle = q4 ? fitTitle(`Best local LLM for ${label}: up to ${q4.model.paramLabel} at Q4`) : undefined;
   const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
   const description = q4
-    ? `How big a model can ${label} run? Up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ${q4.totalGB.toFixed(1)} GB). ${fitCount} of ${models.length} models fit at 4K, with picks.`
+    ? `How big a model can ${label} run? Comfortably up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ${q4.totalGB.toFixed(1)} GB). ${fitCount} of ${models.length} models fit at 4K, with picks.`
     : chat
     ? `${chat.model.name} at ${quantLevelKey(chat.quant)} needs ${chat.totalGB.toFixed(1)} GB of ${tier.vram} GB. ${fitCount} of ${models.length} models fit at 4K — picks for chat, coding and images.`
     : `${fitCount} of ${models.length} quantized models fit ${label} at 4K context.`;
