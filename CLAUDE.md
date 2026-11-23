@@ -53,8 +53,8 @@ so a broken export fails the PR. `build` remains the local gate before every com
 
 The separate `Daily live check` probes production: bilingual calculator results, core pages,
 one retained model/GPU pair, share preview metadata/PNGs, sitemap and `llms.txt`. It runs
-daily after merge and activation, or manually from Actions. Set `LIVE_CHECK_FREE_ONLY=true`
-only after confirming included Actions minutes and no paid overage (README §6).
+daily after merge, or manually from Actions, with no repository variable. Before merging,
+have the owner confirm GitHub Actions spending above the included minutes is blocked at $0 (README §6).
 Failures create or update one owner-assigned issue with the run link.
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior

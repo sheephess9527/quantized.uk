@@ -408,14 +408,14 @@ Pages builds the root `functions/` directory along with `out/`; no separate Work
 ### Daily live check
 
 After merge, the **Daily live check** workflow runs at 01:23 UTC (09:23 in China)
-and can also be run from Actions → Run workflow. Because this is a private repository,
-the Linux runner uses the owner's included GitHub Actions minutes. Before setting the
-repository Actions variable `LIVE_CHECK_FREE_ONLY=true`, confirm there is no paid overage
-(no payment method, or spending blocked at $0 for Actions) and that there are spare included
-minutes. Without the variable both jobs are skipped; if the free quota is exhausted,
-GitHub can stop runs, including alerts. The check job is capped at four minutes and
-uses the Chrome already on the runner; the failure-only alert job is capped at two minutes.
-There is no paid monitor or new Cloudflare service.
+and can also be run from Actions → Run workflow; no repository variable is needed.
+Before merging, the owner should confirm once in [GitHub billing budgets](https://github.com/settings/billing/budgets)
+that Actions spending over the included allowance is blocked at $0. GitHub Free includes
+2,000 Actions minutes per month for private repositories, and this check is expected to
+use about 1–2 Linux runner minutes per day. If the included minutes run out, GitHub can stop
+runs, including alerts. The check uses the Chrome already on the runner and is capped at
+four minutes; the failure-only alert job is capped at two minutes. There is no paid monitor
+or new Cloudflare service.
 
 On failure, the workflow assigns the owner a GitHub issue titled **Daily live check failed**
 and mentions them with a link to the run. Further failures comment on the same open issue.
@@ -572,7 +572,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Added a bilingual live check for the calculator, core pages, a retained model/GPU pair,
   result-link previews, sitemap and `llms.txt`, with a daily GitHub Actions schedule and
-  owner-assigned failure alerts. See §6 for free-tier activation.
+  owner-assigned failure alerts. See §6 for the zero-spend billing check before merge.
 
 ### 2026-11-23 — Model and site patrol
 

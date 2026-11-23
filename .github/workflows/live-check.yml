@@ -12,7 +12,6 @@ permissions: {}
 
 jobs:
   check:
-    if: vars.LIVE_CHECK_FREE_ONLY == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 4
     permissions:
