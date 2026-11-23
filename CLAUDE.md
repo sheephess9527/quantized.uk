@@ -27,13 +27,13 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 
 | Surface | Notes |
 |--------|--------|
-| Models | **156** in index (`models-extra` … `models-extra-18`), 136 active |
+| Models | **157** in index (`models-extra` … `models-extra-18`), 137 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (157 models: 155 licensed, 50 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,392 HTML files (3,605 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,406 HTML files (3,635 files in `out/`) including 404 variants and 328 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1357,7 +1357,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
-| 2026-11-23 | **PRs #28–#49 documentation audit** — all 21 merged PRs have README §9 entries; #45 is open and excluded. Current index: 156 models (136 active), 122 GPU configurations + 4 CPU rows, 28 guides, 322 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
+| 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. Current index: 157 models (137 active), 122 GPU configurations + 4 CPU rows, 28 guides, 328 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
 | 2026-11-22–23 | **Calculator and discovery releases (#28–#49, excluding #45)** — first-load detection, context/concurrency controls, shared size buckets, CI build, share previews, embeds, pair pages and 15,000-file gate, benchmark provenance, forward speed, 27 laptop + 17 other hardware rows, Ollama tag matching, progressive controls, sourced-data tagline, Chinese LLM summary, methodology, five frontier models/compressed KV, answer-first pairs, reverse speed/features and exact-checkpoint LiveBench scores. Historical rows below retain their ship-time counts. |
 | 2026-11-14 (ii) | **Hub: input + licence filters** — `lib/data/model-facts.ts` (26 licences with class + URL, 134 of 136 models read from HF cards, 36 image-input ids), `lib/utils/model-facts.ts` readers + `factTableProblems()` gate, `?input=` / `?lic=` through `hub-url.ts`, licence badge on every card; i18n dictionary split evaluated and **not** done (one root layout serves both trees — needs route groups); docs + repo ops below |
 | 2026-11-14 | **Patrol + repo cleanup** — llama.cpp b12376 (Windows names unchanged), runtimeVersions.checkedAt 11-14 (Ollama v0.40.16 / vLLM v0.33.0 / ExLlamaV3 1.6.7), HF stats refreshed (116 fetched, 20 kept), stale draft PRs #11/#12 closed, 17 merged/stale remote branches deleted (only `main` left) |

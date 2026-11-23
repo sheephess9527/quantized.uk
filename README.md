@@ -550,8 +550,9 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-23 — Documentation audit of merged PRs #28–#49
 
-- Audited all 21 merged PRs against this changelog and the maintainer conventions; open PR #45 is excluded. Existing release entries were present for every merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.
+- Audited the original 21 merged PRs against this changelog and the maintainer conventions. PR #45 was initially open; it has since merged and records KORMo-Web-4B in its own README/data-log entries, preserved below rather than duplicated. Existing release entries were present for every audited merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.
 - Added the [per-PR audit and verification record](docs/changes/2026-11-23-pr-28-49-docs-audit.md) and source-linked additions/corrections in [the data verification log](docs/data-corrections.md). Refreshed the snapshot date and Recent ships summary; retained historical release-time counts as history. No application/data changes or new performance measurements.
+- Merged main after #45 without rebasing, retained both sets of documentation, and recomputed the current snapshot: 157 models (137 active), 155 licensed, 50 image-input models and 328 model/GPU pairs per language. Hardware and guide counts are unchanged; the audit record includes the rebuilt export counts.
 
 ### 2026-11-23 — Fewer model/GPU pair pages
 

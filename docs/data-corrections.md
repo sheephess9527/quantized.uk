@@ -4,7 +4,7 @@
 
 These entries record the merged work and its existing evidence, not newly performed
 publisher fetches or benchmarks. The original November 21 audit follows unchanged.
-Open PR #45 and KORMo-Web-4B are excluded. See the [per-PR documentation audit](changes/2026-11-23-pr-28-49-docs-audit.md).
+PR #45 was open during the initial audit and has since merged. Its own KORMo-Web-4B record is preserved under “Catalog addition — 2026-11-23” below, not duplicated in this backfill. See the [per-PR documentation audit](changes/2026-11-23-pr-28-49-docs-audit.md).
 
 | Date shipped | Model / hardware | Field | Old value | New value | Source / limitation |
 | --- | --- | --- | --- | --- | --- |
