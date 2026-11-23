@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Authors can now copy a Markdown badge from a model’s detail page and paste it into their Hugging Face model card. The badge links readers to the same model’s VRAM and quantization details.',
+    zh: '模型详情页新增可复制的 Markdown 徽章。作者可将徽章粘贴到自己的 Hugging Face 模型卡片中，方便读者查看该模型的显存与量化详情。',
+  },
+  {
+    date: '2026-11-24',
     en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
     zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
   },

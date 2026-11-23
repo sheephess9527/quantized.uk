@@ -597,6 +597,15 @@ export const translations = {
         copyHfSearch: 'Copy HF link',
         copyLink: 'Copy',
         hfCopied: 'Copied!',
+        modelCardBadge: {
+          title: 'Hugging Face model card badge',
+          description: 'Paste the Markdown into your model card to link to this model’s VRAM and quantization details.',
+          alt: 'View VRAM and quantization details on quantized.uk',
+          copy: 'Copy Markdown',
+          copied: 'Markdown copied',
+          manual: 'Clipboard unavailable. Copy the Markdown below manually.',
+          markdown: 'Model card badge Markdown',
+        },
       },
     },
     compare: {
@@ -2192,6 +2201,15 @@ export const translations = {
         copyHfSearch: '复制 HF 链接',
         copyLink: '复制',
         hfCopied: '已复制！',
+        modelCardBadge: {
+          title: 'Hugging Face 模型卡片徽章',
+          description: '将 Markdown 粘贴到你的模型卡片中，即可链接到本模型的显存与量化详情。',
+          alt: '在 quantized.uk 查看显存与量化详情',
+          copy: '复制 Markdown',
+          copied: '已复制 Markdown',
+          manual: '无法访问剪贴板，请手动复制下方的 Markdown。',
+          markdown: '模型卡片徽章 Markdown',
+        },
       },
     },
     compare: {

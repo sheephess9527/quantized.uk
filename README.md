@@ -99,7 +99,7 @@ app/                        # Next.js App Router pages
 components/
   layout/                   # Navbar (lang + GPU profile + Tools), Footer
   home/                     # Hero, HomeMatch, PopularStarts, MeasuredCases, WeeklyUpdates, …
-  hub/                      # ModelCard, ModelDetail, ModelGuides, FilterBar (incl. recency, input, licence)
+  hub/                      # ModelCard, ModelDetail, ModelCardBadge, ModelGuides, FilterBar
   cookbook/                 # ArticleView, GuideNextSteps (guide → hub/calculator)
   tools/                    # VRAMCalculator, CLIGenerator, FormatWizard, ModelCompare
 
@@ -630,6 +630,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Copyable Hugging Face model card badge
+
+- Model detail pages in both languages now show a badge and a **Copy Markdown** button below the quantization variants. Authors can paste it into their own Hugging Face model card; it links to that model's details in the language they copied from. Clipboard restrictions reveal the same Markdown for manual copying. The badge uses one self-hosted asset and no new pages. [Implementation and checks](docs/changes/2026-11-24-model-card-badge.md).
 
 ### 2026-11-24 — Mobile calculator and model index layout
 
