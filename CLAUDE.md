@@ -43,12 +43,19 @@ npm test         # recommendations, evidence, speed calibration, CLI sources and
 npm run build    # type-check + lint + static export → out/   (gate before every commit)
 npm run lint
 npm run typecheck # tsc --noEmit
+npm run check:live # production smoke check (installed Google Chrome, or set CHROME_PATH)
 npm start        # static out/ preview on :3000, build first (pinned npx serve)
 ```
 
 `npm test` is the data-check gate (recommendations, calculator evidence, speed calibration, exact CLI sources and RSS).
 GitHub Actions runs it (`data-checks`) and `npm run build` (`build`) on push and pull request,
 so a broken export fails the PR. `build` remains the local gate before every commit.
+
+The separate `Daily live check` probes production: bilingual calculator results, core pages,
+one retained model/GPU pair, share preview metadata/PNGs, sitemap and `llms.txt`. It runs
+daily after merge, or manually from Actions, with no repository variable. Before merging,
+have the owner confirm GitHub Actions spending above the included minutes is blocked at $0 (README §6).
+Failures create or update one owner-assigned issue with the run link.
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.

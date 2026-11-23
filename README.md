@@ -366,6 +366,12 @@ To exercise the share metadata and PNG against the real export, run
 `npx --yes wrangler@4.66.0 pages dev out` from the project root after building.
 `npm start` and `next dev` serve only the static/base metadata.
 
+`npm run check:live` checks **https://quantized.uk**, not a local build. It uses installed
+Google Chrome (or `CHROME_PATH` pointing to a Chrome/Chromium executable) to verify that
+the calculator's memory estimate changes with context in both languages. It checks the
+main routes, one retained model/GPU pair, both result-link previews and PNGs, sitemap,
+and both `llms.txt` files. Each check prints PASS or FAIL and any failure sets a nonzero exit code.
+
 > **Note on `postbuild`:** `npm run build` ends with `scripts/localize-export.mjs`, which patches
 > `<html lang>` for the Chinese tree and **fails the build** if a `/zh` page links into the English
 > tree. Unlike `prebuild` this one is a gate, not a best-effort refresh — a non-zero exit here is a
@@ -398,6 +404,22 @@ compatibility_date = "2026-02-17"
 ```
 
 Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy or bindings are needed. `public/_routes.json` limits execution to both calculator paths and `/api/vram-share.png`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
+
+### Daily live check
+
+After merge, the **Daily live check** workflow runs at 01:23 UTC (09:23 in China)
+and can also be run from Actions → Run workflow; no repository variable is needed.
+Before merging, the owner should confirm once in [GitHub billing budgets](https://github.com/settings/billing/budgets)
+that Actions spending over the included allowance is blocked at $0. GitHub Free includes
+2,000 Actions minutes per month for private repositories, and this check is expected to
+use about 1–2 Linux runner minutes per day. If the included minutes run out, GitHub can stop
+runs, including alerts. The check uses the Chrome already on the runner and is capped at
+four minutes; the failure-only alert job is capped at two minutes. There is no paid monitor
+or new Cloudflare service.
+
+On failure, the workflow assigns the owner a GitHub issue titled **Daily live check failed**
+and mentions them with a link to the run. Further failures comment on the same open issue.
+Keep GitHub assignment/mention notifications enabled and close the issue after verifying recovery.
 
 ### Hard-won lessons (so you don't repeat them)
 
@@ -545,6 +567,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — Daily production smoke check
+
+- Added a bilingual live check for the calculator, core pages, a retained model/GPU pair,
+  result-link previews, sitemap and `llms.txt`, with a daily GitHub Actions schedule and
+  owner-assigned failure alerts. See §6 for the zero-spend billing check before merge.
 
 ### 2026-11-23 — Model and site patrol
 
