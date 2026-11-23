@@ -3,7 +3,7 @@
 - The forward calculator reads public Hugging Face `blob` and `resolve` file links, or `org/repo filename.gguf`. It asks the Hub's `paths-info` API for bytes at the selected revision; a split GGUF is sized only when every part is present. Only metadata and config are fetched, not model weights. Repository import and manual model sizing remain available.
 - File bytes replace the weight estimate, not the KV cache or activation allowance. The quant label is derived from the filename when recognizable. The existing architecture import uses `config.json` at the revision or the linked base model. If architecture is missing, the file size is still shown, and the calculator asks for layers, KV heads and head dimension before estimating total VRAM. No extra vision-encoder size is inferred.
 - The shared URL stores the source link, exact bytes and architecture snapshot. The recipient and link preview do not contact Hugging Face again. The file is not saved to the hardware profile.
-- Six indexed Chinese models show a ModelScope download link in both languages. See the [listing evidence](../data-corrections.md#2026-11-24--modelscope-gguf-download-links). No new routes, dependencies or backend work.
+- Five indexed Chinese models show a ModelScope download link with the uploader named in both languages. See the [listing evidence and MiniMax exclusion](../data-corrections.md#2026-11-24--modelscope-gguf-download-links). No new routes, dependencies or backend work.
 
 ## Verification
 

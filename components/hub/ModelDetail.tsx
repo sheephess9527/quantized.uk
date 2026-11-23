@@ -172,7 +172,7 @@ export default function ModelDetail({ model }: Props) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"
           >
-            {t.hub.model.viewModelScope}
+            {t.hub.model.viewModelScope.replace('{uploader}', modelscopeRepo.split('/')[0])}
             <ExternalLink size={14} />
           </a>
         )}

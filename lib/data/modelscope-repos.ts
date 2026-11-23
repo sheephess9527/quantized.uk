@@ -4,5 +4,4 @@ export const modelscopeRepoMap: Readonly<Partial<Record<string, string>>> = {
   'deepseek-r1': 'unsloth/DeepSeek-R1-GGUF',
   'glm-4.7-flash': 'unsloth/GLM-4.7-Flash-GGUF',
   'kimi-k3-1-pro': 'DevQuasar/moonshotai.Kimi-K3.1-Pro-GGUF',
-  'minimax-m3-1-flash': 'unsloth/MiniMax-M3.1-Flash-GGUF',
 };

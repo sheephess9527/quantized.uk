@@ -635,7 +635,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-24 — Size an exact GGUF file and download from ModelScope
 
 - The forward VRAM calculator accepts public Hugging Face GGUF file links or `org/repo filename.gguf`. It reads the exact bytes of the file or all of its numbered parts, labels the quant from the filename, and estimates KV cache from the repo or base model config when available. Missing architecture can be supplied manually. Shared results retain the size and model shape without re-fetching.
-- Six Chinese model pages link directly to verified ModelScope GGUF listings. No routes, page titles or backend services changed. See [implementation and verification](docs/changes/2026-11-24-exact-gguf-modelscope.md).
+- Five Chinese model pages link directly to verified ModelScope GGUF listings and name the uploader. No routes, page titles or backend services changed. See [implementation and verification](docs/changes/2026-11-24-exact-gguf-modelscope.md).
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

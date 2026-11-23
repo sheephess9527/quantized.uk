@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
-    en: 'Paste a public Hugging Face GGUF file link into the VRAM calculator to estimate memory using its exact size, including split files. Six Chinese model pages now also link to verified ModelScope GGUF downloads.',
-    zh: '在显存计算器中粘贴 Hugging Face 的公开 GGUF 文件链接，即可按实际文件大小估算显存，支持多分片文件。六个国产模型页面新增了已核实的魔搭 ModelScope GGUF 下载入口。',
+    en: 'Paste a public Hugging Face GGUF file link into the VRAM calculator to estimate memory using its exact size, including split files. Five Chinese model pages now also link to verified ModelScope GGUF downloads and name the uploader.',
+    zh: '在显存计算器中粘贴 Hugging Face 的公开 GGUF 文件链接，即可按实际文件大小估算显存，支持多分片文件。五个国产模型页面新增了已核实的魔搭 ModelScope GGUF 下载入口，并标明上传者。',
   },
   {
     date: '2026-11-24',
