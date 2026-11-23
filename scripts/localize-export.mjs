@@ -20,6 +20,7 @@
  *
  * Runs as `postbuild`, so `npm run build` stays the single gate.
  */
+import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
@@ -313,4 +314,43 @@ if (existsSync(redirectsFile)) {
     process.exit(1);
   }
   console.log(`localize-export: structured data checked (${entities} page entities) — language, URL, counts and FAQ text all match`);
+}
+
+{
+  const calc = '/tools/vram-calc/';
+  const index = '/errors/';
+  const slug = 'failed-to-allocate-kv-cache';
+  const detail = index + slug + '/';
+  const origin = 'https://quantized.uk';
+  const source = path => readFileSync(join(OUT, path, 'index.html'), 'utf8');
+  for (const prefix of ['', '/zh']) {
+    const zh = prefix === '/zh';
+    for (const path of [calc, index, detail]) {
+      const html = source(prefix + path);
+      assert.ok(html.includes(`rel="canonical" href="${origin}${prefix}${path}"`), `${prefix}${path}: self-canonical`);
+      for (const [lang, alternate] of [['en', ''], ['zh-Hans', '/zh'], ['x-default', '']]) {
+        assert.ok(html.includes(`hrefLang="${lang}" href="${origin}${alternate}${path}"`), `${prefix}${path}: ${lang} alternate`);
+      }
+    }
+    const calculator = source(prefix + calc);
+    assert.match(calculator, zh ? /<title>大模型显存 \/ 内存计算器 \| quantized\.uk<\/title>/ : /<title>LLM VRAM Calculator: Will It Fit Your GPU\?/);
+    assert.match(calculator, zh ? /<h1[^>]*>显存 \/ 内存计算器<\/h1>/ : /<h1[^>]*>LLM VRAM Calculator<\/h1>/);
+    assert.match(calculator, zh ? /<dt[^>]*>我的显卡能跑哪些大模型？<\/dt>/ : /<dt[^>]*>Which LLMs can I run on my GPU\?<\/dt>/);
+    for (const path of ['/methodology/', '/tools/context-length/']) {
+      assert.match(source(prefix + path), zh
+        ? /<a[^>]*href="\/zh\/tools\/vram-calc\/">用大模型显存计算器估算/
+        : /<a[^>]*href="\/tools\/vram-calc\/">[^<]*LLM VRAM calculator<\/a>/);
+    }
+    const errors = source(prefix + index);
+    assert.ok(errors.includes(`href="#${slug}"`), `${prefix}${index}: jump to KV-cache error`);
+    assert.ok(errors.includes(`id="${slug}"`), `${prefix}${index}: target of KV-cache jump`);
+    assert.ok(errors.includes(`href="${prefix}${detail}"`), `${prefix}${index}: KV-cache detail link`);
+    assert.match(source(prefix + detail), /<pre[^>]*>failed to allocate buffer for kv cache<\/pre>/);
+  }
+  assert.match(source(calc), /<meta name="description" content="Estimate GPU VRAM and system RAM for local LLMs\./);
+  assert.match(source(index), /<title>LLM Error Lookup: KV Cache,/);
+  assert.match(source(index), /<meta name="description" content="Fix “failed to allocate buffer for kv cache,”/);
+  assert.match(source(detail), /<title>failed to allocate buffer for kv cache: llama\.cpp fix<\/title>/);
+  assert.match(source(detail), /<meta name="description" content="llama\.cpp loaded the weights but ran out of room for the KV cache\./);
+  console.log('localize-export: calculator and KV-cache search metadata, localized links and anchor checked');
 }

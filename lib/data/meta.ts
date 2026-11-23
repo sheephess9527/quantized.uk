@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-23'; // Includes the setup guide and visitor speed submission updates.
+export const dataLastUpdated = '2026-11-23'; // Includes the setup guides, calculator search copy and visitor speed submission release.
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

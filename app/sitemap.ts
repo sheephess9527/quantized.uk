@@ -6,7 +6,7 @@ import { models } from '@/lib/data/models';
 import { articles } from '@/lib/data/cookbook';
 import { dataLastUpdated, runtimeVersions, sizingChangedAt } from '@/lib/data/meta';
 import { pendingModels } from '@/lib/data/pending';
-import { runtimeErrors } from '@/lib/data/errors';
+import { errorModifiedAt, runtimeErrors } from '@/lib/data/errors';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatPairs } from '@/lib/utils/format-compare';
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the
   // tool's date here when that text changes — not `sizingChangedAt`, which
   // would re-announce every derived page.
-  const VRAM_CALC_EDITED = '2026-11-20';
+  const VRAM_CALC_EDITED = '2026-11-23';
   const QUESTIONS_EDITED = '2026-10-26';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
@@ -71,7 +71,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const, priority: 0.7,
     })),
     { path: '/benchmarks/', lastModified: benchDate, changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/methodology/', lastModified: latest(['2026-11-22', sizingChangedAt, ...matrixData.map(row => row.firstPublishedAt)]), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/methodology/', lastModified: latest(['2026-11-23', sizingChangedAt, ...matrixData.map(row => row.firstPublishedAt)]), changeFrequency: 'monthly', priority: 0.7 },
     { path: '/cookbook/', lastModified: guidesDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/faq/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
     { path: '/formats/', lastModified: inventoryDate, changeFrequency: 'monthly', priority: 0.7 },
@@ -84,8 +84,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Derived tables over the calculator's own functions; first published 2026-10-26.
     { path: '/tools/speed/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
     { path: '/tools/which-quant/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/tools/context-length/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), QUESTIONS_EDITED]), changeFrequency: 'monthly', priority: 0.7 },
-    { path: '/errors/', lastModified: latest(runtimeErrors.map(e => e.checkedAt)), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/tools/context-length/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-11-23']), changeFrequency: 'monthly', priority: 0.7 },
+    { path: '/errors/', lastModified: latest(['2026-11-23', ...runtimeErrors.map(errorModifiedAt)]), changeFrequency: 'monthly', priority: 0.7 },
   ];
 
   const entries: Entry[] = [
@@ -138,7 +138,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Each error page changes when its own entry is re-checked.
     ...runtimeErrors.map(e => ({
       path: `/errors/${e.id}/`,
-      lastModified: new Date(e.checkedAt),
+      lastModified: new Date(errorModifiedAt(e)),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
