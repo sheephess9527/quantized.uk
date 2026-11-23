@@ -34,7 +34,8 @@ fresh read of the raw exports. The other guides' precise queries are unknown.
 
 The [b12409 release API](https://api.github.com/repos/ggml-org/llama.cpp/releases/tags/b12409)
 listed the Windows x64 CUDA 12.4 and 13.5 binary/runtime ZIPs and the ROCm 10.0,
-SYCL, and Vulkan ZIPs. This was a source and export check, not a GPU runtime
-test; no guide was marked hardware-verified. Both languages keep the same
-slugs and pre-existing section positions, and Chinese titles are unchanged.
+SYCL, and Vulkan ZIPs. The Windows CUDA ZIP path was checked against upstream
+sources, not run on hardware. The guide's original stack describes the source
+build, not the ZIPs. No guide was newly marked hardware-verified. Both languages
+keep the same slugs and pre-existing section positions, and Chinese titles are unchanged.
 Compare each URL's clicks and CTR against this baseline after deployment.

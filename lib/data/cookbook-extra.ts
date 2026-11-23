@@ -302,8 +302,8 @@ export const extraArticles: Article[] = [
     publishedAt: '2026-06-23',
     verifiedAt: '2026-07-22',
     verifiedStack: {
-      en: 'Windows 11 x64 · NVIDIA driver · CUDA 12.4 / 13.5 ZIPs · optional MSVC + CUDA Toolkit build',
-      zh: 'Windows 11 x64 · NVIDIA 驱动 · CUDA 12.4 / 13.5 ZIP · 可选 MSVC + CUDA Toolkit 编译',
+      en: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
+      zh: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
     },
     content: [
       { heading: 'Prerequisites', headingZh: '前置条件', body: 'Install Visual Studio Build Tools, CMake, and CUDA Toolkit 12.x.', bodyZh: '安装 Visual Studio Build Tools、CMake 和 CUDA Toolkit 12.x。', code: { lang: 'powershell', content: 'winget install Kitware.CMake\n# CUDA: download from developer.nvidia.com/cuda-downloads' } },
