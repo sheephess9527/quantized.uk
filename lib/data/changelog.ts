@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-24',
+    en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
+    zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
+  },
+  {
     date: '2026-11-23',
     en: 'GPU pages and the 8–32 GB VRAM pages now answer how big a model the card can run: the largest current model at Q4_K_M with 4K context, in the summary and a new first FAQ, and in the titles of the VRAM pages and the English GPU pages.',
     zh: '显卡页和 8–32 GB 显存页现在直接回答“能跑多大的模型”：按 Q4_K_M、4K 上下文能从容运行的最大现行模型，写在摘要和新的第一条常见问题里，显存页标题也写明了这个数。',

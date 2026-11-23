@@ -1,6 +1,7 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { ChevronDown, Search, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { cn } from '@/lib/utils/cn';
 import { SHIPPED_FORMATS } from '@/lib/utils/hub-url';
@@ -28,12 +29,47 @@ interface Props {
   count: number;
   total: number;
   profileFilterActive?: boolean;
-  gpuFilterId: string | null;
   legacyCount: number;
+  desktopSearch: ReactNode;
+  mobileStats: ReactNode;
 }
 
-export default function FilterBar({ filters, onChange, count, total, profileFilterActive, gpuFilterId, legacyCount }: Props) {
+export function HubSearch({ filters, onChange, gpuFilterId, id }: Pick<Props, 'filters' | 'onChange'> & {
+  gpuFilterId: string | null;
+  id: string;
+}) {
   const { t, lang } = useLanguage();
+
+  return (
+    <form role="search" action={localizeHref('/quant-hub/', lang)} method="get" className="relative">
+      <label htmlFor={id} className="sr-only">{t.hub.search}</label>
+      <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" aria-hidden="true" />
+      <input
+        type="search"
+        id={id}
+        name="q"
+        placeholder={t.hub.searchPlaceholder.replace('{n}', String(models.length))}
+        value={filters.search}
+        onChange={e => onChange({ ...filters, search: e.target.value })}
+        className="w-full min-h-[44px] sm:min-h-0 bg-white/[0.04] border border-white/[0.14] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
+      />
+      {gpuFilterId && <input type="hidden" name="gpu" value={gpuFilterId} />}
+      {filters.paramRange && <input type="hidden" name="size" value={filters.paramRange} />}
+      {filters.category && <input type="hidden" name="cat" value={filters.category} />}
+      {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}
+      {filters.format && <input type="hidden" name="fmt" value={filters.format} />}
+      {filters.input && <input type="hidden" name="input" value={filters.input} />}
+      {filters.licence && <input type="hidden" name="lic" value={filters.licence} />}
+      {filters.recency && <input type="hidden" name="recency" value={filters.recency} />}
+      {filters.showLegacy && <input type="hidden" name="legacy" value={filters.showLegacy} />}
+    </form>
+  );
+}
+
+export default function FilterBar({ filters, onChange, count, total, profileFilterActive, legacyCount, desktopSearch, mobileStats }: Props) {
+  const { t } = useLanguage();
+  const [expanded, setExpanded] = useState(false);
+  const activeCount = Object.entries(filters).filter(([key, value]) => key !== 'search' && value).length;
 
   const set = (key: keyof HubFilters) => (val: string) =>
     onChange({ ...filters, [key]: val });
@@ -83,7 +119,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
   );
 
   return (
-    <div className="glass rounded-2xl p-5 space-y-4">
+    <div className="glass rounded-2xl px-4 sm:p-5">
       {/*
         A real GET form, not a bare input.
 
@@ -100,32 +136,16 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
         pre-filtered document per query, so `?q=` is honoured after mount by
         `HubQueryObserver`. The URL is real, shareable and crawlable either way.
       */}
-      <form role="search" action={localizeHref('/quant-hub/', lang)} method="get" className="relative">
-        <label htmlFor="hub-search" className="sr-only">{t.hub.search}</label>
-        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" aria-hidden="true" />
-        <input
-          type="search"
-          id="hub-search"
-          name="q"
-          // A placeholder is not an accessible name: it disappears on focus and
-          // several screen readers ignore it entirely.
-          aria-label={t.hub.search}
-          placeholder={t.hub.searchPlaceholder.replace('{n}', String(models.length))}
-          value={filters.search}
-          onChange={e => set('search')(e.target.value)}
-          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
-        />
-        {gpuFilterId && <input type="hidden" name="gpu" value={gpuFilterId} />}
-        {filters.paramRange && <input type="hidden" name="size" value={filters.paramRange} />}
-        {filters.category && <input type="hidden" name="cat" value={filters.category} />}
-        {filters.hardware && <input type="hidden" name="hw" value={filters.hardware} />}
-        {filters.format && <input type="hidden" name="fmt" value={filters.format} />}
-        {filters.input && <input type="hidden" name="input" value={filters.input} />}
-        {filters.licence && <input type="hidden" name="lic" value={filters.licence} />}
-        {filters.recency && <input type="hidden" name="recency" value={filters.recency} />}
-        {filters.showLegacy && <input type="hidden" name="legacy" value={filters.showLegacy} />}
-      </form>
-
+      <div className="hidden sm:block mb-4">{desktopSearch}</div>
+      <button type="button" aria-expanded={expanded} aria-controls="hub-filters"
+        onClick={() => setExpanded(!expanded)}
+        className="flex sm:hidden w-full min-h-[44px] items-center justify-between gap-2 text-left text-sm font-medium text-violet-300"
+      >
+        {t.hub.moreFilters}{activeCount > 0 && ` (${activeCount})`}
+        <ChevronDown size={14} aria-hidden="true" className={expanded ? 'rotate-180' : undefined} />
+      </button>
+      <div id="hub-filters" className={cn('gap-4 pb-4 sm:grid sm:pb-0', expanded ? 'grid' : 'hidden')}>
+      <div className="sm:hidden">{mobileStats}</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {renderGroup(t.hub.filters.params, 'paramRange', PARAM_RANGES.map(value => ({ value, label: PARAM_RANGE_LABEL[value] })))}
 
@@ -178,8 +198,8 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           <p className={cn(
             'text-xs font-medium',
             count < total
-              ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400/70'
-              : 'text-slate-600',
+              ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400'
+              : 'text-slate-500',
           )}>
             {t.hub.modelCount.replace('{count}', String(count)).replace('{total}', String(total))}
           </p>
@@ -214,6 +234,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
             {t.hub.clearFilters}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

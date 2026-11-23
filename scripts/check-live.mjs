@@ -66,6 +66,78 @@ async function checkCalculator(browser, { prefix, estimate }) {
   }
 }
 
+async function checkPhoneUi(browser, { prefix }, base = origin) {
+  const page = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    reducedMotion: 'reduce',
+  });
+  try {
+    await page.route('**/*', route => new URL(route.request().url()).origin === base
+      ? route.continue() : route.abort());
+    const open = async path => {
+      const response = await page.goto(base + prefix + path, { waitUntil: 'domcontentloaded', timeout });
+      assert.equal(response?.status(), 200, path);
+    };
+    const rect = async locator => {
+      const box = await locator.boundingBox({ timeout });
+      assert(box, `not visible: ${locator}`);
+      return box;
+    };
+    const tap = async locator => {
+      const { width, height } = await rect(locator);
+      assert(width >= 44 && height >= 44, `undersized touch target: ${locator} (${width}×${height})`);
+    };
+    const noOverflow = async () => assert.equal(
+      await page.evaluate(() => document.documentElement.scrollWidth), 390, 'phone document overflow',
+    );
+
+    await open(calculator);
+    const gpu = page.locator('#calc-reverse-card');
+    const jump = page.getByRole('link', { name: prefix ? /\d+ 个可用配置 · 查看模型/ : /\d+ compatible configs · View models/ });
+    await jump.waitFor({ timeout });
+    await gpu.selectOption('rtx4090', { timeout });
+    const share = page.getByRole('button', { name: prefix ? '复制分享链接' : 'Copy share link', exact: true });
+    const result = page.locator('#calc-result');
+    await tap(gpu);
+    await tap(jump);
+    await tap(share);
+    await tap(page.getByRole('button', { name: prefix ? '显卡 → 模型' : 'GPU → Models', exact: true }));
+    await tap(page.getByRole('button', { name: '8K (8,192 tokens)', exact: true }));
+    assert((await rect(jump)).y < 844, 'the result jump is below the first viewport');
+    assert((await rect(result)).y < (await rect(share)).y, 'the share button precedes the result');
+    const reranker = page.getByRole('link', { name: prefix ? /选 reranker/ : /Choose a reranker/ });
+    assert((await rect(result)).y < (await rect(reranker)).y, 'the related tool precedes the result');
+    await jump.click({ timeout });
+    assert(await result.evaluate(el => document.activeElement === el), 'the jump did not focus results');
+    await page.getByRole('button', { name: prefix ? '更多选项' : 'More options', exact: true }).click({ timeout });
+    await tap(page.locator('#calc-batch'));
+    await noOverflow();
+
+    await open('/quant-hub/');
+    const search = page.getByRole('searchbox');
+    const disclosure = page.getByRole('button', { name: prefix ? /更多筛选与模型库统计/ : /More filters & index stats/ });
+    const filters = page.locator('#hub-filters');
+    await tap(search);
+    assert((await rect(search)).y < 250, 'search is not near the heading');
+    assert(await page.getByRole('button', { name: /RTX 4090/ }).first().isVisible(), 'missing quick GPU filter');
+    assert.equal(await disclosure.getAttribute('aria-expanded'), 'false');
+    assert.equal(await filters.isVisible(), false);
+    await disclosure.click({ timeout });
+    assert.equal(await disclosure.getAttribute('aria-expanded'), 'true');
+    assert(await filters.isVisible());
+    await disclosure.click({ timeout });
+    await search.fill('qwen3 8b', { timeout });
+    await page.getByRole('heading', { name: 'Llama 3.1 8B Instruct', exact: true }).waitFor({ state: 'hidden', timeout });
+    await page.getByRole('heading', { name: 'Qwen3 8B Instruct', exact: true }).waitFor({ timeout });
+    await noOverflow();
+    return 'reverse result jump, 44px controls and Hub disclosure/search at 390×844';
+  } finally {
+    await page.close();
+  }
+}
+
 async function checkShare(browser, { lang, prefix, preview, tokens }) {
   const share = { ...config, share: '1', ctx: '8192' };
   const url = calcUrl(prefix, share);
@@ -129,15 +201,19 @@ async function check(name, run) {
   }
 }
 
-console.log(`Live checks for ${origin} at ${new Date().toISOString()}`);
-const httpChecks = [check('/sitemap.xml', checkSitemap)];
-for (const { prefix, htmlLang } of locales) {
-  httpChecks.push(check(`${prefix}/llms.txt`, () => checkLlms(prefix)));
-  for (const [path, en, zh] of pages)
-    httpChecks.push(check(`${prefix}${path}`, () => checkPage(prefix + path, htmlLang, prefix ? zh : en)));
+const phoneOnly = process.argv[2] === '--phone-ui';
+const browserOrigin = phoneOnly && process.argv[3] ? new URL(process.argv[3]).origin : origin;
+console.log(`Live checks for ${browserOrigin} at ${new Date().toISOString()}`);
+if (!phoneOnly) {
+  const httpChecks = [check('/sitemap.xml', checkSitemap)];
+  for (const { prefix, htmlLang } of locales) {
+    httpChecks.push(check(`${prefix}/llms.txt`, () => checkLlms(prefix)));
+    for (const [path, en, zh] of pages)
+      httpChecks.push(check(`${prefix}${path}`, () => checkPage(prefix + path, htmlLang, prefix ? zh : en)));
+  }
+  await Promise.all(httpChecks);
 }
 
-await Promise.all(httpChecks);
 const executablePath = process.env.CHROME_PATH;
 const browser = await chromium.launch({ ...(executablePath ? { executablePath } : { channel: 'chrome' }), timeout })
   .catch(error => {
@@ -145,7 +221,9 @@ const browser = await chromium.launch({ ...(executablePath ? { executablePath } 
   });
 try {
   for (const locale of locales) {
-    for (const [name, run] of [['calculator', checkCalculator], ['share preview', checkShare]]) {
+    const checks = [['phone UI', (browser, locale) => checkPhoneUi(browser, locale, browserOrigin)]];
+    if (!phoneOnly) checks.unshift(['calculator', checkCalculator], ['share preview', checkShare]);
+    for (const [name, run] of checks) {
       await check(`${locale.lang} ${name}`, () => {
         assert(browser, 'Chromium could not start');
         return run(browser, locale);
