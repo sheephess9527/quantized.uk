@@ -630,6 +630,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
+
+- The owner's Bing Webmaster Tools export (2026-08-22 to 11-21) shows Bing is the main search source (1,710 clicks; 96% of page clicks on `/zh/`), and its biggest query shape is "<card> / N G 显存 能跑多大的模型". New `largestAtQ4()` gives the largest current model whose GGUF Q4_K_M build fits comfortably at 4K.
+- `/gpu/{card}/`, `/best/{N}gb-vram/` and their `/zh/` copies now lead the meta description with that answer and open the FAQ with "能跑多大的模型？" / "How big a model can … run?". Titles carry it on `/best/` in both languages ("16G 显存能跑多大的模型？Q4 最大约 21B MoE，86 个装得下") and on English GPU pages ("RTX 5060: what LLMs can it run? Up to 9B at Q4"). **`/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？`**: they carry most of the site's search clicks (RTX 5070 28% CTR, 5080 24%) and nobody could watch CTR overnight; change them only after a fresh export shows them losing clicks. No pages added; `out/` stays at 3,737 files. Queries and page numbers: `docs/changes/2026-11-23-bing-how-big-answers.md`.
+
 ### 2026-11-23 — Setup guide answers from Bing and Google search demand
 
 - Reworked the four existing Windows CUDA, Radeon ROCm, WSL2 Ollama and Intel Arc guides: official Windows downloads and missing DLL fixes, AMD backend and GPU target selection, WSL2 GPU checks, and Intel SYCL versus Vulkan setup. Updated English snippets and mirrored the content in Chinese without changing Chinese titles or adding routes. Sources and baseline: [cookbook search intent](docs/changes/2026-11-23-cookbook-search-intent.md).

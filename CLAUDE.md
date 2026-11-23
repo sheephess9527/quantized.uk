@@ -93,6 +93,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **"How big" answers (Bing, 2026-11-23):** GPU and VRAM-tier titles, descriptions and first FAQ name `largestAtQ4()` — largest current model at GGUF Q4_K_M, 4K, batch 1. Keep one level across cards so parameter counts compare; titles over 60 width fall back to the plain question. Apple tier excluded. `/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？` (they win most Bing clicks) — change only on fresh export evidence.
 - **Cookbook code blocks:** Copy takes the whole block. Keep each runnable block in one shell; use a section's `code` array for separately copyable alternatives without moving its anchor.
 
 - **Published model scores:** `lib/data/model-quality.ts` pins LiveBench Overall only for exact checkpoints. Always link the dated release; scores across releases are not directly comparable and are not quant-level measurements. Never infer a missing score. The reverse scored-only checkbox is view-local, survives individual filter clearing and is cleared by Reset filters; it does not change fit or sort rules.

@@ -3,20 +3,24 @@ import BestTierPage from '../../../best/[tier]/page';
 import { models } from '@/lib/data/models';
 import { bestPage, bestTierBySlug } from '@/lib/utils/best-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { fitTitle, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { displayWidth, fitTitle, TITLE_LIMIT, canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 
 export { generateStaticParams } from '../../../best/[tier]/page';
 
 export function generateMetadata({ params }: { params: { tier: string } }): Metadata {
   const tier = bestTierBySlug(params.tier);
   if (!tier) return { title: '未找到 | quantized.uk' };
-  const { picks, fitCount } = bestPage(tier);
+  const { picks, fitCount, q4 } = bestPage(tier);
   const label = tier.kind === 'apple' ? 'Apple 芯片' : `${tier.vram}G 显存`;
   const path = `/zh/best/${params.tier}`;
   const url = canonical(path);
   const chat = picks.find(p => p.useCases.includes('chat'));
-  const title = fitTitle(`${label}能跑的最好的本地大模型 —— ${fitCount} 个装得下`);
-  const description = chat
+  const plainTitle = fitTitle(`${label}能跑的最好的本地大模型 —— ${fitCount} 个装得下`);
+  const sizedTitle = q4 ? fitTitle(`${label}能跑多大的模型？Q4 最大约 ${q4.model.paramLabel}，${fitCount} 个装得下`) : undefined;
+  const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
+  const description = q4
+    ? `${label}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)} GB）。${models.length} 个模型中 ${fitCount} 个能在 4K 下装下，附用途推荐。`
+    : chat
     ? `${chat.model.name} 在 ${quantLevelKey(chat.quant)} 下需要 ${tier.vram} GB 中的 ${chat.totalGB.toFixed(1)} GB。${models.length} 个模型中有 ${fitCount} 个能在 4K 下装下，附通用、写代码、图像的推荐。`
     : `${models.length} 个量化模型中有 ${fitCount} 个能在 4K 上下文下装进${label}。`;
   const ogAlt = `${label}能跑的最好的本地大模型：${fitCount} 个模型可装下${chat ? `，推荐 ${chat.model.name}` : ''} | quantized.uk`;

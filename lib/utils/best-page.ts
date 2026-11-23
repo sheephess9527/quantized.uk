@@ -1,7 +1,7 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
-import { fitsOnGpu, formatAllowed, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, largestAtQ4, type Q4Largest, formatAllowed, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { homePicks, type HomeUseCase } from '@/lib/utils/home-picks';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { formatLoss } from '@/lib/utils/quality';
@@ -189,11 +189,14 @@ export interface BestPageData {
   /** Apple only: largest model that fits at each unified-memory tier. */
   appleLadder?: { vram: number; model?: QuantModel; quant?: QuantVariant; totalGB?: number; count: number }[];
   fitCount: number;
+  /** Largest current model at GGUF Q4_K_M; none on the Apple tier, which spans 8–512 GB. */
+  q4?: Q4Largest;
   faqs: BestFaq[];
 }
 
 export function bestPage(tier: BestTier): BestPageData {
   const card = tierCard(tier);
+  const q4 = tier.kind === 'apple' ? undefined : largestAtQ4(card);
   // `tier.vram` is the nameplate figure; anywhere this page sizes against the
   // tier's *capacity* (not just displays the number) has to use what the card
   // can actually use — `tierCard` already carries `isUnified` through from a
@@ -276,6 +279,19 @@ export function bestPage(tier: BestTier): BestPageData {
 
   const faqs: BestFaq[] = [];
 
+  if (q4) {
+    faqs.push({
+      q: {
+        en: `How big a model can ${label} of VRAM run?`,
+        zh: `${labelZh} 显存能跑多大的模型？`,
+      },
+      a: {
+        en: `At Q4_K_M and ${GPU_PAGE_CONTEXT / 1024}K context, comfortably up to about ${q4.model.paramLabel}: ${q4.model.name} needs about ${q4.totalGB.toFixed(1)} GB of ${tier.vram} GB. "Comfortably" leaves headroom for the display and the runtime; larger models can still load tightly with nothing else running. A longer context grows the KV cache, so the ceiling drops as the window grows.`,
+        zh: `按 Q4_K_M、${GPU_PAGE_CONTEXT / 1024}K 上下文计算，可从容运行的最大约 ${q4.model.paramLabel}：${q4.model.name} 约需 ${tier.vram} GB 中的 ${q4.totalGB.toFixed(1)} GB。「从容」指给显示输出和运行时留有余量；更大的模型在不跑其他程序时可能勉强装下。上下文越长，KV 缓存越大，能跑的模型上限随之下降。`,
+      },
+    });
+  }
+
   if (chat) {
     faqs.push({
       q: {
@@ -326,7 +342,7 @@ export function bestPage(tier: BestTier): BestPageData {
     });
   }
 
-  return { picks, cards: tier.cards, nearMiss, ladder, appleLadder, fitCount, faqs };
+  return { picks, cards: tier.cards, nearMiss, ladder, appleLadder, fitCount, q4, faqs };
 }
 
 /** Hub-page summary line per tier. */

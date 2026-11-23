@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'GPU pages and the 8–32 GB VRAM pages now answer how big a model the card can run: the largest current model at Q4_K_M with 4K context, in the summary and a new first FAQ, and in the titles of the VRAM pages and the English GPU pages.',
+    zh: '显卡页和 8–32 GB 显存页现在直接回答“能跑多大的模型”：按 Q4_K_M、4K 上下文能从容运行的最大现行模型，写在摘要和新的第一条常见问题里，显存页标题也写明了这个数。',
+  },
+  {
+    date: '2026-11-23',
     en: 'Four setup guides now lead with the install path: Windows CUDA ZIPs (including Pascal) and DLL fixes, Radeon ROCm or Vulkan and multi-GPU setup, WSL2 Ollama and Docker GPU checks, and Intel Arc SYCL or Vulkan setup. The same instructions are available in Chinese.',
     zh: '四篇部署指南现在先给出安装方案：Windows CUDA ZIP（包括 Pascal）和 DLL 修复、Radeon 的 ROCm 或 Vulkan 选择和多卡设置、WSL2 下 Ollama 和 Docker 的 GPU 检查，以及 Intel Arc 的 SYCL 或 Vulkan 安装。中英文同步更新。',
   },

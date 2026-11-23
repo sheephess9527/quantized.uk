@@ -4,8 +4,8 @@ import { models } from '@/lib/data/models';
 import GpuPageContent from '@/components/gpu/GpuPageContent';
 import { guidesForGpu } from '@/lib/utils/guide-references';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
-import { countModelsFitting, fitsOnGpu, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
+import { canonical, defaultRobots, feedAlternates, displayWidth, fitTitle, languageAlternates, TITLE_LIMIT, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { countModelsFitting, fitsOnGpu, largestAtQ4, gpuBySlug, gpuSlug, gpuPageDescription } from '@/lib/utils/gpu-page';
 import { gpuExplainer } from '@/lib/utils/gpu-explainer';
 import { gpuMetaDescription } from '@/lib/utils/meta-description';
 
@@ -20,7 +20,10 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   const url = canonical(path);
   const count = fitsOnGpu(gpu).length;
   // fitTitle drops the brand suffix for long card names (Radeon AI PRO R9700 32G was 62 wide).
-  const title = fitTitle(`${gpu.name} — what LLMs can it run?`);
+  const q4 = largestAtQ4(gpu);
+  // Bing queries ask how big ("能跑多大的模型", "多少b"); a title too wide for the size keeps the plain question.
+  const sized = q4 ? fitTitle(`${gpu.name}: what LLMs can it run? Up to ${q4.model.paramLabel} at Q4`) : undefined;
+  const title = sized && displayWidth(sized) <= TITLE_LIMIT ? sized : fitTitle(`${gpu.name} — what LLMs can it run?`);
   const description = gpuMetaDescription(gpu, 'en');
   const comfortableCount = countModelsFitting(gpu, 'comfortable');
   const ogAlt = `${gpu.name}: ${gpu.vram}GB VRAM, ${comfortableCount} models fit comfortably | quantized.uk`;

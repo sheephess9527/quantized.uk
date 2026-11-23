@@ -96,7 +96,7 @@ export function feedAlternates(path = '') {
   };
 }
 
-const TITLE_LIMIT = 60;
+export const TITLE_LIMIT = 60;
 
 /**
  * The English model-page `<title>` template in tiers, never a runtime
