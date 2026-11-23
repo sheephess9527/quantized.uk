@@ -37,8 +37,11 @@ export interface RuntimeErrorEntry {
   guides?: string[];
   seeAlso?: string[];
   sources: { label: string; url: string }[];
+  editedAt?: string;
   checkedAt: string;
 }
+
+export const KV_CACHE_ERROR_ID = 'failed-to-allocate-kv-cache';
 
 const LLAMA = 'https://github.com/ggml-org/llama.cpp/blob/master/';
 const OLLAMA = 'https://github.com/ollama/ollama/blob/main/';
@@ -107,14 +110,14 @@ export const runtimeErrors: RuntimeErrorEntry[] = [
     checkedAt: CHECKED,
   },
   {
-    id: 'failed-to-allocate-kv-cache',
+    id: KV_CACHE_ERROR_ID,
     runtime: 'llama.cpp',
     hardware: 'any',
     message: 'failed to allocate buffer for kv cache',
-    title: { en: 'failed to allocate buffer for kv cache', zh: 'failed to allocate buffer for kv cache 报错' },
+    title: { en: 'failed to allocate buffer for kv cache: llama.cpp fix', zh: 'failed to allocate buffer for kv cache 报错' },
     summary: {
-      en: 'The weights loaded, but there was no room left for the KV cache at the context you asked for. It is usually followed by "failed to initialize the context".',
-      zh: '权重已经加载成功，但按你要求的上下文长度，已经没有空间放 KV 缓存。后面通常还会跟一行 "failed to initialize the context"。',
+      en: 'llama.cpp loaded the weights but ran out of room for the KV cache. Try a shorter context, a quantized KV cache, or a smaller quantization of the model.',
+      zh: 'llama.cpp 已加载模型权重，但没有足够空间分配 KV 缓存。可以缩短上下文、量化 KV 缓存，或改用占用更小的模型量化档位。',
     },
     causes: [
       { en: 'The context (`-c`, or Ollama\'s `num_ctx`) is too long for what the weights left free.', zh: '上下文（`-c`，或 Ollama 的 `num_ctx`）太长，权重剩下的显存装不下。' },
@@ -130,6 +133,7 @@ export const runtimeErrors: RuntimeErrorEntry[] = [
       { label: 'llama.cpp src/llama-kv-cache.cpp', url: `${LLAMA}src/llama-kv-cache.cpp` },
       { label: 'llama.cpp src/llama-context.cpp', url: `${LLAMA}src/llama-context.cpp` },
     ],
+    editedAt: '2026-11-23',
     checkedAt: CHECKED,
   },
   {
@@ -556,3 +560,6 @@ export const runtimeErrors: RuntimeErrorEntry[] = [
 ];
 
 export const errorById = (id: string) => runtimeErrors.find(e => e.id === id);
+
+export const errorModifiedAt = ({ checkedAt, editedAt }: RuntimeErrorEntry) =>
+  editedAt && editedAt > checkedAt ? editedAt : checkedAt;

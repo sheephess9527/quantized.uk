@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'The English LLM VRAM Calculator has a clearer search title and explains how to check a model or find models that fit your GPU. The error lookup now highlights the existing KV cache allocation fix in both languages.',
+    zh: '英文大模型显存计算器的搜索标题更明确，页面说明如何估算指定模型的内存需求，或按显卡找装得下的模型。中英文报错速查均突出显示已有的 KV 缓存分配报错解决办法。',
+  },
+  {
+    date: '2026-11-23',
     en: 'Once submissions are enabled, you can send measured prompt and generation speeds for review from the calculator’s existing test report form. Submissions are private until reviewed; published visitor speeds are marked Community and kept separate from site benchmarks.',
     zh: '开启提交功能后，可在显存计算器现有的测试结果表单中提交实测的提示词处理与生成速度。提交内容在审核前不会公开；发布的访客测速会标为「社区数据」，与本站跑分分开显示。',
   },

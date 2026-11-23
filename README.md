@@ -629,6 +629,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — Easier to find the LLM VRAM Calculator
+
+- The English calculator title and intro now lead with model fit, GPU VRAM, system RAM and KV cache. Both languages explain the two calculator modes and link to the tool from the context-length and methodology pages. The error lookup highlights the existing KV-cache fix, with a more specific English search snippet and no new pages. [Research and verification](docs/changes/2026-11-23-vram-calculator-search.md).
+
 ### 2026-11-23 — Visitor speed submissions
 
 - Added **Submit for review** to the existing English and Chinese test report form for eligible calculator results, with one set of measured speed fields shared by both actions. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See §6.

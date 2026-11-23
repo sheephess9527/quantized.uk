@@ -201,6 +201,7 @@ export const translations = {
     errorPages: {
       indexTitle: 'Local LLM error lookup',
       indexSubtitle: 'Paste the line that stopped you. Each entry quotes the message from the project\'s own source code, says what it means, and lists fixes that name real flags and commands.',
+      jumpToKvCache: 'Fix this KV cache error:',
       groups: { memory: 'Out of memory', file: 'The model file', gpu: 'The GPU is not being used', amd: 'AMD and ROCm', ollama: 'Ollama' },
       message: 'The message',
       messageSetting: 'What you will see',
@@ -776,7 +777,7 @@ export const translations = {
       sizedFor: 'This size is for:',
       ctxOverModel: '{model} attends to at most {max} tokens. At {ctx} the figure below prices a cache the model cannot use — pick a shorter context for a real answer.',
       title: 'VRAM / RAM Calculator',
-      subtitle: 'Precise memory estimate for any model × quant × context combination',
+      subtitle: 'Choose a model to estimate its memory use, or choose your GPU to see which models fit. Change the quantization or context length to see how much memory the weights and KV cache need.',
       model: 'Model',
       modelPlaceholder: 'Select a model...',
       customLabel: 'Custom Parameters',
@@ -1776,6 +1777,7 @@ export const translations = {
     errorPages: {
       indexTitle: '本地大模型报错速查',
       indexSubtitle: '把卡住你的那一行报错贴过来对照。每一条都从项目源码里逐字核对，说明含义，并给出带真实参数和命令的解决办法。',
+      jumpToKvCache: '解决这条 KV 缓存报错：',
       groups: { memory: '显存不足', file: '模型文件的问题', gpu: '没用上显卡', amd: 'AMD 与 ROCm', ollama: 'Ollama' },
       message: '报错原文',
       messageSetting: '你会看到的内容',
@@ -2351,7 +2353,7 @@ export const translations = {
       sizedFor: '对应文件：',
       ctxOverModel: '{model} 最多只能处理 {max} 个 token。按 {ctx} 计算，下面的数字包含了模型根本用不上的缓存——选一个更短的上下文才是真实答案。',
       title: '显存 / 内存计算器',
-      subtitle: '精确计算任意模型 × 量化 × 上下文长度的内存需求',
+      subtitle: '选一个模型，估算它需要多少内存；也可以先选显卡，查看哪些模型能装下。调整量化档位或上下文长度，就能看到模型权重和 KV 缓存各占多少内存。',
       model: '模型',
       modelPlaceholder: '选择模型...',
       customLabel: '自定义参数',

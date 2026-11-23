@@ -1,0 +1,9 @@
+# 2026-11-23 calculator and error search snippets
+
+The research brief reports about 7,800 calculator pageviews across both languages in 90 days (sampled Cloudflare traffic), average Google position about 84 for “llm vram calculator,” and little English calculator visibility in Bing. Bing shows 15 impressions and no clicks for “failed to allocate buffer for kv cache.” Both search-export attachment URLs returned HTTP 401 in the implementation session; the figures are from the brief, not independently reproduced. The Chinese calculator title was left unchanged; the brief reports 9 clicks from 33 Bing impressions for “大模型显存计算器.”
+
+- **Calculator:** The English title, H1 and snippet now start with “LLM VRAM Calculator” or describe what it calculates. In both languages the introduction names model-first and GPU-first sizing, and the FAQ answers which models fit. The context-length tool and methodology link to the clean calculator URL in their own language.
+- **Errors:** The English lookup snippet names the actual KV-cache error alongside broader runtime and memory errors. Both languages link to the existing error card from the intro. The English detail title keeps the exact message first and names the runtime and the fix. The detail summary explains the likely cause and remedies in both languages; the quoted message and its source-check date are unchanged.
+- **Verification:** `npm test` and `npm run build` cover data and exported HTML. The post-export gate checks localized links, the calculator title/H1 and FAQ, the error anchor and detail link, metadata, and language alternates. Baseline and final export both contain 3,737 files. No new route, Pages Function, or Cloudflare setting.
+
+After search engines recrawl the pages, compare English page/query impressions, average position, clicks and CTR in Search Console and Bing Webmaster Tools. No ranking increase is assumed.
