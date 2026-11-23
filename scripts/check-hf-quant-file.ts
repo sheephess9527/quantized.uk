@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { importQuantFile, parseQuantFile, quantFileUrl, quantFromFilename, readHubQuantFile } from '@/lib/utils/hf-quant-file';
+import { importQuantFile, isQuantFileInput, parseQuantFile, quantFileUrl, quantFromFilename, readHubQuantFile } from '@/lib/utils/hf-quant-file';
 import { calcVRAM } from '@/lib/utils/vram';
 import { vramImageUrl, vramPreview } from '@/lib/og/vram-result';
 import { shapeFromConfig } from '@/lib/utils/hf-import';
@@ -34,6 +34,23 @@ test('identify the filename quant without guessing unknown labels', () => {
   assert.equal(quantFromFilename('model-f16.gguf'), 'FP16');
   assert.equal(quantFromFilename('model-MXFP4_MOE.gguf'), 'MXFP4_MOE');
   assert.equal(quantFromFilename('model.gguf'), undefined);
+});
+
+test('reject auxiliary GGUF files without requesting Hub metadata', async () => {
+  for (const path of [
+    'dir/mmproj-model-Q8_0.gguf',
+    'mtp-google_gemma-4-31B-it-Q4_0.gguf',
+    'model-DRAFT-HEAD-Q8_0.gguf',
+    'draft/model-Q8_0.gguf',
+    'model.imatrix.gguf',
+  ]) {
+    const url = `https://huggingface.co/owner/model/blob/main/${path}`;
+    assert.ok(isQuantFileInput(url));
+    assert.equal(parseQuantFile(url), null);
+    assert.equal(readHubQuantFile(new URLSearchParams({ hfFile: url, hfBytes: '100' })), undefined);
+    assert.deepEqual(await importQuantFile(url, async () => assert.fail(url)), { ok: false, error: 'auxiliaryFile' });
+  }
+  assert.ok(parseQuantFile('owner/imatrix-model model-Q4_K_M.gguf'));
 });
 
 test('sum all parts even when the pasted URL points to a later part', async () => {

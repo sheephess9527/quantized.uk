@@ -18,10 +18,14 @@ function validRef({ repo, revision, path }: QuantFileRef): boolean {
     [...repo.split('/'), ...revision.split('/'), ...path.split('/')].every(
       p => p && p !== '.' && p !== '..' && !/[\\\u0000-\u001f]/.test(p),
     ) && path.length <= 1024 && revision.length <= 256 &&
-    /\.gguf$/i.test(path) && !/^mmproj(?:[._-]|$)/i.test(path.split('/').at(-1) ?? '');
+    /\.gguf$/i.test(path);
 }
 
-export function parseQuantFile(input: string): QuantFileRef | null {
+function isAuxiliaryFile(path: string): boolean {
+  return /(?:^|[\/\s._-])(?:mmproj|mtp|draft|imatrix)(?=$|[\/\s._-])/i.test(path);
+}
+
+function parseFileRef(input: string): QuantFileRef | null {
   const raw = input.trim();
   let ref: QuantFileRef;
   try {
@@ -41,6 +45,15 @@ export function parseQuantFile(input: string): QuantFileRef | null {
   } catch {
     return null;
   }
+}
+
+export function isQuantFileInput(input: string): boolean {
+  return parseFileRef(input) !== null;
+}
+
+export function parseQuantFile(input: string): QuantFileRef | null {
+  const ref = parseFileRef(input);
+  return ref && !isAuxiliaryFile(ref.path) ? ref : null;
 }
 
 export function quantFileUrl(file: QuantFileRef): string {
@@ -68,12 +81,13 @@ export function hasQuantFileShape(layers: string, kv: string, hd: string): boole
   return [layers, kv, hd].map(Number).every(n => Number.isSafeInteger(n) && n > 0 && n <= 1_000_000);
 }
 
-export type QuantFileError = 'badInput' | 'notFound' | 'missingShards' | 'network';
+export type QuantFileError = 'badInput' | 'auxiliaryFile' | 'notFound' | 'missingShards' | 'network';
 type QuantFileResult = { ok: true; file: HubQuantFile; shape?: ImportedShape } | { ok: false; error: QuantFileError };
 
 export async function importQuantFile(input: string, fetchImpl: typeof fetch = fetch): Promise<QuantFileResult> {
-  const ref = parseQuantFile(input);
+  const ref = parseFileRef(input);
   if (!ref) return { ok: false, error: 'badInput' };
+  if (isAuxiliaryFile(ref.path)) return { ok: false, error: 'auxiliaryFile' };
   const shard = shardPattern.exec(ref.path);
   const count = shardCount(ref.path);
   if (shard && (!count || count > 1000 || Number(shard[1]) < 1 || Number(shard[1]) > count)) {

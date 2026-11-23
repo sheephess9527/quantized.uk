@@ -5,6 +5,7 @@
 - Only Copy share link puts the file source, exact bytes and architecture snapshot in the copied URL. The live address omits those values, and file results do not send a result analytics event. The recipient and link preview do not contact Hugging Face again. The file is not saved to the hardware profile.
 - The config importer preserves separate global and sliding-window KV dimensions when the layer pattern is available. The Gemma 4 31B layout matches the indexed model, and the copied link and preview retain both sets of dimensions.
 - Past the model's context limit, the calculator and share preview warn without claiming a fit or speed. The calculator still shows the raw memory estimate.
+- Auxiliary GGUFs identifiable from the path (vision projectors, MTP/draft heads and imatrix files) are rejected before metadata is requested.
 - Five indexed Chinese models show a ModelScope download link with the uploader named in both languages. See the [listing evidence and MiniMax exclusion](../data-corrections.md#2026-11-24--modelscope-gguf-download-links). No new routes, dependencies or backend work.
 
 ## Verification

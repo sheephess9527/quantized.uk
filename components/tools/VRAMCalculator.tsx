@@ -38,7 +38,7 @@ import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/util
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
 import { importFromHub, parseRepoInput, mmprojFromHub, type ImportedShape } from '@/lib/utils/hf-import';
-import { hasQuantFileShape, importQuantFile, parseQuantFile, quantFileUrl, quantFromFilename, readHubQuantFile, shardCount, type HubQuantFile, type QuantFileError } from '@/lib/utils/hf-quant-file';
+import { hasQuantFileShape, importQuantFile, isQuantFileInput, quantFileUrl, quantFromFilename, readHubQuantFile, shardCount, type HubQuantFile, type QuantFileError } from '@/lib/utils/hf-quant-file';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import type { ModelArch, QuantModel, QuantVariant } from '@/lib/data/types';
 import { rigPrefillSeconds } from '@/lib/utils/prefill';
@@ -690,7 +690,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   const runImport = async (raw?: string) => {
     const input = raw ?? hfInput;
-    if (mode === 'forward' && parseQuantFile(input)) return runFileImport(input);
+    if (mode === 'forward' && isQuantFileInput(input)) return runFileImport(input);
     if (raw !== undefined) setHfInput(raw);
     selectModel('custom');
     const request = ++fileRequest.current;
@@ -720,7 +720,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     trackEvent('HF Import');
   };
   const openImport = () => {
-    if (mode === 'forward' && parseQuantFile(modelQuery)) { void runFileImport(modelQuery); return; }
+    if (mode === 'forward' && isQuantFileInput(modelQuery)) { void runFileImport(modelQuery); return; }
     selectModel('custom');
     const pasted = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
     if (pasted) { void runImport(pasted); return; }
@@ -1038,6 +1038,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   {fileError && (
                     <p role="alert" className="mt-2 text-xs text-amber-300">
                       {fileError === 'badInput' ? t.calc.hfFileInvalid
+                        : fileError === 'auxiliaryFile' ? t.calc.hfFileAuxiliary
                         : fileError === 'notFound' ? t.calc.hfFileNotFound
                         : fileError === 'missingShards' ? t.calc.hfFileMissingShards : t.calc.hfErrNetwork}
                     </p>
@@ -1102,7 +1103,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       }
                     }}
                     onKeyDown={e => {
-                      if (e.key === 'Enter' && mode === 'forward' && parseQuantFile(modelQuery)) void runFileImport(modelQuery);
+                      if (e.key === 'Enter' && mode === 'forward' && isQuantFileInput(modelQuery)) void runFileImport(modelQuery);
                       else if (e.key === 'Enter' && tagResult?.kind === 'match') applyTag(tagResult);
                     }}
                     aria-label={t.calc.searchLabel}
