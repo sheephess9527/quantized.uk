@@ -105,8 +105,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   151 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-17 (packs)
+    models.ts               #   159 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-19 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -470,7 +470,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-17.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-19.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -545,6 +545,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — Model and site patrol
+
+- Added KORMo-Web-9B and IBM Granite Switch 4.1 8B, each with four verified GGUF sizes. The KORMo estimate includes the BF16 projector for image inference. The Granite estimate includes the adapter-router KV cache for the text GGUFs. Granite launch commands use llama.cpp.
+- Rechecked pending candidates, related reports and stable runtime releases. The Windows llama.cpp pin remains b12409. Updated the calculator's memoized launch command inputs to track the GGUF shard stem.
+- [Sources, pending decisions, validation and deployment](docs/changes/2026-11-23-patrol.md).
 
 ### 2026-11-23 — Fewer model/GPU pair pages
 

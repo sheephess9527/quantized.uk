@@ -25,6 +25,81 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'ccore-web-coder-4b',
+    name: 'CCORE Web Coder 4B',
+    vendor: 'CCORE',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'The Apache-2.0 Q8_0 GGUF is 4,482,402,816 bytes. The publisher labels it a preview at about 26% of projected training tokens.',
+      zh: 'Apache 2.0 Q8_0 GGUF 共 4,482,402,816 字节。发布方注明这是预览权重，约完成预计训练 token 数的 26%。',
+    },
+    recheck: {
+      en: 'Check the published checkpoint and GGUF headers once the completed training release is available.',
+      zh: '完整训练版本发布后，核对权重身份及 GGUF 文件头。',
+    },
+    checkedAt: '2026-11-23',
+  },
+  {
+    id: 'lingsante-3-1',
+    name: 'LingSante 3.1 Flash / Air VL',
+    vendor: 'inclusionAI',
+    reason: 'not-sized',
+    detail: {
+      en: 'The MIT Flash release uses BailingMoeV3 hybrid attention and ships safetensors. Air VL has community GGUFs and projectors, but the exact sparse cache layout and vision loader still need auditing.',
+      zh: 'MIT 许可的 Flash 采用 BailingMoeV3 混合注意力，已发布 safetensors。Air VL 有社区 GGUF 和投影文件，具体稀疏缓存布局和视觉加载仍待审计。',
+    },
+    recheck: {
+      en: 'Verify the exact runtime, quant artifacts and cache layout for each checkpoint.',
+      zh: '逐个核实推理版本、量化文件和缓存布局。',
+    },
+    checkedAt: '2026-11-23',
+  },
+  {
+    id: 'sarvam-105b-1711',
+    name: 'Sarvam 105B 1711',
+    vendor: 'Sarvam AI',
+    reason: 'not-sized',
+    detail: {
+      en: 'Apache-2.0 weights and a three-part Q8_0 GGUF are public. The quantizer documents build 12636 and an MLA conversion with grouped routing and YaRN. Compatibility with the site Windows pin and cache sizing are unverified.',
+      zh: 'Apache 2.0 权重和三分片 Q8_0 GGUF 已公开。量化作者记录了构建 12636，以及带分组路由和 YaRN 的 MLA 转换。本站 Windows 固定版本兼容性与缓存占用仍待核实。',
+    },
+    recheck: {
+      en: 'Verify the launch on a supported build and audit the MLA cache for the converted checkpoint.',
+      zh: '在受支持版本上核实启动并审计转换后权重的 MLA 缓存。',
+    },
+    checkedAt: '2026-11-23',
+  },
+  {
+    id: 'memt-1-0-pro',
+    name: 'MemT 1.0 Pro',
+    vendor: 'MemTensor',
+    reason: 'not-sized',
+    detail: {
+      en: 'The publisher provides safetensors for its Nemotron-derived checkpoint with dynamic memory state. Compatible quant files and the persistent memory requirements are unverified.',
+      zh: '发布方已提供基于 Nemotron、带动态记忆状态的 safetensors 权重。兼容量化文件及持久记忆所需内存仍待核实。',
+    },
+    recheck: {
+      en: 'Verify licensing, a supported quant export and memory-state sizing.',
+      zh: '核实许可、受支持的量化文件及记忆状态内存占用。',
+    },
+    checkedAt: '2026-11-23',
+  },
+  {
+    id: 'clover-2',
+    name: 'Clover 2',
+    vendor: 'Kitaniai',
+    reason: 'not-sized',
+    detail: {
+      en: 'The publisher describes a Qwen3.8 base with routed LoRA experts. The public search did not identify an exact compatible GGUF for this checkpoint.',
+      zh: '发布方说明使用 Qwen3.8 底座及路由 LoRA 专家。公开搜索未找到这版权重对应的兼容 GGUF。',
+    },
+    recheck: {
+      en: 'Verify the licence, exact quant export and residency of the routed adapters.',
+      zh: '核实许可、确切量化文件和路由适配器的内存驻留。',
+    },
+    checkedAt: '2026-11-23',
+  },
+  {
     "id": "inkling-2-mini",
     "name": "Inkling 2 Mini",
     "vendor": "Thinking Machines",
@@ -280,19 +355,19 @@ export const pendingModels: PendingModel[] = [
     "checkedAt": "2026-11-17"
   },
   {
-    "id": "kormo-web-9b-11b",
-    "name": "KORMo Web 9B / 11B",
-    "vendor": "KORMo-VL",
-    "reason": "not-sized",
-    "detail": {
-      "en": "Official Apache-2.0 browser-agent weights and configs are readable. The 9B model uses Qwen3.5 vision, while 11B uses a Llava-OneVision wrapper with a custom KORMo text backbone. The current Hub search found no verified GGUF/projector listing for either; their encoders and runtime compatibility must not be inferred from parameter labels.",
-      "zh": "可读取官方 Apache-2.0 浏览器智能体权重与配置。9B 使用 Qwen3.5 视觉架构，11B 则为 Llava-OneVision 外层加自定义 KORMo 文本骨干。本次 Hub 搜索未找到两者可核实的 GGUF、投影文件列表；不能从参数标签推断编码器大小和运行时兼容性。"
+    id: 'kormo-web-11b',
+    name: 'KORMo Web 11B',
+    vendor: 'KORMo-VL',
+    reason: 'no-runtime',
+    detail: {
+      en: 'The original weights are Apache-2.0. Xylolabs publishes GGUFs and projectors and documents stock text inference, but image input needs its Llava-OneVision patch.',
+      zh: '官方权重采用 Apache 2.0。Xylolabs 提供 GGUF 和投影文件，并注明上游版本可跑文本，但图像输入需要其 Llava-OneVision 补丁。',
     },
-    "recheck": {
-      "en": "When compatible GGUFs/projectors, byte counts and exact backbone runtime support are verified.",
-      "zh": "核实兼容 GGUF、投影文件及字节数，并确认具体骨干的运行时支持后。"
+    recheck: {
+      en: 'Verify upstream vision loading before listing the screenshot model with a standard launch command.',
+      zh: '核实上游可加载视觉投影后，再提供这个截图模型的标准启动命令。',
     },
-    "checkedAt": "2026-11-17"
+    checkedAt: '2026-11-23',
   },
   {
     "id": "ernie-5-5-flash-base",
@@ -406,14 +481,14 @@ export const pendingModels: PendingModel[] = [
     announced: '2026-09-20',
     reason: 'not-sized',
     detail: {
-      en: 'Official FP8 weights are now available in 28 safetensors files; the original card documents vLLM, SGLang and Transformers serving. Its Step5ForConditionalGeneration config has 92 text layers. This calculator has not audited the Step-5 cache or a compatible quantized-file listing, so it remains unsized rather than borrowing Step 3.5 assumptions. The earlier empty-repository report is obsolete.',
-      zh: '官方 FP8 权重现在已发布为 28 个 safetensors 文件，原始模型卡提供 vLLM、SGLang 和 Transformers 部署说明。Step5ForConditionalGeneration 配置有 92 层文本网络。本计算器尚未审计 Step-5 的缓存和兼容量化文件列表，因此仍不提供显存估算，也不借用 Step 3.5 假设。此前仓库为空的记录已经过时。',
+      en: 'Official FP8 weights and deployment instructions are public. The community GGUF reviewed here requires an experimental llama.cpp fork for compressed sparse attention. The 92-layer text cache has not been audited.',
+      zh: '官方 FP8 权重和部署说明已公开。本次核查的社区 GGUF 需要实验性 llama.cpp 分支来处理压缩稀疏注意力。92 层文本缓存仍待审计。',
     },
     recheck: {
       en: 'When the Step-5 cache and a supported quantized-file listing have been audited and checked against a memory observation.',
       zh: '审计 Step-5 缓存和受支持的量化文件列表，并对照内存记录后。',
     },
-    checkedAt: '2026-11-17',
+    checkedAt: '2026-11-23',
   },
   {
     id: 'dory-1-0-4b',

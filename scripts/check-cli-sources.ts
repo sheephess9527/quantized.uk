@@ -4,7 +4,7 @@ import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM } from '../lib/utils/vram';
 import { formatAllowed, vllmRocmSupported, fitsOnGpu } from '../lib/utils/gpu-page';
 import { getRecommendations } from '../lib/utils/recommend';
-import { generateCLI, type CLIOptions, type Env } from '../lib/utils/cli';
+import { canOfferOllamaLaunch, generateCLI, type CLIOptions, type Env } from '../lib/utils/cli';
 import { licenceClassOf, hasImageInput } from '../lib/utils/model-facts';
 
 for (const gpu of gpuDatabase.filter(g => g.isLaptop && g.type === 'amd')) {
@@ -80,6 +80,22 @@ const unmapped = generateCLI({ ...opts, hfRepo: 'publisher/original-weights', gg
 assert(unmapped.command.includes('<hf-gguf-repo-id>'), 'original-weight repo without file evidence remains unverified');
 const fallback = generateCLI({ ...opts, hfRepo: 'publisher/Example-GGUF', ggufFilename: undefined, fileGB: 70 });
 assert(fallback.command.includes('Example-Q4_K_M*.gguf'), 'large split wildcard fallback preserved');
+
+const granite = models.find(m => m.id === 'granite-switch-4.1-8b')!;
+const graniteQuant = granite.quants.find(q => q.level === 'Q4_K_M')!;
+const graniteSource = graniteQuant.source!;
+assert(!canOfferOllamaLaunch(granite.id));
+assert(!canOfferOllamaLaunch(undefined, graniteSource.repo));
+for (const lang of ['en', 'zh'] as const) {
+  const input = { ...opts, lang, modelId: granite.id, modelName: granite.name,
+    quantLevel: graniteQuant.level, hfRepo: graniteSource.repo, ggufFilename: graniteSource.file };
+  assert(generateCLI({ ...input, env: 'windows' }).command.includes(graniteSource.file!));
+  const ollama = generateCLI({ ...input, framework: 'ollama' });
+  assert(!/ollama (run|pull)/.test(ollama.command));
+  assert(ollama.notes.some(note => note.includes('Granite Switch')));
+}
+const graniteFit = calcVRAM({ paramsB: granite.params, ...granite.arch, bpw: graniteQuant.bpw, contextLength: 16384, batchSize: 1 });
+assert.equal(graniteFit.kvCacheGB, 2.51, 'Granite includes the single-head router cache for all tokens');
 
 for (const m of [arete, twil]) for (const quant of m.quants) {
   const source = quant.source!;

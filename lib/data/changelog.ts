@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'Added KORMo-Web-9B and IBM Granite Switch 4.1 8B with four verified GGUF sizes each. KORMo includes the vision projector in its estimates. Granite includes its adapter router cache and sizes the text GGUFs.',
+    zh: '收录 KORMo-Web-9B 和 IBM Granite Switch 4.1 8B，各核实四种 GGUF 的文件大小。KORMo 的估算包含视觉投影，Granite 的文本 GGUF 估算包含适配器路由缓存。',
+  },
+  {
+    date: '2026-11-23',
     en: 'Model-and-GPU pages are now kept for measured runs and the ten most popular cards (322 pairs, down from 2,266). Every other combination is answered by the model page, the GPU page and the VRAM calculator, and an old pair link shows both pages on the not-found screen.',
     zh: '模型与显卡组合页现在只保留有实测数据的组合和 10 张最常用显卡（322 个组合，原为 2,266 个）。其他组合可以查看模型页、显卡页和显存计算器；访问旧的组合链接时，404 页面会直接给出这两个页面的入口。',
   },

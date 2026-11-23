@@ -22,17 +22,17 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 Next.js 14 **static-export** site (`output: 'export'`). No Next.js server or DB — content is
 typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functions for VRAM link previews.
 
-**Live snapshot (2026-11-21):**
+**Live snapshot (2026-11-23):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **156** in index (`models-extra` … `models-extra-18`), 136 active |
+| Models | **159** in index (`models-extra` … `models-extra-19`), 139 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (156 models: 154 licensed, 49 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (159 models: 157 licensed, 51 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,392 HTML files (3,605 files in `out/`) including 404 variants and 322 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,446 HTML files (3,719 files in `out/`) including 404 variants and 346 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -1266,7 +1266,7 @@ contains a dot.
 ```
 lib/data/types.ts           # QuantModel / QuantVariant / Article fields
 lib/data/models.ts          # concat packs + todayFeed
-lib/data/models-extra-*.ts  # model packs (currently through extra-17)
+lib/data/models-extra-*.ts  # model packs (currently through extra-19)
 lib/data/meta.ts            # dataLastUpdated, runtimeVersions, methodology
 lib/data/changelog.ts       # reader-facing changelog (never re-export it from meta.ts)
 lib/site.ts                 # data-free constants for client components (email, GPU_COUNT, canonical)
