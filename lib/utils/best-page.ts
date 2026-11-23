@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { fitsOnGpu, largestAtQ4, type Q4Largest, formatAllowed, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { homePicks, type HomeUseCase } from '@/lib/utils/home-picks';
@@ -122,6 +122,11 @@ function tierCard(tier: BestTier): GPU {
   return base
     ? { ...base, vram: tier.vram }
     : { id: 'synthetic', name: `${tier.vram}GB`, vram: tier.vram, type: 'nvidia-consumer', icon: '' };
+}
+
+export function tierUpgradeBaseline(tier: BestTier): GPU | undefined {
+  const atCapacity = tier.cards.filter(card => card.vram === tier.vram);
+  return atCapacity.find(card => POPULAR_GPU_IDS.includes(card.id)) ?? atCapacity[0];
 }
 
 const USE_CASES: HomeUseCase[] = ['chat', 'code', 'multimodal'];

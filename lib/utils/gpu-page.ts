@@ -318,6 +318,33 @@ export interface GpuFit {
   headroomGB: number;
 }
 
+export function gpuFitMemory(model: QuantModel, gpu: GPU, quant: QuantVariant, contextLength: number, batchSize = 1) {
+  const memory = calcVRAM({
+    paramsB: model.params,
+    layers: model.arch.layers,
+    kvHeads: model.arch.kvHeads,
+    headDim: model.arch.headDim,
+    attention: model.arch.attention,
+    bpw: quant.bpw,
+    contextLength,
+    batchSize,
+  });
+  const capacity = usableCapacityGB(gpu);
+  return { ...memory, quant, verdict: getVerdict(memory.totalGB, capacity, tightCeiling(gpu)), headroomGB: capacity - memory.totalGB };
+}
+
+export function longestComfortableContext(model: QuantModel, gpu: GPU, quant: QuantVariant, batchSize = 1): number {
+  if (!formatAllowed(gpu, quant.format)) return 0;
+  let low = 0;
+  let high = model.contextLength;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    if (gpuFitMemory(model, gpu, quant, mid, batchSize).verdict === 'green') low = mid;
+    else high = mid - 1;
+  }
+  return low;
+}
+
 /**
  * The best-quality quant of each model that fits this card comfortably.
  *
@@ -330,27 +357,17 @@ export interface GpuFit {
 export function fitsOnGpu(gpu: GPU, contextLength = GPU_PAGE_CONTEXT, batchSize = 1): GpuFit[] {
   const out: GpuFit[] = [];
   if (!Number.isFinite(contextLength) || contextLength <= 0 || !Number.isFinite(batchSize) || batchSize <= 0) return out;
-  const capacity = usableCapacityGB(gpu);
 
   for (const model of models) {
     if (contextLength > model.contextLength) continue;
     let best: GpuFit | undefined;
     for (const quant of model.quants) {
       if (!formatAllowed(gpu, quant.format)) continue;
-      const { totalGB } = calcVRAM({
-        paramsB: model.params,
-        layers: model.arch.layers,
-        kvHeads: model.arch.kvHeads,
-        headDim: model.arch.headDim,
-        attention: model.arch.attention,
-        bpw: quant.bpw,
-        contextLength,
-        batchSize,
-      });
-      if (getVerdict(totalGB, capacity, tightCeiling(gpu)) !== 'green') continue;
+      const { totalGB, verdict, headroomGB } = gpuFitMemory(model, gpu, quant, contextLength, batchSize);
+      if (verdict !== 'green') continue;
       // Lower perplexity loss wins; ties break toward the smaller footprint.
       if (!best || qualityRank(quant) < qualityRank(best.quant)) {
-        best = { model, quant, totalGB, headroomGB: Math.round((capacity - totalGB) * 10) / 10 };
+        best = { model, quant, totalGB, headroomGB: Math.round(headroomGB * 10) / 10 };
       }
     }
     if (best) out.push(best);

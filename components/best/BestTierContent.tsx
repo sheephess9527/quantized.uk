@@ -5,11 +5,12 @@ import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
-import { bestPage, type BestTier } from '@/lib/utils/best-page';
+import { bestPage, tierUpgradeBaseline, type BestTier } from '@/lib/utils/best-page';
 import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import { formatLoss } from '@/lib/utils/quality';
+import GpuUpgradeComparison from '@/components/gpu/GpuUpgradeComparison';
 
 /**
  * "Best local LLM for {N}GB" — a recommendation, not another list.
@@ -25,6 +26,7 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
   const { t, lang } = useLanguage();
   const b = t.best;
   const { picks, cards, nearMiss, ladder, appleLadder, fitCount, faqs } = bestPage(tier);
+  const upgradeBaseline = tierUpgradeBaseline(tier);
   const total = models.length;
 
   const fill = (s: string, v: Record<string, string | number>) =>
@@ -141,6 +143,16 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
               ))}
             </ul>
           </section>
+        )}
+
+        {upgradeBaseline && (
+          <GpuUpgradeComparison
+            current={upgradeBaseline}
+            tierLabel={fill(t.gpuUpgrade[tier.kind === 'apple' ? 'appleBaseline' : 'vramBaseline'], {
+              gb: tier.vram,
+              card: upgradeBaseline.name,
+            })}
+          />
         )}
 
         {nearMiss && (
