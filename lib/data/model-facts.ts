@@ -212,6 +212,7 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'kormo-web-4b': 'apache-2.0',
   'clairic-27b': 'apache-2.0',
   'clairic-flash-9b': 'apache-2.0',
   'shot-reader-8b': 'apache-2.0',
@@ -392,6 +393,7 @@ export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
   'glm-5-3-flash',
   'kimi-k3-1-pro',
   'minimax-m3-1-flash',
+  'kormo-web-4b',
   'clairic-27b',
   'clairic-flash-9b',
   'shot-reader-8b',

@@ -270,6 +270,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 56, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
   { id: 51, type: 'new', modelId: 'deepseek-v4-flash-0731', level: 'MXFP4', note: { en: 'compressed cache, 1M window', zh: '压缩缓存，100 万上下文' }, quantizer: 'ggml-org' },
   { id: 52, type: 'new', modelId: 'deepseek-v4-1-flash-1017', level: 'Q4_K_M', note: { en: '4 cache owners for 40 layers', zh: '40 层只有 4 层持有缓存' }, quantizer: 'mrfakename' },
   { id: 53, type: 'new', modelId: 'glm-5-3-flash', level: 'Q4_K_M', note: { en: '11 of 45 layers cache', zh: '45 层中仅 11 层缓存' }, quantizer: 'ggml-org' },

@@ -644,6 +644,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Updated the bilingual homepage badge to “Sourced Data · Edge Deployment · Geek-First” / “数据来源可查 · 端侧部署 · 极客优先” to avoid implying the private site repository is public. The tagline lives in the translation dictionary; metadata, OG assets and JSON-LD contain no separate copy.
 - Added the bilingual reader-facing release note; `dataLastUpdated` remains synchronized at `2026-11-22`.
 
+### 2026-11-22 — KORMo-Web-4B
+
+- Added [KORMo-Web-4B](https://huggingface.co/KORMo-VL/KORMo-Web-4B) (Apache 2.0) with four [bartowski GGUF files](https://huggingface.co/bartowski/KORMo-VL_KORMo-Web-4B-GGUF) and the matching BF16 vision projector. Memory estimates use the verified file sizes and eight full-attention layers; no runtime measurements are claimed.
+
 ### 2026-11-22 — Ollama tag paste in the calculator
 
 - The VRAM calculator's model search box accepts an Ollama tag (`qwen3:8b-q4_K_M`, `llama3.1:8b`, `ollama run gpt-oss:20b`, `ollama.com/library/…` URLs, `hf.co/{repo}:{quant}`). Pasting or pressing Enter on a recognised tag selects the indexed model and quant; a tag with no quant uses the file type Ollama downloads for it, and says so. Tags the index cannot vouch for (unknown library, unlisted size, a library tag that serves another checkpoint such as `deepseek-r1:8b`, `olmo-3:7b`, `devstral:24b`, an unknown quant or one the Ollama library does not publish as a suffix, an `hf.co` quant the index does not record for that repo, community uploads, unindexed HF repos) show a bilingual message and select nothing.
