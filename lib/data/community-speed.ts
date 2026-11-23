@@ -15,6 +15,7 @@ export interface SpeedConfiguration {
 }
 
 interface SpeedObservation {
+  processor?: string;
   runtime: string;
   version: string;
   prefill: number;
@@ -60,7 +61,7 @@ function inBounds(value: unknown, min: number, max: number): value is number {
 
 export function validateSpeedSubmission(input: unknown): SpeedSubmission | undefined {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return;
-  const { modelId, quant, gpuIds, context, batch, kv, vision, runtime, version, prefill, decode, note = '', url = '', website = '' } = input as Record<string, unknown>;
+  const { modelId, quant, gpuIds, context, batch, kv, vision, processor = '', runtime, version, prefill, decode, note = '', url = '', website = '' } = input as Record<string, unknown>;
   if (website !== '' || typeof modelId !== 'string' || typeof quant !== 'string') return;
   const model = models.find(m => m.id === modelId);
   if (!model?.quants.some(q => quantLevelKey(q) === quant)) return;
@@ -68,6 +69,8 @@ export function validateSpeedSubmission(input: unknown): SpeedSubmission | undef
   const devices = gpuIds.map(id => gpuDatabase.find(g => g.id === id));
   const primary = devices[0];
   if (!primary || devices.some(g => !g || (devices.length > 1 && (!canStack(g) || backendFor(g) !== backendFor(primary))))) return;
+  const cleanProcessor = limitedText(processor, 80);
+  if (primary.type === 'cpu' ? !cleanProcessor || /[\r\n\t]/.test(cleanProcessor) : processor !== '') return;
   if (!inBounds(context, 1, 10_000_000) || !Number.isInteger(context)) return;
   if (!inBounds(batch, 1, 16) || !Number.isInteger(batch)) return;
   if ((kv !== 'f16' && kv !== 'q8_0' && kv !== 'q4_0') || typeof vision !== 'boolean') return;
@@ -87,5 +90,6 @@ export function validateSpeedSubmission(input: unknown): SpeedSubmission | undef
     } catch { return; }
   }
   return { modelId, quant, gpuIds: devices.map(g => g!.id), context, batch, kv, vision,
+    ...(cleanProcessor ? { processor: cleanProcessor } : {}),
     runtime: cleanRuntime, version: cleanVersion, prefill, decode, note: cleanNote || undefined, url: evidenceUrl };
 }

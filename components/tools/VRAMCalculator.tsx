@@ -2115,7 +2115,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   context: contextLen, batch: batchSize, kv: kvType, vision: !!result.extraGB,
                 };
                 return <CommunitySpeedForm key={speedConfigurationKey(configuration)}
-                  configuration={configuration} modelName={selectedModel.name} rig={rigLabel} />;
+                  configuration={configuration} modelName={selectedModel.name} rig={rigLabel}
+                  requiresProcessor={profileGpu.type === 'cpu'} />;
               })()}
               {(() => {
                 const configuration = {

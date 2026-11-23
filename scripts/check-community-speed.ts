@@ -13,6 +13,12 @@ assert.deepEqual(validateSpeedSubmission({ ...valid, runtime: ' llama.cpp ', sou
 assert.equal(validateSpeedSubmission({ ...valid, url: 'https://example.com' })?.url, 'https://example.com/');
 assert.ok(validateSpeedSubmission({ ...valid, gpuIds: ['rtx3060', 'rtx4090'] }));
 assert.ok(validateSpeedSubmission({ ...valid, batch: 3 }));
+const cpuRun = { ...valid, gpuIds: ['cpu-32'] };
+assert.equal(validateSpeedSubmission({ ...cpuRun, processor: ' Ryzen 9 7950X ' })?.processor, 'Ryzen 9 7950X');
+for (const processor of [undefined, '', ' ', 123, 'x'.repeat(81), 'two\nlines']) {
+  assert.equal(validateSpeedSubmission({ ...cpuRun, processor }), undefined);
+}
+assert.equal(validateSpeedSubmission({ ...valid, processor: 'Ryzen 9 7950X' }), undefined);
 for (const overrides of [
   { modelId: 'custom' }, { quant: 'bad' }, { gpuIds: [] }, { gpuIds: ['missing'] }, { gpuIds: Array(5).fill('rtx3060') },
   { context: -1 }, { context: 1.5 }, { batch: 17 }, { batch: 1.5 }, { kv: 'other' }, { vision: 'false' },
@@ -57,6 +63,7 @@ async function checkEndpoint() {
   assert.equal((await post('{')).status, 400);
   assert.equal((await post(' '.repeat(8193) + JSON.stringify(valid))).status, 400);
   assert.equal((await post(JSON.stringify({ ...valid, website: 'bot' }))).status, 400);
+  assert.equal((await post(JSON.stringify(cpuRun))).status, 400);
   assert.equal(args.length, 0);
 
   const accepted = await post(JSON.stringify({ ...valid, note: 'private test details', source: 'measured' }));
@@ -66,6 +73,8 @@ async function checkEndpoint() {
   assert.deepEqual(JSON.parse(String(args[4])), { ...valid, note: 'private test details' });
   assert.match(String(args[3]), /^[a-f0-9]{64}$/);
   assert.ok(!JSON.stringify(args).includes(headers['CF-Connecting-IP']));
+  assert.equal((await post(JSON.stringify({ ...cpuRun, processor: ' Ryzen 9 7950X ' }))).status, 201);
+  assert.equal(JSON.parse(String(args[4])).processor, 'Ryzen 9 7950X');
 
   changes = 0;
   assert.equal((await post(JSON.stringify(valid))).status, 429);

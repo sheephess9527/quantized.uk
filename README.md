@@ -407,6 +407,8 @@ Pages builds the root `functions/` directory along with `out/`; no separate Work
 
 Open an indexed model's forward calculator result with an indexed GPU or system, then open **Submit your speed** (Chinese: **提交你的测速结果**). Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. A missing binding, missing schema or exhausted free quota returns an error without changing the calculator.
 
+CPU-only RAM tiers require the processor model. Include that field when approving CPU-only rows so readers can distinguish processors within a RAM tier.
+
 **Owner setup (before enabling):**
 
 1. On the Cloudflare **Workers Free** plan, create the D1 databases `quantized-community-speed` and `quantized-community-speed-preview` (Workers & Pages → D1 SQL Database → Create). In each database's **Console**, execute the SQL in [scripts/community-speed.sql](scripts/community-speed.sql).
@@ -601,6 +603,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-23 — Visitor speed submissions
 
 - Added English and Chinese speed submission forms on indexed forward calculator results. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See the setup and review steps in §6.
+- CPU-only submissions require a processor model; approved rows show it alongside the speeds.
 
 ### 2026-11-23 — Model and site patrol
 
