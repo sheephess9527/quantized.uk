@@ -1,0 +1,55 @@
+name: Daily live check
+
+on:
+  schedule:
+    - cron: '23 1 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: daily-live-check
+
+permissions: {}
+
+jobs:
+  check:
+    if: vars.LIVE_CHECK_FREE_ONLY == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check:live
+
+  notify:
+    needs: check
+    if: failure() && needs.check.result == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Assign or update the live check issue
+        shell: bash
+        run: |
+          title='Daily live check failed'
+          numbers=$(gh api --paginate "repos/$GH_REPO/issues?state=open&per_page=100" \
+            --jq '.[] | select(has("pull_request") | not) | select(.title == "Daily live check failed") | .number')
+          issue=${numbers%%$'\n'*}
+          body="@$OWNER The live check for https://quantized.uk failed. [See the failed run]($RUN_URL)."
+          if [[ -z "$issue" ]]; then
+            gh issue create --assignee "$OWNER" --title "$title" --body "$body"
+          else
+            gh issue edit "$issue" --add-assignee "$OWNER"
+            gh issue comment "$issue" --body "$body"
+          fi
