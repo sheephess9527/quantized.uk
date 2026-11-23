@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "include": ["/tools/vram-calc", "/tools/vram-calc/", "/zh/tools/vram-calc", "/zh/tools/vram-calc/", "/api/vram-share.png"],
+  "include": ["/tools/vram-calc", "/tools/vram-calc/", "/zh/tools/vram-calc", "/zh/tools/vram-calc/", "/api/vram-share.png", "/api/community-speed"],
   "exclude": []
 }
