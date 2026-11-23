@@ -276,8 +276,8 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
         zh: `${gpu.name} 能跑多大的模型？`,
       },
       a: {
-        en: `At Q4_K_M and 4K context, comfortably up to about ${q4.model.paramLabel}: ${q4.model.name} needs about ${q4.totalGB.toFixed(1)} GB of the card's ${gpu.vram} GB.${lower ? ` With a smaller quant the largest that loads is ${lower.model.name} at ${quantLevelKey(lower.quant)} (${lower.totalGB.toFixed(1)} GB).` : ''} "Comfortably" means at most 88% of memory; larger models can still load tightly with nothing else running. A longer context grows the KV cache, so the ceiling drops as the window grows.`,
-        zh: `按 Q4_K_M、4K 上下文计算，可从容运行的最大约 ${q4.model.paramLabel}：${q4.model.name} 约需这张卡 ${gpu.vram} GB 中的 ${q4.totalGB.toFixed(1)} GB。${lower ? `换用更小的量化档位，能加载的最大模型是 ${lower.model.name}（${quantLevelKey(lower.quant)}，约 ${lower.totalGB.toFixed(1)} GB）。` : ''}「从容」指占用不超过显存的 88%；更大的模型在不跑其他程序时可能勉强装下。上下文越长，KV 缓存越大，能跑的模型上限随之下降。`,
+        en: `At Q4_K_M and 4K context, comfortably up to about ${q4.model.paramLabel}: ${q4.model.name} needs about ${q4.totalGB.toFixed(1)} GB of the card's ${gpu.vram} GB.${lower ? ` With a smaller quant the largest that loads is ${lower.model.name} at ${quantLevelKey(lower.quant)} (${lower.totalGB.toFixed(1)} GB).` : ''} "Comfortably" leaves headroom for the display and the runtime; larger models can still load tightly with nothing else running. A longer context grows the KV cache, so the ceiling drops as the window grows.`,
+        zh: `按 Q4_K_M、4K 上下文计算，可从容运行的最大约 ${q4.model.paramLabel}：${q4.model.name} 约需这张卡 ${gpu.vram} GB 中的 ${q4.totalGB.toFixed(1)} GB。${lower ? `换用更小的量化档位，能加载的最大模型是 ${lower.model.name}（${quantLevelKey(lower.quant)}，约 ${lower.totalGB.toFixed(1)} GB）。` : ''}「从容」指给显示输出和运行时留有余量；更大的模型在不跑其他程序时可能勉强装下。上下文越长，KV 缓存越大，能跑的模型上限随之下降。`,
       },
     });
   }
