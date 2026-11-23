@@ -570,6 +570,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — Search titles from Search Console and Cloudflare data
+
+- Read the owner's Search Console export (data rows 2026-10-29 to 11-21: 110 clicks, 16,204 impressions) beside Cloudflare Web Analytics. `/benchmarks/` had 5,320 impressions at position ~6 and no clicks; "qwen3 8b q4_k_m" and its variants had ~120 impressions at position ~8 and no clicks on `/quant-hub/qwen3-8b/`.
+- `/benchmarks/` and `/zh/benchmarks/` titles and meta descriptions now name the cards, models and runtimes the page measures. English model-page titles (`modelPageTitle()`) now lead with the reference level and its 4K size, the same numbers as the meta description (e.g. "Qwen3 8B Instruct Q4_K_M VRAM: 5.8 GB | quantized.uk"), falling back to the previous tiers when too long. Chinese model titles are unchanged. Record: [docs/changes/2026-11-23-search-snippets.md](docs/changes/2026-11-23-search-snippets.md). No model data changed; compare CTR about two weeks after deploy.
+
 ### 2026-11-23 — Documentation audit of merged PRs #28–#49
 
 - Audited the original 21 merged PRs against this changelog and the maintainer conventions. PR #45 was initially open; it has since merged and records KORMo-Web-4B in its own README/data-log entries, preserved below rather than duplicated. Existing release entries were present for every audited merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.

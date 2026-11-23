@@ -917,7 +917,7 @@ the card — this site's own `tight`, not `comfortable`. Run the number before w
 over 60 characters was already stale by the time it was fixed — the index had grown, and the actual
 export had 63, across five templates the audit never named (homepage, `/best/`, `/formats/`,
 `/tools/`, `/faq/`, `/changelog/`). Audit by walking `out/**` and measuring, not by trusting a
-count written down earlier. Model titles go through `modelPageTitle()` and cookbook titles through
+count written down earlier. Model titles go through `modelPageTitle()` (English: reference level + 4K size first, same numbers as the meta description, since 2026-11-23) and cookbook titles through
 `articlePageTitle()` (`lib/seo.ts`) — a short-tier fallback, never a runtime ellipsis. `Article`
 carries an optional `seoTitle` for the rare guide whose real title is long on its own; it changes
 only the `<title>` tag, never the visible H1.

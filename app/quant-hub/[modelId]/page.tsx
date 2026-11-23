@@ -30,10 +30,12 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   const description = modelMetaDescription(model, 'en');
   const quant = bestQuant(model.quants);
   const { totalGB } = sizeAt(model, quant.bpw, REF_CONTEXT);
+  const ref = referenceQuant(model.quants);
+  const refGB = sizeAt(model, ref.bpw, REF_CONTEXT).totalGB;
   const retainedPart = quant.pplLossPercent === undefined ? '' : `, ${(100 - quant.pplLossPercent).toFixed(1)}% retained`;
   const ogAlt = `${model.name}: ${model.paramLabel}, ${quantLevelKey(quant)}, ${totalGB.toFixed(1)} GB${retainedPart} | quantized.uk`;
   return {
-    title: modelPageTitle(model.name),
+    title: modelPageTitle(model.name, quantLevelKey(ref), refGB),
     description,
     alternates: { canonical: url, languages: languageAlternates(path), ...feedAlternates(path) },
     robots: defaultRobots,
