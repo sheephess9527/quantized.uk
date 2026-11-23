@@ -45,7 +45,8 @@ export const extraModels3: QuantModel[] = [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.85, vramGB: 10.5, pplLossPercent: 2.6, speedRTX4090: 88, hfSearchUrl: hf('Qwen3-14B GGUF Q4_K_M bartowski') },
       { format: 'GGUF', level: 'Q5_K_M', bpw: 5.68, vramGB: 12.2, pplLossPercent: 1.2, speedRTX4090: 78, hfSearchUrl: hf('Qwen3-14B GGUF Q5_K_M') },
       { format: 'AWQ',  level: 'INT4',   bpw: 4.0,  vramGB: 9.5, pplLossPercent: 3.5, speedRTX4090: 115, hfSearchUrl: hf('Qwen3-14B AWQ') },
-      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 10.0, pplLossPercent: 1.8, speedRTX4090: 125, hfSearchUrl: hf('Qwen3-14B exl2') },
+      // Speed follows the measured RTX 4090 row in benchmarks.ts.
+      { format: 'EXL2', level: '4.65bpw', bpw: 4.65, vramGB: 10.0, pplLossPercent: 1.8, speedRTX4090: 118, hfSearchUrl: hf('Qwen3-14B exl2') },
     ],
   },
   {

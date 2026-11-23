@@ -158,8 +158,21 @@ flaky network. Never "fix" it by removing the postbuild hook.
   A laptop GPU cannot stack, but it can offload GGUF layers to system RAM.
 - **Integrated AMD memory:** `isIntegrated` keeps the AMD backend but disables stacking. Ryzen AI Max+ 395 rows store Windows GPU allocation (48/96 GB), not their 64/128 GB system RAM. Do not set Apple's `isUnified` flag or apply its cap again. Stock and unofficial memory mods share renderer candidates, smallest first.
 - **CUDA AWQ eligibility:** record `cudaComputeCapability` for legacy NVIDIA rows. Known values below 7.5 cannot use vLLM AWQ kernels; keep fits and launch choices behind `formatAllowed`. Omitted capability preserves the existing format policy, not a new compatibility guarantee.
-- **Reverse fits must respect both context and input.** `getRecommendations()` excludes contexts
-  beyond each model's supported limit. Its optional final argument is `text` (default) or `image`:
+- **Reverse fits must respect both context and input.** `getRecommendations()` supports
+  URL-only `minTok=10|20|40` and `feat=tools,code` filters (AND).
+  Speed filtering and the single displayed row figure share `recommendationSpeed`: exact-card,
+  exact-model/quant benchmark first, otherwise the calibrated `measuredSpeed` point; no ceiling fallback.
+  Unknown speed fails a minimum on one device. Multi-device rigs disable and bypass the minimum,
+  keeping its URL/state selection for a return to one card. Empty states test removal of speed
+  and feature requirements separately and offer targeted clearing when that restores results.
+  `quantConfidence` may label an RTX 4090 figure measured only with an exact benchmark and matching value;
+  a measured model id never promotes its other quant levels. Matching lives in `measured-runs.ts`.
+  Existing speed sorting retains its bandwidth-bound ranking for old-link compatibility.
+  Reverse share metadata/images must use `readRecommendationFilters` and preserve `minTok`/`feat`
+  in `vramImageUrl` cache keys; preview counts obey the same multi-device bypass as the calculator.
+  Tool calling is positive recorded publisher-template/card evidence only in `model-facts.ts`;
+  code uses the recorded category. Image remains `input=image`; none of these filters enters profiles.
+  It excludes contexts beyond each model's supported limit. Its `input` argument is `text` (default) or `image`:
   image fits require a capability flag, GGUF and recorded positive `source.mmprojBytes`. Never
   interpret an unknown encoder size as zero. Keep encoder GiB in the total, context reach, forward
   state transfer and actual href (`mmproj`), with cache/batch/card settings preserved. The UI's

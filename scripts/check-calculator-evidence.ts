@@ -3,6 +3,7 @@ import { matrixData } from '../lib/data/benchmarks';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { dataLastUpdated } from '../lib/data/meta';
+import { LIVEBENCH_RELEASE_URL, liveBenchScores } from '../lib/data/model-quality';
 import { performanceReports, performanceReportProblems, relatedReports } from '../lib/data/performance-reports';
 import { buildRunReport, measurementFields, type RunMeasurements } from '../lib/utils/run-report';
 import { calibrationRows, memoryAccuracy } from '../lib/utils/bench-calibration';
@@ -37,6 +38,21 @@ assert.deepEqual(memoryAccuracy([
 ]), { total: 3, compared: 2, hardware: 1, meanAbsoluteError: 0.5, maxAbsoluteError: 0.75 });
 assert.equal(memoryAccuracy([]).meanAbsoluteError, null);
 
+liveBenchScores.forEach(([score, release], modelId) => {
+  assert(modelIds.has(modelId), `LiveBench checkpoint not indexed: ${modelId}`);
+  assert(Number.isFinite(score) && score >= 0 && score <= 100, `Invalid LiveBench score: ${score}`);
+  assert(/^\d{4}-\d{2}-\d{2}$/.test(release) && release <= dataLastUpdated, `Invalid LiveBench release: ${release}`);
+});
+assert.deepEqual(liveBenchScores.get('qwen3-8-27b'), [54.0, '2026-11-06']);
+assert.deepEqual(liveBenchScores.get('mistral-large-4'), [60.3, '2026-11-06'], 'use the exact open-weight release, not the API row');
+assert.equal(liveBenchScores.get('qwen3-6-35b-a3b'), undefined, 'do not borrow a nearby checkpoint’s score');
+assert.equal(liveBenchScores.get('custom'), undefined, 'custom models have no benchmark score');
+assert.equal(new URL(LIVEBENCH_RELEASE_URL).origin, 'https://livebench.ai');
+for (const { calc } of [translations.en, translations.zh]) {
+  assert(calc.modelQualityScore.includes('{score}') && calc.modelQualityScore.includes('{release}'));
+  assert(calc.modelQualityNote.trim() && calc.modelQualityEmpty.trim() && calc.modelQualityFilter.includes('{count}'));
+}
+
 const fields = Object.fromEntries(measurementFields.map(k => [k, ''])) as RunMeasurements;
 fields.notes = '```\n[example](https://example.com)\n```';
 const config = { model: 'Test', quant: 'GGUF Q4_K_M', hardware: '2 × RTX 3090', context: 8192, sequences: 2, kv: 'q8_0', encoderGiB: 0.5, estimatedGiB: 24 };
@@ -49,4 +65,4 @@ assert(report.includes('No error percentage is inferred'));
 assert.equal(report.includes('122.4'), false, 'related speed must not leak into reader measurements');
 const changed = buildRunReport({ ...config, context: 32768 }, fields, 'Ran successfully', translations.en.evidence, 'Not provided', 'https://quantized.uk/');
 assert(changed.includes('32768') && !changed.includes('8192'), 'exports follow current settings');
-console.log('Calculator evidence checks passed: references, memory calibration, language keys, strict related matching and honest report export.');
+console.log('Calculator evidence checks passed: references, LiveBench scores, memory calibration, language keys, strict related matching and honest report export.');

@@ -7,7 +7,8 @@ import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { measuredSpeed, CALIBRATION_ERROR } from '../lib/utils/measured-speed';
 import { runPlanSpeed } from '../lib/utils/calc-insights';
-import { activeParamsB } from '../lib/utils/model-meta';
+import { activeParamsB, quantConfidence } from '../lib/utils/model-meta';
+import { matchingSpeedRun } from '../lib/utils/measured-runs';
 import { weightsGB } from '../lib/utils/roofline';
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 const ratios: number[] = [];
@@ -50,6 +51,29 @@ const dense = models.find(m => m.id === 'llama-3.1-8b')!;
 const moe = models.find(m => m.id === 'qwen3-30b-a3b')!;
 const gguf = (model: typeof dense) => model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M')!;
 const rtx4090 = gpuDatabase.find(g => g.id === 'rtx4090')!;
+const qwen32 = models.find(m => m.id === 'qwen2.5-32b')!;
+const qwenQ3 = qwen32.quants.find(q => q.format === 'GGUF' && q.level === 'Q3_K_M')!;
+assert.equal(quantConfidence(qwen32.id, qwenQ3), 'estimated');
+assert.equal(quantConfidence(qwen32.id, gguf(qwen32)), 'measured');
+assert.equal(quantConfidence(qwen32.id, { ...gguf(qwen32), speedRTX4090: 999 }), 'estimated');
+assert.equal(quantConfidence(qwen32.id, { ...qwenQ3, confidence: 'measured' }), 'estimated');
+assert.equal(quantConfidence(qwen32.id, gguf(qwen32), 'rtx3090'), 'estimated');
+const qwen14 = models.find(m => m.id === 'qwen3-14b')!;
+const qwen14Exl2 = qwen14.quants.find(q => q.format === 'EXL2' && q.level === '4.65bpw')!;
+assert.equal(qwen14Exl2.speedRTX4090, 118);
+assert.equal(quantConfidence(qwen14.id, qwen14Exl2), 'measured');
+for (const model of models) for (const quant of model.quants) {
+  const exactRun = matchingSpeedRun(rtx4090, model, quant);
+  if (exactRun && quant.speedRTX4090 !== undefined) {
+    assert.equal(quant.speedRTX4090, exactRun.speedTokSec, `${model.id} ${quant.format} ${quant.level}: stored speed differs from exact measurement`);
+  }
+  if (quantConfidence(model.id, quant) === 'measured') {
+    const run = matchingSpeedRun(rtx4090, model, quant);
+    assert.ok(run, `${model.id} ${quant.format} ${quant.level}: missing exact measurement`);
+    assert.equal(quant.speedRTX4090, run.speedTokSec);
+  }
+}
+console.log('Exact RTX 4090 quant speeds match benchmark rows; Qwen3 14B EXL2 4.65bpw is measured at 118 tok/s');
 const rtx5090 = gpuDatabase.find(g => g.id === 'rtx5090')!;
 const mac = gpuDatabase.find(g => g.id === 'm4-pro-24')!;
 

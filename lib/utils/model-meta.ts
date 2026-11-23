@@ -2,6 +2,8 @@ import { models } from '@/lib/data/models';
 import type { QuantConfidence, QuantModel, QuantVariant } from '@/lib/data/types';
 import type { Lang } from '@/lib/i18n/translations';
 import { dataLastUpdated } from '@/lib/data/meta';
+import { gpuDatabase } from '@/lib/data/gpus';
+import { matchingSpeedRun } from '@/lib/utils/measured-runs';
 
 /**
  * Quant formats at least one indexed model actually ships — derived, never
@@ -13,29 +15,16 @@ export const SHIPPED_FORMATS: string[] = Array.from(
   new Set(models.flatMap(m => m.quants.map(q => q.format))),
 ).sort();
 
-/** Models with published site-side speed / matrix numbers → default measured for VRAM/speed fields. */
-const MEASURED_MODEL_IDS = new Set([
-  'llama-3.1-8b',
-  'qwen2.5-7b',
-  'qwen2.5-32b',
-  'qwen3-4b',
-  'qwen3-8b',
-  'qwen3-14b',
-  'qwen3-32b',
-  'qwen3-30b-a3b',
-  'qwen3-coder-30b-a3b',
-  'deepseek-r1-distill-qwen-14b',
-]);
-
 /** Consider "recent" if added within this many days. */
 export const RECENT_DAYS = 45;
 
 export function quantConfidence(modelId: string, q: QuantVariant, gpuId?: string): QuantConfidence {
-  if (q.confidence) return q.confidence;
-  // `speedRTX4090` is a figure from that card. A page about a different GPU
-  // must not inherit the measured tag just because the model is in the set.
+  if (q.confidence && q.confidence !== 'measured') return q.confidence;
   if (gpuId && gpuId !== 'rtx4090') return 'estimated';
-  if (MEASURED_MODEL_IDS.has(modelId) && q.speedRTX4090 != null) return 'measured';
+  const model = models.find(m => m.id === modelId);
+  const gpu = gpuDatabase.find(g => g.id === 'rtx4090');
+  const run = model && gpu ? matchingSpeedRun(gpu, model, q) : undefined;
+  if (run && q.speedRTX4090 === run.speedTokSec) return 'measured';
   return 'estimated';
 }
 
