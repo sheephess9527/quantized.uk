@@ -42,8 +42,8 @@ against 28% for `/zh/gpu/rtx-5070/` and 24% for `/zh/gpu/rtx-5080/`.
 - New `largestAtQ4(gpu)` (`lib/utils/gpu-page.ts`): the largest current (non-superseded) model
   whose GGUF Q4_K_M build fits comfortably at 4K, batch 1 — one level for every card so the
   parameter count compares across pages. Sizing is `calcVRAM` + `getVerdict`, as everywhere else.
-- `/gpu/{card}/` and `/zh/gpu/{card}/`: title `RTX 5060 能跑什么模型？Q4 最大约 9B` /
-  `RTX 5060: what LLMs can it run? Up to 9B at Q4`, meta description leads with the same answer,
+- `/gpu/{card}/` and `/zh/gpu/{card}/`: English title `RTX 5060: what LLMs can it run? Up to 9B at Q4`;
+  both languages' meta description leads with the same answer,
   and a first FAQ "{card} 能跑多大的模型？" / "How big a model can a {card} run?" (visible and in
   JSON-LD). Titles too wide for the size keep the old question.
 - `/best/{N}gb-vram/` and `/zh/best/{N}gb-vram/`: same title, description lead and FAQ. The Apple
@@ -52,6 +52,15 @@ against 28% for `/zh/gpu/rtx-5070/` and 24% for `/zh/gpu/rtx-5080/`.
 Example: `/zh/best/16gb-vram/` was "16G 显存能跑的最好的本地大模型 —— 86 个装得下" with a
 description leading with Xing4.0 29B-A4B at Q2_K; it is now "16G 显存能跑多大的模型？Q4 最大约
 21B MoE，86 个装得下", leading with GPT-OSS 20B at Q4_K_M, about 11.3 GB.
+
+## Scope: `/zh/gpu/` titles unchanged
+
+The `/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？`, exactly as live before this change. They
+already win most of the site's Bing clicks (RTX 5070 28% CTR, 5080 24%, 5090 14%), MoE labels
+would read awkwardly there ("Q4 最大约 16B-A2.4B" on 12 GB cards), and the change shipped
+overnight with nobody watching CTR. Two zh GPU pages do get impressions without clicks
+(`/zh/gpu/rtx-5060/` 60 / 0, `/zh/gpu/rtx-4060/` 28 / 0); retitle only after a fresh export
+confirms that, and say so before changing anything.
 
 ## Pages not added
 
