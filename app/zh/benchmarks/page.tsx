@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: '大模型基准测试：实测速度与显存 | quantized.uk',
-  description: 'RTX 4090、RTX 3090、Apple M3 Max 与 M2 Ultra 上的真机实测：推理速度、显存占用与困惑度损失，以及哪些数字是预估、完整的测试方法。',
+  title: '本地大模型实测速度：RTX 4090、3090 与 Mac 的 tok/s',
+  description: 'Llama 3.1 8B、Qwen3 等模型用 llama.cpp、Ollama、ExLlamaV2 和 vLLM 在 RTX 4090、3090、M3 Max 与 M2 Ultra 上的实测速度与显存，另附各量化级别的困惑度。',
   path: '/zh/benchmarks',
 });
 

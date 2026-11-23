@@ -99,14 +99,21 @@ export function feedAlternates(path = '') {
 const TITLE_LIMIT = 60;
 
 /**
- * The English model-page `<title>` template as two tiers, never a runtime
- * ellipsis — a truncated SERP title reads as broken, and both tiers below
- * cover every model in the index today (checked: the short tier alone is
- * enough, no model needs a data-level `shortName`).
+ * The English model-page `<title>` template in tiers, never a runtime
+ * ellipsis — a truncated SERP title reads as broken. The reference level and
+ * its 4K size lead because searches name them ("qwen3 8b q4_k_m": ~120
+ * impressions at position ~8 and no clicks while the title named neither,
+ * Search Console 2026-10-29 to 11-21). Pass the same level and size as the
+ * meta description so the two never disagree.
  */
-export function modelPageTitle(name: string): string {
-  const full = `${name} VRAM & quant guide | quantized.uk`;
-  return full.length <= TITLE_LIMIT ? full : `${name} VRAM | quantized.uk`;
+export function modelPageTitle(name: string, level?: string, totalGB?: number): string {
+  const tiers: string[] = [];
+  if (level && totalGB !== undefined) {
+    const gb = totalGB.toFixed(1);
+    tiers.push(`${name} ${level} VRAM: ${gb} GB | quantized.uk`, `${name} ${level}: ${gb} GB VRAM`);
+  }
+  tiers.push(`${name} VRAM & quant guide | quantized.uk`);
+  return tiers.find(t => t.length <= TITLE_LIMIT) ?? `${name} VRAM | quantized.uk`;
 }
 
 /**
