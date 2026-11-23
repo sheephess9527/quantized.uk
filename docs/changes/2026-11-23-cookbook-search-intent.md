@@ -68,3 +68,8 @@ sources, not run on hardware. The guide's original stack describes the source
 build, not the ZIPs. No guide was newly marked hardware-verified. Both languages
 keep the same slugs and pre-existing section positions, and Chinese titles are unchanged.
 Compare each URL's clicks and CTR against this baseline after deployment.
+
+The Windows CUDA, ROCm, SYCL and Vulkan ZIPs do not bundle the Microsoft
+Visual C++ runtime. Both languages now point readers to
+[Microsoft's x64 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
+before running the ZIP binaries.

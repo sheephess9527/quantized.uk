@@ -456,8 +456,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Windows: install the official ROCm ZIP',
         headingZh: 'Windows：安装官方 ROCm ZIP',
-        body: 'Update the AMD graphics driver and check AMD’s Windows support matrix for your exact card. The pinned ROCm 10.0 x64 ZIP includes llama-server.exe and some HIP DLLs, but not all of the ROCm math libraries. Use x64 Python on PATH to install the matching AMD SDK wheels, then add their bin directory to PATH in the same PowerShell session. The steps use the matching 10.0.0 SDK from llama.cpp’s release workflow. Replace the model path with your own GGUF. If HIP cannot see your Radeon, use the Vulkan path below; HSA_OVERRIDE_GFX_VERSION does not work on Windows.',
-        bodyZh: '更新 AMD 显卡驱动，并在 AMD 的 Windows 兼容表中确认具体型号。这里固定使用的 ROCm 10.0 x64 ZIP 含有 llama-server.exe 和部分 HIP DLL，但并未包含全部 ROCm 数学库。用 PATH 中的 x64 Python 安装配套 AMD SDK 软件包，再在同一个 PowerShell 会话中把 SDK 的 bin 目录加入 PATH。以下命令使用 llama.cpp 发布工作流对应的 10.0.0 SDK；请把路径换成自己的 GGUF 文件。如果 HIP 找不到你的 Radeon，请改用下面的 Vulkan 方案；HSA_OVERRIDE_GFX_VERSION 在 Windows 上不起作用。',
+        body: 'Update the AMD graphics driver, install the latest Microsoft Visual C++ Redistributable (x64) from aka.ms/vc14/vc_redist.x64.exe, and check AMD’s Windows support matrix for your exact card. The pinned ROCm 10.0 x64 ZIP includes llama-server.exe and some HIP DLLs, but not all of the ROCm math libraries. Use x64 Python on PATH to install the matching AMD SDK wheels, then add their bin directory to PATH in the same PowerShell session. The steps use the matching 10.0.0 SDK from llama.cpp’s release workflow. Replace the model path with your own GGUF. If HIP cannot see your Radeon, use the Vulkan path below; HSA_OVERRIDE_GFX_VERSION does not work on Windows.',
+        bodyZh: '更新 AMD 显卡驱动，从 aka.ms/vc14/vc_redist.x64.exe 安装最新版 Microsoft Visual C++ 可再发行组件（x64），并在 AMD 的 Windows 兼容表中确认具体型号。这里固定使用的 ROCm 10.0 x64 ZIP 含有 llama-server.exe 和部分 HIP DLL，但并未包含全部 ROCm 数学库。用 PATH 中的 x64 Python 安装配套 AMD SDK 软件包，再在同一个 PowerShell 会话中把 SDK 的 bin 目录加入 PATH。以下命令使用 llama.cpp 发布工作流对应的 10.0.0 SDK；请把路径换成自己的 GGUF 文件。如果 HIP 找不到你的 Radeon，请改用下面的 Vulkan 方案；HSA_OVERRIDE_GFX_VERSION 在 Windows 上不起作用。',
         code: {
           lang: 'powershell',
           content: `$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-rocm-10.0-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-rocm\npython -m venv .\\rocm-env\n.\\rocm-env\\Scripts\\python.exe -m pip install --index-url https://stable.repo.amd.com/rocm/whl-next/ "rocm[libraries,devel]==10.0.0"\n.\\rocm-env\\Scripts\\rocm-sdk.exe init\n$RocmBin = (.\\rocm-env\\Scripts\\rocm-sdk.exe path --bin).Trim()\n$env:Path = "$RocmBin;$env:Path"\n.\\llama-rocm\\llama-server.exe --list-devices\n.\\llama-rocm\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
@@ -466,8 +466,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Vulkan fallback on Windows or Linux',
         headingZh: 'Windows 或 Linux 上的 Vulkan 备用方案',
-        body: 'Vulkan uses the GPU driver rather than ROCm. On Windows x64, extract the official Vulkan ZIP to a separate folder and check that --list-devices names your Radeon. On Debian or Ubuntu, install the Vulkan tools and build dependencies plus your distribution’s Vulkan driver, then use a separate build directory. In either case, if the list also shows integrated graphics, pass --device with the exact Radeon device name, and look for layer offload in the server log.',
-        bodyZh: 'Vulkan 使用显卡驱动，不依赖 ROCm。Windows x64 上，把官方 Vulkan ZIP 解压到单独的目录，确认 --list-devices 列出了 Radeon。在 Debian 或 Ubuntu 上，安装 Vulkan 工具、编译依赖和发行版的 Vulkan 驱动，再用单独的目录编译。如果列表还显示集成显卡，可用 --device 指定所列的 Radeon 设备名，并在服务日志里确认模型层已卸载到显卡。',
+        body: 'Vulkan uses the GPU driver rather than ROCm. On Windows x64, install the Microsoft Visual C++ Redistributable (x64) as above, then extract the official Vulkan ZIP to a separate folder and check that --list-devices names your Radeon. On Debian or Ubuntu, install the Vulkan tools and build dependencies plus your distribution’s Vulkan driver, then use a separate build directory. In either case, if the list also shows integrated graphics, pass --device with the exact Radeon device name, and look for layer offload in the server log.',
+        bodyZh: 'Vulkan 使用显卡驱动，不依赖 ROCm。Windows x64 上，先按上文安装 Microsoft Visual C++ 可再发行组件（x64），再把官方 Vulkan ZIP 解压到单独的目录，确认 --list-devices 列出了 Radeon。在 Debian 或 Ubuntu 上，安装 Vulkan 工具、编译依赖和发行版的 Vulkan 驱动，再用单独的目录编译。如果列表还显示集成显卡，可用 --device 指定所列的 Radeon 设备名，并在服务日志里确认模型层已卸载到显卡。',
         code: {
           lang: 'text',
           content: `# Windows PowerShell\n$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-vulkan-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-vulkan\n.\\llama-vulkan\\llama-server.exe --list-devices\n.\\llama-vulkan\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080\n\n# Debian / Ubuntu (from the llama.cpp checkout)\n${linuxVulkanSetup}`,
@@ -678,11 +678,11 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Choose SYCL or Vulkan for Intel Arc',
         headingZh: 'Intel Arc 选 SYCL 还是 Vulkan',
-        body: 'Start with Vulkan for a driver-only Windows install or a Linux build without oneAPI. Choose llama.cpp SYCL for Intel’s oneAPI backend. Upstream lists the Arc A770, A750 and B580, and Lunar Lake integrated Arc graphics, which include the Arc 140V. The B570 and Arc Pro B70 are not named in the pinned SYCL support table; use --list-devices to check your installation rather than assuming compatibility. Ollama uses Vulkan, not SYCL. This guide uses GGUF: ExLlamaV2 requires CUDA, and this site has not confirmed which quantized formats vLLM’s Intel backend serves on consumer Arc.',
-        bodyZh: '想在 Windows 上只装显卡驱动，或在 Linux 上不装 oneAPI 就能编译，先选 Vulkan。想用英特尔的 oneAPI 后端则选 llama.cpp SYCL。上游列出了 Arc A770、A750、B580 和 Lunar Lake 的 Arc 核显（包括 Arc 140V）。固定版本的 SYCL 支持表没有列出 B570 和 Arc Pro B70；请用 --list-devices 检查本机，不要直接假定兼容。Ollama 用的是 Vulkan，不是 SYCL。本指南用 GGUF：ExLlamaV2 需要 CUDA，而本站尚未确认 vLLM 英特尔后端在消费级 Arc 上支持哪些量化格式。',
+        body: 'Start with Vulkan for a Windows install or Linux build without oneAPI. Choose llama.cpp SYCL for Intel’s oneAPI backend. Upstream lists the Arc A770, A750 and B580, and Lunar Lake integrated Arc graphics, which include the Arc 140V. The B570 and Arc Pro B70 are not named in the pinned SYCL support table; use --list-devices to check your installation rather than assuming compatibility. Ollama uses Vulkan, not SYCL. This guide uses GGUF: ExLlamaV2 requires CUDA, and this site has not confirmed which quantized formats vLLM’s Intel backend serves on consumer Arc.',
+        bodyZh: '想在 Windows 上不装 oneAPI 就能运行，或在 Linux 上不装 oneAPI 就能编译，先选 Vulkan。想用英特尔的 oneAPI 后端则选 llama.cpp SYCL。上游列出了 Arc A770、A750、B580 和 Lunar Lake 的 Arc 核显（包括 Arc 140V）。固定版本的 SYCL 支持表没有列出 B570 和 Arc Pro B70；请用 --list-devices 检查本机，不要直接假定兼容。Ollama 用的是 Vulkan，不是 SYCL。本指南用 GGUF：ExLlamaV2 需要 CUDA，而本站尚未确认 vLLM 英特尔后端在消费级 Arc 上支持哪些量化格式。',
         code: {
           lang: 'text',
-          content: 'llama.cpp SYCL:    Intel-specific path; upstream lists Arc A770, A750, B580\n                   Arc B570 is the same generation as B580 but not on that list\nllama.cpp Vulkan:  simpler driver-only Windows ZIP, or Linux build without oneAPI\nOllama:            Vulkan, not SYCL; enabled by default when supported\nModel format:      GGUF',
+          content: 'llama.cpp SYCL:    Intel-specific path; upstream lists Arc A770, A750, B580\n                   Arc B570 is the same generation as B580 but not on that list\nllama.cpp Vulkan:  Windows ZIP or Linux build without oneAPI\nOllama:            Vulkan, not SYCL; enabled by default when supported\nModel format:      GGUF',
         },
       },
       {
@@ -748,8 +748,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Windows 11: install a SYCL or Vulkan ZIP',
         headingZh: 'Windows 11：安装 SYCL 或 Vulkan ZIP',
-        body: 'Update the Intel Arc driver, then choose the official x64 SYCL ZIP for Intel’s backend or the official Vulkan ZIP if you want the simpler driver-only route. The SYCL ZIP bundles the oneAPI runtime; the Vulkan ZIP needs neither oneAPI nor the Vulkan SDK. Use a separate folder for each backend. Check that --list-devices shows the Arc card before loading a GGUF model, and use --device with the listed name if the integrated GPU also appears.',
-        bodyZh: '更新 Intel Arc 驱动，然后选择官方 x64 SYCL ZIP 使用英特尔后端，或者选只需显卡驱动的官方 Vulkan ZIP。SYCL ZIP 已带 oneAPI 运行库；Vulkan ZIP 不需要 oneAPI，也不需要 Vulkan SDK。两种后端请解压到不同目录。加载 GGUF 之前，先用 --list-devices 确认 Arc 出现在设备列表中；如果还列出了集成显卡，可用 --device 指定 Arc 的设备名。',
+        body: 'Update the Intel Arc driver and install the latest Microsoft Visual C++ Redistributable (x64) from aka.ms/vc14/vc_redist.x64.exe. Then choose the official x64 SYCL or Vulkan ZIP. The SYCL ZIP bundles the oneAPI runtime; the Vulkan ZIP needs neither oneAPI nor the Vulkan SDK. Use a separate folder for each backend. Check that --list-devices shows the Arc card before loading a GGUF model, and use --device with the listed name if the integrated GPU also appears.',
+        bodyZh: '更新 Intel Arc 驱动，从 aka.ms/vc14/vc_redist.x64.exe 安装最新版 Microsoft Visual C++ 可再发行组件（x64），再选择官方 x64 SYCL 或 Vulkan ZIP。SYCL ZIP 已带 oneAPI 运行库；Vulkan ZIP 不需要 oneAPI，也不需要 Vulkan SDK。两种后端请解压到不同目录。加载 GGUF 之前，先用 --list-devices 确认 Arc 出现在设备列表中；如果还列出了集成显卡，可用 --device 指定 Arc 的设备名。',
         code: {
           lang: 'powershell',
           content: `$Build = '${LLAMACPP_BUILD}'\n$Backend = 'sycl' # or 'vulkan'\n$Zip = "llama-$Build-bin-win-$Backend-x64.zip"\n$Folder = ".\\llama-$Backend"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath $Folder\n& "$Folder\\llama-server.exe" --list-devices\n& "$Folder\\llama-server.exe" -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
@@ -770,14 +770,14 @@ export const extraArticles2: Article[] = [
       {
         q: 'Should I use llama.cpp SYCL or Vulkan on Intel Arc?',
         qZh: 'Intel Arc 上跑 llama.cpp，应该用 SYCL 还是 Vulkan？',
-        a: 'Use Vulkan if you want a driver-only Windows install or a Linux build without oneAPI. Use SYCL for llama.cpp’s Intel-specific backend; upstream lists the A770, A750 and B580, and the Windows SYCL ZIP bundles its runtime. Ollama uses Vulkan for Arc, not SYCL. This site has not measured which backend is faster on Arc.',
-        aZh: 'Windows 上想只装显卡驱动，或 Linux 上不想装 oneAPI 就选 Vulkan。想用 llama.cpp 的英特尔专用后端就选 SYCL；上游列出了 A770、A750 和 B580，Windows SYCL ZIP 也已带运行库。Ollama 在 Arc 上用的是 Vulkan，不是 SYCL。本站没有实测哪种后端在 Arc 上更快。',
+        a: 'Use Vulkan if you want a Windows install or Linux build without oneAPI. Use SYCL for llama.cpp’s Intel-specific backend; upstream lists the A770, A750 and B580, and the Windows SYCL ZIP bundles its runtime. Ollama uses Vulkan for Arc, not SYCL. This site has not measured which backend is faster on Arc.',
+        aZh: '如果想在 Windows 或 Linux 上免装 oneAPI，选 Vulkan。想用 llama.cpp 的英特尔专用后端就选 SYCL；上游列出了 A770、A750 和 B580，Windows SYCL ZIP 也已带运行库。Ollama 在 Arc 上用的是 Vulkan，不是 SYCL。本站没有实测哪种后端在 Arc 上更快。',
       },
       {
         q: 'Can I use llama.cpp SYCL on Windows without installing oneAPI?',
         qZh: '在 Windows 上不装 oneAPI 能用 llama.cpp SYCL 吗？',
-        a: 'Yes. On Windows 11, install the Intel graphics driver and extract the official bin-win-sycl-x64 ZIP. It includes the SYCL runtime and dependent DLLs; no separate oneAPI Toolkit install is needed. Windows source builds still require Visual Studio and the oneAPI Base Toolkit, and the Linux SYCL package requires matching oneAPI packages.',
-        aZh: '可以。在 Windows 11 上安装英特尔显卡驱动，再解压官方 bin-win-sycl-x64 ZIP。包里已带 SYCL 运行时和依赖的 DLL，不用另装 oneAPI Toolkit。在 Windows 上从源码编译仍需要 Visual Studio 和 oneAPI Base Toolkit；Linux 的 SYCL 软件包则需要匹配的 oneAPI 软件包。',
+        a: 'Yes. On Windows 11, install the Intel graphics driver and Microsoft Visual C++ Redistributable (x64), then extract the official bin-win-sycl-x64 ZIP. It includes the SYCL runtime and dependent DLLs; no separate oneAPI Toolkit install is needed. Windows source builds still require Visual Studio and the oneAPI Base Toolkit, and the Linux SYCL package requires matching oneAPI packages.',
+        aZh: '可以。在 Windows 11 上安装英特尔显卡驱动和 Microsoft Visual C++ 可再发行组件（x64），再解压官方 bin-win-sycl-x64 ZIP。包里已带 SYCL 运行时和依赖的 DLL，不用另装 oneAPI Toolkit。在 Windows 上从源码编译仍需要 Visual Studio 和 oneAPI Base Toolkit；Linux 的 SYCL 软件包则需要匹配的 oneAPI 软件包。',
       },
       {
         q: 'How many models fit on an Arc B580?',
