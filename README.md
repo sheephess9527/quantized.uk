@@ -604,7 +604,8 @@ interface GPU {
 }
 
 // lib/data/cookbook.ts → `articles` (note: flat *Zh fields, not nested {en,zh})
-interface Section { heading; headingZh; body; bodyZh: string; code?: { lang: string; content: string }; }
+type SectionCode = { lang: string; content: string };
+interface Section { heading; headingZh; body; bodyZh: string; code?: SectionCode | SectionCode[]; }
 interface Article {
   id; title; titleZh; description; descriptionZh: string;
   category: 'edge' | 'server' | 'docker' | 'mac';
@@ -628,6 +629,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — Setup guide answers from Bing and Google search demand
+
+- Reworked the four existing Windows CUDA, Radeon ROCm, WSL2 Ollama and Intel Arc guides: official Windows downloads and missing DLL fixes, AMD backend and GPU target selection, WSL2 GPU checks, and Intel SYCL versus Vulkan setup. Updated English snippets and mirrored the content in Chinese without changing Chinese titles or adding routes. Sources and baseline: [cookbook search intent](docs/changes/2026-11-23-cookbook-search-intent.md).
+- Checked both search exports and filled gaps in both languages: Pascal ZIP selection and CUDA device checks, Radeon multi-GPU and Windows rocBLAS troubleshooting, native Windows versus WSL2 and Docker GPU setup, and Ollama Vulkan defaults on Intel Arc.
+- Documented the Microsoft Visual C++ Redistributable (x64) prerequisite for the official Windows llama.cpp ZIPs.
+- Made the Radeon Vulkan and WSL2 GPU snippets copyable in one shell at a time without moving guide anchors. The WSL commands target the distro running Ollama, even when it is not the Windows default.
 
 ### 2026-11-23 — Easier to find the LLM VRAM Calculator
 

@@ -31,7 +31,11 @@ export function readingMinutes(article: Article, lang: Lang): number {
     } else {
       prose += (section.heading + ' ' + section.body).trim().split(/\s+/).length / WORDS_PER_MIN;
     }
-    if (section.code) codeLines += section.code.content.split('\n').length;
+    if (section.code) {
+      for (const block of Array.isArray(section.code) ? section.code : [section.code]) {
+        codeLines += block.content.split('\n').length;
+      }
+    }
   }
 
   return Math.max(1, Math.round(prose + codeLines / CODE_LINES_PER_MIN));

@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'Four setup guides now lead with the install path: Windows CUDA ZIPs (including Pascal) and DLL fixes, Radeon ROCm or Vulkan and multi-GPU setup, WSL2 Ollama and Docker GPU checks, and Intel Arc SYCL or Vulkan setup. The same instructions are available in Chinese.',
+    zh: '四篇部署指南现在先给出安装方案：Windows CUDA ZIP（包括 Pascal）和 DLL 修复、Radeon 的 ROCm 或 Vulkan 选择和多卡设置、WSL2 下 Ollama 和 Docker 的 GPU 检查，以及 Intel Arc 的 SYCL 或 Vulkan 安装。中英文同步更新。',
+  },
+  {
+    date: '2026-11-23',
     en: 'The English LLM VRAM Calculator has a clearer search title and explains how to check a model or find models that fit your GPU. The error lookup now highlights the existing KV cache allocation fix in both languages.',
     zh: '英文大模型显存计算器的搜索标题更明确，页面说明如何估算指定模型的内存需求，或按显卡找装得下的模型。中英文报错速查均突出显示已有的 KV 缓存分配报错解决办法。',
   },
