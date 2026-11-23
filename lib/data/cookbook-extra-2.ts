@@ -180,9 +180,9 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Three commands to check NVIDIA GPU use',
         headingZh: '用三条命令检查 NVIDIA GPU 是否在用',
-        body: 'Choose native Windows Ollama if you just want to run models on Windows. Choose WSL2 if your tools or scripts need Linux. For NVIDIA passthrough, install the driver on Windows, not inside WSL. Check that Windows sees the GPU, then that WSL2 sees it, then that the Linux Ollama server uses it. If ollama ps is empty, no model is loaded: run a prompt with ollama run qwen3:8b, then check again. 100% GPU means full offload, CPU/GPU means partial offload, and 100% CPU means no GPU offload.',
-        bodyZh: '只想在 Windows 上跑模型，就选原生 Ollama；工具或脚本依赖 Linux 时，再选 WSL2。要用 NVIDIA GPU 透传，请在 Windows 安装驱动，不要在 WSL 里装。先确认 Windows 看得到显卡，再检查 WSL2 能否看到，最后确认 Linux 版 Ollama 服务是否在用它。如果 ollama ps 没有条目，说明当前没有模型加载：先用 ollama run qwen3:8b 发一条提示词，再检查。100% GPU 表示全部卸载到显卡，CPU/GPU 表示部分卸载，100% CPU 表示没有使用显卡。',
-        code: { lang: 'powershell', content: '# Windows PowerShell\nnvidia-smi\nwsl.exe --exec /usr/lib/wsl/lib/nvidia-smi\n\n# Run a prompt in Ollama inside WSL before checking model offload.\nwsl.exe --exec ollama ps' },
+        body: 'Choose native Windows Ollama if you just want to run models on Windows. Choose WSL2 if your tools or scripts need Linux. For NVIDIA passthrough, install the driver on Windows, not inside WSL. Use wsl -l -v to find the exact name of the WSL2 distro where Ollama runs, and set $Distro to that name below. Check that Windows sees the GPU, then that the selected distro sees it, then that its Ollama server uses it. If ollama ps is empty, no model is loaded: run a prompt with ollama run qwen3:8b, then check again. 100% GPU means full offload, CPU/GPU means partial offload, and 100% CPU means no GPU offload.',
+        bodyZh: '只想在 Windows 上跑模型，就选原生 Ollama；工具或脚本依赖 Linux 时，再选 WSL2。要用 NVIDIA GPU 透传，请在 Windows 安装驱动，不要在 WSL 里装。用 wsl -l -v 找到运行 Ollama 的 WSL2 发行版的准确名称，将下方的 $Distro 改为该名称。先确认 Windows 看得到显卡，再检查选中的发行版能否看到，最后确认其中的 Ollama 服务是否在用它。如果 ollama ps 没有条目，说明当前没有模型加载：先用 ollama run qwen3:8b 发一条提示词，再检查。100% GPU 表示全部卸载到显卡，CPU/GPU 表示部分卸载，100% CPU 表示没有使用显卡。',
+        code: { lang: 'powershell', content: '# Windows PowerShell\nwsl.exe -l -v\n$Distro = "Ubuntu" # Use the exact name from the list above.\nnvidia-smi\nwsl.exe -d $Distro --exec /usr/lib/wsl/lib/nvidia-smi\n\n# Run a prompt with Ollama in that distro before checking model offload.\nwsl.exe -d $Distro --exec ollama ps' },
       },
       {
         heading: 'Prerequisites',
@@ -191,7 +191,7 @@ export const extraArticles2: Article[] = [
         bodyZh: 'Windows 11（或 Windows 10 21H2+）、一张 NVIDIA 显卡，以及 Windows 侧装好的较新 NVIDIA 驱动。唯一要紧的规则：不要在 WSL 里装任何 NVIDIA 驱动。NVIDIA 的 CUDA on WSL 指南写得很明确 —— Windows 驱动会以 libcuda.so 的形式映射进 WSL（/usr/lib/wsl/lib），在它上面再装 Linux 驱动就会把它覆盖掉。最容易误踩的是 apt install cuda（或 cuda-drivers）：这两个元包会顺带装上 Linux 驱动。如果你确实需要在 WSL 里编译东西用的 CUDA 工具包，NVIDIA 的说法是只装 cuda-toolkit-12-x 这个包。',
         code: {
           lang: 'powershell',
-          content: '# PowerShell (Administrator)\nwsl --install\nwsl --update\nwsl --status          # want: default version 2\n\n# The check that matters — GPU visible from inside the WSL VM\nwsl nvidia-smi',
+          content: '# PowerShell (Administrator)\nwsl --install\nwsl --update\nwsl --status          # want: default version 2\n\n# Run the distro-specific GPU check above.',
         },
       },
       {
@@ -237,8 +237,8 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Common problems',
         headingZh: '常见问题',
-        body: 'wsl nvidia-smi fails: update the Windows driver, then wsl --update and wsl --shutdown; do not install a driver inside WSL. It worked and then stopped after an apt upgrade: check whether a cuda or cuda-drivers package got installed — that is the Linux driver overwriting the stub. "could not connect to ollama app": the server is not running, almost always because systemd is off (see the install step). nvidia-smi works but Ollama uses CPU: usually a second Ollama (the Windows app) already holding the port, or a model too large for the card — check ollama ps. Disk fills up: the WSL virtual disk grows to hold pulled models and does not shrink by itself; ollama rm removes a model, and getting the space back needs the vhdx compacted (sparseVhd=true in .wslconfig only applies to newly created disks). First load painfully slow: the model is probably under /mnt/c.',
-        bodyZh: 'wsl nvidia-smi 失败：更新 Windows 驱动，然后 wsl --update 与 wsl --shutdown；不要在 WSL 里装驱动。原本好好的，一次 apt upgrade 之后不行了：检查是不是装进了 cuda 或 cuda-drivers 包 —— 那是 Linux 驱动把映射进来的驱动覆盖了。"could not connect to ollama app"：服务没在运行，几乎都是因为 systemd 没开（见安装一节）。nvidia-smi 正常但 Ollama 走 CPU：通常是另一份 Ollama（Windows 应用）占着端口，或者模型对这张卡太大 —— 用 ollama ps 看。磁盘被占满：WSL 虚拟磁盘会为拉取的模型扩容，但不会自己缩回去；ollama rm 能删模型，要真正回收空间得压缩 vhdx（.wslconfig 里的 sparseVhd=true 只对新建的磁盘生效）。首次加载极慢：模型多半放在 /mnt/c 下。',
+        body: 'nvidia-smi fails in the selected WSL2 distro: update the Windows driver, then wsl --update and wsl --shutdown; do not install a driver inside WSL. It worked and then stopped after an apt upgrade: check whether a cuda or cuda-drivers package got installed — that is the Linux driver overwriting the stub. "could not connect to ollama app": the server is not running, almost always because systemd is off (see the install step). nvidia-smi works but Ollama uses CPU: usually a second Ollama (the Windows app) already holding the port, or a model too large for the card — check ollama ps. Disk fills up: the WSL virtual disk grows to hold pulled models and does not shrink by itself; ollama rm removes a model, and getting the space back needs the vhdx compacted (sparseVhd=true in .wslconfig only applies to newly created disks). First load painfully slow: the model is probably under /mnt/c.',
+        bodyZh: '在选中的 WSL2 发行版里运行 nvidia-smi 失败：更新 Windows 驱动，然后 wsl --update 与 wsl --shutdown；不要在 WSL 里装驱动。原本好好的，一次 apt upgrade 之后不行了：检查是不是装进了 cuda 或 cuda-drivers 包 —— 那是 Linux 驱动把映射进来的驱动覆盖了。"could not connect to ollama app"：服务没在运行，几乎都是因为 systemd 没开（见安装一节）。nvidia-smi 正常但 Ollama 走 CPU：通常是另一份 Ollama（Windows 应用）占着端口，或者模型对这张卡太大 —— 用 ollama ps 看。磁盘被占满：WSL 虚拟磁盘会为拉取的模型扩容，但不会自己缩回去；ollama rm 能删模型，要真正回收空间得压缩 vhdx（.wslconfig 里的 sparseVhd=true 只对新建的磁盘生效）。首次加载极慢：模型多半放在 /mnt/c 下。',
       },
       {
         heading: 'Next steps',

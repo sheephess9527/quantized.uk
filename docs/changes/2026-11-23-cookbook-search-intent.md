@@ -75,5 +75,7 @@ Visual C++ runtime. Both languages now point readers to
 before running the ZIP binaries.
 
 The Radeon Vulkan section has separate PowerShell and Bash copy buttons. The
-WSL2 checks all run from PowerShell, invoking Linux checks through
-`wsl.exe --exec`. Neither fix moves a section anchor.
+WSL2 checks all run from PowerShell. They list distros with `wsl.exe -l -v`
+and invoke both Linux checks through `wsl.exe -d $Distro --exec` so they
+reach the distro running Ollama, not necessarily the default. Neither fix
+moves a section anchor.

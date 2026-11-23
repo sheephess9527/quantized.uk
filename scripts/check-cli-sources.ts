@@ -119,7 +119,9 @@ assert.doesNotMatch(vulkan[1].content, /Invoke-WebRequest/);
 const wslChecks = articles.find(guide => guide.id === 'wsl2-ollama-gpu')!.content[0].code;
 assert(wslChecks && !Array.isArray(wslChecks));
 assert.equal(wslChecks.lang, 'powershell');
-assert.match(wslChecks.content, /^wsl\.exe --exec ollama ps$/m);
+assert.match(wslChecks.content, /^wsl\.exe -l -v$/m);
+assert.match(wslChecks.content, /^wsl\.exe -d \$Distro --exec \/usr\/lib\/wsl\/lib\/nvidia-smi$/m);
+assert.match(wslChecks.content, /^wsl\.exe -d \$Distro --exec ollama ps$/m);
 assert.doesNotMatch(wslChecks.content, /^ollama ps/m);
 
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');
