@@ -11,7 +11,7 @@ export interface SpeedConfiguration {
   context: number;
   batch: number;
   kv: KvCacheType;
-  vision: boolean;
+  encoderGiB: number;
 }
 
 interface SpeedObservation {
@@ -38,7 +38,7 @@ export const communitySpeeds: readonly CommunitySpeed[] = [];
 export const SPEED_BOUNDS = { min: 0.01, prefillMax: 10_000_000, decodeMax: 100_000 } as const;
 
 export function speedConfigurationKey(c: SpeedConfiguration): string {
-  return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, c.vision]);
+  return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, c.encoderGiB]);
 }
 
 export function matchingCommunitySpeeds(c: SpeedConfiguration, rows = communitySpeeds): CommunitySpeed[] {
@@ -61,7 +61,7 @@ function inBounds(value: unknown, min: number, max: number): value is number {
 
 export function validateSpeedSubmission(input: unknown): SpeedSubmission | undefined {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return;
-  const { modelId, quant, gpuIds, context, batch, kv, vision, processor = '', runtime, version, prefill, decode, note = '', url = '', website = '' } = input as Record<string, unknown>;
+  const { modelId, quant, gpuIds, context, batch, kv, encoderGiB, processor = '', runtime, version, prefill, decode, note = '', url = '', website = '' } = input as Record<string, unknown>;
   if (website !== '' || typeof modelId !== 'string' || typeof quant !== 'string') return;
   const model = models.find(m => m.id === modelId);
   if (!model?.quants.some(q => quantLevelKey(q) === quant)) return;
@@ -73,7 +73,7 @@ export function validateSpeedSubmission(input: unknown): SpeedSubmission | undef
   if (primary.type === 'cpu' ? !cleanProcessor || /[\r\n\t]/.test(cleanProcessor) : processor !== '') return;
   if (!inBounds(context, 1, 10_000_000) || !Number.isInteger(context)) return;
   if (!inBounds(batch, 1, 16) || !Number.isInteger(batch)) return;
-  if ((kv !== 'f16' && kv !== 'q8_0' && kv !== 'q4_0') || typeof vision !== 'boolean') return;
+  if ((kv !== 'f16' && kv !== 'q8_0' && kv !== 'q4_0') || !inBounds(encoderGiB, 0, Number.MAX_SAFE_INTEGER)) return;
   if (!inBounds(prefill, SPEED_BOUNDS.min, SPEED_BOUNDS.prefillMax)
     || !inBounds(decode, SPEED_BOUNDS.min, SPEED_BOUNDS.decodeMax)) return;
   const cleanRuntime = limitedText(runtime, 80);
@@ -89,7 +89,7 @@ export function validateSpeedSubmission(input: unknown): SpeedSubmission | undef
       evidenceUrl = link.href;
     } catch { return; }
   }
-  return { modelId, quant, gpuIds: devices.map(g => g!.id), context, batch, kv, vision,
+  return { modelId, quant, gpuIds: devices.map(g => g!.id), context, batch, kv, encoderGiB,
     ...(cleanProcessor ? { processor: cleanProcessor } : {}),
     runtime: cleanRuntime, version: cleanVersion, prefill, decode, note: cleanNote || undefined, url: evidenceUrl };
 }

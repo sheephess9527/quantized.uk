@@ -62,7 +62,7 @@ export default function CommunitySpeedForm({ configuration, modelName, rig, requ
       <p className="mt-3 rounded-lg border border-white/10 p-3 text-xs text-slate-300">
         {modelName} · {configuration.quant} · {rig} · {d.context.replace('{n}', String(configuration.context))}
         {' · '}{d.batch.replace('{n}', String(configuration.batch))} · KV {configuration.kv}
-        {configuration.vision && ` · ${d.vision}`}
+        {configuration.encoderGiB > 0 && ` · ${d.vision.replace('{n}', String(configuration.encoderGiB))}`}
       </p>
       <p className="my-3 text-xs text-slate-400">{d.instructions}</p>
       {status !== 'saved' && <form method="post" action="/api/community-speed" onSubmit={submit}>

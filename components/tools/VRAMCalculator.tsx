@@ -2112,7 +2112,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 const configuration: SpeedConfiguration = {
                   modelId: selectedModel.id, quant: quantLevelKey(selectedQuantObj),
                   gpuIds: rigDevices(profileGpu, profileCards, profileExtras).map(g => g.id),
-                  context: contextLen, batch: batchSize, kv: kvType, vision: !!result.extraGB,
+                  context: contextLen, batch: batchSize, kv: kvType, encoderGiB: calcInput.extraGB ?? 0,
                 };
                 return <CommunitySpeedForm key={speedConfigurationKey(configuration)}
                   configuration={configuration} modelName={selectedModel.name} rig={rigLabel}

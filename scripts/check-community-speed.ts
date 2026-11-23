@@ -3,7 +3,7 @@ import { onRequest } from '../functions/api/community-speed';
 import { communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
 
 const configuration: SpeedConfiguration = {
-  modelId: 'qwen3-8b', quant: 'Q4_K_M', gpuIds: ['rtx3060'], context: 4096, batch: 1, kv: 'f16', vision: false,
+  modelId: 'qwen3-8b', quant: 'Q4_K_M', gpuIds: ['rtx3060'], context: 4096, batch: 1, kv: 'f16', encoderGiB: 0,
 };
 const observation = { runtime: 'llama.cpp', version: 'b12409', prefill: 600.2, decode: 40.3 };
 const valid = { ...configuration, ...observation };
@@ -21,7 +21,8 @@ for (const processor of [undefined, '', ' ', 123, 'x'.repeat(81), 'two\nlines'])
 assert.equal(validateSpeedSubmission({ ...valid, processor: 'Ryzen 9 7950X' }), undefined);
 for (const overrides of [
   { modelId: 'custom' }, { quant: 'bad' }, { gpuIds: [] }, { gpuIds: ['missing'] }, { gpuIds: Array(5).fill('rtx3060') },
-  { context: -1 }, { context: 1.5 }, { batch: 17 }, { batch: 1.5 }, { kv: 'other' }, { vision: 'false' },
+  { context: -1 }, { context: 1.5 }, { batch: 17 }, { batch: 1.5 }, { kv: 'other' },
+  { encoderGiB: -1 }, { encoderGiB: '0.532' }, { encoderGiB: Infinity }, { encoderGiB: undefined, vision: false },
   { prefill: 0 }, { prefill: SPEED_BOUNDS.prefillMax + 1 }, { decode: SPEED_BOUNDS.decodeMax + 1 },
   { decode: '40.3' }, { decode: Infinity }, { runtime: ' ' }, { version: null }, { website: 'bot' },
   { url: 'javascript:alert(1)' }, { url: 'https://user@example.com' }, { url: 'https:example.com' }, { note: 'x'.repeat(1001) },
@@ -29,9 +30,13 @@ for (const overrides of [
 
 const reviewed: CommunitySpeed = { ...valid, id: '12345678-1234-4000-8000-123456789012', source: 'community' };
 assert.deepEqual(matchingCommunitySpeeds(configuration, [reviewed]), [reviewed]);
-for (const overrides of [{ modelId: 'other' }, { quant: 'Q8_0' }, { gpuIds: ['rtx4090'] }, { context: 8192 }, { batch: 2 }, { kv: 'q8_0' as const }, { vision: true }]) {
+for (const overrides of [{ modelId: 'other' }, { quant: 'Q8_0' }, { gpuIds: ['rtx4090'] }, { context: 8192 }, { batch: 2 }, { kv: 'q8_0' as const }, { encoderGiB: 0.531 }]) {
   assert.deepEqual(matchingCommunitySpeeds({ ...configuration, ...overrides }, [reviewed]), []);
 }
+const visionRun = { ...configuration, encoderGiB: 0.531 };
+const reviewedVision = { ...reviewed, ...visionRun };
+assert.deepEqual(matchingCommunitySpeeds(visionRun, [reviewed, reviewedVision]), [reviewedVision]);
+assert.deepEqual(matchingCommunitySpeeds({ ...visionRun, encoderGiB: 0.532 }, [reviewedVision]), []);
 assert.equal(new Set(communitySpeeds.map(row => row.id)).size, communitySpeeds.length);
 for (const row of communitySpeeds) {
   assert.equal(row.source, 'community');
@@ -75,6 +80,8 @@ async function checkEndpoint() {
   assert.ok(!JSON.stringify(args).includes(headers['CF-Connecting-IP']));
   assert.equal((await post(JSON.stringify({ ...cpuRun, processor: ' Ryzen 9 7950X ' }))).status, 201);
   assert.equal(JSON.parse(String(args[4])).processor, 'Ryzen 9 7950X');
+  assert.equal((await post(JSON.stringify({ ...valid, ...visionRun }))).status, 201);
+  assert.equal(JSON.parse(String(args[4])).encoderGiB, 0.531);
 
   changes = 0;
   assert.equal((await post(JSON.stringify(valid))).status, 429);
