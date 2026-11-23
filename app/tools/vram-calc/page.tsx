@@ -23,12 +23,15 @@ export default function VRAMCalcPage() {
           { label: t.nav.vramCalc },
         ]}
       />
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
+      <div className="mb-5 sm:mb-8">
+        <div className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
           ⚡ {t.nav.vramCalc}
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{title}</h1>
-        <p className="text-slate-400 max-w-2xl">{t.calc.subtitle}</p>
+        <p className="text-slate-400 max-w-2xl">
+          <span className="sm:hidden">{t.calc.mobileSubtitle}</span>
+          <span className="hidden sm:inline">{t.calc.subtitle}</span>
+        </p>
       </div>
       <Suspense fallback={<div className="glass rounded-2xl p-8 text-center text-slate-600 text-sm">Loading...</div>}>
         <VRAMCalculator />

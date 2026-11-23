@@ -98,7 +98,7 @@ export default function CookbookPage() {
 
             <div className="flex flex-wrap gap-1.5 mb-4">
               {article.tags.slice(0, 4).map(tag => (
-                <span key={tag} className="badge text-xs bg-white/[0.03] text-slate-600 border-white/[0.05] font-mono">
+                <span key={tag} className="badge text-xs bg-white/[0.03] text-slate-500 border-white/[0.05] font-mono">
                   {tag}
                 </span>
               ))}

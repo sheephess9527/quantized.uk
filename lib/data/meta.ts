@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-23'; // Includes the GPU and VRAM-tier upgrade comparisons.
+export const dataLastUpdated = '2026-11-24';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

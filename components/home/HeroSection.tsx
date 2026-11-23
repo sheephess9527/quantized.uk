@@ -27,7 +27,7 @@ export default function HeroSection({ latestDate }: { latestDate?: string }) {
     // Deliberately not a 70vh hero any more: the panel directly below it is the
     // page's actual entry point (pick a card → get models that fit), and a
     // full-viewport hero pushed it off the first screen on every laptop.
-    <section className="relative flex items-center justify-center overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-12">
+    <section className="relative flex items-center justify-center overflow-hidden pt-[4.5rem] pb-5 sm:pt-24 sm:pb-12">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -49,7 +49,7 @@ export default function HeroSection({ latestDate }: { latestDate?: string }) {
           this the whole hero block sized to 480px and the section's
           overflow-hidden silently clipped the CTAs off the right edge. */}
       <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        <div className="hero-rise flex flex-col items-center gap-2 mb-6">
+        <div className="hero-rise flex flex-col items-center gap-2 mb-4 sm:mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
             {t.home.hero.badge}
@@ -75,7 +75,7 @@ export default function HeroSection({ latestDate }: { latestDate?: string }) {
 
         {/* .hero-lift, not .hero-rise: this is the LCP element, so it animates
             transform only and is never rendered invisible. */}
-        <h1 className="hero-lift text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-4">
+        <h1 className="hero-lift text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-2 sm:mb-4">
           <span className="text-slate-100">{t.home.hero.title1}</span>
           <br />
           <span className="text-gradient">{t.home.hero.title2}</span>
@@ -83,12 +83,12 @@ export default function HeroSection({ latestDate }: { latestDate?: string }) {
 
         {/* The old headline, kept as a tagline rather than deleted: it is the
             site's name-adjacent line and still appears on the OG image. */}
-        <p className="hero-rise text-xs font-mono uppercase tracking-[0.2em] text-slate-600 mb-4">
+        <p className="hero-rise text-xs font-mono uppercase tracking-[0.2em] text-slate-600 mb-2 sm:mb-4">
           {t.home.hero.tagline}
         </p>
 
         <p
-          className="hero-rise [animation-delay:0.1s] text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed"
+          className="hero-rise [animation-delay:0.1s] text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-4 sm:mb-8 leading-relaxed"
         >
           {t.home.hero.subtitle}
         </p>
@@ -120,13 +120,13 @@ export default function HeroSection({ latestDate }: { latestDate?: string }) {
 
         <Link
           href="/cookbook/8gb-gpu-starter-guide/"
-          className="hero-rise [animation-delay:0.18s] inline-flex items-center gap-1 mt-4 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          className="hero-rise [animation-delay:0.18s] inline-flex items-center gap-1 mt-3 sm:mt-4 text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
           {t.home.hero.ctaTertiary}
           <ArrowRight size={11} />
         </Link>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+        <div className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2.5">
           {formatBadges.map(fmt => (
             <span key={fmt.name} className={`badge text-xs font-mono font-semibold ${fmt.color}`}>
               {fmt.name}

@@ -631,6 +631,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-24 — Mobile calculator and model index layout
+
+- On phones, the reverse calculator puts hardware and a jump to the matching models before sharing and the related reranker link. The model index puts search first and folds secondary filters and stats; the home hardware picker sits closer to the hero. Frequent calculator and fit controls have larger touch targets, and selected form borders and small labels are easier to see. Desktop ordering, the dark palette, existing URLs and Chinese search titles stay in place. [Verification](docs/changes/2026-11-24-phone-layout-contrast.md).
+
 ### 2026-11-23 — GPU upgrade comparisons
 
 - Added a collapsed comparison on existing GPU and VRAM-tier pages in English and Chinese. Compare another indexed GPU or Mac for new comfortable fits, quality-ranked quantization gains, and example context gains at the same quantization.

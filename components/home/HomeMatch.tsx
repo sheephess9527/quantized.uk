@@ -86,7 +86,7 @@ export default function HomeMatch() {
                 updateConfig({ gpuId: e.target.value });
                 if (e.target.value) trackEvent('Home Match', { gpu: e.target.value });
               }}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
+              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
             >
               <option value="">{m.gpuPlaceholder}</option>
               {GROUPS.map(g => (
@@ -108,7 +108,7 @@ export default function HomeMatch() {
             <select
               value={useCase}
               onChange={e => setUseCase(e.target.value as HomeUseCase)}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
+              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
             >
               <option value="chat">{m.useChat}</option>
               <option value="code">{m.useCode}</option>
@@ -168,11 +168,11 @@ export default function HomeMatch() {
 
                   <dl className="mt-3 space-y-1 text-xs">
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-600">{m.usesGB.replace('{total}', round(pick.totalGB)).replace('{vram}', String(gpu.vram))}</dt>
+                      <dt className="text-slate-500">{m.usesGB.replace('{total}', round(pick.totalGB)).replace('{vram}', String(gpu.vram))}</dt>
                       <dd className="text-slate-400 font-mono">{m.headroom.replace('{n}', round(pick.headroomGB))}</dd>
                     </div>
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-600">
+                      <dt className="text-slate-500">
                         {pick.quant.pplLossPercent === undefined
                           ? m.pplUnknown
                           : m.pplLoss.replace('{n}', pick.quant.pplLossPercent.toFixed(1))}
@@ -186,7 +186,7 @@ export default function HomeMatch() {
                     </div>
                   </dl>
 
-                  <p className="text-xs text-slate-600 leading-relaxed mt-3 flex-1">{kindLabel[pick.kind].why}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-3 flex-1">{kindLabel[pick.kind].why}</p>
 
                   <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-white/[0.05]">
                     <Link href={`/quant-hub/${pick.model.id}/`} className="card-action text-xs">

@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-24',
+    en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
+    zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
+  },
+  {
     date: '2026-11-23',
     en: 'GPU and VRAM-tier pages now compare upgrades at the same context and concurrency. Tier comparisons name the baseline device. See what newly fits, which models can run at a better quantization, and how much longer the context can be at the same quantization.',
     zh: '显卡页和显存档位页新增升级对比，档位页会标明基准设备。在相同上下文和并发设置下，看看换卡后多跑哪些模型、哪些模型能用更高质量的量化，以及相同量化能多跑多长的上下文。',
