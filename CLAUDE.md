@@ -92,6 +92,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **"How big" answers (Bing, 2026-11-23):** GPU and VRAM-tier titles, descriptions and first FAQ name `largestAtQ4()` — largest current model at GGUF Q4_K_M, 4K, batch 1. Keep one level across cards so parameter counts compare; titles over 60 width fall back to the plain question. Apple tier excluded.
 - **Published model scores:** `lib/data/model-quality.ts` pins LiveBench Overall only for exact checkpoints. Always link the dated release; scores across releases are not directly comparable and are not quant-level measurements. Never infer a missing score. The reverse scored-only checkbox is view-local, survives individual filter clearing and is cleared by Reset filters; it does not change fit or sort rules.
 - **Methodology:** `/methodology/` and `/zh/methodology/` derive memory-error summaries from `calibrationRows()` and the current calculator. Keep the historical sample's limits visible; updating arithmetic is not a new hardware measurement.
 - **LLM summaries:** `lib/llms.ts` owns both `/llms.txt` and `/zh/llms.txt`; keep shared counts and the page-link table in parity. Chinese page links use `/zh/`, while sitemap and public JSON are shared. `scripts/check-llms.ts` runs in `npm test`.

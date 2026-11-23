@@ -570,6 +570,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
+
+- The owner's Bing Webmaster Tools export (2026-08-22 to 11-21) shows Bing is the main search source (1,710 clicks; 96% of page clicks on `/zh/`), and its biggest query shape is "<card> / N G 显存 能跑多大的模型". New `largestAtQ4()` gives the largest current model whose GGUF Q4_K_M build fits comfortably at 4K.
+- `/gpu/{card}/`, `/best/{N}gb-vram/` and their `/zh/` copies now put that answer in the title ("RTX 5060 能跑什么模型？Q4 最大约 9B"), lead the meta description with it and open the FAQ with "能跑多大的模型？" / "How big a model can … run?". No pages added; `out/` stays at 3,737 files. Queries and page numbers: `docs/changes/2026-11-23-bing-how-big-answers.md`.
+
 ### 2026-11-23 — Search titles from Search Console and Cloudflare data
 
 - Read the owner's Search Console export (data rows 2026-10-29 to 11-21: 110 clicks, 16,204 impressions) beside Cloudflare Web Analytics. `/benchmarks/` had 5,320 impressions at position ~6 and no clicks; "qwen3 8b q4_k_m" and its variants had ~120 impressions at position ~8 and no clicks on `/quant-hub/qwen3-8b/`.

@@ -2,7 +2,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { fitsOnGpu, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, tightCeiling, type GpuFit } from '@/lib/utils/gpu-page';
+import { fitsOnGpu, largestAtQ4, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, tightCeiling, type GpuFit } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { isMoE } from '@/lib/utils/model-meta';
@@ -266,6 +266,21 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
 
   // ---- FAQ ----------------------------------------------------------------
   const faqs: GpuFaq[] = [];
+
+  const q4 = largestAtQ4(gpu);
+  if (q4) {
+    const lower = biggest && biggest.model.params > q4.model.params ? biggest : undefined;
+    faqs.push({
+      q: {
+        en: `How big a model can ${article(gpu.name)} ${gpu.name} run?`,
+        zh: `${gpu.name} 能跑多大的模型？`,
+      },
+      a: {
+        en: `At Q4_K_M and 4K context, up to about ${q4.model.paramLabel}: ${q4.model.name} needs about ${q4.totalGB.toFixed(1)} GB of the card's ${gpu.vram} GB.${lower ? ` With a smaller quant the largest that loads is ${lower.model.name} at ${quantLevelKey(lower.quant)} (${lower.totalGB.toFixed(1)} GB).` : ''} A longer context grows the KV cache, so the ceiling drops as the window grows.`,
+        zh: `按 Q4_K_M、4K 上下文计算，最大约 ${q4.model.paramLabel}：${q4.model.name} 约需这张卡 ${gpu.vram} GB 中的 ${q4.totalGB.toFixed(1)} GB。${lower ? `换用更小的量化档位，能加载的最大模型是 ${lower.model.name}（${quantLevelKey(lower.quant)}，约 ${lower.totalGB.toFixed(1)} GB）。` : ''}上下文越长，KV 缓存越大，能跑的模型上限随之下降。`,
+      },
+    });
+  }
 
   if (biggest) {
     const pick = grow ?? biggest;

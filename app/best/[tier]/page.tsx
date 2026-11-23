@@ -4,7 +4,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { models } from '@/lib/data/models';
 import { BEST_TIERS, bestPage, bestTierBySlug } from '@/lib/utils/best-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
-import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
+import { canonical, defaultRobots, displayWidth, feedAlternates, fitTitle, languageAlternates, TITLE_LIMIT, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
 
 export function generateStaticParams() {
   return BEST_TIERS.map(t => ({ tier: t.slug }));
@@ -13,13 +13,17 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { tier: string } }): Metadata {
   const tier = bestTierBySlug(params.tier);
   if (!tier) return { title: 'Not found | quantized.uk' };
-  const { picks, fitCount } = bestPage(tier);
+  const { picks, fitCount, q4 } = bestPage(tier);
   const label = tier.kind === 'apple' ? 'Apple silicon' : `${tier.vram}GB VRAM`;
   const path = `/best/${params.tier}`;
   const url = canonical(path);
   const chat = picks.find(p => p.useCases.includes('chat'));
-  const title = `Best local LLM for ${label} — ${fitCount} models | quantized.uk`;
-  const description = chat
+  const plainTitle = `Best local LLM for ${label} — ${fitCount} models | quantized.uk`;
+  const sizedTitle = q4 ? fitTitle(`Best local LLM for ${label}: up to ${q4.model.paramLabel} at Q4`) : undefined;
+  const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
+  const description = q4
+    ? `How big a model can ${label} run? Up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ${q4.totalGB.toFixed(1)} GB). ${fitCount} of ${models.length} models fit at 4K, with picks.`
+    : chat
     ? `${chat.model.name} at ${quantLevelKey(chat.quant)} needs ${chat.totalGB.toFixed(1)} GB of ${tier.vram} GB. ${fitCount} of ${models.length} models fit at 4K — picks for chat, coding and images.`
     : `${fitCount} of ${models.length} quantized models fit ${label} at 4K context.`;
   const ogAlt = `Best local LLM for ${label}: ${fitCount} models fit${chat ? `, top pick ${chat.model.name}` : ''} | quantized.uk`;
