@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
-    en: 'Added KORMo-Web-9B and IBM Granite Switch 4.1 8B with four verified GGUF sizes each. KORMo includes the vision projector in its estimates. Granite includes its adapter router cache and sizes the text GGUFs.',
-    zh: '收录 KORMo-Web-9B 和 IBM Granite Switch 4.1 8B，各核实四种 GGUF 的文件大小。KORMo 的估算包含视觉投影，Granite 的文本 GGUF 估算包含适配器路由缓存。',
+    en: 'Added KORMo-Web-9B and IBM Granite Switch 4.1 8B and 30B with four verified GGUF sizes each. KORMo includes the vision projector in its estimates. Granite includes its adapter router cache and sizes the text GGUFs.',
+    zh: '收录 KORMo-Web-9B、IBM Granite Switch 4.1 8B 和 30B，各核实四种 GGUF 的文件大小。KORMo 的估算包含视觉投影，Granite 的文本 GGUF 估算包含适配器路由缓存。',
   },
   {
     date: '2026-11-23',

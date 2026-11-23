@@ -85,6 +85,8 @@ const granite = models.find(m => m.id === 'granite-switch-4.1-8b')!;
 const graniteQuant = granite.quants.find(q => q.level === 'Q4_K_M')!;
 const graniteSource = graniteQuant.source!;
 assert(!canOfferOllamaLaunch(granite.id));
+assert(!canOfferOllamaLaunch('granite-switch-4.1-30b'));
+assert(!canOfferOllamaLaunch(undefined, 'ibm-granite/granite-switch-4.1-30b-GGUF'));
 assert(!canOfferOllamaLaunch(undefined, graniteSource.repo));
 for (const lang of ['en', 'zh'] as const) {
   const input = { ...opts, lang, modelId: granite.id, modelName: granite.name,

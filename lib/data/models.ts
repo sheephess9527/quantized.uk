@@ -272,6 +272,7 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
   { id: 57, type: 'new', modelId: 'kormo-web-9b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
+  { id: 59, type: 'new', modelId: 'granite-switch-4.1-30b', level: 'Q4_K_M', note: { en: 'Official text GGUF with two adapters', zh: '内置两个适配器的官方文本 GGUF' }, quantizer: 'IBM' },
   { id: 58, type: 'new', modelId: 'granite-switch-4.1-8b', level: 'Q4_K_M', note: { en: 'Official text GGUF with two adapters', zh: '内置两个适配器的官方文本 GGUF' }, quantizer: 'IBM' },
   { id: 56, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
   { id: 51, type: 'new', modelId: 'deepseek-v4-flash-0731', level: 'MXFP4', note: { en: 'compressed cache, 1M window', zh: '压缩缓存，100 万上下文' }, quantizer: 'ggml-org' },
