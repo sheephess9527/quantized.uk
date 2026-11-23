@@ -8,8 +8,8 @@ import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
 import RerankerLink from '@/components/tools/RerankerLink';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
-import CommunitySpeedForm, { CommunitySpeedReports } from '@/components/feedback/CommunitySpeedForm';
-import { COMMUNITY_SPEED_ENABLED, speedConfigurationKey, type SpeedConfiguration } from '@/lib/data/community-speed';
+import CommunitySpeedReports from '@/components/feedback/CommunitySpeedReports';
+import { COMMUNITY_SPEED_ENABLED, type SpeedConfiguration } from '@/lib/data/community-speed';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
@@ -2108,20 +2108,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               </div>
 
               {selectedModel && <RelatedReports modelId={selectedModel.id} gpuId={profileGpu?.id} />}
-              {selectedModel && selectedQuantObj && profileGpu && (() => {
-                const configuration: SpeedConfiguration = {
+              {(() => {
+                const speedConfiguration: SpeedConfiguration | undefined = selectedModel && selectedQuantObj && profileGpu ? {
                   modelId: selectedModel.id, quant: quantLevelKey(selectedQuantObj),
                   gpuIds: rigDevices(profileGpu, profileCards, profileExtras).map(g => g.id),
                   context: contextLen, batch: batchSize, kv: kvType, encoderGiB: calcInput.extraGB ?? 0,
-                };
-                return <>
-                  <CommunitySpeedReports configuration={configuration} />
-                  {COMMUNITY_SPEED_ENABLED && <CommunitySpeedForm key={speedConfigurationKey(configuration)}
-                    configuration={configuration} modelName={selectedModel.name} rig={rigLabel}
-                    requiresProcessor={profileGpu.type === 'cpu'} />}
-                </>;
-              })()}
-              {(() => {
+                } : undefined;
                 const configuration = {
                   model: selectedModel?.name || customRepo || t.calc.customLabel,
                   quant: selectedQuantObj ? `${selectedQuantObj.format} ${selectedQuantObj.level}` : selectedQuant,
@@ -2131,7 +2123,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   encoderGiB: result.extraGB ?? 0, estimatedGiB: result.totalGB,
                   sizingInput: JSON.stringify(calcInput),
                 };
-                return <RunReportForm key={JSON.stringify(configuration)} configuration={configuration} />;
+                return <>
+                  {speedConfiguration && <CommunitySpeedReports configuration={speedConfiguration} />}
+                  <RunReportForm key={JSON.stringify(configuration)} configuration={configuration}
+                    speedConfiguration={COMMUNITY_SPEED_ENABLED ? speedConfiguration : undefined}
+                    requiresProcessor={profileGpu?.type === 'cpu'} />
+                </>;
               })()}
 
               {selectedModel && levels.length > 1 && (

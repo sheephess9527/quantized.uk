@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
-    en: 'The VRAM calculator is ready to accept prompt and generation speeds once submissions are enabled. Submissions are private until reviewed; published visitor speeds are marked Community and kept separate from site benchmarks.',
-    zh: '开启提交功能后，可在显存计算器中提交提示词处理与生成速度。提交内容在审核前不会公开；发布的访客测速会标为「社区数据」，与本站跑分分开显示。',
+    en: 'Once submissions are enabled, you can send measured prompt and generation speeds for review from the calculator’s existing test report form. Submissions are private until reviewed; published visitor speeds are marked Community and kept separate from site benchmarks.',
+    zh: '开启提交功能后，可在显存计算器现有的测试结果表单中提交实测的提示词处理与生成速度。提交内容在审核前不会公开；发布的访客测速会标为「社区数据」，与本站跑分分开显示。',
   },
   {
     date: '2026-11-23',

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { onRequest } from '../functions/api/community-speed';
-import { COMMUNITY_SPEED_ENABLED, communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
+import { COMMUNITY_SPEED_ENABLED, communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, speedSubmissionFromReport, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
 
 function hasD1Binding(config: string, environment: 'production' | 'preview'): boolean {
   return config.split(/(?=^[ \t]*\[)/m).some(table => {
@@ -31,6 +31,19 @@ const configuration: SpeedConfiguration = {
 };
 const observation = { runtime: 'llama.cpp', version: 'b12409', prefill: 600.2, decode: 40.3 };
 const valid = { ...configuration, ...observation };
+const formFields = new FormData();
+for (const [name, value] of Object.entries({
+  engine: 'llama.cpp', version: 'b12409', prefillField: '600.2', decodeField: '40.3',
+  notes: 'Local test conditions', url: 'https://example.com/', peak: '22', outcome: 'Ran successfully',
+})) formFields.set(name, value);
+assert.deepEqual(speedSubmissionFromReport(configuration, formFields), {
+  ...valid, processor: '', note: 'Local test conditions', url: 'https://example.com/', website: '',
+});
+assert.ok(validateSpeedSubmission(speedSubmissionFromReport(configuration, formFields)));
+const cpuConfiguration = { ...configuration, gpuIds: ['cpu-32'] };
+assert.equal(validateSpeedSubmission(speedSubmissionFromReport(cpuConfiguration, formFields)), undefined);
+formFields.set('processor', 'Ryzen 9 7950X');
+assert.equal(validateSpeedSubmission(speedSubmissionFromReport(cpuConfiguration, formFields))?.processor, 'Ryzen 9 7950X');
 
 assert.deepEqual(validateSpeedSubmission({ ...valid, runtime: ' llama.cpp ', source: 'measured', website: '', note: ' ' }),
   { ...valid, note: undefined, url: undefined });

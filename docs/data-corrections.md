@@ -1,4 +1,25 @@
-# Model data verification — 2026-11-21
+# Model/GPU data verification and corrections
+
+## 2026-11-23 — Backfill of merged PR #28–#49 data changes
+
+These entries record the merged work and its existing evidence, not newly performed
+publisher fetches or benchmarks. The original November 21 audit follows unchanged.
+PR #45 was open during the initial audit and has since merged. Its own KORMo-Web-4B record is preserved under “Catalog addition — 2026-11-23” below, not duplicated in this backfill. See the [per-PR documentation audit](changes/2026-11-23-pr-28-49-docs-audit.md).
+
+| Date shipped | Model / hardware | Field | Old value | New value | Source / limitation |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | DeepSeek-R1-Distill-Qwen-14B (#34) | Benchmark identity | `DeepSeek-R1 14B` did not resolve to the indexed checkpoint | Alias resolves the existing RTX 4090 EXL2 run | `lib/utils/measured-runs.ts`; historical benchmark, not a new measurement. |
+| 2026-11-22 | M2 Ultra (#35) | Matrix runtime | llama.cpp, conflicting with chart | Ollama 0.3.14, consistent across surfaces | `lib/data/benchmarks.ts`, `lib/data/meta.ts`; editorial reconciliation: only recorded llama.cpp version was CUDA b4217. No recovered raw run; dates are first-publication bounds. |
+| 2026-11-22 | Laptop GPUs (#37) | Hardware catalogue | No laptop-specific rows | 27 GeForce RTX / Radeon laptop memory configurations, vendor `specUrl`, `isLaptop` | [Current sourced rows](../lib/data/gpus.ts); NVIDIA 30/40/50-series laptop specs and archived AMD laptop launch specs are linked per row. Laptop bandwidth is not copied from desktop; no physical performance measured. |
+| 2026-11-22 | Older GeForce / workstation / mods / Ryzen AI Max+ 395 (#42) | Hardware catalogue | Missing configurations | 17 rows: 8 consumer, 5 workstation/datacenter, 2 modified cards, 2 APU allocations | [Current sourced rows](../lib/data/gpus.ts): NVIDIA/AMD specs, TechPowerUp and mod articles linked via `specUrl`. Mods are unofficial; bandwidth assumes stock rate. |
+| 2026-11-22 | Ryzen AI Max+ 395 64G / 128G (#42) | GPU budget / bandwidth | Not indexed | 48 / 96 GB Windows GPU allocations; 256 GB/s shared bus; `isIntegrated`, not Apple `isUnified` | [AMD VGM FAQ](https://www.amd.com/en/blogs/2025/faqs-amd-variable-graphics-memory-vram-ai-model-sizes-quantization-mcp-more.html); [processor specs](https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html). Not dedicated VRAM or a Linux-tuned allocation; no stacking. |
+| 2026-11-22 | GTX 1080 Ti, V100, P100, P40; RTX 2060 Super (#42) | Format eligibility / renderer identity | Legacy CUDA could pass AWQ; Super could match base 2060 | Known compute capability below 7.5 excludes AWQ; unindexed 2060 Super no longer maps to 6/12 GB base rows | `cudaComputeCapability` and linked specs in `gpus.ts`, shared `formatAllowed`, `gpu-detect.ts`; missing capability retains existing policy, not a guarantee. |
+| 2026-11-22 | DeepSeek V4 / V4.1, GLM-5.3 Flash, Kimi K3.1 Pro, MiniMax M3.1 Flash (#44) | Index, parameters, GGUF bytes, KV layout, licence and image facts | Pending / unsized | Five indexed models with exact-file sizing and compressed/indexer cache groups | [Per-model source/byte/cache record](changes/2026-11-22-frontier-vram.md). DeepSeek uses compressed-row padding 256; derived active params 13.8 / 16.8B. Fixed KDA/compressor state excluded; cache not validated against a published measurement. |
+| 2026-11-22 | Tool-calling facts (#47) | Positive template evidence | Initial 3 Qwen3 entries | Audit of 151 then-indexed checkpoints: 113 positive, 33 readable without tools, 5 unreadable | `TOOL_CALLING_SOURCES` in [model-facts.ts](../lib/data/model-facts.ts) stores per-checkpoint URLs. Templates, not runtime tool-use tests; no inherited training-base claims. |
+| 2026-11-22 | Qwen3 14B EXL2 4.65bpw (#47) | Stored RTX 4090 speed | 125 tok/s | 118 tok/s | Existing exact row in `lib/data/benchmarks.ts`; `check-measured-speed.ts` enforces agreement. Other levels do not inherit measured status. |
+| 2026-11-22 | Exact-checkpoint model quality (#48) | LiveBench Overall | No calculator score table | 35 of 156 checkpoints have pinned published scores | [model-quality.ts](../lib/data/model-quality.ts), each linked to its dated [LiveBench release](https://livebench.ai/#/release/). Not quant measurements; different releases are not directly comparable; missing scores are not inferred. |
+
+## Original verification pass — 2026-11-21
 
 **Visitor speed provenance (2026-11-23):** No visitor rows were seeded; submissions ship disabled.
 For each future approved row in `lib/data/community-speed.ts`, record the submission ID, review

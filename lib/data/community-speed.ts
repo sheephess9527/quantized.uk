@@ -38,6 +38,20 @@ export const COMMUNITY_SPEED_ENABLED = false;
 
 export const SPEED_BOUNDS = { min: 0.01, prefillMax: 10_000_000, decodeMax: 100_000 } as const;
 
+export function speedSubmissionFromReport(configuration: SpeedConfiguration, fields: FormData) {
+  return {
+    ...configuration,
+    runtime: String(fields.get('engine') ?? ''),
+    version: String(fields.get('version') ?? ''),
+    prefill: Number(fields.get('prefillField')),
+    decode: Number(fields.get('decodeField')),
+    processor: String(fields.get('processor') ?? ''),
+    note: String(fields.get('notes') ?? ''),
+    url: String(fields.get('url') ?? ''),
+    website: String(fields.get('website') ?? ''),
+  };
+}
+
 export function speedConfigurationKey(c: SpeedConfiguration): string {
   const projectorSize = c.encoderGiB > 0 ? c.encoderGiB.toFixed(2) : null;
   return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, projectorSize]);

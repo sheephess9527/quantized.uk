@@ -37,7 +37,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 105 hardware configurations, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
+| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 122 GPU configurations plus 4 CPU-only RAM rows, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
 | **Local LLM hardware guides** | `/what-llm-can-i-run-locally/`, `/best-llm-to-run-locally/`, `/local-llm-gpu-requirements/`, `/local-llm-without-gpu/` | GPU-first calculator, tier picks, GPU × model-size matrix, and separate CPU/Mac memory tables. All four have Chinese mirrors. |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
@@ -185,6 +185,8 @@ The calculator supports two modes, toggled at the top of the page:
 | **Reverse** (`mode=reverse`) | GPU → Models | Pick your GPU + context → list all compatible model×quant configs |
 
 Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
+
+Reverse links accept `minTok=10|20|40` and AND-required `feat=tools,code`; image input uses `input=image` with verified GGUF encoder accounting. The displayed/filtering speed is the exact selected-card model/quant benchmark when available, otherwise the calibrated `measuredSpeed` point, never a bandwidth ceiling. Unknown speed fails a minimum on one card; multi-device rigs bypass and disable the minimum while preserving its selection. These filters do not enter profiles. Share previews preserve the same filters and multi-device bypass. Positive tool-template evidence lives in `model-facts.ts`; the code requirement uses the recorded category.
 
 For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
@@ -340,14 +342,15 @@ KV, sequences, encoder and estimated memory. Engine/version, exact file revision
 observed peak and its scope, speeds, actual token counts, repetitions, offload, speculation
 and notes are optional reader observations; blanks export as unknown. Outcome requires
 an explicit choice. Generate first, review, then copy/download Markdown or open a short
-email draft and attach it. No server submission, automatic sending or field analytics.
+email draft and attach it. These actions never submit data to the site or send field analytics.
 Changing settings or editing observations clears the generated preview. Markdown fences
 protect literal logs; no memory-error percentage is inferred across different scopes.
 Run `npm run check:evidence` after changing this flow.
 
-`CommunitySpeedForm.tsx` is separate from the local report: it sends just the displayed
-configuration and speed form fields to the private review queue on explicit submission.
-The bilingual privacy policy describes what is stored. See §6 for setup and approval.
+When community submissions are enabled for the result, the same form offers **Submit for review**:
+it sends the calculator configuration, runtime/version, measured speeds, CPU model when applicable,
+and any notes or public evidence URL. All other report fields stay local. The bilingual privacy
+policy describes what is stored. See §6 for setup and approval.
 
 ## 5. Local Development
 
@@ -411,7 +414,7 @@ Pages builds the root `functions/` directory along with `out/`; no separate Work
 
 ### Visitor speed submissions (Pages + D1 Free)
 
-Safe to merge before setup, or leave disabled indefinitely: `COMMUNITY_SPEED_ENABLED` in `lib/data/community-speed.ts` defaults to `false`, so the result shows no submit form and makes no availability request. After setup, **Submit your speed** (Chinese: **提交你的测速结果**) appears on forward results with an indexed model and hardware. Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. If storage later fails or exhausts its quota, a submission returns an error without changing the calculator.
+Safe to merge before setup, or leave disabled indefinitely: `COMMUNITY_SPEED_ENABLED` in `lib/data/community-speed.ts` defaults to `false`, so **Share your test result** (Chinese: **回传你的测试结果**) behaves as before and makes no availability request. Once enabled, eligible forward results with an indexed model and named hardware get a **Submit for review** (**提交审核**) action in that same form. The measured speed fields are shared with the local Markdown report; the form separates runtime and version and adds a CPU model field when applicable and an optional evidence link. Custom models and configurations without named hardware keep the local-only form. The submit endpoint writes only to D1; there is no public API to read the queue. If storage later fails or exhausts its quota, the local report actions still work.
 
 CPU-only RAM tiers require the processor model. Include that field when approving CPU-only rows so readers can distinguish processors within a RAM tier.
 For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no projector) when approving. Matching uses hundredths of a GiB so a rounded Hub lookup and a recommendation based on the same file's bytes agree. No projector is always separate from any positive size.
@@ -628,11 +631,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-23 — Visitor speed submissions
 
-- Added English and Chinese speed submission forms on indexed forward calculator results. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See the setup and review steps in §6.
-- The submit form ships off by default and can be enabled after Cloudflare setup. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
+- Added **Submit for review** to the existing English and Chinese test report form for eligible calculator results, with one set of measured speed fields shared by both actions. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See §6.
+- The review action ships off by default, leaving the local Markdown form unchanged. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
 - Added a Chinese Cloudflare setup guide covering Free-tier resources, setup steps, and what to send back without sharing secrets.
 - CPU-only submissions require a processor model; approved rows show it alongside the speeds.
 - Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).
+
+### 2026-11-23 — Documentation audit of merged PRs #28–#49
+
+- Audited the original 21 merged PRs against this changelog and the maintainer conventions. PR #45 was initially open; it has since merged and records KORMo-Web-4B in its own README/data-log entries, preserved below rather than duplicated. Existing release entries were present for every audited merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.
+- Added the [per-PR audit and verification record](docs/changes/2026-11-23-pr-28-49-docs-audit.md) and source-linked additions/corrections in [the data verification log](docs/data-corrections.md). Refreshed the snapshot date and Recent ships summary; retained historical release-time counts as history. No application/data changes or new performance measurements.
+- Merged main after #45, the November 23 patrol and its Granite Switch 4.1 30B follow-up, and daily live-check PR #51 without rebasing, retaining both sets of documentation. Current recomputed snapshot: 160 models (140 active), 158 licensed, 51 image-input models and 349 model/GPU pairs per language. Hardware and guide counts are unchanged; the audit record includes the rebuilt export counts. The patrol and #51 are outside the original PR range and retain their own release entries below.
 
 ### 2026-11-23 — Daily production smoke check
 

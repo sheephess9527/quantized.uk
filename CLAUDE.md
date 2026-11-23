@@ -16,6 +16,7 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
   ask: "does the README changelog reflect this? did any rule here change?"
 - Record every update in the Markdown changelog in `README.md` §9. For reader-visible releases, also prepend a dated English/Chinese entry in `lib/data/changelog.ts` and sync `dataLastUpdated` in `lib/data/meta.ts` in the same commit. After deployment, verify both homepages show the release date and both public changelogs describe the change. Keep runtime verification dates tied to actual checks.
 - Keep both accurate over comprehensive — fix stale facts (counts, file lists) when you notice them.
+- Keep per-change audit/verification records in `docs/changes/` (a linked multi-PR audit may cover related changes). Record model/GPU additions and corrections in `docs/data-corrections.md` with sources and limits; do not describe a documentation backfill as a new measurement or release.
 
 ## What this is
 
@@ -23,7 +24,7 @@ Next.js 14 **static-export** site (`output: 'export'`). No Next.js server — pu
 typed data in `lib/data/`. Cloudflare **Pages** Functions handle VRAM link previews and write
 visitor speed submissions to a private D1 Free queue.
 
-**Live snapshot (2026-11-23):**
+**Repository snapshot (2026-11-23; local export, not a deployment check):**
 
 | Surface | Notes |
 |--------|--------|
@@ -92,6 +93,12 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Published model scores:** `lib/data/model-quality.ts` pins LiveBench Overall only for exact checkpoints. Always link the dated release; scores across releases are not directly comparable and are not quant-level measurements. Never infer a missing score. The reverse scored-only checkbox is view-local, survives individual filter clearing and is cleared by Reset filters; it does not change fit or sort rules.
+- **Methodology:** `/methodology/` and `/zh/methodology/` derive memory-error summaries from `calibrationRows()` and the current calculator. Keep the historical sample's limits visible; updating arithmetic is not a new hardware measurement.
+- **LLM summaries:** `lib/llms.ts` owns both `/llms.txt` and `/zh/llms.txt`; keep shared counts and the page-link table in parity. Chinese page links use `/zh/`, while sitemap and public JSON are shared. `scripts/check-llms.ts` runs in `npm test`.
+- **Compressed KV:** `ModelArch.attention.compressed` groups add K-only rows of `values` elements on `layers` layers, with `ceil(ctx / ratio)` rows rounded up to optional `pad`, multiplied by batch and KV dtype bytes. DeepSeek V4/V4.1 use `pad: 256`; indexer K+V must be represented together in `values`. Fixed KDA/compressor state is still excluded; these are code-derived estimates, not measured cache allocations. Preserve first-part shard naming through `ggufShardStem` for split-file launch commands.
+- **Pair answers:** `pairAnswer()` uses calculator sizing to search the longest comfortable context, capped at the model window (batch 1, FP16 KV, no offload). Reuse its breakdown and `QuantFileLine`, not independent arithmetic; tight-only fits must remain warnings.
+- **Forward speed labels:** `speed-label.ts` prefers exact single-card model/quant benchmarks, then calibrated estimates, then an explicitly estimated bandwidth ceiling. Unsupported, over-context and over-budget results show no speed. This ceiling fallback is not allowed for reverse minimum-speed filters.
 - **Model/GPU pairs:** `lib/utils/pair-pages.ts` owns eligibility for routes, sitemap and links. Exact measured pairs always qualify; otherwise require a GPU in `POPULAR_GPU_IDS`, current models, verified-file green/yellow fits and at least 25% of usable memory. Each pair is four exported files, so don't widen this without counting `out/`. Keep GPU slugs last and reuse model OG images. `npm test` checks pair coverage/sizing; `postbuild` (`scripts/check-export-size.mjs`) fails above 15,000 files, under Cloudflare Pages' 20,000-file Free limit.
 
 - **Embedding:** only `/embed/*` and `/zh/embed/*` may be framed (Cloudflare `_headers` detach exceptions). Keep embed pages noindex, out of the sitemap and free of site chrome/analytics. Fit cards and snippets reuse `lib/utils/embed-fit.ts` and calculator sizing; never persist guessed/example choices when copying.
@@ -149,11 +156,12 @@ flaky network. Never "fix" it by removing the postbuild hook.
   promote a related report to same-config evidence or derive memory error from capacity.
   `scripts/check-calculator-evidence.ts` checks references and export semantics. Reader
   reports stay local until an explicit copy/download/mail-draft action; no automatic sending.
-  The separate speed form sends only on explicit submission; its D1 queue is private and
+  The existing local report form shares its measured speed fields with an optional review action.
+  Only that explicit action sends the configuration and speed submission fields; the D1 queue is private and
   never used at build time. Publish only reviewed rows from `community-speed.ts` as
   **Community / 社区数据**, never in measured, recommended, or calibration data. See README §6
   for required Pages bindings, review steps and Free-tier limits.
-  Keep the submit form disabled until both D1 schemas and Pages secrets are set; flip
+  Keep the review action disabled until both D1 schemas and Pages secrets are set; flip
   `COMMUNITY_SPEED_ENABLED` in the same commit as the real D1 binding IDs. Never add
   an availability request to calculator page views.
 
@@ -1305,7 +1313,7 @@ components/home/JobPaths.tsx
 - Always `git push origin main`; on `fetch first` rejection, `git pull --rebase origin main`,
   resolve conflicts, continue rebase, push again.
 - **Branches: one per piece of work, deleted after merge.** `git push origin --delete <branch>` works;
-  `gh` branch deletion 403s on this repo. Since 2026-11-14 the remote carries `main` only — check a
+  `gh` branch deletion 403s on this repo. The 2026-11-14 cleanup left only `main` at that time; do not assume that remains true. Check a
   stale branch's content (`compare/main...<branch>`, `git diff --name-status main origin/<branch>`),
   never its `ahead_by`: a squash merge leaves the branch's commits out of `main`'s history, so every
   merged branch still reports as "ahead".
@@ -1365,6 +1373,10 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol and Granite 30B follow-up: 160 models (140 active), 122 GPU configurations + 4 CPU rows, 28 guides, 349 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
+| 2026-11-23 | **Model/site patrol** — KORMo-Web-9B and Granite Switch 4.1 8B / 30B added in `models-extra-19.ts`, four sourced GGUF variants each; image projector and adapter-router KV accounted for respectively. Stable Windows pin remains b12409; launch-command shard-stem memo inputs corrected. Sources and limits: `docs/changes/2026-11-23-patrol.md`. |
+| 2026-11-23 | **Daily live check (#51)** — `npm run check:live` and the daily/manual Actions workflow probe bilingual production pages and calculator answers, retained pairs and share previews. Incoming command, billing and owner-alert documentation is preserved; no live check was rerun as part of this merge. |
+| 2026-11-22–23 | **Calculator and discovery releases (#28–#49, excluding #45)** — first-load detection, context/concurrency controls, shared size buckets, CI build, share previews, embeds, pair pages and 15,000-file gate, benchmark provenance, forward speed, 27 laptop + 17 other hardware rows, Ollama tag matching, progressive controls, sourced-data tagline, Chinese LLM summary, methodology, five frontier models/compressed KV, answer-first pairs, reverse speed/features and exact-checkpoint LiveBench scores. Historical rows below retain their ship-time counts. |
 | 2026-11-14 (ii) | **Hub: input + licence filters** — `lib/data/model-facts.ts` (26 licences with class + URL, 134 of 136 models read from HF cards, 36 image-input ids), `lib/utils/model-facts.ts` readers + `factTableProblems()` gate, `?input=` / `?lic=` through `hub-url.ts`, licence badge on every card; i18n dictionary split evaluated and **not** done (one root layout serves both trees — needs route groups); docs + repo ops below |
 | 2026-11-14 | **Patrol + repo cleanup** — llama.cpp b12376 (Windows names unchanged), runtimeVersions.checkedAt 11-14 (Ollama v0.40.16 / vLLM v0.33.0 / ExLlamaV3 1.6.7), HF stats refreshed (116 fetched, 20 kept), stale draft PRs #11/#12 closed, 17 merged/stale remote branches deleted (only `main` left) |
 | 2026-11-13 (ii) | **+1 model (136): Clover-35B-A3B-Preview** — DiffuSpace block-diffusion model on the Qwen3.6-35B-A3B backbone, read from its config + bartowski's GGUF bytes; params 34.66B (safetensors ÷ 2), 10 of 40 layers cache (30 GDN), `arch.moe` 32.21B routed; Q4_K_M 23.4 GB @4K tight on 24 GB, Q3_K_M 18.2 GB @4K green and green at 128K; IQ3_M not indexed (rung not in `quantBPW`); `/pending/` entry removed, `hfRepoMap` added, `todayFeed` id 35 |
