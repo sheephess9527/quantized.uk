@@ -81,7 +81,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       lang,
       gpuName: gpu?.name,
     });
-  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os, repo, filename]);
+  }, [active, gpu, model, gpuLayers, cpuMoe, contextLen, lang, mac, os, repo, filename, shardStem]);
   if (!active || !out) return null;
   const needsSourceCheck = !filename || /<hf-[^>]+-repo-id>|<gfx-target>/.test(out.command);
   const copyLabel = needsSourceCheck ? t.calc.launchCopyTemplate : t.calc.launchCopy;

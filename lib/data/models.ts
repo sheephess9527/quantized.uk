@@ -18,6 +18,7 @@ import { extraModels15 } from './models-extra-15';
 import { extraModels16 } from './models-extra-16';
 import { extraModels17 } from './models-extra-17';
 import { extraModels18 } from './models-extra-18';
+import { extraModels19 } from './models-extra-19';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -253,7 +254,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17, ...extraModels18];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17, ...extraModels18, ...extraModels19];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -270,6 +271,8 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 57, type: 'new', modelId: 'kormo-web-9b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
+  { id: 58, type: 'new', modelId: 'granite-switch-4.1-8b', level: 'Q4_K_M', note: { en: 'Official text GGUF with two adapters', zh: '内置两个适配器的官方文本 GGUF' }, quantizer: 'IBM' },
   { id: 56, type: 'new', modelId: 'kormo-web-4b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
   { id: 51, type: 'new', modelId: 'deepseek-v4-flash-0731', level: 'MXFP4', note: { en: 'compressed cache, 1M window', zh: '压缩缓存，100 万上下文' }, quantizer: 'ggml-org' },
   { id: 52, type: 'new', modelId: 'deepseek-v4-1-flash-1017', level: 'Q4_K_M', note: { en: '4 cache owners for 40 layers', zh: '40 层只有 4 层持有缓存' }, quantizer: 'mrfakename' },

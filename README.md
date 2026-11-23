@@ -105,8 +105,8 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   151 models — exports combined `models` array + todayFeed
-    models-extra*.ts        #   models-extra .. models-extra-17 (packs)
+    models.ts               #   159 models — exports combined `models` array + todayFeed
+    models-extra*.ts        #   models-extra .. models-extra-19 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
     hf-repos.mjs            #   HF repo map (single source; .ts re-exports)
@@ -472,7 +472,7 @@ A fresh agent/account taking over should run this top to bottom:
 
 | I want to… | Edit |
 |---|---|
-| Add a model | `lib/data/models-extra-17.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
+| Add a model | `lib/data/models-extra-19.ts` (or a new `models-extra-N.ts` imported by `models.ts`). Include `arch` + `quants`; set `addedAt` for Hub recency |
 | Add a GPU to the calculator | `lib/data/gpus.ts` |
 | Add a deployment guide | `lib/data/cookbook-extra-2.ts` (EN + ZH fields) |
 | Add/track a quant format | `lib/data/formats.ts` |
@@ -552,7 +552,13 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Audited the original 21 merged PRs against this changelog and the maintainer conventions. PR #45 was initially open; it has since merged and records KORMo-Web-4B in its own README/data-log entries, preserved below rather than duplicated. Existing release entries were present for every audited merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.
 - Added the [per-PR audit and verification record](docs/changes/2026-11-23-pr-28-49-docs-audit.md) and source-linked additions/corrections in [the data verification log](docs/data-corrections.md). Refreshed the snapshot date and Recent ships summary; retained historical release-time counts as history. No application/data changes or new performance measurements.
-- Merged main after #45 without rebasing, retained both sets of documentation, and recomputed the current snapshot: 157 models (137 active), 155 licensed, 50 image-input models and 328 model/GPU pairs per language. Hardware and guide counts are unchanged; the audit record includes the rebuilt export counts.
+- Merged main after #45 and the subsequent November 23 patrol without rebasing, retaining both sets of documentation. Current recomputed snapshot: 159 models (139 active), 157 licensed, 51 image-input models and 346 model/GPU pairs per language. Hardware and guide counts are unchanged; the audit record includes the rebuilt export counts. The patrol is outside the original PR range and retains its own release entry and source record below.
+
+### 2026-11-23 — Model and site patrol
+
+- Added KORMo-Web-9B and IBM Granite Switch 4.1 8B, each with four verified GGUF sizes. The KORMo estimate includes the BF16 projector for image inference. The Granite estimate includes the adapter-router KV cache for the text GGUFs. Granite launch commands use llama.cpp.
+- Rechecked pending candidates, related reports and stable runtime releases. The Windows llama.cpp pin remains b12409. Updated the calculator's memoized launch command inputs to track the GGUF shard stem.
+- [Sources, pending decisions, validation and deployment](docs/changes/2026-11-23-patrol.md).
 
 ### 2026-11-23 — Fewer model/GPU pair pages
 

@@ -168,11 +168,17 @@ export interface CLIOutput {
   notes: string[];
 }
 
+function isGraniteSwitchGGUF(modelId?: string, repo?: string): boolean {
+  return modelId === 'granite-switch-4.1-8b' ||
+    repo?.toLowerCase() === 'ibm-granite/granite-switch-4.1-8b-gguf';
+}
+
 export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {
   // The publisher verifies stock llama.cpp for this rotated GGUF. Ollama's
-  // handling of its Hadamard metadata has not been verified.
+  // handling of its Hadamard metadata and of Granite Switch's adapters is unverified.
   return modelId !== 'ternary-bonsai-2-27b' &&
-    repo?.toLowerCase() !== 'prism-ml/ternary-bonsai-2-27b-gguf';
+    repo?.toLowerCase() !== 'prism-ml/ternary-bonsai-2-27b-gguf' &&
+    !isGraniteSwitchGGUF(modelId, repo);
 }
 
 export function generateCLI(opts: CLIOptions): CLIOutput {
@@ -186,9 +192,12 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
   if (framework === 'llamacpp') return generateLlamaCpp(opts);
   if (framework === 'ollama') {
     if (!canOfferOllamaLaunch(opts.modelId, opts.hfRepo)) {
-      const note = L(opts.lang ?? 'en',
-        'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
-        '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
+      const lang = opts.lang ?? 'en';
+      const note = isGraniteSwitchGGUF(opts.modelId, opts.hfRepo)
+        ? L(lang, 'IBM publishes these Granite Switch GGUFs for llama.cpp b11798 or newer. Ollama support is unverified.',
+          'IBM 为 llama.cpp b11798 或更新版本发布了这批 Granite Switch GGUF。Ollama 支持尚未核实。')
+        : L(lang, 'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
+          '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
       return { command: '# ' + note, notes: [note] };
     }
     return generateOllama(opts);

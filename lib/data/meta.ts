@@ -66,7 +66,7 @@ export const benchmarkMethodology = {
  * projects' own release pages — update it only when actually re-checked.
  */
 export const runtimeVersions = {
-  checkedAt: '2026-11-21',
+  checkedAt: '2026-11-23',
   current: {
     llamacpp: LLAMACPP_BUILD,
     vllm: 'v0.34.0',
@@ -78,7 +78,7 @@ export const runtimeVersions = {
     exllama: 'v0.3.2 (stalled)',
   },
   note: {
-    en: 'llama.cpp stable is v1.0.0 (its nightly-tag.txt points to b12359); Windows commands retain the previously verified b12409 pin. Newer b12606 is flagged as a prerelease and is not adopted in this stable-release review. vLLM 0.34 enables extensible KV caching by default and changes block size to 64; this site’s generated commands explicitly set GPU memory utilization to 0.85. The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.7 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
-    zh: 'llama.cpp 稳定版为 v1.0.0（nightly-tag.txt 指向 b12359）；Windows 命令保留此前已核实的 b12409。较新的 b12606 标记为预发布，本次稳定版核查不采用。vLLM 0.34 默认启用可扩展 KV 缓存，块大小改为 64；本站生成命令已显式设置显存利用率 0.85。本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.7，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
+    en: 'llama.cpp stable is v1.0.0 (its nightly-tag.txt points to b12359); Windows commands retain the previously verified b12409 pin. Newer b12651 is flagged as a prerelease and is not adopted in this stable-release review. vLLM 0.34 enables extensible KV caching by default and changes block size to 64; this site’s generated commands explicitly set GPU memory utilization to 0.85. The figures on this page were measured on the stack in the left column. Those releases are now well behind current — speed numbers in particular move with the runtime, so treat them as a ranking between formats rather than as what you will see today. One thing this comparison cannot show: ExLlamaV2 has had no release since 2025-07, and the maintainer\'s active project has moved to a separate repository, ExLlamaV3 (v1.6.7 as of the date above, and shipping fast). Its own README describes a genuinely new quantization format, EXL3, not a version bump of EXL2 — this index does not track it yet, since no model here ships it, but a format this site tracks going quiet is itself worth knowing.',
+    zh: 'llama.cpp 稳定版为 v1.0.0（nightly-tag.txt 指向 b12359）；Windows 命令保留此前已核实的 b12409。较新的 b12651 标记为预发布，本次稳定版核查不采用。vLLM 0.34 默认启用可扩展 KV 缓存，块大小改为 64；本站生成命令已显式设置显存利用率 0.85。本页的数字是在左列那套软件栈上测得的。这些版本如今已明显落后于当前版本 —— 速度尤其会随运行时变化，因此请把它们当作格式之间的排序参考，而不是你今天会跑出的数值。这个对比说明不了的一件事：ExLlamaV2 自 2025-07 起再没有发布过新版本，维护者的主要精力已经转到另一个仓库 ExLlamaV3（截至上面的日期已到 v1.6.7，更新很勤）。它自己的 README 说得很清楚，这是一个全新的量化格式 EXL3，而不是 EXL2 的版本升级——本索引目前还没有任何模型提供这个格式，所以暂不收录，但本站在跟踪的一个格式陷入停滞，这件事本身值得让读者知道。',
   },
 } as const;
