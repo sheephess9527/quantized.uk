@@ -19,8 +19,9 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 
 ## What this is
 
-Next.js 14 **static-export** site (`output: 'export'`). No Next.js server or DB — content is
-typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functions for VRAM link previews.
+Next.js 14 **static-export** site (`output: 'export'`). No Next.js server — public content is
+typed data in `lib/data/`. Cloudflare **Pages** Functions handle VRAM link previews and write
+visitor speed submissions to a private D1 Free queue.
 
 **Live snapshot (2026-11-23):**
 
@@ -141,6 +142,10 @@ flaky network. Never "fix" it by removing the postbuild hook.
   promote a related report to same-config evidence or derive memory error from capacity.
   `scripts/check-calculator-evidence.ts` checks references and export semantics. Reader
   reports stay local until an explicit copy/download/mail-draft action; no automatic sending.
+  The separate speed form sends only on explicit submission; its D1 queue is private and
+  never used at build time. Publish only reviewed rows from `community-speed.ts` as
+  **Community / 社区数据**, never in measured, recommended, or calibration data. See README §6
+  for required Pages bindings, review steps and Free-tier limits.
 
 - **Calculator progressive controls:** advanced controls live in the More options disclosure, which auto-opens on non-default advanced settings and only closes via its toggle button, never automatically. Disclosure open state is never URL or profile state.
 - **Calculator first load:** reverse mode is the default. Precedence is URL, then saved profile,

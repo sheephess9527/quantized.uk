@@ -12,7 +12,7 @@ A full-stack static intelligence website for indie developers and geeks who run 
 
 You're an AI agent or a new account picking this up cold. Read this box, then do the [Handoff Checklist](#8-handoff-checklist-do-this-first).
 
-- **What it is:** Next.js 14 **static-export** site. No database or Next.js server. Content is typed data under `lib/data/`; narrow Cloudflare Pages Functions supply VRAM share previews.
+- **What it is:** Next.js 14 **static-export** site with no Next.js server. Public content is typed data under `lib/data/`; narrow Cloudflare Pages Functions supply VRAM share previews and accept visitor speed submissions into a private review queue.
 - **Run it:** `npm install && npm run dev` → http://localhost:3000. Checks: `npm test`. Build: `npm run build` → static files in `out/`.
 - **Deploy:** Push to `main` on GitHub → Cloudflare **Pages** auto-builds and publishes `out/`. No manual deploy step.
 - **Change content:** data = `lib/data/*.ts`; UI strings = `lib/i18n/translations.ts` (add **both** `en` and `zh`); pages = `app/`; reusable UI = `components/`.
@@ -345,6 +345,10 @@ Changing settings or editing observations clears the generated preview. Markdown
 protect literal logs; no memory-error percentage is inferred across different scopes.
 Run `npm run check:evidence` after changing this flow.
 
+`CommunitySpeedForm.tsx` is separate from the local report: it sends just the displayed
+configuration and speed form fields to the private review queue on explicit submission.
+The bilingual privacy policy describes what is stored. See §6 for setup and approval.
+
 ## 5. Local Development
 
 ```bash
@@ -397,7 +401,55 @@ pages_build_output_dir = "out"
 compatibility_date = "2026-02-17"
 ```
 
-Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy or bindings are needed. `public/_routes.json` limits execution to both calculator paths and `/api/vram-share.png`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
+Pages builds the root `functions/` directory along with `out/`; no separate Worker deploy is needed. `public/_routes.json` limits execution to both calculator paths, `/api/vram-share.png` and `/api/community-speed`. Only valid `share=1` calculator URLs replace OG/Twitter metadata; canonicals stay on the static tools, and share HTML is not cached or indexed. Result PNGs are cached per configuration and language. To update the bundled Noto Sans SC subset under `lib/og/`, use the [pinned upstream font](https://github.com/google/fonts/tree/06bfe0d62a98375cb09c942fa18e68bd32cff057/ofl/notosanssc), subset Latin-1, the symbols `–—…→` and the Chinese characters in `vram-result.ts` with `pyftsubset --name-IDs='*'`, then instantiate weight 400 using `fonttools varLib.instancer --update-name-table`. The bundled OFL applies to the subset.
+
+### Visitor speed submissions (Pages + D1 Free)
+
+Open an indexed model's forward calculator result with an indexed GPU or system, then open **Submit your speed** (Chinese: **提交你的测速结果**). Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. A missing binding, missing schema or exhausted free quota returns an error without changing the calculator.
+
+**Owner setup (before enabling):**
+
+1. On the Cloudflare **Workers Free** plan, create the D1 databases `quantized-community-speed` and `quantized-community-speed-preview` (Workers & Pages → D1 SQL Database → Create). In each database's **Console**, execute the SQL in [scripts/community-speed.sql](scripts/community-speed.sql).
+2. In this PR, append the following to `wrangler.toml` and replace both placeholders with the corresponding D1 database IDs from Cloudflare. Pages uses the repo's Wrangler config as its source of truth for bindings. Keep production and preview separate.
+
+   ```toml
+   [[env.production.d1_databases]]
+   binding = "COMMUNITY_SPEED_DB"
+   database_name = "quantized-community-speed"
+   database_id = "<production database ID>"
+
+   [[env.preview.d1_databases]]
+   binding = "COMMUNITY_SPEED_DB"
+   database_name = "quantized-community-speed-preview"
+   database_id = "<preview database ID>"
+   ```
+
+3. In the `quantized` Pages project, go to **Settings → Variables and Secrets → Add**, choose **Secret**, and set `COMMUNITY_SPEED_RATE_SECRET` in **Production** and **Preview**. Use a different random value for each (generate each with `openssl rand -hex 32`); never commit the values. Redeploy the PR preview after those changes. Production takes effect on the first production deployment with the binding.
+
+**Review and publish:** In the production D1 console, run `SELECT id, received_at, payload FROM pending_speed ORDER BY received_at DESC LIMIT 100;` (paginate for older rows). Check the exact model/quant, hardware, context and benchmark conditions, and reject suspicious or unsupported figures. To approve, make a data PR adding the ID, configuration, runtime, version and speeds to `communitySpeeds` in `lib/data/community-speed.ts` with `source: 'community'`. Include a canonical public HTTPS evidence URL only after reviewing it. Leave private notes and queue metadata out of git. Record the source and review in [docs/data-corrections.md](docs/data-corrections.md). Only those reviewed rows appear after deploy, in a separate **Community / 社区数据** panel on matching calculator results; they never feed measured benchmarks, recommendations or calibration.
+
+The endpoint saves a keyed, daily rate-limit tag instead of a raw IP, and allows up to 3 accepted submissions per IP and 100 total per UTC day per database. To minimize private data retention, periodically delete old queue rows in the console, e.g. `DELETE FROM pending_speed WHERE day < date('now', '-90 days');` after reviewing them. Keep same-day rows so the limits continue to count them.
+
+**Local preview with storage:** After `npm run build`, save this local-only config outside the repo (e.g. `~/community-speed-local.toml`):
+
+```toml
+name = "quantized-local"
+compatibility_date = "2026-02-17"
+
+[[d1_databases]]
+binding = "COMMUNITY_SPEED_DB"
+database_name = "community-speed-local"
+database_id = "00000000-0000-4000-8000-000000000042"
+```
+
+Then run these from the repo root (omit `--remote`; storage is local):
+
+```sh
+npx --yes wrangler@4.66.0 d1 execute COMMUNITY_SPEED_DB --config "$HOME/community-speed-local.toml" --local --file scripts/community-speed.sql --persist-to "$HOME/community-speed-local"
+npx --yes wrangler@4.66.0 pages dev out --d1 COMMUNITY_SPEED_DB=00000000-0000-4000-8000-000000000042 --binding COMMUNITY_SPEED_RATE_SECRET=local-preview-only --persist-to "$HOME/community-speed-local"
+```
+
+Use a forward result such as `/tools/vram-calc/?model=qwen3-8b&quant=Q4_K_M&gpu=rtx3060`, or prepend `/zh`. Re-run the local `d1 execute` command with the review query in `--command` instead of `--file` to check that a submission was queued.
 
 ### Hard-won lessons (so you don't repeat them)
 
@@ -545,6 +597,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — Visitor speed submissions
+
+- Added English and Chinese speed submission forms on indexed forward calculator results. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See the setup and review steps in §6.
 
 ### 2026-11-23 — Model and site patrol
 

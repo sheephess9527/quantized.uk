@@ -91,6 +91,26 @@ export const translations = {
       rerankerBody: 'Building a RAG pipeline? Choose the reranker alongside your LLM.',
       chooseReranker: 'Choose a reranker',
     },
+    communitySpeed: {
+      label: 'Community',
+      reviewedNote: 'Reviewed visitor submissions for these calculator settings. Runtime and test conditions can differ. These figures do not replace the calculator’s estimate.',
+      source: 'View benchmark evidence',
+      title: 'Submit your speed',
+      context: '{n}-token context',
+      batch: 'Batch {n}',
+      vision: 'Vision encoder',
+      instructions: 'Use results from a run with the settings above, not the calculator’s estimate. Submissions stay private until reviewed and are published only as community data. Do not include private prompts, credentials or personal details.',
+      runtime: 'Runtime',
+      version: 'Runtime version or build',
+      link: 'Public evidence link (HTTPS, optional)',
+      note: 'Test details (optional: prompt and output lengths, file, offload, or command)',
+      send: 'Submit for review',
+      sending: 'Submitting…',
+      saved: 'Thanks! Your speed is pending review and is not public.',
+      invalid: 'Check the settings and speed values, and use a public HTTPS link if you provide one.',
+      limited: 'The daily submission limit has been reached. Try again tomorrow (UTC).',
+      unavailable: 'Submissions are unavailable right now. Try again later or use “Share your test result” below to save a local report.',
+    },
     evidence: {
       "title": "What this result is based on",
       "reportTitle": "quantized.uk calculator test report",
@@ -658,7 +678,7 @@ export const translations = {
         mailSubject: 'quantized.uk benchmark run',
         mailBody: 'Card / chip and memory:\nDriver and OS:\nGGUF file:\nDownloaded from:\n\nllama-bench output (unedited):\n',
       },
-      coverageIntro: 'Every row below was produced on a machine described on this page, not collected from elsewhere. That also means the coverage is narrow: {r} runs across {c} cards, out of {m} in the GPU index. Where a figure on this site is not measured, it says estimated — this page is the only place the measured ones come from.',
+      coverageIntro: 'Every row below was produced on a machine described on this page, not collected from elsewhere. That also means the coverage is narrow: {r} runs across {c} cards, out of {m} in the GPU index. The site labels estimates and reviewed visitor speeds separately from these measured runs.',
       coverage: {
         title: 'What is and is not covered',
         measuredHere: 'Measured here',
@@ -1268,8 +1288,8 @@ export const translations = {
     privacy: {
       badge: 'Privacy',
       title: 'Privacy Policy',
-      subtitle: 'How quantized.uk handles analytics, local storage, and third-party services.',
-      lastUpdated: 'Last updated: 18 August 2026',
+      subtitle: 'How quantized.uk handles analytics, local storage, submissions, and third-party services.',
+      lastUpdated: 'Last updated: 23 November 2026',
       backHome: 'Back to Home',
       footerNote: 'Questions? Read our',
       linkLabel: 'Privacy Policy',
@@ -1295,7 +1315,7 @@ export const translations = {
           title: '3. Local Storage',
           paragraphs: [
             'Your browser may store preferences locally via localStorage: language choice (EN/ZH) and optional hardware profile (selected GPU).',
-            'This data never leaves your device unless you explicitly share a URL (e.g. VRAM calculator query params). We do not read or sync localStorage server-side.',
+            'We do not read or sync localStorage server-side. When you share a calculator result or submit a speed, the settings shown are included.',
             'You can clear this data anytime via your browser settings.',
           ],
         },
@@ -1304,6 +1324,7 @@ export const translations = {
           paragraphs: [
             'The site is hosted on Cloudflare Pages. Cloudflare may process standard web server logs (IP address, user agent, requested URL) for security and delivery.',
             'We do not receive or store those logs directly. Refer to Cloudflare\'s privacy policy for their data practices.',
+            'Sending a calculator speed saves the displayed settings and the fields you submit in a private Cloudflare D1 review queue. The queue stores a daily keyed rate-limit tag, not your raw IP address. Only approved settings and results, including a reviewed public evidence link if available, can be published as community data. Private notes are not published.',
           ],
         },
         {
@@ -1648,6 +1669,26 @@ export const translations = {
     crossTools: {
       rerankerBody: '搭建 RAG？给生成模型配一个合适的重排序模型。',
       chooseReranker: '选 reranker',
+    },
+    communitySpeed: {
+      label: '社区数据',
+      reviewedNote: '这些是与当前计算器设置匹配且已经审核的访客提交。运行时和测试条件可能不同，不能代替计算器的估算。',
+      source: '查看测速依据',
+      title: '提交你的测速结果',
+      context: '{n} token 上下文',
+      batch: '批大小 {n}',
+      vision: '视觉编码器',
+      instructions: '请填写按上述设置实际运行得到的速度，不要填写计算器的估算值。提交内容在审核前不会公开，通过审核后仅作为社区数据发布。请勿填写私人提示词、凭据或个人信息。',
+      runtime: '运行时',
+      version: '运行时版本或构建号',
+      link: '公开测速依据链接（HTTPS，可选）',
+      note: '测试细节（可选：提示词和输出长度、模型文件、卸载设置或命令）',
+      send: '提交审核',
+      sending: '正在提交…',
+      saved: '谢谢！你的测速结果已提交审核，目前未公开。',
+      invalid: '请检查计算器设置和速度数值；如提供链接，请使用公开的 HTTPS 链接。',
+      limited: '已达到每日提交上限。请在下一个 UTC 日期再试。',
+      unavailable: '暂时无法提交。请稍后重试，或使用下方的「分享测试结果」保存本地报告。',
     },
     evidence: {
       "title": "这份结果的依据",
@@ -2216,7 +2257,7 @@ export const translations = {
         mailSubject: 'quantized.uk 实测成绩提交',
         mailBody: '显卡 / 芯片与内存：\n驱动与操作系统：\nGGUF 文件：\n下载仓库：\n\nllama-bench 输出（未修改）：\n',
       },
-      coverageIntro: '下面每一行数据都产自本页描述的那台机器，不是从别处收集来的。这也意味着覆盖面很窄：在 GPU 索引的 {m} 张卡里，实测覆盖了 {c} 张，共 {r} 次运行。本站任何没有实测的数字都会标注为「预估」——而这一页，就是所有实测数字唯一的来源。',
+      coverageIntro: '下面每一行数据都产自本页描述的机器，不是从别处收集来的。这也意味着覆盖面很窄：在 GPU 索引的 {m} 张卡里，实测覆盖了 {c} 张，共 {r} 次运行。估算值和已审核的访客测速均单独标注，与本站实测区分。',
       coverage: {
         title: '哪些有实测，哪些没有',
         measuredHere: '这里实测过',
@@ -2826,8 +2867,8 @@ export const translations = {
     privacy: {
       badge: '隐私',
       title: '隐私政策',
-      subtitle: '说明 quantized.uk 如何处理分析数据、本地存储和第三方服务。',
-      lastUpdated: '最后更新：2026 年 8 月 18 日',
+      subtitle: '说明 quantized.uk 如何处理分析数据、本地存储、访客提交和第三方服务。',
+      lastUpdated: '最后更新：2026 年 11 月 23 日',
       backHome: '返回首页',
       footerNote: '有疑问？请阅读',
       linkLabel: '隐私政策',
@@ -2853,7 +2894,7 @@ export const translations = {
           title: '3. 本地存储',
           paragraphs: [
             '浏览器可能通过 localStorage 保存偏好：语言选择（中/英）和可选的硬件档案（所选 GPU）。',
-            '这些数据不会离开您的设备，除非您主动分享 URL（如显存计算器的查询参数）。我们不会在服务端读取或同步 localStorage。',
+            '我们不会在服务端读取或同步 localStorage。分享计算器结果或提交测速时，会包含所显示的配置。',
             '您可随时通过浏览器设置清除这些数据。',
           ],
         },
@@ -2862,6 +2903,7 @@ export const translations = {
           paragraphs: [
             '本站托管于 Cloudflare Pages。Cloudflare 可能处理标准 Web 服务器日志（IP、User-Agent、请求 URL）以保障安全与内容分发。',
             '我们不直接接收或存储这些日志。请参阅 Cloudflare 隐私政策了解其数据处理方式。',
+            '从计算器提交测速时，所显示的配置和您填写的内容会保存在 Cloudflare D1 的私有审核队列中。队列保存用于每日限流的加密标识，不保存您的原始 IP 地址。只有通过审核的配置和结果才可能作为社区数据发布；如有公开依据链接，也需审核后发布。私有备注不会发布。',
           ],
         },
         {

@@ -8,6 +8,8 @@ import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
 import RerankerLink from '@/components/tools/RerankerLink';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
+import CommunitySpeedForm from '@/components/feedback/CommunitySpeedForm';
+import { speedConfigurationKey, type SpeedConfiguration } from '@/lib/data/community-speed';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
@@ -2106,6 +2108,15 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               </div>
 
               {selectedModel && <RelatedReports modelId={selectedModel.id} gpuId={profileGpu?.id} />}
+              {selectedModel && selectedQuantObj && profileGpu && (() => {
+                const configuration: SpeedConfiguration = {
+                  modelId: selectedModel.id, quant: quantLevelKey(selectedQuantObj),
+                  gpuIds: rigDevices(profileGpu, profileCards, profileExtras).map(g => g.id),
+                  context: contextLen, batch: batchSize, kv: kvType, vision: !!result.extraGB,
+                };
+                return <CommunitySpeedForm key={speedConfigurationKey(configuration)}
+                  configuration={configuration} modelName={selectedModel.name} rig={rigLabel} />;
+              })()}
               {(() => {
                 const configuration = {
                   model: selectedModel?.name || customRepo || t.calc.customLabel,

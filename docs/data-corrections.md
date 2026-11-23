@@ -1,5 +1,10 @@
 # Model data verification — 2026-11-21
 
+**Visitor speed provenance (2026-11-23):** No visitor rows were added when submissions opened.
+For each future approved row in `lib/data/community-speed.ts`, record the submission ID, review
+date, public evidence if available, and any limitations here. Do not record private queue fields.
+Visitor figures are community data, not site measurements.
+
 First verification pass against publisher model cards/configs and the Hugging Face repository API (including the quantizer's own file metadata). Only unambiguous discrepancies are corrected; original full-checkpoint totals are not silently substituted for stored GGUF language-weight counts.
 
 ## Scope
