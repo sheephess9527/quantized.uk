@@ -26,7 +26,8 @@ most queries for privacy (listed queries account for 4 of 110 clicks), so the
 
 - `/benchmarks/`: title "Local LLM speed tests: tok/s on RTX 4090, 3090 and Mac";
   description names Llama 3.1 8B, Qwen3, llama.cpp, Ollama, ExLlamaV2, vLLM and the four
-  measured machines (all present in `lib/data/benchmarks.ts`). `/zh/benchmarks/` mirrored.
+  measured machines (all present in `lib/data/benchmarks.ts`); perplexity is named
+  separately because only Llama 3.1 8B has quant-level perplexity rows. `/zh/benchmarks/` mirrored.
 - English model pages: `modelPageTitle(name, level, totalGB)` puts the reference level
   (`referenceQuant()`) and its 4K size (`sizeAt(…, REF_CONTEXT)`) first, the same values
   `modelMetaDescription()` prints. Tiers: `<name> <level> VRAM: <GB> GB | quantized.uk`,

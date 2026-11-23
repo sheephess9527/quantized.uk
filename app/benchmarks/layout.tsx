@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMetadata({
   // bandwidth (see CLAUDE.md), and nothing has re-measured it since. Naming
   // only the cards this page actually has runs for.
   description:
-    'Measured tokens/s, VRAM and perplexity for Llama 3.1 8B, Qwen3 and more with llama.cpp, Ollama, ExLlamaV2 and vLLM on RTX 4090, 3090, M3 Max and M2 Ultra.',
+    'Measured tokens/s and VRAM for Llama, Qwen3 and more with llama.cpp, Ollama, ExLlamaV2 and vLLM on RTX 4090, 3090, M3 Max and M2 Ultra, plus quant perplexity.',
   path: '/benchmarks',
 });
 
