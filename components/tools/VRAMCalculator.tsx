@@ -688,6 +688,18 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     trackEvent('HF Import');
   };
 
+  const clearFile = () => {
+    selectModel(config.modelId);
+    if (config.quantLevel) {
+      setSelectedQuant(config.quantLevel);
+      setFormatGroup(findFormatGroup(config.quantLevel));
+    }
+    setContextLen(config.contextLen);
+    setFileInput('');
+    setUncopiedLink('');
+    setLinkCopied(false);
+  };
+
   const runImport = async (raw?: string) => {
     const input = raw ?? hfInput;
     if (mode === 'forward' && isQuantFileInput(input)) return runFileImport(input);
@@ -1050,7 +1062,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       <p className="text-emerald-300">{fileQuant} · {t.calc.hfFileSize.replace('{gb}', (activeFile.bytes / 1024 ** 3).toFixed(2))}
                         {shardCount(activeFile.path) > 1 ? ` · ${t.calc.hfFileShards.replace('{n}', String(shardCount(activeFile.path)))}` : ''}
                       </p>
-                      <button type="button" onClick={() => selectModel('')} className="min-h-[36px] text-violet-300 hover:underline">{t.calc.hfFileClear}</button>
+                      <button type="button" onClick={clearFile} className="min-h-[36px] text-violet-300 hover:underline">{t.calc.hfFileClear}</button>
                     </div>
                   )}
                 </div>
