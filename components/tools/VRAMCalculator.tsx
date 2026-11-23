@@ -889,9 +889,29 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   embedParams.set('cards', String(profileCards));
   embedParams.set('extra', profileExtras.map(g => g.id).join(','));
 
+  const shareButton = (
+    <button
+      type="button"
+      onClick={copyShareLink}
+      disabled={!configReady || (mode === 'reverse' && !showReverseResult) || (mode === 'forward' && !showForwardResult)}
+      className="inline-flex min-h-[44px] sm:min-h-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-colors disabled:opacity-50"
+    >
+      {linkCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+      {linkCopied ? t.calc.shareCopied : t.calc.shareLink}
+    </button>
+  );
+  const shareFallback = uncopiedLink && (
+    <label className="block text-xs text-slate-300">
+      {t.calc.shareCopyFailed}
+      <input readOnly value={uncopiedLink} onFocus={e => e.currentTarget.select()} className="mt-1 w-full rounded-lg border border-white/10 bg-transparent p-2" />
+    </label>
+  );
+
   return (
-    <div ref={rootRef} className="space-y-6 scroll-mt-24">
-      <RerankerLink placement="vram" />
+    <div ref={rootRef} className="flex flex-col gap-4 sm:gap-6 scroll-mt-24">
+      <div className={mode === 'reverse' ? 'hidden sm:block' : undefined}>
+        <RerankerLink placement="vram" />
+      </div>
       {/* Mode toggle + share */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
@@ -901,7 +921,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               onClick={() => setMode(m)}
               aria-pressed={mode === m}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
+                'flex min-h-[44px] sm:min-h-0 items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
                 mode === m
                   ? 'bg-violet-500/15 text-violet-300 border-violet-500/30'
                   : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
@@ -912,23 +932,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
             </button>
           ))}
         </div>
-        <button
-          onClick={copyShareLink}
-          disabled={!configReady || (mode === 'reverse' && !showReverseResult) || (mode === 'forward' && !showForwardResult)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-colors disabled:opacity-50"
-        >
-          {linkCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          {linkCopied ? t.calc.shareCopied : t.calc.shareLink}
-        </button>
+        <div className={mode === 'reverse' ? 'hidden sm:contents' : 'contents'}>{shareButton}</div>
       </div>
       {uncopiedLink && (
-        <label className="block text-xs text-slate-300">
-          {t.calc.shareCopyFailed}
-          <input readOnly value={uncopiedLink} onFocus={e => e.currentTarget.select()} className="mt-1 w-full rounded-lg border border-white/10 bg-transparent p-2" />
-        </label>
+        <div className={mode === 'reverse' ? 'hidden sm:block' : undefined}>{shareFallback}</div>
       )}
 
-      <p className="text-sm text-slate-500 -mt-2">
+      <p className="text-sm text-slate-500">
         {mode === 'forward' ? t.calc.modeForwardDesc : mode === 'reverse' ? t.calc.modeReverseDesc : t.calc.modeFinetuneDesc}
       </p>
 
@@ -1451,7 +1461,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     id="calc-reverse-card"
                     value={selectedGpuId}
                     onChange={e => chooseGpu(e.target.value)}
-                    className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full min-h-[44px] sm:min-h-0 appearance-none bg-white/[0.04] border border-white/[0.14] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.selectGpuPlaceholder}</option>
                     {gpuOptgroups(k => t.calc[k])}
@@ -1482,6 +1492,20 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 )}
                 {gpuHint?.kind === 'example' && selectedGpu && (
                   <p className="text-[11px] text-slate-500 mt-1.5">{t.calc.gpuExample.replace('{gpu}', selectedGpu.name)}</p>
+                )}
+                {showReverseResult && (
+                  <a
+                    href="#calc-result"
+                    onClick={e => {
+                      e.preventDefault();
+                      resultsRef.current?.focus({ preventScroll: true });
+                      resultsRef.current?.scrollIntoView({ block: 'start' });
+                    }}
+                    className="inline-flex sm:hidden min-h-[44px] items-center gap-1.5 text-sm font-medium text-cyan-300 hover:text-cyan-200"
+                  >
+                    {t.calc.reverseJump.replace('{count}', String(visibleRecommendations.length))}
+                    <ChevronDown size={14} aria-hidden="true" />
+                  </a>
                 )}
                 {(!selectedGpu || gpuHint?.kind === 'example') && (
                   <div className="mt-2">
@@ -1528,7 +1552,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   aria-label={exactLabel(p)}
                   title={exactLabel(p)}
                   className={cn(
-                    'px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
+                    'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                     contextLen === p
                       ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
                       : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
@@ -1827,15 +1851,16 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-medium text-slate-400">{t.calc.batch}</label>
+              <label htmlFor="calc-batch" className="text-xs font-medium text-slate-400">{t.calc.batch}</label>
               <span className="font-mono text-xs text-violet-300">{batchSize}</span>
             </div>
             <input
               type="range"
+              id="calc-batch"
               min={1} max={16} step={1}
               value={batchSize}
               onChange={e => setBatchSize(Number(e.target.value))}
-              className="w-full accent-violet-500 h-1.5 rounded-full"
+              className="w-full accent-violet-500 h-11 sm:h-1.5 rounded-full"
             />
             <div className="flex justify-between text-xs text-slate-600 mt-1">
               <span>1</span><span>4</span><span>8</span><span>16</span>
@@ -1850,7 +1875,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         </div>
 
         {/* Right: Results */}
-        <div ref={resultsRef} id="calc-result" className="scroll-mt-24">
+        <div ref={resultsRef} id="calc-result" tabIndex={-1} role={showReverseResult ? 'region' : undefined} aria-labelledby={showReverseResult ? 'calc-reverse-result-heading' : undefined} className="scroll-mt-24">
           {(invalidModelId || modelLookupFailed) && (
             <div className="glass rounded-2xl p-5 border border-amber-500/20 mb-4">
               <p className="text-sm text-amber-300">
@@ -2489,7 +2514,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           {mode === 'reverse' && showReverseResult && (
             <div className="glass rounded-2xl p-5">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-slate-300">{t.calc.reverseTitle}</h3>
+                <h3 id="calc-reverse-result-heading" className="text-sm font-semibold text-slate-300">{t.calc.reverseTitle}</h3>
                 <span className="text-xs text-slate-500">
                   {t.calc.reverseResults.replace('{count}', String(visibleRecommendations.length))}
                 </span>
@@ -2667,6 +2692,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           )}
         </div>
       </div>
+
+      {mode === 'reverse' && (
+        <div className="sm:hidden flex flex-col gap-4">
+          {shareButton}
+          {shareFallback}
+          <RerankerLink placement="vram" />
+        </div>
+      )}
 
       {/* Keeps the pinned bar from covering the end of the page. */}
       {showForwardResult && <div className="h-16 lg:hidden" aria-hidden="true" />}

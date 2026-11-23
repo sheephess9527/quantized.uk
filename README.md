@@ -630,6 +630,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-24 — Mobile calculator and model index layout
+
+- On phones, the reverse calculator puts hardware and a jump to the matching models before sharing and the related reranker link. The model index puts search first and folds secondary filters and stats; the home hardware picker sits closer to the hero. Frequent calculator and fit controls have larger touch targets, and selected form borders and small labels are easier to see. Desktop ordering, the dark palette, existing URLs and Chinese search titles stay in place. [Verification](docs/changes/2026-11-24-phone-layout-contrast.md).
+
 ### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
 
 - The owner's Bing Webmaster Tools export (2026-08-22 to 11-21) shows Bing is the main search source (1,710 clicks; 96% of page clicks on `/zh/`), and its biggest query shape is "<card> / N G 显存 能跑多大的模型". New `largestAtQ4()` gives the largest current model whose GGUF Q4_K_M build fits comfortably at 4K.

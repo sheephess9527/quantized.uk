@@ -9,7 +9,7 @@ import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
 import QueryNoindex from '@/components/seo/QueryNoindex';
-import FilterBar, { HubFilters } from '@/components/hub/FilterBar';
+import FilterBar, { HubSearch, type HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
 import GpuQuickChips from '@/components/hub/GpuQuickChips';
 import HubQueryObserver from '@/components/hub/HubQueryObserver';
@@ -186,6 +186,9 @@ export default function QuantHubContent() {
     router.replace(localizeHref('/quant-hub/', lang), { scroll: false });
   };
 
+  const searchProps = { filters, onChange: handleFiltersChange, gpuFilterId };
+  const scaleStats = <HubScaleStats total={total} families={HUB_STATS.families} formats={HUB_STATS.formats} buckets={HUB_STATS.buckets} />;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
       <Suspense fallback={null}>
@@ -200,12 +203,17 @@ export default function QuantHubContent() {
       />
 
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="max-sm:w-full">
           <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.hub.title}</h1>
+          <div className="mb-3 sm:hidden">
+            <HubSearch {...searchProps} id="hub-search-mobile" />
+          </div>
           <p className="text-slate-400">
             {t.hub.subtitle}
-            <span className="text-slate-500"> · </span>
-            <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
+            <span className="hidden sm:inline">
+              <span className="text-slate-500"> · </span>
+              <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
+            </span>
           </p>
           <DataFreshness className="mt-1.5" />
         </div>
@@ -231,12 +239,7 @@ export default function QuantHubContent() {
         </div>
       </div>
 
-      <HubScaleStats
-        total={total}
-        families={HUB_STATS.families}
-        formats={HUB_STATS.formats}
-        buckets={HUB_STATS.buckets}
-      />
+      <div className="hidden sm:flow-root">{scaleStats}</div>
 
       <GpuQuickChips selectedGpuId={gpuFilterId} onSelect={handleGpuSelect} />
 
@@ -295,8 +298,9 @@ export default function QuantHubContent() {
           count={filtered.length}
           total={total}
           profileFilterActive={!!gpuFilterModelIds}
-          gpuFilterId={gpuFilterId}
           legacyCount={HUB_STATS.legacyCount}
+          desktopSearch={<HubSearch {...searchProps} id="hub-search" />}
+          mobileStats={scaleStats}
         />
       </div>
 
