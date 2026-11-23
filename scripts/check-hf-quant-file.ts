@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import { importQuantFile, parseQuantFile, quantFileUrl, quantFromFilename, readHubQuantFile } from '@/lib/utils/hf-quant-file';
 import { calcVRAM } from '@/lib/utils/vram';
 import { vramImageUrl, vramPreview } from '@/lib/og/vram-result';
+import { shapeFromConfig } from '@/lib/utils/hf-import';
+import { models } from '@/lib/data/models';
 
 const input = 'https://huggingface.co/owner/model/blob/refs%2Fpr%2F2/quant%20files/model-UD-Q4_K_XL-00002-of-00002.gguf?download=true';
 const split = { repo: 'owner/model', revision: 'refs/pr/2', path: 'quant files/model-UD-Q4_K_XL-00002-of-00002.gguf' };
@@ -77,4 +79,34 @@ test('use exact bytes instead of bits per weight in the estimate and shared prev
   assert.match(vramPreview(image.searchParams, 'zh')!.answer, /^2\.41 GiB 预估/);
   params.delete('layers');
   assert.equal(vramPreview(params, 'en'), undefined);
+});
+
+test('Gemma 4 31B exact-file sizing and shared preview use separate global and window KV layouts', () => {
+  const text_config = {
+    num_hidden_layers: 60, head_dim: 256, global_head_dim: 512,
+    num_key_value_heads: 16, num_global_key_value_heads: 4, sliding_window: 1024,
+    layer_types: Array.from({ length: 60 }, (_, i) => i % 6 === 5 ? 'full_attention' : 'sliding_attention'),
+  };
+  const { layers, kvHeads, headDim, attention } = shapeFromConfig({ text_config });
+  const indexed = models.find(m => m.id === 'gemma-4-31b')!.arch;
+  assert.equal(layers, indexed.layers);
+  assert.equal(kvHeads, indexed.kvHeads);
+  assert.equal(headDim, indexed.headDim);
+  assert.deepEqual(attention, {
+    fullLayers: indexed.attention?.fullLayers, windowLayers: indexed.attention?.windowLayers,
+    windowTokens: indexed.attention?.windowTokens, fullKvHeads: indexed.attention?.fullKvHeads,
+    fullHeadDim: indexed.attention?.fullHeadDim,
+  });
+  const unknown = shapeFromConfig({ text_config: { ...text_config, layer_types: undefined } });
+  assert.equal(unknown.kvHeads, undefined);
+  assert.equal(unknown.headDim, undefined);
+  const weightBytes = 19_598_489_952;
+  const result = calcVRAM({ paramsB: 30.7, layers: 60, kvHeads: 16, headDim: 256, attention,
+    bpw: 0, contextLength: 65536, batchSize: 1, weightBytes });
+  assert.equal(result.kvCacheGB, 6.17);
+  const params = new URLSearchParams({ share: '1', mode: 'forward', model: 'custom', gpu: 'none',
+    ctx: '65536', layers: '60', kv: '16', hd: '256', full: '10', win: '50', wt: '1536', fkv: '4', fhd: '512',
+    hfFile: 'https://huggingface.co/owner/gguf/blob/main/gemma-4-31B-it-Q4_K_M.gguf', hfBytes: String(weightBytes) });
+  const image = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'en');
+  assert.equal(vramPreview(image.searchParams, 'en')?.answer, `${result.totalGB.toFixed(2)} GiB estimated`);
 });

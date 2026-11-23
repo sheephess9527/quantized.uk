@@ -148,7 +148,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
 
 const imageKeys = [
   VRAM_SHARE_PARAM, 'mode', 'ctx', 'batch', 'cache', 'gpu', 'cards',
-  'model', 'quant', 'params', 'layers', 'kv', 'hd', 'full', 'win', 'wt', 'mctx', 'mmproj', 'extra', 'hfFile', 'hfBytes',
+  'model', 'quant', 'params', 'layers', 'kv', 'hd', 'full', 'win', 'wt', 'fkv', 'fhd', 'mctx', 'mmproj', 'extra', 'hfFile', 'hfBytes',
   'sort', 'yellow', 'all', 'input', 'minTok', 'feat',
 ];
 

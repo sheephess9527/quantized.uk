@@ -123,6 +123,20 @@ export function shapeFromConfig(cfg: Json): Omit<ImportedShape, 'repo' | 'params
     notes.push('windowIgnored');
   }
 
+  const fullHeadDim = num(c.global_head_dim);
+  const fullKvHeads = num(c.num_global_key_value_heads);
+  if ((fullHeadDim && fullHeadDim !== headDim) || (fullKvHeads && fullKvHeads !== kvHeads)) {
+    if (attention?.fullLayers && attention.windowLayers && attention.windowTokens) {
+      attention = { ...attention, fullHeadDim, fullKvHeads };
+    } else if (!types || types.some(t => /sliding|chunk|local/.test(t))) {
+      kvHeads = headDim = undefined;
+      attention = undefined;
+    } else {
+      kvHeads = fullKvHeads ?? kvHeads;
+      headDim = fullHeadDim ?? headDim;
+    }
+  }
+
   const experts = num(c.num_experts) ?? num(c.num_local_experts) ?? num(c.n_routed_experts);
   const expertsPerToken = num(c.num_experts_per_tok) ?? num(c.moe_topk) ?? num(c.num_selected_experts);
   if (experts && experts > 1) notes.push('moe');

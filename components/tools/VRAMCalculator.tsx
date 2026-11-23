@@ -417,6 +417,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         params.set('kv', customKvHeads);
         params.set('hd', customHeadDim);
         if (customAttention?.fullLayers !== undefined) params.set('full', String(customAttention.fullLayers));
+        if (customAttention?.fullKvHeads) params.set('fkv', String(customAttention.fullKvHeads));
+        if (customAttention?.fullHeadDim) params.set('fhd', String(customAttention.fullHeadDim));
         if (customAttention?.windowLayers) {
           params.set('win', String(customAttention.windowLayers));
           params.set('wt', String(customAttention.windowTokens ?? 0));

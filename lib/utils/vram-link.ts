@@ -13,7 +13,14 @@ export function readVramAttention(params: URLSearchParams): ModelArch['attention
   const tokens = Number(params.get('wt'));
   const hasWindow = Number.isSafeInteger(window) && window > 0 && Number.isSafeInteger(tokens) && tokens > 0;
   if ((!params.has('full') && !hasWindow) || !Number.isSafeInteger(full) || full < 0) return;
-  return { fullLayers: full, ...(hasWindow ? { windowLayers: window, windowTokens: tokens } : {}) };
+  const fullKvHeads = Number(params.get('fkv'));
+  const fullHeadDim = Number(params.get('fhd'));
+  return {
+    fullLayers: full,
+    ...(hasWindow ? { windowLayers: window, windowTokens: tokens } : {}),
+    ...(Number.isSafeInteger(fullKvHeads) && fullKvHeads > 0 && fullKvHeads <= 1_000_000 ? { fullKvHeads } : {}),
+    ...(Number.isSafeInteger(fullHeadDim) && fullHeadDim > 0 && fullHeadDim <= 1_000_000 ? { fullHeadDim } : {}),
+  };
 }
 
 export function readVramEncoder(raw: string | null): number | undefined {
