@@ -638,6 +638,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Five Chinese model pages link directly to verified ModelScope GGUF listings and name the uploader. No routes, page titles or backend services changed. See [implementation and verification](docs/changes/2026-11-24-exact-gguf-modelscope.md).
 - Pasted file links stay out of the live address and result analytics. Only the explicit Copy share link action includes the file snapshot.
 - Gemma 4 file estimates use separate KV layouts for global and sliding-window layers, including in the shared result.
+- An estimate above a model's context limit warns instead of claiming a hardware fit or speed, including for imported files.
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

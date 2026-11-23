@@ -538,9 +538,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   };
 
   const selectedModel = models.find(m => m.id === selectedModelId);
+  const contextLimit = selectedModel?.contextLength ?? customCtx ?? 131072;
   /** The window is longer than the model can attend to — the estimate prices
       cache the model would never fill. */
-  const ctxOverModel = selectedModel !== undefined && contextLen > selectedModel.contextLength;
+  const ctxOverModel = !!(selectedModel || activeFile) && contextLen > contextLimit;
   /** True when the index has no file for the selected model at this level. */
   const levelNotShipped =
     selectedModel !== undefined &&
@@ -814,12 +815,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
     : undefined;
 
-  const contextLimit = selectedModel?.contextLength ?? customCtx ?? 131072;
   const formatOk = !profileGpu || !forwardFormat || rigFormatAllowed(profileGpu, profileExtras, forwardFormat);
-  const currentVerdict = profileGpu
+  const currentVerdict = profileGpu && !ctxOverModel
     ? formatOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red'
     : undefined;
-  const overBudget = !!profileGpu && formatOk && result.totalGB > rigCapacity;
+  const overBudget = !!profileGpu && !ctxOverModel && formatOk && result.totalGB > rigCapacity;
   const quantOptions = levels.filter(row =>
     contextLen <= contextLimit && row.key !== selectedQuant && row.formatOk &&
     (row.verdict === 'green' || ((overBudget || currentVerdict === 'red') && row.verdict === 'yellow')) &&
@@ -851,7 +851,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
     ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, offloadFormat, selectedModel, profileExtras, selectedQuantObj?.level)
     : undefined;
-  const planSpeed = showForwardResult && profileGpu && selectedModel && selectedQuantObj && !launchOffload
+  const planSpeed = showForwardResult && !ctxOverModel && profileGpu && selectedModel && selectedQuantObj && !launchOffload
     ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
     : undefined;
   const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
@@ -2025,8 +2025,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
             <div className="glass rounded-2xl p-4 border border-amber-500/20 mb-4">
               <p className="text-xs text-amber-300/90 leading-relaxed">
                 {t.calc.ctxOverModel
-                  .replace('{model}', selectedModel!.name)
-                  .replace('{max}', selectedModel!.contextLength.toLocaleString('en-US'))
+                  .replace('{model}', fileName ?? selectedModel?.name ?? t.calc.customLabel)
+                  .replace('{max}', contextLimit.toLocaleString('en-US'))
                   .replace('{ctx}', contextLen.toLocaleString('en-US'))}
               </p>
             </div>
@@ -2064,7 +2064,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   )}
                   {selectedModel && <ModelQualityScore modelId={selectedModel.id} />}
                 </p>
-                {!activeFile && <>
+                {!activeFile && !ctxOverModel && <>
                   <div className="mt-2"><ModelQualityNote /></div>
                   <EmbedSnippets query={embedParams.toString()} />
                 </>}
@@ -2113,7 +2113,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 quant={selectedQuantObj}
                 file={activeFile}
                 context={contextLen} batch={batchSize} kv={kvType} encoder={result.extraGB ?? 0}
-                calibrated={!!profileGpu && !!selectedModel && !!selectedQuantObj && !multiDevice
+                calibrated={!ctxOverModel && !!profileGpu && !!selectedModel && !!selectedQuantObj && !multiDevice
                   && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)
                   && getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) !== 'red'
                   && !!measuredSpeed(profileGpu, selectedModel, selectedQuantObj)}
@@ -2145,7 +2145,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     </div>
                   </div>
                 </div>
-                <VramStackBar
+                {!ctxOverModel && <VramStackBar
                   weightsGB={result.modelWeightsGB}
                   kvGB={result.kvCacheGB}
                   activationsGB={result.activationsGB}
@@ -2153,12 +2153,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   capacityGB={profileGpu && formatOk ? rigCapacity : undefined}
                   tightCeiling={profileGpu ? tightCeiling(profileGpu) : undefined}
                   formatBlocked={!!profileGpu && !formatOk}
-                />
+                />}
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
                 {(() => {
                   const desc = `${fileName ?? selectedModel?.name ?? (customRepo || t.calc.customLabel)} · ${fileQuant ?? selectedQuant} · ${contextLabel(contextLen)}${kvType !== 'f16' ? ` · KV ${kvType}` : ''}${batchSize > 1 ? ` · ×${batchSize}` : ''}${profileGpu ? ` · ${rigLabel}` : ''}`;
-                  const fmtOk = formatOk;
-                  const nowVerdict: VerdictColor | undefined = profileGpu ? (fmtOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red') : undefined;
+                  const nowVerdict = currentVerdict;
+                  const comparisonCapacity = profileGpu && !ctxOverModel ? rigCapacity : undefined;
                   const line = (label: string, d: string, gb: number, v?: VerdictColor, cap?: number) => (
                     <div className="flex items-center gap-2 text-xs">
                       <span className="w-10 shrink-0 text-slate-500">{label}</span>
@@ -2174,14 +2174,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button onClick={() => setPinned(null)} className="text-[11px] text-slate-500 hover:text-slate-300">{t.calc.pinClear}</button>
                       </div>
                       {line('A', pinned.desc, pinned.totalGB, pinned.verdict, pinned.capacity)}
-                      {line(t.calc.pinNow, desc, result.totalGB, nowVerdict, profileGpu ? rigCapacity : undefined)}
+                      {line(t.calc.pinNow, desc, result.totalGB, nowVerdict, comparisonCapacity)}
                       <p className={cn('text-xs font-mono', result.totalGB > pinned.totalGB ? 'text-amber-300/90' : 'text-emerald-300/90')}>
                         {result.totalGB >= pinned.totalGB ? '+' : ''}{(result.totalGB - pinned.totalGB).toFixed(2)} {t.calc.gbUnit}
                       </p>
                     </div>
                   ) : (
                     <button
-                      onClick={() => setPinned({ desc, totalGB: result.totalGB, verdict: nowVerdict, capacity: profileGpu ? rigCapacity : undefined })}
+                      onClick={() => setPinned({ desc, totalGB: result.totalGB, verdict: nowVerdict, capacity: comparisonCapacity })}
                       className="mt-2 text-xs text-violet-300 hover:text-violet-200 min-h-[32px]"
                     >
                       {t.calc.pinA} →
@@ -2202,7 +2202,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     here should not have to re-enter it in the next tool. The
                     shared config already carries model/quant/context, so these
                     links only need to name the destination. */}
-                {selectedModel && selectedQuantObj && (() => {
+                {!ctxOverModel && selectedModel && selectedQuantObj && (() => {
                   const okFmt = !profileGpu || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
                   const verdict = profileGpu ? (okFmt ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red') : undefined;
                   const sp = profileGpu && verdict !== 'red' && !multiDevice ? measuredSpeed(profileGpu, selectedModel, selectedQuantObj) : undefined;
@@ -2224,7 +2224,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 })()}
                 {selectedModel && (
                   <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
-                    {selectedQuantObj && !profileGpu && (() => {
+                    {!ctxOverModel && selectedQuantObj && !profileGpu && (() => {
                       // With a card picked the player is offered as a button beside the speed line
                       // above; with none it opens on the defaults from here.
                       const href = feelTarget(undefined, selectedModel, selectedQuantObj, contextLen);
@@ -2275,7 +2275,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 </>;
               })()}
 
-              {selectedModel && levels.length > 1 && (
+              {!ctxOverModel && selectedModel && levels.length > 1 && (
                 <div className="glass rounded-2xl p-5">
                   <h3 className="text-sm font-semibold text-slate-300 mb-1">
                     {t.calc.levelsTitle.replace('{model}', selectedModel.name)}
@@ -2330,7 +2330,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 </div>
               )}
 
-              <div className="glass rounded-2xl p-5">
+              {!ctxOverModel && <div className="glass rounded-2xl p-5">
                 <h3 className="text-sm font-semibold text-slate-300 mb-3">{t.calc.hwTitle}</h3>
 
                 {/* 43 bars, almost all green in the common case, is a lot of ink
@@ -2624,7 +2624,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />{t.calc.yellow}</span>
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-400" />{t.calc.red}</span>
                 </div>
-              </div>
+              </div>}
             </div>
           )}
 
@@ -2821,8 +2821,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       {/* Keeps the pinned bar from covering the end of the page. */}
       {showForwardResult && <div className="h-16 lg:hidden" aria-hidden="true" />}
       {showForwardResult && !resultsInView && (() => {
-        const capacity = rigCapacity;
-        const v = profileGpu ? (formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(profileGpu)) : 'red') : null;
+        const v = currentVerdict;
         return (
           <div
             className="fixed inset-x-0 bottom-0 z-40 lg:hidden border-t border-white/[0.08] bg-[#0a0a0f]/95 backdrop-blur px-4 pt-2.5"
@@ -2835,7 +2834,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 </p>
                 <p className="text-sm text-slate-200 truncate">
                   <span className="font-mono font-semibold">{result.totalGB.toFixed(1)} {t.calc.gbUnit}</span>
-                  {v ? (
+                  {ctxOverModel ? (
+                    <span className="ml-2 text-xs text-amber-300">{t.calc.ctxLimitLabel}</span>
+                  ) : v ? (
                     <span className={cn('ml-2 text-xs', verdictConfig[v].label)}>
                       {v === 'green' ? t.calc.green : v === 'yellow' ? t.calc.yellow : t.calc.red} · {rigLabel}
                     </span>

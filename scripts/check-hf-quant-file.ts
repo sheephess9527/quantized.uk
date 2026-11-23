@@ -77,6 +77,12 @@ test('use exact bytes instead of bits per weight in the estimate and shared prev
   assert.equal(preview.answer, `${result.totalGB.toFixed(2)} GiB estimated`);
   const image = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'zh');
   assert.match(vramPreview(image.searchParams, 'zh')!.answer, /^2\.41 GiB 预估/);
+  params.set('mctx', '2048');
+  params.set('gpu', 'rtx4090');
+  const overContext = vramPreview(params, 'en');
+  assert.match(overContext!.answer, /Context exceeds model limit/);
+  assert.doesNotMatch(overContext!.answer, /fit|budget/i);
+  assert.equal(overContext!.tone, 'yellow');
   params.delete('layers');
   assert.equal(vramPreview(params, 'en'), undefined);
 });
