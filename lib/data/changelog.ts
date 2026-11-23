@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
-    en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
-    zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
+    en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The index also distinguishes filtered results from the full catalog by simplifying its search and GPU filter labels. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
+    zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。搜索和 GPU 筛选提示也更简洁，不再把全库总数和筛选结果混在一起。首页硬件选择器也更靠上，常用控件更好点、更好读。',
   },
   {
     date: '2026-11-23',

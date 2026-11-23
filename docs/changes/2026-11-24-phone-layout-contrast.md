@@ -6,6 +6,8 @@
 
 ## Verification
 
+The Hub uses “Search models” / “搜索模型” and “GPU filter off” / “已关闭 GPU 筛选”. The saved-GPU action is unchanged. The full index count still includes legacy models, while the results count reflects the current filters and excludes legacy models by default.
+
 Run `npm test` and `npm run build`, then serve the export with `npm start` and run `npm run check:live -- --phone-ui http://localhost:3000`. The browser check covers the reverse jump and filter disclosure in both languages at 390×844. Confirm that the export stays below 4,000 files.
 
 Local export verification (2026-11-23 UTC): 3,738 files. At 390×844 in English and Chinese, choosing RTX 4090 put the calculator jump at y=462 px and the results heading at y=760 px. Following the jump moved the heading to 117 px from the viewport top. Hub search moved from y=683/659 px on the live site to y=180 px locally; the home picker heading moved from y=636/580 px to y=548/492 px. The three contrast samples measured 5.67:1 (home recommendation detail), 5.54:1 (Cookbook tag) and 6.90:1 (Hub count). Sampled touch controls were at least 44 px in both dimensions, and the home, Cookbook, Hub, calculator and RTX 4090 pages had no horizontal document overflow.

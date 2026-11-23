@@ -633,6 +633,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-24 — Mobile calculator and model index layout
 
 - On phones, the reverse calculator puts hardware and a jump to the matching models before sharing and the related reranker link. The model index puts search first and folds secondary filters and stats; the home hardware picker sits closer to the hero. Frequent calculator and fit controls have larger touch targets, and selected form borders and small labels are easier to see. Desktop ordering, the dark palette, existing URLs and Chinese search titles stay in place. [Verification](docs/changes/2026-11-24-phone-layout-contrast.md).
+- In both languages, the Hub search placeholder no longer shows the full index count, and the saved-GPU banner says only that GPU filtering is off. The results count still reflects the selected filters and whether legacy models are included.
 
 ### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
 

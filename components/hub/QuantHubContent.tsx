@@ -278,7 +278,7 @@ export default function QuantHubContent() {
       {hasProfile && profileGpu && !gpuFilterId && (
         <div className="mb-6 glass rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-slate-400">
-            {t.hub.profileFilterAll.replace('{total}', String(total))}
+            {t.hub.profileFilterOff}
           </p>
           <button
             onClick={() => handleGpuSelect(profileGpu.id)}

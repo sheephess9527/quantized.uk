@@ -120,6 +120,7 @@ async function checkPhoneUi(browser, { prefix }, base = origin) {
     const disclosure = page.getByRole('button', { name: prefix ? /更多筛选与模型库统计/ : /More filters & index stats/ });
     const filters = page.locator('#hub-filters');
     await tap(search);
+    assert.equal(await search.getAttribute('placeholder'), prefix ? '搜索模型' : 'Search models');
     assert((await rect(search)).y < 250, 'search is not near the heading');
     assert(await page.getByRole('button', { name: /RTX 4090/ }).first().isVisible(), 'missing quick GPU filter');
     assert.equal(await disclosure.getAttribute('aria-expanded'), 'false');
@@ -131,6 +132,14 @@ async function checkPhoneUi(browser, { prefix }, base = origin) {
     await search.fill('qwen3 8b', { timeout });
     await page.getByRole('heading', { name: 'Llama 3.1 8B Instruct', exact: true }).waitFor({ state: 'hidden', timeout });
     await page.getByRole('heading', { name: 'Qwen3 8B Instruct', exact: true }).waitFor({ timeout });
+    const gpuOff = page.getByText(prefix ? '已关闭 GPU 筛选' : 'GPU filter off', { exact: true });
+    await gpuOff.waitFor({ timeout });
+    const myGpu = page.getByRole('button', { name: prefix ? /按 RTX 4090 筛选/ : /Filter for RTX 4090/ });
+    await myGpu.click({ timeout });
+    await page.getByRole('button', { name: prefix ? /^显示全部 \d+ 个$/ : /^Show all \d+$/ }).click({ timeout });
+    await gpuOff.waitFor({ timeout });
+    await myGpu.waitFor({ timeout });
+    await page.getByText(prefix ? /^显示 \d+ \/ \d+ 个模型$/ : /^Showing \d+ of \d+ models$/).waitFor({ timeout });
     await noOverflow();
     return 'reverse result jump, 44px controls and Hub disclosure/search at 390×844';
   } finally {
