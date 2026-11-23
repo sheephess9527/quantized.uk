@@ -126,9 +126,9 @@ export default function ArticleView({ article }: Props) {
             <p className="text-sm text-slate-400 leading-relaxed mb-4">
               {lang === 'zh' ? section.bodyZh : section.body}
             </p>
-            {section.code && (
-              <CodeBlock lang={section.code.lang} content={section.code.content} />
-            )}
+            {section.code && (Array.isArray(section.code) ? section.code : [section.code]).map(({ lang, content }, index) => (
+              <CodeBlock key={index} lang={lang} content={content} />
+            ))}
           </section>
         ))}
 

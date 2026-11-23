@@ -182,7 +182,7 @@ export const extraArticles2: Article[] = [
         headingZh: '用三条命令检查 NVIDIA GPU 是否在用',
         body: 'Choose native Windows Ollama if you just want to run models on Windows. Choose WSL2 if your tools or scripts need Linux. For NVIDIA passthrough, install the driver on Windows, not inside WSL. Check that Windows sees the GPU, then that WSL2 sees it, then that the Linux Ollama server uses it. If ollama ps is empty, no model is loaded: run a prompt with ollama run qwen3:8b, then check again. 100% GPU means full offload, CPU/GPU means partial offload, and 100% CPU means no GPU offload.',
         bodyZh: '只想在 Windows 上跑模型，就选原生 Ollama；工具或脚本依赖 Linux 时，再选 WSL2。要用 NVIDIA GPU 透传，请在 Windows 安装驱动，不要在 WSL 里装。先确认 Windows 看得到显卡，再检查 WSL2 能否看到，最后确认 Linux 版 Ollama 服务是否在用它。如果 ollama ps 没有条目，说明当前没有模型加载：先用 ollama run qwen3:8b 发一条提示词，再检查。100% GPU 表示全部卸载到显卡，CPU/GPU 表示部分卸载，100% CPU 表示没有使用显卡。',
-        code: { lang: 'text', content: '# Windows PowerShell\nnvidia-smi\nwsl.exe --exec /usr/lib/wsl/lib/nvidia-smi\n\n# Inside WSL Ubuntu, after running a model in another terminal\nollama ps' },
+        code: { lang: 'powershell', content: '# Windows PowerShell\nnvidia-smi\nwsl.exe --exec /usr/lib/wsl/lib/nvidia-smi\n\n# Run a prompt in Ollama inside WSL before checking model offload.\nwsl.exe --exec ollama ps' },
       },
       {
         heading: 'Prerequisites',
@@ -466,12 +466,15 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Vulkan fallback on Windows or Linux',
         headingZh: 'Windows 或 Linux 上的 Vulkan 备用方案',
-        body: 'Vulkan uses the GPU driver rather than ROCm. On Windows x64, install the Microsoft Visual C++ Redistributable (x64) as above, then extract the official Vulkan ZIP to a separate folder and check that --list-devices names your Radeon. On Debian or Ubuntu, install the Vulkan tools and build dependencies plus your distribution’s Vulkan driver, then use a separate build directory. In either case, if the list also shows integrated graphics, pass --device with the exact Radeon device name, and look for layer offload in the server log.',
-        bodyZh: 'Vulkan 使用显卡驱动，不依赖 ROCm。Windows x64 上，先按上文安装 Microsoft Visual C++ 可再发行组件（x64），再把官方 Vulkan ZIP 解压到单独的目录，确认 --list-devices 列出了 Radeon。在 Debian 或 Ubuntu 上，安装 Vulkan 工具、编译依赖和发行版的 Vulkan 驱动，再用单独的目录编译。如果列表还显示集成显卡，可用 --device 指定所列的 Radeon 设备名，并在服务日志里确认模型层已卸载到显卡。',
-        code: {
-          lang: 'text',
-          content: `# Windows PowerShell\n$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-vulkan-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-vulkan\n.\\llama-vulkan\\llama-server.exe --list-devices\n.\\llama-vulkan\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080\n\n# Debian / Ubuntu (from the llama.cpp checkout)\n${linuxVulkanSetup}`,
-        },
+        body: 'Vulkan uses the GPU driver rather than ROCm. On Windows x64, install the Microsoft Visual C++ Redistributable (x64) as above, then extract the official Vulkan ZIP to a separate folder and check that --list-devices names your Radeon. On Debian or Ubuntu, install the Vulkan tools and build dependencies plus your distribution’s Vulkan driver, then run the Bash block from your llama.cpp checkout. In either case, if the list also shows integrated graphics, pass --device with the exact Radeon device name, and look for layer offload in the server log.',
+        bodyZh: 'Vulkan 使用显卡驱动，不依赖 ROCm。Windows x64 上，先按上文安装 Microsoft Visual C++ 可再发行组件（x64），再把官方 Vulkan ZIP 解压到单独的目录，确认 --list-devices 列出了 Radeon。在 Debian 或 Ubuntu 上，安装 Vulkan 工具、编译依赖和发行版的 Vulkan 驱动，再从 llama.cpp 源码目录运行 Bash 命令。如果列表还显示集成显卡，可用 --device 指定所列的 Radeon 设备名，并在服务日志里确认模型层已卸载到显卡。',
+        code: [
+          {
+            lang: 'powershell',
+            content: `# Windows PowerShell\n$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-vulkan-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-vulkan\n.\\llama-vulkan\\llama-server.exe --list-devices\n.\\llama-vulkan\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
+          },
+          { lang: 'bash', content: linuxVulkanSetup },
+        ],
       },
     ],
     faqs: [

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { articles } from '../lib/data/cookbook';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM } from '../lib/utils/vram';
@@ -106,4 +107,19 @@ for (const m of [arete, twil]) for (const quant of m.quants) {
 }
 const a = calcVRAM({ paramsB: arete.params, ...arete.arch, bpw: arete.quants[0].bpw, contextLength: 8192, batchSize: 1 });
 assert.equal(a.kvCacheGB, 0.5, 'Arete has 16 growing-cache layers, not 64');
+
+const vulkan = articles.find(guide => guide.id === 'amd-rocm-llamacpp')!.content.find(section => section.heading === 'Vulkan fallback on Windows or Linux')!.code;
+assert(Array.isArray(vulkan));
+assert.deepEqual(vulkan.map(block => block.lang), ['powershell', 'bash']);
+assert.match(vulkan[0].content, /Invoke-WebRequest/);
+assert.doesNotMatch(vulkan[0].content, /sudo apt|^cmake/m);
+assert.match(vulkan[1].content, /sudo apt/);
+assert.doesNotMatch(vulkan[1].content, /Invoke-WebRequest/);
+
+const wslChecks = articles.find(guide => guide.id === 'wsl2-ollama-gpu')!.content[0].code;
+assert(wslChecks && !Array.isArray(wslChecks));
+assert.equal(wslChecks.lang, 'powershell');
+assert.match(wslChecks.content, /^wsl\.exe --exec ollama ps$/m);
+assert.doesNotMatch(wslChecks.content, /^ollama ps/m);
+
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');

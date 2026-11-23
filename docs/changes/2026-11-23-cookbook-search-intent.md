@@ -73,3 +73,7 @@ The Windows CUDA, ROCm, SYCL and Vulkan ZIPs do not bundle the Microsoft
 Visual C++ runtime. Both languages now point readers to
 [Microsoft's x64 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
 before running the ZIP binaries.
+
+The Radeon Vulkan section has separate PowerShell and Bash copy buttons. The
+WSL2 checks all run from PowerShell, invoking Linux checks through
+`wsl.exe --exec`. Neither fix moves a section anchor.

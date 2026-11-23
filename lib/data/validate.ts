@@ -295,7 +295,11 @@ function guideFigureProblems(): string[] {
     const texts: string[] = [];
     for (const sec of a.content ?? []) {
       texts.push(sec.body ?? '');
-      if (sec.code?.content) texts.push(...sec.code.content.split('\n'));
+      if (sec.code) {
+        for (const block of Array.isArray(sec.code) ? sec.code : [sec.code]) {
+          texts.push(...block.content.split('\n'));
+        }
+      }
     }
     for (const f of a.faqs ?? []) texts.push(f.a);
     for (const t of texts) for (const sent of t.split(/(?<=[.;:—])\s+|\n/)) {
