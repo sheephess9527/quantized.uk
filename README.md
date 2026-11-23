@@ -35,6 +35,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial). Filters follow same-page navigation and back/forward; Enter search preserves the GPU. |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
+| **GPU upgrade comparison** | `/gpu/[gpuId]/`, `/best/[tier]/` | Compare a second device at the same context and concurrency: new comfortable fits, higher-ranked quantizations and longer context at the same quant. |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 122 GPU configurations plus 4 CPU-only RAM rows, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
@@ -629,6 +630,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — GPU upgrade comparisons
+
+- Added a collapsed comparison on existing GPU and VRAM-tier pages in English and Chinese. Compare another indexed GPU or Mac for new comfortable fits, quality-ranked quantization gains, and example context gains at the same quantization.
+- GPU comparisons follow the page's fit controls; tier comparisons use the tier's representative hardware and the same presets without changing the static picks. No new routes or title changes. [Sizing and verification](docs/changes/2026-11-23-gpu-upgrade-compare.md).
 
 ### 2026-11-23 — GPU and VRAM-tier pages answer "能跑多大的模型" (Bing data)
 

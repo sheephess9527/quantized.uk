@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'GPU and VRAM-tier pages now compare upgrades at the same context and concurrency. See what newly fits, which models can run at a better quantization, and how much longer the context can be at the same quantization.',
+    zh: '显卡页和显存档位页新增升级对比。在相同上下文和并发设置下，看看换卡后多跑哪些模型、哪些模型能用更高质量的量化，以及相同量化能多跑多长的上下文。',
+  },
+  {
+    date: '2026-11-23',
     en: 'GPU pages and the 8–32 GB VRAM pages now answer how big a model the card can run: the largest current model at Q4_K_M with 4K context, in the summary and a new first FAQ, and in the titles of the VRAM pages and the English GPU pages.',
     zh: '显卡页和 8–32 GB 显存页现在直接回答“能跑多大的模型”：按 Q4_K_M、4K 上下文能从容运行的最大现行模型，写在摘要和新的第一条常见问题里，显存页标题也写明了这个数。',
   },

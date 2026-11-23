@@ -117,7 +117,7 @@ function sizeAt(model: QuantModel, bpw: number, ctx: number) {
  * picks came back as a 675B model needing 429 GB while the same page's context
  * ladder was computed against the declared 36 GB tier. One tier, two capacities.
  */
-function tierCard(tier: BestTier): GPU {
+export function tierCard(tier: BestTier): GPU {
   const base = tier.cards[0];
   return base
     ? { ...base, vram: tier.vram }

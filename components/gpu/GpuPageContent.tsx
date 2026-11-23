@@ -3,6 +3,7 @@
 import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { useState } from 'react';
 import FitControls from './FitControls';
+import GpuUpgradeComparison from './GpuUpgradeComparison';
 import { contextLabel } from '@/lib/utils/context-label';
 import Link from '@/components/i18n/LocalLink';
 import { Cpu, ArrowRight } from 'lucide-react';
@@ -149,6 +150,10 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           </Link>
         )}
       </section>
+
+      <div className="mb-6">
+        <GpuUpgradeComparison current={gpu} settings={{ contextLength, batchSize }} />
+      </div>
 
       {fits.length === 0 ? (
         <p className="glass rounded-2xl p-6 text-sm text-slate-400">{fill(g.noFits.replace('4K', contextLabel(contextLength)), { vram: gpu.vram })}</p>
