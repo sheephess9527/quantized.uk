@@ -52,6 +52,11 @@ export function speedSubmissionFromReport(configuration: SpeedConfiguration, fie
   };
 }
 
+export function speedSubmissionKey(input: unknown): string | undefined {
+  const validated = validateSpeedSubmission(input);
+  return validated && JSON.stringify(validated);
+}
+
 export function speedConfigurationKey(c: SpeedConfiguration): string {
   const projectorSize = c.encoderGiB > 0 ? c.encoderGiB.toFixed(2) : null;
   return JSON.stringify([c.modelId, c.quant, c.gpuIds, c.context, c.batch, c.kv, projectorSize]);

@@ -805,6 +805,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   // seconds, so the site learns which models and cards readers actually check
   // and which of them do not fit. Ids and verdicts only; nothing typed is sent.
   const trackedResults = useRef(new Set<string>());
+  const submittedReviewKeys = useRef(new Set<string>());
   const resultEvent = useMemo((): Record<string, string | number> | null => {
     if (showForwardResult) {
       return {
@@ -2127,7 +2128,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   {speedConfiguration && <CommunitySpeedReports configuration={speedConfiguration} />}
                   <RunReportForm key={JSON.stringify(configuration)} configuration={configuration}
                     speedConfiguration={COMMUNITY_SPEED_ENABLED ? speedConfiguration : undefined}
-                    requiresProcessor={profileGpu?.type === 'cpu'} />
+                    requiresProcessor={profileGpu?.type === 'cpu'} submittedReviewKeys={submittedReviewKeys.current} />
                 </>;
               })()}
 

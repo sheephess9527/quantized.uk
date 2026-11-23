@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { onRequest } from '../functions/api/community-speed';
-import { COMMUNITY_SPEED_ENABLED, communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, speedSubmissionFromReport, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
+import { COMMUNITY_SPEED_ENABLED, communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, speedSubmissionFromReport, speedSubmissionKey, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
 
 function hasD1Binding(config: string, environment: 'production' | 'preview'): boolean {
   return config.split(/(?=^[ \t]*\[)/m).some(table => {
@@ -40,6 +40,16 @@ assert.deepEqual(speedSubmissionFromReport(configuration, formFields), {
   ...valid, processor: '', note: 'Local test conditions', url: 'https://example.com/', website: '',
 });
 assert.ok(validateSpeedSubmission(speedSubmissionFromReport(configuration, formFields)));
+const submittedKey = speedSubmissionKey(speedSubmissionFromReport(configuration, formFields));
+assert.ok(submittedKey);
+formFields.set('outcome', 'Other failure');
+formFields.set('peak', '23');
+formFields.set('engine', ' llama.cpp ');
+assert.equal(speedSubmissionKey(speedSubmissionFromReport(configuration, formFields)), submittedKey);
+formFields.set('decodeField', '41');
+assert.notEqual(speedSubmissionKey(speedSubmissionFromReport(configuration, formFields)), submittedKey);
+formFields.set('decodeField', '40.3');
+assert.equal(speedSubmissionKey(speedSubmissionFromReport(configuration, formFields)), submittedKey);
 const cpuConfiguration = { ...configuration, gpuIds: ['cpu-32'] };
 assert.equal(validateSpeedSubmission(speedSubmissionFromReport(cpuConfiguration, formFields)), undefined);
 formFields.set('processor', 'Ryzen 9 7950X');

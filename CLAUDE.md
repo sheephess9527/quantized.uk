@@ -161,6 +161,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
   never used at build time. Publish only reviewed rows from `community-speed.ts` as
   **Community / 社区数据**, never in measured, recommended, or calibration data. See README §6
   for required Pages bindings, review steps and Free-tier limits.
+  Track successful submissions by their validated review payload, not by local-only report fields.
   Keep the review action disabled until both D1 schemas and Pages secrets are set; flip
   `COMMUNITY_SPEED_ENABLED` in the same commit as the real D1 binding IDs. Never add
   an availability request to calculator page views.

@@ -633,6 +633,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 - Added **Submit for review** to the existing English and Chinese test report form for eligible calculator results, with one set of measured speed fields shared by both actions. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See §6.
 - The review action ships off by default, leaving the local Markdown form unchanged. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
+- After a successful submission, edits to local-only report fields do not re-enable submission of the same review data.
 - Added a Chinese Cloudflare setup guide covering Free-tier resources, setup steps, and what to send back without sharing secrets.
 - CPU-only submissions require a processor model; approved rows show it alongside the speeds.
 - Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).

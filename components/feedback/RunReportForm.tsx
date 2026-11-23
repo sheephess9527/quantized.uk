@@ -3,17 +3,18 @@
 import { Fragment, useRef, useState, type FormEvent } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import { FEEDBACK_EMAIL } from '@/lib/site';
-import { speedSubmissionFromReport, validateSpeedSubmission, type SpeedConfiguration } from '@/lib/data/community-speed';
+import { speedSubmissionFromReport, speedSubmissionKey, type SpeedConfiguration } from '@/lib/data/community-speed';
 import { buildRunReport, measurementFields, type RunConfiguration, type RunMeasurements } from '@/lib/utils/run-report';
 
 const numeric = new Set(['peak', 'decodeField', 'prefillField', 'prompt', 'output', 'runs']);
 const inputClass = 'mt-1 block w-full rounded-lg bg-slate-900 border border-white/10 p-2 text-slate-200';
 type ReviewStatus = 'idle' | 'sending' | 'saved' | 'invalid' | 'limited' | 'unavailable';
 
-export default function RunReportForm({ configuration, speedConfiguration, requiresProcessor }: {
+export default function RunReportForm({ configuration, speedConfiguration, requiresProcessor, submittedReviewKeys }: {
   configuration: RunConfiguration;
   speedConfiguration?: SpeedConfiguration;
   requiresProcessor?: boolean;
+  submittedReviewKeys: Set<string>;
 }) {
   const { t } = useLanguage();
   const d = t.evidence;
@@ -36,29 +37,41 @@ export default function RunReportForm({ configuration, speedConfiguration, requi
     const a = document.createElement('a'); a.href = url; a.download = 'quantized-test-report.md'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  function currentReviewKey() {
+    if (!speedConfiguration || !formRef.current) return;
+    return speedSubmissionKey(speedSubmissionFromReport(speedConfiguration, new FormData(formRef.current)));
+  }
   async function submitForReview() {
-    if (!speedConfiguration || !formRef.current || submitting.current || reviewStatus === 'saved') return;
+    if (!speedConfiguration || !formRef.current || submitting.current) return;
     const payload = speedSubmissionFromReport(speedConfiguration, new FormData(formRef.current));
-    if (!validateSpeedSubmission(payload)) {
+    const key = speedSubmissionKey(payload);
+    if (!key) {
       setReviewStatus('invalid');
+      return;
+    }
+    if (submittedReviewKeys.has(key)) {
+      setReviewStatus('saved');
       return;
     }
     submitting.current = true;
     setReviewStatus('sending');
+    let status: ReviewStatus;
     try {
       const response = await fetch('/api/community-speed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      setReviewStatus(response.status === 201 ? 'saved'
+      if (response.status === 201) submittedReviewKeys.add(key);
+      status = response.status === 201 ? 'saved'
         : response.status === 400 ? 'invalid'
-        : response.status === 429 ? 'limited' : 'unavailable');
+        : response.status === 429 ? 'limited' : 'unavailable';
     } catch {
-      setReviewStatus('unavailable');
-    } finally {
-      submitting.current = false;
+      status = 'unavailable';
     }
+    submitting.current = false;
+    const currentKey = currentReviewKey();
+    setReviewStatus(currentKey && submittedReviewKeys.has(currentKey) ? 'saved' : currentKey === key ? status : 'idle');
   }
   return <details className="glass rounded-2xl p-5">
     <summary className="cursor-pointer text-sm font-semibold text-slate-200 py-1">{d.formTitle}</summary>
@@ -66,7 +79,10 @@ export default function RunReportForm({ configuration, speedConfiguration, requi
     <form ref={formRef} onSubmit={generate} onChange={() => {
       setReport('');
       setCopyState('idle');
-      if (!submitting.current) setReviewStatus('idle');
+      if (speedConfiguration && !submitting.current) {
+        const key = submittedReviewKeys.size ? currentReviewKey() : undefined;
+        setReviewStatus(key && submittedReviewKeys.has(key) ? 'saved' : 'idle');
+      }
     }} className="space-y-3">
       <label className="block text-xs text-slate-400">{d.outcome}
         <select name="outcome" required defaultValue="" className="mt-1 block w-full rounded-lg bg-slate-900 border border-white/10 p-2 text-slate-200">
