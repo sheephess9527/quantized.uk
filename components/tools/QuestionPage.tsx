@@ -71,7 +71,14 @@ export default function QuestionPage({ kind }: { kind: QuestionKind }) {
             <p>{q.quant.noPpl}</p>
           </>
         )}
-        {kind === 'context' && <p>{q.context.legend}</p>}
+        {kind === 'context' && (
+          <>
+            <p>{q.context.legend}</p>
+            <Link href="/tools/vram-calc/" className="inline-block text-violet-300 hover:text-violet-200">
+              {lang === 'zh' ? '用大模型显存计算器估算你的上下文长度' : 'Check your context length with the LLM VRAM calculator'}
+            </Link>
+          </>
+        )}
       </div>
 
       <div className="space-y-6">

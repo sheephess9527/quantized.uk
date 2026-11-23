@@ -67,7 +67,9 @@ export default function MethodologyPage({ lang }: { lang: Lang }) {
               {note && <p className="text-slate-400">{note}</p>}
             </div>
           ))}
-          <Link className={`${link} inline-block text-sm`} href="/tools/vram-calc/">{t.nav.vramCalc}</Link>
+          <Link className={`${link} inline-block text-sm`} href="/tools/vram-calc/">
+            {lang === 'zh' ? '用大模型显存计算器估算你的配置' : 'Estimate your setup with the LLM VRAM calculator'}
+          </Link>
         </section>
 
         <section className={`${panel} space-y-3 text-sm leading-relaxed`} aria-labelledby="sources">

@@ -99,10 +99,10 @@ export const vramCalcContent: ToolContent = {
       },
     },
     {
-      q: { en: 'What does reverse mode do differently?', zh: '反向模式有什么不同？' },
+      q: { en: 'Which LLMs can I run on my GPU?', zh: '我的显卡能跑哪些大模型？' },
       a: {
-        en: 'Forward mode answers "will this model fit on my card". Reverse mode starts from the card and lists every model × quant pair in the index that fits, sorted by quality, speed or footprint. Both size from the same per-model figures, so the two views agree.',
-        zh: '正向模式回答「这个模型能装进我的卡吗」。反向模式从显卡出发，列出索引中所有能装下的「模型 × 量化档位」组合，可按质量、速度或占用排序。两者使用同一套按模型的实测数据，因此结论一致。',
+        en: 'Choose your GPU in reverse mode to see which indexed models and quantization levels fit, sorted by quality, speed or memory use. If you already have a model in mind, use forward mode to estimate its memory use. Both modes use the same sizing rules.',
+        zh: '在反向模式选择显卡，就能查看索引中能装下的模型和量化档位，可按质量、速度或内存占用排序。已有目标模型时，用正向模式估算它的内存需求。两种模式使用同一套估算规则。',
       },
     },
     {
