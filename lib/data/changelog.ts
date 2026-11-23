@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
-    en: 'Four setup guides now lead with the install path: official Windows CUDA downloads and missing DLL fixes, ROCm or Vulkan for Radeon, WSL2 Ollama GPU checks, and SYCL or Vulkan for Intel Arc. The same instructions are available in Chinese.',
-    zh: '四篇部署指南现在先给出安装方案：Windows CUDA 官方下载和 DLL 缺失修复、Radeon 的 ROCm 或 Vulkan 选择、WSL2 中 Ollama 的 GPU 检查，以及 Intel Arc 的 SYCL 或 Vulkan 安装。中英文同步更新。',
+    en: 'Four setup guides now lead with the install path: Windows CUDA ZIPs (including Pascal) and DLL fixes, Radeon ROCm or Vulkan and multi-GPU setup, WSL2 Ollama and Docker GPU checks, and Intel Arc SYCL or Vulkan setup. The same instructions are available in Chinese.',
+    zh: '四篇部署指南现在先给出安装方案：Windows CUDA ZIP（包括 Pascal）和 DLL 修复、Radeon 的 ROCm 或 Vulkan 选择和多卡设置、WSL2 下 Ollama 和 Docker 的 GPU 检查，以及 Intel Arc 的 SYCL 或 Vulkan 安装。中英文同步更新。',
   },
   {
     date: '2026-11-23',

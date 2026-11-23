@@ -161,8 +161,8 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
       {
         heading: 'Fastest path: install the prebuilt CUDA ZIPs',
         headingZh: '最快的方法：安装预编译 CUDA ZIP',
-        body: 'On x64 Windows with an NVIDIA GPU, start with an up-to-date NVIDIA driver and the two official ZIPs from the same llama.cpp release. Use the CUDA 13.5 pair for RTX 50-series cards and the CUDA 12.4 pair for earlier supported cards such as RTX 20, 30 and 40. Extract both into the same clean folder so the runtime DLLs are beside llama-server.exe. No CUDA Toolkit, Visual Studio or WSL is needed. winget install llama.cpp installs the Vulkan build, not CUDA. Run the following in ordinary PowerShell; replace the model path with your own GGUF file.',
-        bodyZh: '使用 NVIDIA 显卡的 x64 Windows 电脑先更新显卡驱动，再从同一个 llama.cpp 发布版本下载两个官方 ZIP。RTX 50 系列选 CUDA 13.5 那一对；RTX 20、30、40 等较早且受支持的显卡选 CUDA 12.4 那一对。把两个 ZIP 解压到同一个干净的目录，让运行库 DLL 和 llama-server.exe 放在一起。不需要 CUDA Toolkit、Visual Studio 或 WSL。winget install llama.cpp 装的是 Vulkan 版，不是 CUDA 版。用普通 PowerShell 执行以下命令，把模型路径换成自己的 GGUF 文件。',
+        body: 'On x64 Windows with an NVIDIA GPU, update the driver and download both official ZIPs from the same llama.cpp release. Use CUDA 13.5 for RTX 50 and 12.4 for earlier supported cards such as RTX 20, 30 and 40. Extract both ZIPs into the same clean folder. In ordinary PowerShell, run llama-server.exe --list-devices before loading a model: if it lists your NVIDIA card as a CUDA device, the CUDA backend loaded. Replace the GGUF path in the launch command with your own. No Toolkit, Visual Studio or WSL is needed; winget install llama.cpp installs Vulkan, not CUDA. Using Ollama instead? Native Windows is simpler; see WSL2 + Ollama GPU Passthrough on Windows if you need Linux tooling.',
+        bodyZh: '使用 NVIDIA 显卡的 x64 Windows 电脑先更新驱动，再从同一个 llama.cpp 发布版本下载两个官方 ZIP。RTX 50 选 CUDA 13.5；RTX 20、30、40 等较早且受支持的显卡选 12.4。把两个 ZIP 解压到同一个干净的目录。在普通 PowerShell 中，先运行 llama-server.exe --list-devices：如果你的 NVIDIA 显卡被列为 CUDA 设备，说明 CUDA 后端已加载。把启动命令里的 GGUF 路径换成自己的。不需要 CUDA Toolkit、Visual Studio 或 WSL；winget install llama.cpp 装的是 Vulkan，不是 CUDA。用的是 Ollama？Windows 原生版更简单；需要 Linux 工具时请看《Windows WSL2 + Ollama GPU 透传》。',
         code: {
           lang: 'powershell',
           content: `$Build = '${LLAMACPP_BUILD}'\n$Cuda = '12.4' # RTX 50: use '13.5'\n$Release = "https://github.com/ggml-org/llama.cpp/releases/download/$Build"\n$Binary = "llama-$Build-bin-win-cuda-$Cuda-x64.zip"\n$Runtime = "cudart-llama-bin-win-cuda-$Cuda-x64.zip"\nInvoke-WebRequest "$Release/$Binary" -OutFile $Binary\nInvoke-WebRequest "$Release/$Runtime" -OutFile $Runtime\nExpand-Archive $Binary -DestinationPath .\\llama-cuda\nExpand-Archive $Runtime -DestinationPath .\\llama-cuda\n.\\llama-cuda\\llama-server.exe --list-devices\n.\\llama-cuda\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
@@ -214,6 +214,12 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         qZh: 'winget 安装的是 llama.cpp CUDA 版吗？',
         a: 'No. The WinGet package ggml.llamacpp uses the official Vulkan ZIP. If you want NVIDIA CUDA, download the matching CUDA binary and cudart ZIPs manually. They run in native Windows without WSL or a CUDA Toolkit install.',
         aZh: '不是。WinGet 的 ggml.llamacpp 软件包使用官方 Vulkan ZIP。要使用 NVIDIA CUDA，请手动下载配套的 CUDA 程序和 cudart ZIP。这两个包可在 Windows 原生运行，不需要 WSL，也不需要安装 CUDA Toolkit。',
+      },
+      {
+        q: 'Which compute capabilities are in the Windows CUDA ZIPs? Does Pascal 6.1 work?',
+        qZh: 'Windows CUDA ZIP 包含哪些计算能力？支持 Pascal 6.1 吗？',
+        a: 'The pinned x64 release uses llama.cpp’s default CUDA architecture list. CUDA 12.4 builds PTX for 50, 61, 70, 75, 80 and 90, and native code for 86 and 89. CUDA 13.5 drops the 50, 61 and 70 targets, keeps 75/80/90 PTX and 86/89 native code, and adds native 103, 120a and 121a. For a Pascal GTX 10-series card with compute capability 6.1, start with the 12.4 ZIPs: the driver JIT-compiles 61 PTX. Self-build if you need a different target or native code for your exact card; for 6.1 set -DCMAKE_CUDA_ARCHITECTURES=61 and use a CUDA 12 Toolkit.',
+        aZh: '这里固定的 x64 发布版使用 llama.cpp 默认的 CUDA 架构列表。CUDA 12.4 为 50、61、70、75、80 和 90 编译 PTX，为 86 和 89 编译原生代码。CUDA 13.5 移除了 50、61、70，保留 75/80/90 的 PTX 与 86/89 的原生代码，并加入 103、120a、121a 原生代码。计算能力为 6.1 的 Pascal GTX 10 系列显卡先试 12.4 ZIP，驱动会即时编译 61 PTX。需要其他架构目标或专为自己显卡生成原生代码时，再从源码编译；6.1 用 -DCMAKE_CUDA_ARCHITECTURES=61 和 CUDA 12 Toolkit。',
       },
       {
         q: 'How do I fix missing CUDA DLLs in llama.cpp on Windows?',
