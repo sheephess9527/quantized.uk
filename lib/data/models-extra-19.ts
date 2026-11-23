@@ -193,5 +193,103 @@ export const extraModels19: QuantModel[] = [
         }
       }
     ]
+  },
+  {
+    "id": "granite-switch-4.1-30b",
+    "name": "Granite Switch 4.1 30B",
+    "family": "IBM Granite",
+    "params": 30.551851008,
+    "paramLabel": "30B",
+    "categories": [
+      "general",
+      "instruct"
+    ],
+    "hardwareTags": [
+      "consumer-gpu",
+      "mac"
+    ],
+    "contextLength": 131072,
+    "arch": {
+      "layers": 64,
+      "attHeads": 32,
+      "kvHeads": 8,
+      "headDim": 128,
+      "attention": {
+        "compressed": [
+          {
+            "layers": 1,
+            "values": 256,
+            "ratio": 1
+          }
+        ],
+        "note": {
+          "en": "The 64 GGUF transformer blocks have 8 KV heads each. llama.cpp also keeps one 128-wide key and value per token for its adapter router.",
+          "zh": "GGUF 的 64 个 Transformer 层各有 8 个 KV 头。llama.cpp 另外为适配器路由器的每个 token 保留一组 128 维 K 和 V。"
+        }
+      }
+    },
+    "addedAt": "2026-11-23",
+    "description": {
+      "en": "IBM’s larger Granite Switch text GGUFs store 30.55B parameters, including two switchable adapters. Its 64 transformer blocks and single adapter router contribute to the 128K context estimate. IBM’s speech pipeline uses a separate runtime and memory budget.",
+      "zh": "IBM 的 Granite Switch 30B 文本 GGUF 含约 305.5 亿参数，内置两个可切换适配器。128K 上下文估算包含 64 层 Transformer 与适配器路由器的缓存。IBM 的语音流程需要另行配置运行时和内存。"
+    },
+    "quants": [
+      {
+        "format": "GGUF",
+        "level": "Q3_K_M",
+        "bpw": 4.59,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/ibm-granite/granite-switch-4.1-30b-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "ibm-granite/granite-switch-4.1-30b-GGUF",
+          "file": "granite-switch-4.1-30b-Q3_K_M.gguf",
+          "bytes": 17512331648,
+          "checkedAt": "2026-11-23"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q4_K_M",
+        "bpw": 5.51,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/ibm-granite/granite-switch-4.1-30b-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "ibm-granite/granite-switch-4.1-30b-GGUF",
+          "file": "granite-switch-4.1-30b-Q4_K_M.gguf",
+          "bytes": 21035547008,
+          "checkedAt": "2026-11-23"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q5_K_M",
+        "bpw": 6.27,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/ibm-granite/granite-switch-4.1-30b-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "ibm-granite/granite-switch-4.1-30b-GGUF",
+          "file": "granite-switch-4.1-30b-Q5_K_M.gguf",
+          "bytes": 23954782592,
+          "checkedAt": "2026-11-23"
+        }
+      },
+      {
+        "format": "GGUF",
+        "level": "Q8_0",
+        "bpw": 8.92,
+        "vramGB": 0,
+        "hfSearchUrl": "https://huggingface.co/ibm-granite/granite-switch-4.1-30b-GGUF",
+        "confidence": "estimated",
+        "source": {
+          "repo": "ibm-granite/granite-switch-4.1-30b-GGUF",
+          "file": "granite-switch-4.1-30b-Q8_0.gguf",
+          "bytes": 34047264032,
+          "checkedAt": "2026-11-23"
+        }
+      }
+    ]
   }
 ];

@@ -27,13 +27,13 @@ typed data in `lib/data/`. Deployed on Cloudflare **Pages**, with narrow Functio
 
 | Surface | Notes |
 |--------|--------|
-| Models | **159** in index (`models-extra` … `models-extra-19`), 139 active |
+| Models | **160** in index (`models-extra` … `models-extra-19`), 140 active |
 | Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (159 models: 157 licensed, 51 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (160 models: 158 licensed, 51 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,446 HTML files (3,719 files in `out/`) including 404 variants and 346 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,454 HTML files (3,737 files in `out/`) including 404 variants and 349 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -44,12 +44,19 @@ npm test         # recommendations, evidence, speed calibration, CLI sources and
 npm run build    # type-check + lint + static export → out/   (gate before every commit)
 npm run lint
 npm run typecheck # tsc --noEmit
+npm run check:live # production smoke check (installed Google Chrome, or set CHROME_PATH)
 npm start        # static out/ preview on :3000, build first (pinned npx serve)
 ```
 
 `npm test` is the data-check gate (recommendations, calculator evidence, speed calibration, exact CLI sources and RSS).
 GitHub Actions runs it (`data-checks`) and `npm run build` (`build`) on push and pull request,
 so a broken export fails the PR. `build` remains the local gate before every commit.
+
+The separate `Daily live check` probes production: bilingual calculator results, core pages,
+one retained model/GPU pair, share preview metadata/PNGs, sitemap and `llms.txt`. It runs
+daily after merge, or manually from Actions, with no repository variable. Before merging,
+have the owner confirm GitHub Actions spending above the included minutes is blocked at $0 (README §6).
+Failures create or update one owner-assigned issue with the run link.
 
 `build` runs a `prebuild` HF-stats fetch that fails gracefully offline (merge keeps prior
 stats on 401). **No `HF_TOKEN` required** — zero-config deploy; gated HF repos simply skip.
@@ -1357,8 +1364,9 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
-| 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol: 159 models (139 active), 122 GPU configurations + 4 CPU rows, 28 guides, 346 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
-| 2026-11-23 | **Model/site patrol** — KORMo-Web-9B and Granite Switch 4.1 8B added in `models-extra-19.ts`, four sourced GGUF variants each; image projector and adapter-router KV accounted for respectively. Stable Windows pin remains b12409; launch-command shard-stem memo inputs corrected. Sources and limits: `docs/changes/2026-11-23-patrol.md`. |
+| 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol and Granite 30B follow-up: 160 models (140 active), 122 GPU configurations + 4 CPU rows, 28 guides, 349 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
+| 2026-11-23 | **Model/site patrol** — KORMo-Web-9B and Granite Switch 4.1 8B / 30B added in `models-extra-19.ts`, four sourced GGUF variants each; image projector and adapter-router KV accounted for respectively. Stable Windows pin remains b12409; launch-command shard-stem memo inputs corrected. Sources and limits: `docs/changes/2026-11-23-patrol.md`. |
+| 2026-11-23 | **Daily live check (#51)** — `npm run check:live` and the daily/manual Actions workflow probe bilingual production pages and calculator answers, retained pairs and share previews. Incoming command, billing and owner-alert documentation is preserved; no live check was rerun as part of this merge. |
 | 2026-11-22–23 | **Calculator and discovery releases (#28–#49, excluding #45)** — first-load detection, context/concurrency controls, shared size buckets, CI build, share previews, embeds, pair pages and 15,000-file gate, benchmark provenance, forward speed, 27 laptop + 17 other hardware rows, Ollama tag matching, progressive controls, sourced-data tagline, Chinese LLM summary, methodology, five frontier models/compressed KV, answer-first pairs, reverse speed/features and exact-checkpoint LiveBench scores. Historical rows below retain their ship-time counts. |
 | 2026-11-14 (ii) | **Hub: input + licence filters** — `lib/data/model-facts.ts` (26 licences with class + URL, 134 of 136 models read from HF cards, 36 image-input ids), `lib/utils/model-facts.ts` readers + `factTableProblems()` gate, `?input=` / `?lic=` through `hub-url.ts`, licence badge on every card; i18n dictionary split evaluated and **not** done (one root layout serves both trees — needs route groups); docs + repo ops below |
 | 2026-11-14 | **Patrol + repo cleanup** — llama.cpp b12376 (Windows names unchanged), runtimeVersions.checkedAt 11-14 (Ollama v0.40.16 / vLLM v0.33.0 / ExLlamaV3 1.6.7), HF stats refreshed (116 fetched, 20 kept), stale draft PRs #11/#12 closed, 17 merged/stale remote branches deleted (only `main` left) |

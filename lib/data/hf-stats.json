@@ -1,7 +1,7 @@
 {
-  "fetchedAt": "2026-11-23T11:23:43.183Z",
+  "fetchedAt": "2026-11-23T11:28:13.125Z",
   "source": "https://huggingface.co/api/models",
-  "modelCount": 139,
+  "modelCount": 140,
   "models": {
     "llama-3.1-8b": {
       "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
@@ -432,7 +432,7 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 2147378,
-      "likes": 7462,
+      "likes": 7463,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -822,7 +822,7 @@
     "glm-5-3-flash": {
       "repo": "zai-org/GLM-5.3-Flash",
       "downloads": 6383668,
-      "likes": 3312,
+      "likes": 3313,
       "lastModified": "2026-10-15T06:32:52.000Z"
     },
     "kimi-k3-1-pro": {
@@ -836,6 +836,12 @@
       "downloads": 150214,
       "likes": 615,
       "lastModified": "2026-11-05T00:55:30.000Z"
+    },
+    "granite-switch-4.1-30b": {
+      "repo": "ibm-granite/granite-switch-4.1-30b-GGUF",
+      "downloads": 6002,
+      "likes": 0,
+      "lastModified": "2026-11-12T18:11:07.000Z"
     }
   }
 }

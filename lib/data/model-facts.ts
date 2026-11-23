@@ -215,6 +215,7 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
   'kormo-web-4b': 'apache-2.0',
   'kormo-web-9b': 'apache-2.0',
   'granite-switch-4.1-8b': 'apache-2.0',
+  'granite-switch-4.1-30b': 'apache-2.0',
   'clairic-27b': 'apache-2.0',
   'clairic-flash-9b': 'apache-2.0',
   'shot-reader-8b': 'apache-2.0',

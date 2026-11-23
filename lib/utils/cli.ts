@@ -169,8 +169,8 @@ export interface CLIOutput {
 }
 
 function isGraniteSwitchGGUF(modelId?: string, repo?: string): boolean {
-  return modelId === 'granite-switch-4.1-8b' ||
-    repo?.toLowerCase() === 'ibm-granite/granite-switch-4.1-8b-gguf';
+  return /^granite-switch-4\.1-(8b|30b)$/.test(modelId ?? '') ||
+    /^ibm-granite\/granite-switch-4\.1-(8b|30b)-gguf$/i.test(repo ?? '');
 }
 
 export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {
