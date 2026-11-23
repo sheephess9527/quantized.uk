@@ -634,6 +634,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - The owner's Bing Webmaster Tools export (2026-08-22 to 11-21) shows Bing is the main search source (1,710 clicks; 96% of page clicks on `/zh/`), and its biggest query shape is "<card> / N G 显存 能跑多大的模型". New `largestAtQ4()` gives the largest current model whose GGUF Q4_K_M build fits comfortably at 4K.
 - `/gpu/{card}/`, `/best/{N}gb-vram/` and their `/zh/` copies now lead the meta description with that answer and open the FAQ with "能跑多大的模型？" / "How big a model can … run?". Titles carry it on `/best/` in both languages ("16G 显存能跑多大的模型？Q4 最大约 21B MoE，86 个装得下") and on English GPU pages ("RTX 5060: what LLMs can it run? Up to 9B at Q4"). **`/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？`**: they carry most of the site's search clicks (RTX 5070 28% CTR, 5080 24%) and nobody could watch CTR overnight; change them only after a fresh export shows them losing clicks. No pages added; `out/` stays at 3,737 files. Queries and page numbers: `docs/changes/2026-11-23-bing-how-big-answers.md`.
 
+### 2026-11-23 — Easier to find the LLM VRAM Calculator
+
+- The English calculator title and intro now lead with model fit, GPU VRAM, system RAM and KV cache. Both languages explain the two calculator modes and link to the tool from the context-length and methodology pages. The error lookup highlights the existing KV-cache fix, with a more specific English search snippet and no new pages. [Research and verification](docs/changes/2026-11-23-vram-calculator-search.md).
+
 ### 2026-11-23 — Visitor speed submissions
 
 - Added **Submit for review** to the existing English and Chinese test report form for eligible calculator results, with one set of measured speed fields shared by both actions. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See §6.

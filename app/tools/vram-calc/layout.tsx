@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Local LLM VRAM Calculator: Which Model Fits Your GPU',
+  title: 'LLM VRAM Calculator: Will It Fit Your GPU? | quantized.uk',
   description:
-    'LLM VRAM / RAM calculator: any model or Hugging Face repo, mixed GPUs, speed, time to first token, serving capacity and QLoRA/LoRA fine-tuning memory.',
+    'Estimate GPU VRAM and system RAM for local LLMs. Compare model weights and KV cache by quantization and context length, or find models that fit your GPU.',
   path: '/tools/vram-calc',
 });
 

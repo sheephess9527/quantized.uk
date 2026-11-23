@@ -8,7 +8,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
 import { canonical, FEEDBACK_EMAIL } from '@/lib/site';
 import { localizeHref } from '@/lib/i18n/routing';
-import { runtimeErrors, errorById, type RuntimeErrorEntry } from '@/lib/data/errors';
+import { runtimeErrors, errorById, errorModifiedAt, KV_CACHE_ERROR_ID, type RuntimeErrorEntry } from '@/lib/data/errors';
 
 /**
  * `/errors/` and `/errors/<id>/`. All text comes from `lib/data/errors.ts`,
@@ -21,7 +21,7 @@ type GroupKey = 'memory' | 'file' | 'gpu' | 'amd' | 'ollama';
 const GROUP_OF: Record<string, GroupKey> = {
   'cuda-out-of-memory': 'memory',
   'unable-to-allocate-buffer': 'memory',
-  'failed-to-allocate-kv-cache': 'memory',
+  [KV_CACHE_ERROR_ID]: 'memory',
   'metal-failed-to-allocate-buffer': 'memory',
   'torch-cuda-out-of-memory': 'memory',
   'vllm-free-memory-less-than-utilization': 'memory',
@@ -48,6 +48,7 @@ export function ErrorIndexView() {
   const { t, lang } = useLanguage();
   const e = t.errorPages;
   const path = localizeHref('/errors/', lang);
+  const cacheError = errorById(KV_CACHE_ERROR_ID);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
@@ -71,6 +72,14 @@ export function ErrorIndexView() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{e.indexTitle}</h1>
         <p className="text-slate-400 max-w-3xl leading-relaxed">{e.indexSubtitle}</p>
+        {cacheError && (
+          <p className="mt-3 text-sm text-slate-400">
+            {e.jumpToKvCache}{' '}
+            <a className="font-mono text-violet-300 hover:text-violet-200 underline" href={`#${cacheError.id}`}>
+              {cacheError.message}
+            </a>
+          </p>
+        )}
         <p className="text-xs text-slate-500 mt-2">{e.count.replace('{n}', String(runtimeErrors.length))}</p>
       </div>
 
@@ -83,7 +92,7 @@ export function ErrorIndexView() {
               <h2 className="text-lg font-bold text-slate-100 mb-3">{e.groups[g]}</h2>
               <ul className="space-y-3">
                 {items.map(err => (
-                  <li key={err.id}>
+                  <li key={err.id} id={err.id === KV_CACHE_ERROR_ID ? err.id : undefined} className={err.id === KV_CACHE_ERROR_ID ? 'scroll-mt-24' : undefined}>
                     <Link href={`/errors/${err.id}/`} className="block glass glass-hover rounded-2xl p-4">
                       <span className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mb-1.5">
                         <span className="badge bg-white/[0.05] border-white/[0.08] text-slate-400">{err.runtime}</span>
@@ -126,7 +135,7 @@ export function ErrorDetailView({ id, guides }: { id: string; guides: GuideLink[
           description: err.summary[lang],
           url: canonical(path),
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
-          dateModified: err.checkedAt,
+          dateModified: errorModifiedAt(err),
           about: err.runtime,
         }}
       />
