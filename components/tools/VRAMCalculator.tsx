@@ -387,7 +387,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     }
   }, [urlInitialized, selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink, hubFile]);
 
-  const resultParams = useCallback(() => {
+  const resultParams = useCallback((includeFile = false) => {
     const params = new URLSearchParams();
     params.set('mode', mode);
     params.set('ctx', String(contextLen));
@@ -410,8 +410,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (mode === 'forward' || mode === 'finetune') {
       // An example model or guessed card stays out of the address bar: a reload
       // would read it back as the reader's own choice and save it.
-      if (selectedModelId && !modelIsExample) params.set('model', selectedModelId);
-      if (selectedModelId === 'custom') {
+      if (selectedModelId && !modelIsExample && (!hubFile || includeFile)) params.set('model', selectedModelId);
+      if (selectedModelId === 'custom' && (!hubFile || includeFile)) {
         params.set('params', customParams);
         params.set('layers', customLayers);
         params.set('kv', customKvHeads);
@@ -422,13 +422,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           params.set('wt', String(customAttention.windowTokens ?? 0));
         }
         if (customCtx) params.set('mctx', String(customCtx));
-        if (customRepo) params.set('repo', customRepo);
-        if (activeFile) {
+        if (customRepo && !hubFile) params.set('repo', customRepo);
+        if (includeFile && activeFile) {
           params.set('hfFile', quantFileUrl(activeFile));
           params.set('hfBytes', String(activeFile.bytes));
         }
       }
-      params.set('quant', selectedQuant);
+      if (!hubFile || includeFile) params.set('quant', selectedQuant);
       // Forward mode judges the answer against the card in the shared profile,
       // and this rewrites the address bar on every render — so leaving `gpu`
       // out did not merely omit it from a copied link, it deleted it from a
@@ -446,7 +446,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       if (features.length) params.set('feat', features.join(','));
     }
     return params;
-  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, minTok, requireTools, requireCode, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, activeFile, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, minTok, requireTools, requireCode, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, hubFile, activeFile, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => {
     if (!urlInitialized) return;
@@ -872,7 +872,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const trackedResults = useRef(new Set<string>());
   const submittedReviewKeys = useRef(new Set<string>());
   const resultEvent = useMemo((): Record<string, string | number> | null => {
-    if (showForwardResult) {
+    if (showForwardResult && !activeFile) {
       return {
         mode, model: selectedModelId, ctx: contextLen,
         quant: selectedQuantObj || Object.values(quantGroups).some(levels => levels.includes(selectedQuant)) ? selectedQuant : 'other',
@@ -884,7 +884,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       return { mode, gpu: selectedGpuId, ctx: contextLen, fits: recommendations.length, start: gpuHint?.kind ?? 'chosen' };
     }
     return null;
-  }, [showForwardResult, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
+  }, [showForwardResult, activeFile, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
   useEffect(() => {
     if (!resultEvent) return;
     const key = JSON.stringify(resultEvent);
@@ -910,7 +910,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   }, []);
 
   const copyShareLink = async () => {
-    const url = snapshotVramLink(new URL(window.location.href), resultParams(), {
+    const url = snapshotVramLink(new URL(window.location.href), resultParams(!!activeFile), {
       mode,
       lang,
       modelId: selectedModelId,
