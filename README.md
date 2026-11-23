@@ -560,6 +560,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add/track a quant format | `lib/data/formats.ts` |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
+| Add a verified ModelScope GGUF mirror | `lib/data/modelscope-repos.ts`; record the verified file listing in `docs/data-corrections.md` |
 | Record a model's licence or image input | `lib/data/model-facts.ts` (the Hub's input + licence filters read it) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
@@ -630,6 +631,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Size an exact GGUF file and download from ModelScope
+
+- The forward VRAM calculator accepts public Hugging Face GGUF file links or `org/repo filename.gguf`. It reads the exact bytes of the file or all of its numbered parts, labels the quant from the filename, and estimates KV cache from the repo or base model config when available. Missing architecture can be supplied manually. Shared results retain the size and model shape without re-fetching.
+- Six Chinese model pages link directly to verified ModelScope GGUF listings. No routes, page titles or backend services changed. See [implementation and verification](docs/changes/2026-11-24-exact-gguf-modelscope.md).
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

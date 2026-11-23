@@ -176,18 +176,19 @@ async function getJson(fetchImpl: typeof fetch, url: string): Promise<{ status: 
   return { status: res.status, body: (await res.json()) as Json };
 }
 
-export async function importFromHub(input: string, fetchImpl: typeof fetch = fetch): Promise<ImportResult> {
+export async function importFromHub(input: string, fetchImpl: typeof fetch = fetch, revision = 'main'): Promise<ImportResult> {
   const repo = parseRepoInput(input);
   if (!repo) return { ok: false, error: 'badInput' };
   try {
-    const info = await getJson(fetchImpl, `${HUB}/api/models/${repo}`);
+    const rev = encodeURIComponent(revision);
+    const info = await getJson(fetchImpl, `${HUB}/api/models/${repo}${revision === 'main' ? '' : `/revision/${rev}`}`);
     if (info.status === 404 || info.status === 401) return { ok: false, error: 'notFound' };
     const notes: ImportNote[] = [];
     const paramsB = info.body ? paramsFromInfo(info.body) : undefined;
     if (!paramsB) notes.push('noParams');
 
     let configRepo = repo;
-    let cfg = await getJson(fetchImpl, `${HUB}/${repo}/resolve/main/config.json`);
+    let cfg = await getJson(fetchImpl, `${HUB}/${repo}/resolve/${rev}/config.json`);
     if (cfg.status === 401 || cfg.status === 403) notes.push('gated');
     if (!cfg.body && cfg.status === 404 && info.body) {
       // A GGUF repo has no config.json; most name the model they convert.

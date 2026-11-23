@@ -1,5 +1,18 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-24 — ModelScope GGUF download links
+
+Checked the public ModelScope model and file-list APIs on 2026-11-23 UTC. Each exact-checkpoint repository listed GGUF weights; the split-file checks below also queried the indicated subdirectory. These are verified listings, not downloads, runtime tests, or alternative sources for the calculator's published file measurements.
+
+| Indexed model | ModelScope source | Example file shown by the API |
+| --- | --- | --- |
+| Qwen2.5 7B Instruct | [Official GGUF listing](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-7B-Instruct-GGUF/repo/files?Revision=master) | `qwen2.5-7b-instruct-fp16-00001-of-00004.gguf` |
+| Qwen3 8B | [Official GGUF listing](https://modelscope.cn/api/v1/models/Qwen/Qwen3-8B-GGUF/repo/files?Revision=master) | `Qwen3-8B-Q4_K_M.gguf` |
+| DeepSeek-R1 | [Unsloth GGUF listing](https://modelscope.cn/api/v1/models/unsloth/DeepSeek-R1-GGUF/repo/files?Revision=master&Root=DeepSeek-R1-Q2_K) | `DeepSeek-R1-Q2_K/DeepSeek-R1-Q2_K-00001-of-00005.gguf` |
+| GLM-4.7-Flash | [Unsloth GGUF listing](https://modelscope.cn/api/v1/models/unsloth/GLM-4.7-Flash-GGUF/repo/files?Revision=master) | `GLM-4.7-Flash-IQ4_NL.gguf` |
+| Kimi K3.1 Pro | [DevQuasar GGUF listing](https://modelscope.cn/api/v1/models/DevQuasar/moonshotai.Kimi-K3.1-Pro-GGUF/repo/files?Revision=master&Root=Q2_K) | `Q2_K/moonshotai.Kimi-K3.1-Pro-Q2_K-00001-of-00033.gguf` |
+| MiniMax M3.1 Flash | [Unsloth GGUF listing](https://modelscope.cn/api/v1/models/unsloth/MiniMax-M3.1-Flash-GGUF/repo/files?Revision=master&Root=UD-IQ2_XXS) | `UD-IQ2_XXS/MiniMax-M3.1-Flash-UD-IQ2_XXS-00001-of-00004.gguf` |
+
 ## 2026-11-23 — Backfill of merged PR #28–#49 data changes
 
 These entries record the merged work and its existing evidence, not newly performed

@@ -11,6 +11,7 @@ import { sizeAt4K } from '@/lib/utils/quant-source';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
+import { modelscopeRepoMap } from '@/lib/data/modelscope-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import RelatedReports from '@/components/reports/RelatedReports';
@@ -43,6 +44,7 @@ export default function ModelDetail({ model }: Props) {
   const d = t.hub.detail;
   const hf = getHFStats(model.id);
   const hfRepo = hf?.repo ?? hfRepoMap[model.id];
+  const modelscopeRepo = modelscopeRepoMap[model.id];
 
   const bestQuant = pickBestQuant(model.quants);
 
@@ -163,6 +165,17 @@ export default function ModelDetail({ model }: Props) {
           {t.hub.model.viewHF}
           <ExternalLink size={14} />
         </a>
+        {modelscopeRepo && (
+          <a
+            href={`https://modelscope.cn/models/${modelscopeRepo}/files`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"
+          >
+            {t.hub.model.viewModelScope}
+            <ExternalLink size={14} />
+          </a>
+        )}
         <Link
           href={`/tools/compare/?a=${model.id}&b=${compareTarget}`}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-slate-300 text-sm font-semibold transition-colors"

@@ -38,6 +38,7 @@ import { nameCarriesLabel, isMoE, isSuperseded, activeParamsB } from '@/lib/util
 import { homePicks } from '@/lib/utils/home-picks';
 import { searchModels } from '@/lib/utils/model-search';
 import { importFromHub, parseRepoInput, mmprojFromHub, type ImportedShape } from '@/lib/utils/hf-import';
+import { hasQuantFileShape, importQuantFile, parseQuantFile, quantFileUrl, quantFromFilename, readHubQuantFile, shardCount, type HubQuantFile, type QuantFileError } from '@/lib/utils/hf-quant-file';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import type { ModelArch, QuantModel, QuantVariant } from '@/lib/data/types';
 import { rigPrefillSeconds } from '@/lib/utils/prefill';
@@ -183,6 +184,15 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [hfShape, setHfShape] = useState<ImportedShape | null>(null);
   const [hfEdited, setHfEdited] = useState(false);
   const hfInputRef = useRef<HTMLInputElement>(null);
+  const [fileInput, setFileInput] = useState('');
+  const [hubFile, setHubFile] = useState<HubQuantFile>();
+  const [fileBusy, setFileBusy] = useState(false);
+  const [fileError, setFileError] = useState<QuantFileError>();
+  const fileRequest = useRef(0);
+  const activeFile = mode === 'forward' && selectedModelId === 'custom' ? hubFile : undefined;
+  const fileQuant = activeFile ? quantFromFilename(activeFile.path) ?? t.calc.hfFileUnknownQuant : undefined;
+  const fileName = activeFile?.path.split('/').at(-1);
+  const fileNeedsShape = !!activeFile && !hasQuantFileShape(customLayers, customKvHeads, customHeadDim);
   // Fine-tune mode.
   const [ftMethod, setFtMethod] = useState<FtMethod>('qlora');
   const [ftOpt, setFtOpt] = useState<FtOptimizer>('adamw');
@@ -297,10 +307,15 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     // A custom model is only shareable if its shape travels with the link —
     // without these the recipient got the 7B / 32-layer defaults.
     if (modelParam === 'custom') {
+      const file = m === 'forward' ? readHubQuantFile(searchParams) : undefined;
+      if (file) {
+        setHubFile(file);
+        setFileInput(quantFileUrl(file));
+      }
       const p = searchParams.get('params'); if (p) setCustomParams(p);
-      const l = searchParams.get('layers'); if (l) setCustomLayers(l);
-      const kv = searchParams.get('kv'); if (kv) setCustomKvHeads(kv);
-      const hd = searchParams.get('hd'); if (hd) setCustomHeadDim(hd);
+      const l = searchParams.get('layers'); if (l || file) setCustomLayers(l ?? '');
+      const kv = searchParams.get('kv'); if (kv || file) setCustomKvHeads(kv ?? '');
+      const hd = searchParams.get('hd'); if (hd || file) setCustomHeadDim(hd ?? '');
       // An imported shape travels as numbers, never as a re-fetch: the
       // recipient sees what the sender saw even if the repo has changed.
       setCustomAttention(readVramAttention(searchParams));
@@ -354,7 +369,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
-    if (!urlInitialized) return;
+    if (!urlInitialized || hubFile) return;
     const modelId = modelIsExample ? '' : selectedModelId;
     if (sharedLink) {
       // The initial restored values belong to the sender. Only subsequent
@@ -370,7 +385,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     } else {
       updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId, quantLevel: selectedQuant, contextLen });
     }
-  }, [urlInitialized, selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink]);
+  }, [urlInitialized, selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink, hubFile]);
 
   const resultParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -408,6 +423,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         }
         if (customCtx) params.set('mctx', String(customCtx));
         if (customRepo) params.set('repo', customRepo);
+        if (activeFile) {
+          params.set('hfFile', quantFileUrl(activeFile));
+          params.set('hfBytes', String(activeFile.bytes));
+        }
       }
       params.set('quant', selectedQuant);
       // Forward mode judges the answer against the card in the shared profile,
@@ -427,7 +446,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       if (features.length) params.set('feat', features.join(','));
     }
     return params;
-  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, minTok, requireTools, requireCode, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
+  }, [mode, selectedModelId, modelIsExample, selectedQuant, contextLen, batchSize, selectedGpuId, gpuHint, profileGpuId, sortBy, includeYellow, bestPerModel, reverseInput, minTok, requireTools, requireCode, customParams, customLayers, customKvHeads, customHeadDim, customAttention, customCtx, customRepo, activeFile, kvType, cards, extraIds, ram, ftMethod, ftOpt, ftRank, ftSeq, ftBatch, ftCkpt, ftHidden, ftVocab, mmprojGB]);
 
   useEffect(() => {
     if (!urlInitialized) return;
@@ -453,6 +472,21 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
    * for is labelled rather than blocked.
    */
   const selectModel = useCallback((id: string) => {
+    fileRequest.current++;
+    setFileBusy(false);
+    setFileError(undefined);
+    setHfBusy(false);
+    if (hubFile) {
+      setHubFile(undefined);
+      setCustomParams('7');
+      setCustomLayers('32');
+      setCustomKvHeads('8');
+      setCustomHeadDim('128');
+      setCustomAttention(undefined);
+      setCustomCtx(undefined);
+      setCustomRepo('');
+      setHfShape(null);
+    }
     setSelectedModelId(id);
     setModelIsExample(false);
     setInvalidModelId(null);
@@ -470,7 +504,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     const next = quantLevelKey(referenceQuant(model.quants));
     setSelectedQuant(next);
     setFormatGroup(findFormatGroup(next));
-  }, [selectedQuant]);
+  }, [selectedQuant, hubFile]);
 
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -486,7 +520,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
     setMode('forward');
-    setSelectedModelId(modelId);
+    selectModel(modelId);
     setInvalidModelId(null);
     setSelectedQuant(level);
     setFormatGroup(findFormatGroup(level));
@@ -514,6 +548,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       `format` is what decides whether a given GPU can run it at all, a
       question size alone can't answer. */
   const selectedQuantObj = selectedModel?.quants.find(q => quantLevelKey(q) === selectedQuant);
+  const forwardFormat = activeFile ? 'GGUF' : selectedQuantObj?.format;
 
   const calcInput = useMemo(() => {
     const tableBpw = quantBPW[selectedQuant] ?? 4.85;
@@ -546,12 +581,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       headDim: parseInt(customHeadDim) || 128,
       attention: customAttention,
       bpw,
+      weightBytes: activeFile?.bytes,
       contextLength: contextLen,
       batchSize,
       kvBytesPerValue: KV_CACHE_TYPES[kvType],
       extraGB: Number(mmprojGB) > 0 ? Number(mmprojGB) : undefined,
     };
-  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, customAttention, kvType, mmprojGB]);
+  }, [selectedModel, selectedQuant, contextLen, batchSize, customParams, customLayers, customKvHeads, customHeadDim, customAttention, kvType, mmprojGB, activeFile]);
 
   const result = useMemo(() => calcVRAM(calcInput), [calcInput]);
 
@@ -565,9 +601,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       // CPU-only RAM rows are not cards; "smallest" is a size, with retail
       // cards ahead of datacentre ones at the same capacity (bySmallestCard) —
       // sorting on vram alone named whichever 16 GB row came first in the file.
-      .filter(g => !g.isCPU && (!selectedQuantObj || formatAllowed(g, selectedQuantObj.format)) && getVerdict(result.totalGB, usableCapacityGB(g)) === 'green')
+      .filter(g => !g.isCPU && (!forwardFormat || formatAllowed(g, forwardFormat)) && getVerdict(result.totalGB, usableCapacityGB(g)) === 'green')
       .sort(bySmallestCard),
-    [result.totalGB, selectedQuantObj],
+    [result.totalGB, forwardFormat],
   );
   const smallestGreen = greenGpus[0];
 
@@ -620,15 +656,45 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   };
   const tagModelName = (id: string) => models.find(m => m.id === id)?.name ?? id;
 
+  const runFileImport = async (input: string) => {
+    const request = ++fileRequest.current;
+    setHfBusy(false);
+    setFileInput(input);
+    setFileBusy(true);
+    setFileError(undefined);
+    const r = await importQuantFile(input, (url, options) => fetch(url, { ...options, signal: AbortSignal.timeout(15000) }));
+    if (request !== fileRequest.current) return;
+    if (!r.ok) {
+      setFileBusy(false);
+      setFileError(r.error);
+      return;
+    }
+    selectModel('custom');
+    setHubFile(r.file);
+    setHfShape(r.shape ?? null);
+    setHfError(null);
+    setHfEdited(false);
+    setModelQuery('');
+    setCustomParams(String(r.shape?.paramsB ?? ''));
+    setCustomLayers(String(r.shape?.layers ?? ''));
+    setCustomKvHeads(String(r.shape?.kvHeads ?? ''));
+    setCustomHeadDim(String(r.shape?.headDim ?? ''));
+    setCustomAttention(r.shape?.attention);
+    setCustomCtx(r.shape?.contextLength);
+    setCustomRepo(r.file.repo);
+    trackEvent('HF Import');
+  };
+
   const runImport = async (raw?: string) => {
     const input = raw ?? hfInput;
+    if (mode === 'forward' && parseQuantFile(input)) return runFileImport(input);
     if (raw !== undefined) setHfInput(raw);
-    setSelectedModelId('custom');
-    setModelIsExample(false);
-    setInvalidModelId(null);
+    selectModel('custom');
+    const request = ++fileRequest.current;
     setHfBusy(true);
     setHfError(null);
     const r = await importFromHub(input);
+    if (request !== fileRequest.current) return;
     setHfBusy(false);
     if (!r.ok) {
       setHfError(r.error);
@@ -651,9 +717,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     trackEvent('HF Import');
   };
   const openImport = () => {
-    setSelectedModelId('custom');
-    setModelIsExample(false);
-    setInvalidModelId(null);
+    if (mode === 'forward' && parseQuantFile(modelQuery)) { void runFileImport(modelQuery); return; }
+    selectModel('custom');
     const pasted = modelQuery.includes('/') ? parseRepoInput(modelQuery) : null;
     if (pasted) { void runImport(pasted); return; }
     setTimeout(() => hfInputRef.current?.focus(), 0);
@@ -735,20 +800,20 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     [selectedModel, profileGpu, contextLen, batchSize, kvType, profileCards, profileExtras, mmprojGB],
   );
   const reach = useMemo(() => {
-    if (!profileGpu) return undefined;
-    if (selectedQuantObj && !rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) return undefined;
+    if (!profileGpu || fileNeedsShape) return undefined;
+    if (forwardFormat && !rigFormatAllowed(profileGpu, profileExtras, forwardFormat)) return undefined;
     const { bpw, contextLength: _ctx, ...shape } = calcInput;
     // A hand-typed model has no declared window; 128K is the generic ceiling.
     // An imported one carries its trained context.
     return contextReach(shape, bpw, profileGpu, selectedModel?.contextLength ?? customCtx ?? 131072, profileCards, profileExtras);
-  }, [calcInput, profileGpu, selectedModel, selectedQuantObj, profileCards, profileExtras, customCtx]);
+  }, [calcInput, profileGpu, selectedModel, forwardFormat, profileCards, profileExtras, customCtx, fileNeedsShape]);
   /** Largest preset chip inside the reach, so "use it" lands on a round value. */
   const reachPreset = reach
     ? [...CONTEXT_PRESETS].reverse().find(p => p <= (reach.comfortable || reach.tight))
     : undefined;
 
   const contextLimit = selectedModel?.contextLength ?? customCtx ?? 131072;
-  const formatOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
+  const formatOk = !profileGpu || !forwardFormat || rigFormatAllowed(profileGpu, profileExtras, forwardFormat);
   const currentVerdict = profileGpu
     ? formatOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red'
     : undefined;
@@ -777,10 +842,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   // meant the panel silently fell through to the custom-model defaults (7B /
   // 32 layers / 8 kvHeads) and presented 4.98 GB plus a green verdict on all 43
   // GPUs as if it were an answer about a model the reader never picked.
-  const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && (
+  const showForwardResult = mode === 'forward' && !modelLookupFailed && !invalidModelId && !fileNeedsShape && (
     selectedModelId === 'custom' || !!selectedModel
   );
-  const offloadFormat = selectedQuantObj?.format ?? (quantGroups.GGUF.includes(selectedQuant) ? 'GGUF' : undefined);
+  const offloadFormat = forwardFormat ?? (quantGroups.GGUF.includes(selectedQuant) ? 'GGUF' : undefined);
   const launchOffload = showForwardResult && profileGpu && formatOk && !ctxOverModel
     ? offloadPlan(calcInput, result, profileGpu, profileCards, ram, offloadFormat, selectedModel, profileExtras, selectedQuantObj?.level)
     : undefined;
@@ -947,6 +1012,46 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         <div className="space-y-4">
           {mode !== 'reverse' ? (
             <>
+              {mode === 'forward' && (
+                <div className="glass min-w-0 rounded-xl p-4">
+                  <label htmlFor="calc-hf-file" className="block text-sm font-medium text-slate-200 mb-2">{t.calc.hfFileLabel}</label>
+                  <form onSubmit={e => { e.preventDefault(); void runFileImport(fileInput); }} className="flex gap-2">
+                    <input
+                      id="calc-hf-file"
+                      value={fileInput}
+                      onChange={e => { setFileInput(e.target.value); setFileError(undefined); }}
+                      placeholder={t.calc.hfFilePlaceholder}
+                      inputMode="url"
+                      autoComplete="off"
+                      spellCheck={false}
+                      aria-describedby="calc-hf-file-help"
+                      className="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500/50"
+                    />
+                    <button type="submit" disabled={fileBusy || !fileInput.trim()}
+                      className="min-h-[44px] shrink-0 px-3 rounded-lg text-xs font-medium text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50">
+                      {fileBusy ? t.calc.hfLoading : t.calc.hfFileButton}
+                    </button>
+                  </form>
+                  <p id="calc-hf-file-help" className="mt-2 text-xs text-slate-400">{t.calc.hfFileHelp}</p>
+                  {fileError && (
+                    <p role="alert" className="mt-2 text-xs text-amber-300">
+                      {fileError === 'badInput' ? t.calc.hfFileInvalid
+                        : fileError === 'notFound' ? t.calc.hfFileNotFound
+                        : fileError === 'missingShards' ? t.calc.hfFileMissingShards : t.calc.hfErrNetwork}
+                    </p>
+                  )}
+                  {activeFile && (
+                    <div role="status" className="mt-2 space-y-1 text-xs">
+                      <a href={quantFileUrl(activeFile)} target="_blank" rel="noopener noreferrer"
+                        className="break-all text-violet-300 hover:underline">{fileName}</a>
+                      <p className="text-emerald-300">{fileQuant} · {t.calc.hfFileSize.replace('{gb}', (activeFile.bytes / 1024 ** 3).toFixed(2))}
+                        {shardCount(activeFile.path) > 1 ? ` · ${t.calc.hfFileShards.replace('{n}', String(shardCount(activeFile.path)))}` : ''}
+                      </p>
+                      <button type="button" onClick={() => selectModel('')} className="min-h-[36px] text-violet-300 hover:underline">{t.calc.hfFileClear}</button>
+                    </div>
+                  )}
+                </div>
+              )}
               <div>
                 <label htmlFor="calc-model" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.model}</label>
                 <div className="relative">
@@ -995,7 +1100,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       }
                     }}
                     onKeyDown={e => {
-                      if (e.key === 'Enter' && tagResult?.kind === 'match') applyTag(tagResult);
+                      if (e.key === 'Enter' && mode === 'forward' && parseQuantFile(modelQuery)) void runFileImport(modelQuery);
+                      else if (e.key === 'Enter' && tagResult?.kind === 'match') applyTag(tagResult);
                     }}
                     aria-label={t.calc.searchLabel}
                     placeholder={t.calc.searchPlaceholder}
@@ -1142,6 +1248,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               {selectedModelId === 'custom' && (
                 <div className="glass rounded-xl p-4 space-y-3">
                   <div>
+                    {!activeFile && <>
                     <label htmlFor="calc-hf" className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.hfLabel}</label>
                     <form onSubmit={e => { e.preventDefault(); void runImport(); }} className="flex gap-2">
                       <input
@@ -1163,6 +1270,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       </button>
                     </form>
                     <p className="text-[11px] text-slate-600 mt-1">{t.calc.hfPrivacy}</p>
+                    </>}
                     {hfError && (
                       <p className="text-xs text-amber-300 mt-2" role="alert">
                         {hfError === 'badInput' ? t.calc.hfErrBadInput : hfError === 'notFound' ? t.calc.hfErrNotFound : t.calc.hfErrNetwork}
@@ -1176,7 +1284,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           case 'gated': return t.calc.hfNoteGated;
                           case 'noConfig': return t.calc.hfNoteNoConfig;
                           case 'viaBase': return t.calc.hfNoteViaBase.replace('{base}', sh.configRepo ?? '');
-                          case 'noParams': return t.calc.hfNoteNoParams;
+                          case 'noParams': return activeFile ? '' : t.calc.hfNoteNoParams;
                           case 'mla': return t.calc.hfNoteMla;
                           case 'linear': return t.calc.hfNoteLinear.replace('{full}', String(sh.attention?.fullLayers ?? 0));
                           case 'window': return t.calc.hfNoteWindow
@@ -1202,10 +1310,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               {hfEdited ? ` · ${t.calc.hfEdited}` : ''}
                             </p>
                           )}
-                          {notes.map((n, i) => (
+                          {notes.filter(Boolean).map((n, i) => (
                             <p key={i} className="text-[11px] text-slate-500 leading-relaxed">{n}</p>
                           ))}
-                          {indexed && (
+                          {indexed && !activeFile && (
                             <button
                               type="button"
                               onClick={() => chooseModel(indexed.id)}
@@ -1218,10 +1326,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       );
                     })()}
                   </div>
+                  {fileNeedsShape && <p className="text-xs text-amber-300">{t.calc.hfFileNeedShape}</p>}
                   <p className="text-xs font-medium text-slate-400">{t.calc.customLabel}</p>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { label: t.calc.customParams,  value: customParams,  setter: setCustomParams },
+                      ...(!activeFile ? [{ label: t.calc.customParams, value: customParams, setter: setCustomParams }] : []),
                       // The attention shape was read for this layer count; a new
                       // count by hand invalidates it.
                       { label: t.calc.customLayers,  value: customLayers,  setter: (v: string) => { setCustomLayers(v); setCustomAttention(undefined); } },
@@ -1229,20 +1338,21 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       { label: t.calc.customHeadDim, value: customHeadDim, setter: setCustomHeadDim },
                     ].map(({ label, value, setter }) => (
                       <div key={label}>
-                        <label className="block text-xs text-slate-500 mb-1">{label}</label>
-                        <input
+                        <label className="block text-xs text-slate-500 mb-1">{label}
+                          <input
                           type="number"
                           value={value}
                           onChange={e => { setter(e.target.value); if (hfShape) setHfEdited(true); }}
                           className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-violet-500/40"
-                        />
+                          />
+                        </label>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {mode === 'forward' && (
+              {mode === 'forward' && !activeFile && (
                 <>
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1.5">{t.calc.quant}</label>
@@ -1924,7 +2034,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               <section data-testid="run-plan" className="glass min-w-0 rounded-2xl p-4 sm:p-5">
                 <h3 className="text-sm font-semibold text-slate-200">{t.calc.runPlanTitle}</h3>
                 <p className="mt-2 text-sm text-slate-300">
-                  {selectedModel?.name ?? (customRepo || t.calc.customLabel)} · {selectedQuant} · {contextLabel(contextLen)}
+                  <span className={activeFile ? 'break-all' : undefined}>{fileName ?? selectedModel?.name ?? (customRepo || t.calc.customLabel)}</span> · {fileQuant ?? selectedQuant} · {contextLabel(contextLen)}
                 </p>
                 <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs text-slate-400" aria-live="polite">
                   <span>{t.calc.runPlanEstimate.replace('{gb}', result.totalGB.toFixed(2))}</span>
@@ -1952,8 +2062,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   )}
                   {selectedModel && <ModelQualityScore modelId={selectedModel.id} />}
                 </p>
-                <div className="mt-2"><ModelQualityNote /></div>
-                <EmbedSnippets query={embedParams.toString()} />
+                {!activeFile && <>
+                  <div className="mt-2"><ModelQualityNote /></div>
+                  <EmbedSnippets query={embedParams.toString()} />
+                </>}
                 {(currentVerdict === 'yellow' || currentVerdict === 'red') && (quantFix || contextFix) && (
                   <div className="mt-3">
                     <p className="text-xs font-medium text-slate-400">{t.calc.runPlanAdjust}</p>
@@ -1997,6 +2109,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               </section>
               <CalculatorEvidence
                 quant={selectedQuantObj}
+                file={activeFile}
                 context={contextLen} batch={batchSize} kv={kvType} encoder={result.extraGB ?? 0}
                 calibrated={!!profileGpu && !!selectedModel && !!selectedQuantObj && !multiDevice
                   && rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)
@@ -2035,14 +2148,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   kvGB={result.kvCacheGB}
                   activationsGB={result.activationsGB}
                   extraGB={result.extraGB}
-                  capacityGB={profileGpu && (!selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)) ? rigCapacity : undefined}
+                  capacityGB={profileGpu && formatOk ? rigCapacity : undefined}
                   tightCeiling={profileGpu ? tightCeiling(profileGpu) : undefined}
-                  formatBlocked={!!profileGpu && !!selectedQuantObj && !rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format)}
+                  formatBlocked={!!profileGpu && !formatOk}
                 />
                 <p className="text-xs text-slate-600 mt-3">{t.calc.overhead}</p>
                 {(() => {
-                  const desc = `${selectedModel ? selectedModel.name : customRepo || t.calc.customLabel} · ${selectedQuant} · ${contextLabel(contextLen)}${kvType !== 'f16' ? ` · KV ${kvType}` : ''}${batchSize > 1 ? ` · ×${batchSize}` : ''}${profileGpu ? ` · ${rigLabel}` : ''}`;
-                  const fmtOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
+                  const desc = `${fileName ?? selectedModel?.name ?? (customRepo || t.calc.customLabel)} · ${fileQuant ?? selectedQuant} · ${contextLabel(contextLen)}${kvType !== 'f16' ? ` · KV ${kvType}` : ''}${batchSize > 1 ? ` · ×${batchSize}` : ''}${profileGpu ? ` · ${rigLabel}` : ''}`;
+                  const fmtOk = formatOk;
                   const nowVerdict: VerdictColor | undefined = profileGpu ? (fmtOk ? getVerdict(result.totalGB, rigCapacity, tightCeiling(profileGpu)) : 'red') : undefined;
                   const line = (label: string, d: string, gb: number, v?: VerdictColor, cap?: number) => (
                     <div className="flex items-center gap-2 text-xs">
@@ -2076,9 +2189,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 {/* The file is params × bits: for a row whose bpw was derived
                     from a published file, this is that file's size. */}
                 <p className="text-xs text-slate-500 mt-1.5">
-                  {t.calc.download.replace('{gb}', ((calcInput.paramsB * calcInput.bpw) / 8).toFixed(1))}{' '}
+                  {activeFile
+                    ? t.calc.hfFileSize.replace('{gb}', (activeFile.bytes / 1024 ** 3).toFixed(2))
+                    : t.calc.download.replace('{gb}', ((calcInput.paramsB * calcInput.bpw) / 8).toFixed(1))}{' '}
                   {result.extraGB ? `${t.calc.mmprojDownload.replace('{gb}', result.extraGB.toFixed(2))} ` : ''}
-                  <span className="text-slate-600">{t.calc.downloadOllama}</span>
+                  {!activeFile && <span className="text-slate-600">{t.calc.downloadOllama}</span>}
                 </p>
 
                 {/* The path the task book asks for: a reader who has an answer
@@ -2142,8 +2257,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 } : undefined;
                 const configuration = {
                   model: selectedModel?.name || customRepo || t.calc.customLabel,
-                  quant: selectedQuantObj ? `${selectedQuantObj.format} ${selectedQuantObj.level}` : selectedQuant,
-                  file: selectedQuantObj?.source ? `${selectedQuantObj.source.repo} / ${selectedQuantObj.source.file ?? ''}` : undefined,
+                  quant: fileQuant ?? (selectedQuantObj ? `${selectedQuantObj.format} ${selectedQuantObj.level}` : selectedQuant),
+                  file: activeFile ? quantFileUrl(activeFile)
+                    : selectedQuantObj?.source ? `${selectedQuantObj.source.repo} / ${selectedQuantObj.source.file ?? ''}` : undefined,
                   hardware: profileGpu ? `${rigLabel} · RAM ${RAM_SETUPS[ram].label}` : t.evidence.unknown,
                   context: contextLen, sequences: batchSize, kv: kvType,
                   encoderGiB: result.extraGB ?? 0, estimatedGiB: result.totalGB,
@@ -2232,7 +2348,6 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
                 {profileGpu && (() => {
                   const capacity = rigCapacity;
-                  const formatOk = !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
                   const v = getVerdict(result.totalGB, capacity, tightCeiling(profileGpu));
                   return (
                     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
@@ -2260,7 +2375,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       )}
                       <p className={cn('text-xs mt-2', formatOk ? verdictConfig[v].label : verdictConfig.red.label)}>
                         {!formatOk
-                          ? t.calc.hwFormatMismatch.replace('{format}', selectedQuantObj!.format)
+                          ? t.calc.hwFormatMismatch.replace('{format}', forwardFormat ?? '')
                           : v === 'green'
                             ? t.calc.hwAdviceGreen.replace('{spare}', (capacity - result.totalGB).toFixed(1))
                             : v === 'yellow'
@@ -2482,12 +2597,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   </summary>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
                   {gpuDatabase.map(gpu => {
-                    const formatOk = !selectedQuantObj || formatAllowed(gpu, selectedQuantObj.format);
+                    const formatOk = !forwardFormat || formatAllowed(gpu, forwardFormat);
                     const v = formatOk ? getVerdict(result.totalGB, usableCapacityGB(gpu), tightCeiling(gpu)) : 'red';
                     const cfg = verdictConfig[v];
                     const pct = formatOk ? Math.min(100, (result.totalGB / usableCapacityGB(gpu)) * 100) : 100;
                     return (
-                      <div key={gpu.id} className="flex items-center gap-2 group" title={formatOk ? undefined : t.calc.hwFormatMismatch.replace('{format}', selectedQuantObj!.format)}>
+                      <div key={gpu.id} className="flex items-center gap-2 group" title={formatOk ? undefined : t.calc.hwFormatMismatch.replace('{format}', forwardFormat ?? '')}>
                         <span className="text-sm w-4 shrink-0">{gpu.icon}</span>
                         <span className="text-xs text-slate-400 truncate w-36 shrink-0 group-hover:text-slate-200 transition-colors">
                           {gpu.name}
@@ -2685,7 +2800,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               <div className="text-center">
                 <Calculator size={32} className="text-slate-700 mx-auto mb-3" />
                 <p className="text-sm text-slate-600">
-                  {mode === 'forward' ? t.calc.pickModel : mode === 'reverse' ? t.calc.selectGpuPlaceholder : (selectedModel || selectedModelId === 'custom') ? t.calc.ftNeedHidden : t.calc.ftPickModel}
+                  {mode === 'forward' ? fileNeedsShape ? t.calc.hfFileNeedShape : t.calc.pickModel : mode === 'reverse' ? t.calc.selectGpuPlaceholder : (selectedModel || selectedModelId === 'custom') ? t.calc.ftNeedHidden : t.calc.ftPickModel}
                 </p>
               </div>
             </div>
@@ -2705,7 +2820,6 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       {showForwardResult && <div className="h-16 lg:hidden" aria-hidden="true" />}
       {showForwardResult && !resultsInView && (() => {
         const capacity = rigCapacity;
-        const formatOk = !profileGpu || !selectedQuantObj || rigFormatAllowed(profileGpu, profileExtras, selectedQuantObj.format);
         const v = profileGpu ? (formatOk ? getVerdict(result.totalGB, capacity, tightCeiling(profileGpu)) : 'red') : null;
         return (
           <div
@@ -2715,7 +2829,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
             <div className="flex items-center gap-3 max-w-7xl mx-auto">
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] text-slate-500 truncate">
-                  {selectedModel ? selectedModel.name : customRepo || t.calc.customLabel} · {selectedQuant} · {contextLabel(contextLen)}
+                  {fileName ?? selectedModel?.name ?? (customRepo || t.calc.customLabel)} · {fileQuant ?? selectedQuant} · {contextLabel(contextLen)}
                 </p>
                 <p className="text-sm text-slate-200 truncate">
                   <span className="font-mono font-semibold">{result.totalGB.toFixed(1)} {t.calc.gbUnit}</span>

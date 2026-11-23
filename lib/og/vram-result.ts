@@ -3,6 +3,7 @@ import { models } from '@/lib/data/models';
 import { canStack, capacityGB, MAX_CARDS, modelShape, rigExtras, rigFormatAllowed, verdictOn } from '@/lib/utils/calc-insights';
 import { getRecommendations, readRecommendationFilters, quantLevelKey, type SortBy } from '@/lib/utils/recommend';
 import { calcVRAM, KV_CACHE_TYPES, quantBPW } from '@/lib/utils/vram';
+import { hasQuantFileShape, quantFromFilename, readHubQuantFile } from '@/lib/utils/hf-quant-file';
 import { NO_SHARE_GPU, readVramAttention, readVramEncoder, VRAM_SHARE_PARAM } from '@/lib/utils/vram-link';
 
 type Locale = 'en' | 'zh';
@@ -89,11 +90,13 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
   const id = params.get('model');
   const model = models.find(m => m.id === id);
   if (!model && id !== 'custom') return;
-  const level = params.get('quant');
+  const file = id === 'custom' ? readHubQuantFile(params) : undefined;
+  if (file && !hasQuantFileShape(params.get('layers') ?? '', params.get('kv') ?? '', params.get('hd') ?? '')) return;
+  const level = file ? quantFromFilename(file.path) ?? 'GGUF' : params.get('quant');
   if (!level) return;
   const quant = model?.quants.find(q => quantLevelKey(q) === level);
-  const bpw = quant?.bpw ?? (Object.hasOwn(quantBPW, level) ? quantBPW[level] : undefined);
-  if (!bpw) return;
+  const bpw = file ? 0 : quant?.bpw ?? (Object.hasOwn(quantBPW, level) ? quantBPW[level] : undefined);
+  if (bpw === undefined) return;
 
   const extraGB = readVramEncoder(params.get('mmproj'));
   if ((extraGB ?? 0) > 1_000_000) return;
@@ -108,7 +111,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
     extraGB,
   };
   if ([shape.paramsB, shape.layers, shape.kvHeads, shape.headDim].some(n => n <= 0 || n > 1_000_000)) return;
-  const { totalGB } = calcVRAM({ ...shape, bpw, contextLength: ctx });
+  const { totalGB } = calcVRAM({ ...shape, bpw, contextLength: ctx, weightBytes: file?.bytes });
   if (!Number.isFinite(totalGB) || totalGB >= 1e9) return;
   const extras = rigExtras(gpu ?? null, (params.get('extra') ?? '').split(','), cards);
   let tone: Tone = 'neutral';
@@ -121,7 +124,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
     verdict = t.unshipped;
     tone = 'yellow';
   } else if (gpu) {
-    if (quant && !rigFormatAllowed(gpu, extras, quant.format)) {
+    if ((file || quant) && !rigFormatAllowed(gpu, extras, file ? 'GGUF' : quant!.format)) {
       verdict = t.unsupportedFormat;
       tone = 'red';
     } else if (totalGB > capacityGB(gpu, cards, extras)) {
@@ -135,7 +138,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
   const rig = gpu && [`${cards > 1 ? `${cards}× ` : ''}${gpu.name}`, ...extras.map(g => g.name)].join(' + ');
   return {
     eyebrow: t.forward,
-    title: model?.name ?? t.custom,
+    title: file?.path.split('/').at(-1) ?? model?.name ?? t.custom,
     details: [level, ...details].join(' · '),
     answer: [`${totalGB.toFixed(2)} GiB ${t.estimate}`, verdict].filter(Boolean).join(' · '),
     hardware: rig || undefined,
@@ -145,7 +148,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
 
 const imageKeys = [
   VRAM_SHARE_PARAM, 'mode', 'ctx', 'batch', 'cache', 'gpu', 'cards',
-  'model', 'quant', 'params', 'layers', 'kv', 'hd', 'full', 'win', 'wt', 'mctx', 'mmproj', 'extra',
+  'model', 'quant', 'params', 'layers', 'kv', 'hd', 'full', 'win', 'wt', 'mctx', 'mmproj', 'extra', 'hfFile', 'hfBytes',
   'sort', 'yellow', 'all', 'input', 'minTok', 'feat',
 ];
 
