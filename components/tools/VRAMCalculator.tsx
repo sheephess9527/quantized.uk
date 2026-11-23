@@ -8,8 +8,8 @@ import CalculatorEvidence from '@/components/tools/CalculatorEvidence';
 import RerankerLink from '@/components/tools/RerankerLink';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
-import CommunitySpeedForm from '@/components/feedback/CommunitySpeedForm';
-import { speedConfigurationKey, type SpeedConfiguration } from '@/lib/data/community-speed';
+import CommunitySpeedForm, { CommunitySpeedReports } from '@/components/feedback/CommunitySpeedForm';
+import { COMMUNITY_SPEED_ENABLED, speedConfigurationKey, type SpeedConfiguration } from '@/lib/data/community-speed';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
@@ -2114,9 +2114,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   gpuIds: rigDevices(profileGpu, profileCards, profileExtras).map(g => g.id),
                   context: contextLen, batch: batchSize, kv: kvType, encoderGiB: calcInput.extraGB ?? 0,
                 };
-                return <CommunitySpeedForm key={speedConfigurationKey(configuration)}
-                  configuration={configuration} modelName={selectedModel.name} rig={rigLabel}
-                  requiresProcessor={profileGpu.type === 'cpu'} />;
+                return <>
+                  <CommunitySpeedReports configuration={configuration} />
+                  {COMMUNITY_SPEED_ENABLED && <CommunitySpeedForm key={speedConfigurationKey(configuration)}
+                    configuration={configuration} modelName={selectedModel.name} rig={rigLabel}
+                    requiresProcessor={profileGpu.type === 'cpu'} />}
+                </>;
               })()}
               {(() => {
                 const configuration = {

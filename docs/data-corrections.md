@@ -1,6 +1,6 @@
 # Model data verification — 2026-11-21
 
-**Visitor speed provenance (2026-11-23):** No visitor rows were added when submissions opened.
+**Visitor speed provenance (2026-11-23):** No visitor rows were seeded; submissions ship disabled.
 For each future approved row in `lib/data/community-speed.ts`, record the submission ID, review
 date, public evidence if available, and any limitations here. Do not record private queue fields.
 Visitor figures are community data, not site measurements.

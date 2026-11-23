@@ -1,6 +1,30 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { onRequest } from '../functions/api/community-speed';
-import { communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
+import { COMMUNITY_SPEED_ENABLED, communitySpeeds, matchingCommunitySpeeds, SPEED_BOUNDS, validateSpeedSubmission, type CommunitySpeed, type SpeedConfiguration } from '../lib/data/community-speed';
+
+function hasD1Binding(config: string, environment: 'production' | 'preview'): boolean {
+  return config.split(/(?=^[ \t]*\[)/m).some(table => {
+    const header = table.split(/[#\r\n]/, 1)[0].trim();
+    if (header !== `[[env.${environment}.d1_databases]]`) return false;
+    if (!/^[ \t]*binding\s*=\s*(?:"COMMUNITY_SPEED_DB"|'COMMUNITY_SPEED_DB')[ \t]*(?:#.*)?$/m.test(table)) return false;
+    const id = /^[ \t]*database_id\s*=\s*(["'])([\w-]+)\1[ \t]*(?:#.*)?$/m.exec(table)?.[2];
+    return !!id && !id.startsWith('00000000-') && /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(id);
+  });
+}
+
+const bindingTable = '[[env.production.d1_databases]]\nbinding = "COMMUNITY_SPEED_DB"\n';
+assert.equal(hasD1Binding(bindingTable + 'database_id = "<production database ID>"\n', 'production'), false);
+assert.equal(hasD1Binding(bindingTable + 'database_id = "00000000-0000-4000-8000-000000000042"\n', 'production'), false);
+assert.equal(hasD1Binding(bindingTable + 'database_id = "12345678-1234-4000-8000-123456789012"\n', 'production'), true);
+assert.equal(hasD1Binding(bindingTable + '[[env.preview.d1_databases]]\ndatabase_id = "12345678-1234-4000-8000-123456789012"\n', 'production'), false);
+
+if (COMMUNITY_SPEED_ENABLED) {
+  const config = readFileSync('wrangler.toml', 'utf8');
+  for (const environment of ['production', 'preview'] as const) {
+    assert.ok(hasD1Binding(config, environment), `Community submissions require a real COMMUNITY_SPEED_DB D1 database ID in wrangler.toml for ${environment}`);
+  }
+}
 
 const configuration: SpeedConfiguration = {
   modelId: 'qwen3-8b', quant: 'Q4_K_M', gpuIds: ['rtx3060'], context: 4096, batch: 1, kv: 'f16', encoderGiB: 0,

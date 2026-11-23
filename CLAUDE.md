@@ -146,6 +146,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   never used at build time. Publish only reviewed rows from `community-speed.ts` as
   **Community / 社区数据**, never in measured, recommended, or calibration data. See README §6
   for required Pages bindings, review steps and Free-tier limits.
+  Keep the submit form disabled until both D1 schemas and Pages secrets are set; flip
+  `COMMUNITY_SPEED_ENABLED` in the same commit as the real D1 binding IDs. Never add
+  an availability request to calculator page views.
 
 - **Calculator progressive controls:** advanced controls live in the More options disclosure, which auto-opens on non-default advanced settings and only closes via its toggle button, never automatically. Disclosure open state is never URL or profile state.
 - **Calculator first load:** reverse mode is the default. Precedence is URL, then saved profile,

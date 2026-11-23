@@ -405,7 +405,7 @@ Pages builds the root `functions/` directory along with `out/`; no separate Work
 
 ### Visitor speed submissions (Pages + D1 Free)
 
-Open an indexed model's forward calculator result with an indexed GPU or system, then open **Submit your speed** (Chinese: **提交你的测速结果**). Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. A missing binding, missing schema or exhausted free quota returns an error without changing the calculator.
+Safe to merge before setup, or leave disabled indefinitely: `COMMUNITY_SPEED_ENABLED` in `lib/data/community-speed.ts` defaults to `false`, so the result shows no submit form and makes no availability request. After setup, **Submit your speed** (Chinese: **提交你的测速结果**) appears on forward results with an indexed model and hardware. Custom models and configurations without named hardware still have the local report tool. The submit endpoint writes only to D1; there is no public API to read the queue. If storage later fails or exhausts its quota, a submission returns an error without changing the calculator.
 
 CPU-only RAM tiers require the processor model. Include that field when approving CPU-only rows so readers can distinguish processors within a RAM tier.
 For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no projector) when approving. Matching uses hundredths of a GiB so a rounded Hub lookup and a recommendation based on the same file's bytes agree. No projector is always separate from any positive size.
@@ -413,7 +413,8 @@ For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no 
 **Owner setup (before enabling):**
 
 1. On the Cloudflare **Workers Free** plan, create the D1 databases `quantized-community-speed` and `quantized-community-speed-preview` (Workers & Pages → D1 SQL Database → Create). In each database's **Console**, execute the SQL in [scripts/community-speed.sql](scripts/community-speed.sql).
-2. In this PR, append the following to `wrangler.toml` and replace both placeholders with the corresponding D1 database IDs from Cloudflare. Pages uses the repo's Wrangler config as its source of truth for bindings. Keep production and preview separate.
+2. In the `quantized` Pages project, go to **Settings → Variables and Secrets → Add**, choose **Secret**, and set `COMMUNITY_SPEED_RATE_SECRET` in **Production** and **Preview**. Use a different random value for each (generate each with `openssl rand -hex 32`); never commit the values.
+3. Once both databases have the schema and both secrets are set, make one commit that adds the following to `wrangler.toml` (replace both placeholders with the corresponding IDs) and changes `COMMUNITY_SPEED_ENABLED` to `true`. Pages uses the repo's Wrangler config as its source of truth for bindings. Test the preview before merging; the deployment with that commit enables the form. `npm test` catches absent or placeholder binding IDs, but cannot verify the Cloudflare secrets or the remote schema.
 
    ```toml
    [[env.production.d1_databases]]
@@ -427,13 +428,13 @@ For vision runs, keep the calculator projector size (`encoderGiB`; `0` means no 
    database_id = "<preview database ID>"
    ```
 
-3. In the `quantized` Pages project, go to **Settings → Variables and Secrets → Add**, choose **Secret**, and set `COMMUNITY_SPEED_RATE_SECRET` in **Production** and **Preview**. Use a different random value for each (generate each with `openssl rand -hex 32`); never commit the values. Redeploy the PR preview after those changes. Production takes effect on the first production deployment with the binding.
+To turn off the form again, set the flag to `false` and redeploy. Remove the D1 bindings in the same commit if you also want the endpoint to stop accepting direct submissions. Published community rows do not depend on the form.
 
 **Review and publish:** In the production D1 console, run `SELECT id, received_at, payload FROM pending_speed ORDER BY received_at DESC LIMIT 100;` (paginate for older rows). Check the exact model/quant, hardware, context and benchmark conditions, and reject suspicious or unsupported figures. To approve, make a data PR adding the ID, configuration, runtime, version and speeds to `communitySpeeds` in `lib/data/community-speed.ts` with `source: 'community'`. Include a canonical public HTTPS evidence URL only after reviewing it. Leave private notes and queue metadata out of git. Record the source and review in [docs/data-corrections.md](docs/data-corrections.md). Only those reviewed rows appear after deploy, in a separate **Community / 社区数据** panel on matching calculator results; they never feed measured benchmarks, recommendations or calibration.
 
 The endpoint saves a keyed, daily rate-limit tag instead of a raw IP, and allows up to 3 accepted submissions per IP and 100 total per UTC day per database. To minimize private data retention, periodically delete old queue rows in the console, e.g. `DELETE FROM pending_speed WHERE day < date('now', '-90 days');` after reviewing them. Keep same-day rows so the limits continue to count them.
 
-**Local preview with storage:** After `npm run build`, save this local-only config outside the repo (e.g. `~/community-speed-local.toml`):
+**Local preview with storage:** In a local-only checkout, set `COMMUNITY_SPEED_ENABLED` to `true` before `npm run build`. Don't commit this local flag change. Save this local-only config outside the repo (e.g. `~/community-speed-local.toml`):
 
 ```toml
 name = "quantized-local"
@@ -604,6 +605,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ### 2026-11-23 — Visitor speed submissions
 
 - Added English and Chinese speed submission forms on indexed forward calculator results. The private Cloudflare D1 Free queue requires manual review before publication; approved visitor figures are labeled **Community / 社区数据** and never enter measured or estimated speed data. No visitor runs were seeded. See the setup and review steps in §6.
+- The submit form ships off by default and can be enabled after Cloudflare setup. Viewing a calculator result makes no new Pages Function request; a submission makes one POST.
 - CPU-only submissions require a processor model; approved rows show it alongside the speeds.
 - Community speed results store the calculator's vision projector size and match it at the precision of the Hub lookup (0.01 GiB).
 

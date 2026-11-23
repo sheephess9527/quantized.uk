@@ -34,6 +34,7 @@ export interface CommunitySpeed extends SpeedConfiguration, SpeedObservation {
 }
 
 export const communitySpeeds: readonly CommunitySpeed[] = [];
+export const COMMUNITY_SPEED_ENABLED = false;
 
 export const SPEED_BOUNDS = { min: 0.01, prefillMax: 10_000_000, decodeMax: 100_000 } as const;
 
