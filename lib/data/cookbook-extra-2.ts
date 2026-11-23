@@ -1,4 +1,7 @@
 import type { Article } from './cookbook';
+import { LLAMACPP_BUILD } from './runtime-build';
+
+const linuxVulkanSetup = 'sudo apt install build-essential cmake libvulkan-dev glslc spirv-headers vulkan-tools\nvulkaninfo --summary\ncmake -S . -B build-vulkan -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release\ncmake --build build-vulkan --parallel\n./build-vulkan/bin/llama-server --list-devices\n./build-vulkan/bin/llama-server -m /path/to/your-model.gguf -ngl all -c 4096 --host 127.0.0.1 --port 8080';
 
 export const extraArticles2: Article[] = [
   {
@@ -158,8 +161,8 @@ export const extraArticles2: Article[] = [
     title: 'WSL2 + Ollama GPU Passthrough on Windows',
     seoTitle: 'Ollama in WSL2 with NVIDIA GPU: Setup Guide',
     titleZh: 'Windows WSL2 + Ollama GPU 透传',
-    description: 'Run Ollama on an NVIDIA GPU inside WSL2: Windows driver setup, GPU passthrough and nvidia-smi checks for local LLMs.',
-    descriptionZh: '在 WSL2 内用 NVIDIA GPU 加速运行 Ollama — Windows 本地 LLM 最稳妥的路线。',
+    description: 'Set up Ollama with an NVIDIA GPU in WSL2. Check passthrough with nvidia-smi, start ollama serve, and use ollama ps to diagnose CPU fallback.',
+    descriptionZh: '在 WSL2 中用 NVIDIA 显卡运行 Ollama：用 nvidia-smi 检查 GPU 透传，运行 ollama serve 启动服务，再用 ollama ps 排查 CPU 回退。',
     category: 'edge',
     difficulty: 'intermediate',
     tags: ['WSL2', 'Windows', 'Ollama', 'NVIDIA', 'CUDA'],
@@ -168,17 +171,18 @@ export const extraArticles2: Article[] = [
     // networking.md), NVIDIA's CUDA on WSL user guide, Ollama's docs (faq.mdx,
     // linux.mdx) and scripts/install.sh. A documentation check, not a run on a
     // Windows box — so a target stack, no verified date. See README §9.
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-11-23',
     verifiedStack: {
       en: 'Windows 11 (or Win10 21H2+) · WSL2 Ubuntu 22.04/24.04 · recent NVIDIA Windows driver · Ollama Linux install · GGUF Q4_K_M',
       zh: 'Windows 11（或 Win10 21H2+）· WSL2 Ubuntu 22.04/24.04 · 较新的 NVIDIA Windows 驱动 · Ollama Linux 版 · GGUF Q4_K_M',
     },
     content: [
       {
-        heading: 'Who this is for',
-        headingZh: '适用于谁',
-        body: 'A Windows machine with an NVIDIA GPU, where you want the Linux tooling (Ollama, llama.cpp, Python) without dual-booting. If you only want to chat with a model and never touch a terminal, the native Windows Ollama app is simpler — this guide is for the case where you also want the Linux side.',
-        bodyZh: '一台带 NVIDIA 显卡的 Windows 机器，你想用 Linux 那套工具（Ollama、llama.cpp、Python）又不想装双系统。如果你只是想聊天、完全不碰终端，Windows 原生的 Ollama 应用更简单 —— 这篇是写给同时还想要 Linux 环境的情况。',
+        heading: 'Three commands to check NVIDIA GPU use',
+        headingZh: '用三条命令检查 NVIDIA GPU 是否在用',
+        body: 'Install the NVIDIA driver on Windows, not inside WSL. Check that Windows sees the GPU, then that your WSL2 distro sees it, then that the Linux Ollama server actually uses it. The final command needs a loaded model: 100% GPU means full offload, CPU/GPU means partial offload, and 100% CPU means no GPU offload. If you do not need Linux tooling, native Windows Ollama is simpler.',
+        bodyZh: '在 Windows 安装 NVIDIA 驱动，不要在 WSL 里装。先确认 Windows 看得到显卡，再检查 WSL2 发行版能否看到，最后确认 Linux 版 Ollama 服务是否在用它。最后一条需要先加载模型：100% GPU 是全部卸载到显卡，CPU/GPU 表示仅卸载一部分，100% CPU 表示没有使用显卡。如果不需要 Linux 工具，Windows 原生 Ollama 更简单。',
+        code: { lang: 'text', content: '# Windows PowerShell\nnvidia-smi\nwsl.exe --exec /usr/lib/wsl/lib/nvidia-smi\n\n# Inside WSL Ubuntu, after running a model in another terminal\nollama ps' },
       },
       {
         heading: 'Prerequisites',
@@ -203,21 +207,21 @@ export const extraArticles2: Article[] = [
       {
         heading: 'Install Ollama inside WSL',
         headingZh: '在 WSL 中安装 Ollama',
-        body: 'Install the Linux build inside Ubuntu, not the Windows app — running both leaves two servers competing for port 11434 and for the GPU. On WSL2 the install script installs no GPU driver at all; it only checks for the passthrough and prints "Nvidia GPU detected." when nvidia-smi works, so if that line is missing, fix the passthrough before going further. The script also starts Ollama as a systemd service. WSL\'s documented default is systemd off, and without it the script warns "systemd is not running" and nothing is serving — enable it in /etc/wsl.conf, or run ollama serve in a second terminal. Keep models on the WSL filesystem (~/.ollama); under /mnt/c every read crosses into the Windows filesystem and loads are dramatically slower.',
-        bodyZh: '在 Ubuntu 里装 Linux 版，而不是 Windows 应用 —— 两个都装会有两个服务同时抢 11434 端口和 GPU。在 WSL2 上安装脚本完全不装 GPU 驱动，只检查透传是否可用，nvidia-smi 正常时会打印 "Nvidia GPU detected."；如果没看到这一行，先修好透传再往下走。脚本还会把 Ollama 注册成 systemd 服务。WSL 文档里 systemd 默认是关闭的，没开的话脚本会警告 "systemd is not running"，此时没有任何服务在运行 —— 在 /etc/wsl.conf 里开启它，或者在另一个终端里运行 ollama serve。模型放在 WSL 文件系统里（~/.ollama）；放在 /mnt/c 下，每次读取都要跨到 Windows 文件系统，加载会慢得多。',
+        body: 'Install the Linux build inside Ubuntu. Quit the native Windows Ollama app while testing to avoid talking to the wrong server on port 11434. The WSL installer does not install an NVIDIA driver. It starts a service if systemd is running; if it warns "systemd is not running", either use ollama serve in a second WSL terminal or enable systemd under [boot] in /etc/wsl.conf and restart WSL. Keep models on the WSL filesystem: loading from /mnt/c crosses into the Windows filesystem and can be much slower.',
+        bodyZh: '在 Ubuntu 里装 Linux 版。测试时退出 Windows 原生 Ollama，避免在 11434 端口连错服务。WSL 安装脚本不会安装 NVIDIA 驱动。如果 systemd 正在运行，脚本会启动服务；如果提示 "systemd is not running"，就在另一个 WSL 终端运行 ollama serve，或在 /etc/wsl.conf 的 [boot] 节中启用 systemd 并重启 WSL。模型放在 WSL 文件系统里：从 /mnt/c 加载要跨到 Windows 文件系统，可能慢很多。',
         code: {
           lang: 'bash',
-          content: 'curl -fsSL https://ollama.com/install.sh | sh\n# look for: "Nvidia GPU detected."\n\n# If it warned "systemd is not running":\n#   printf \'[boot]\\nsystemd=true\\n\' | sudo tee -a /etc/wsl.conf\n#   then in PowerShell: wsl --shutdown\n\n# Most library tags default to Q4_K_M\nollama pull qwen3:8b\nollama run qwen3:8b',
+          content: 'curl -fsSL https://ollama.com/install.sh | sh\n\n# Only if there is no running Ollama service, run in a separate WSL terminal:\n# ollama serve\n\n# Back in the first terminal, with the service running:\nollama run qwen3:8b',
         },
       },
       {
         heading: 'Verify it is actually on the GPU',
         headingZh: '确认真的用上了 GPU',
-        body: 'Ollama falls back to CPU rather than failing, so a model that answers slowly is the symptom of a broken passthrough, not of a slow card. Two checks: ollama ps shows a PROCESSOR column that reads 100% GPU when the whole model is on the card, and nvidia-smi inside WSL shows the ollama process holding roughly the model\'s size. For Qwen3 8B at Q4_K_M and Ollama\'s default 4,096-token context, this site\'s calculator puts that at about 5.8 GB. If PROCESSOR shows a CPU share on a model that should fit, the passthrough is the problem, not the model.',
-        bodyZh: 'Ollama 装不下或找不到 GPU 时会退回 CPU 而不是报错，所以"回答很慢"通常是透传坏了，而不是显卡慢。两个检查点：ollama ps 的 PROCESSOR 一列，整个模型都在显卡上时显示 100% GPU；WSL 里的 nvidia-smi 应该能看到 ollama 进程占着大约模型大小的显存。Qwen3 8B 在 Q4_K_M、Ollama 默认 4096 token 上下文下，本站计算器给出的是约 5.8 GB。如果一个本该装得下的模型 PROCESSOR 里出现了 CPU 占比，问题在透传，不在模型。',
+        body: 'Use the PROCESSOR column in ollama ps as the main check. WSL’s nvidia-smi has fewer features than the native tool; a missing process row alone does not prove CPU fallback. Qwen3 8B at Q4_K_M with a 4,096-token context needs about 5.8 GB by this site’s calculator. If a small model still runs on CPU, confirm you are talking to the Linux Ollama server, then check its logs for GPU discovery errors.',
+        bodyZh: '以 ollama ps 的 PROCESSOR 列为主要依据。WSL 中的 nvidia-smi 功能比原生工具少；进程列表没显示，并不代表一定退回了 CPU。按本站计算器估算，Qwen3 8B 的 Q4_K_M 在 4096 token 上下文下约需 5.8 GB。如果连小模型也走 CPU，先确认连接的是 Linux 版 Ollama 服务，再看日志中有没有显卡探测报错。',
         code: {
           lang: 'bash',
-          content: 'ollama ps\n# NAME        ID     SIZE    PROCESSOR   UNTIL\n# qwen3:8b    <id>   ...     100% GPU    4 minutes from now\n\nnvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv',
+          content: 'ollama ps\n# NAME        ID     SIZE    PROCESSOR   UNTIL\n# qwen3:8b    <id>   ...     100% GPU    4 minutes from now',
         },
       },
       {
@@ -244,6 +248,12 @@ export const extraArticles2: Article[] = [
       },
     ],
     faqs: [
+      {
+        q: 'Why is Ollama not using my NVIDIA GPU in WSL2?',
+        qZh: '为什么 WSL2 里的 Ollama 没有使用 NVIDIA GPU？',
+        a: 'Check wsl -l -v in Windows PowerShell: the Ubuntu distro must be version 2. If /usr/lib/wsl/lib/nvidia-smi fails inside WSL, update the Windows NVIDIA driver, run wsl --update and wsl --shutdown, then reopen Ubuntu. Do not install a Linux NVIDIA driver. If nvidia-smi works but ollama ps shows CPU, stop any duplicate Windows Ollama, reduce the model size or context, and read journalctl -u ollama (systemd) or the ollama serve terminal for GPU errors.',
+        aZh: '先在 Windows PowerShell 运行 wsl -l -v：Ubuntu 发行版必须是版本 2。如果 WSL 里的 /usr/lib/wsl/lib/nvidia-smi 不能运行，请更新 Windows 的 NVIDIA 驱动，执行 wsl --update 和 wsl --shutdown，再打开 Ubuntu。不要安装 Linux NVIDIA 驱动。如果 nvidia-smi 正常，但 ollama ps 显示 CPU，退出可能同时运行的 Windows 版 Ollama，换更小的模型或减小上下文，并用 journalctl -u ollama（systemd）或查看 ollama serve 终端中的 GPU 报错。',
+      },
       {
         q: 'Do I need to install the CUDA toolkit inside WSL to run Ollama?',
         qZh: '在 WSL 里跑 Ollama 需要装 CUDA 工具包吗？',
@@ -349,8 +359,8 @@ export const extraArticles2: Article[] = [
     title: 'AMD GPU + llama.cpp via ROCm (Quick Start)',
     seoTitle: 'llama.cpp ROCm Setup on AMD RX 7900 / 6800',
     titleZh: 'AMD 显卡 + llama.cpp ROCm 快速入门',
-    description: 'Build and run llama.cpp with ROCm (HIP) on Radeon RX 9070, 7900 and 6800 cards: HSA_OVERRIDE fixes, what runs well, and what does not.',
-    descriptionZh: '用 llama.cpp HIP 后端在 RX 9070 / 7900 / 6800 系列上跑 GGUF — 能做什么、不能做什么。',
+    description: 'Set up llama.cpp on Radeon RX 9070, 7900 or 6800: Linux ROCm/HIP build and GPU targets, Windows ROCm ZIP, or Vulkan without ROCm.',
+    descriptionZh: '在 Radeon RX 9070、7900 或 6800 上安装 llama.cpp：Linux ROCm/HIP 编译与 GPU 架构目标、Windows ROCm ZIP，以及无需 ROCm 的 Vulkan 方案。',
     category: 'edge',
     difficulty: 'advanced',
     tags: ['AMD', 'ROCm', 'llama.cpp', 'HIP', 'Linux'],
@@ -358,25 +368,25 @@ export const extraArticles2: Article[] = [
     // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03; RDNA 4 + iGPU
     // re-check 2026-10-20 (llama.cpp docs/build.md + ggml-hip/CMakeLists.txt on master, AMD's ROCm
     // Linux system requirements, Ollama docs/gpu.mdx, LLVM AMDGPUUsage processor table).
-    updatedAt: '2026-11-12',
+    updatedAt: '2026-11-23',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
     // documented interfaces, not from a run. Saying otherwise would make the
     // badge meaningless on the other guides too.
     verifiedStack: {
-      en: 'Linux (Ubuntu 22.04/24.04) · ROCm 6.1+ (7.x for RX 9000) · llama.cpp built with GGML_HIP=ON · RX 9070 / 7900 / 6800 class · GGUF',
-      zh: 'Linux（Ubuntu 22.04/24.04）· ROCm 6.1+（RX 9000 需 7.x）· 以 GGML_HIP=ON 编译的 llama.cpp · RX 9070 / 7900 / 6800 级显卡 · GGUF',
+      en: 'Linux: ROCm 6.1+ (card-dependent) · Windows x64: ROCm 10.0 ZIP or Vulkan · GGUF',
+      zh: 'Linux：ROCm 6.1+（视显卡而定）· Windows x64：ROCm 10.0 ZIP 或 Vulkan · GGUF',
     },
     content: [
       {
-        heading: 'Who this is for, and what actually works',
-        headingZh: '适用于谁，以及哪些真的能用',
-        body: 'A Radeon card on Linux, running GGUF through llama.cpp. Two things to settle before you start. ROCm on consumer Radeon is Linux-first: llama.cpp does document a Windows HIP build, but the HSA_OVERRIDE_GFX_VERSION workaround below does not work on Windows, so a card outside AMD’s official list is usually better served there by the Vulkan backend. And format choice is narrower than on NVIDIA — GGUF works, and vLLM ships official ROCm builds for AWQ/GPTQ serving (RX 7700 XT and up, RX 9000 — not RX 6000 or the 7600 XT), but EXL2 is CUDA-only and no amount of ROCm setup will change that.',
-        bodyZh: '一张跑在 Linux 上的 Radeon 显卡，用 llama.cpp 跑 GGUF。开始前先明确两点。消费级 Radeon 的 ROCm 以 Linux 为主：llama.cpp 文档里也有 Windows 上的 HIP 构建方法，但下面的 HSA_OVERRIDE_GFX_VERSION 变通办法在 Windows 上无效，所以不在 AMD 官方支持列表里的显卡，在 Windows 上通常更适合用 Vulkan 后端。另外可选格式比 NVIDIA 窄 —— GGUF 可用，vLLM 也有官方 ROCm 构建可用于 AWQ/GPTQ 服务（限 RX 7700 XT 及以上、RX 9000 系列，不含 RX 6000 和 7600 XT），但 EXL2 是 CUDA 独占，再怎么配 ROCm 也没用。',
+        heading: 'Choose a path for your Radeon and OS',
+        headingZh: '按 Radeon 型号和系统选方案',
+        body: 'On Linux, use the ROCm/HIP build if AMD supports your exact card, distribution and ROCm version. On Windows 11 x64, use the official ROCm ZIP if the matching ROCm runtime supports your card. Otherwise start with Vulkan: it works on either OS with a Vulkan-capable driver and does not require ROCm. Use the real gfx target for a supported card. The optional overrides below are Linux-only workarounds, not a compatibility list; if you use one, build for the target you are impersonating and verify the output.',
+        bodyZh: '在 Linux 上，如果 AMD 的兼容表支持你的具体显卡、发行版和 ROCm 版本，就选 ROCm/HIP 编译方案。在 Windows 11 x64 上，如果对应的 ROCm 运行环境支持你的显卡，就选官方 ROCm ZIP。否则先试 Vulkan：两个系统都可用，只需要支持 Vulkan 的驱动，不用装 ROCm。受支持的显卡请使用实际的 gfx 架构目标。下表的覆盖值只是 Linux 上可选的变通办法，并非兼容名单；如果使用覆盖，请按模拟的架构编译，并核对输出。',
         code: {
           lang: 'text',
-          content: 'Best reports:  RX 7900 XTX / XT (gfx1100), W7900\nWorks:         RX 9070 XT / 9070 / 9070 GRE (gfx1201, ROCm 7.x)\n               RX 9060 XT / 9060 (gfx1200, on Ollama\'s ROCm list)\n               RX 7800 XT / 7700 XT (gfx1101), RX 6800 XT / 6900 XT (gfx1030)\nPatchy:        RX 6700 XT (gfx1031), older Polaris\nIntegrated:    Ryzen AI APUs (Radeon 8060S = gfx1151) are on Ollama\'s ROCm list;\n               other iGPUs only via the override + unified memory (see below)',
+          content: 'Radeon family                       GPU_TARGETS   HSA_OVERRIDE_GFX_VERSION\nRX 6800 / 6800 XT / 6900 XT (RDNA 2) gfx1030       —\nRX 6700 XT (RDNA 2)                  gfx1031       10.3.0 → gfx1030\nRX 7900 XTX / XT / GRE (RDNA 3)      gfx1100       —\nRX 7800 XT / 7700 XT (RDNA 3)        gfx1101       11.0.0 → gfx1100\nRX 9070 XT / 9070 (RDNA 4)           gfx1201       —\nRX 9060 XT / 9060 (RDNA 4)           gfx1200       —\nRadeon 8060S (Ryzen AI Max)          gfx1151       —',
         },
       },
       {
@@ -437,6 +447,26 @@ export const extraArticles2: Article[] = [
         body: 'The models linked below are the ones this guide is written around. Open any of them with your Radeon selected in the calculator to see the context length it can actually hold.',
         bodyZh: '下方链接的模型就是本指南所围绕的那几个。在计算器里选好你的 Radeon 再打开其中任意一个，就能看到它实际能撑住多长的上下文。',
       },
+      {
+        heading: 'Windows: install the official ROCm ZIP',
+        headingZh: 'Windows：安装官方 ROCm ZIP',
+        body: 'Update the AMD graphics driver and check AMD’s Windows support matrix for your exact card. The pinned ROCm 10.0 x64 ZIP includes llama-server.exe and some HIP DLLs, but not all of the ROCm math libraries. Use x64 Python on PATH to install the matching AMD SDK wheels, then add their bin directory to PATH in the same PowerShell session. The steps use the matching 10.0.0 SDK from llama.cpp’s release workflow. Replace the model path with your own GGUF. If HIP cannot see your Radeon, use the Vulkan path below; HSA_OVERRIDE_GFX_VERSION does not work on Windows.',
+        bodyZh: '更新 AMD 显卡驱动，并在 AMD 的 Windows 兼容表中确认具体型号。这里固定使用的 ROCm 10.0 x64 ZIP 含有 llama-server.exe 和部分 HIP DLL，但并未包含全部 ROCm 数学库。用 PATH 中的 x64 Python 安装配套 AMD SDK 软件包，再在同一个 PowerShell 会话中把 SDK 的 bin 目录加入 PATH。以下命令使用 llama.cpp 发布工作流对应的 10.0.0 SDK；请把路径换成自己的 GGUF 文件。如果 HIP 找不到你的 Radeon，请改用下面的 Vulkan 方案；HSA_OVERRIDE_GFX_VERSION 在 Windows 上不起作用。',
+        code: {
+          lang: 'powershell',
+          content: `$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-rocm-10.0-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-rocm\npython -m venv .\\rocm-env\n.\\rocm-env\\Scripts\\python.exe -m pip install --index-url https://stable.repo.amd.com/rocm/whl-next/ "rocm[libraries,devel]==10.0.0"\n.\\rocm-env\\Scripts\\rocm-sdk.exe init\n$RocmBin = (.\\rocm-env\\Scripts\\rocm-sdk.exe path --bin).Trim()\n$env:Path = "$RocmBin;$env:Path"\n.\\llama-rocm\\llama-server.exe --list-devices\n.\\llama-rocm\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
+        },
+      },
+      {
+        heading: 'Vulkan fallback on Windows or Linux',
+        headingZh: 'Windows 或 Linux 上的 Vulkan 备用方案',
+        body: 'Vulkan uses the GPU driver rather than ROCm. On Windows x64, extract the official Vulkan ZIP to a separate folder and check that --list-devices names your Radeon. On Debian or Ubuntu, install the Vulkan tools and build dependencies plus your distribution’s Vulkan driver, then use a separate build directory. In either case, if the list also shows integrated graphics, pass --device with the exact Radeon device name, and look for layer offload in the server log.',
+        bodyZh: 'Vulkan 使用显卡驱动，不依赖 ROCm。Windows x64 上，把官方 Vulkan ZIP 解压到单独的目录，确认 --list-devices 列出了 Radeon。在 Debian 或 Ubuntu 上，安装 Vulkan 工具、编译依赖和发行版的 Vulkan 驱动，再用单独的目录编译。如果列表还显示集成显卡，可用 --device 指定所列的 Radeon 设备名，并在服务日志里确认模型层已卸载到显卡。',
+        code: {
+          lang: 'text',
+          content: `# Windows PowerShell\n$Build = '${LLAMACPP_BUILD}'\n$Zip = "llama-$Build-bin-win-vulkan-x64.zip"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath .\\llama-vulkan\n.\\llama-vulkan\\llama-server.exe --list-devices\n.\\llama-vulkan\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080\n\n# Debian / Ubuntu (from the llama.cpp checkout)\n${linuxVulkanSetup}`,
+        },
+      },
     ],
     faqs: [
       {
@@ -444,6 +474,12 @@ export const extraArticles2: Article[] = [
         qZh: 'Radeon 上跑 llama.cpp，该用 ROCm 还是 Vulkan？',
         a: 'On Linux with a card AMD officially supports, ROCm (the HIP build in this guide) is the documented path. Vulkan is the fallback that needs no ROCm install at all: build with -DGGML_VULKAN=ON instead of GGML_HIP. It is the better choice on Windows for a card outside AMD’s list, because llama.cpp’s build docs note that HSA_OVERRIDE_GFX_VERSION is not supported on Windows. If you only want to run models on Windows rather than build llama.cpp, Ollama’s Windows app handles Radeon cards itself: ROCm on the RX 7600 to 7900 series, and Vulkan on the others. This site has not measured either backend on a Radeon, so it does not say which is faster — run both on your card with the same model and context and compare.',
         aZh: '在 Linux 上、且显卡在 AMD 官方支持列表里时，ROCm（也就是本指南的 HIP 构建）是文档给出的路径。Vulkan 是完全不需要安装 ROCm 的后备方案：编译时用 -DGGML_VULKAN=ON 代替 GGML_HIP。在 Windows 上、显卡又不在 AMD 列表里时，它是更好的选择，因为 llama.cpp 的构建文档写明 HSA_OVERRIDE_GFX_VERSION 在 Windows 上不受支持。如果你只是想在 Windows 上跑模型、不想自己编译 llama.cpp，Ollama 的 Windows 版会自己处理 Radeon 显卡：RX 7600 到 7900 系列走 ROCm，其他型号走 Vulkan。本站没有在 Radeon 上实测过任何一个后端，所以不下“谁更快”的结论 —— 用同一个模型和上下文在你的卡上两个都跑一遍再比较。',
+      },
+      {
+        q: 'Can I run llama.cpp with ROCm on Windows without compiling?',
+        qZh: 'Windows 上不编译也能用 ROCm 跑 llama.cpp 吗？',
+        a: 'Yes, if your GPU supports the matching ROCm runtime. Use the official Windows x64 ROCm ZIP, install its matching AMD ROCm SDK libraries, and check llama-server.exe --list-devices before loading a model. Use the Windows Vulkan ZIP if your Radeon is not supported by that ROCm version.',
+        aZh: '可以，前提是你的显卡受配套的 ROCm 运行环境支持。下载官方 Windows x64 ROCm ZIP、安装匹配的 AMD ROCm SDK 库，再用 llama-server.exe --list-devices 确认显卡后加载模型。不支持该 ROCm 版本的 Radeon 请用 Windows Vulkan ZIP。',
       },
       {
         q: 'Can a Radeon run AWQ, GPTQ or EXL2 models?',
@@ -612,29 +648,29 @@ export const extraArticles2: Article[] = [
     title: 'Intel Arc: llama.cpp (SYCL) or Ollama (Vulkan)',
     seoTitle: 'llama.cpp on Intel Arc: SYCL vs Vulkan Setup',
     titleZh: 'Intel Arc 显卡：llama.cpp（SYCL）或 Ollama（Vulkan）',
-    description: 'Run llama.cpp and Ollama on Intel Arc B580, B570, A770 or A750: SYCL (oneAPI) vs Vulkan builds, checking GPU use, and what fits in 8–16 GB.',
-    descriptionZh: '在 Arc B580、B570、A770、A750 上跑 GGUF —— SYCL 编译、Ollama 路线、如何确认真的在用 GPU，以及 8–16 GB 能装下什么。',
+    description: 'Run llama.cpp on Intel Arc B580, B570, A770 or A750: choose a Windows SYCL or Vulkan ZIP, build on Linux, or use Ollama Vulkan.',
+    descriptionZh: '在 Intel Arc B580、B570、A770 或 A750 上运行 llama.cpp：选择 Windows SYCL 或 Vulkan ZIP、在 Linux 上编译，或使用 Ollama Vulkan。',
     category: 'edge',
     difficulty: 'intermediate',
     tags: ['Intel Arc', 'SYCL', 'llama.cpp', 'Ollama', 'Vulkan', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-11-12',
+    updatedAt: '2026-11-23',
     // Written 2026-10-04 from llama.cpp docs/backend/SYCL.md, docs/build.md and
     // docs/docker.md, and Ollama docs/gpu.mdx + docs/docker.mdx. No `verifiedAt`:
     // there is no Arc card in this environment, so nothing here was run.
     verifiedStack: {
-      en: 'Linux (Ubuntu) or Windows 11 · Intel GPU driver · oneAPI Base Toolkit · llama.cpp built with GGML_SYCL=ON · or Ollama with Vulkan · GGUF',
-      zh: 'Linux（Ubuntu）或 Windows 11 · 英特尔 GPU 驱动 · oneAPI Base Toolkit · 以 GGML_SYCL=ON 编译的 llama.cpp · 或启用 Vulkan 的 Ollama · GGUF',
+      en: 'Intel GPU driver · Windows 11: SYCL or Vulkan ZIP · Linux: SYCL or Vulkan build · Ollama Vulkan · GGUF',
+      zh: '英特尔 GPU 驱动 · Windows 11：SYCL 或 Vulkan ZIP · Linux：编译 SYCL 或 Vulkan 版 · Ollama Vulkan · GGUF',
     },
     content: [
       {
-        heading: 'What works on Arc, and what does not',
-        headingZh: 'Arc 上哪些能用，哪些不能',
-        body: 'GGUF works, through two routes. llama.cpp has a SYCL backend built on Intel’s oneAPI, and its documentation lists the Arc A770, A750 and B580 as verified cards; the B570 is the same Xe2 generation as the B580 but is not on that list. Ollama has no SYCL build — it reaches Arc through its Vulkan backend, which is on by default. AWQ, GPTQ and EXL2 are not options here: ExLlamaV2 is CUDA-only, and this site has not confirmed which quantized formats vLLM’s Intel backend serves on consumer Arc cards, so the calculator and every recommendation on an Arc page use GGUF only.',
-        bodyZh: 'GGUF 可以用，有两条路线。llama.cpp 有基于英特尔 oneAPI 的 SYCL 后端，文档把 Arc A770、A750 和 B580 列为已验证；B570 与 B580 同属 Xe2 一代，但不在名单上。Ollama 没有 SYCL 版本，它通过 Vulkan 后端使用 Arc，默认开启。AWQ、GPTQ、EXL2 在这里不可选：ExLlamaV2 只支持 CUDA，而 vLLM 的英特尔后端在消费级 Arc 上支持哪些量化格式本站尚未确认，所以计算器和 Arc 页面上的所有推荐都只用 GGUF。',
+        heading: 'Choose SYCL or Vulkan for Intel Arc',
+        headingZh: 'Intel Arc 选 SYCL 还是 Vulkan',
+        body: 'Start with Vulkan for a driver-only Windows install or a Linux build without oneAPI. Choose llama.cpp SYCL for Intel’s oneAPI backend. Upstream lists the Arc A770, A750 and B580 for SYCL; the B570 is the same Xe2 generation as the B580 but is not on that list. Ollama uses Vulkan, not SYCL. This guide uses GGUF: ExLlamaV2 requires CUDA, and this site has not confirmed which quantized formats vLLM’s Intel backend serves on consumer Arc.',
+        bodyZh: '想在 Windows 上只装显卡驱动，或在 Linux 上不装 oneAPI 就能编译，先选 Vulkan。想用英特尔的 oneAPI 后端则选 llama.cpp SYCL。上游列出的 SYCL 显卡有 Arc A770、A750 和 B580；B570 与 B580 同属 Xe2 一代，但不在名单上。Ollama 用的是 Vulkan，不是 SYCL。本指南用 GGUF：ExLlamaV2 需要 CUDA，而本站尚未确认 vLLM 英特尔后端在消费级 Arc 上支持哪些量化格式。',
         code: {
           lang: 'text',
-          content: 'llama.cpp SYCL, verified list:  Arc A770, A750, B580\nSame generation, not listed:     Arc B570\nOllama:                          Vulkan backend, on by default\nFormats this site recommends:    GGUF only',
+          content: 'llama.cpp SYCL:    Intel-specific path; upstream lists Arc A770, A750, B580\n                   Arc B570 is the same generation as B580 but not on that list\nllama.cpp Vulkan:  simpler driver-only Windows ZIP, or Linux build without oneAPI\nOllama:            Vulkan, not SYCL; enabled by default when supported\nModel format:      GGUF',
         },
       },
       {
@@ -697,13 +733,33 @@ export const extraArticles2: Article[] = [
           content: 'sycl-ls shows no level_zero GPU\n  → driver not installed, or user not in render/video (log out and back in)\n\n"setvars.sh" forgotten → icx not found at build, or SYCL libraries missing at run\n\nFirst run very slow, later runs normal\n  → kernels compiled on first use (no ahead-of-time build) — expected\n\nRuns, but on the integrated GPU\n  → ONEAPI_DEVICE_SELECTOR="level_zero:0" (llama.cpp) / GGML_VK_VISIBLE_DEVICES (Ollama)\n\nOut of device memory\n  → shorten -c, or pick a smaller quant (the SYCL docs\' own advice)',
         },
       },
+      {
+        heading: 'Windows 11: install a SYCL or Vulkan ZIP',
+        headingZh: 'Windows 11：安装 SYCL 或 Vulkan ZIP',
+        body: 'Update the Intel Arc driver, then choose the official x64 SYCL ZIP for Intel’s backend or the official Vulkan ZIP if you want the simpler driver-only route. The SYCL ZIP bundles the oneAPI runtime; the Vulkan ZIP needs neither oneAPI nor the Vulkan SDK. Use a separate folder for each backend. Check that --list-devices shows the Arc card before loading a GGUF model, and use --device with the listed name if the integrated GPU also appears.',
+        bodyZh: '更新 Intel Arc 驱动，然后选择官方 x64 SYCL ZIP 使用英特尔后端，或者选只需显卡驱动的官方 Vulkan ZIP。SYCL ZIP 已带 oneAPI 运行库；Vulkan ZIP 不需要 oneAPI，也不需要 Vulkan SDK。两种后端请解压到不同目录。加载 GGUF 之前，先用 --list-devices 确认 Arc 出现在设备列表中；如果还列出了集成显卡，可用 --device 指定 Arc 的设备名。',
+        code: {
+          lang: 'powershell',
+          content: `$Build = '${LLAMACPP_BUILD}'\n$Backend = 'sycl' # or 'vulkan'\n$Zip = "llama-$Build-bin-win-$Backend-x64.zip"\n$Folder = ".\\llama-$Backend"\nInvoke-WebRequest "https://github.com/ggml-org/llama.cpp/releases/download/$Build/$Zip" -OutFile $Zip\nExpand-Archive $Zip -DestinationPath $Folder\n& "$Folder\\llama-server.exe" --list-devices\n& "$Folder\\llama-server.exe" -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
+        },
+      },
+      {
+        heading: 'Linux: build llama.cpp with Vulkan instead of SYCL',
+        headingZh: 'Linux：为 llama.cpp 编译 Vulkan 版而非 SYCL 版',
+        body: 'Install a Vulkan-capable Intel driver for your distribution and check that vulkaninfo --summary lists the Arc card. The build below uses Debian or Ubuntu packages plus the llama.cpp source checkout. It needs no oneAPI. Run --list-devices and check the server log for Vulkan and the number of layers offloaded. Use --device with the Arc device name if necessary.',
+        bodyZh: '为你的发行版安装支持 Vulkan 的英特尔驱动，用 vulkaninfo --summary 确认列出了 Arc 显卡。下面从 llama.cpp 源码目录开始，用的是 Debian 或 Ubuntu 软件包，无需 oneAPI。运行 --list-devices，再查看服务日志中的 Vulkan 后端和卸载到显卡的模型层数；如果需要，可用 --device 指定 Arc 的设备名。',
+        code: {
+          lang: 'bash',
+          content: linuxVulkanSetup,
+        },
+      },
     ],
     faqs: [
       {
-        q: 'Should I use llama.cpp SYCL or Ollama on an Intel Arc card?',
-        qZh: 'Intel Arc 显卡上该用 llama.cpp SYCL 还是 Ollama？',
-        a: 'Ollama is the shorter path: no oneAPI install, no build, and it reaches Arc through its Vulkan backend, which is on by default. llama.cpp with SYCL takes more setup but is the route llama.cpp documents for Intel GPUs, with the A770, A750 and B580 on its verified list. This site has not benchmarked either on Arc, so it cannot tell you which is faster on your card — llama-bench will.',
-        aZh: 'Ollama 路线更短：不用装 oneAPI，不用编译，通过默认开启的 Vulkan 后端使用 Arc。llama.cpp + SYCL 配置更多，但它是 llama.cpp 官方为英特尔 GPU 写的路线，A770、A750、B580 在其已验证名单上。本站没有在 Arc 上做过基准测试，所以无法告诉你哪个在你的卡上更快 —— 用 llama-bench 测。',
+        q: 'Should I use llama.cpp SYCL or Vulkan on Intel Arc?',
+        qZh: 'Intel Arc 上跑 llama.cpp，应该用 SYCL 还是 Vulkan？',
+        a: 'Use Vulkan if you want a driver-only Windows install or a Linux build without oneAPI. Use SYCL for llama.cpp’s Intel-specific backend; upstream lists the A770, A750 and B580, and the Windows SYCL ZIP bundles its runtime. Ollama uses Vulkan for Arc, not SYCL. This site has not measured which backend is faster on Arc.',
+        aZh: 'Windows 上想只装显卡驱动，或 Linux 上不想装 oneAPI 就选 Vulkan。想用 llama.cpp 的英特尔专用后端就选 SYCL；上游列出了 A770、A750 和 B580，Windows SYCL ZIP 也已带运行库。Ollama 在 Arc 上用的是 Vulkan，不是 SYCL。本站没有实测哪种后端在 Arc 上更快。',
       },
       {
         q: 'Can I use llama.cpp SYCL on Windows without installing oneAPI?',

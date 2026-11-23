@@ -570,6 +570,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-23 — Setup guide answers from Bing and Google search demand
+
+- Reworked the four existing Windows CUDA, Radeon ROCm, WSL2 Ollama and Intel Arc guides: official Windows downloads and missing DLL fixes, AMD backend and GPU target selection, WSL2 GPU checks, and Intel SYCL versus Vulkan setup. Updated English snippets and mirrored the content in Chinese without changing Chinese titles or adding routes. Sources and baseline: [cookbook search intent](docs/changes/2026-11-23-cookbook-search-intent.md).
+
 ### 2026-11-23 — Search titles from Search Console and Cloudflare data
 
 - Read the owner's Search Console export (data rows 2026-10-29 to 11-21: 110 clicks, 16,204 impressions) beside Cloudflare Web Analytics. `/benchmarks/` had 5,320 impressions at position ~6 and no clicks; "qwen3 8b q4_k_m" and its variants had ~120 impressions at position ~8 and no clicks on `/quant-hub/qwen3-8b/`.

@@ -122,7 +122,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   resolves to b12359. Keep the verified Windows pin explicit; newer GitHub
   b-builds flagged prerelease are not a new stable semantic release. Runtime
   checks record both rather than silently upgrading to a prerelease or
-  downgrading the existing b12409 pin. Recheck asset names before any pin change.
+  downgrading the existing b12409 pin. The Windows CUDA, ROCm and Arc cookbook
+  examples also use this pin; recheck their asset suffixes and matching runtime
+  versions before changing it.
 
 - **Related RAG tools:** model pages and VRAM link to the same-owner reranker.uk
   picker in the matching language. Use `RERANKER_URL` and `RerankerLink`, with only

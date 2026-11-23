@@ -292,18 +292,18 @@ export const extraArticles: Article[] = [
   {
     id: 'llamacpp-windows-cuda',
     title: 'llama.cpp on Windows with CUDA',
-    seoTitle: 'Build llama.cpp with CUDA on Windows 11',
+    seoTitle: 'llama.cpp CUDA for Windows: Prebuilt ZIP',
     titleZh: 'Windows + CUDA 运行 llama.cpp',
-    description: 'Compile llama.cpp with NVIDIA CUDA on Windows 11: install VS Build Tools, CMake and CUDA 12.x, then build with GGML_CUDA=ON.',
-    descriptionZh: 'Windows 11 上编译带 NVIDIA GPU 支持的 llama.cpp — PC 玩家的最简路径。',
+    description: 'Install llama.cpp on Windows with the official CUDA and DLL ZIPs, no compiling needed. Fix missing DLLs, check winget, or build with GGML_CUDA=ON.',
+    descriptionZh: '在 Windows 上用官方 CUDA 和运行库 ZIP 安装 llama.cpp，无需编译。也可排查缺失 DLL、了解 winget 安装的是哪个版本，或通过 GGML_CUDA=ON 自行编译。',
     category: 'edge',
     difficulty: 'beginner',
     tags: ['Windows', 'llama.cpp', 'CUDA', 'GGUF'],
     publishedAt: '2026-06-23',
     verifiedAt: '2026-07-22',
     verifiedStack: {
-      en: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
-      zh: 'Windows 11 · VS Build Tools · CMake · CUDA 12.x · llama.cpp GGML_CUDA=ON',
+      en: 'Windows 11 x64 · NVIDIA driver · CUDA 12.4 / 13.5 ZIPs · optional MSVC + CUDA Toolkit build',
+      zh: 'Windows 11 x64 · NVIDIA 驱动 · CUDA 12.4 / 13.5 ZIP · 可选 MSVC + CUDA Toolkit 编译',
     },
     content: [
       { heading: 'Prerequisites', headingZh: '前置条件', body: 'Install Visual Studio Build Tools, CMake, and CUDA Toolkit 12.x.', bodyZh: '安装 Visual Studio Build Tools、CMake 和 CUDA Toolkit 12.x。', code: { lang: 'powershell', content: 'winget install Kitware.CMake\n# CUDA: download from developer.nvidia.com/cuda-downloads' } },

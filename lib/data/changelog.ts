@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-23',
+    en: 'Four setup guides now lead with the install path: official Windows CUDA downloads and missing DLL fixes, ROCm or Vulkan for Radeon, WSL2 Ollama GPU checks, and SYCL or Vulkan for Intel Arc. The same instructions are available in Chinese.',
+    zh: '四篇部署指南现在先给出安装方案：Windows CUDA 官方下载和 DLL 缺失修复、Radeon 的 ROCm 或 Vulkan 选择、WSL2 中 Ollama 的 GPU 检查，以及 Intel Arc 的 SYCL 或 Vulkan 安装。中英文同步更新。',
+  },
+  {
+    date: '2026-11-23',
     en: 'Added KORMo-Web-9B and IBM Granite Switch 4.1 8B and 30B with four verified GGUF sizes each. KORMo includes the vision projector in its estimates. Granite includes its adapter router cache and sizes the text GGUFs.',
     zh: '收录 KORMo-Web-9B、IBM Granite Switch 4.1 8B 和 30B，各核实四种 GGUF 的文件大小。KORMo 的估算包含视觉投影，Granite 的文本 GGUF 估算包含适配器路由缓存。',
   },
