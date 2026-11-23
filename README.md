@@ -37,7 +37,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
 | **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
-| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 105 hardware configurations, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
+| **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 122 GPU configurations plus 4 CPU-only RAM rows, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
 | **Local LLM hardware guides** | `/what-llm-can-i-run-locally/`, `/best-llm-to-run-locally/`, `/local-llm-gpu-requirements/`, `/local-llm-without-gpu/` | GPU-first calculator, tier picks, GPU × model-size matrix, and separate CPU/Mac memory tables. All four have Chinese mirrors. |
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
@@ -185,6 +185,8 @@ The calculator supports two modes, toggled at the top of the page:
 | **Reverse** (`mode=reverse`) | GPU → Models | Pick your GPU + context → list all compatible model×quant configs |
 
 Reverse lookup is powered by `getRecommendations()` in `lib/utils/recommend.ts`, which iterates every model×quant pair, runs `calcVRAM()`, filters by `getVerdict()`, and sorts by quality / speed / VRAM footprint.
+
+Reverse links accept `minTok=10|20|40` and AND-required `feat=tools,code`; image input uses `input=image` with verified GGUF encoder accounting. The displayed/filtering speed is the exact selected-card model/quant benchmark when available, otherwise the calibrated `measuredSpeed` point, never a bandwidth ceiling. Unknown speed fails a minimum on one card; multi-device rigs bypass and disable the minimum while preserving its selection. These filters do not enter profiles. Share previews preserve the same filters and multi-device bypass. Positive tool-template evidence lives in `model-facts.ts`; the code requirement uses the recorded category.
 
 For a supported configuration within the GPU memory budget, the forward run plan shows an exact model/quant/GPU benchmark when available on a single card. Otherwise it shows a calibrated single-card estimate or an estimated bandwidth ceiling (using active weights for MoE). The speed is informational and is not saved in the profile or shared URL.
 
@@ -567,6 +569,12 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-23 — Documentation audit of merged PRs #28–#49
+
+- Audited the original 21 merged PRs against this changelog and the maintainer conventions. PR #45 was initially open; it has since merged and records KORMo-Web-4B in its own README/data-log entries, preserved below rather than duplicated. Existing release entries were present for every audited merged PR. Backfilled missing conventions for scores, methodology, bilingual LLM summaries, compressed KV, pair answers and speed labels in `CLAUDE.md`.
+- Added the [per-PR audit and verification record](docs/changes/2026-11-23-pr-28-49-docs-audit.md) and source-linked additions/corrections in [the data verification log](docs/data-corrections.md). Refreshed the snapshot date and Recent ships summary; retained historical release-time counts as history. No application/data changes or new performance measurements.
+- Merged main after #45, the November 23 patrol and its Granite Switch 4.1 30B follow-up, and daily live-check PR #51 without rebasing, retaining both sets of documentation. Current recomputed snapshot: 160 models (140 active), 158 licensed, 51 image-input models and 349 model/GPU pairs per language. Hardware and guide counts are unchanged; the audit record includes the rebuilt export counts. The patrol and #51 are outside the original PR range and retain their own release entries below.
 
 ### 2026-11-23 — Daily production smoke check
 
