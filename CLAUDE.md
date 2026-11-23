@@ -29,7 +29,7 @@ visitor speed submissions to a private D1 Free queue.
 | Surface | Notes |
 |--------|--------|
 | Models | **160** in index (`models-extra` … `models-extra-19`), 140 active |
-| Cookbook | **28** guides, all rewritten with 3–4 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
 | Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (160 models: 158 licensed, 51 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
@@ -94,6 +94,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
 ## Conventions (must follow)
 
 - **"How big" answers (Bing, 2026-11-23):** GPU and VRAM-tier titles, descriptions and first FAQ name `largestAtQ4()` — largest current model at GGUF Q4_K_M, 4K, batch 1. Keep one level across cards so parameter counts compare; titles over 60 width fall back to the plain question. Apple tier excluded. `/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？` (they win most Bing clicks) — change only on fresh export evidence.
+- **Cookbook code blocks:** Copy takes the whole block. Keep each runnable block in one shell; use a section's `code` array for separately copyable alternatives without moving its anchor.
+
 - **Published model scores:** `lib/data/model-quality.ts` pins LiveBench Overall only for exact checkpoints. Always link the dated release; scores across releases are not directly comparable and are not quant-level measurements. Never infer a missing score. The reverse scored-only checkbox is view-local, survives individual filter clearing and is cleared by Reset filters; it does not change fit or sort rules.
 - **Methodology:** `/methodology/` and `/zh/methodology/` derive memory-error summaries from `calibrationRows()` and the current calculator. Keep the historical sample's limits visible; updating arithmetic is not a new hardware measurement.
 - **LLM summaries:** `lib/llms.ts` owns both `/llms.txt` and `/zh/llms.txt`; keep shared counts and the page-link table in parity. Chinese page links use `/zh/`, while sitemap and public JSON are shared. `scripts/check-llms.ts` runs in `npm test`.
@@ -124,7 +126,9 @@ flaky network. Never "fix" it by removing the postbuild hook.
   resolves to b12359. Keep the verified Windows pin explicit; newer GitHub
   b-builds flagged prerelease are not a new stable semantic release. Runtime
   checks record both rather than silently upgrading to a prerelease or
-  downgrading the existing b12409 pin. Recheck asset names before any pin change.
+  downgrading the existing b12409 pin. The Windows CUDA, ROCm and Arc cookbook
+  examples also use this pin; recheck their asset suffixes and matching runtime
+  versions before changing it.
 
 - **Related RAG tools:** model pages and VRAM link to the same-owner reranker.uk
   picker in the matching language. Use `RERANKER_URL` and `RerankerLink`, with only

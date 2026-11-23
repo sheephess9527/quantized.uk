@@ -292,10 +292,10 @@ export const extraArticles: Article[] = [
   {
     id: 'llamacpp-windows-cuda',
     title: 'llama.cpp on Windows with CUDA',
-    seoTitle: 'Build llama.cpp with CUDA on Windows 11',
+    seoTitle: 'llama.cpp CUDA for Windows: Prebuilt ZIP',
     titleZh: 'Windows + CUDA 运行 llama.cpp',
-    description: 'Compile llama.cpp with NVIDIA CUDA on Windows 11: install VS Build Tools, CMake and CUDA 12.x, then build with GGML_CUDA=ON.',
-    descriptionZh: 'Windows 11 上编译带 NVIDIA GPU 支持的 llama.cpp — PC 玩家的最简路径。',
+    description: 'Install llama.cpp on Windows with the official CUDA and DLL ZIPs, no compiling needed. Fix missing DLLs, check winget, or build with GGML_CUDA=ON.',
+    descriptionZh: '在 Windows 上用官方 CUDA 和运行库 ZIP 安装 llama.cpp，无需编译。也可排查缺失 DLL、了解 winget 安装的是哪个版本，或通过 GGML_CUDA=ON 自行编译。',
     category: 'edge',
     difficulty: 'beginner',
     tags: ['Windows', 'llama.cpp', 'CUDA', 'GGUF'],

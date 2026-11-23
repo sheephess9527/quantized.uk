@@ -1,4 +1,5 @@
 import type { Article } from '@/lib/data/cookbook';
+import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
 /**
  * Guides rewritten from the thin originals, merged over them by id.
@@ -154,22 +155,25 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'llamacpp-windows-cuda': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-11-23',
     verifiedAt: undefined,
     content: [
       {
-        heading: 'What you need first',
-        headingZh: '开始之前',
-        body: 'Visual Studio 2022 with the "Desktop development with C++" workload — that one checkbox also installs CMake and the MSVC toolchain, so there is nothing else to fetch. The CUDA Toolkit, matching a driver new enough for it. And the habit that saves the most time: every command below runs in a Developer Command Prompt for VS 2022, not a plain terminal, because a plain terminal has none of the compiler paths set.',
-        bodyZh: '安装 Visual Studio 2022，勾选「使用 C++ 的桌面开发」工作负载 —— 这一个勾选项会一并装好 CMake 和 MSVC 工具链，不需要再单独下载什么。再装 CUDA Toolkit，以及与之匹配的较新驱动。还有一个最省时间的习惯：下面所有命令都要在「VS 2022 开发人员命令提示符」里运行，而不是普通终端，因为普通终端没有设置编译器路径。',
-        code: { lang: 'powershell', content: '# In a Developer Command Prompt / PowerShell for VS 2022\ncmake --version\nnvcc --version\nnvidia-smi' },
+        heading: 'Fastest path: install the prebuilt CUDA ZIPs',
+        headingZh: '最快的方法：安装预编译 CUDA ZIP',
+        body: 'On x64 Windows with an NVIDIA GPU, update the driver, install the latest Microsoft Visual C++ Redistributable (x64) from aka.ms/vc14/vc_redist.x64.exe, and download both official ZIPs from the same llama.cpp release. Use CUDA 13.5 for RTX 50 and 12.4 for earlier supported cards such as RTX 20, 30 and 40. Extract both ZIPs into the same clean folder. In ordinary PowerShell, run llama-server.exe --list-devices before loading a model: if it lists your NVIDIA card as a CUDA device, the CUDA backend loaded. Replace the GGUF path in the launch command with your own. No Toolkit, Visual Studio or WSL is needed; winget install llama.cpp installs Vulkan, not CUDA. Using Ollama instead? Native Windows is simpler; see WSL2 + Ollama GPU Passthrough on Windows if you need Linux tooling.',
+        bodyZh: '使用 NVIDIA 显卡的 x64 Windows 电脑先更新驱动，从 aka.ms/vc14/vc_redist.x64.exe 安装最新版 Microsoft Visual C++ 可再发行组件（x64），再从同一个 llama.cpp 发布版本下载两个官方 ZIP。RTX 50 选 CUDA 13.5；RTX 20、30、40 等较早且受支持的显卡选 12.4。把两个 ZIP 解压到同一个干净的目录。在普通 PowerShell 中，先运行 llama-server.exe --list-devices：如果你的 NVIDIA 显卡被列为 CUDA 设备，说明 CUDA 后端已加载。把启动命令里的 GGUF 路径换成自己的。不需要 CUDA Toolkit、Visual Studio 或 WSL；winget install llama.cpp 装的是 Vulkan，不是 CUDA。用的是 Ollama？Windows 原生版更简单；需要 Linux 工具时请看《Windows WSL2 + Ollama GPU 透传》。',
+        code: {
+          lang: 'powershell',
+          content: `$Build = '${LLAMACPP_BUILD}'\n$Cuda = '12.4' # RTX 50: use '13.5'\n$Release = "https://github.com/ggml-org/llama.cpp/releases/download/$Build"\n$Binary = "llama-$Build-bin-win-cuda-$Cuda-x64.zip"\n$Runtime = "cudart-llama-bin-win-cuda-$Cuda-x64.zip"\nInvoke-WebRequest "$Release/$Binary" -OutFile $Binary\nInvoke-WebRequest "$Release/$Runtime" -OutFile $Runtime\nExpand-Archive $Binary -DestinationPath .\\llama-cuda\nExpand-Archive $Runtime -DestinationPath .\\llama-cuda\n.\\llama-cuda\\llama-server.exe --list-devices\n.\\llama-cuda\\llama-server.exe -m "C:\\models\\your-model.gguf" -ngl all -c 4096 --host 127.0.0.1 --port 8080`,
+        },
       },
       {
-        heading: 'Build with CUDA on',
-        headingZh: '开启 CUDA 编译',
+        heading: 'Optional: build from source with CUDA',
+        headingZh: '可选：从源码编译 CUDA 版',
         body: 'The flag is `GGML_CUDA`. Older names are caught — `LLAMA_CUDA` still works with a deprecation warning, `LLAMA_CUBLAS` stops with an error — but a misspelt one is not: CMake mentions an unknown `-D` only in a "Manually-specified variables were not used" warning at the end of configure and carries on, producing a clean, successful, CPU-only build. The first sign of trouble is then a model running at a fraction of the speed you expected, so read the end of the configure output.',
         bodyZh: '开关是 `GGML_CUDA`。旧名字会被识别 —— `LLAMA_CUDA` 仍然有效、只是附带弃用警告，`LLAMA_CUBLAS` 会直接报错停止 —— 但拼错的名字不会：CMake 对不认识的 `-D` 只在配置结束时给一条 "Manually-specified variables were not used" 警告，然后照常继续，得到一次干净、成功、却是纯 CPU 的构建。之后你发现不对劲的第一个迹象，就是模型只有预期速度的零头，所以请看完配置输出的结尾。',
-        code: { lang: 'powershell', content: 'git clone https://github.com/ggml-org/llama.cpp\ncd llama.cpp\n\n# CMAKE_CUDA_ARCHITECTURES is optional but cuts build time a lot:\n#   86 = RTX 30-series, 89 = RTX 40-series, 120 = RTX 50-series\ncmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="89"\ncmake --build build --config Release -j' },
+        code: { lang: 'powershell', content: '# Visual Studio 2022: Desktop development with C++ (MSVC and CMake)\n# Install a CUDA Toolkit compatible with your GPU and MSVC version.\n# Run in the VS 2022 Developer PowerShell, not ordinary PowerShell.\ncmake --version\nnvcc --version\nnvidia-smi\ngit clone https://github.com/ggml-org/llama.cpp\ncd llama.cpp\n\n# Example: 89 for RTX 40; use 75 for RTX 20, 86 for RTX 30, 120 for RTX 50.\n# RTX 50 requires a toolkit that supports sm_120.\ncmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="89"\ncmake --build build --config Release --parallel' },
       },
       {
         heading: 'Run the server',
@@ -206,10 +210,22 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
         aZh: '几乎总是编译开关的问题。正确的是 `-DGGML_CUDA=ON`。漏写或拼错，都会得到一次成功的、纯 CPU 的构建 —— CMake 只会在配置结束时把不认识的 `-D` 列在 "Manually-specified variables were not used" 下面。（旧的 `LLAMA_CUDA` 仍然有效，只是附带弃用警告。）重新配置前请删掉 `build` 目录 —— 旧的 CMake 缓存会保留之前的结论。正常的构建会在加载时打印 CUDA 设备和层的 offload 数量。',
       },
       {
-        q: 'Do I need WSL to run llama.cpp with CUDA on Windows?',
-        qZh: 'Windows 上用 CUDA 跑 llama.cpp 需要 WSL 吗？',
-        a: 'No. llama.cpp builds natively with MSVC and the CUDA Toolkit, and the resulting `llama-server.exe` uses the GPU directly. WSL is a reasonable choice if you want a Linux toolchain for other reasons, but it adds a layer rather than removing one, and native builds avoid the filesystem performance question entirely.',
-        aZh: '不需要。llama.cpp 可以直接用 MSVC 加 CUDA Toolkit 原生编译，生成的 `llama-server.exe` 会直接使用 GPU。如果你出于别的原因想要一套 Linux 工具链，用 WSL 是合理的，但它是多加了一层而不是省掉一层，而原生编译还完全绕开了文件系统性能的问题。',
+        q: 'Does winget install llama.cpp with CUDA?',
+        qZh: 'winget 安装的是 llama.cpp CUDA 版吗？',
+        a: 'No. The WinGet package ggml.llamacpp uses the official Vulkan ZIP. If you want NVIDIA CUDA, download the matching CUDA binary and cudart ZIPs manually. They run in native Windows without WSL or a CUDA Toolkit install.',
+        aZh: '不是。WinGet 的 ggml.llamacpp 软件包使用官方 Vulkan ZIP。要使用 NVIDIA CUDA，请手动下载配套的 CUDA 程序和 cudart ZIP。这两个包可在 Windows 原生运行，不需要 WSL，也不需要安装 CUDA Toolkit。',
+      },
+      {
+        q: 'Which compute capabilities are in the Windows CUDA ZIPs? Does Pascal 6.1 work?',
+        qZh: 'Windows CUDA ZIP 包含哪些计算能力？支持 Pascal 6.1 吗？',
+        a: 'The pinned x64 release uses llama.cpp’s default CUDA architecture list. CUDA 12.4 builds PTX for 50, 61, 70, 75, 80 and 90, and native code for 86 and 89. CUDA 13.5 drops the 50, 61 and 70 targets, keeps 75/80/90 PTX and 86/89 native code, and adds native 103, 120a and 121a. For a Pascal GTX 10-series card with compute capability 6.1, start with the 12.4 ZIPs: the driver JIT-compiles 61 PTX. Self-build if you need a different target or native code for your exact card; for 6.1 set -DCMAKE_CUDA_ARCHITECTURES=61 and use a CUDA 12 Toolkit.',
+        aZh: '这里固定的 x64 发布版使用 llama.cpp 默认的 CUDA 架构列表。CUDA 12.4 为 50、61、70、75、80 和 90 编译 PTX，为 86 和 89 编译原生代码。CUDA 13.5 移除了 50、61、70，保留 75/80/90 的 PTX 与 86/89 的原生代码，并加入 103、120a、121a 原生代码。计算能力为 6.1 的 Pascal GTX 10 系列显卡先试 12.4 ZIP，驱动会即时编译 61 PTX。需要其他架构目标或专为自己显卡生成原生代码时，再从源码编译；6.1 用 -DCMAKE_CUDA_ARCHITECTURES=61 和 CUDA 12 Toolkit。',
+      },
+      {
+        q: 'How do I fix missing CUDA DLLs in llama.cpp on Windows?',
+        qZh: 'Windows 上的 llama.cpp 缺少 CUDA DLL，怎么修复？',
+        a: 'For cudart64_12.dll, cublas64_12.dll or cublasLt64_12.dll, extract the matching 12.4 cudart ZIP next to llama-server.exe; for the CUDA 13.5 build use its own cudart ZIP. If ggml-cuda.dll itself is missing, re-extract the CUDA binary ZIP, not the CPU or Vulkan ZIP. For VCRUNTIME140.dll or MSVCP140.dll, install Microsoft’s current Visual C++ v14 x64 Redistributable. Do not fetch individual DLLs from third-party sites.',
+        aZh: '如果缺少 cudart64_12.dll、cublas64_12.dll 或 cublasLt64_12.dll，把配套的 12.4 cudart ZIP 解压到 llama-server.exe 所在目录；CUDA 13.5 版则用自己对应的 cudart ZIP。要是缺少 ggml-cuda.dll 本身，应重新解压 CUDA 程序 ZIP，不是 CPU 或 Vulkan 版。若缺少 VCRUNTIME140.dll 或 MSVCP140.dll，请安装微软当前的 Visual C++ v14 x64 可再发行组件。不要从第三方站点下载单独的 DLL。',
       },
       {
         q: 'What is System Memory Fallback and should I turn it off?',

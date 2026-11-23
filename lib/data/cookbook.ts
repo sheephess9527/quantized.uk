@@ -51,12 +51,14 @@ export interface Article {
   faqs?: { q: string; qZh: string; a: string; aZh: string }[];
 }
 
+type SectionCode = { lang: string; content: string };
+
 interface Section {
   heading: string;
   headingZh: string;
   body: string;
   bodyZh: string;
-  code?: { lang: string; content: string };
+  code?: SectionCode | SectionCode[];
 }
 
 import { cookbookRewrites } from '@/lib/data/cookbook-rewrites';
