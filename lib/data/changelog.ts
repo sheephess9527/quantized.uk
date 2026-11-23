@@ -98,6 +98,11 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     date: '2026-11-22',
+    en: 'Added KORMo-Web-4B to the Quant Hub and VRAM calculator, with four GGUF levels and a separate BF16 projector for image input. Memory figures are estimates from the published files.',
+    zh: '量化中心和显存计算器新增 KORMo-Web-4B，提供四档 GGUF，图像输入使用独立的 BF16 投影文件。内存数字基于公开文件估算。',
+  },
+  {
+    date: '2026-11-22',
     en: 'Paste an Ollama tag such as qwen3:8b-q4_K_M or llama3.1:8b into the VRAM calculator search box to select the matching model and quantization. Tags the site does not index, or that serve a different checkpoint, show a message instead of a guess.',
     zh: '在显存计算器的搜索框粘贴 Ollama 标签（如 qwen3:8b-q4_K_M 或 llama3.1:8b），即可自动选中对应模型和量化。本站未收录的标签或指向其他检查点的标签会给出提示，不会猜测。',
   },

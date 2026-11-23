@@ -837,3 +837,20 @@ All 30 original publisher APIs were accessible; 28 original `config.json` files 
 - Generated `lib/data/hf-stats.json` reverted; only the approved data/release changes and this log are included. README and non-data code untouched. User-facing changes remain visually unverified; no inference or deployment performed.
 
 Pass 3 covers all 90 older models; together with the 61 recent models in Passes 1–2, the whole index of 151 models is now covered, with unresolved items explicitly qualified.
+
+## Catalog addition — 2026-11-23
+
+| Model id | Field | Old value | New value | Source |
+| --- | --- | --- | --- | --- |
+| `kormo-web-4b` | Catalog entry, licence and image input | Not indexed | KORMo-Web-4B, a Qwen3.5-4B fine-tune for Korean and English browser screenshots; Apache-2.0, supports image input | [Publisher model card][kormo-card] |
+| `kormo-web-4b` | Context and architecture | Not indexed | 262,144 tokens; 32 layers, 16 attention heads, 4 KV heads, head dimension 256; only 8 full-attention layers grow the main KV cache | [Publisher config][kormo-config] |
+| `kormo-web-4b` | Stored language parameters and GGUF file sizes | Not indexed | 4,841,450,496 parameters counted from GGUF tensor headers; Q3_K_M: 2,427,130,688 bytes; Q4_K_M: 3,166,776,128 bytes; Q5_K_M: 3,720,637,248 bytes; Q8_0: 5,157,831,488 bytes | [GGUF files and metadata][kormo-gguf] |
+| `kormo-web-4b` | Image projector | Not indexed | All four rows use `mmproj-KORMo-VL_KORMo-Web-4B-bf16.gguf` (675,569,408 bytes) for image-input sizing | [GGUF files and metadata][kormo-gguf] |
+| `kormo-web-4b` | HF stats mapping | None | `bartowski/KORMo-VL_KORMo-Web-4B-GGUF` | [Quantizer repository][kormo-gguf] |
+| `kormo-web-4b` | Recent-model feed | None on main; PR originally used 51 | ID 56, Q4_K_M; preserves IDs 51–55 on main | [Catalog PR #45](https://github.com/sheephess9527/quantized.uk/pull/45) |
+
+Documented the addition in README §9 and the bilingual public changelog. Memory figures are estimates from the published artifacts, not inference measurements.
+
+[kormo-card]: https://huggingface.co/KORMo-VL/KORMo-Web-4B/blob/4be14497ea5196661b9db1cd1ad27acaa9a6771d/README.md
+[kormo-config]: https://huggingface.co/KORMo-VL/KORMo-Web-4B/blob/4be14497ea5196661b9db1cd1ad27acaa9a6771d/config.json
+[kormo-gguf]: https://huggingface.co/api/models/bartowski/KORMo-VL_KORMo-Web-4B-GGUF/revision/b6cff2f436d2d7c0973d5964ca7db295da18caf3?blobs=true
