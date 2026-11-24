@@ -32,3 +32,13 @@ and evidence records were retained.
   4.36 GiB of file data and 5.04 GiB of estimated memory at 4K. The copied
   snapshot reproduced both figures. Browser testing covered the Mac launch
   links and copied command without launching LM Studio or running inference.
+- The existing mobile layout regression also passed in both languages,
+  including result-jump focus, 44 px controls, and the Hub filter disclosure.
+
+## Deployment
+
+- GitHub marked PRs #59–#63 merged after the fast-forward to application
+  commit `83749fa`. Cloudflare Pages reported a first-attempt build failure.
+  The GitHub check returned a generic error without build logs accessible in
+  this session. A documentation-only push retries the same application source.
+  [First Cloudflare check](https://github.com/sheephess9527/quantized.uk/runs/138181701750)
