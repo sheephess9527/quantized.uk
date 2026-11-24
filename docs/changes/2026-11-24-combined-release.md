@@ -42,3 +42,12 @@ and evidence records were retained.
   The GitHub check returned a generic error without build logs accessible in
   this session. A documentation-only push retries the same application source.
   [First Cloudflare check](https://github.com/sheephess9527/quantized.uk/runs/138181701750)
+- The same application source deployed successfully from `f3ca45a` at
+  10:58 Beijing time (02:58 UTC). GitHub's build and data checks passed for
+  application commit `83749fa`. Wrangler 4.66.0 also compiled the Pages
+  Functions locally.
+  [Successful production check](https://github.com/sheephess9527/quantized.uk/runs/138183425404)
+- Live 390 px Chromium checks passed in English and Chinese for all five
+  changes, including actual Hub metadata requests and replay without Hub
+  access, clipboard fallback, filtered CSV and both localized changelogs.
+  The production check covered Mac links and the copyable command.
