@@ -370,7 +370,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
-    if (!urlInitialized || hubFile || (preserveSavedCustom.current && !selectedModelId)) return;
+    if (!urlInitialized || hubFile) return;
+    const preserveModel = preserveSavedCustom.current && !selectedModelId;
     const modelId = modelIsExample ? '' : selectedModelId;
     if (sharedLink) {
       // The initial restored values belong to the sender. Only subsequent
@@ -379,12 +380,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       lastSharedSettings.current = { modelId, quantLevel: selectedQuant, contextLen };
       if (!previous) return;
       const changes: Partial<SharedConfig> = {};
-      if (previous.modelId !== modelId && !modelIsExample) changes.modelId = modelId;
-      if (previous.quantLevel !== selectedQuant || changes.modelId !== undefined) changes.quantLevel = selectedQuant;
+      if (!preserveModel && previous.modelId !== modelId && !modelIsExample) changes.modelId = modelId;
+      if (!preserveModel && (previous.quantLevel !== selectedQuant || changes.modelId !== undefined)) changes.quantLevel = selectedQuant;
       if (previous.contextLen !== contextLen) changes.contextLen = contextLen;
       if (Object.keys(changes).length) updateConfig(changes);
     } else {
-      updateConfig(modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId, quantLevel: selectedQuant, contextLen });
+      updateConfig(preserveModel ? { contextLen } : modelIsExample ? { quantLevel: selectedQuant, contextLen } : { modelId, quantLevel: selectedQuant, contextLen });
     }
   }, [urlInitialized, selectedModelId, selectedQuant, contextLen, updateConfig, modelIsExample, sharedLink, hubFile]);
 
