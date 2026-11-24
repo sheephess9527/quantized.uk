@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Authors can now copy a Markdown badge from a model’s detail page and paste it into their Hugging Face model card. The badge links readers to the same model’s VRAM and quantization details.',
+    zh: '模型详情页新增可复制的 Markdown 徽章。作者可将徽章粘贴到自己的 Hugging Face 模型卡片中，方便读者查看该模型的显存与量化详情。',
+  },
+  {
+    date: '2026-11-24',
     en: 'Paste a public Hugging Face GGUF file link into the VRAM calculator to estimate memory using its exact size, including split files. Five Chinese model pages now also link to verified ModelScope GGUF downloads and name the uploader.',
     zh: '在显存计算器中粘贴 Hugging Face 的公开 GGUF 文件链接，即可按实际文件大小估算显存，支持多分片文件。五个国产模型页面新增了已核实的魔搭 ModelScope GGUF 下载入口，并标明上传者。',
   },

@@ -13,6 +13,7 @@ import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { modelscopeRepoMap } from '@/lib/data/modelscope-repos';
 import SimilarModels from '@/components/hub/SimilarModels';
+import ModelCardBadge from '@/components/hub/ModelCardBadge';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import RelatedReports from '@/components/reports/RelatedReports';
 import RerankerLink from '@/components/tools/RerankerLink';
@@ -292,6 +293,7 @@ export default function ModelDetail({ model }: Props) {
         </div>
       </div>
 
+      <ModelCardBadge key={model.id} modelId={model.id} />
       <RelatedReports modelId={model.id} />
       <SimilarModels modelId={model.id} />
     </div>

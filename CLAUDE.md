@@ -105,6 +105,7 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **Model/GPU pairs:** `lib/utils/pair-pages.ts` owns eligibility for routes, sitemap and links. Exact measured pairs always qualify; otherwise require a GPU in `POPULAR_GPU_IDS`, current models, verified-file green/yellow fits and at least 25% of usable memory. Each pair is four exported files, so don't widen this without counting `out/`. Keep GPU slugs last and reuse model OG images. `npm test` checks pair coverage/sizing; `postbuild` (`scripts/check-export-size.mjs`) fails above 15,000 files, under Cloudflare Pages' 20,000-file Free limit.
 
 - **Embedding:** only `/embed/*` and `/zh/embed/*` may be framed (Cloudflare `_headers` detach exceptions). Keep embed pages noindex, out of the sitemap and free of site chrome/analytics. Fit cards and snippets reuse `lib/utils/embed-fit.ts` and calculator sizing; never persist guessed/example choices when copying.
+- **Model card badge:** keep the self-hosted `/model-card-badge.svg` URL stable for existing cards. Copied Markdown links to the current model's localized canonical URL, not a preview host or an embedded fit card. Authors paste it themselves; the site does not write to Hugging Face.
 - **Calculator run plan:** use the same sizing and fit rules as the detailed
   result. Launch commands follow the selected quant and context. Settings that
   need runtime configuration show a note beside the command. Native Ollama
