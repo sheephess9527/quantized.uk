@@ -10,6 +10,28 @@ import { runPlanSpeed } from '../lib/utils/calc-insights';
 import { activeParamsB, quantConfidence } from '../lib/utils/model-meta';
 import { matchingSpeedRun } from '../lib/utils/measured-runs';
 import { weightsGB } from '../lib/utils/roofline';
+import { benchmarkCsv, benchmarkFilterOptions, filterBenchmarks } from '../lib/utils/benchmark-csv';
+
+assert.deepEqual(filterBenchmarks({}), matrixData);
+assert.deepEqual(benchmarkFilterOptions.hardware, Array.from(new Set(matrixData.map(row => row.hardware))).sort());
+const filtered = filterBenchmarks({ hardware: 'M3 Max 48G', model: 'Llama 3.1 8B', framework: 'Ollama', quant: 'GGUF Q4_K_M' });
+assert.equal(filtered.length, 1);
+assert.equal(filtered[0].speedTokSec, 68);
+assert.deepEqual(filterBenchmarks({ hardware: 'M3 Max 48G', framework: 'vLLM' }), []);
+for (const lang of ['en', 'zh'] as const) {
+  const csv = benchmarkCsv(filtered, lang);
+  const [header, line, end] = csv.split('\r\n');
+  const [row] = filtered;
+  const source = lang === 'zh' ? 'https://quantized.uk/zh/benchmarks/' : 'https://quantized.uk/benchmarks/';
+  assert.equal(header, '\uFEFFmodel,hardware,framework,runtime_version,quant,speed_tok_s,vram_used_gb,first_published_at,notes,attribution,source_url,license,license_url');
+  assert.equal(line, `Llama 3.1 8B,M3 Max 48G,Ollama,${row.runtimeVersion},GGUF Q4_K_M,68,${row.vramUsedGB},${row.firstPublishedAt},${row.notes[lang]},quantized.uk,${source},CC BY 4.0,https://creativecommons.org/licenses/by/4.0/`);
+  assert.equal(end, '');
+  assert.equal(benchmarkCsv(matrixData, lang).split('\r\n').length, matrixData.length + 2);
+}
+const escaped = benchmarkCsv([{ ...filtered[0], notes: { en: 'One, "two"\nthree', zh: '' } }], 'en');
+assert.ok(escaped.includes(',"One, ""two""\nthree",quantized.uk,'));
+console.log('Measured matrix CSV: filters, BOM, localized notes and citation links, provenance, and escaping verified');
+
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 const ratios: number[] = [];
 for (const r of matrixData) {

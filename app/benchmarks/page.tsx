@@ -1,19 +1,17 @@
 'use client';
 
-import RunProvenance from '@/components/benchmarks/RunProvenance';
 import dynamic from 'next/dynamic';
-import { GPU_COUNT } from '@/lib/seo';
 import { useLanguage } from '@/lib/i18n/context';
-import { matrixData } from '@/lib/data/benchmarks';
 import MethodologyPanel from '@/components/benchmarks/MethodologyPanel';
 import BenchDataTables from '@/components/benchmarks/BenchDataTables';
+import BenchmarkMatrix from '@/components/benchmarks/BenchmarkMatrix';
 import CoverageSection from '@/components/benchmarks/CoverageSection';
 import RunStandard from '@/components/benchmarks/RunStandard';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { measuredCards, TOTAL_RUNS } from '@/lib/utils/bench-coverage';
+import { BENCHMARK_LICENSE_URL } from '@/lib/utils/benchmark-csv';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { SITE_URL } from '@/lib/seo';
+import { GPU_COUNT, SITE_URL } from '@/lib/site';
 
 // Recharts is the heaviest chunk on this page; defer it so the header,
 // matrix table and methodology render immediately. Skeletons mirror the
@@ -36,15 +34,6 @@ const BenchCharts = dynamic(() => import('@/components/benchmarks/BenchCharts'),
     </>
   ),
 });
-
-function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
-  return (
-    <div className="mb-5">
-      <h2 className="text-xl font-bold text-slate-100">{title}</h2>
-      <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
-    </div>
-  );
-}
 
 export default function BenchmarksPage() {
   const { t, lang } = useLanguage();
@@ -73,7 +62,7 @@ export default function BenchmarksPage() {
           variableMeasured: ['tokens per second', 'VRAM usage (GB)', 'perplexity retained (%)'],
           // Chosen by the site owner 2026-10-05 (Search Console flagged the
           // missing field); the terms page states the same in section 10.
-          license: 'https://creativecommons.org/licenses/by/4.0/',
+          license: BENCHMARK_LICENSE_URL,
         }}
       />
       <Breadcrumbs
@@ -99,7 +88,7 @@ export default function BenchmarksPage() {
         </p>
         <p className="text-xs text-slate-500 mt-2">
           <a
-            href="https://creativecommons.org/licenses/by/4.0/"
+            href={BENCHMARK_LICENSE_URL}
             rel="license noopener"
             target="_blank"
             className="hover:text-slate-300 underline decoration-dotted underline-offset-2"
@@ -114,51 +103,10 @@ export default function BenchmarksPage() {
       </div>
 
       <div className="space-y-10">
+        <BenchmarkMatrix />
         <BenchCharts />
         <BenchDataTables />
-        <p className="text-sm text-slate-400">{t.bench.dateNote}</p>
         <CoverageSection />
-
-        {/* Matrix table */}
-        <section>
-          <div className="glass rounded-2xl p-6 overflow-x-auto">
-            <SectionHeader title={t.bench.tableTitle} subtitle={t.bench.tableSubtitle} />
-            <table className="w-full text-sm">
-              {/* Visually redundant with the SectionHeader above, but a table
-                  needs its own accessible name — screen readers announce the
-                  caption when entering table navigation mode. */}
-              <caption className="sr-only">
-                {t.bench.tableTitle} — {t.bench.tableSubtitle}
-              </caption>
-              <thead>
-                <tr className="border-b border-white/[0.06]">
-                  {Object.values(t.bench.cols).map(col => (
-                    <th key={col} className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {matrixData.map((row, i) => (
-                  <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                    <td className="py-2.5 px-3 text-slate-200 text-xs font-medium">{row.model}</td>
-                    <td className="py-2.5 px-3 text-slate-300 text-xs">{row.hardware}</td>
-                    <td className="py-2.5 px-3 text-slate-400 text-xs font-mono"><RunProvenance row={row} /></td>
-                    <td className="py-2.5 px-3">
-                      <span className="badge bg-violet-500/10 text-violet-300 border-violet-500/20 text-xs font-mono">
-                        {row.quant}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-sm font-semibold text-emerald-400">{row.speedTokSec}</td>
-                    <td className="py-2.5 px-3 font-mono text-xs text-cyan-400">{row.vramUsedGB} GB</td>
-                    <td className="py-2.5 px-3 text-xs text-slate-500">{row.notes[lang]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
 
         <RunStandard />
 

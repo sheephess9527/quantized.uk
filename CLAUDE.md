@@ -1155,6 +1155,8 @@ indexing. Always render it through `t.hub.model.addedOn` ("added {date}").
 
 **Benchmark row provenance:** `MatrixRow.runtimeVersion` is historical; `firstPublishedAt` is an ISO first-publication day, not an exact run date. Render both with `RunProvenance` wherever matrix rows appear. Existing runs lack exact dates and raw output: label dates as “measured on or before” / “测于…或之前”. Overlapping chart/matrix model + hardware + quant keys must agree on runtime; `npm test` checks provenance and date validity.
 
+**Benchmark CSV:** Export the same filtered `matrixData` rows shown in the matrix, not estimates, submissions or chart-only points. Keep `first_published_at` distinct from measurement date, stable headers across languages, and per-row attribution, source and license. Generate the UTF-8 BOM download in the browser so it adds no static route.
+
 **The methodology block records history, not the present.** `benchmarkMethodology.frameworks` is the
 stack those numbers were measured on — editing it to look current would claim runs on releases that
 did not exist at the time. `runtimeVersions` in `meta.ts` carries what the projects are at today,

@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Filter measured benchmark runs by hardware, model, runtime or quantization, and download the results as CSV with the original runtime versions, first publication dates and CC BY 4.0 attribution.',
+    zh: '可按硬件、模型、运行时和量化级别筛选实测结果，并下载 CSV。文件包含测试时的运行时版本、首次发布日期和 CC BY 4.0 署名信息。',
+  },
+  {
+    date: '2026-11-24',
     en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
     zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
   },
