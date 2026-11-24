@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'GPU upgrade comparisons label up to three longer-context examples and distinguish quantization rankings based on published perplexity loss, partial data or bits per weight.',
+    zh: '显卡升级对比标明最多展示 3 个上下文增益示例，并逐项说明量化档位的排序依据：两档均有公开困惑度损失、仅一档有数据，或按每权重位数估排。',
+  },
+  {
+    date: '2026-11-24',
     en: 'Three Qwen3 detail pages now offer verified 4-bit MLX weights for Apple Silicon, with a copyable mlx-lm command and a link to open the same model in LM Studio.',
     zh: '三个 Qwen3 模型详情页新增适用于 Apple 芯片的 4 位 MLX 权重。可以复制 mlx-lm 命令，也可以在 LM Studio 中打开同一模型。',
   },

@@ -8,6 +8,7 @@ import { contextLabel } from '@/lib/utils/context-label';
 import { GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { compareGpuUpgrade, defaultGpuUpgrade, gpuUpgradeChoices } from '@/lib/utils/gpu-upgrade';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import { quantRankBasis } from '@/lib/utils/quality';
 import FitControls from './FitControls';
 
 function ChangeList({ title, rows }: { title: string; rows: { id: string; name: string; detail: ReactNode }[] }) {
@@ -83,7 +84,7 @@ export default function GpuUpgradeComparison({ current, tierLabel, settings }: {
                   id: model.id, name: model.name, detail: quantLevelKey(quant),
                 }))} />
                 <ChangeList title={u.quantGains} rows={result.quantGains.map(({ before, after }) => ({
-                  id: after.model.id, name: after.model.name, detail: `${quantLevelKey(before.quant)} → ${quantLevelKey(after.quant)}`,
+                  id: after.model.id, name: after.model.name, detail: `${quantLevelKey(before.quant)} → ${quantLevelKey(after.quant)} · ${u[quantRankBasis(before.quant, after.quant)]}`,
                 }))} />
                 <ChangeList title={u.contextGains} rows={result.contextGains.map(({ fit, before, after }) => ({
                   id: fit.model.id, name: fit.model.name,

@@ -21,6 +21,14 @@ export function qualityRank(quant: QuantVariant): number {
   return quant.pplLossPercent ?? LOSS_CEILING - quant.bpw;
 }
 
+export function quantRankBasis(before: Pick<QuantVariant, 'pplLossPercent'>, after: Pick<QuantVariant, 'pplLossPercent'>) {
+  const oldMeasured = before.pplLossPercent !== undefined;
+  const newMeasured = after.pplLossPercent !== undefined;
+  if (oldMeasured && newMeasured) return 'publishedLoss';
+  if (oldMeasured || newMeasured) return 'partialLoss';
+  return 'bpwEstimate';
+}
+
 /** The best-quality quant of a model, by the rule above. */
 export function bestQuant(quants: QuantVariant[]): QuantVariant {
   return quants.reduce((best, q) => (qualityRank(q) < qualityRank(best) ? q : best), quants[0]);
