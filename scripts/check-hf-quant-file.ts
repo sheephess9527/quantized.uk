@@ -71,6 +71,31 @@ test('MTP in a filename can mean bundled weights, but a much smaller counterpart
   }
 });
 
+test('find the complete DeepSeek-V4-Flash MXFP4 counterpart when the main file is sharded', async () => {
+  const path = 'mtp-DeepSeek-V4-Flash-MXFP4.gguf';
+  const main = 'DeepSeek-V4-Flash-MXFP4.gguf';
+  const draftBytes = 4_732_195_392;
+  const siblings = [
+    { rfilename: 'DeepSeek-V4-Flash-MXFP4-00001-of-00002.gguf', size: 5_250_016 },
+    { rfilename: 'DeepSeek-V4-Flash-MXFP4-00002-of-00002.gguf', size: 154_986_288_576 },
+  ];
+  for (const complete of [true, false]) {
+    const result = await importQuantFile(`ggml-org/DeepSeek-V4-Flash-GGUF ${path}`, async (url, options) => {
+      if (options?.method === 'POST') {
+        assert.deepEqual((options.body as URLSearchParams).getAll('paths'), [path, main]);
+        return Response.json([{ path, type: 'file', size: draftBytes }]);
+      }
+      if (String(url).endsWith('/revision/main?blobs=true')) {
+        return Response.json({ siblings: complete ? siblings : siblings.slice(1) });
+      }
+      assert.equal(complete, false);
+      return Response.json({});
+    });
+    if (complete) assert.deepEqual(result, { ok: false, error: 'auxiliaryFile' });
+    else { assert.ok(result.ok); assert.equal(result.file.bytes, draftBytes); }
+  }
+});
+
 test('sum all parts even when the pasted URL points to a later part', async () => {
   const first = split.path.replace('00002-of-', '00001-of-');
   const sizes = [{ path: split.path, size: 1_000_000_000 }, { path: first, size: 2_000_000_000 }];

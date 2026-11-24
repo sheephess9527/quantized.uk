@@ -31,6 +31,27 @@ function nonMtpCounterpart(path: string): string | undefined {
   if (other !== name) return path.slice(0, -name.length) + other;
 }
 
+async function hasLargerShardedCounterpart(
+  { repo, revision }: QuantFileRef, counterpart: string, bytes: number, fetchImpl: typeof fetch,
+): Promise<boolean> {
+  const res = await fetchImpl(`${HUB}/api/models/${repo}/revision/${encodeURIComponent(revision)}?blobs=true`);
+  if (!res.ok) return false;
+  const listing: { siblings?: { rfilename: string; size: number }[] } = await res.json();
+  const groups = new Map<number, Map<number, number>>();
+  for (const { rfilename, size } of listing.siblings ?? []) {
+    if (typeof rfilename !== 'string' || !Number.isSafeInteger(size) || size <= 0) continue;
+    const suffix = shardPattern.exec(rfilename);
+    if (!suffix || rfilename.replace(shardPattern, '') !== counterpart) continue;
+    const part = Number(suffix[1]);
+    const count = Number(suffix[2]);
+    if (part < 1 || part > count) continue;
+    if (!groups.has(count)) groups.set(count, new Map());
+    groups.get(count)!.set(part, size);
+  }
+  return Array.from(groups).some(([count, parts]) =>
+    parts.size === count && Array.from(parts.values()).reduce((total, size) => total + size, 0) > 4 * bytes);
+}
+
 function parseFileRef(input: string): QuantFileRef | null {
   const raw = input.trim();
   let ref: QuantFileRef;
@@ -101,9 +122,8 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
   }
   const paths = shard ? Array.from({ length: count }, (_, i) =>
     ref.path.replace(shardPattern, `-${String(i + 1).padStart(5, '0')}-of-${shard[2]}`)) : [ref.path];
-  const counterpart = nonMtpCounterpart(paths[0]);
-  const otherPaths = counterpart ? Array.from(new Set([counterpart, counterpart.replace(shardPattern, '')])) : [];
-  const lookups = [...paths, ...otherPaths];
+  const counterpart = nonMtpCounterpart(ref.path)?.replace(shardPattern, '');
+  const lookups = counterpart ? [...paths, counterpart] : paths;
   const url = `${HUB}/api/models/${ref.repo}/paths-info/${encodeURIComponent(ref.revision)}`;
   try {
     const sizes = new Map<string, number>();
@@ -123,7 +143,12 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
     if (paths.some(path => !sizes.has(path))) return { ok: false, error: 'missingShards' };
     const bytes = paths.reduce((total, path) => total + sizes.get(path)!, 0);
     if (!Number.isSafeInteger(bytes)) return { ok: false, error: 'network' };
-    if (otherPaths.some(path => (sizes.get(path) ?? 0) > 4 * bytes)) return { ok: false, error: 'auxiliaryFile' };
+    if (counterpart) {
+      const mainBytes = sizes.get(counterpart);
+      if (mainBytes ? mainBytes > 4 * bytes : await hasLargerShardedCounterpart(ref, counterpart, bytes, fetchImpl)) {
+        return { ok: false, error: 'auxiliaryFile' };
+      }
+    }
     const result = await importFromHub(ref.repo, fetchImpl, ref.revision);
     return { ok: true, file: { ...ref, bytes }, shape: result.ok ? result.shape : undefined };
   } catch {
