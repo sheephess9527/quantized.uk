@@ -189,6 +189,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const [fileBusy, setFileBusy] = useState(false);
   const [fileError, setFileError] = useState<QuantFileError>();
   const fileRequest = useRef(0);
+  const preserveSavedCustom = useRef(false);
   const activeFile = mode === 'forward' && selectedModelId === 'custom' ? hubFile : undefined;
   const fileQuant = activeFile ? quantFromFilename(activeFile.path) ?? t.calc.hfFileUnknownQuant : undefined;
   const fileName = activeFile?.path.split('/').at(-1);
@@ -369,7 +370,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   // Write the reader's choices back so the next tool starts where they left off.
   useEffect(() => {
-    if (!urlInitialized || hubFile) return;
+    if (!urlInitialized || hubFile || (preserveSavedCustom.current && !selectedModelId)) return;
     const modelId = modelIsExample ? '' : selectedModelId;
     if (sharedLink) {
       // The initial restored values belong to the sender. Only subsequent
@@ -474,6 +475,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
    * for is labelled rather than blocked.
    */
   const selectModel = useCallback((id: string) => {
+    preserveSavedCustom.current = false;
     fileRequest.current++;
     setFileBusy(false);
     setFileError(undefined);
@@ -689,7 +691,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   };
 
   const clearFile = () => {
-    selectModel(config.modelId);
+    selectModel(config.modelId === 'custom' ? '' : config.modelId);
+    preserveSavedCustom.current = config.modelId === 'custom';
     if (config.quantLevel) {
       setSelectedQuant(config.quantLevel);
       setFormatGroup(findFormatGroup(config.quantLevel));

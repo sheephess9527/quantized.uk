@@ -640,7 +640,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 - Gemma 4 file estimates use separate KV layouts for global and sliding-window layers and count caches only on layers that own them.
 - An estimate above a model's context limit warns instead of claiming a hardware fit or speed, including for imported files.
 - Auxiliary GGUFs, such as projectors, identifiable MTP/draft heads and imatrix files, are not accepted as model weights. Full weights can include a bundled MTP head.
-- Clearing a pasted file returns to the saved model instead of clearing the shared hardware profile's model.
+- Clearing a pasted file returns to the saved indexed model, or leaves the picker empty if the profile has no restorable model.
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

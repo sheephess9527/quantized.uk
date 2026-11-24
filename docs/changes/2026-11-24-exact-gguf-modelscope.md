@@ -7,7 +7,7 @@
 - Gemma 4 E4B shares KV caches across its final 18 layers. Following llama.cpp, only the first 24 layers count toward allocation, including just four global layers.
 - Past the model's context limit, the calculator and share preview warn without claiming a fit or speed. The calculator still shows the raw memory estimate.
 - Explicit auxiliary names such as vision projectors, draft heads, `mtp-head` and imatrix are rejected before metadata is requested. An MTP tag by itself is ambiguous: reject only when the file is less than a quarter the size of the equivalent non-MTP file in the same folder, if listed. Bundled model weights remain usable.
-- Clearing the file restores the saved model, quant and context rather than persisting an empty model selection.
+- Clearing the file restores the saved indexed model, quant and context. If the profile names a custom model, its architecture is not stored, so clearing leaves the picker empty without changing the saved model or estimating an unrelated default.
 - Five indexed Chinese models show a ModelScope download link with the uploader named in both languages. See the [listing evidence and MiniMax exclusion](../data-corrections.md#2026-11-24--modelscope-gguf-download-links). No new routes, dependencies or backend work.
 
 ## Verification
