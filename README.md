@@ -560,6 +560,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add/track a quant format | `lib/data/formats.ts` |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
+| Add a verified ModelScope GGUF mirror | `lib/data/modelscope-repos.ts`; record the verified file listing in `docs/data-corrections.md` |
 | Record a model's licence or image input | `lib/data/model-facts.ts` (the Hub's input + licence filters read it) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
@@ -630,6 +631,17 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Size an exact GGUF file and download from ModelScope
+
+- The forward VRAM calculator accepts public Hugging Face GGUF file links or `org/repo filename.gguf`. It reads the exact bytes of the file or all of its numbered parts, labels the quant from the filename, and estimates KV cache from the repo or base model config when available. Missing architecture can be supplied manually. Shared results retain the size and model shape without re-fetching.
+- Five Chinese model pages link directly to verified ModelScope GGUF listings and name the uploader. No routes, page titles or backend services changed. See [implementation and verification](docs/changes/2026-11-24-exact-gguf-modelscope.md).
+- Pasted file links stay out of the live address and result analytics. Only the explicit Copy share link action includes the file snapshot.
+- Gemma 4 file estimates use separate KV layouts for global and sliding-window layers and count caches only on layers that own them.
+- An estimate above a model's context limit warns instead of claiming a hardware fit or speed, including for imported files.
+- Auxiliary GGUFs, such as projectors, identifiable MTP/draft heads and imatrix files, are not accepted as model weights. MTP detection checks sharded counterparts and still accepts full weights with a bundled head.
+- Clearing a pasted file returns to the saved indexed model, or leaves the picker empty if the profile has no restorable model. Later context changes still carry to Compare.
+- The GGUF file selection is for inference only and is cleared on entering Fine-tune mode.
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

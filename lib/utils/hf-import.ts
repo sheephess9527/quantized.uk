@@ -91,13 +91,16 @@ export function shapeFromConfig(cfg: Json): Omit<ImportedShape, 'repo' | 'params
   }
 
   let attention: ModelArch['attention'];
+  const sharedLayers = num(c.num_kv_shared_layers);
+  const cacheLayers = layers && sharedLayers && Number.isInteger(sharedLayers) && sharedLayers < layers
+    ? layers - sharedLayers : layers;
   const types = Array.isArray(c.layer_types) ? (c.layer_types as unknown[]).map(String) : undefined;
   const window = num(c.sliding_window) ?? num(c.attention_chunk_size);
-  if (types && layers && types.length >= layers) {
-    const used = types.slice(0, layers);
+  if (types && cacheLayers && types.length >= cacheLayers) {
+    const used = types.slice(0, cacheLayers);
     const full = used.filter(t => t === 'full_attention' || t === 'attention' || t === 'global').length;
     const sliding = used.filter(t => /sliding|chunk|local/.test(t)).length;
-    const other = layers - full - sliding;
+    const other = cacheLayers - full - sliding;
     if (other > 0) notes.push('linear');
     if (sliding > 0 && window) {
       notes.push('window');
@@ -106,21 +109,36 @@ export function shapeFromConfig(cfg: Json): Omit<ImportedShape, 'repo' | 'params
       // A sliding layer with no stated window cannot be capped; count it as full.
       attention = { fullLayers: full + sliding };
       notes.push('windowIgnored');
-    } else if (other > 0) {
+    } else if (other > 0 || cacheLayers !== layers) {
       attention = { fullLayers: full };
     }
-  } else if (layers && num(c.full_attention_interval)) {
-    attention = { fullLayers: Math.floor(layers / num(c.full_attention_interval)!) };
+  } else if (cacheLayers && num(c.full_attention_interval)) {
+    attention = { fullLayers: Math.floor(cacheLayers / num(c.full_attention_interval)!) };
     notes.push('linear');
-  } else if (layers && window && num(c.sliding_window_pattern) && c.use_sliding_window !== false) {
+  } else if (cacheLayers && window && num(c.sliding_window_pattern) && c.use_sliding_window !== false) {
     // Gemma 3 style: every Nth layer is global.
-    const full = Math.floor(layers / num(c.sliding_window_pattern)!);
-    attention = { fullLayers: full, windowLayers: layers - full, windowTokens: llamaCppWindowCells(window) };
+    const full = Math.floor(cacheLayers / num(c.sliding_window_pattern)!);
+    attention = { fullLayers: full, windowLayers: cacheLayers - full, windowTokens: llamaCppWindowCells(window) };
     notes.push('window');
   } else if (window && c.use_sliding_window !== false) {
     // A window with no per-layer pattern: which layers use it is not stated,
     // so every layer is sized at full context — an upper bound, said so.
     notes.push('windowIgnored');
+  }
+  if (!attention && cacheLayers !== layers) attention = { fullLayers: cacheLayers };
+
+  const fullHeadDim = num(c.global_head_dim);
+  const fullKvHeads = num(c.num_global_key_value_heads);
+  if ((fullHeadDim && fullHeadDim !== headDim) || (fullKvHeads && fullKvHeads !== kvHeads)) {
+    if (attention?.fullLayers && attention.windowLayers && attention.windowTokens) {
+      attention = { ...attention, fullHeadDim, fullKvHeads };
+    } else if (!types || types.some(t => /sliding|chunk|local/.test(t))) {
+      kvHeads = headDim = undefined;
+      attention = undefined;
+    } else {
+      kvHeads = fullKvHeads ?? kvHeads;
+      headDim = fullHeadDim ?? headDim;
+    }
   }
 
   const experts = num(c.num_experts) ?? num(c.num_local_experts) ?? num(c.n_routed_experts);
@@ -176,18 +194,19 @@ async function getJson(fetchImpl: typeof fetch, url: string): Promise<{ status: 
   return { status: res.status, body: (await res.json()) as Json };
 }
 
-export async function importFromHub(input: string, fetchImpl: typeof fetch = fetch): Promise<ImportResult> {
+export async function importFromHub(input: string, fetchImpl: typeof fetch = fetch, revision = 'main'): Promise<ImportResult> {
   const repo = parseRepoInput(input);
   if (!repo) return { ok: false, error: 'badInput' };
   try {
-    const info = await getJson(fetchImpl, `${HUB}/api/models/${repo}`);
+    const rev = encodeURIComponent(revision);
+    const info = await getJson(fetchImpl, `${HUB}/api/models/${repo}${revision === 'main' ? '' : `/revision/${rev}`}`);
     if (info.status === 404 || info.status === 401) return { ok: false, error: 'notFound' };
     const notes: ImportNote[] = [];
     const paramsB = info.body ? paramsFromInfo(info.body) : undefined;
     if (!paramsB) notes.push('noParams');
 
     let configRepo = repo;
-    let cfg = await getJson(fetchImpl, `${HUB}/${repo}/resolve/main/config.json`);
+    let cfg = await getJson(fetchImpl, `${HUB}/${repo}/resolve/${rev}/config.json`);
     if (cfg.status === 401 || cfg.status === 403) notes.push('gated');
     if (!cfg.body && cfg.status === 404 && info.body) {
       // A GGUF repo has no config.json; most name the model they convert.

@@ -4,6 +4,8 @@ export interface CalcInput {
   kvHeads: number;
   headDim: number;
   bpw: number;
+  /** Exact combined weight-file bytes, when known. No extra weight overhead. */
+  weightBytes?: number;
   contextLength: number;
   batchSize: number;
   /**
@@ -127,7 +129,9 @@ export function calcVRAM(input: CalcInput): CalcResult {
   const kvValueBytes = input.kvBytesPerValue ?? KV_CACHE_TYPES.f16;
 
   // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
-  const modelWeightsGB = (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * (1 + WEIGHT_OVERHEAD);
+  const modelWeightsGB = input.weightBytes === undefined
+    ? (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * (1 + WEIGHT_OVERHEAD)
+    : input.weightBytes / (1024 ** 3);
 
   // KV cache: 2 (K+V) × kvHeads × headDim × 2 bytes (fp16) per layer per token.
   //

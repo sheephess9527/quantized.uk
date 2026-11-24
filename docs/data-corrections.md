@@ -1,5 +1,19 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-24 — ModelScope GGUF download links
+
+Checked the ModelScope JSON APIs on 2026-11-23 UTC, not just the website response. `/api/v1/models/<repo>` returned `Code: 200`, `Success: true`, and matching uploader and repository names. A nonexistent control repo returned `Code: 10010205001` (`record not found`). The recursive `/repo/files?Revision=master&Recursive=true` listings returned the GGUF file counts below, including shard files and any vision projectors. These confirm listings for the same checkpoints, not downloads, runtime tests, or byte-for-byte equivalence to the files used for sizing.
+
+| Indexed model | ModelScope listing and uploader | GGUF files | Checkpoint and sizing relationship |
+| --- | --- | ---: | --- |
+| Qwen2.5 7B Instruct | [Qwen (official)](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-7B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 19 | Qwen's 7B Instruct checkpoint; includes Q4_K_M shards. |
+| Qwen3 8B | [Qwen (official)](https://modelscope.cn/api/v1/models/Qwen/Qwen3-8B-GGUF/repo/files?Revision=master&Recursive=true) | 5 | Qwen's 8B checkpoint; includes `Qwen3-8B-Q4_K_M.gguf`. |
+| DeepSeek-R1 | [unsloth (community)](https://modelscope.cn/api/v1/models/unsloth/DeepSeek-R1-GGUF/repo/files?Revision=master&Recursive=true) | 133 | Full **671B MoE**, not a distill. The [repository config](https://modelscope.cn/models/unsloth/DeepSeek-R1-GGUF/resolve/master/config.json) identifies `DeepseekV3ForCausalLM` with 61 layers and 256 routed experts. Unsloth's files are not the source of the page's sizing estimates. |
+| GLM-4.7-Flash | [unsloth (community)](https://modelscope.cn/api/v1/models/unsloth/GLM-4.7-Flash-GGUF/repo/files?Revision=master&Recursive=true) | 29 | Zhipu's 30B-A3B Flash checkpoint. The site sizes bartowski's files, not unsloth's. |
+| Kimi K3.1 Pro | [DevQuasar (community)](https://modelscope.cn/api/v1/models/DevQuasar/moonshotai.Kimi-K3.1-Pro-GGUF/repo/files?Revision=master&Recursive=true) | 67 | Moonshot's K3.1 Pro checkpoint; the 33 parts in DevQuasar's Q2_K listing total 1,009,315,027,936 bytes, matching the uploader, filename and size the site uses. |
+
+**Not linked: MiniMax M3.1 Flash.** [unsloth's ModelScope repo](https://modelscope.cn/api/v1/models/unsloth/MiniMax-M3.1-Flash-GGUF/repo/files?Revision=master&Recursive=true) exists and lists 45 GGUF files for the same checkpoint, including `UD-Q2_K_XL`, but not the plain [smalinin Q2_K release](https://huggingface.co/smalinin/MiniMax-M3.1-Flash-Q2_K-GGUF) that the page sizes.
+
 ## 2026-11-23 — Backfill of merged PR #28–#49 data changes
 
 These entries record the merged work and its existing evidence, not newly performed
