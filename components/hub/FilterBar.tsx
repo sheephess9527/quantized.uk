@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils/cn';
 import { SHIPPED_FORMATS } from '@/lib/utils/hub-url';
 import { PARAM_RANGES, PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
 import { localizeHref } from '@/lib/i18n/routing';
-import { models } from '@/lib/data/models';
 
 export interface HubFilters {
   search: string;
@@ -48,7 +47,7 @@ export function HubSearch({ filters, onChange, gpuFilterId, id }: Pick<Props, 'f
         type="search"
         id={id}
         name="q"
-        placeholder={t.hub.searchPlaceholder.replace('{n}', String(models.length))}
+        placeholder={t.hub.searchPlaceholder}
         value={filters.search}
         onChange={e => onChange({ ...filters, search: e.target.value })}
         className="w-full min-h-[44px] sm:min-h-0 bg-white/[0.04] border border-white/[0.14] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
