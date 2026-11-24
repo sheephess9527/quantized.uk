@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Five model pages now offer verified 4-bit MLX weights for Apple Silicon, with a copyable mlx-lm command and a link to open the same model in LM Studio.',
+    zh: '五个模型详情页新增适用于 Apple 芯片的 4 位 MLX 权重。可以复制 mlx-lm 命令，也可以在 LM Studio 中打开同一模型。',
+  },
+  {
+    date: '2026-11-24',
     en: 'On phones, the VRAM calculator now puts a jump to matching models next to the GPU picker, and the model index puts search first with more filters and stats folded away. The home hardware picker is closer to the top, and common controls are easier to tap and read.',
     zh: '手机端显存计算器现在可以从显卡选择框旁跳到可运行模型列表；模型库把搜索放到前面，次要筛选与统计可展开查看。首页硬件选择器也更靠上，常用控件更好点、更好读。',
   },

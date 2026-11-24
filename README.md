@@ -560,6 +560,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add/track a quant format | `lib/data/formats.ts` |
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
+| Add a verified Apple Silicon download | `lib/data/mac-models.ts` and `docs/data-corrections.md`; separate from calculator variants |
 | Record a model's licence or image input | `lib/data/model-facts.ts` (the Hub's input + licence filters read it) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
@@ -630,6 +631,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Apple Silicon model downloads
+
+- Five existing model detail pages offer verified 4-bit MLX weights, a copyable `mlx_lm.generate` example, and an LM Studio link for the same repo in English and Chinese. No new routes or sizing changes. [Verification](docs/changes/2026-11-24-mac-model-downloads.md).
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

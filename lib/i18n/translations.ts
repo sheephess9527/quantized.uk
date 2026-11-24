@@ -597,6 +597,13 @@ export const translations = {
         copyHfSearch: 'Copy HF link',
         copyLink: 'Copy',
         hfCopied: 'Copied!',
+        mac: {
+          title: 'Mac / Apple Silicon',
+          summary: 'Verified 4-bit MLX weights. The command requires mlx-lm; these weights are separate from the quantization variants below.',
+          copyCommand: 'Copy MLX command',
+          openStudio: 'Open in LM Studio',
+          studioFallback: 'If the app doesn’t open, paste the repository link into Discover in LM Studio.',
+        },
       },
     },
     compare: {
@@ -2192,6 +2199,13 @@ export const translations = {
         copyHfSearch: '复制 HF 链接',
         copyLink: '复制',
         hfCopied: '已复制！',
+        mac: {
+          title: 'Mac / Apple 芯片',
+          summary: '已核对 4 位 MLX 权重。此命令需要 mlx-lm；这套权重与下方量化变体分开提供。',
+          copyCommand: '复制 MLX 命令',
+          openStudio: '在 LM Studio 中打开',
+          studioFallback: '如果应用未打开，请将仓库链接粘贴到 LM Studio 的 Discover（发现）页面。',
+        },
       },
     },
     compare: {

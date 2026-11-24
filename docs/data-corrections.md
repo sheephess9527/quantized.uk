@@ -1,5 +1,22 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-24 — Apple Silicon MLX downloads
+
+Checked each conversion's Hugging Face API record for its identity, ungated access,
+and MLX Safetensors listing. The linked revision configs report 4-bit groups of 64.
+Every conversion page exposed LM Studio's `open_from_hf` link for that exact repo.
+These are separately published MLX conversions, not additional calculator size or speed data.
+
+| Indexed checkpoint | Publisher checkpoint | Verified MLX repository (API) | Weights and config |
+| --- | --- | --- | --- |
+| `llama-3.2-3b` | [Meta Llama 3.2 3B Instruct](https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct), via the [community conversion's immediate parent](https://huggingface.co/api/models/mlx-community/Llama-3.2-3B-Instruct) | [mlx-community/Llama-3.2-3B-Instruct-4bit](https://huggingface.co/api/models/mlx-community/Llama-3.2-3B-Instruct-4bit) | `model.safetensors`, [4-bit config](https://huggingface.co/mlx-community/Llama-3.2-3B-Instruct-4bit/blob/7f0dc925e0d0afb0322d96f9255cfddf2ba5636e/config.json) |
+| `mistral-7b-v0.3` | [Mistral 7B Instruct v0.3](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3), named in the [converter's model card](https://huggingface.co/mlx-community/Mistral-7B-Instruct-v0.3-4bit/blob/a4b8f870474b0eb527f466a03fbc187830d271f5/README.md) | [mlx-community/Mistral-7B-Instruct-v0.3-4bit](https://huggingface.co/api/models/mlx-community/Mistral-7B-Instruct-v0.3-4bit) | `model.safetensors`, [4-bit config](https://huggingface.co/mlx-community/Mistral-7B-Instruct-v0.3-4bit/blob/a4b8f870474b0eb527f466a03fbc187830d271f5/config.json) |
+| `qwen3-4b` | [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B) | [mlx-community/Qwen3-4B-4bit](https://huggingface.co/api/models/mlx-community/Qwen3-4B-4bit) | `model.safetensors`, [4-bit config](https://huggingface.co/mlx-community/Qwen3-4B-4bit/blob/4dcb3d101c2a062e5c1d4bb173588c54ea6c4d25/config.json) |
+| `qwen3-8b` | [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) | [mlx-community/Qwen3-8B-4bit](https://huggingface.co/api/models/mlx-community/Qwen3-8B-4bit) | `model.safetensors`, [4-bit config](https://huggingface.co/mlx-community/Qwen3-8B-4bit/blob/545dc4251c05440727734bcd94334791f6ab0192/config.json) |
+| `qwen3-14b` | [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) | [mlx-community/Qwen3-14B-4bit](https://huggingface.co/api/models/mlx-community/Qwen3-14B-4bit) | `model-00001-of-00002.safetensors` and `model-00002-of-00002.safetensors`, [4-bit config](https://huggingface.co/mlx-community/Qwen3-14B-4bit/blob/a4d9b2df59d2c150bef02fcbe0d91046b7ca33a4/config.json) |
+
+Not listed in this set: [Gemma 3 4B IT candidate](https://huggingface.co/api/models/mlx-community/gemma-3-4b-it-4bit) reports the base pretrained checkpoint (`gemma-3-4b-pt`), not the indexed IT checkpoint; [Llama 3.2 1B candidate](https://huggingface.co/api/models/mlx-community/Llama-3.2-1B-Instruct-4bit) points to a BF16 intermediary whose API metadata lacks a publisher base reference.
+
 ## 2026-11-23 — Backfill of merged PR #28–#49 data changes
 
 These entries record the merged work and its existing evidence, not newly performed
