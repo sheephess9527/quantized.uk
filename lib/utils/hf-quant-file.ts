@@ -102,7 +102,7 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
   const paths = shard ? Array.from({ length: count }, (_, i) =>
     ref.path.replace(shardPattern, `-${String(i + 1).padStart(5, '0')}-of-${shard[2]}`)) : [ref.path];
   const counterpart = nonMtpCounterpart(paths[0]);
-  const otherPaths = counterpart ? [...new Set([counterpart, counterpart.replace(shardPattern, '')])] : [];
+  const otherPaths = counterpart ? Array.from(new Set([counterpart, counterpart.replace(shardPattern, '')])) : [];
   const lookups = [...paths, ...otherPaths];
   const url = `${HUB}/api/models/${ref.repo}/paths-info/${encodeURIComponent(ref.revision)}`;
   try {
