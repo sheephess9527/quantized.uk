@@ -703,6 +703,17 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     setLinkCopied(false);
   };
 
+  const changeMode = (next: Mode) => {
+    if (next === 'finetune') {
+      if (hubFile) clearFile();
+      else if (fileBusy) {
+        fileRequest.current++;
+        setFileBusy(false);
+      }
+    }
+    setMode(next);
+  };
+
   const runImport = async (raw?: string) => {
     const input = raw ?? hfInput;
     if (mode === 'forward' && isQuantFileInput(input)) return runFileImport(input);
@@ -1000,7 +1011,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           {(['reverse', 'forward', 'finetune'] as Mode[]).map(m => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              onClick={() => changeMode(m)}
               aria-pressed={mode === m}
               className={cn(
                 'flex min-h-[44px] sm:min-h-0 items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
