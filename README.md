@@ -35,7 +35,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Quant Hub** | `/quant-hub` | Searchable/filterable index of quantized models with per-quant VRAM, context, speed and quality stats; filters for size, task, hardware, format, recency, **input type** (text / image) and **licence class** (commercial / restricted / non-commercial). Filters follow same-page navigation and back/forward; Enter search preserves the GPU. |
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
-| **GPU upgrade comparison** | `/gpu/[gpuId]/`, `/best/[tier]/` | Compare a second device at the same context and concurrency: new comfortable fits, higher-ranked quantizations and longer context at the same quant. |
+| **GPU upgrade comparison** | `/gpu/[gpuId]/`, `/best/[tier]/` | Compare a second device at the same context and concurrency: new comfortable fits, quantization ranks with evidence labels and up to three same-quant context examples, largest models first. |
 | **Benchmarks** | `/benchmarks` | Inference-speed and perplexity charts, filterable measured matrix, CSV download |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 122 GPU configurations plus 4 CPU-only RAM rows, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
@@ -634,6 +634,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — GPU upgrade comparison labels
+
+- Context counts describe examples. Each quantization change shows the basis for its rank. [Comparison rules](docs/changes/2026-11-23-gpu-upgrade-compare.md).
 
 ### 2026-11-24 — Combined Hub, VRAM calculator and benchmarks release
 

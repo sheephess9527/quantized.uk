@@ -3,7 +3,13 @@ import { gpuDatabase } from '../lib/data/gpus';
 import { bestTierBySlug, tierUpgradeBaseline } from '../lib/utils/best-page';
 import { fitsOnGpu, formatAllowed, gpuFitMemory, usableCapacityGB } from '../lib/utils/gpu-page';
 import { compareGpuUpgrade, defaultGpuUpgrade, gpuUpgradeChoices } from '../lib/utils/gpu-upgrade';
-import { qualityRank } from '../lib/utils/quality';
+import { qualityRank, quantRankBasis } from '../lib/utils/quality';
+
+const measured = { pplLossPercent: 0 };
+assert.equal(quantRankBasis({ pplLossPercent: 1 }, measured), 'publishedLoss');
+assert.equal(quantRankBasis(measured, {}), 'partialLoss');
+assert.equal(quantRankBasis({}, measured), 'partialLoss');
+assert.equal(quantRankBasis({}, {}), 'bpwEstimate');
 
 const current = gpuDatabase.find(g => g.id === 'rtx4060')!;
 const candidate = gpuDatabase.find(g => g.id === 'rtx4090')!;

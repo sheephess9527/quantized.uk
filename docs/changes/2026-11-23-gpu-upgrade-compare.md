@@ -10,3 +10,9 @@ The comparison names its real baseline device: the first listed card at that cap
 - A count calls out fits lost when a candidate has less usable memory or supports different model formats.
 
 The candidate and controls are page-local. There are no extra routes, prices, data fetches or title changes. The upgrade checks run in `npm test`; the export can be checked with `npm run build`, `find out -type f | wc -l`, and a comparison of exported title bytes against the base export.
+
+## 2026-11-24 — Reading the results
+
+The context count labels displayed examples, in descending parameter order. Quantization rows distinguish two published perplexity-loss values, one published value, and a BPW estimate when neither value is available. Capacity estimates do not measure speed or task accuracy.
+
+Regression checks: cover zero loss and both mixed-coverage directions. Check example counts, empty states, expanded rows and mobile wrapping on GPU and tier pages in both languages.
