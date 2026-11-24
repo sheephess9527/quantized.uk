@@ -13,8 +13,8 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
-    en: 'Five model pages now offer verified 4-bit MLX weights for Apple Silicon, with a copyable mlx-lm command and a link to open the same model in LM Studio.',
-    zh: '五个模型详情页新增适用于 Apple 芯片的 4 位 MLX 权重。可以复制 mlx-lm 命令，也可以在 LM Studio 中打开同一模型。',
+    en: 'Three Qwen3 detail pages now offer verified 4-bit MLX weights for Apple Silicon, with a copyable mlx-lm command and a link to open the same model in LM Studio.',
+    zh: '三个 Qwen3 模型详情页新增适用于 Apple 芯片的 4 位 MLX 权重。可以复制 mlx-lm 命令，也可以在 LM Studio 中打开同一模型。',
   },
   {
     date: '2026-11-24',

@@ -28,6 +28,7 @@ export default function MacModelSetup({ modelId }: { modelId: string }) {
           text={options.command}
           label={d.copyCommand}
           copiedLabel={t.hub.detail.hfCopied}
+          failedLabel={d.copyFailed}
           className="min-h-11 shrink-0"
         />
       </div>

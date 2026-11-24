@@ -634,7 +634,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ### 2026-11-24 — Apple Silicon model downloads
 
-- Five existing model detail pages offer verified 4-bit MLX weights, a copyable `mlx_lm.generate` example, and an LM Studio link for the same repo in English and Chinese. No new routes or sizing changes. [Verification](docs/changes/2026-11-24-mac-model-downloads.md).
+- Three existing Qwen3 detail pages offer verified 4-bit MLX weights, a copyable `mlx_lm.generate` example, and an LM Studio link for the same repo in English and Chinese. Only repos with a direct publisher checkpoint in their API metadata and both a 4-bit tag and config are listed. No new routes or sizing changes. [Verification](docs/changes/2026-11-24-mac-model-downloads.md).
 
 ### 2026-11-24 — Mobile calculator and model index layout
 

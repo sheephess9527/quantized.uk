@@ -135,6 +135,8 @@ assert.deepEqual(macModelOptions('qwen3-4b'), {
   command: 'mlx_lm.generate --model mlx-community/Qwen3-4B-4bit --prompt "Hello"',
   studioUrl: 'lmstudio://open_from_hf?model=mlx-community/Qwen3-4B-4bit',
 });
-assert.equal(macModelOptions('gemma-3-4b-it'), undefined, 'unverified Mac entries stay hidden');
+for (const modelId of ['gemma-3-4b-it', 'llama-3.2-1b', 'llama-3.2-3b', 'mistral-7b-v0.3']) {
+  assert.equal(macModelOptions(modelId), undefined, `${modelId}: unverified Mac entries stay hidden`);
+}
 
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');
