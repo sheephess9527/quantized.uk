@@ -151,3 +151,20 @@ test('Gemma 4 31B exact-file sizing and shared preview use separate global and w
   const image = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'en');
   assert.equal(vramPreview(image.searchParams, 'en')?.answer, `${result.totalGB.toFixed(2)} GiB estimated`);
 });
+
+test('Gemma 4 E4B counts only cache-owning layers and fits tightly at 128K', () => {
+  const { layers, kvHeads, headDim, attention } = shapeFromConfig({ text_config: {
+    num_hidden_layers: 42, num_kv_shared_layers: 18, head_dim: 256, global_head_dim: 512,
+    num_key_value_heads: 2, sliding_window: 512,
+    layer_types: Array.from({ length: 42 }, (_, i) => i % 6 === 5 ? 'full_attention' : 'sliding_attention'),
+  } });
+  assert.equal(layers, 42);
+  assert.equal(attention?.fullLayers, 4);
+  assert.equal(attention?.windowLayers, 20);
+  const indexed = models.find(m => m.id === 'gemma-4-e4b')!;
+  const weightBytes = indexed.quants.find(q => q.level === 'Q4_K_M')!.source!.bytes!;
+  const memory = calcVRAM({ paramsB: indexed.params, layers: layers!, kvHeads: kvHeads!, headDim: headDim!,
+    attention, bpw: 0, contextLength: 131072, batchSize: 1, weightBytes });
+  assert.equal(memory.kvCacheGB, 2.04);
+  assert.ok(memory.totalGB > 8 * .88 && memory.totalGB <= 8, String(memory.totalGB));
+});
