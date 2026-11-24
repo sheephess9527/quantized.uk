@@ -36,7 +36,7 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Model Detail** | `/quant-hub/[modelId]` | Per-model quant comparison table, HF links, one-click jump to VRAM calculator with pre-filled params |
 | **Model × GPU answer** | `/quant-hub/[modelId]/[gpuId]/` | Recommended download, estimated weights/published file size, longest comfortable context and worked memory arithmetic before existing tables; bilingual, using shared sizing logic. |
 | **GPU upgrade comparison** | `/gpu/[gpuId]/`, `/best/[tier]/` | Compare a second device at the same context and concurrency: new comfortable fits, higher-ranked quantizations and longer context at the same quant. |
-| **Benchmarks** | `/benchmarks` | Inference-speed bar chart, perplexity-vs-quant line chart, full comparison matrix |
+| **Benchmarks** | `/benchmarks` | Inference-speed and perplexity charts, filterable measured matrix, CSV download |
 | **Cookbook** | `/cookbook` | 28 deployment guides with standalone `/cookbook/[slug]/` pages (8GB GPU, WSL2, Docker GPU, VPS, Mac, Nginx) |
 | **VRAM Calculator** | `/tools/vram-calc` | GiB memory breakdown with estimated headroom; Model→VRAM, GPU→Models and fine-tuning estimates; shareable URL params; verdict against 122 GPU configurations plus 4 CPU-only RAM rows, including 27 laptop GPU rows. Reverse lookup respects supported context and offers text or image use with recorded GGUF encoder memory. |
 | **Local LLM hardware guides** | `/what-llm-can-i-run-locally/`, `/best-llm-to-run-locally/`, `/local-llm-gpu-requirements/`, `/local-llm-without-gpu/` | GPU-first calculator, tier picks, GPU × model-size matrix, and separate CPU/Mac memory tables. All four have Chinese mirrors. |
@@ -148,6 +148,8 @@ wrangler.toml               # Cloudflare Pages: pages_build_output_dir = "out"
 ### Benchmark data schema (`lib/data/benchmarks.ts`)
 
 `MatrixRow` holds `model`, `hardware`, `framework`, `quant`, `speedTokSec`, `vramUsedGB`, bilingual `notes`, plus required `runtimeVersion` (full historical runtime label) and `firstPublishedAt` (ISO day). The latter is the first publication of the matrix result, used only as an upper bound on its unknown measurement date: 2026-06-24, 2026-06-25 or 2026-07-22 from git introduction history. Never replace historical versions with current releases or describe publication bounds as exact run dates. `RunProvenance` renders these fields with bilingual labels on every matrix-row surface. `speedBenchmarks` remains separate chart data; overlapping model/hardware/quant keys must agree on framework.
+
+The benchmark matrix on `/benchmarks/` and `/zh/benchmarks/` filters by hardware, model, runtime and quantization. Its UTF-8 CSV downloads exactly the displayed `matrixData` rows (all rows when unfiltered), with stable column names, localized notes, the historical runtime version and `first_published_at`, and per-row attribution, source URL and CC BY 4.0 license. It does not export separate chart data, estimates or visitor submissions, and adds no static route.
 
 
 ### VRAM calculation (`lib/utils/vram.ts`)
@@ -631,6 +633,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Measured benchmark filters and CSV
+
+- Filter the measured hardware matrix by hardware, model, runtime or quantization, then download the shown results for citation. Both languages include historical provenance and CC BY 4.0 attribution in the CSV. No routes or benchmark measurements changed. [Verification](docs/changes/2026-11-24-benchmark-csv.md).
 
 ### 2026-11-24 — Copyable Hugging Face model card badge
 

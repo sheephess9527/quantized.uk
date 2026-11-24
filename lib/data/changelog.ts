@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Filter measured benchmark runs by hardware, model, runtime or quantization, and download the results as CSV with the original runtime versions, first publication dates and CC BY 4.0 attribution.',
+    zh: '可按硬件、模型、运行时和量化级别筛选实测结果，并下载 CSV。文件包含测试时的运行时版本、首次发布日期和 CC BY 4.0 署名信息。',
+  },
+  {
+    date: '2026-11-24',
     en: 'Authors can now copy a Markdown badge from a model’s detail page and paste it into their Hugging Face model card. The badge links readers to the same model’s VRAM and quantization details.',
     zh: '模型详情页新增可复制的 Markdown 徽章。作者可将徽章粘贴到自己的 Hugging Face 模型卡片中，方便读者查看该模型的显存与量化详情。',
   },

@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     new Date(ds.filter((d): d is string => !!d).sort().slice(-1)[0] ?? dataLastUpdated);
   const inventoryDate = latest([sizingChangedAt, ...models.map(m => m.addedAt), ...gpuDatabase.map(g => g.addedAt)]);
   const guidesDate = latest(articles.map(a => articleModifiedAt(a)));
-  const benchDate = latest([runtimeVersions.checkedAt]);
+  const benchDate = latest(['2026-11-24', runtimeVersions.checkedAt]);
 
   // `/legal/` and `/privacy/` are hand-written pages that do not move with a
   // data ship — they should not claim `siteDate` just because the site
