@@ -39,7 +39,7 @@ test('identify the filename quant without guessing unknown labels', () => {
 test('reject auxiliary GGUF files without requesting Hub metadata', async () => {
   for (const path of [
     'dir/mmproj-model-Q8_0.gguf',
-    'mtp-google_gemma-4-31B-it-Q4_0.gguf',
+    'mtp-head-google_gemma-4-31B-it-Q4_0.gguf',
     'model-DRAFT-HEAD-Q8_0.gguf',
     'draft/model-Q8_0.gguf',
     'model.imatrix.gguf',
@@ -51,6 +51,24 @@ test('reject auxiliary GGUF files without requesting Hub metadata', async () => 
     assert.deepEqual(await importQuantFile(url, async () => assert.fail(url)), { ok: false, error: 'auxiliaryFile' });
   }
   assert.ok(parseQuantFile('owner/imatrix-model model-Q4_K_M.gguf'));
+});
+
+test('MTP in a filename can mean bundled weights, but a much smaller counterpart is a head', async () => {
+  for (const [path, main, size] of [
+    ['mtp-google_gemma-4-31B-it-Q4_0.gguf', 'google_gemma-4-31B-it-Q4_0.gguf', 349_161_984],
+    ['model-MTP-Q4_K_M.gguf', 'model-Q4_K_M.gguf', 20_000_000_000],
+  ] as const) {
+    const input = `owner/model ${path}`;
+    assert.ok(parseQuantFile(input));
+    const result = await importQuantFile(input, async (_url, options) => {
+      if (options?.method !== 'POST') return Response.json({});
+      assert.deepEqual((options.body as URLSearchParams).getAll('paths'), [path, main]);
+      return Response.json([{ path, type: 'file', size }, { path: main, type: 'file', size: 19_000_000_000 }]);
+    });
+    if (result.ok) assert.equal(result.file.bytes, 20_000_000_000);
+    else assert.deepEqual(result, { ok: false, error: 'auxiliaryFile' });
+    assert.equal(result.ok, size > 19_000_000_000 / 4);
+  }
 });
 
 test('sum all parts even when the pasted URL points to a later part', async () => {

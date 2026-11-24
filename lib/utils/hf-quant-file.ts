@@ -22,7 +22,13 @@ function validRef({ repo, revision, path }: QuantFileRef): boolean {
 }
 
 function isAuxiliaryFile(path: string): boolean {
-  return /(?:^|[\/\s._-])(?:mmproj|mtp|draft|imatrix)(?=$|[\/\s._-])/i.test(path);
+  return /(?:^|[\/\s._-])(?:mmproj|mtp[\s._-]+heads?|draft|imatrix)(?=$|[\/\s._-])/i.test(path);
+}
+
+function nonMtpCounterpart(path: string): string | undefined {
+  const name = path.split('/').at(-1)!;
+  const other = name.replace(/^mtp[\s._-]+|[\s._-]+mtp(?=[\s._-])/i, '');
+  if (other !== name) return path.slice(0, -name.length) + other;
 }
 
 function parseFileRef(input: string): QuantFileRef | null {
@@ -95,11 +101,14 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
   }
   const paths = shard ? Array.from({ length: count }, (_, i) =>
     ref.path.replace(shardPattern, `-${String(i + 1).padStart(5, '0')}-of-${shard[2]}`)) : [ref.path];
+  const counterpart = nonMtpCounterpart(paths[0]);
+  const otherPaths = counterpart ? [...new Set([counterpart, counterpart.replace(shardPattern, '')])] : [];
+  const lookups = [...paths, ...otherPaths];
   const url = `${HUB}/api/models/${ref.repo}/paths-info/${encodeURIComponent(ref.revision)}`;
   try {
     const sizes = new Map<string, number>();
-    for (let offset = 0; offset < paths.length; offset += 100) {
-      const batch = paths.slice(offset, offset + 100);
+    for (let offset = 0; offset < lookups.length; offset += 100) {
+      const batch = lookups.slice(offset, offset + 100);
       const form = new URLSearchParams();
       batch.forEach(path => form.append('paths', path));
       const res = await fetchImpl(url, { method: 'POST', body: form });
@@ -114,6 +123,7 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
     if (paths.some(path => !sizes.has(path))) return { ok: false, error: 'missingShards' };
     const bytes = paths.reduce((total, path) => total + sizes.get(path)!, 0);
     if (!Number.isSafeInteger(bytes)) return { ok: false, error: 'network' };
+    if (otherPaths.some(path => (sizes.get(path) ?? 0) > 4 * bytes)) return { ok: false, error: 'auxiliaryFile' };
     const result = await importFromHub(ref.repo, fetchImpl, ref.revision);
     return { ok: true, file: { ...ref, bytes }, shape: result.ok ? result.shape : undefined };
   } catch {
