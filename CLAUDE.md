@@ -93,6 +93,8 @@ flaky network. Never "fix" it by removing the postbuild hook.
 
 ## Conventions (must follow)
 
+- **Apple Silicon model downloads:** `lib/data/mac-models.ts` is an exact-checkpoint allowlist, not a sizing input. Require the publisher checkpoint as the conversion API's direct `base_model`, an MLX weight listing, matching quantization tag and config, and the LM Studio link exposed by Hugging Face. Record the sources and check date in `docs/data-corrections.md`; don't infer entries from model names.
+
 - **"How big" answers (Bing, 2026-11-23):** GPU and VRAM-tier titles, descriptions and first FAQ name `largestAtQ4()` — largest current model at GGUF Q4_K_M, 4K, batch 1. Keep one level across cards so parameter counts compare; titles over 60 width fall back to the plain question. Apple tier excluded. `/zh/gpu/` titles stay `{显卡} 能跑哪些大模型？` (they win most Bing clicks) — change only on fresh export evidence.
 - **Cookbook code blocks:** Copy takes the whole block. Keep each runnable block in one shell; use a section's `code` array for separately copyable alternatives without moving its anchor.
 

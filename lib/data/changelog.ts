@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-24',
+    en: 'Three Qwen3 detail pages now offer verified 4-bit MLX weights for Apple Silicon, with a copyable mlx-lm command and a link to open the same model in LM Studio.',
+    zh: '三个 Qwen3 模型详情页新增适用于 Apple 芯片的 4 位 MLX 权重。可以复制 mlx-lm 命令，也可以在 LM Studio 中打开同一模型。',
+  },
+  {
+    date: '2026-11-24',
     en: 'Filter measured benchmark runs by hardware, model, runtime or quantization, and download the results as CSV with the original runtime versions, first publication dates and CC BY 4.0 attribution.',
     zh: '可按硬件、模型、运行时和量化级别筛选实测结果，并下载 CSV。文件包含测试时的运行时版本、首次发布日期和 CC BY 4.0 署名信息。',
   },

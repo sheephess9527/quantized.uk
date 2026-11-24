@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/cn';
 import { bestQuant as pickBestQuant, formatLoss, referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 import { quantLevelKey } from '@/lib/utils/recommend';
+import MacModelSetup from '@/components/hub/MacModelSetup';
 import { getHFStats, formatDownloads, hfStats } from '@/lib/data/hf-stats';
 import { hfRepoMap } from '@/lib/data/hf-repos';
 import { modelscopeRepoMap } from '@/lib/data/modelscope-repos';
@@ -190,6 +191,7 @@ export default function ModelDetail({ model }: Props) {
         />
       </div>
 
+      <MacModelSetup modelId={model.id} />
       <RerankerLink placement="model" />
       <div className="glass rounded-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/[0.06]">

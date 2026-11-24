@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { articles } from '../lib/data/cookbook';
 import { models } from '../lib/data/models';
+import { macModelOptions, macModelRepos } from '../lib/data/mac-models';
 import { gpuDatabase } from '../lib/data/gpus';
 import { calcVRAM } from '../lib/utils/vram';
 import { formatAllowed, vllmRocmSupported, fitsOnGpu } from '../lib/utils/gpu-page';
@@ -123,5 +124,19 @@ assert.match(wslChecks.content, /^wsl\.exe -l -v$/m);
 assert.match(wslChecks.content, /^wsl\.exe -d \$Distro --exec \/usr\/lib\/wsl\/lib\/nvidia-smi$/m);
 assert.match(wslChecks.content, /^wsl\.exe -d \$Distro --exec ollama ps$/m);
 assert.doesNotMatch(wslChecks.content, /^ollama ps/m);
+
+for (const [modelId, repo] of Object.entries(macModelRepos)) {
+  assert(models.some(model => model.id === modelId), `Unknown Mac model: ${modelId}`);
+  assert.match(repo!, /^mlx-community\/[\w.-]+-4bit$/);
+}
+assert.deepEqual(macModelOptions('qwen3-4b'), {
+  repo: 'mlx-community/Qwen3-4B-4bit',
+  repoUrl: 'https://huggingface.co/mlx-community/Qwen3-4B-4bit',
+  command: 'mlx_lm.generate --model mlx-community/Qwen3-4B-4bit --prompt "Hello"',
+  studioUrl: 'lmstudio://open_from_hf?model=mlx-community/Qwen3-4B-4bit',
+});
+for (const modelId of ['gemma-3-4b-it', 'llama-3.2-1b', 'llama-3.2-3b', 'mistral-7b-v0.3']) {
+  assert.equal(macModelOptions(modelId), undefined, `${modelId}: unverified Mac entries stay hidden`);
+}
 
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');

@@ -563,6 +563,7 @@ A fresh agent/account taking over should run this top to bottom:
 | Add benchmark rows | `lib/data/benchmarks.ts` |
 | Map a model to its HF repo | `lib/data/hf-repos.mjs` only (`hf-repos.ts` re-exports) |
 | Add a verified ModelScope GGUF mirror | `lib/data/modelscope-repos.ts`; record the verified file listing in `docs/data-corrections.md` |
+| Add a verified Apple Silicon download | `lib/data/mac-models.ts` and `docs/data-corrections.md`; separate from calculator variants |
 | Record a model's licence or image input | `lib/data/model-facts.ts` (the Hub's input + licence filters read it) |
 | Change/translate any UI text | `lib/i18n/translations.ts` — add to **both** `en` and `zh` |
 | Tweak the VRAM formula | `lib/utils/vram.ts` |
@@ -633,6 +634,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-24 — Combined Hub, VRAM calculator and benchmarks release
+
+- Combined PRs #59–#63 against current main and preserved all five features, both language variants and the source notes. [Integration and deployment checks](docs/changes/2026-11-24-combined-release.md).
+
+### 2026-11-24 — Apple Silicon model downloads
+
+- Three existing Qwen3 detail pages offer verified 4-bit MLX weights, a copyable `mlx_lm.generate` example, and an LM Studio link for the same repo in English and Chinese. Only repos with a direct publisher checkpoint in their API metadata and both a 4-bit tag and config are listed. No new routes or sizing changes. [Verification](docs/changes/2026-11-24-mac-model-downloads.md).
 
 ### 2026-11-24 — Measured benchmark filters and CSV
 

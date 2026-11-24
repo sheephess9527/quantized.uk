@@ -8,22 +8,23 @@ interface Props {
   text: string;
   label: string;
   copiedLabel: string;
+  failedLabel?: string;
   className?: string;
   size?: 'sm' | 'md';
 }
 
-export default function CopyButton({ text, label, copiedLabel, className, size = 'md' }: Props) {
-  const [copied, setCopied] = useState(false);
+export default function CopyButton({ text, label, copiedLabel, failedLabel, className, size = 'md' }: Props) {
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
 
   const copy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setStatus('copied');
+      setTimeout(() => setStatus(current => current === 'copied' ? 'idle' : current), 2000);
     } catch {
-      /* clipboard denied */
+      if (failedLabel) setStatus('failed');
     }
-  }, [text]);
+  }, [text, failedLabel]);
 
   const iconSize = size === 'sm' ? 10 : 14;
 
@@ -39,8 +40,10 @@ export default function CopyButton({ text, label, copiedLabel, className, size =
         className,
       )}
     >
-      {copied ? <Check size={iconSize} className="text-emerald-400" /> : <Copy size={iconSize} />}
-      {copied ? copiedLabel : label}
+      {status === 'copied' ? <Check size={iconSize} className="text-emerald-400" /> : <Copy size={iconSize} />}
+      {failedLabel ? (
+        <span aria-live="polite">{status === 'failed' ? failedLabel : status === 'copied' ? copiedLabel : label}</span>
+      ) : status === 'copied' ? copiedLabel : label}
     </button>
   );
 }
