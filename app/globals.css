@@ -135,4 +135,10 @@ body {
     @apply inline-flex items-center text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer
            min-h-[44px] py-2.5 -my-2.5;
   }
+  .cv-card {
+    /* Defer layout and paint of off-screen Hub cards (140+ cards, ~6,000 DOM
+       nodes) while keeping every card's <h3> and link in the prerendered HTML. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
 }

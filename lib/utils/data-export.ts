@@ -105,6 +105,7 @@ export function gpusExport() {
     gpus: gpuDatabase.map(g => ({
       id: g.id,
       name: g.name,
+      ...(g.nameZh ? { nameZh: g.nameZh } : {}),
       type: g.type,
       backend: backendFor(g),
       vramGB: g.vram,

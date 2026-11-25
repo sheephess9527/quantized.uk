@@ -1,9 +1,8 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowUpRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { todayFeed, models } from '@/lib/data/models';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { cn } from '@/lib/utils/cn';
 import { sizeAt, cardsFitting, REF_CONTEXT } from '@/lib/utils/model-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -25,8 +24,8 @@ const picks = [...todayFeed].sort((a, b) =>
   (addedAt.get(b.modelId) ?? '').localeCompare(addedAt.get(a.modelId) ?? '') || b.id - a.id
 ).slice(0, PICKS_SHOWN);
 
-export default function TodayBoard() {
-  const { t, lang } = useLanguage();
+export default function TodayBoard({ lang }: { lang: Lang }) {
+  const t = translations[lang];
 
   return (
     <div className="glass rounded-2xl p-5 flex flex-col h-full">
@@ -77,7 +76,7 @@ export default function TodayBoard() {
                   <div className="flex items-center gap-1 mt-1">
                     <span className="text-xs text-slate-600">
                       {smallest
-                        ? t.home.todayBoard.fitsFrom.replace('{gpu}', smallest.name).replace('{vram}', String(smallest.vram))
+                        ? t.home.todayBoard.fitsFrom.replace('{gpu}', gpuDisplayName(smallest, lang)).replace('{vram}', String(smallest.vram))
                         : t.home.todayBoard.noSingleCard}
                     </span>
                   </div>

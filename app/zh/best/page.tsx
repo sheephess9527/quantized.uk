@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { GPU_COUNT } from '@/lib/seo';
-import BestHubPage from '../../best/page';
+import BestHubContent from '@/components/best/BestHubContent';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 
 export function generateMetadata(): Metadata {
@@ -20,5 +19,5 @@ export function generateMetadata(): Metadata {
 }
 
 export default function ZhBestHubPage() {
-  return <BestHubPage />;
+  return <BestHubContent lang="zh" />;
 }

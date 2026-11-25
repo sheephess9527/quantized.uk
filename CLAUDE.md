@@ -18,6 +18,14 @@ Guidance for any Claude/AI session working on **quantized.uk**. Keep this file s
 - Keep both accurate over comprehensive — fix stale facts (counts, file lists) when you notice them.
 - Keep per-change audit/verification records in `docs/changes/` (a linked multi-PR audit may cover related changes). Record model/GPU additions and corrections in `docs/data-corrections.md` with sources and limits; do not describe a documentation backfill as a new measurement or release.
 
+## 🤝 Multi-agent handoff (non-negotiable)
+
+Several AI agents (Claude, ChatGPT, Antigravity, Grok, patrol bots) work on this repo. Treat every session as a handoff.
+
+- **Before changing anything:** `git fetch origin && git log --oneline -n 15 origin/main`, read the newest files in `docs/changes/` and the top of `README.md` §9, and skim the "Grok Bot change log" section below. Rebase on `origin/main` first; never overwrite another agent's recent work without understanding why it was done.
+- **While working:** write every change — including failed attempts, footguns found, and unfinished follow-ups — into Markdown (`docs/changes/YYYY-MM-DD-*.md`, plus README §9 / this file per the rules above). The next agent only sees the repo, not your chat.
+- **End each `docs/changes/` record with "Handoff notes"**: what is done, what is verified (and how), what is not done, and the traps to avoid.
+
 ## What this is
 
 Next.js 14 **static-export** site (`output: 'export'`). No Next.js server — public content is
@@ -65,7 +73,12 @@ The fetcher uses four workers, a 10-second AbortController timeout per request/b
 200 ms pacing per worker. `npm test` includes offline fetcher regression tests. `npm start`
 uses `npx --yes serve@14.2.5 out -l 3000`; first use needs registry access, not a Next server.
 Homepage server content lives in `components/home/HomeContent.tsx`; each route passes its
-language explicitly so `StatsBar` stays server-rendered. Do not restore its client language hook.
+language explicitly so `StatsBar`, `HeroSection`, `WeeklyUpdates`, `PopularStarts`, `MeasuredCases`,
+`TodayBoard`, `HomeFaq`, `QuickAccess`, `ExploreStrip` and `DataChangelog` stay server-rendered.
+Static reference/index views (`AboutView`, `LegalView`, `PrivacyView`, `ToolIndexView`, `ChangelogView`,
+`FaqView`, `BestHubContent`, `FormatIndexView`, `PendingView`) also take explicit `lang` on the server,
+and long-form legal/about/privacy essays live in `lib/i18n/static-pages.ts` rather than `translations.ts`.
+Do not restore client language hooks on those static views.
 
 `build` fails on **data invariants** too: `app/sitemap.ts` calls `assertDataConsistent()`
 (`lib/data/validate.ts`) — broken `supersededBy`, a `todayFeed` level the model does not ship, a
@@ -1074,9 +1087,10 @@ hardware into the homepage "Latest additions" beside new models (`latestEntries(
 never reaches the homepage. Back-fill only from `git log -S`, never from memory.
 
 **Adding a GPU costs one line and needs only its VRAM** — but a verified `bandwidth` is what makes
-its page differ from its same-capacity siblings. `GPU` carries `{ id, name, vram, type, bandwidth?, memType? }`
+its page differ from its same-capacity siblings. `GPU` carries `{ id, name, nameZh?, vram, type, bandwidth?, memType? }`
 and only `vram` reaches the sizing math, so a card is addable the moment its capacity is confirmed —
-no architecture, no benchmarks. Do confirm it: a card whose VRAM is a guess generates a whole page
+no architecture, no benchmarks. Keep `gpu.name` English-only (it drives `gpuSlug()`); put localized
+Chinese suffixes such as `（改装）` in `nameZh` and render through `gpuDisplayName(gpu, lang)`. Do confirm capacity: a card whose VRAM is a guess generates a whole page
 of guesses. The RTX 5050 and RX 9060 XT waited until official spec pages could be read (2026-10-02, via
 web search restricted to nvidia.com / amd.com — the spec sites themselves are blocked here); the
 5050's data rate was not stated, so it ships with no `bandwidth` rather than a computed guess. Keep `gpuSlug()` dot-free,
@@ -1387,6 +1401,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-25 | **Site optimization & audit** — extracted static legal/about/privacy essays to `lib/i18n/static-pages.ts`; converted 9 reference/index routes (`/about`, `/legal`, `/privacy`, `/tools`, `/changelog`, `/faq`, `/best`, `/formats`, `/pending` → 167 kB First Load JS) and static homepage sections to Server Components (homepage assets 363.5 → 316.1 KB gz; `out/` 3,825 → 3,817 files); `public/_headers` `immutable` cache on `/_next/static/*` + SWR cache on OG/icons; Plausible `lazyOnload` + updated `/privacy/`; instant 126-GPU search on `/gpu/`, unified 8-group localized `<optgroup>`s, `nameZh` / `gpuDisplayName` fixing `改装` leak, `/zh/**` `WebSite` `SearchAction` JSON-LD, `.cv-card` on Hub cards, and pre-filled calculator link on pruned pair 404s. See `docs/changes/2026-11-25-site-optimization.md`. |
 | 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol and Granite 30B follow-up: 160 models (140 active), 122 GPU configurations + 4 CPU rows, 28 guides, 349 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
 | 2026-11-23 | **Model/site patrol** — KORMo-Web-9B and Granite Switch 4.1 8B / 30B added in `models-extra-19.ts`, four sourced GGUF variants each; image projector and adapter-router KV accounted for respectively. Stable Windows pin remains b12409; launch-command shard-stem memo inputs corrected. Sources and limits: `docs/changes/2026-11-23-patrol.md`. |
 | 2026-11-23 | **Daily live check (#51)** — `npm run check:live` and the daily/manual Actions workflow probe bilingual production pages and calculator answers, retained pairs and share previews. Incoming command, billing and owner-alert documentation is preserved; no live check was rerun as part of this merge. |

@@ -1,13 +1,10 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/site';
 import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge, Cpu, Layers, Zap, ListChecks, Ruler, AlertTriangle } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { vramCalcContent, cliGenContent, formatWizardContent, compareContent, feelContent, speedQContent, quantQContent, contextQContent } from '@/lib/data/tool-content';
 import { errorsIndexSummary } from '@/lib/data/errors';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { formatPairs } from '@/lib/utils/format-compare';
 
@@ -35,8 +32,8 @@ const questions = [
   { href: '/errors/',               icon: AlertTriangle, accent: 'text-amber-300',   summary: errorsIndexSummary,      key: 'errors' as const },
 ];
 
-export default function ToolIndexView() {
-  const { t, lang } = useLanguage();
+export default function ToolIndexView({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const i = t.toolsIndex;
 
   return (

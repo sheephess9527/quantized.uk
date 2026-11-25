@@ -9,5 +9,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ZhFormatIndexPage() {
-  return <FormatIndexView />;
+  return <FormatIndexView lang="zh" />;
 }

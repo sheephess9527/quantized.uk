@@ -1,7 +1,5 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { formatPairs, headToHead, modelsWithFormat } from '@/lib/utils/format-compare';
 import { formatOverview } from '@/lib/utils/format-overview';
@@ -12,8 +10,8 @@ import FormatHeatmap from '@/components/home/FormatHeatmap';
 const rows = formatOverview();
 const count = (name: string) => rows.find(r => r.format.name === name)?.modelCount ?? 0;
 
-export default function FormatIndexView() {
-  const { t, lang } = useLanguage();
+export default function FormatIndexView({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const c = t.formatCompare;
 
   return (
@@ -129,7 +127,7 @@ export default function FormatIndexView() {
         GGUF Q4_K_M, the opposite of every paired model in this index.
       */}
       <div className="mt-8 max-w-xl">
-        <FormatHeatmap />
+        <FormatHeatmap lang={lang} />
       </div>
     </div>
   );

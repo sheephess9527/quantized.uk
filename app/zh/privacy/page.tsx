@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import PrivacyView from '@/components/static/PrivacyView';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/privacy',
 });
 
-export { default } from '../../privacy/page';
+export default function ZhPrivacyPage() {
+  return <PrivacyView lang="zh" />;
+}

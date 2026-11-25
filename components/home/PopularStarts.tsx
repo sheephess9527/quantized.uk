@@ -1,10 +1,8 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/site';
 import { ChevronRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase, POPULAR_GPU_IDS } from '@/lib/data/gpus';
+import { translations, type Lang } from '@/lib/i18n/translations';
+import { gpuDatabase, gpuDisplayName, POPULAR_GPU_IDS } from '@/lib/data/gpus';
 import { countModelsFitting, gpuSlug } from '@/lib/utils/gpu-page';
 
 /**
@@ -28,8 +26,8 @@ const popular = POPULAR_GPU_IDS.map(id => {
   return { gpu, slug: gpuSlug(gpu), fits: countModelsFitting(gpu, 'comfortable') };
 });
 
-export default function PopularStarts() {
-  const { t } = useLanguage();
+export default function PopularStarts({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const p = t.home.popular;
 
   const tasks = [
@@ -59,7 +57,7 @@ export default function PopularStarts() {
                   className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 min-h-[44px] hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
                 >
                   <span aria-hidden className="text-sm">{gpu.icon}</span>
-                  <span className="text-sm text-slate-200 font-medium flex-1 min-w-0 truncate">{gpu.name}</span>
+                  <span className="text-sm text-slate-200 font-medium flex-1 min-w-0 truncate">{gpuDisplayName(gpu, lang)}</span>
                   <span className="text-xs font-mono text-slate-500 shrink-0">
                     {p.fitCount.replace('{n}', String(fits))}
                   </span>

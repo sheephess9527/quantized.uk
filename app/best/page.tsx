@@ -20,5 +20,5 @@ export function generateMetadata(): Metadata {
 }
 
 export default function BestHubPage() {
-  return <BestHubContent />;
+  return <BestHubContent lang="en" />;
 }

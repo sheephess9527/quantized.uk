@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, Layers, BookOpen, BarChart3 } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { getSiteStats } from '@/lib/stats';
 
 const stats = getSiteStats();
@@ -13,8 +11,8 @@ const featuredCookbook = [
   { id: 'docker-ollama-gpu', titleKey: 'guideDocker' as const },
 ];
 
-export default function ExploreStrip({ guideCount }: { guideCount: number }) {
-  const { t } = useLanguage();
+export default function ExploreStrip({ guideCount, lang }: { guideCount: number; lang: Lang }) {
+  const t = translations[lang];
   const e = t.home.explore;
 
   return (

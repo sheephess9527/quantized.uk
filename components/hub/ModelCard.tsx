@@ -32,6 +32,8 @@ interface Props {
   lang: 'en' | 'zh';
 }
 
+const MODEL_NAME_BY_ID = new Map(models.map(m => [m.id, m.name]));
+
 export default function ModelCard({ model, lang }: Props) {
   const { t } = useLanguage();
   const uniqueFormats = Array.from(new Set(model.quants.map(q => q.format)));
@@ -56,7 +58,7 @@ export default function ModelCard({ model, lang }: Props) {
   return (
     <Link
       href={`/quant-hub/${model.id}/`}
-      className="glass glass-hover rounded-2xl p-5 flex flex-col gap-4 group transition-all duration-200 hover:scale-[1.01]"
+      className="cv-card glass glass-hover rounded-2xl p-5 flex flex-col gap-4 group transition-all duration-200 hover:scale-[1.01]"
     >
       {/* Header */}
       <div>
@@ -87,7 +89,7 @@ export default function ModelCard({ model, lang }: Props) {
           <p className="text-[11px] text-amber-400/80 mb-1.5">
             {t.hub.model.prefer.replace(
               '{name}',
-              models.find(m => m.id === model.supersededBy)?.name ?? model.supersededBy,
+              MODEL_NAME_BY_ID.get(model.supersededBy) ?? model.supersededBy,
             )}
           </p>
         )}

@@ -1,16 +1,13 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { GPU_COUNT } from '@/lib/site';
 import { ArrowRight, Cpu } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { BEST_TIERS, tierSummary } from '@/lib/utils/best-page';
 
-export default function BestHubContent() {
-  const { t, lang } = useLanguage();
+export default function BestHubContent({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const b = t.best;
 
   return (

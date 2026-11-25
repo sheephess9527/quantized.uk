@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LegalView from '@/components/static/LegalView';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/legal',
 });
 
-export { default } from '../../legal/page';
+export default function ZhLegalPage() {
+  return <LegalView lang="zh" />;
+}

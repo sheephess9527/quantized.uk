@@ -10,5 +10,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ChangelogPage() {
-  return <ChangelogView />;
+  return <ChangelogView lang="en" />;
 }

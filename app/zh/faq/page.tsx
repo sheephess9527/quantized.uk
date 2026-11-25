@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import FaqPage from '../../faq/page';
+import FaqView from '@/components/faq/FaqView';
 import { models } from '@/lib/data/models';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, ogLocale, OG_IMAGE, SITE_NAME } from '@/lib/seo';
 
@@ -18,5 +18,5 @@ export function generateMetadata(): Metadata {
 }
 
 export default function ZhFaqPage() {
-  return <FaqPage lang="zh" />;
+  return <FaqView lang="zh" />;
 }

@@ -10,5 +10,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ZhToolIndexPage() {
-  return <ToolIndexView />;
+  return <ToolIndexView lang="zh" />;
 }

@@ -1,11 +1,9 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, Terminal, Wand2, GitCompareArrows, Gauge } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 
-export default function QuickAccess() {
-  const { t } = useLanguage();
+export default function QuickAccess({ lang }: { lang: Lang }) {
+  const t = translations[lang];
 
   const tools = [
     {

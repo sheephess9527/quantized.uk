@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Calculator, Sparkles } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { quantFormats } from '@/lib/data/formats';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 
@@ -20,8 +18,8 @@ const formatBadges = quantFormats
     color: `${f.bgClass.replace('/10', '/15')} ${f.textClass} ${f.borderClass.replace('/20', '/25')}`,
   }));
 
-export default function HeroSection({ latestDate }: { latestDate?: string }) {
-  const { t, lang } = useLanguage();
+export default function HeroSection({ latestDate, lang }: { latestDate?: string; lang: Lang }) {
+  const t = translations[lang];
 
   return (
     // Deliberately not a 70vh hero any more: the panel directly below it is the

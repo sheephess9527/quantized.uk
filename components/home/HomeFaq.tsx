@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, HelpCircle } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { faqGroups, homeFaqIds } from '@/lib/utils/faq';
 
 /**
@@ -13,8 +11,8 @@ import { faqGroups, homeFaqIds } from '@/lib/utils/faq';
  * engine to decide which page owns them, which is a duplicate-entity problem
  * rather than double coverage. This block is visible content and a link.
  */
-export default function HomeFaq() {
-  const { t, lang } = useLanguage();
+export default function HomeFaq({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const all = faqGroups().flatMap(g => g.items);
   const ids = homeFaqIds();
   const picked = ids.map(id => all.find(i => i.id === id)).filter((x): x is NonNullable<typeof x> => !!x);

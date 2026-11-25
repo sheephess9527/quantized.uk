@@ -13,7 +13,7 @@ import { COMMUNITY_SPEED_ENABLED, type SpeedConfiguration } from '@/lib/data/com
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
-import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType, quantWeights } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
@@ -109,13 +109,13 @@ function indexedModelFor(shape: ImportedShape) {
 }
 
 /** Both card pickers (forward verdict, reverse lookup) list the same groups. */
-function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number][1]) => string) {
+function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number][1]) => string, lang: 'en' | 'zh') {
   return GPU_GROUPS.map(([type, key]) => {
     const rows = gpuDatabase.filter(g => (g.isLaptop ? 'laptop' : g.type) === type);
     return rows.length === 0 ? null : (
       <optgroup key={key} label={label(key)}>
         {rows.map(g => (
-          <option key={g.id} value={g.id}>{g.icon} {g.name} ({g.vram} GB)</option>
+          <option key={g.id} value={g.id}>{g.icon} {gpuDisplayName(g, lang)} ({g.vram} GB)</option>
         ))}
       </optgroup>
     );
@@ -1248,7 +1248,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.yourCardPlaceholder}</option>
-                    {gpuOptgroups(k => t.calc[k])}
+                    {gpuOptgroups(k => t.calc[k], lang)}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
@@ -1600,7 +1600,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     className="w-full min-h-[44px] sm:min-h-0 appearance-none bg-white/[0.04] border border-white/[0.14] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
                   >
                     <option value="">{t.calc.selectGpuPlaceholder}</option>
-                    {gpuOptgroups(k => t.calc[k])}
+                    {gpuOptgroups(k => t.calc[k], lang)}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>

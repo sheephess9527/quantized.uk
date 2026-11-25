@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { models } from '@/lib/data/models';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import GpuPage from '../../../gpu/[gpuId]/page';
 import { gpuMetaDescription } from '@/lib/utils/meta-description';
 import { canonical, defaultRobots, feedAlternates, fitTitle, languageAlternates, ogLocale, pageOgImage, SITE_NAME } from '@/lib/seo';
-import { countModelsFitting, fitsOnGpu, gpuBySlug, gpuPageDescription } from '@/lib/utils/gpu-page';
+import { countModelsFitting, gpuBySlug } from '@/lib/utils/gpu-page';
 
 export { generateStaticParams } from '../../../gpu/[gpuId]/page';
 
@@ -16,11 +16,11 @@ export function generateMetadata({ params }: { params: { gpuId: string } }): Met
   if (!gpu) return { title: '未找到该显卡 | quantized.uk' };
   const path = `/zh/gpu/${params.gpuId}`;
   const url = canonical(path);
-  const count = fitsOnGpu(gpu).length;
-  const title = fitTitle(`${gpu.name} 能跑哪些大模型？`);
+  const label = gpuDisplayName(gpu, 'zh');
+  const title = fitTitle(`${label} 能跑哪些大模型？`);
   const description = gpuMetaDescription(gpu, 'zh');
   const comfortableCount = countModelsFitting(gpu, 'comfortable');
-  const ogAlt = `${gpu.name}：${gpu.vram}GB 显存，${comfortableCount} 个模型可从容运行 | quantized.uk`;
+  const ogAlt = `${label}：${gpu.vram}GB 显存，${comfortableCount} 个模型可从容运行 | quantized.uk`;
   return {
     title,
     description,

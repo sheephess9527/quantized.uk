@@ -37,7 +37,7 @@ export default function HomeContent({ lang }: { lang: Lang }) {
         this page — collapsed — because `#changelog` is linked from the hero,
         the About page and off-site.
       */}
-      <HeroSection latestDate={changelog[0]?.date} />
+      <HeroSection latestDate={changelog[0]?.date} lang={lang} />
       <HomeMatch />
       <StatsBar lang={lang} />
 
@@ -48,29 +48,29 @@ export default function HomeContent({ lang }: { lang: Lang }) {
         <div className="flex justify-end">
           <DataFreshness />
         </div>
-        <WeeklyUpdates />
+        <WeeklyUpdates lang={lang} />
 
-        <PopularStarts />
+        <PopularStarts lang={lang} />
         <JobPaths />
 
-        <MeasuredCases />
+        <MeasuredCases lang={lang} />
 
-        <TodayBoard />
+        <TodayBoard lang={lang} />
 
-        <HomeFaq />
+        <HomeFaq lang={lang} />
 
         <MaintainerNote />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <QuickAccess />
+            <QuickAccess lang={lang} />
           </div>
           <div className="lg:col-span-2">
-            <ExploreStrip guideCount={articles.length} />
+            <ExploreStrip guideCount={articles.length} lang={lang} />
           </div>
         </div>
 
-        <DataChangelog latest={changelog[0]} total={changelog.length} />
+        <DataChangelog latest={changelog[0]} total={changelog.length} lang={lang} />
       </div>
     </>
   );

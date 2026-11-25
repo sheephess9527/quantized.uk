@@ -1,16 +1,15 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Rss, Sparkles } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { models } from '@/lib/data/models';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { dataLastUpdated } from '@/lib/data/meta';
 import { isRecentModel, nameCarriesLabel } from '@/lib/utils/model-meta';
 import { latestEntries, isRecentDate } from '@/lib/utils/latest-additions';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 
-export default function WeeklyUpdates() {
-  const { t, lang } = useLanguage();
+export default function WeeklyUpdates({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const w = t.home.weekly;
   // Newest first, and never empty: the 45-day window alone left two models
   // here, in file order, and would have shown nothing a month later under a
@@ -88,7 +87,7 @@ export default function WeeklyUpdates() {
                     {t.hub.model.newBadge}
                   </span>
                 )}
-                <span className="text-sm text-slate-200 font-medium">{e.gpus.map(g => g.name).join(' · ')}</span>
+                <span className="text-sm text-slate-200 font-medium">{e.gpus.map(g => gpuDisplayName(g, lang)).join(' · ')}</span>
                 <span className="block text-xs text-slate-600 font-mono mt-0.5">
                   {w.hardware} · {e.gpus.every(g => g.name.includes(`${g.vram}G`)) ? '' : `${Array.from(new Set(e.gpus.map(g => g.vram))).join(' / ')} GB · `}{t.hub.model.addedOn.replace('{date}', e.date)}
                 </span>

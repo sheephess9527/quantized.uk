@@ -1,11 +1,9 @@
-'use client';
-
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { quantFormats } from '@/lib/data/formats';
 import { dataSources } from '@/lib/data/meta';
 
-export default function FormatHeatmap() {
-  const { t, lang } = useLanguage();
+export default function FormatHeatmap({ lang }: { lang: Lang }) {
+  const t = translations[lang];
 
   return (
     <div className="glass rounded-2xl p-5 flex flex-col h-full">

@@ -38,6 +38,9 @@ export const metadata: Metadata = {
     title: 'quantized',
     statusBarStyle: 'black-translucent',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },

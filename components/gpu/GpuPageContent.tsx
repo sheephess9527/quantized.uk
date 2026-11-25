@@ -11,7 +11,7 @@ import { useLanguage } from '@/lib/i18n/context';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import { prefillData } from '@/lib/data/prefill';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import { countModelsFitting, fitsOnGpu, groupFitsByBucket, gpuSlug, nextStepUp, sameBudgetCards, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
@@ -34,6 +34,7 @@ import { pairData, pairHref } from '@/lib/utils/pair-pages';
 export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id: string; title: string; titleZh: string }[] }) {
   const { t, lang } = useLanguage();
   const g = t.gpuPage;
+  const gpuName = gpuDisplayName(gpu, lang);
 
   const [contextLength, setContextLength] = useState(GPU_PAGE_CONTEXT);
   const [batchSize, setBatchSize] = useState(1);
@@ -76,7 +77,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         items={[
           { label: t.nav.home, href: '/' },
           { label: g.allGpus, href: '/gpu/' },
-          { label: gpu.name },
+          { label: gpuName },
         ]}
       />
 
@@ -84,7 +85,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
           <Cpu size={12} /> {gpu.vram}GB {g.vramLabel}
         </div>
-        <h1 className="text-3xl font-bold text-slate-100 mb-2">{fill(g.title, { gpu: gpu.name })}</h1>
+        <h1 className="text-3xl font-bold text-slate-100 mb-2">{fill(g.title, { gpu: gpuName })}</h1>
         <p className="text-slate-400 max-w-3xl">
           {fill(g.subtitle.replace('4K', contextLabel(contextLength)), { count: fits.length, total, vram: gpu.vram })}
         </p>
@@ -99,7 +100,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         can read the weights, which is now a vendor spec in `gpuDatabase`.
       */}
       <section className="glass rounded-2xl p-5 sm:p-6 mb-6">
-        <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpu.name })}</h2>
+        <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpuName })}</h2>
         <p className="text-sm text-slate-400 leading-relaxed mb-4">{!isBaseline && <span className="block text-xs text-amber-300 mb-2">{g.baselineNote}</span>}{x.specLine[lang]}</p>
         {gpu.specUrl && (
           <a href={gpu.specUrl} className="inline-block mb-4 text-sm text-violet-400 hover:text-violet-300 underline">

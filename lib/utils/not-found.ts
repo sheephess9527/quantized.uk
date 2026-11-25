@@ -1,9 +1,9 @@
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { articles } from '@/lib/data/cookbook';
 import { localizeHref } from '@/lib/i18n/routing';
-import type { Lang } from '@/lib/i18n/translations';
+import { translations, type Lang } from '@/lib/i18n/translations';
 
 /** Standard edit-distance DP — every candidate slug here is under 30 characters, so this is cheap. */
 function levenshtein(a: string, b: string): number {
@@ -38,16 +38,23 @@ interface Candidate {
 
 /**
  * Model/GPU pair pages exist only for measured pairs and popular cards; an
- * older `/quant-hub/{model}/{gpu}/` URL points readers at both halves instead.
+ * older `/quant-hub/{model}/{gpu}/` URL points readers at both halves plus the
+ * exact pre-filled VRAM calculator view.
  */
 function pairSuggestions(segments: string[], lang: Lang): NotFoundSuggestion[] {
   if (segments.length !== 3 || segments[0] !== 'quant-hub') return [];
   const model = models.find(m => m.id === segments[1]);
   const gpu = gpuDatabase.find(g => gpuSlug(g) === segments[2]);
   if (!model || !gpu) return [];
+  const gpuName = gpuDisplayName(gpu, lang);
+  const calcHref = `/tools/vram-calc/?mode=forward&model=${encodeURIComponent(model.id)}&gpu=${encodeURIComponent(gpu.id)}`;
   return [
+    {
+      label: translations[lang].notFound.calcPair.replace('{model}', model.name).replace('{gpu}', gpuName),
+      href: localizeHref(calcHref, lang),
+    },
     { label: model.name, href: localizeHref(`/quant-hub/${model.id}/`, lang) },
-    { label: gpu.name, href: localizeHref(`/gpu/${gpuSlug(gpu)}/`, lang) },
+    { label: gpuName, href: localizeHref(`/gpu/${gpuSlug(gpu)}/`, lang) },
   ];
 }
 
@@ -67,7 +74,7 @@ export function notFoundSuggestions(requestedPath: string, lang: Lang): NotFound
 
   const candidates: Candidate[] = [
     ...models.map(m => ({ label: m.name, href: `/quant-hub/${m.id}/`, slug: m.id })),
-    ...gpuDatabase.map(g => ({ label: g.name, href: `/gpu/${gpuSlug(g)}/`, slug: gpuSlug(g) })),
+    ...gpuDatabase.map(g => ({ label: gpuDisplayName(g, lang), href: `/gpu/${gpuSlug(g)}/`, slug: gpuSlug(g) })),
     ...articles.map(a => ({ label: lang === 'zh' ? a.titleZh : a.title, href: `/cookbook/${a.id}/`, slug: a.id })),
   ];
 

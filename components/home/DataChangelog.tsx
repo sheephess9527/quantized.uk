@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { dataLastUpdated } from '@/lib/data/meta';
 import type { ChangelogEntry } from '@/lib/data/changelog';
 
@@ -19,8 +17,8 @@ import type { ChangelogEntry } from '@/lib/data/changelog';
  * resolving is worse than a redundant section.
  */
 /** The entry and the count are passed from the server page: importing the changelog here shipped all of it (~205 kB) with the homepage. */
-export default function DataChangelog({ latest, total }: { latest?: ChangelogEntry; total: number }) {
-  const { t, lang } = useLanguage();
+export default function DataChangelog({ latest, total, lang }: { latest?: ChangelogEntry; total: number; lang: Lang }) {
+  const t = translations[lang];
   const c = t.home.changelog;
 
   return (

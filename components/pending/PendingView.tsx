@@ -1,7 +1,5 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { pendingModels, type PendingReason } from '@/lib/data/pending';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { cn } from '@/lib/utils/cn';
@@ -18,8 +16,8 @@ const reasonColors: Record<PendingReason, string> = {
  * "Released, not runnable here yet" — one page listing what the patrol saw and did not index,
  * with the reason recorded at the time. Content is in the static HTML; no disclosure, no JS.
  */
-export default function PendingView() {
-  const { t, lang } = useLanguage();
+export default function PendingView({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const p = t.pending;
   const sorted = pendingModels.slice().sort((a, b) => b.checkedAt.localeCompare(a.checkedAt));
 

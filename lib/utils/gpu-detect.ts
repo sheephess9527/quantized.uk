@@ -31,7 +31,7 @@ function normalize(s: string): string {
 
 /** The chip part of an index name: "RTX 4060 Ti 16G" → "rtx 4060 ti", "Mac M3 Pro 36G" → "m3 pro". */
 function chipName(g: GPU): string {
-  return g.name.replace(/\s\(Mod\/改装\)/g, '').replace(/\s\d+\s?GB?\b/g, '').trim();
+  return g.name.replace(/\s\(Mod(?:\/改装)?\)/g, '').replace(/\s\d+\s?GB?\b/g, '').trim();
 }
 
 function chipKey(g: GPU): string {

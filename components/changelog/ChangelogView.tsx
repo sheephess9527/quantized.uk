@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { Rss } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { dataLastUpdated, dataSources } from '@/lib/data/meta';
 import { changelog } from '@/lib/data/changelog';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -18,8 +16,8 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
  * `/changelog/` was one of the paths the audit found returning 404, and it is
  * the path a reader guesses.
  */
-export default function ChangelogView() {
-  const { t, lang } = useLanguage();
+export default function ChangelogView({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const c = t.home.changelog;
 
   return (

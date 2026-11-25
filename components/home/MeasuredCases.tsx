@@ -1,9 +1,7 @@
-'use client';
-
 import RunProvenance from '@/components/benchmarks/RunProvenance';
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, FlaskConical } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { matrixData } from '@/lib/data/benchmarks';
 import { benchmarkMethodology, runtimeVersions } from '@/lib/data/meta';
 
@@ -31,8 +29,8 @@ const sample = SAMPLE_KEYS.map(([model, hardware, framework]) =>
   matrixData.find(r => r.model === model && r.hardware === hardware && r.framework === framework),
 ).filter((r): r is (typeof matrixData)[number] => r !== undefined);
 
-export default function MeasuredCases() {
-  const { t } = useLanguage();
+export default function MeasuredCases({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const m = t.home.measured;
 
   return (

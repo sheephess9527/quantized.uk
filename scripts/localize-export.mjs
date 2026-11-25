@@ -43,11 +43,32 @@ function htmlFiles(dir, acc = []) {
 
 const files = htmlFiles(ZH);
 
-// ---------------------------------------------------------------- 1. lang
+// ---------------------------------------------------------------- 1. lang & site-wide JSON-LD
+// `SiteJsonLd` lives in the single root `app/layout.tsx`, so it renders once in
+// English for both trees. Patching `/zh/**` here gives Chinese pages localized
+// `WebSite` / `Organization` descriptions and points `SearchAction` at
+// `/zh/quant-hub/?q={search_term_string}` rather than sending Chinese search
+// queries into the English Hub.
+function localizeSiteJsonLd(html) {
+  return html
+    .replace(
+      '"description":"LLM quantization reference — VRAM calculator, quantized model hub, benchmarks, and deployment cookbook."',
+      '"description":"本地大模型量化参考站 —— 显存计算器、量化模型库、真机基准测试与部署指南。"',
+    )
+    .replace(
+      '"urlTemplate":"https://quantized.uk/quant-hub/?q={search_term_string}"',
+      '"urlTemplate":"https://quantized.uk/zh/quant-hub/?q={search_term_string}"',
+    )
+    .replace(
+      '"description":"An independent, hand-maintained reference for running quantized open-weight LLMs on local hardware — per-quant VRAM, measured throughput, and deployment guides."',
+      '"description":"独立人工维护的开源大模型本地量化部署参考 —— 提供各量化档位显存估算、实测吞吐与部署指南。"',
+    );
+}
+
 let patched = 0;
 for (const file of files) {
   const html = readFileSync(file, 'utf8');
-  const next = html.replace(/(<html[^>]*\s)lang="en"/, '$1lang="zh-Hans"');
+  const next = localizeSiteJsonLd(html.replace(/(<html[^>]*\s)lang="en"/, '$1lang="zh-Hans"'));
   if (next !== html) {
     writeFileSync(file, next);
     patched += 1;
@@ -352,5 +373,8 @@ if (existsSync(redirectsFile)) {
   assert.match(source(index), /<meta name="description" content="Fix “failed to allocate buffer for kv cache,”/);
   assert.match(source(detail), /<title>failed to allocate buffer for kv cache: llama\.cpp fix<\/title>/);
   assert.match(source(detail), /<meta name="description" content="llama\.cpp loaded the weights but ran out of room for the KV cache\./);
-  console.log('localize-export: calculator and KV-cache search metadata, localized links and anchor checked');
+  assert.ok(source('/zh/').includes('"urlTemplate":"https://quantized.uk/zh/quant-hub/?q={search_term_string}"'), '/zh/ WebSite SearchAction must target /zh/quant-hub/');
+  assert.ok(!source('/').includes('rel="preload" href="https://plausible.io/js/script.js"'), 'analytics must not preload in <head>');
+  assert.ok(!source('/').replace(/<script[\s\S]*?<\/script>/g, '').replace(/切换到中文版|中文/g, '').includes('改装'), 'English homepage must not leak untranslated Mod/改装 label');
+  console.log('localize-export: calculator and KV-cache search metadata, localized links, /zh/ SearchAction and head preload checked');
 }

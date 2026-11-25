@@ -282,14 +282,15 @@ export function largestAtQ4(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): Q4Large
 export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const fits = fitsOnGpu(gpu);
   const total = models.length;
+  const label = gpu.nameZh && lang === 'zh' ? gpu.nameZh : gpu.name;
   // "The largest" is a recommendation, so a superseded model cannot hold it —
   // the RTX 4060's description named Stable LM 2 12B after it was tagged legacy.
   const top = fits.find(f => !isSuperseded(f.model)) ?? fits[0];
 
   if (!top) {
     return lang === 'zh'
-      ? `在 4K 上下文下，索引中的 ${total} 个量化模型没有一个能从容装进 ${gpu.name} 的 ${gpu.vram}GB。本页说明还差多少，以及换哪张卡能跑。`
-      : `None of the ${total} quantized models in this index fit comfortably in the ${gpu.name}'s ${gpu.vram}GB at 4K context. This page shows by how much, and which card clears it.`;
+      ? `在 4K 上下文下，索引中的 ${total} 个量化模型没有一个能从容装进 ${label} 的 ${gpu.vram}GB。本页说明还差多少，以及换哪张卡能跑。`
+      : `None of the ${total} quantized models in this index fit comfortably in the ${label}'s ${gpu.vram}GB at 4K context. This page shows by how much, and which card clears it.`;
   }
 
   const size = top.totalGB.toFixed(1);
@@ -303,12 +304,12 @@ export function gpuPageDescription(gpu: GPU, lang: 'en' | 'zh'): string {
   const q4 = largestAtQ4(gpu);
   if (q4) {
     return lang === 'zh'
-      ? `${gpu.name}${zhCap || ' '}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)}GB）。4K 下 ${total} 个模型中 ${fits.length} 个可从容运行。`
-      : `How big a model can ${gpu.name}${enCap} run? Comfortably up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ~${q4.totalGB.toFixed(1)}GB). ${fits.length} of ${total} fit at 4K.`;
+      ? `${label}${zhCap || ' '}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)}GB）。4K 下 ${total} 个模型中 ${fits.length} 个可从容运行。`
+      : `How big a model can ${label}${enCap} run? Comfortably up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ~${q4.totalGB.toFixed(1)}GB). ${fits.length} of ${total} fit at 4K.`;
   }
   return lang === 'zh'
-    ? `${gpu.name}${zhCap || ' '}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`
-    : `${gpu.name}${enCap} runs ${fits.length} of ${total} quantized LLMs comfortably at 4K context. Largest: ${top.model.name} at ${level}, about ${size}GB.`;
+    ? `${label}${zhCap || ' '}在 4K 上下文下可从容运行 ${total} 个量化模型中的 ${fits.length} 个，最大的是 ${top.model.name}（${level}，约 ${size}GB）。`
+    : `${label}${enCap} runs ${fits.length} of ${total} quantized LLMs comfortably at 4K context. Largest: ${top.model.name} at ${level}, about ${size}GB.`;
 }
 
 export interface GpuFit {

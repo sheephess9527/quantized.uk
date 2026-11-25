@@ -1,12 +1,10 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
-import { GPU_COUNT } from '@/lib/site';
+import { canonical, GPU_COUNT } from '@/lib/site';
 import { ArrowRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
 import { faqGroups } from '@/lib/utils/faq';
 
 /**
@@ -17,9 +15,12 @@ import { faqGroups } from '@/lib/utils/faq';
  * `<details>` rather than a JS accordion: the answers are then in the exported
  * HTML and readable with the bundle blocked, which is the point of writing
  * them. The first item of each group opens by default.
+ *
+ * `FAQPage` lives here and **only** here. The homepage shows four of the same
+ * questions as a visible block with no schema of its own.
  */
-export default function FaqView() {
-  const { t, lang } = useLanguage();
+export default function FaqView({ lang }: { lang: Lang }) {
+  const t = translations[lang];
   const f = t.faq;
   const groups = faqGroups();
 
@@ -28,6 +29,21 @@ export default function FaqView() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',
+          url: canonical(lang === 'zh' ? '/zh/faq' : '/faq'),
+          mainEntity: groups.flatMap(g =>
+            g.items.map(item => ({
+              '@type': 'Question',
+              name: item.q[lang],
+              acceptedAnswer: { '@type': 'Answer', text: item.a[lang] },
+            })),
+          ),
+        }}
+      />
       <Breadcrumbs items={[{ label: t.nav.home, href: '/' }, { label: f.title }]} />
 
       <div className="mb-8">

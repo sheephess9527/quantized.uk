@@ -9,5 +9,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ZhPendingPage() {
-  return <PendingView />;
+  return <PendingView lang="zh" />;
 }

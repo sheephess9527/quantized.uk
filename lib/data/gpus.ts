@@ -1,6 +1,8 @@
 export interface GPU {
   id: string;
   name: string;
+  /** Optional localized Chinese display name where the English name carries a descriptive tag (e.g. Mod). */
+  nameZh?: string;
   vram: number;
   type: 'nvidia-consumer' | 'nvidia-pro' | 'nvidia-unified' | 'apple' | 'amd' | 'intel' | 'cpu';
   isUnified?: boolean;
@@ -36,6 +38,25 @@ export interface GPU {
   addedAt?: string;
 }
 
+export function gpuDisplayName(gpu: GPU, lang: 'en' | 'zh'): string {
+  return lang === 'zh' && gpu.nameZh ? gpu.nameZh : gpu.name;
+}
+
+export const GPU_GROUPS = [
+  ['nvidia-consumer', 'gpuGroupNvidia'],
+  ['laptop', 'gpuGroupLaptop'],
+  ['nvidia-pro', 'gpuGroupPro'],
+  ['nvidia-unified', 'gpuGroupUnified'],
+  ['amd', 'gpuGroupAmd'],
+  ['intel', 'gpuGroupIntel'],
+  ['apple', 'gpuGroupApple'],
+  ['cpu', 'gpuGroupCpu'],
+] as const;
+
+export function rowsInGpuGroup(groupType: (typeof GPU_GROUPS)[number][0]): GPU[] {
+  return gpuDatabase.filter(g => (g.isLaptop ? 'laptop' : g.type) === groupType);
+}
+
 function geforceLaptops(series: 30 | 40 | 50, memType: string, models: [string, number, boolean?][]): GPU[] {
   const specUrl = `https://www.nvidia.com/en-us/geforce/laptops/${series}-series/`;
   return models.map(([model, vram, hasVariants]) => ({
@@ -64,8 +85,8 @@ export const gpuDatabase: GPU[] = [
   { id: 't4', name: 'Tesla T4 16G', vram: 16, type: 'nvidia-pro', icon: '🔵', bandwidth: 320, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-t4/t4-tensor-core-product-brief.pdf', bandwidthNote: { en: 'Peak bandwidth from the product brief; NVIDIA also lists 300 GB/s in its datasheet.', zh: '采用产品简介中的峰值带宽；NVIDIA 的数据表另列为 300 GB/s。' } },
   { id: 'rtxa6000', name: 'RTX A6000 48G', vram: 48, type: 'nvidia-pro', icon: '🔵', bandwidth: 768, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/content/dam/en-zz/Solutions/products/workstations/nvidia-rtx-a6000-datasheet.pdf' },
   { id: 'rtx6000-ada', name: 'RTX 6000 Ada 48G', vram: 48, type: 'nvidia-pro', icon: '🔵', bandwidth: 960, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.nvidia.com/en-us/products/workstations/rtx-6000/' },
-  { id: 'rtx2080ti-22', name: 'RTX 2080 Ti 22G (Mod/改装)', vram: 22, type: 'nvidia-consumer', icon: '🟢', bandwidth: 616, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/pre-modded-rtx-2080-ti-cards-with-22gb-of-vram-surface-on-ebay-for-usd500-hong-kong-based-seller-offers-ai-friendly-memory-mod-for-a-reasonable-price', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 22 GB comes from the mod; bandwidth assumes stock 14 Gbps memory on the unchanged 352-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。22 GB 容量来自改装；带宽沿用原卡 14 Gbps 显存及 352 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
-  { id: 'rtx4090-48', name: 'RTX 4090 48G (Mod/改装)', vram: 48, type: 'nvidia-consumer', icon: '🟢', bandwidth: 1008, memType: 'GDDR6X', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/blower-style-rtx-4090-48gb-teardown-reveals-dual-sided-memory-configuration-pcb-design-echoes-the-rtx-3090', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 48 GB comes from a modified board; bandwidth assumes stock 21 Gbps memory on the unchanged 384-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。48 GB 容量来自改装电路板；带宽沿用原卡 21 Gbps 显存及 384 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
+  { id: 'rtx2080ti-22', name: 'RTX 2080 Ti 22G (Mod)', nameZh: 'RTX 2080 Ti 22G（改装）', vram: 22, type: 'nvidia-consumer', icon: '🟢', bandwidth: 616, memType: 'GDDR6', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/pre-modded-rtx-2080-ti-cards-with-22gb-of-vram-surface-on-ebay-for-usd500-hong-kong-based-seller-offers-ai-friendly-memory-mod-for-a-reasonable-price', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 22 GB comes from the mod; bandwidth assumes stock 14 Gbps memory on the unchanged 352-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。22 GB 容量来自改装；带宽沿用原卡 14 Gbps 显存及 352 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
+  { id: 'rtx4090-48', name: 'RTX 4090 48G (Mod)', nameZh: 'RTX 4090 48G（改装）', vram: 48, type: 'nvidia-consumer', icon: '🟢', bandwidth: 1008, memType: 'GDDR6X', addedAt: '2026-11-22', specUrl: 'https://www.tomshardware.com/pc-components/gpus/blower-style-rtx-4090-48gb-teardown-reveals-dual-sided-memory-configuration-pcb-design-echoes-the-rtx-3090', bandwidthNote: { en: 'Unofficial China-market memory modification, not an NVIDIA SKU. 48 GB comes from a modified board; bandwidth assumes stock 21 Gbps memory on the unchanged 384-bit bus. Firmware, stability and warranty vary by seller; verify your actual card.', zh: '中国市场非官方扩容改装卡，并非 NVIDIA 官方型号。48 GB 容量来自改装电路板；带宽沿用原卡 21 Gbps 显存及 384 位总线。固件、稳定性和保修取决于卖家，请核实实卡。' } },
   /*
    * Capacities verified 2026-09-11 against vendor and press specifications.
    * VRAM is the only field the sizing math reads, and it is the only claim made

@@ -9,5 +9,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ZhChangelogPage() {
-  return <ChangelogView />;
+  return <ChangelogView lang="zh" />;
 }

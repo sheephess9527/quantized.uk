@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AboutView from '@/components/static/AboutView';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/about',
 });
 
-export { default } from '../../about/page';
+export default function ZhAboutPage() {
+  return <AboutView lang="zh" />;
+}

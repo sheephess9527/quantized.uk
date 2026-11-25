@@ -10,5 +10,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function PendingPage() {
-  return <PendingView />;
+  return <PendingView lang="en" />;
 }

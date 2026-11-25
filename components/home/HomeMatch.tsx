@@ -8,7 +8,7 @@ import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Gauge, ShieldCheck, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, GPU_GROUPS, gpuDisplayName, rowsInGpuGroup } from '@/lib/data/gpus';
 import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { homePicks, type HomePick, type HomeUseCase } from '@/lib/utils/home-picks';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -31,16 +31,6 @@ import { trackEvent } from '@/lib/analytics';
 /** A mid-range consumer card, wide enough that the example is not degenerate. */
 const EXAMPLE_GPU_ID = 'rtx4060ti16';
 
-const GROUPS: { type: GPU['type']; label: string }[] = [
-  { type: 'nvidia-consumer', label: 'NVIDIA GeForce' },
-  { type: 'amd', label: 'AMD Radeon' },
-  { type: 'intel', label: 'Intel Arc' },
-  { type: 'apple', label: 'Apple Silicon' },
-  { type: 'nvidia-unified', label: 'NVIDIA DGX Spark' },
-  { type: 'nvidia-pro', label: 'NVIDIA data centre' },
-  { type: 'cpu', label: 'CPU / system RAM' },
-];
-
 const KIND_STYLE: Record<HomePick['kind'], { icon: typeof ShieldCheck; color: string; ring: string }> = {
   capable: { icon: Sparkles, color: 'text-violet-300', ring: 'border-violet-500/25' },
   headroom: { icon: ShieldCheck, color: 'text-emerald-300', ring: 'border-emerald-500/25' },
@@ -50,7 +40,7 @@ const KIND_STYLE: Record<HomePick['kind'], { icon: typeof ShieldCheck; color: st
 const round = (n: number) => (n >= 10 ? n.toFixed(0) : n.toFixed(1));
 
 export default function HomeMatch() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const m = t.home.match;
   const { config, hydrated, updateConfig } = useHardwareProfile();
   const [contextLength, setContextLength] = useState(GPU_PAGE_CONTEXT);
@@ -59,6 +49,7 @@ export default function HomeMatch() {
 
   const chosen = hydrated ? gpuDatabase.find(g => g.id === config.gpuId) ?? null : null;
   const gpu = chosen ?? gpuDatabase.find(g => g.id === EXAMPLE_GPU_ID)!;
+  const gpuName = gpuDisplayName(gpu, lang);
   const isExample = chosen === null;
 
   const picks = useMemo(() => homePicks(gpu, useCase, contextLength, batchSize), [gpu, useCase, contextLength, batchSize]);
@@ -86,20 +77,21 @@ export default function HomeMatch() {
                 updateConfig({ gpuId: e.target.value });
                 if (e.target.value) trackEvent('Home Match', { gpu: e.target.value });
               }}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
+              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40"
             >
               <option value="">{m.gpuPlaceholder}</option>
-              {GROUPS.map(g => (
-                <optgroup key={g.type} label={g.label}>
-                  {gpuDatabase
-                    .filter(x => x.type === g.type)
-                    .map(x => (
+              {GPU_GROUPS.map(([type, key]) => {
+                const rows = rowsInGpuGroup(type);
+                return rows.length === 0 ? null : (
+                  <optgroup key={key} label={t.calc[key]}>
+                    {rows.map(x => (
                       <option key={x.id} value={x.id}>
-                        {x.name} — {x.vram} GB
+                        {gpuDisplayName(x, lang)} — {x.vram} GB
                       </option>
                     ))}
-                </optgroup>
-              ))}
+                  </optgroup>
+                );
+              })}
             </select>
           </label>
 
@@ -108,7 +100,7 @@ export default function HomeMatch() {
             <select
               value={useCase}
               onChange={e => setUseCase(e.target.value as HomeUseCase)}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40 focus:outline-none"
+              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40"
             >
               <option value="chat">{m.useChat}</option>
               <option value="code">{m.useCode}</option>
@@ -127,14 +119,14 @@ export default function HomeMatch() {
           )}
           <span>
             {isExample
-              ? m.exampleNote.replace('{gpu}', gpu.name)
-              : m.yoursNote.replace('{gpu}', gpu.name).replace('{vram}', String(gpu.vram))}
+              ? m.exampleNote.replace('{gpu}', gpuName)
+              : m.yoursNote.replace('{gpu}', gpuName).replace('{vram}', String(gpu.vram))}
           </span>
         </p>
 
         {picks.length === 0 ? (
           <p className="text-sm text-slate-400 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            {m.none.replace('{gpu}', gpu.name)}
+            {m.none.replace('{gpu}', gpuName)}
           </p>
         ) : (
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -206,7 +198,7 @@ export default function HomeMatch() {
           href={`/gpu/${gpuSlug(gpu)}/`}
           className="inline-flex items-center gap-1 mt-4 min-h-[44px] text-xs text-violet-400 hover:text-violet-300"
         >
-          {m.allFits.replace('{gpu}', gpu.name)} <ArrowRight size={12} />
+          {m.allFits.replace('{gpu}', gpuName)} <ArrowRight size={12} />
         </Link>
       </div>
     </section>

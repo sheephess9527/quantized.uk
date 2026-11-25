@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-25',
+    en: 'Faster page loads, instant search across all 126 GPUs and Macs, and grouped hardware pickers across the site. Non-interactive reference pages now ship far less JavaScript, static assets cache longer, and missing model-and-GPU links offer a direct jump into the pre-filled VRAM calculator.',
+    zh: '全站页面加载更快，显卡索引页支持在全部 126 款显卡与 Mac 中即时搜索，各处硬件下拉框统一按类别分组显示。纯阅读参考页面大幅减少了客户端脚本体积，静态资源缓存更持久，旧的「模型 × 显卡」链接也可一键跳入预填好参数的显存计算器。',
+  },
+  {
+    date: '2026-11-25',
     en: 'Added Ternary Bonsai 2.5 27B, the final CCORE Web Coder 4B checkpoint, and MiniCPM-V 4.6 and 4.6 Thinking with verified GGUF and vision-projector sizes. Verified Ollama 0.40.18 and retained the Windows llama.cpp pin.',
     zh: '收录 Ternary Bonsai 2.5 27B、CCORE Web Coder 4B 最终权重，以及 MiniCPM-V 4.6 和 4.6 Thinking，核实了 GGUF 与视觉投影文件大小。已复核 Ollama 0.40.18，Windows llama.cpp 固定版本保持不变。',
   },
