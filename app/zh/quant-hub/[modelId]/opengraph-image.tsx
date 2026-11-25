@@ -18,7 +18,7 @@ export default function Image({ params }: { params: { modelId: string } }) {
     return renderOgImage({ eyebrow: '模型', title: '未找到', stats: [] });
   }
   const quant = bestQuant(model.quants);
-  const { totalGB } = sizeAt(model, quant.bpw, REF_CONTEXT);
+  const { totalGB } = sizeAt(model, quant, REF_CONTEXT);
   const smallest = cardsFitting(totalGB, quant.format)[0];
   return renderOgImage({
     eyebrow: '模型',

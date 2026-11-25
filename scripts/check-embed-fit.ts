@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { parseEmbedFit, buildEmbedSnippets, embedMemoryLabel } from '../lib/utils/embed-fit';
-import { calcVRAM, getVerdict } from '../lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '../lib/utils/vram';
 import { capacityGB, tightCeiling } from '../lib/utils/gpu-page';
 import { quantLevelKey } from '../lib/utils/recommend';
 import { models } from '../lib/data/models';
@@ -18,7 +18,7 @@ for (const [modelId, gpuId] of [['qwen3-8b', 'rtx4090'], ['qwen3-32b', 'rtx3060'
   assert.ok(fit);
   const model = models.find(m => m.id === modelId)!;
   assert.equal(quantLevelKey(fit.quant), quantLevelKey(referenceQuant(model.quants)));
-  const expected = calcVRAM({ paramsB: model.params, ...model.arch, bpw: fit.quant.bpw, contextLength: 4096, batchSize: 1 });
+  const expected = calcVRAM({ paramsB: model.params, ...model.arch, ...quantWeights(fit.quant), contextLength: 4096, batchSize: 1 });
   assert.equal(fit.result.totalGB, expected.totalGB);
   assert.equal(embedMemoryLabel(fit, 'en'), `${fit.gpu.vram} GB`);
   assert.equal(embedMemoryLabel(fit, 'zh'), `${fit.gpu.vram} GB`);
@@ -63,7 +63,7 @@ for (const lang of ['en', 'zh'] as const) {
 }
 const advanced = parse('model=qwen3-8b&gpu=rtx4090&ctx=8192&batch=2&cache=q8_0&cards=2&extra=rtx3060&mmproj=1.5');
 assert.ok(advanced);
-assert.equal(advanced.result.totalGB, calcVRAM({ paramsB: advanced.model.params, ...advanced.model.arch, bpw: advanced.quant.bpw, contextLength: 8192, batchSize: 2, kvBytesPerValue: 34 / 32, extraGB: 1.5 }).totalGB);
+assert.equal(advanced.result.totalGB, calcVRAM({ paramsB: advanced.model.params, ...advanced.model.arch, ...quantWeights(advanced.quant), contextLength: 8192, batchSize: 2, kvBytesPerValue: 34 / 32, extraGB: 1.5 }).totalGB);
 assert.equal(advanced.capacity, capacityGB(advanced.gpu, 2, [parse('model=qwen3-8b&gpu=rtx3060')!.gpu]));
 assert.equal(advanced.hardwareGB, 60);
 assert.equal(parse('model=qwen3-8b&gpu=rtx4090&extra=rx7900xtx'), null);

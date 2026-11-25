@@ -46,7 +46,7 @@ export default function TodayBoard() {
           const model = models.find(m => m.id === item.modelId);
           const quant = model?.quants.find(q => q.level === item.level);
           if (!model || !quant) return null;
-          const size = sizeAt(model, quant.bpw, REF_CONTEXT).totalGB;
+          const size = sizeAt(model, quant, REF_CONTEXT).totalGB;
           const smallest = cardsFitting(size, quant.format)[0];
           const href = `/quant-hub/${item.modelId}/`;
           return (

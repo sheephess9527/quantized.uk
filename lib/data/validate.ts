@@ -4,7 +4,7 @@ import { models, todayFeed } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { articles } from '@/lib/data/cookbook';
 import { hfRepoMap } from '@/lib/data/hf-repos';
-import { calcVRAM, getVerdict, quantBPW, quantGroups } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantBPW, quantGroups, quantWeights } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuSlug, usableCapacityGB, tightCeiling } from '@/lib/utils/gpu-page';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
@@ -237,11 +237,12 @@ function descriptionProblems(): string[] {
   const out: string[] = [];
   const LEVEL = /\b(IQ2_XXS|Q[2-8]_K_[MS]|Q[2-8]_K|Q8_0|Q4_0|MXFP4|INT4)\b/g;
   const sizeOf = (m: (typeof models)[number], level: string, ctxK: number) => {
-    const bpw = m.quants.find(q => q.level === level)?.bpw ?? (quantBPW as Record<string, number>)[level];
+    const quant = m.quants.find(q => q.level === level);
+    const bpw = quant?.bpw ?? (quantBPW as Record<string, number>)[level];
     if (!bpw) return undefined;
     return calcVRAM({
       paramsB: m.params, layers: m.arch.layers, kvHeads: m.arch.kvHeads, headDim: m.arch.headDim,
-      attention: m.arch.attention, bpw, contextLength: ctxK * 1024, batchSize: 1,
+      attention: m.arch.attention, ...quantWeights(quant ?? { bpw }), contextLength: ctxK * 1024, batchSize: 1,
     });
   };
   const near = (stated: string, r: { totalGB: number; modelWeightsGB: number }) => {
@@ -310,11 +311,12 @@ function guideFigureProblems(): string[] {
       const hit = aliases.find(x => x.re.test(sent));
       if (!hit) continue;
       const m = hit.m;
-      const bpw = m.quants.find(q => q.level === lv[1])?.bpw ?? (quantBPW as Record<string, number>)[lv[1]];
+      const quant = m.quants.find(q => q.level === lv[1]);
+      const bpw = quant?.bpw ?? (quantBPW as Record<string, number>)[lv[1]];
       if (!bpw) continue;
       const r = calcVRAM({
         paramsB: m.params, layers: m.arch.layers, kvHeads: m.arch.kvHeads, headDim: m.arch.headDim,
-        attention: m.arch.attention, bpw, contextLength: Number(ctx[1]) * 1024, batchSize: 1,
+        attention: m.arch.attention, ...quantWeights(quant ?? { bpw }), contextLength: Number(ctx[1]) * 1024, batchSize: 1,
       });
       const stated = Number(gb[1]);
       if (Math.abs(stated - r.totalGB) > 0.3 && Math.abs(stated - r.modelWeightsGB) > 0.3) {
@@ -334,6 +336,10 @@ function sourceAndPendingProblems(): string[] {
   // bpw (rounded to two places), split builds say how many parts, and the date is a real date.
   for (const m of models) {
     for (const q of m.quants) {
+      if (q.publishedBytes !== undefined && (q.source || !Number.isSafeInteger(q.publishedBytes) ||
+          q.publishedBytes <= 0 || Math.abs(q.publishedBytes * 8 / (m.params * 1e9) - q.bpw) > 0.02)) {
+        out.push(`${m.id} ${q.level}: invalid or conflicting published bytes`);
+      }
       const src = q.source;
       if (!src) continue;
       const tag = `${m.id} ${q.format} ${q.level}`;

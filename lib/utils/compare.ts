@@ -1,5 +1,5 @@
 import { QuantModel } from '@/lib/data/types';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { contextLabel } from '@/lib/utils/context-label';
 import { bestQuant as pickBestQuant, referenceQuant } from '@/lib/utils/quality';
 import type { GPU } from '@/lib/data/gpus';
@@ -114,14 +114,14 @@ export function compareModels(
    * Undefined past the model's own window: a size at a context the model cannot
    * take is not an answer (same rule as the calculator's static tables).
    */
-  const estimate = (m: QuantModel, q: { bpw: number }) =>
+  const estimate = (m: QuantModel, q: Pick<QuantModel['quants'][number], 'bpw' | 'source'>) =>
     contextLen > m.contextLength ? undefined : calcVRAM({
       paramsB: m.params,
       layers: m.arch.layers,
       kvHeads: m.arch.kvHeads,
       headDim: m.arch.headDim,
       attention: m.arch.attention,
-      bpw: q.bpw,
+      ...quantWeights(q),
       contextLength: contextLen,
       batchSize: 1,
     }).totalGB;

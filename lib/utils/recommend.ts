@@ -1,6 +1,6 @@
 import { models, QuantModel, QuantVariant } from '@/lib/data/models';
 import type { GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { qualityRank } from '@/lib/utils/quality';
 import { capacityGB, formatAllowed, tightCeiling } from '@/lib/utils/gpu-page';
 import { rooflineTokS, moeRooflineTokS } from '@/lib/utils/roofline';
@@ -62,10 +62,11 @@ export function getRecommendations(
   bestPerModel = false,
   input: RecommendationInput = 'text',
   filters: RecommendationFilters = {},
+  extra: GPU[] = [],
 ): Recommendation[] {
   if (!Number.isFinite(contextLen) || contextLen <= 0 || !Number.isFinite(batchSize) || batchSize <= 0) return [];
   const results: Recommendation[] = [];
-  const capacity = capacityGB(gpu, cards);
+  const capacity = capacityGB(gpu, cards, extra);
 
   for (const model of models) {
     if (filters.tools && !hasToolCalling(model.id)) continue;
@@ -74,11 +75,11 @@ export function getRecommendations(
     if (contextLen > model.contextLength) continue;
     if (input === 'image' && !hasImageInput(model.id)) continue;
     for (const quant of model.quants) {
-      if (cards === 1 && Number.isFinite(filters.minTok) && filters.minTok! > 0) {
+      if (cards === 1 && !extra.length && Number.isFinite(filters.minTok) && filters.minTok! > 0) {
         const speed = recommendationSpeed(gpu, model, quant, cards);
         if (speed === undefined || speed.tokS < filters.minTok!) continue;
       }
-      if (!formatAllowed(gpu, quant.format)) continue;
+      if (!formatAllowed(gpu, quant.format) || extra.some(g => !formatAllowed(g, quant.format))) continue;
       const bytes = quant.source?.mmprojBytes;
       // Image mode only makes a fit claim when its separate encoder is known.
       // Missing bytes do not mean a zero-size encoder; non-GGUF layouts need
@@ -91,7 +92,7 @@ export function getRecommendations(
         kvHeads: model.arch.kvHeads,
         headDim: model.arch.headDim,
         attention: model.arch.attention,
-        bpw: quant.bpw,
+        ...quantWeights(quant),
         contextLength: contextLen,
         batchSize,
         kvBytesPerValue,

@@ -1,6 +1,6 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { fitsOnGpu, largestAtQ4, type Q4Largest, formatAllowed, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { homePicks, type HomeUseCase } from '@/lib/utils/home-picks';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -96,14 +96,14 @@ export interface BestFaq {
   a: { en: string; zh: string };
 }
 
-function sizeAt(model: QuantModel, bpw: number, ctx: number) {
+function sizeAt(model: QuantModel, quant: QuantVariant, ctx: number) {
   return calcVRAM({
     paramsB: model.params,
     layers: model.arch.layers,
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw,
+    ...quantWeights(quant),
     contextLength: ctx,
     batchSize: 1,
   });
@@ -221,7 +221,7 @@ export function bestPage(tier: BestTier): BestPageData {
       ),
     ).length;
     const holdsAt = LONG_CONTEXTS.filter(
-      ctx => getVerdict(sizeAt(top.model, top.quant.bpw, ctx).totalGB, capacity) === 'green',
+      ctx => getVerdict(sizeAt(top.model, top.quant, ctx).totalGB, capacity) === 'green',
     );
     const already = picks.find(p => p.model.id === top.model.id);
     if (already) {
@@ -253,7 +253,7 @@ export function bestPage(tier: BestTier): BestPageData {
     if (fittingIds.has(model.id)) continue;
     const cheapest = model.quants
       .filter(q => formatAllowed(card, q.format))
-      .map(q => ({ q, gb: sizeAt(model, q.bpw, GPU_PAGE_CONTEXT).totalGB }))
+      .map(q => ({ q, gb: sizeAt(model, q, GPU_PAGE_CONTEXT).totalGB }))
       .sort((a, b) => a.gb - b.gb)[0];
     if (!cheapest) continue;
     const overBy = cheapest.gb - capacity;
@@ -266,7 +266,7 @@ export function bestPage(tier: BestTier): BestPageData {
   const ladder = [GPU_PAGE_CONTEXT, ...LONG_CONTEXTS].map(context => ({
     context,
     count: models.filter(m =>
-      m.quants.some(q => formatAllowed(card, q.format) && getVerdict(sizeAt(m, q.bpw, context).totalGB, capacity) === 'green'),
+      m.quants.some(q => formatAllowed(card, q.format) && getVerdict(sizeAt(m, q, context).totalGB, capacity) === 'green'),
     ).length,
   }));
 

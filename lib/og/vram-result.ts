@@ -2,7 +2,7 @@ import { gpuDatabase } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { canStack, capacityGB, MAX_CARDS, modelShape, rigExtras, rigFormatAllowed, verdictOn } from '@/lib/utils/calc-insights';
 import { getRecommendations, readRecommendationFilters, quantLevelKey, type SortBy } from '@/lib/utils/recommend';
-import { calcVRAM, KV_CACHE_TYPES, quantBPW } from '@/lib/utils/vram';
+import { calcVRAM, KV_CACHE_TYPES, quantBPW, quantWeights } from '@/lib/utils/vram';
 import { hasQuantFileShape, quantFromFilename, readHubQuantFile } from '@/lib/utils/hf-quant-file';
 import { NO_SHARE_GPU, readVramAttention, readVramEncoder, VRAM_SHARE_PARAM } from '@/lib/utils/vram-link';
 
@@ -75,13 +75,13 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
     const extras = rigExtras(gpu, (params.get('extra') ?? '').split(','), cards);
     if (cards > 1 || extras.length > 0) filters.minTok = 0;
     const rows = getRecommendations(gpu, ctx, batch, sort, params.get('yellow') !== '0', kvBytes,
-      cards, params.get('all') !== '1', input, filters);
+      cards, params.get('all') !== '1', input, filters, extras);
     return {
       eyebrow: t.reverse,
       title: gpu.name,
       details: [...details, ...(input === 'image' ? [t.image] : [])].join(' · '),
       answer: `${rows.length} ${t.variants}`,
-      hardware: `${cards > 1 ? `${cards}× · ` : ''}${capacityGB(gpu, cards).toFixed(2)} GiB ${t.usable}`,
+      hardware: `${cards > 1 ? `${cards}× · ` : ''}${capacityGB(gpu, cards, extras).toFixed(2)} GiB ${t.usable}`,
       tone: rows.length ? 'green' : 'neutral',
     };
   }
@@ -111,7 +111,7 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
     extraGB,
   };
   if ([shape.paramsB, shape.layers, shape.kvHeads, shape.headDim].some(n => n <= 0 || n > 1_000_000)) return;
-  const { totalGB } = calcVRAM({ ...shape, bpw, contextLength: ctx, weightBytes: file?.bytes });
+  const { totalGB } = calcVRAM({ ...shape, bpw, contextLength: ctx, weightBytes: file?.bytes ?? (quant && quantWeights(quant).weightBytes) });
   if (!Number.isFinite(totalGB) || totalGB >= 1e9) return;
   const extras = rigExtras(gpu ?? null, (params.get('extra') ?? '').split(','), cards);
   let tone: Tone = 'neutral';
@@ -128,8 +128,8 @@ export function vramPreview(params: URLSearchParams, lang: Locale): VramPreview 
       verdict = t.unsupportedFormat;
       tone = 'red';
     } else if (totalGB > capacityGB(gpu, cards, extras)) {
-      verdict = t.overBudget;
-      tone = 'red';
+      tone = verdictOn(totalGB, gpu, cards, extras);
+      verdict = `${t[tone]} · ${t.overBudget}`;
     } else {
       tone = verdictOn(totalGB, gpu, cards, extras);
       verdict = t[tone];

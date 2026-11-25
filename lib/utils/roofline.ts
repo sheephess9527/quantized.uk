@@ -1,6 +1,6 @@
 import type { GPU } from '@/lib/data/gpus';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
-import { calcVRAM } from '@/lib/utils/vram';
+import { calcVRAM, quantWeights } from '@/lib/utils/vram';
 import { isMoE, activeParamsB } from '@/lib/utils/model-meta';
 
 /**
@@ -16,7 +16,7 @@ export function weightsGB(model: QuantModel, quant: QuantVariant) {
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw: quant.bpw,
+    ...quantWeights(quant),
     contextLength: 4096,
     batchSize: 1,
   }).modelWeightsGB;

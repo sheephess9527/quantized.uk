@@ -1,6 +1,6 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { matchesParamRange, PARAM_RANGES, type ParamRange } from '@/lib/utils/param-buckets';
 import { qualityRank } from '@/lib/utils/quality';
 import { isSuperseded } from '@/lib/utils/model-meta';
@@ -198,7 +198,7 @@ export function countModelsFitting(gpu: GPU, level: FitLevel, contextLength = GP
         kvHeads: model.arch.kvHeads,
         headDim: model.arch.headDim,
         attention: model.arch.attention,
-        bpw: quant.bpw,
+        ...quantWeights(quant),
         contextLength,
         batchSize,
       });
@@ -269,7 +269,7 @@ export function largestAtQ4(gpu: GPU, contextLength = GPU_PAGE_CONTEXT): Q4Large
       kvHeads: model.arch.kvHeads,
       headDim: model.arch.headDim,
       attention: model.arch.attention,
-      bpw: quant.bpw,
+      ...quantWeights(quant),
       contextLength,
       batchSize: 1,
     });
@@ -325,7 +325,7 @@ export function gpuFitMemory(model: QuantModel, gpu: GPU, quant: QuantVariant, c
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw: quant.bpw,
+    ...quantWeights(quant),
     contextLength,
     batchSize,
   });

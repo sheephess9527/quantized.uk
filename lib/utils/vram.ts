@@ -1,10 +1,12 @@
+import type { QuantVariant } from '@/lib/data/types';
+
 export interface CalcInput {
   paramsB: number;
   layers: number;
   kvHeads: number;
   headDim: number;
   bpw: number;
-  /** Exact combined weight-file bytes, when known. No extra weight overhead. */
+  /** Exact combined weight-file bytes, when known, before the planning allowance. */
   weightBytes?: number;
   contextLength: number;
   batchSize: number;
@@ -36,7 +38,9 @@ export interface CalcInput {
 }
 
 export interface CalcResult {
+  /** Planning budget including weightAllowanceGB. */
   modelWeightsGB: number;
+  weightAllowanceGB: number;
   kvCacheGB: number;
   activationsGB: number;
   /** Present only when `extraGB` was given. */
@@ -124,14 +128,22 @@ export type KvCacheType = keyof typeof KV_CACHE_TYPES;
 export const WEIGHT_OVERHEAD = 0.02;
 export const ACTIVATION_BUFFER = 0.10;
 
+/** Prefer recorded language-model file bytes. BPW-only rows retain the estimate allowance. */
+export function quantWeights(quant: Pick<QuantVariant, 'bpw' | 'source' | 'publishedBytes'>) {
+  return { bpw: quant.bpw, weightBytes: quant.source?.bytes ?? quant.publishedBytes };
+}
+
 export function calcVRAM(input: CalcInput): CalcResult {
   const { paramsB, layers, kvHeads, headDim, bpw, contextLength, batchSize, attention } = input;
   const kvValueBytes = input.kvBytesPerValue ?? KV_CACHE_TYPES.f16;
 
-  // Model weights: params × bits ÷ 8 → bytes → GB, with 2% embedding overhead
-  const modelWeightsGB = input.weightBytes === undefined
-    ? (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3) * (1 + WEIGHT_OVERHEAD)
+  // Use the same planning allowance for every source. It is separate from file bytes.
+  const weightBasisGB = input.weightBytes === undefined
+    ? (paramsB * 1e9 * (bpw / 8)) / (1024 ** 3)
     : input.weightBytes / (1024 ** 3);
+
+  const weightAllowanceGB = weightBasisGB * WEIGHT_OVERHEAD;
+  const modelWeightsGB = weightBasisGB + weightAllowanceGB;
 
   // KV cache: 2 (K+V) × kvHeads × headDim × 2 bytes (fp16) per layer per token.
   //
@@ -170,6 +182,7 @@ export function calcVRAM(input: CalcInput): CalcResult {
   const totalGB = modelWeightsGB + kvCacheGB + extraGB + activationsGB;
 
   return {
+    weightAllowanceGB: round(weightAllowanceGB),
     modelWeightsGB: round(modelWeightsGB),
     kvCacheGB: round(kvCacheGB),
     activationsGB: round(activationsGB),

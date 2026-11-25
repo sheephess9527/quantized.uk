@@ -1,3 +1,4 @@
+import { models } from '@/lib/data/models';
 import { importFromHub, type ImportedShape } from '@/lib/utils/hf-import';
 
 const HUB = 'https://huggingface.co';
@@ -148,6 +149,20 @@ export async function importQuantFile(input: string, fetchImpl: typeof fetch = f
       if (mainBytes ? mainBytes > 4 * bytes : await hasLargerShardedCounterpart(ref, counterpart, bytes, fetchImpl)) {
         return { ok: false, error: 'auxiliaryFile' };
       }
+    }
+    // The catalog records default-branch listings. Keep explicit revisions and
+    // ambiguous or unnamed files on the revision-specific config path.
+    const firstPart = ref.path.replace(shardPattern, (_, _part, total) => `-00001-of-${total}`);
+    const matches = ref.revision === 'main' ? models.filter(model => model.quants.some(q =>
+      q.format === 'GGUF' && q.source?.repo === ref.repo && q.source.file === firstPart && q.source.bytes === bytes,
+    )) : [];
+    if (matches.length === 1) {
+      const model = matches[0];
+      const { layers, kvHeads, headDim, attention } = model.arch;
+      return { ok: true, file: { ...ref, bytes }, shape: {
+        repo: ref.repo, paramsB: model.params, layers, kvHeads, headDim, attention,
+        contextLength: model.contextLength, notes: ['indexedFile'],
+      } };
     }
     const result = await importFromHub(ref.repo, fetchImpl, ref.revision);
     return { ok: true, file: { ...ref, bytes }, shape: result.ok ? result.shape : undefined };

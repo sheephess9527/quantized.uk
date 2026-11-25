@@ -3,7 +3,7 @@
 import { ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import type { QuantVariant } from '@/lib/data/types';
-import { fileGB, groupedBytes, repoUrl, sizingBasis } from '@/lib/utils/quant-source';
+import { fileGB, groupedBytes, repoUrl, weightEvidence } from '@/lib/utils/quant-source';
 
 /**
  * One line saying which published file a quant row is sized from — repo, file name, exact bytes,
@@ -16,9 +16,11 @@ export default function QuantFileLine({ quant, compact = false }: { quant: Quant
   const d = t.hub.detail;
   const src = quant.source;
   if (!src) {
+    if (quant.publishedBytes !== undefined) return <span className="text-slate-500">{groupedBytes(quant.publishedBytes)} {d.fileBytes} · {d.fileUnnamed}</span>;
+    const basis = weightEvidence(quant);
     return (
       <span className="text-slate-500">
-        {sizingBasis(quant) === 'generic' ? d.basisGeneric : d.basisPublished}
+        {basis === 'generic' ? d.basisGeneric : basis === 'published' ? d.basisPublished : d.basisModelSpecific}
       </span>
     );
   }

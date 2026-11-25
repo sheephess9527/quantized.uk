@@ -2,13 +2,13 @@ import { models } from '@/lib/data/models';
 import { quantFormats, type QuantFormat } from '@/lib/data/formats';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 import { modelsWithFormat, formatPairs } from '@/lib/utils/format-compare';
-import { calcVRAM } from '@/lib/utils/vram';
+import { calcVRAM, quantWeights } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { gpuDatabase } from '@/lib/data/gpus';
 import { getVerdict } from '@/lib/utils/vram';
 import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { article } from '@/lib/utils/gpu-explainer';
-import type { QuantModel } from '@/lib/data/types';
+import type { QuantModel, QuantVariant } from '@/lib/data/types';
 
 /**
  * One page per format the index actually ships.
@@ -89,14 +89,14 @@ function referenceModel(format: QuantFormat): QuantModel | undefined {
   )[0];
 }
 
-function sizeOf(model: QuantModel, bpw: number) {
+function sizeOf(model: QuantModel, quant: QuantVariant) {
   return calcVRAM({
     paramsB: model.params,
     layers: model.arch.layers,
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw,
+    ...quantWeights(quant),
     contextLength: REF_CONTEXT,
     batchSize: 1,
   });
@@ -122,7 +122,7 @@ export function formatPage(format: QuantFormat): {
   // bases in one sentence, which is the fault the compare tool already shipped
   // once. The reference model's own row is what is priced here.
   const refQuant = ref?.quants.find(q => q.format === format.name && q.level === main?.level);
-  const example = ref && refQuant ? sizeOf(ref, refQuant.bpw) : undefined;
+  const example = ref && refQuant ? sizeOf(ref, refQuant) : undefined;
   const smallestCard = example
     ? gpuDatabase
         .filter(g => formatAllowed(g, format.name) && getVerdict(example.totalGB, usableCapacityGB(g)) === 'green')

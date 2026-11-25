@@ -3,7 +3,7 @@ import { matrixData } from '../lib/data/benchmarks';
 import assert from 'node:assert/strict';
 import { models } from '../lib/data/models';
 import { gpuDatabase } from '../lib/data/gpus';
-import { calcVRAM, KV_CACHE_TYPES } from '../lib/utils/vram';
+import { calcVRAM, KV_CACHE_TYPES, quantWeights } from '../lib/utils/vram';
 import { fitsOnGpu, countModelsFitting, nextStepUp, GPU_CONTEXT_PRESETS, GPU_BATCH_PRESETS } from '../lib/utils/gpu-page';
 import { homePicks } from '../lib/utils/home-picks';
 import { getRecommendations, recommendationSpeed } from '../lib/utils/recommend';
@@ -43,7 +43,7 @@ assert.ok(imageTools.every(r => hasImageInput(r.model.id) && hasToolCalling(r.mo
 const laptop = gpuDatabase.find(g => g.id === 'rx7700s')!;
 const qwen32b = models.find(m => m.id === 'qwen3-32b')!;
 const gguf32b = qwen32b.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M')!;
-const laptopShape = { ...modelShape(qwen32b, 1), bpw: gguf32b.bpw, contextLength: 4096 };
+const laptopShape = { ...modelShape(qwen32b, 1), ...quantWeights(gguf32b), contextLength: 4096 };
 const laptopResult = calcVRAM(laptopShape);
 const laptopOffload = offloadPlan(laptopShape, laptopResult, laptop, 2, 'ddr5-5600', gguf32b.format, qwen32b);
 assert.ok(laptopOffload && laptopOffload.gpuLayers > 0 && laptopOffload.gpuLayers < laptopShape.layers);
@@ -71,7 +71,7 @@ for (const card of gpuDatabase) {
       for (const fit of fits) {
         assert.ok(fit.model.contextLength >= ctx, `${fit.model.id}: GPU page context exceeded`);
         assert.equal(fit.totalGB, calcVRAM({
-          ...modelShape(fit.model, batch), bpw: fit.quant.bpw, contextLength: ctx,
+          ...modelShape(fit.model, batch), ...quantWeights(fit.quant), contextLength: ctx,
         }).totalGB);
       }
     }
@@ -104,7 +104,7 @@ for (const card of gpuDatabase) {
           assert.ok(r.quant.source!.mmprojBytes! > 0);
           assert.equal(r.extraGB, r.quant.source!.mmprojBytes! / 1024 ** 3);
         } else assert.equal(r.extraGB, undefined);
-        const sized = calcVRAM({ ...modelShape(r.model, 1, KV_CACHE_TYPES.f16, r.extraGB), bpw: r.quant.bpw, contextLength: ctx });
+        const sized = calcVRAM({ ...modelShape(r.model, 1, KV_CACHE_TYPES.f16, r.extraGB), ...quantWeights(r.quant), contextLength: ctx });
         assert.equal(r.totalGB, sized.totalGB, 'reverse/forward memory mismatch');
         checked++;
       }

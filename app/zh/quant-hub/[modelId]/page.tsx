@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { modelId: string } }): M
   const url = canonical(path);
   const description = modelMetaDescription(model, 'zh');
   const quant = bestQuant(model.quants);
-  const { totalGB } = sizeAt(model, quant.bpw, REF_CONTEXT);
+  const { totalGB } = sizeAt(model, quant, REF_CONTEXT);
   const retainedPart = quant.pplLossPercent === undefined ? '' : `，保留 ${(100 - quant.pplLossPercent).toFixed(1)}% 精度`;
   const ogAlt = `${model.name}：${model.paramLabel}，${quantLevelKey(quant)}，${totalGB.toFixed(1)} GB${retainedPart} | quantized.uk`;
   return {

@@ -1,6 +1,6 @@
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { formatAllowed, usableCapacityGB } from '@/lib/utils/gpu-page';
 import { bestQuant, isNativeQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -41,14 +41,14 @@ export interface ExplainerFaq {
   a: { en: string; zh: string };
 }
 
-export function sizeAt(model: QuantModel, bpw: number, ctx: number) {
+export function sizeAt(model: QuantModel, quant: QuantVariant, ctx: number) {
   return calcVRAM({
     paramsB: model.params,
     layers: model.arch.layers,
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw,
+    ...quantWeights(quant),
     contextLength: ctx,
     batchSize: 1,
   });
@@ -97,8 +97,8 @@ export function bySmallestCard(a: GPU, b: GPU): number {
 export function modelExplainer(model: QuantModel): { sections: ExplainerSection[]; faqs: ExplainerFaq[] } {
   const ref = referenceQuant(model.quants);
   const refKey = quantLevelKey(ref);
-  const at4k = sizeAt(model, ref.bpw, REF_CONTEXT);
-  const atLong = sizeAt(model, ref.bpw, LONG_CONTEXT);
+  const at4k = sizeAt(model, ref, REF_CONTEXT);
+  const atLong = sizeAt(model, ref, LONG_CONTEXT);
   const fits = cardsFitting(at4k.totalGB, ref.format);
   const smallest = fits[0];
   const tier = smallest ? fits.filter(g => g.vram === smallest.vram) : [];
@@ -110,7 +110,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
     .filter(q => q !== ref && q.bpw < ref.bpw)
     .sort((a, b) => b.bpw - a.bpw)
     .map(q => {
-      const size = sizeAt(model, q.bpw, REF_CONTEXT).totalGB;
+      const size = sizeAt(model, q, REF_CONTEXT).totalGB;
       return { q, size, card: cardsFitting(size, q.format)[0] };
     })
     .find(x => x.card);
@@ -192,7 +192,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             `, so the cache scales at a fraction of the usual rate. `
           : `Weights do not move with context — only the KV cache does, and it grows linearly, so this is the number to watch when planning for long documents. `) +
         `The model's native window is ${contextLabel(model.contextLength)}; holding all of it at ${refKey} would need about ` +
-        `${sizeAt(model, ref.bpw, model.contextLength).totalGB.toFixed(0)} GB.`,
+        `${sizeAt(model, ref, model.contextLength).totalGB.toFixed(0)} GB.`,
       zh:
         `从 ${contextLabel(REF_CONTEXT)} 提到 ${contextLabel(LONG_CONTEXT)} 约多占 ` +
         `${kvGrowth.toFixed(2)} GB，总量来到 ${atLong.totalGB.toFixed(1)} GB。` +
@@ -205,7 +205,7 @@ export function modelExplainer(model: QuantModel): { sections: ExplainerSection[
             `，因此缓存的增速只有常规架构的一小部分。`
           : `权重不随上下文变化，只有 KV 缓存会，而且是线性增长 —— 规划长文档场景时要盯的就是这个数字。`) +
         `该模型的原生上下文是 ${contextLabel(model.contextLength)}；在 ${refKey} 下把它全部撑满约需 ` +
-        `${sizeAt(model, ref.bpw, model.contextLength).totalGB.toFixed(0)} GB。`,
+        `${sizeAt(model, ref, model.contextLength).totalGB.toFixed(0)} GB。`,
     },
   });
 

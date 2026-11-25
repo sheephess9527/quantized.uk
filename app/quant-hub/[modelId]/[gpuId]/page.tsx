@@ -1,3 +1,4 @@
+import { quantWeights } from '@/lib/utils/vram';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from '@/components/i18n/LocalLink';
@@ -102,13 +103,15 @@ export default function PairPage({
   const { model, gpu, recommended: r, rows, measured } = data(params);
   const t = translations[lang].pair;
   const answer = pairAnswer(model, gpu)!;
+  const { weightBytes } = quantWeights(answer.quant);
   const worked = {
     quant: `${answer.quant.format} ${answer.quant.level}`,
     weights: answer.memory.modelWeightsGB.toFixed(2),
     ctx: answer.contextLength.toLocaleString('en-US'),
     max: model.contextLength.toLocaleString('en-US'),
-    params: String(model.params),
-    bpw: String(answer.quant.bpw),
+    weightFormula: weightBytes !== undefined
+      ? `${weightBytes.toLocaleString('en-US')} B ÷ 2³⁰ × 1.02`
+      : `${model.params} × 10⁹ × ${answer.quant.bpw} ÷ 8 ÷ 2³⁰ × 1.02`,
     kvFormula: answer.kvFormula,
     kv: answer.memory.kvCacheGB.toFixed(2),
     activation: answer.memory.activationsGB.toFixed(2),
