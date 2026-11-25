@@ -43,6 +43,16 @@ Homepage tagline: **Sourced Data · Edge Deployment · Geek-First** / **数据�
 | **Format Wizard** | `/tools/format-wizard` | 3-question wizard (NVIDIA / AMD / Mac / CPU) → personalised GGUF / AWQ / EXL2 recommendation |
 | **CLI Generator** | `/tools/cli-gen` | Generate ready-to-run commands for llama.cpp / Ollama / vLLM / ExLlamaV2 across Linux / Mac / Docker / Compose |
 
+### Model card badge attribution
+
+Model detail pages generate a badge for the current model and language. The English Qwen3-8B snippet is:
+
+```markdown
+[![View VRAM and quantization details on quantized.uk](https://quantized.uk/model-card-badge.svg)](https://quantized.uk/quant-hub/qwen3-8b/?utm_source=huggingface&utm_medium=referral&utm_campaign=hf_model_card_badge)
+```
+
+In Plausible, filter by UTM source `huggingface`, medium `referral` and campaign `hf_model_card_badge`. Report **Visits**, grouped by entry page for model and language. Reposts carrying those tags count too. Old untagged badges blend into ordinary referrals. Cloudflare Web Analytics provides an aggregate referrer trend. Copying, fetching the SVG and publishing a card are separate from a recorded landing visit.
+
 ### Design language
 
 - **Dark-mode first**, glassmorphism surfaces (`.glass`, `.glass-hover`)
@@ -634,6 +644,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-25 — Model card badge referral attribution
+
+- Newly copied English and Chinese badge links carry fixed campaign tags. [Verification and reporting](docs/changes/2026-11-25-model-card-badge-attribution.md).
 
 ### 2026-11-24 — GPU upgrade comparison labels
 

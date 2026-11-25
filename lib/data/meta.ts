@@ -1,6 +1,6 @@
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
-export const dataLastUpdated = '2026-11-24';
+export const dataLastUpdated = '2026-11-25';
 
 /**
  * Last day the *sizing* behind derived pages changed without a model or GPU

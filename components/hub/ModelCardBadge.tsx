@@ -8,13 +8,14 @@ import { pathForLang } from '@/lib/i18n/routing';
 import { canonical, SITE_URL } from '@/lib/site';
 
 const badgePath = '/model-card-badge.svg';
+const badgeQuery = 'utm_source=huggingface&utm_medium=referral&utm_campaign=hf_model_card_badge';
 
 export default function ModelCardBadge({ modelId }: { modelId: string }) {
   const { lang, t } = useLanguage();
   const d = t.hub.detail.modelCardBadge;
   const [status, setStatus] = useState<'idle' | 'copied' | 'manual'>('idle');
   const url = canonical(pathForLang(`/quant-hub/${modelId}/`, lang));
-  const markdown = `[![${d.alt}](${SITE_URL}${badgePath})](${url})`;
+  const markdown = `[![${d.alt}](${SITE_URL}${badgePath})](${url}?${badgeQuery})`;
 
   async function copyMarkdown() {
     try {
