@@ -25,19 +25,94 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
-    id: 'ccore-web-coder-4b',
-    name: 'CCORE Web Coder 4B',
-    vendor: 'CCORE',
-    reason: 'awaiting-data',
+    id: 'kolibri-1-1',
+    name: 'Kolibri 1.1',
+    vendor: 'Aleph Alpha',
+    reason: 'no-runtime',
     detail: {
-      en: 'The Apache-2.0 Q8_0 GGUF is 4,482,402,816 bytes. The publisher labels it a preview at about 26% of projected training tokens.',
-      zh: 'Apache 2.0 Q8_0 GGUF 共 4,482,402,816 字节。发布方注明这是预览权重，约完成预计训练 token 数的 26%。',
+      en: 'Apache-2.0 weights and official GGUFs are public. The publisher requires llama.cpp PR #32891, which is still open. Kolibri 1.1 uses a separate architecture ID from Kolibri 1.',
+      zh: 'Apache 2.0 权重与官方 GGUF 已公开。发布方要求使用尚未合并的 llama.cpp PR #32891。Kolibri 1.1 与 Kolibri 1 使用不同的架构标识。',
     },
     recheck: {
-      en: 'Check the published checkpoint and GGUF headers once the completed training release is available.',
-      zh: '完整训练版本发布后，核对权重身份及 GGUF 文件头。',
+      en: 'Verify a supported release and audit the local and global cache layout.',
+      zh: '核实支持该架构的发行版本，审计局部和全局缓存布局。',
     },
-    checkedAt: '2026-11-23',
+    checkedAt: '2026-11-25',
+  },
+  {
+    id: 'raon-1-mini',
+    name: 'Raon-1 mini',
+    vendor: 'KRAFTON',
+    reason: 'no-runtime',
+    detail: {
+      en: 'Official Apache-2.0 GGUFs for the final 28.8B MoE are available. The publisher instructs readers to build its raon-1-mini llama.cpp branch. The Raon attention and per-layer state need verified sizing.',
+      zh: '最终版 28.8B MoE 已有官方 Apache 2.0 GGUF。发布方要求编译其 raon-1-mini llama.cpp 分支。Raon 注意力和逐层状态仍需核实内存占用。',
+    },
+    recheck: {
+      en: 'Verify upstream support and size the final checkpoint cache.',
+      zh: '核实上游兼容性并审计最终权重的缓存。',
+    },
+    checkedAt: '2026-11-25',
+  },
+  {
+    id: 'ernie-5-5-flash-preview',
+    name: 'ERNIE 5.5 Flash Preview',
+    vendor: 'Baidu',
+    reason: 'not-sized',
+    detail: {
+      en: 'The Apache-2.0 preview adds a DSpark draft head to the ERNIE 5.5 Flash architecture. The publisher ships FP8 and FP4 expert weights, and a community IQ1_S release has two parts. Its compressed attention and draft cache need runtime-specific sizing.',
+      zh: 'Apache 2.0 预览版在 ERNIE 5.5 Flash 架构上增加 DSpark 草稿头。官方提供 FP8 与 FP4 专家权重，社区有两分片 IQ1_S。压缩注意力及草稿缓存仍需按推理框架核算。',
+    },
+    recheck: {
+      en: 'Verify upstream GGUF loading and cache allocation for the same checkpoint.',
+      zh: '核实相同权重的上游 GGUF 加载和缓存分配。',
+    },
+    checkedAt: '2026-11-25',
+  },
+  {
+    id: 'orbitlm-1-8b-thinking',
+    name: 'OrbitLM 1.8B Thinking',
+    vendor: 'AI Forever',
+    reason: 'not-sized',
+    detail: {
+      en: 'Apache-2.0 Ouro weights use repeated layers and a learned exit gate. The public search did not surface an exact GGUF, and repeated-pass KV residency has not been verified.',
+      zh: 'Apache 2.0 Ouro 权重使用循环层和学习得到的提前退出门。公开搜索未找到对应 GGUF，循环各次的 KV 驻留仍待核实。',
+    },
+    recheck: {
+      en: 'Verify a compatible quant export and the cache across loop passes.',
+      zh: '核实兼容量化文件及各循环的缓存。',
+    },
+    checkedAt: '2026-11-25',
+  },
+  {
+    id: 'memt-1-0-flash',
+    name: 'MemT 1.0 Flash',
+    vendor: 'MemTensor',
+    reason: 'not-sized',
+    detail: {
+      en: 'The MIT checkpoint adds dynamic memory to DeepSeek V4 Flash. The reviewed GGUF overlay requires a separate Abyss engine and depends on a specific base build. The resident memory budget remains unverified.',
+      zh: 'MIT 权重为 DeepSeek V4 Flash 增加动态记忆。已核查的 GGUF 覆盖包要求独立 Abyss 引擎，并依赖特定底座。常驻内存预算仍待核实。',
+    },
+    recheck: {
+      en: 'Verify the full compatible artifact set and memory allocation.',
+      zh: '核实全部兼容文件和内存分配。',
+    },
+    checkedAt: '2026-11-25',
+  },
+  {
+    id: 'avalon-m1-mini',
+    name: 'Avalon-M1-Mini',
+    vendor: 'General Reasoning',
+    reason: 'awaiting-data',
+    detail: {
+      en: 'The public release fine-tunes Nemotron 3 Super and ships 50 safetensors shards. No compatible quant export was found in the public search. The card links upstream Nemotron terms.',
+      zh: '公开版本基于 Nemotron 3 Super 微调，提供 50 个 safetensors 分片。公开搜索未找到兼容量化文件，模型卡链接了 Nemotron 上游条款。',
+    },
+    recheck: {
+      en: 'Verify upstream terms and an exact quant export for this checkpoint.',
+      zh: '核实上游条款与该检查点的确切量化文件。',
+    },
+    checkedAt: '2026-11-25',
   },
   {
     id: 'lingsante-3-1',
@@ -105,14 +180,14 @@ export const pendingModels: PendingModel[] = [
     "vendor": "Thinking Machines",
     "reason": "not-sized",
     "detail": {
-      "en": "Apache-2.0 weights and GGUFs are available. Upstream inkling2_loop expands 24 physical layers to 48 execution slots with separate KV and convolution state for loop passes. Ollama 0.40.17 lists Apple Silicon support only.",
-      "zh": "Apache 2.0 权重及 GGUF 可获取。上游 inkling2_loop 将 24 个物理层扩为 48 个执行槽，循环各次有独立 KV 和卷积状态。Ollama 0.40.17 仅列 Apple Silicon 支持。"
+      "en": "Apache-2.0 weights and GGUFs are available. Upstream inkling2_loop expands 24 physical layers to 48 execution slots with separate KV and convolution state for loop passes. Ollama 0.40.18 lists Metal improvements and no PC support announcement.",
+      "zh": "Apache 2.0 权重及 GGUF 可获取。上游 inkling2_loop 将 24 个物理层扩为 48 个执行槽，循环各次有独立 KV 和卷积状态。Ollama 0.40.18 更新说明列出 Metal 优化，未公告 PC 支持。"
     },
     "recheck": {
       "en": "Audit the loop cache and projector with an observed memory result before adding a sizing row.",
       "zh": "对照实际内存结果核实循环缓存和投影后再添加估算。"
     },
-    "checkedAt": "2026-11-21"
+    "checkedAt": "2026-11-25"
   },
   {
     "id": "olala-mini-7a1b",

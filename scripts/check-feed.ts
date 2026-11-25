@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
 import { buildFeed } from '../lib/feed/build';
+import { models } from '../lib/data/models';
+
+const newestModelDate = models.flatMap(model => model.addedAt ? [model.addedAt] : []).sort().at(-1);
+assert(newestModelDate, 'the catalog has dated additions');
+const latestModels = models.filter(model => model.addedAt === newestModelDate).slice(0, 20);
 
 for (const lang of ['en', 'zh'] as const) {
   const xml = buildFeed(lang);
@@ -16,8 +21,9 @@ for (const lang of ['en', 'zh'] as const) {
     assert(item.match(/<link>(.*?)<\/link>/)![1].startsWith(base));
     assert(item.includes('<description>'));
   }
-  assert(xml.includes(`${base}quant-hub/arete-27b/`));
-  assert(xml.includes(`${base}quant-hub/twil-8b-balanced/`));
+  for (const model of latestModels) {
+    assert(ids.includes(`${base}quant-hub/${model.id}/`), `latest model missing from ${lang} feed: ${model.id}`);
+  }
   assert.equal(buildFeed(lang), xml, 'feed generation must be deterministic');
 }
 console.log('RSS checks passed: mixed chronology, date-only publication semantics, stable IDs, both languages and new models.');

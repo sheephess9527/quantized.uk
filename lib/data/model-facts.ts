@@ -49,6 +49,7 @@ export type LicenceClass = 'commercial' | 'restricted' | 'noncommercial';
  * Each URL below is the exact evidence read; this is template support, not a runtime test.
  */
 export const TOOL_CALLING_SOURCES: Readonly<Record<string, string>> = {
+  'ternary-bonsai-2-5-27b': 'https://huggingface.co/prism-ml/Ternary-Bonsai-2.5-27B-GGUF',
   'jamba-1.5-mini': 'https://huggingface.co/api/models/mradermacher/AI21-Jamba-Mini-1.5-GGUF?expand[]=gguf',
   'llama-3.1-8b': 'https://huggingface.co/api/models/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF?expand[]=gguf',
   'llama-3.1-70b': 'https://huggingface.co/api/models/bartowski/Meta-Llama-3.1-70B-Instruct-GGUF?expand[]=gguf',
@@ -220,6 +221,10 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
   'clairic-flash-9b': 'apache-2.0',
   'shot-reader-8b': 'apache-2.0',
   'ternary-bonsai-2-27b': 'apache-2.0',
+  'ternary-bonsai-2-5-27b': 'apache-2.0',
+  'ccore-web-coder-4b': 'apache-2.0',
+  'minicpm-v-4-6-thinking': 'apache-2.0',
+  'minicpm-v-4-6': 'apache-2.0',
   'daisyrose-27b': 'apache-2.0',
   'apex-35b-v1': 'apache-2.0',
   'botpsy-0-8b': 'apache-2.0',
@@ -402,6 +407,10 @@ export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
   'clairic-flash-9b',
   'shot-reader-8b',
   'ternary-bonsai-2-27b',
+  'ternary-bonsai-2-5-27b',
+  'ccore-web-coder-4b',
+  'minicpm-v-4-6-thinking',
+  'minicpm-v-4-6',
   'daisyrose-27b',
   'apex-35b-v1',
   'arete-27b',

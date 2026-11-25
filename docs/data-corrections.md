@@ -1,5 +1,9 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-25 — Four official vision-capable GGUF checkpoints
+
+Prism ML, CCORE and OpenBMB provide the files for the new Ternary Bonsai, CCORE and two MiniCPM entries. The exact weight and projector byte counts, GGUF block and tensor counts, publisher terms and runtime audits are in the dated patrol. The CCORE final checkpoint replaces its earlier preview in the same publisher repository. No runtime measurements were introduced. [Catalogue evidence](changes/2026-11-25-patrol.md#catalogue-additions)
+
 ## 2026-11-25 — Weight-size evidence and Ling-3.1-flash sizing prose
 
 The Beam Q2_K and Q8_0 records now expose the 14-part 182,067,737,056-byte and 13-part 532,794,735,998-byte totals already documented beside those rows in `lib/data/models-extra-12.ts`. No repository path, filename or new verification date is inferred. Published-size BPWs are annotated only where existing repository notes corroborate them.

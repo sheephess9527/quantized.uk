@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-25',
+    en: 'Added Ternary Bonsai 2.5 27B, the final CCORE Web Coder 4B checkpoint, and MiniCPM-V 4.6 and 4.6 Thinking with verified GGUF and vision-projector sizes. Verified Ollama 0.40.18 and retained the Windows llama.cpp pin.',
+    zh: '收录 Ternary Bonsai 2.5 27B、CCORE Web Coder 4B 最终权重，以及 MiniCPM-V 4.6 和 4.6 Thinking，核实了 GGUF 与视觉投影文件大小。已复核 Ollama 0.40.18，Windows llama.cpp 固定版本保持不变。',
+  },
+  {
+    date: '2026-11-25',
     en: 'Indexed models and imported GGUFs now use recorded file bytes with the same 2% weight planning allowance, KV cache and activation buffer. Fit estimates are planning figures. Mixed GPU recommendations include each selected card.',
     zh: '已收录模型和导入的 GGUF 统一采用已记录的文件字节数，另留 2% 权重规划余量，并计入 KV 缓存和激活缓冲。适配结果为估算。混合显卡反查计入所有已选设备。',
   },

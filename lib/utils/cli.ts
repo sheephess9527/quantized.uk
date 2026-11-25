@@ -180,8 +180,8 @@ function isGraniteSwitchGGUF(modelId?: string, repo?: string): boolean {
 export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {
   // The publisher verifies stock llama.cpp for this rotated GGUF. Ollama's
   // handling of its Hadamard metadata and of Granite Switch's adapters is unverified.
-  return modelId !== 'ternary-bonsai-2-27b' &&
-    repo?.toLowerCase() !== 'prism-ml/ternary-bonsai-2-27b-gguf' &&
+  return !/^ternary-bonsai-2(?:-5)?-27b$/.test(modelId ?? '') &&
+    !/^prism-ml\/ternary-bonsai-2(?:\.5)?-27b-gguf$/i.test(repo ?? '') &&
     !isGraniteSwitchGGUF(modelId, repo);
 }
 

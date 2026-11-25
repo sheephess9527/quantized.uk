@@ -271,6 +271,10 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 60, type: 'new', modelId: 'ternary-bonsai-2-5-27b', level: 'Q2_0', note: { en: 'Official ternary Q2_0 for upstream llama.cpp', zh: '适用上游 llama.cpp 的官方三值 Q2_0' }, quantizer: 'Prism ML' },
+  { id: 61, type: 'new', modelId: 'ccore-web-coder-4b', level: 'Q4_K_M', note: { en: 'Final checkpoint for single-file React pages', zh: '生成单文件 React 网页的最终权重' }, quantizer: 'CCORE' },
+  { id: 62, type: 'new', modelId: 'minicpm-v-4-6', level: 'Q4_K_M', note: { en: 'Official GGUF with a separate F16 vision projector', zh: '官方 GGUF 与独立 F16 视觉投影' }, quantizer: 'OpenBMB' },
+  { id: 63, type: 'new', modelId: 'minicpm-v-4-6-thinking', level: 'Q4_K_M', note: { en: 'Official GGUF with a separate F16 vision projector', zh: '官方 GGUF 与独立 F16 视觉投影' }, quantizer: 'OpenBMB' },
   { id: 57, type: 'new', modelId: 'kormo-web-9b', level: 'Q4_K_M', note: { en: 'Korean and English browser screenshots', zh: '理解韩语和英语网页截图' }, quantizer: 'bartowski' },
   { id: 59, type: 'new', modelId: 'granite-switch-4.1-30b', level: 'Q4_K_M', note: { en: 'Official text GGUF with two adapters', zh: '内置两个适配器的官方文本 GGUF' }, quantizer: 'IBM' },
   { id: 58, type: 'new', modelId: 'granite-switch-4.1-8b', level: 'Q4_K_M', note: { en: 'Official text GGUF with two adapters', zh: '内置两个适配器的官方文本 GGUF' }, quantizer: 'IBM' },

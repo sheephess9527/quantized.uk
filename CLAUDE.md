@@ -24,17 +24,17 @@ Next.js 14 **static-export** site (`output: 'export'`). No Next.js server — pu
 typed data in `lib/data/`. Cloudflare **Pages** Functions handle VRAM link previews and write
 visitor speed submissions to a private D1 Free queue.
 
-**Repository snapshot (2026-11-23; local export, not a deployment check):**
+**Repository snapshot (2026-11-25; local export, not a deployment check):**
 
 | Surface | Notes |
 |--------|--------|
-| Models | **160** in index (`models-extra` … `models-extra-19`), 140 active |
+| Models | **164** in index (`models-extra` … `models-extra-19`), 144 active |
 | Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (160 models: 158 licensed, 51 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (164 models: 162 licensed, 55 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,454 HTML files (3,737 files in `out/`) including 404 variants and 349 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,492 HTML files (3,825 files in `out/`) including 404 variants and 364 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands

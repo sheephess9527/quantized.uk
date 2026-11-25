@@ -116,7 +116,7 @@ components/
 lib/
   stats.ts                  # getSiteStats() — dynamic counts for homepage StatsBar
   data/                     # ── all content lives here ──
-    models.ts               #   160 models — exports combined `models` array + todayFeed
+    models.ts               #   164 models — exports combined `models` array + todayFeed
     models-extra*.ts        #   models-extra .. models-extra-19 (packs)
     types.ts                #   QuantModel fields (status, addedAt, confidence, …)
     cookbook*.ts            #   cookbook + extras (28 guides; verifiedAt on key articles)
@@ -645,6 +645,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-25 — Model and site patrol
+
+- Indexed the base Q2_0 of Ternary Bonsai 2.5 27B, the final CCORE Web Coder 4B, and both MiniCPM-V 4.6 checkpoints with verified GGUF and vision projector sizes.
+- Verified Ollama 0.40.18 and retained the llama.cpp Windows pin. The RSS test now checks the newest catalog additions instead of fixed older models. [Sources, pending decisions and deployment](docs/changes/2026-11-25-patrol.md).
 
 ### 2026-11-25 — Consistent VRAM estimates for indexed and imported weights
 
