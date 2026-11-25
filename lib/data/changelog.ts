@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-25',
+    en: 'Newly copied Hugging Face model card badges include campaign tags so visits through these links can be measured separately.',
+    zh: '新复制的 Hugging Face 模型卡徽章链接带有固定来源标记，可单独统计通过这类链接到达模型详情页的访问。',
+  },
+  {
     date: '2026-11-24',
     en: 'GPU upgrade comparisons label up to three longer-context examples and distinguish quantization rankings based on published perplexity loss, partial data or bits per weight.',
     zh: '显卡升级对比标明最多展示 3 个上下文增益示例，并逐项说明量化档位的排序依据：两档均有公开困惑度损失、仅一档有数据，或按每权重位数估排。',
