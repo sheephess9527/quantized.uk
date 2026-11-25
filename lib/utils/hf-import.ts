@@ -32,6 +32,7 @@ export interface ImportedShape {
 }
 
 export type ImportNote =
+  | 'indexedFile'    // unique catalog match on repository, full file path and combined bytes
   | 'gated'          // config.json refused: gated or private repo
   | 'noConfig'       // no config.json and no base model to fall back to
   | 'viaBase'        // architecture read from the base model a GGUF repo names

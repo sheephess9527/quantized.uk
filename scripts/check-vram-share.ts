@@ -5,7 +5,7 @@ import { vramImageUrl, vramPreview } from '@/lib/og/vram-result';
 import { vramSvg } from '@/lib/og/vram-svg';
 import { modelShape } from '@/lib/utils/calc-insights';
 import { getRecommendations, readRecommendationFilters } from '@/lib/utils/recommend';
-import { calcVRAM, KV_CACHE_TYPES } from '@/lib/utils/vram';
+import { calcVRAM, KV_CACHE_TYPES, quantWeights } from '@/lib/utils/vram';
 import { readVramAttention, snapshotVramLink } from '@/lib/utils/vram-link';
 
 const forward = new URL('https://quantized.uk/tools/vram-calc/?mode=forward&ctx=8192&batch=2&cache=q8_0&quant=Q4_K_M#result');
@@ -17,7 +17,7 @@ assert.equal(copied.searchParams.get('gpu'), 'rtx4090');
 assert.equal(copied.searchParams.get('model'), 'qwen3-8b');
 const model = models.find(m => m.id === 'qwen3-8b')!;
 const quant = model.quants.find(q => q.format === 'GGUF' && q.level === 'Q4_K_M')!;
-const sizing = calcVRAM({ ...modelShape(model, 2, KV_CACHE_TYPES.q8_0), bpw: quant.bpw, contextLength: 8192 });
+const sizing = calcVRAM({ ...modelShape(model, 2, KV_CACHE_TYPES.q8_0), ...quantWeights(quant), contextLength: 8192 });
 const english = vramPreview(copied.searchParams, 'en')!;
 assert.equal(english.title, model.name);
 assert.match(english.details, /Q4_K_M · 8,192 tokens · batch 2 · q8_0 KV/);
@@ -69,7 +69,7 @@ for (const fields of reverseFilterCases) {
   const params = new URLSearchParams({ share: '1', mode: 'reverse', gpu: 'rtx4090', ctx: '4096', batch: '1', ...fields });
   const filters = readRecommendationFilters(params);
   if (params.get('cards') === '2' || params.has('extra')) filters.minTok = 0;
-  const rows = getRecommendations(gpu, 4096, 1, 'quality', true, KV_CACHE_TYPES.f16, Number(params.get('cards') ?? 1), true, 'text', filters);
+  const rows = getRecommendations(gpu, 4096, 1, 'quality', true, KV_CACHE_TYPES.f16, Number(params.get('cards') ?? 1), true, 'text', filters, gpuDatabase.filter(g => g.id === fields.extra));
   assert.equal(vramPreview(params, 'en')!.answer, `${rows.length} compatible configs`);
   assert.equal(vramPreview(params, 'zh')!.answer, `${rows.length} 个兼容配置`);
   const imageUrl = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'en');

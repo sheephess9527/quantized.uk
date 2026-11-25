@@ -55,7 +55,7 @@ export const extraModels7: QuantModel[] = [
       // attention and embeddings are wider. llama.cpp's own gpt-oss guide
       // (ggml-org/llama.cpp discussion #15396) reports the file at 11.27 GiB →
       // 11.27 × 2^30 × 8 / 20.9e9 = 4.63. 4.25 understated weights by ~0.9 GiB.
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.63, vramGB: 12.8, pplLossPercent: 0.0, speedRTX4090: 195, hfSearchUrl: hf('gpt-oss-20b GGUF MXFP4'), confidence: 'community' },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.63, bpwFromPublishedSize: true, vramGB: 12.8, pplLossPercent: 0.0, speedRTX4090: 195, hfSearchUrl: hf('gpt-oss-20b GGUF MXFP4'), confidence: 'community' },
       { format: 'GGUF', level: 'Q8_0',  bpw: 5.10, vramGB: 13.8, pplLossPercent: 0.0, speedRTX4090: 178, hfSearchUrl: hf('gpt-oss-20b GGUF Q8_0') },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 11.9, pplLossPercent: 1.4, speedRTX4090: 205, hfSearchUrl: hf('gpt-oss-20b GGUF Q4_K_M') },
     ],
@@ -97,7 +97,7 @@ export const extraModels7: QuantModel[] = [
     quants: [
       // Same reasoning as the 20B: 59.02 GiB file (llama.cpp discussion #15396)
       // → 59.02 × 2^30 × 8 / 116.8e9 = 4.34 effective bpw.
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, vramGB: 61.0, pplLossPercent: 0.0, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.34, bpwFromPublishedSize: true, vramGB: 61.0, pplLossPercent: 0.0, hfSearchUrl: hf('gpt-oss-120b GGUF MXFP4'), confidence: 'community' },
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.10, vramGB: 58.5, pplLossPercent: 1.6, hfSearchUrl: hf('gpt-oss-120b GGUF Q4_K_M') },
     ],
   },

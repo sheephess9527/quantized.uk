@@ -1,6 +1,6 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict, KV_CACHE_TYPES } from './vram';
+import { calcVRAM, getVerdict, KV_CACHE_TYPES, quantWeights } from './vram';
 import { referenceQuant } from './quality';
 import { quantLevelKey } from './recommend';
 import { capacityGB, canStack, MAX_CARDS, tightCeiling, backendFor } from './gpu-page';
@@ -26,7 +26,7 @@ export function parseEmbedFit(params: URLSearchParams | null) {
       !Number.isFinite(mmproj) || mmproj < 0 || mmproj >= 50 || extra.some(g => !g || !canStack(g) || backendFor(g) !== backendFor(gpu)) ||
       extra.length + cards > MAX_CARDS || (extra.length > 0 && !canStack(gpu))) return null;
   const extras = extra.filter((g): g is NonNullable<typeof g> => !!g);
-  const result = calcVRAM({ paramsB: model.params, ...model.arch, bpw: quant.bpw, contextLength: ctx,
+  const result = calcVRAM({ paramsB: model.params, ...model.arch, ...quantWeights(quant), contextLength: ctx,
     batchSize: batch, kvBytesPerValue: KV_CACHE_TYPES[cache as keyof typeof KV_CACHE_TYPES], extraGB: mmproj });
   const capacity = capacityGB(gpu, cards, extras);
   const hardwareGB = gpu.vram * cards + extras.reduce((sum, g) => sum + g.vram, 0);

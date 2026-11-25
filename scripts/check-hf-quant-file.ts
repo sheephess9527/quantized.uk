@@ -128,7 +128,8 @@ test('use exact bytes instead of bits per weight in the estimate and shared prev
   const weightBytes = 2 * 1024 ** 3;
   const result = calcVRAM({ paramsB: 7, layers: 24, kvHeads: 4, headDim: 128, bpw: 4.85,
     contextLength: 4096, batchSize: 1, weightBytes });
-  assert.equal(result.modelWeightsGB, 2);
+  assert.equal(result.weightAllowanceGB, 0.04);
+  assert.equal(result.modelWeightsGB, 2.04);
   const params = new URLSearchParams({ share: '1', mode: 'forward', model: 'custom', gpu: 'none',
     ctx: '4096', layers: '24', kv: '4', hd: '128', hfFile: quantFileUrl(split), hfBytes: String(weightBytes) });
   assert.deepEqual(readHubQuantFile(params), { ...split, bytes: weightBytes });
@@ -136,7 +137,7 @@ test('use exact bytes instead of bits per weight in the estimate and shared prev
   assert.match(preview.details, /^UD-Q4_K_XL/);
   assert.equal(preview.answer, `${result.totalGB.toFixed(2)} GiB estimated`);
   const image = vramImageUrl(new URL(`https://quantized.uk/tools/vram-calc/?${params}`), 'zh');
-  assert.match(vramPreview(image.searchParams, 'zh')!.answer, /^2\.41 GiB 预估/);
+  assert.match(vramPreview(image.searchParams, 'zh')!.answer, /^2\.45 GiB 预估/);
   params.set('mctx', '2048');
   params.set('gpu', 'rtx4090');
   const overContext = vramPreview(params, 'en');
@@ -192,4 +193,18 @@ test('Gemma 4 E4B counts only cache-owning layers and fits tightly at 128K', () 
     attention, bpw: 0, contextLength: 131072, batchSize: 1, weightBytes });
   assert.equal(memory.kvCacheGB, 2.04);
   assert.ok(memory.totalGB > 8 * .88 && memory.totalGB <= 8, String(memory.totalGB));
+});
+
+test('recognized GGUF uses the indexed cache layout after verifying combined bytes', async () => {
+  const model = models.find(m => m.id === 'gemma-4-31b')!;
+  const source = model.quants.find(q => q.level === 'Q4_K_M')!.source!;
+  const file = source.file!;
+  const result = await importQuantFile(quantFileUrl({ repo: source.repo, revision: 'main', path: file }), async url => {
+    assert.match(String(url), /paths-info/);
+    return Response.json([{ type: 'file', path: file, size: source.bytes }]);
+  });
+  assert.ok(result.ok);
+  assert.deepEqual(result.shape?.attention, model.arch.attention);
+  assert.equal(result.shape?.contextLength, model.contextLength);
+  assert.deepEqual(result.shape?.notes, ['indexedFile']);
 });

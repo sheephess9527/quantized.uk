@@ -16,7 +16,7 @@ import {
 } from '../lib/utils/gpu-page';
 import { measuredRowsFor } from '../lib/utils/measured-runs';
 import { sameModel } from '../lib/utils/speed-label';
-import { calcVRAM } from '../lib/utils/vram';
+import { calcVRAM, quantWeights } from '../lib/utils/vram';
 import { matrixData } from '../lib/data/benchmarks';
 
 for (const row of matrixData) {
@@ -94,7 +94,7 @@ for (const gpu of gpuDatabase)
           kvHeads: model.arch.kvHeads,
           headDim: model.arch.headDim,
           attention: model.arch.attention,
-          bpw: row.quant.bpw,
+          ...quantWeights(row.quant),
           contextLength,
           batchSize: 1,
         });

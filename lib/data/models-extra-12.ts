@@ -154,9 +154,9 @@ export const extraModels12: QuantModel[] = [
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 4.81, vramGB: 17.7, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'meta-models/Muse-Glimmer-30B-GGUF', file: 'Muse-Glimmer-30B-KQuant-17GB-Q4_K_M.gguf', bytes: 16_756_683_904, checkedAt: '2026-10-09' } },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.78, vramGB: 21.2, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q5_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q6_K',   bpw: 6.72, vramGB: 24.6, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q6_K'),   confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 31.1, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.78, bpwFromPublishedSize: true, vramGB: 21.2, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q5_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q6_K',   bpw: 6.72, bpwFromPublishedSize: true, vramGB: 24.6, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q6_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  bpwFromPublishedSize: true, vramGB: 31.1, hfSearchUrl: hf('Muse-Glimmer-30B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
   {
@@ -302,7 +302,7 @@ export const extraModels12: QuantModel[] = [
       zh: 'Qwen3.5 的 4B 尺寸，适合 4 到 8 GB 显卡、基础款 Mac 和纯 CPU 机器。32 层中只有 8 层保留会增长的 KV 缓存。Q4_K_M 在 4K 上下文下约需 3.3 GB，32K 下约 4.3 GB，所以 6 GB 显卡就够长对话使用；用满 256K 窗口约需 12 GB。Qwen3.5 的小尺寸默认关闭推理模式；它通过单独的视觉编码器读取图像。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.54, vramGB: 3.3, hfSearchUrl: hf('Qwen3.5-4B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.54, bpwFromPublishedSize: true, vramGB: 3.3, hfSearchUrl: hf('Qwen3.5-4B GGUF Q4_K_M'), confidence: 'estimated' },
       { format: 'GGUF', level: 'Q8_0',   bpw: 8.5,  vramGB: 5.0, hfSearchUrl: hf('Qwen3.5-4B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
@@ -326,8 +326,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'Qwen3.5 的 2B 尺寸，几乎什么硬件都能跑：老显卡、基础款 Mac、迷你主机和纯 CPU 服务器。24 层中只有 6 层保留会增长的 KV 缓存，每层只有 2 个 KV 头。Q4_K_M 在 4K 上下文下约需 1.5 GB，32K 下约 1.9 GB，用满 256K 窗口约 4.8 GB；即使 Q8_0，4K 下也只要约 2.2 GB。Qwen3.5 的小尺寸默认关闭推理模式。体积按已公布的 GGUF 文件大小计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.71, vramGB: 1.5, hfSearchUrl: hf('Qwen3.5-2B GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, vramGB: 2.2, hfSearchUrl: hf('Qwen3.5-2B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.71, bpwFromPublishedSize: true, vramGB: 1.5, hfSearchUrl: hf('Qwen3.5-2B GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, bpwFromPublishedSize: true, vramGB: 2.2, hfSearchUrl: hf('Qwen3.5-2B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
   {
@@ -381,7 +381,7 @@ export const extraModels12: QuantModel[] = [
       zh: '小米的开放权重旗舰，今年秋天位列开源模型排行榜前列：约 1.02 万亿参数，每个 token 激活约 42B，MIT 许可。发布的权重本身就是 4 比特（专家层为 MXFP4），GGUF 版本只是重新打包、没有再次量化。在这个档位下 4K 上下文约需 604 GB，超过本索引里任何一台单机：最大的 Mac Studio 给 GPU 的约 384 GB，四张 80 GB 的 H100 合计 320 GB。八张 80 GB 显卡（640 GB）大约是能装下它的最小服务器，按本站规则也只算「勉强」。收录它是为了让计算器能把这一点说清楚。70 层中只有 10 层保留会增长的缓存，所以即使 100 万 token 也只多约 50 GB。llama.cpp 以 `mimo2` 架构运行它，视觉通过单独的编码器加载。体积按已公布的 GGUF 文件计算，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'MXFP4', bpw: 4.52, vramGB: 603.8, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Pro GGUF MXFP4'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'MXFP4', bpw: 4.52, bpwFromPublishedSize: true, vramGB: 603.8, pplLossPercent: 0.0, hfSearchUrl: hf('MiMo-V2.6-Pro GGUF MXFP4'), confidence: 'estimated' },
     ],
   },
   {
@@ -411,8 +411,8 @@ export const extraModels12: QuantModel[] = [
       zh: 'JetBrains 面向编程智能体和快速子智能体的开源代码模型，10 月以 Apache 2.0 发布。它是 12B 的混合专家模型，每个 token 约激活 2.5B 参数，生成速度大致相当于 3B 模型。Q4_K_M 在 4K 上下文下约需 8.6 GB，用满 128K 窗口也只要 10.5 GB，因为 28 层中只有 7 层保留会增长的缓存。10 GB 或 12 GB 显卡可以从容运行，8 GB 显卡装不下；Q8_0 适合 16 GB 显卡。llama.cpp 以 `mellum` 架构支持它。体积按 JetBrains 官方 GGUF 文件计算；官方公布的是 KL 散度而不是困惑度，所以不显示质量损失。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.33, vramGB: 8.6,  hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q4_K_M'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, vramGB: 13.6, hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 5.33, bpwFromPublishedSize: true, vramGB: 8.6,  hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q4_K_M'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.49, bpwFromPublishedSize: true, vramGB: 13.6, hfSearchUrl: hf('Mellum2.1-12B-A2.5B-Thinking GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
   {
@@ -561,9 +561,9 @@ export const extraModels12: QuantModel[] = [
       zh: 'Meta 目前最大的开放权重模型，10 月以 Muse Model License 发布：816B 混合专家模型，每个 token 约激活 42B 参数，面向编程和智能体任务，支持图像和音频输入。只有最小的量化版本能在单台机器上运行。Q2_K（ggml-org 发布的 304 GB 文件）在 4K 上下文下约需 319 GB，到 128K 也只要 327 GB，因为 62 层中只有 16 层的缓存会随上下文增长——512 GB 的 Mac Studio 可以从容运行，四张 80 GB 的 H100 则偏紧。用满 100 万上下文约需 389 GB。Q4_K_S（470 GB）和 Q8_0（872 GB）在本站收录的任何单台机器上都装不下。视觉和音频编码器是另外 2–4 GB 的文件，未计入。体积按已发布的 GGUF 文件计算；基准成绩是 Meta 自己报的，各档位的质量损失未公布。它的许可证不是常规开源许可：Meta 的仓库需要申请访问才能下载；基于它的产品须注明"Built with Muse Spark Open"；年收入超过 2000 万美元的公司若要把它作为 API 服务提供，须先与 Meta 另签协议。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q2_K',   bpw: 2.97, bpwFromPublishedSize: true, vramGB: 318.9, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q2_K'),   confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q4_K_S', bpw: 4.59, bpwFromPublishedSize: true, vramGB: 492.4, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q4_K_S'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, bpwFromPublishedSize: true, vramGB: 912.3, hfSearchUrl: hf('Muse-Spark-Open-816B-A42B GGUF Q8_0'),   confidence: 'estimated' },
     ],
   },
   {
@@ -684,8 +684,8 @@ export const extraModels12: QuantModel[] = [
     arch: { layers: 72, attHeads: 64, kvHeads: 1, headDim: 288, attention: { fullLayers: 9, note: { en: '9 of 72 layers keep an MLA cache (one in every eight); the other 63 are Kimi Delta Attention, a linear layer with a fixed-size state, so the cache grows by only about 10 KB per token.', zh: '72 层中只有 9 层保留 MLA 缓存（每八层一层）；其余 63 层是 Kimi Delta Attention 线性层，只有固定大小的状态，所以每个 token 只让缓存增长约 10 KB。' } } },
     addedAt: ADDED_LING31,
     description: {
-      en: 'inclusionAI\'s Ling-3.1-flash (Ant Group), released in October under MIT: a 560B mixture-of-experts reasoning model with 25B parameters active per token. It is aimed at agents, coding and long office tasks. Only 9 of its 72 layers keep a growing cache, and those store MLA\'s compressed vectors, so even its full 256K window adds only about 3 GB: the weights decide where it runs. At Q4_K_M it needs about 371 GB at 4K context, more than any single GPU in this index. The 512 GB Mac Studio gives its GPU about 384 GB, which holds it only tightly on this site\'s rule; on servers the vendor\'s reference setup is eight H200s or four GB300s running FP8. Q8_0 needs about 628 GB. The vendor quotes a 1M-token window, but the released config sets 262,144 positions with no scaling, so that is the limit used here. llama.cpp runs it as `bailingmoe3` from build b11571. Sizes come from a published GGUF file, whose maker reports KL divergence rather than perplexity, so no quality-loss figure is shown.',
-      zh: 'inclusionAI（蚂蚁集团）的 Ling-3.1-flash，10 月以 MIT 许可发布：560B 混合专家推理模型，每个 token 激活 25B 参数。它面向智能体、编程和长时间的办公任务。72 层中只有 9 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 256K 窗口，缓存也只多约 3 GB——决定它能在什么硬件上跑的是权重。Q4_K_M 在 4K 上下文下约需 371 GB，超过本索引里任何一张单卡。512 GB 的 Mac Studio 能分给 GPU 约 384 GB，按本站规则只能算「勉强」装下；服务器上，官方的参考配置是 8 张 H200 或 4 张 GB300 跑 FP8。Q8_0 约需 628 GB。官方称上下文窗口为 100 万 token，但发布的 config 设定为 262,144 个位置且没有缩放配置，所以这里按这个上限计算。llama.cpp 从 b11571 版起以 `bailingmoe3` 架构运行它。体积按已公布的 GGUF 文件计算，制作者给出的是 KL 散度而非困惑度，所以不显示质量损失。',
+      en: 'inclusionAI\'s Ling-3.1-flash (Ant Group), released in October under MIT: a 560B mixture-of-experts reasoning model with 25B parameters active per token. It is aimed at agents, coding and long office tasks. Only 9 of its 72 layers keep a growing cache, and those store MLA\'s compressed vectors, so even its full 256K window adds only about 3 GB: the weights decide where it runs. At Q4_K_M it needs about 370.4 GB at 4K context, more than any single GPU in this index. The 512 GB Mac Studio gives its GPU about 384 GB, which holds it only tightly on this site\'s rule; on servers the vendor\'s reference setup is eight H200s or four GB300s running FP8. Q8_0 needs about 628 GB. The vendor quotes a 1M-token window, but the released config sets 262,144 positions with no scaling, so that is the limit used here. llama.cpp runs it as `bailingmoe3` from build b11571. Sizes come from a published GGUF file, whose maker reports KL divergence rather than perplexity, so no quality-loss figure is shown.',
+      zh: 'inclusionAI（蚂蚁集团）的 Ling-3.1-flash，10 月以 MIT 许可发布：560B 混合专家推理模型，每个 token 激活 25B 参数。它面向智能体、编程和长时间的办公任务。72 层中只有 9 层保留会增长的缓存，而且存的是 MLA 压缩向量，所以即使用满 256K 窗口，缓存也只多约 3 GB——决定它能在什么硬件上跑的是权重。Q4_K_M 在 4K 上下文下约需 370.4 GB，超过本索引里任何一张单卡。512 GB 的 Mac Studio 能分给 GPU 约 384 GB，按本站规则只能算「勉强」装下；服务器上，官方的参考配置是 8 张 H200 或 4 张 GB300 跑 FP8。Q8_0 约需 628 GB。官方称上下文窗口为 100 万 token，但发布的 config 设定为 262,144 个位置且没有缩放配置，所以这里按这个上限计算。llama.cpp 从 b11571 版起以 `bailingmoe3` 架构运行它。体积按已公布的 GGUF 文件计算，制作者给出的是 KL 散度而非困惑度，所以不显示质量损失。',
     },
     quants: [
       { format: 'GGUF', level: 'Q4_K_M', bpw: 5.03, vramGB: 370.6, hfSearchUrl: hf('Ling-3.1-flash GGUF Q4_K_M'), confidence: 'estimated', source: { repo: 'AtomicChat/Ling-3.1-flash-GGUF', bytes: 354_394_733_920, checkedAt: '2026-10-17' } },
@@ -720,12 +720,12 @@ export const extraModels12: QuantModel[] = [
     arch: { layers: 52, attHeads: 48, kvHeads: 8, headDim: 128, attention: { fullLayers: 9, windowLayers: 43, windowTokens: 1024, note: { en: '43 of 52 layers use a 512-token sliding window (llama.cpp keeps the window plus one 512-token batch, 1,024 cells); only the 9 full-attention layers grow a cache with context.', zh: '52 层中 43 层使用 512 token 滑动窗口（llama.cpp 保留窗口加一个 512 token 批次，共 1,024 个位置），只有 9 层全注意力层的缓存随上下文增长。' } } },
     addedAt: ADDED_BEAM,
     description: {
-      en: 'Reflection AI\'s first open-weight model, released in October under Apache 2.0. It is a 501B text-only mixture-of-experts model with about 23B parameters active per token, built for coding and agent work, with a 1M-token window. Only 9 of its 52 layers keep a growing cache, so context costs little: at Q2_K (DevQuasar\'s 182 GB file) it needs about 191 GB at 4K, 196 GB at 128K and 230 GB across the full 1M window. That is comfortable on a 512 GB Mac Studio at any context and tight on a 256 GB one up to 128K. Unsloth\'s dynamic 4-bit UD-Q4_K_XL file (307 GB) works out to about 321 GB at 4K, which still fits the 512 GB Mac; Q8_0 (533 GB) fits no single machine in this index. Sizes come from the published GGUF files; Reflection\'s benchmark claims are its own and no per-level quality loss has been published.',
-      zh: 'Reflection AI 的首个开放权重模型，10 月以 Apache 2.0 发布：501B 纯文本混合专家模型，每个 token 约激活 23B 参数，面向编程和智能体任务。上下文窗口 100 万 token；52 层中只有 9 层的缓存随上下文增长，所以上下文很便宜：Q2_K（DevQuasar 发布的 182 GB 文件）在 4K 下约需 191 GB，128K 约 196 GB，用满 100 万上下文约 230 GB。512 GB 的 Mac Studio 在任何上下文下都能从容运行，256 GB 的到 128K 为止偏紧。Unsloth 的动态 4-bit 文件 UD-Q4_K_XL（307 GB）在 4K 下约需 321 GB，512 GB 的 Mac 仍然装得下；Q8_0（533 GB）在本站收录的任何单台机器上都装不下。体积按已发布的 GGUF 文件计算；基准成绩是 Reflection 自己报的，各档位的质量损失未公布。',
+      en: 'Reflection AI\'s first open-weight model, released in October under Apache 2.0. It is a 501B text-only mixture-of-experts model with about 23B parameters active per token, built for coding and agent work, with a 1M-token window. Only 9 of its 52 layers keep a growing cache, so context costs little: at Q2_K (DevQuasar\'s 182 GB file) it needs about 191 GB at 4K, 195.4 GB at 128K and 230 GB across the full 1M window. That is comfortable on a 512 GB Mac Studio at any context and tight on a 256 GB one up to 128K. Unsloth\'s dynamic 4-bit UD-Q4_K_XL file (307 GB) works out to about 321 GB at 4K, which still fits the 512 GB Mac; Q8_0 (533 GB) fits no single machine in this index. Sizes come from the published GGUF files; Reflection\'s benchmark claims are its own and no per-level quality loss has been published.',
+      zh: 'Reflection AI 的首个开放权重模型，10 月以 Apache 2.0 发布：501B 纯文本混合专家模型，每个 token 约激活 23B 参数，面向编程和智能体任务。上下文窗口 100 万 token；52 层中只有 9 层的缓存随上下文增长，所以上下文很便宜：Q2_K（DevQuasar 发布的 182 GB 文件）在 4K 下约需 191 GB，128K 约 195.4 GB，用满 100 万上下文约 230 GB。512 GB 的 Mac Studio 在任何上下文下都能从容运行，256 GB 的到 128K 为止偏紧。Unsloth 的动态 4-bit 文件 UD-Q4_K_XL（307 GB）在 4K 下约需 321 GB，512 GB 的 Mac 仍然装得下；Q8_0（533 GB）在本站收录的任何单台机器上都装不下。体积按已发布的 GGUF 文件计算；基准成绩是 Reflection 自己报的，各档位的质量损失未公布。',
     },
     quants: [
-      { format: 'GGUF', level: 'Q2_K', bpw: 2.91, vramGB: 190.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q2_K'), confidence: 'estimated' },
-      { format: 'GGUF', level: 'Q8_0', bpw: 8.50, vramGB: 556.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q8_0'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q2_K', bpw: 2.91, publishedBytes: 182_067_737_056, vramGB: 190.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q2_K'), confidence: 'estimated' },
+      { format: 'GGUF', level: 'Q8_0', bpw: 8.50, publishedBytes: 532_794_735_998, vramGB: 556.9, hfSearchUrl: hf('Beam-1.0-501B-A23B GGUF Q8_0'), confidence: 'estimated' },
     ],
   },
   {

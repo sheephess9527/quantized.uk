@@ -14,7 +14,7 @@ import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
 import { gpuDatabase, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
-import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType } from '@/lib/utils/vram';
+import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType, quantWeights } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
 import EmbedSnippets from '@/components/tools/EmbedSnippets';
@@ -95,7 +95,7 @@ const POPULAR_GPUS = POPULAR_GPU_IDS
  *  to ones a single 24 GB card holds comfortably at 4K, or a 1T model that fits
  *  nothing would be the first thing offered. */
 const NEWEST_MODELS = [...models]
-  .filter(m => !isSuperseded(m) && getVerdict(sizeAt(m, referenceQuant(m.quants).bpw, 4096).totalGB, 24) === 'green')
+  .filter(m => !isSuperseded(m) && getVerdict(sizeAt(m, referenceQuant(m.quants), 4096).totalGB, 24) === 'green')
   .sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''))
   .slice(0, 4);
 
@@ -532,7 +532,6 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
     setMmprojGB(extraGB === undefined ? '' : String(extraGB));
     setMmprojFile('');
     setMmprojState('idle');
-    setExtraIds([]);
     setModelIsExample(false);
     // Asking for the detail of a fit on this card adopts the card, guessed or not.
     if (selectedGpuId && (selectedGpuId !== savedGpuId || gpuOverridden)) setGpuId(selectedGpuId);
@@ -559,12 +558,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const calcInput = useMemo(() => {
     const tableBpw = quantBPW[selectedQuant] ?? 4.85;
     if (selectedModel) {
-      // `quantBPW` is a generic per-level table; a model that actually ships
-      // this level carries its own measured bpw, which can differ sharply —
-      // GPT-OSS's Q4_K_M is 4.10, not the table's 4.85, because most of its MoE
-      // weights stay in native MXFP4. Reverse mode already sizes from
-      // `quant.bpw`, so preferring it here is also what stops the two halves of
-      // this calculator disagreeing about the same model.
+      // Prefer the indexed file or model-specific BPW before a generic fallback.
       const own = selectedModel.quants.find(q => quantLevelKey(q) === selectedQuant);
       return {
         paramsB: selectedModel.params,
@@ -572,7 +566,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         kvHeads: selectedModel.arch.kvHeads,
         headDim: selectedModel.arch.headDim,
         attention: selectedModel.arch.attention,
-        bpw: own?.bpw ?? tableBpw,
+        ...quantWeights(own ?? { bpw: tableBpw }),
         contextLength: contextLen,
         batchSize,
         kvBytesPerValue: KV_CACHE_TYPES[kvType],
@@ -615,25 +609,26 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
 
   const recommendationSort = selectedGpu?.isLaptop && sortBy === 'speed' ? 'quality' : sortBy;
   const reverseCards = selectedGpu && canStack(selectedGpu) ? cards : 1;
-  const reverseDeviceCount = reverseCards + rigExtras(selectedGpu ?? null, extraIds, reverseCards).length;
+  const reverseExtras = useMemo(() => rigExtras(selectedGpu ?? null, extraIds, reverseCards), [selectedGpu, extraIds, reverseCards]);
+  const reverseDeviceCount = reverseCards + reverseExtras.length;
   const reverseSpeedDisabled = reverseDeviceCount > 1;
   const effectiveMinTok = reverseSpeedDisabled ? 0 : minTok;
   const recommendations = useMemo(() => {
     if (!selectedGpu) return [];
-    return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput, { minTok: effectiveMinTok, tools: requireTools, code: requireCode });
-  }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode]);
+    return getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, reverseInput, { minTok: effectiveMinTok, tools: requireTools, code: requireCode }, reverseExtras);
+  }, [selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode, reverseExtras]);
   const scoredRecommendations = recommendations.filter(({ model }) => liveBenchScores.has(model.id));
   const visibleRecommendations = scoredOnly ? scoredRecommendations : recommendations;
   const emptyRecovery = useMemo(() => {
     if (!selectedGpu || visibleRecommendations.length) return { speed: false, features: false };
     const without = (input: RecommendationInput, min: number, tools: boolean, code: boolean) =>
-      getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, input, { minTok: min, tools, code })
+      getRecommendations(selectedGpu, contextLen, batchSize, recommendationSort, includeYellow, KV_CACHE_TYPES[kvType], canStack(selectedGpu) ? cards : 1, bestPerModel, input, { minTok: min, tools, code }, reverseExtras)
         .some(({ model }) => !scoredOnly || liveBenchScores.has(model.id));
     return {
       speed: effectiveMinTok > 0 && without(reverseInput, 0, requireTools, requireCode),
       features: (reverseInput === 'image' || requireTools || requireCode) && without('text', effectiveMinTok, false, false),
     };
-  }, [selectedGpu, visibleRecommendations.length, scoredOnly, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode]);
+  }, [selectedGpu, visibleRecommendations.length, scoredOnly, contextLen, batchSize, recommendationSort, includeYellow, kvType, cards, bestPerModel, reverseInput, effectiveMinTok, requireTools, requireCode, reverseExtras]);
 
   // One-tap starts. With a card named, the suggestions are the homepage's own
   // picks for it (`homePicks`, the same ranking behind `/best/`), so the
@@ -905,7 +900,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       return {
         mode, model: selectedModelId, ctx: contextLen,
         quant: selectedQuantObj || Object.values(quantGroups).some(levels => levels.includes(selectedQuant)) ? selectedQuant : 'other',
-        gpu: profileGpuId || 'none', verdict: overBudget ? 'red' : currentVerdict ?? 'none',
+        gpu: profileGpuId || 'none', verdict: currentVerdict ?? 'none',
         start: modelIsExample ? 'example' : 'chosen',
       };
     }
@@ -913,7 +908,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       return { mode, gpu: selectedGpuId, ctx: contextLen, fits: recommendations.length, start: gpuHint?.kind ?? 'chosen' };
     }
     return null;
-  }, [showForwardResult, activeFile, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, overBudget, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
+  }, [showForwardResult, activeFile, showReverseResult, mode, selectedModelId, selectedQuant, selectedQuantObj, contextLen, profileGpuId, currentVerdict, modelIsExample, selectedGpuId, recommendations.length, gpuHint]);
   useEffect(() => {
     if (!resultEvent) return;
     const key = JSON.stringify(resultEvent);
@@ -1311,6 +1306,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       const indexed = indexedModelFor(sh);
                       const notes = sh.notes.map(n => {
                         switch (n) {
+                          case 'indexedFile': return t.calc.hfIndexedShape;
                           case 'gated': return t.calc.hfNoteGated;
                           case 'noConfig': return t.calc.hfNoteNoConfig;
                           case 'viaBase': return t.calc.hfNoteViaBase.replace('{base}', sh.configRepo ?? '');
@@ -2216,12 +2212,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     </button>
                   );
                 })()}
-                {/* The file is params × bits: for a row whose bpw was derived
-                    from a published file, this is that file's size. */}
                 <p className="text-xs text-slate-500 mt-1.5">
-                  {activeFile
-                    ? t.calc.hfFileSize.replace('{gb}', (activeFile.bytes / 1024 ** 3).toFixed(2))
+                  {calcInput.weightBytes !== undefined
+                    ? t.calc.hfFileSize.replace('{gb}', (calcInput.weightBytes / 1024 ** 3).toFixed(2))
                     : t.calc.download.replace('{gb}', ((calcInput.paramsB * calcInput.bpw) / 8).toFixed(1))}{' '}
+                  {t.calc.weightAllowance.replace('{gb}', result.weightAllowanceGB.toFixed(2))}{' '}
                   {result.extraGB ? `${t.calc.mmprojDownload.replace('{gb}', result.extraGB.toFixed(2))} ` : ''}
                   {!activeFile && <span className="text-slate-600">{t.calc.downloadOllama}</span>}
                 </p>
@@ -2692,6 +2687,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     const cfg = verdictConfig[verdict];
                     const forwardParams = new URLSearchParams({ mode: 'forward', model: model.id, quant: level, ctx: String(contextLen), batch: String(batchSize), cache: kvType, cards: String(canStack(selectedGpu!) ? cards : 1) });
                     if (selectedGpuId) forwardParams.set('gpu', selectedGpuId);
+                    if (reverseExtras.length) forwardParams.set('extra', reverseExtras.map(g => g.id).join(','));
                     if (extraGB !== undefined) forwardParams.set('mmproj', String(extraGB));
                     return (
                       <div
@@ -2715,7 +2711,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               return speed ? <span>{(speed.source === 'measured' ? t.calc.reverseMeasured : t.calc.reverseEstimate).replace('{n}', String(speed.tokS))}</span> : null;
                             })()}
                             {(() => {
-                              const r = contextReach(modelShape(model, batchSize, KV_CACHE_TYPES[kvType], extraGB), quant.bpw, selectedGpu!, model.contextLength, canStack(selectedGpu!) ? cards : 1);
+                              const r = contextReach({ ...modelShape(model, batchSize, KV_CACHE_TYPES[kvType], extraGB), ...quantWeights(quant) }, quant.bpw, selectedGpu!, model.contextLength, reverseCards, reverseExtras);
                               const best = r.comfortable || r.tight;
                               return best ? <span>{t.calc.reverseMaxCtx.replace('{ctx}', contextLabel(best))}</span> : null;
                             })()}

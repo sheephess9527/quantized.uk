@@ -3,7 +3,7 @@ import { articles } from '../lib/data/cookbook';
 import { models } from '../lib/data/models';
 import { macModelOptions, macModelRepos } from '../lib/data/mac-models';
 import { gpuDatabase } from '../lib/data/gpus';
-import { calcVRAM } from '../lib/utils/vram';
+import { calcVRAM, quantWeights } from '../lib/utils/vram';
 import { formatAllowed, vllmRocmSupported, fitsOnGpu } from '../lib/utils/gpu-page';
 import { getRecommendations } from '../lib/utils/recommend';
 import { canOfferOllamaLaunch, generateCLI, type CLIOptions, type Env } from '../lib/utils/cli';
@@ -98,15 +98,15 @@ for (const lang of ['en', 'zh'] as const) {
   assert(!/ollama (run|pull)/.test(ollama.command));
   assert(ollama.notes.some(note => note.includes('Granite Switch')));
 }
-const graniteFit = calcVRAM({ paramsB: granite.params, ...granite.arch, bpw: graniteQuant.bpw, contextLength: 16384, batchSize: 1 });
+const graniteFit = calcVRAM({ paramsB: granite.params, ...granite.arch, ...quantWeights(graniteQuant), contextLength: 16384, batchSize: 1 });
 assert.equal(graniteFit.kvCacheGB, 2.51, 'Granite includes the single-head router cache for all tokens');
 
 for (const m of [arete, twil]) for (const quant of m.quants) {
   const source = quant.source!;
-  const result = calcVRAM({ paramsB: m.params, ...m.arch, bpw: quant.bpw, contextLength: 8192, batchSize: 1 });
+  const result = calcVRAM({ paramsB: m.params, ...m.arch, ...quantWeights(quant), contextLength: 8192, batchSize: 1 });
   assert(Math.abs(result.modelWeightsGB - Number((source.bytes / 1024 ** 3 * 1.02).toFixed(2))) < 1e-9, `${m.id}: exact bytes determine weight estimate`);
 }
-const a = calcVRAM({ paramsB: arete.params, ...arete.arch, bpw: arete.quants[0].bpw, contextLength: 8192, batchSize: 1 });
+const a = calcVRAM({ paramsB: arete.params, ...arete.arch, ...quantWeights(arete.quants[0]), contextLength: 8192, batchSize: 1 });
 assert.equal(a.kvCacheGB, 0.5, 'Arete has 16 growing-cache layers, not 64');
 
 const vulkan = articles.find(guide => guide.id === 'amd-rocm-llamacpp')!.content.find(section => section.heading === 'Vulkan fallback on Windows or Linux')!.code;

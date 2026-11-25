@@ -1,4 +1,6 @@
 import { vllmRocmSupported } from '@/lib/utils/gpu-page';
+import { quantWeights } from '@/lib/utils/vram';
+import type { QuantVariant } from '@/lib/data/types';
 import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
 
 export type Framework = 'llamacpp' | 'ollama' | 'vllm' | 'exllama';
@@ -100,10 +102,12 @@ function ggufBase(hfRepo: string): string {
  */
 export const SHARD_GB = 48;
 
-/** File size of a model's GGUF build at `level`, params × bpw / 8 (the calculator's download figure). */
-export function ggufFileGB(model: { params: number; quants: { format: string; level: string; bpw: number }[] }, level: string): number | undefined {
+/** File size of a model's GGUF build at `level`, recorded bytes or an estimate from params × bpw / 8. */
+export function ggufFileGB(model: { params: number; quants: { format: string; level: string; bpw: number; source?: QuantVariant['source']; publishedBytes?: number }[] }, level: string): number | undefined {
   const q = model.quants.find(x => x.format === 'GGUF' && x.level === level);
-  return q ? (model.params * q.bpw) / 8 : undefined;
+  if (!q) return undefined;
+  const { weightBytes } = quantWeights(q);
+  return weightBytes === undefined ? (model.params * q.bpw) / 8 : weightBytes / 1e9;
 }
 
 type Backend = NonNullable<CLIOptions['backend']>;

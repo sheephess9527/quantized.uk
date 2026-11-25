@@ -48,9 +48,9 @@ export const extraModels9: QuantModel[] = [
     // bpw derived from the published file sizes at 8.49B parameters, not from
     // the generic table: 5.2 / 6.06 / 9.03 GB → 4.90 / 5.71 / 8.51.
     quants: [
-      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.90, vramGB: 5.2,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q4_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, vramGB: 6.1,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q5_K_M'), confidence: 'community' },
-      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, vramGB: 9.0,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q8_0'),   confidence: 'community' },
+      { format: 'GGUF', level: 'Q4_K_M', bpw: 4.90, bpwFromPublishedSize: true, vramGB: 5.2,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q4_K_M'), confidence: 'community' },
+      { format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, bpwFromPublishedSize: true, vramGB: 6.1,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q5_K_M'), confidence: 'community' },
+      { format: 'GGUF', level: 'Q8_0',   bpw: 8.51, bpwFromPublishedSize: true, vramGB: 9.0,  hfSearchUrl: hf('Ministral-3-8B-Instruct-2512-GGUF Q8_0'),   confidence: 'community' },
     ],
   },
   {

@@ -31,10 +31,10 @@ export function sizeClassReference(): SizeClassRow[] {
         const q = referenceQuant(m.quants);
         return {
           format: q.format,
-          s4: sizeAt(m, q.bpw, REF_CONTEXT).totalGB,
+          s4: sizeAt(m, q, REF_CONTEXT).totalGB,
           // A model whose own window is shorter than 32K has no 32K figure —
           // Gemma 2 "needed" 15.6 GB at a context it cannot hold.
-          s32: m.contextLength >= LONG_REF_CONTEXT ? sizeAt(m, q.bpw, LONG_REF_CONTEXT).totalGB : undefined,
+          s32: m.contextLength >= LONG_REF_CONTEXT ? sizeAt(m, q, LONG_REF_CONTEXT).totalGB : undefined,
         };
       });
     const s4 = sized.map(x => x.s4);

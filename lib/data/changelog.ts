@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-25',
+    en: 'Indexed models and imported GGUFs now use recorded file bytes with the same 2% weight planning allowance, KV cache and activation buffer. Fit estimates are planning figures. Mixed GPU recommendations include each selected card.',
+    zh: '已收录模型和导入的 GGUF 统一采用已记录的文件字节数，另留 2% 权重规划余量，并计入 KV 缓存和激活缓冲。适配结果为估算。混合显卡反查计入所有已选设备。',
+  },
+  {
+    date: '2026-11-25',
     en: 'Newly copied Hugging Face model card badges include campaign tags so visits through these links can be measured separately.',
     zh: '新复制的 Hugging Face 模型卡徽章链接带有固定来源标记，可单独统计通过这类链接到达模型详情页的访问。',
   },

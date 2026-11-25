@@ -5,7 +5,7 @@ import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { benchmarkMethodology } from '@/lib/data/meta';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
 import { sameModel, sameQuant } from '@/lib/utils/speed-label';
-import { calcVRAM, KV_CACHE_TYPES } from '@/lib/utils/vram';
+import { calcVRAM, KV_CACHE_TYPES, quantWeights } from '@/lib/utils/vram';
 import { rooflineTokS } from '@/lib/utils/roofline';
 import { isMoE } from '@/lib/utils/model-meta';
 
@@ -55,7 +55,7 @@ export function calibrationRows(): CalibrationRow[] {
       kvHeads: model.arch.kvHeads,
       headDim: model.arch.headDim,
       attention: model.arch.attention,
-      bpw: quant.bpw,
+      ...quantWeights(quant),
       contextLength: benchmarkMethodology.context,
       batchSize: benchmarkMethodology.batch,
       kvBytesPerValue: KV_CACHE_TYPES.f16,

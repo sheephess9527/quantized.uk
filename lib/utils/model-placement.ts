@@ -1,5 +1,5 @@
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { referenceQuant } from '@/lib/utils/quality';
 import { bySmallestCard } from '@/lib/utils/model-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -75,7 +75,7 @@ export function modelPlacement(model: QuantModel): ModelPlacement {
       kvHeads: model.arch.kvHeads,
       headDim: model.arch.headDim,
       attention: model.arch.attention,
-      bpw: quant.bpw,
+      ...quantWeights(quant),
       contextLength: GPU_PAGE_CONTEXT,
       batchSize: 1,
     });

@@ -1,5 +1,11 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-25 — Weight-size evidence and Ling-3.1-flash sizing prose
+
+The Beam Q2_K and Q8_0 records now expose the 14-part 182,067,737,056-byte and 13-part 532,794,735,998-byte totals already documented beside those rows in `lib/data/models-extra-12.ts`. No repository path, filename or new verification date is inferred. Published-size BPWs are annotated only where existing repository notes corroborate them.
+
+The English and Chinese Q4_K_M estimates at 4K now read 370.4 GiB using the existing recorded bytes and the shared planning allowance. The file source and its byte count are unchanged. [Formula audit](changes/2026-11-25-vram-consistency.md).
+
 ## 2026-11-24 — Apple Silicon MLX downloads
 
 Checked each conversion's Hugging Face API record for the direct publisher

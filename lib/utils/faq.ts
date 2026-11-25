@@ -1,14 +1,14 @@
 import { models } from '@/lib/data/models';
 import { GPU_COUNT } from '@/lib/site';
 import { gpuDatabase } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { countModelsFitting, usableCapacityGB, ALLOWED_FORMATS, backendFor } from '@/lib/utils/gpu-page';
 import { SHIPPED_FORMATS } from '@/lib/utils/model-meta';
 import { modelsWithFormat } from '@/lib/utils/format-compare';
 import { getSiteStats } from '@/lib/stats';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { benchmarkMethodology, dataLastUpdated } from '@/lib/data/meta';
-import type { QuantModel } from '@/lib/data/types';
+import type { QuantModel, QuantVariant } from '@/lib/data/types';
 
 /**
  * The site's questions, answered from the site's own index.
@@ -48,14 +48,14 @@ export interface FaqGroup {
 const CTX = 4096;
 const LONG_CTX = 32768;
 
-function size(model: QuantModel, bpw: number, ctx: number) {
+function size(model: QuantModel, quant: QuantVariant, ctx: number) {
   return calcVRAM({
     paramsB: model.params,
     layers: model.arch.layers,
     kvHeads: model.arch.kvHeads,
     headDim: model.arch.headDim,
     attention: model.arch.attention,
-    bpw,
+    ...quantWeights(quant),
     contextLength: ctx,
     batchSize: 1,
   });
@@ -78,18 +78,18 @@ export function faqGroups(): FaqGroup[] {
   const gpuCount = GPU_COUNT;
 
   const b7 = nearest(7);
-  const s7 = size(b7.model, b7.quant.bpw, CTX);
-  const s7long = size(b7.model, b7.quant.bpw, LONG_CTX);
+  const s7 = size(b7.model, b7.quant, CTX);
+  const s7long = size(b7.model, b7.quant, LONG_CTX);
 
   const b24 = nearest(24);
-  const s24 = size(b24.model, b24.quant.bpw, CTX);
+  const s24 = size(b24.model, b24.quant, CTX);
   const awq24 = b24.model.quants.find(q => q.format === 'AWQ');
-  const s24awq = awq24 ? size(b24.model, awq24.bpw, CTX) : undefined;
+  const s24awq = awq24 ? size(b24.model, awq24, CTX) : undefined;
 
   const b70 = nearest(70);
-  const s70 = size(b70.model, b70.quant.bpw, CTX);
+  const s70 = size(b70.model, b70.quant, CTX);
   const small70 = [...b70.model.quants].sort((a, b) => a.bpw - b.bpw)[0];
-  const s70small = size(b70.model, small70.bpw, CTX);
+  const s70small = size(b70.model, small70, CTX);
   const cards70 = gpuDatabase.filter(g => getVerdict(s70.totalGB, usableCapacityGB(g)) === 'green');
   const consumer70 = cards70.filter(g => g.type === 'nvidia-consumer' || (g.type === 'intel' && !/Arc Pro/.test(g.name)) || /^Radeon RX/.test(g.name));
 

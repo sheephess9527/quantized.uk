@@ -5,6 +5,10 @@ export interface QuantVariant {
   format: 'GGUF' | 'AWQ' | 'EXL2' | 'GPTQ' | 'HQQ';
   level: string;
   bpw: number;
+  /** Repository notes document a published size for this BPW; the listing is not in source. */
+  bpwFromPublishedSize?: true;
+  /** Exact combined bytes documented without a complete QuantSource listing. */
+  publishedBytes?: number;
   /** Legacy hand-typed figure — no display reads it (they call `sizeAt4K()`); kept so old rows
    *  type-check. It mixed file sizes with old 4K totals and disagreed with the calculator on 182 of 313 rows. */
   vramGB: number;

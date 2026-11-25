@@ -165,7 +165,8 @@ The benchmark matrix on `/benchmarks/` and `/zh/benchmarks/` filters by hardware
 ### VRAM calculation (`lib/utils/vram.ts`)
 
 ```
-model_weights     = params × bpw / 8 / 2³⁰ × 1.02
+weight_basis_bytes = recorded model-file bytes if known, otherwise params × bpw / 8
+model_weights     = weight_basis_bytes / 2³⁰ × 1.02  # includes planning allowance
 kv_cache          = sum(2 × layers × kvHeads × headDim × cachedTokens × batchSize × bytesPerValue / 2³⁰)
 subtotal          = model_weights + kv_cache + optional vision_encoder
 total             = subtotal × 1.10
@@ -644,6 +645,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 ---
 
 ## 9. Changelog
+
+### 2026-11-25 — Consistent VRAM estimates for indexed and imported weights
+
+- Recorded bytes take precedence over rounded BPW. `weightEvidence` distinguishes exact byte totals, documented published-size BPWs, generic-rate estimates and historical model-specific estimates with unverified provenance. The v1 JSON export retains its legacy `sizingBasis` field for compatibility. All inference paths retain a separately disclosed 2% weight allowance. Reverse lookup uses the selected GPU rig, including a mixed rig. [Audit and verification](docs/changes/2026-11-25-vram-consistency.md).
 
 ### 2026-11-25 — Model card badge referral attribution
 

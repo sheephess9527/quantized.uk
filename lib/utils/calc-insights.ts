@@ -1,6 +1,6 @@
 import type { QuantModel, QuantVariant } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict, type CalcInput } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, type CalcInput, quantWeights } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { usableCapacityGB, formatAllowed, tightCeiling, canStack, hasDedicatedVram, capacityGB, rigDevices, MAX_CARDS, backendFor } from '@/lib/utils/gpu-page';
 export { canStack, capacityGB, rigDevices, MAX_CARDS };
@@ -76,7 +76,7 @@ export function levelTable(
 ): LevelRow[] {
   const shape = modelShape(model, batchSize, kvBytesPerValue, extraGB);
   const rows: LevelRow[] = model.quants.map(quant => {
-    const { totalGB } = calcVRAM({ ...shape, bpw: quant.bpw, contextLength });
+    const { totalGB } = calcVRAM({ ...shape, ...quantWeights(quant), contextLength });
     const formatOk = !gpu || rigFormatAllowed(gpu, extra, quant.format);
     const verdict = gpu
       ? formatOk ? verdictOn(totalGB, gpu, cards, extra) : 'red'

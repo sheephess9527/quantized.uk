@@ -1,6 +1,6 @@
 import { models } from '@/lib/data/models';
 import { gpuDatabase, type GPU } from '@/lib/data/gpus';
-import { calcVRAM, getVerdict } from '@/lib/utils/vram';
+import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { fitsOnGpu, largestAtQ4, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, tightCeiling, type GpuFit } from '@/lib/utils/gpu-page';
 import { measuredRowsFor } from '@/lib/utils/measured-runs';
@@ -303,7 +303,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
       // does the answer fall back to the format explanation. Picking across
       // every format said "AWQ doesn't run here" about models that also ship GGUF.
       const sized = nextUp.quants
-        .map(q => ({ q, gb: calcVRAM({ paramsB: nextUp.params, layers: nextUp.arch.layers, kvHeads: nextUp.arch.kvHeads, headDim: nextUp.arch.headDim, attention: nextUp.arch.attention, bpw: q.bpw, contextLength: GPU_PAGE_CONTEXT, batchSize: 1 }).totalGB }))
+        .map(q => ({ q, gb: calcVRAM({ paramsB: nextUp.params, layers: nextUp.arch.layers, kvHeads: nextUp.arch.kvHeads, headDim: nextUp.arch.headDim, attention: nextUp.arch.attention, ...quantWeights(q), contextLength: GPU_PAGE_CONTEXT, batchSize: 1 }).totalGB }))
         .sort((a, b) => a.gb - b.gb);
       const best = sized.find(x => formatAllowed(gpu, x.q.format)) ?? sized[0];
       const capacity = usableCapacityGB(gpu);

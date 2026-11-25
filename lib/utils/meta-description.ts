@@ -27,7 +27,7 @@ function contextLabel(tokens: number): string {
 
 export function modelMetaDescription(model: QuantModel, lang: Lang): string {
   const ref = referenceQuant(model.quants);
-  const total = sizeAt(model, ref.bpw, REF_CONTEXT).totalGB;
+  const total = sizeAt(model, ref, REF_CONTEXT).totalGB;
   const smallest = cardsFitting(total, ref.format)[0];
   const level = quantLevelKey(ref);
   const ctx = contextLabel(model.contextLength);
