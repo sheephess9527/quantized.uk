@@ -20,8 +20,12 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const chat = picks.find(p => p.useCases.includes('chat'));
   const plainTitle = `Best local LLM for ${label} — ${fitCount} models | quantized.uk`;
   const sizedTitle = q4 ? fitTitle(`Best local LLM for ${label}: up to ${q4.model.paramLabel} at Q4`) : undefined;
-  const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
-  const description = q4
+  const title = tier.kind === 'vram'
+    ? fitTitle(`Local LLMs for ${label}`)
+    : sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
+  const description = tier.kind === 'vram'
+    ? `Compare local LLM sizes and quantization levels for ${label} at 4K context. See estimated headroom and picks for chat, coding and images.`
+    : q4
     ? `How big a model can ${label} run? Comfortably up to ${q4.model.paramLabel} at Q4_K_M (${q4.model.name}, ${q4.totalGB.toFixed(1)} GB). ${fitCount} of ${models.length} models fit at 4K, with picks.`
     : chat
     ? `${chat.model.name} at ${quantLevelKey(chat.quant)} needs ${chat.totalGB.toFixed(1)} GB of ${tier.vram} GB. ${fitCount} of ${models.length} models fit at 4K — picks for chat, coding and images.`

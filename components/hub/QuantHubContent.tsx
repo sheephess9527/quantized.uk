@@ -215,6 +215,11 @@ export default function QuantHubContent() {
               <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
             </span>
           </p>
+          <nav aria-label={lang === 'zh' ? '常用入口' : 'Common destinations'} className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <Link className="text-cyan-300 hover:underline" href="/quant-hub/qwen3-8b/">Qwen3 8B</Link>
+            <Link className="text-cyan-300 hover:underline" href="/tools/vram-calc/">{t.nav.vramCalc}</Link>
+            <Link className="text-cyan-300 hover:underline" href="/gpu/rtx-4090/">RTX 4090</Link>
+          </nav>
           <DataFreshness className="mt-1.5" />
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">

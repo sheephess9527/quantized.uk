@@ -25,7 +25,7 @@ import GpuUpgradeComparison from '@/components/gpu/GpuUpgradeComparison';
 export default function BestTierContent({ tier }: { tier: BestTier }) {
   const { t, lang } = useLanguage();
   const b = t.best;
-  const { picks, cards, nearMiss, ladder, appleLadder, fitCount, faqs } = bestPage(tier);
+  const { picks, cards, nearMiss, ladder, appleLadder, fitCount, faqs, q4 } = bestPage(tier);
   const upgradeBaseline = tierUpgradeBaseline(tier);
   const total = models.length;
 
@@ -33,6 +33,7 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
     Object.entries(v).reduce((acc, [k, val]) => acc.replaceAll(`{${k}}`, String(val)), s);
 
   const label = tier.kind === 'apple' ? b.appleLabel : `${tier.vram}GB`;
+  const title = fill(tier.kind === 'vram' ? b.vramTierTitle : b.tierTitle, { label });
   const useCaseLabel = (u: string) =>
     u === 'chat' ? b.useChat : u === 'code' ? b.useCode : b.useVision;
 
@@ -44,12 +45,17 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
         items={[
           { label: t.nav.home, href: '/' },
           { label: b.hubTitle, href: '/best/' },
-          { label: fill(b.tierTitle, { label }) },
+          { label: title },
         ]}
       />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-100 mb-3">{fill(b.tierTitle, { label })}</h1>
+        <h1 className="text-3xl font-bold text-slate-100 mb-3">{title}</h1>
+        {tier.kind === 'vram' && q4 && (
+          <p className="text-slate-300 max-w-3xl leading-relaxed mb-2">
+            {fill(b.vramTierLead, { size: q4.model.paramLabel, model: q4.model.name })}
+          </p>
+        )}
         {/*
           The answer first, in the first sentence. A page that opens by
           explaining what quantization is has already lost the reader who typed

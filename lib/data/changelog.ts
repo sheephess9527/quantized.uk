@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-26',
+    en: 'The benchmark, VRAM and model pages now say what you can compare before you scroll. The model catalog links to Qwen3 8B, the calculator and RTX 4090. Five Windows and Linux setup guides now lead with their hardware and first step.',
+    zh: '基准测试、显存工具和模型库的首屏现在直接说明能查什么。模型库新增 Qwen3 8B、显存计算器和 RTX 4090 快捷入口。五篇英文部署指南先交代支持的硬件和第一步。',
+  },
+  {
     date: '2026-11-25',
     en: 'Faster page loads, instant search across all 126 GPUs and Macs, and grouped hardware pickers across the site. Non-interactive reference pages now ship far less JavaScript, static assets cache longer, and missing model-and-GPU links offer a direct jump into the pre-filled VRAM calculator.',
     zh: '全站页面加载更快，显卡索引页支持在全部 126 款显卡与 Mac 中即时搜索，各处硬件下拉框统一按类别分组显示。纯阅读参考页面大幅减少了客户端脚本体积，静态资源缓存更持久，旧的「模型 × 显卡」链接也可一键跳入预填好参数的显存计算器。',

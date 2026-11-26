@@ -647,6 +647,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — Search intent for benchmarks, VRAM and the model catalog
+
+- Refocused bilingual benchmarks, VRAM calculator, five memory tiers, three sizing guides and model catalog titles and first-screen copy. Five English cookbook guides put hardware and setup steps first. The model catalog links to three existing localized destinations. [Exported copy and self-check](docs/changes/2026-11-26-search-intent.md).
+
 ### 2026-11-25 — Bundle reduction, static asset caching, hardware search and i18n polish
 
 - Extracted long-form `/legal/`, `/about/` and `/privacy/` essays into server-only `lib/i18n/static-pages.ts` and converted static reference/index views (`AboutView`, `LegalView`, `PrivacyView`, `ToolIndexView`, `ChangelogView`, `FaqView`, `BestHubContent`, `FormatIndexView`, `PendingView`) plus static homepage sections to Server Components. Reference/index routes drop to **167 kB** First Load JS (722.6 KB raw / 231.0 KB gzipped total assets across 14 files), homepage static assets drop from 1,141.9 KB raw / 363.5 KB gzipped (21 files) to **1,068.7 KB raw / 316.1 KB gzipped (19 files)**, and exported files in `out/` drop from 3,825 to 3,817.

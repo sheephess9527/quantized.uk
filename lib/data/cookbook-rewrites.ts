@@ -155,7 +155,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
     ],
   },
   'llamacpp-windows-cuda': {
-    updatedAt: '2026-11-23',
+    updatedAt: '2026-11-26',
     verifiedAt: undefined,
     content: [
       {
@@ -945,7 +945,7 @@ export const cookbookRewrites: Record<string, Partial<Article>> = {
   },
 
   'cpu-inference-optimization': {
-    updatedAt: '2026-10-03',
+    updatedAt: '2026-11-26',
     verifiedAt: undefined,
     relatedModelIds: ['llama-3.1-8b', 'qwen3-5-4b', 'qwen3-5-2b'],
     verifiedStack: {

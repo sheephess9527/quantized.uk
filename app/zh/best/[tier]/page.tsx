@@ -17,8 +17,12 @@ export function generateMetadata({ params }: { params: { tier: string } }): Meta
   const chat = picks.find(p => p.useCases.includes('chat'));
   const plainTitle = fitTitle(`${label}能跑的最好的本地大模型 —— ${fitCount} 个装得下`);
   const sizedTitle = q4 ? fitTitle(`${label}能跑多大的模型？Q4 最大约 ${q4.model.paramLabel}，${fitCount} 个装得下`) : undefined;
-  const title = sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
-  const description = q4
+  const title = tier.kind === 'vram'
+    ? fitTitle(`${tier.vram}GB 显存能跑多大的本地大模型？`)
+    : sizedTitle && displayWidth(sizedTitle) <= TITLE_LIMIT ? sizedTitle : plainTitle;
+  const description = tier.kind === 'vram'
+    ? `按 ${tier.vram}GB 显存估算 4K 上下文能跑的本地大模型大小、量化档位和显存余量。查看聊天、写代码和看图的配置建议。`
+    : q4
     ? `${label}能跑多大的模型：Q4_K_M 下从容最大约 ${q4.model.paramLabel}（${q4.model.name}，约 ${q4.totalGB.toFixed(1)} GB）。${models.length} 个模型中 ${fitCount} 个能在 4K 下装下，附用途推荐。`
     : chat
     ? `${chat.model.name} 在 ${quantLevelKey(chat.quant)} 下需要 ${tier.vram} GB 中的 ${chat.totalGB.toFixed(1)} GB。${models.length} 个模型中有 ${fitCount} 个能在 4K 下装下，附通用、写代码、图像的推荐。`

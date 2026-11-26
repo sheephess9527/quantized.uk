@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     new Date(ds.filter((d): d is string => !!d).sort().slice(-1)[0] ?? dataLastUpdated);
   const inventoryDate = latest([sizingChangedAt, ...models.map(m => m.addedAt), ...gpuDatabase.map(g => g.addedAt)]);
   const guidesDate = latest(articles.map(a => articleModifiedAt(a)));
-  const benchDate = latest(['2026-11-24', runtimeVersions.checkedAt]);
+  const benchDate = latest(['2026-11-26', runtimeVersions.checkedAt]);
 
   // `/legal/` and `/privacy/` are hand-written pages that do not move with a
   // data ship — they should not claim `siteDate` just because the site
@@ -51,7 +51,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // `lib/data/tool-content.ts`), which `inventoryDate` cannot see. Bump the
   // tool's date here when that text changes — not `sizingChangedAt`, which
   // would re-announce every derived page.
-  const VRAM_CALC_EDITED = '2026-11-23';
+  const VRAM_CALC_EDITED = '2026-11-26';
+  const VRAM_GUIDES_EDITED = '2026-11-26';
   const QUESTIONS_EDITED = '2026-10-26';
 
   type Entry = { path: string; lastModified: Date; changeFrequency: 'yearly' | 'monthly' | 'weekly'; priority: number };
@@ -61,13 +62,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // at best, but a sitemap where every URL claims the same values is the same
   // "carries no information" problem as a uniform lastmod.
   const HUB_INDEX: Entry[] = [
-    { path: '/quant-hub/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/quant-hub/', lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-11-26']), changeFrequency: 'weekly', priority: 0.9 },
     { path: '/gpu/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
     { path: '/best/', lastModified: inventoryDate, changeFrequency: 'weekly', priority: 0.9 },
   ];
   const CONTENT_INDEX: Entry[] = [
     ...localGuideSlugs.map(slug => ({
-      path: `/${slug}/`, lastModified: latest([inventoryDate.toISOString().slice(0, 10), '2026-11-20']),
+      path: `/${slug}/`, lastModified: latest([
+        inventoryDate.toISOString().slice(0, 10), slug === 'local-llm-without-gpu' ? '2026-11-20' : VRAM_GUIDES_EDITED,
+      ]),
       changeFrequency: 'monthly' as const, priority: 0.7,
     })),
     { path: '/benchmarks/', lastModified: benchDate, changeFrequency: 'monthly', priority: 0.7 },
@@ -119,7 +122,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // add one and list only the other — which is exactly what happened.
     ...BEST_TIERS.map(t => ({
       path: `/best/${t.slug}/`,
-      lastModified: inventoryDate,
+      lastModified: t.kind === 'vram' ? latest([inventoryDate.toISOString().slice(0, 10), VRAM_GUIDES_EDITED]) : inventoryDate,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     })),

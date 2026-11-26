@@ -354,8 +354,8 @@ if (existsSync(redirectsFile)) {
       }
     }
     const calculator = source(prefix + calc);
-    assert.match(calculator, zh ? /<title>大模型显存 \/ 内存计算器 \| quantized\.uk<\/title>/ : /<title>LLM VRAM Calculator: Will It Fit Your GPU\?/);
-    assert.match(calculator, zh ? /<h1[^>]*>显存 \/ 内存计算器<\/h1>/ : /<h1[^>]*>LLM VRAM Calculator<\/h1>/);
+    assert.match(calculator, zh ? /<title>本地大模型显存计算器：能跑多大？ \| quantized\.uk<\/title>/ : /<title>LLM VRAM Calculator: What Fits Your GPU\?/);
+    assert.match(calculator, zh ? /<h1[^>]*>本地大模型显存计算器：能跑多大？<\/h1>/ : /<h1[^>]*>LLM VRAM Calculator<\/h1>/);
     assert.match(calculator, zh ? /<dt[^>]*>我的显卡能跑哪些大模型？<\/dt>/ : /<dt[^>]*>Which LLMs can I run on my GPU\?<\/dt>/);
     for (const path of ['/methodology/', '/tools/context-length/']) {
       assert.match(source(prefix + path), zh
@@ -368,7 +368,7 @@ if (existsSync(redirectsFile)) {
     assert.ok(errors.includes(`href="${prefix}${detail}"`), `${prefix}${index}: KV-cache detail link`);
     assert.match(source(prefix + detail), /<pre[^>]*>failed to allocate buffer for kv cache<\/pre>/);
   }
-  assert.match(source(calc), /<meta name="description" content="Estimate GPU VRAM and system RAM for local LLMs\./);
+  assert.match(source(calc), /<meta name="description" content="Pick a GPU to find local LLMs that fit,/);
   assert.match(source(index), /<title>LLM Error Lookup: KV Cache,/);
   assert.match(source(index), /<meta name="description" content="Fix “failed to allocate buffer for kv cache,”/);
   assert.match(source(detail), /<title>failed to allocate buffer for kv cache: llama\.cpp fix<\/title>/);

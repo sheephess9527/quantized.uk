@@ -158,10 +158,10 @@ export const extraArticles2: Article[] = [
     id: 'wsl2-ollama-gpu',
     gpuPreset: { gpuId: 'rtx4060ti16', ctx: 4096 },
     relatedModelIds: ['qwen3-8b', 'llama-3.1-8b', 'gpt-oss-20b'],
-    title: 'WSL2 + Ollama GPU Passthrough on Windows',
-    seoTitle: 'Ollama in WSL2 with NVIDIA GPU: Setup Guide',
+    title: 'Set Up Ollama on an NVIDIA GPU in Windows WSL2',
+    seoTitle: 'Ollama NVIDIA GPU Setup in Windows WSL2',
     titleZh: 'Windows WSL2 + Ollama GPU 透传',
-    description: 'Set up Ollama with an NVIDIA GPU in WSL2. Check passthrough with nvidia-smi, start ollama serve, and use ollama ps to diagnose CPU fallback.',
+    description: 'On Windows with an NVIDIA GPU, run nvidia-smi in WSL2 to check passthrough. Install Ollama in Ubuntu, start the server, then check GPU use with ollama ps.',
     descriptionZh: '在 WSL2 中用 NVIDIA 显卡运行 Ollama：用 nvidia-smi 检查 GPU 透传，运行 ollama serve 启动服务，再用 ollama ps 排查 CPU 回退。',
     category: 'edge',
     difficulty: 'intermediate',
@@ -171,7 +171,7 @@ export const extraArticles2: Article[] = [
     // networking.md), NVIDIA's CUDA on WSL user guide, Ollama's docs (faq.mdx,
     // linux.mdx) and scripts/install.sh. A documentation check, not a run on a
     // Windows box — so a target stack, no verified date. See README §9.
-    updatedAt: '2026-11-23',
+    updatedAt: '2026-11-26',
     verifiedStack: {
       en: 'Windows 11 (or Win10 21H2+) · WSL2 Ubuntu 22.04/24.04 · recent NVIDIA Windows driver · Ollama Linux install · GGUF Q4_K_M',
       zh: 'Windows 11（或 Win10 21H2+）· WSL2 Ubuntu 22.04/24.04 · 较新的 NVIDIA Windows 驱动 · Ollama Linux 版 · GGUF Q4_K_M',
@@ -362,10 +362,10 @@ export const extraArticles2: Article[] = [
     id: 'amd-rocm-llamacpp',
     gpuPreset: { gpuId: 'rx7900xtx', ctx: 8192 },
     relatedModelIds: ['llama-3.1-8b', 'qwen3-8b', 'gpt-oss-20b', 'qwen3-30b-a3b'],
-    title: 'AMD GPU + llama.cpp via ROCm (Quick Start)',
-    seoTitle: 'llama.cpp ROCm Setup on AMD RX 7900 / 6800',
+    title: 'Set Up llama.cpp on AMD Radeon with ROCm or Vulkan',
+    seoTitle: 'llama.cpp ROCm Setup for AMD Radeon GPUs',
     titleZh: 'AMD 显卡 + llama.cpp ROCm 快速入门',
-    description: 'Set up llama.cpp on Radeon RX 9070, 7900 or 6800: Linux ROCm/HIP build and GPU targets, Windows ROCm ZIP, or Vulkan without ROCm.',
+    description: 'Check your Radeon GPU and ROCm support first. Build llama.cpp with HIP on Linux, pick a Windows ROCm ZIP, or use Vulkan to run a GGUF model.',
     descriptionZh: '在 Radeon RX 9070、7900 或 6800 上安装 llama.cpp：Linux ROCm/HIP 编译与 GPU 架构目标、Windows ROCm ZIP，以及无需 ROCm 的 Vulkan 方案。',
     category: 'edge',
     difficulty: 'advanced',
@@ -374,7 +374,7 @@ export const extraArticles2: Article[] = [
     // Rewritten from the index on 2026-09-08; FAQs + LLAMA_HIPBLAS wording 2026-10-03; RDNA 4 + iGPU
     // re-check 2026-10-20 (llama.cpp docs/build.md + ggml-hip/CMakeLists.txt on master, AMD's ROCm
     // Linux system requirements, Ollama docs/gpu.mdx, LLVM AMDGPUUsage processor table).
-    updatedAt: '2026-11-23',
+    updatedAt: '2026-11-26',
     // Expanded 2026-09-08; commands re-checked against llama.cpp docs/build.md
     // and ggml-hip/CMakeLists.txt on 2026-10-02. No `verifiedAt`: this environment has no Radeon
     // card, so the added build flags and checks are written from the
@@ -660,16 +660,16 @@ export const extraArticles2: Article[] = [
     id: 'intel-arc-llamacpp',
     gpuPreset: { gpuId: 'arc-b580', ctx: 8192 },
     relatedModelIds: ['qwen3-8b', 'gemma-3-12b-it', 'qwen3-14b', 'gemma-4-e4b'],
-    title: 'Intel Arc: llama.cpp (SYCL) or Ollama (Vulkan)',
-    seoTitle: 'llama.cpp on Intel Arc: SYCL vs Vulkan Setup',
+    title: 'Set Up llama.cpp on Intel Arc with SYCL or Vulkan',
+    seoTitle: 'llama.cpp Setup on Intel Arc: SYCL or Vulkan',
     titleZh: 'Intel Arc 显卡：llama.cpp（SYCL）或 Ollama（Vulkan）',
-    description: 'Run llama.cpp on Intel Arc B580, B570, A770 or A750: choose a Windows SYCL or Vulkan ZIP, build on Linux, or use Ollama Vulkan.',
+    description: 'Check your Intel Arc GPU and driver, then choose SYCL or Vulkan for llama.cpp. Use a prebuilt ZIP on Windows or build on Linux and list devices.',
     descriptionZh: '在 Intel Arc B580、B570、A770 或 A750 上运行 llama.cpp：选择 Windows SYCL 或 Vulkan ZIP、在 Linux 上编译，或使用 Ollama Vulkan。',
     category: 'edge',
     difficulty: 'intermediate',
     tags: ['Intel Arc', 'SYCL', 'llama.cpp', 'Ollama', 'Vulkan', 'GGUF'],
     publishedAt: '2026-10-04',
-    updatedAt: '2026-11-23',
+    updatedAt: '2026-11-26',
     // Written 2026-10-04 from llama.cpp docs/backend/SYCL.md, docs/build.md and
     // docs/docker.md, and Ollama docs/gpu.mdx + docs/docker.mdx. No `verifiedAt`:
     // there is no Arc card in this environment, so nothing here was run.

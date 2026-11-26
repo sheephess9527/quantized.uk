@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { pageMetadata, GPU_COUNT } from '@/lib/seo';
+import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: '大模型显存 / 内存计算器 | quantized.uk',
-  description: `大模型显存计算器：任意模型或 Hugging Face 仓库、混搭多卡、速度、首字等待、并发人数与 QLoRA/LoRA 微调显存，覆盖 ${GPU_COUNT} 张显卡。`,
+  title: '本地大模型显存计算器：能跑多大？ | quantized.uk',
+  description: '按显卡和可用显存估算能跑多大的本地大模型、哪些量化档位能装下。可调整上下文，或粘贴 GGUF 文件链接按实际大小估算。',
   path: '/zh/tools/vram-calc',
 });
 

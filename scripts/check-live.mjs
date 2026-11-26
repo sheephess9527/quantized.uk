@@ -7,9 +7,9 @@ const calculator = '/tools/vram-calc/';
 const pair = '/quant-hub/qwen3-32b/rtx-4090/';
 const pages = [
   ['/', /Will it fit/i, /这张显卡/],
-  ['/quant-hub/', /Quant Hub/i, /量化模型库/],
+  ['/quant-hub/', /Quant Hub|Quantized Models/i, /量化模型库/],
   ['/gpu/', /What can each GPU run/i, /每张显卡能跑什么/],
-  ['/benchmarks/', /Benchmarks/i, /基准测试/],
+  ['/benchmarks/', /Benchmarks/i, /基准测试|本地大模型量化实测/],
   ['/cookbook/', /Deployment Cookbook/i, /实战部署指南/],
   ['/tools/', /Tools/i, /工具/],
   ['/tools/compare/', /Model A vs B/i, /模型 A vs B/],
