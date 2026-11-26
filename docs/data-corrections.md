@@ -904,3 +904,25 @@ Documented the addition in README §9 and the bilingual public changelog. Memory
 [kormo-card]: https://huggingface.co/KORMo-VL/KORMo-Web-4B/blob/4be14497ea5196661b9db1cd1ad27acaa9a6771d/README.md
 [kormo-config]: https://huggingface.co/KORMo-VL/KORMo-Web-4B/blob/4be14497ea5196661b9db1cd1ad27acaa9a6771d/config.json
 [kormo-gguf]: https://huggingface.co/api/models/bartowski/KORMo-VL_KORMo-Web-4B-GGUF/revision/b6cff2f436d2d7c0973d5964ca7db295da18caf3?blobs=true
+
+
+## 2026-11-26 — Routed expert inventory
+
+Counts cover inference blocks only (exclude MTP, routers, shared experts and projectors). The residual uses the existing catalog total, which may be rounded. Nemotron Super uses two latent-width matrices in its 40 interleaved MoE blocks.
+
+| Publisher config | Layers × experts × matrices × input × width | Top-k | Routed B | Catalog B | Residual B |
+|---|---:|---:|---:|---:|---:|
+| [deepseek-v2-lite](https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite/blob/main/config.json) | 26 × 64 × 3 × 2048 × 1408 | 6 | 14.39485 | 15.7 | 1.305 |
+| [deepseek-coder-v2-lite](https://huggingface.co/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct/blob/main/config.json) | 26 × 64 × 3 × 2048 × 1408 | 6 | 14.39485 | 15.7 | 1.305 |
+| [deepseek-v3](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/main/config.json) | 58 × 256 × 3 × 7168 × 2048 | 8 | 653.90877 | 671 | 17.091 |
+| [deepseek-r1](https://huggingface.co/deepseek-ai/DeepSeek-R1/blob/main/config.json) | 58 × 256 × 3 × 7168 × 2048 | 8 | 653.90877 | 671 | 17.091 |
+| [mixtral-8x7b](https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1/blob/main/config.json) | 32 × 8 × 3 × 4096 × 14336 | 2 | 45.09716 | 46.7 | 1.603 |
+| [qwen3-8-flash-next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/main/config.json) | 48 × 512 × 3 × 2560 × 640 | 10 | 120.79596 | 125 | 4.204 |
+| [mimo-v2-6-pro](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/config.json) | 69 × 384 × 3 × 6144 × 2048 | 8 | 1000.19051 | 1022 | 21.809 |
+| [nemotron-3.5-super-vl-120b-a12b](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16/blob/main/config.json) | 40 × 512 × 2 × 1024 × 2688 | 22 | 112.74289 | 120.76 | 8.017 |
+| [ling-3.1-flash](https://huggingface.co/inclusionAI/Ling-3.1-flash/blob/main/config.json) | 68 × 512 × 3 × 4096 × 1280 | 8 | 547.60833 | 563.95 | 16.342 |
+| [beam-1.0-501b-a23b](https://huggingface.co/reflection/Beam-1.0-501B-A23B/blob/main/config.json) | 49 × 256 × 3 × 5120 × 2560 | 8 | 493.25015 | 501.27 | 8.020 |
+| [mimo-v2-6-flash](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Flash-RL/blob/main/config.json) | 47 × 256 × 3 × 4096 × 2048 | 8 | 302.79519 | 308.78 | 5.985 |
+| [flint-40b-a2-5b](https://huggingface.co/RecursiveSI/flint/blob/main/config.json) | 47 × 256 × 3 × 2048 × 512 | 6 | 37.84940 | 39.81 | 1.961 |
+| [laguna-s-2-1-118b-a8b](https://huggingface.co/Poolside/Laguna-S-2.1/blob/main/config.json) | 47 × 256 × 3 × 3072 × 1024 | 10 | 113.54820 | 117.6 | 4.052 |
+| [k2-horizon-375b-a23b](https://huggingface.co/IFM/K2-Horizon-375B-A23B/blob/main/config.json) | 58 × 192 × 3 × 6144 × 1792 | 8 | 367.82368 | 379.17 | 11.346 |

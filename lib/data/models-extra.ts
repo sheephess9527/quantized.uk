@@ -216,7 +216,7 @@ export const extraModels: QuantModel[] = [
     categories: ['general', 'instruct'],
     hardwareTags: ['pro-gpu'],
     contextLength: 32768,
-    arch: { layers: 32, attHeads: 32, kvHeads: 8, headDim: 128 },
+    arch: { moe: { expertParams: 45.09716, experts: 8, perToken: 2, moeLayers: 32 }, layers: 32, attHeads: 32, kvHeads: 8, headDim: 128 },
     description: {
       en: 'Classic MoE model. ~13B active params per token; needs 32GB+ VRAM for Q4.',
       zh: '经典 MoE 模型，每 token 约 13B 激活参数，Q4 量化需 32GB+ 显存。',

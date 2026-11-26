@@ -10,6 +10,7 @@ import RelatedReports from '@/components/reports/RelatedReports';
 import RunReportForm from '@/components/feedback/RunReportForm';
 import CommunitySpeedReports from '@/components/feedback/CommunitySpeedReports';
 import { COMMUNITY_SPEED_ENABLED, type SpeedConfiguration } from '@/lib/data/community-speed';
+import OffloadMemory from './OffloadMemory';
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
@@ -24,7 +25,7 @@ import { measuredSpeed, CALIBRATION_ERROR } from '@/lib/utils/measured-speed';
 import { modelShape, levelTable, contextReach, rigSpeedCeiling, runPlanSpeed, offloadPlan, canStack, capacityGB, MAX_CARDS, RAM_SETUPS, rigFormatAllowed, rigExtras, servingCapacity, rigDevices, VLLM_MEMORY_UTILIZATION, type RamSetup } from '@/lib/utils/calc-insights';
 import { getRecommendations, readRecommendationFilters, recommendationSpeed, quantLevelKey, SortBy, type RecommendationInput } from '@/lib/utils/recommend';
 import { hasImageInput } from '@/lib/utils/model-facts';
-import { usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
+import { hasDedicatedVram, usableCapacityGB, formatAllowed, tightCeiling, backendFor, vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { commonQuantLevels, changedAdvancedSettings } from '@/lib/utils/calc-simplify';
 import { cn } from '@/lib/utils/cn';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
@@ -865,6 +866,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const planSpeed = showForwardResult && !ctxOverModel && profileGpu && selectedModel && selectedQuantObj && !launchOffload
     ? runPlanSpeed(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, result.totalGB, contextLen)
     : undefined;
+  const moeModel = !!selectedModel && isMoE(selectedModel);
+  const split = launchOffload?.moe;
+  // Estimated tier boundary. Each verified layer in an expert-only split has an equal share.
+  const heavy = split && split.cpuMoeLayers * 2 >= split.moeLayers;
   const canShowLaunch = selectedModel && selectedQuantObj && formatOk && !ctxOverModel;
   const launchCommands = canShowLaunch && (!overBudget || launchOffload) ? (
     <LaunchCommands
@@ -872,7 +877,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       quant={selectedQuantObj}
       contextLen={contextLen}
       gpu={profileGpu ?? undefined}
-      gpuLayers={launchOffload?.gpuLayers}
+      gpuLayers={launchOffload?.moe ? Math.max(99, launchOffload.layers + 1) : launchOffload?.gpuLayers}
       cpuMoe={launchOffload?.moe && { n: launchOffload.moe.n, all: launchOffload.moe.all }}
       advanced={multiDevice || batchSize !== 1 || kvType !== 'f16' || !!calcInput.extraGB}
     />
@@ -2064,7 +2069,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       currentVerdict === 'yellow' ? t.calc.yellow : t.calc.red
                     }</span>
                   )}
-                  {planSpeed && (
+                  {planSpeed && (!moeModel || planSpeed.source === 'measured') && (
                     <span data-testid="run-plan-speed" className="text-slate-200">
                       {'· '}{planSpeed.source === 'measured' ? (
                         <Link href="/benchmarks/" className="underline decoration-slate-500 underline-offset-2">
@@ -2109,6 +2114,23 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 )}
                 {overBudget && !quantFix && !contextFix && (
                   <p className="mt-3 text-xs text-slate-400">{t.calc.runPlanNoAdjustment}</p>
+                )}
+                {moeModel && !selectedModel?.arch.moe && (
+                  <p className="mt-2 text-xs text-slate-400">{t.calc.offloadMoE}</p>
+                )}
+                {moeModel && profileGpu && hasDedicatedVram(profileGpu) && formatOk && !ctxOverModel && (split || (!launchOffload && !overBudget)) && (
+                  <p className="mt-2 text-sm text-slate-300">
+                    {split ? (heavy ? t.calc.moeHeavy : t.calc.moePartial) : t.calc.moeResident}
+                    {split && ` · ${split.cpuMoeLayers}/${split.moeLayers} · ${t.calc.moeBandwidth}`}
+                  </p>
+                )}
+                {moeModel && launchOffload && !split && (
+                  <p className="mt-2 text-xs text-slate-400">{lang === 'zh'
+                    ? '当前按整层卸载。生成速度受系统内存带宽影响，例如是否使用双通道 DDR5。'
+                    : 'Whole-layer offload. System RAM bandwidth, such as dual-channel DDR5, affects decode speed.'}</p>
+                )}
+                {launchOffload && profileGpu && (
+                  <OffloadMemory plan={launchOffload} result={result} capacity={rigCapacity} ceiling={tightCeiling(profileGpu)} />
                 )}
                 {launchCommands && launchOffload ? (
                   <details className="mt-3 rounded-lg border border-white/10 px-3">
@@ -2161,7 +2183,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     </div>
                   </div>
                 </div>
-                {!ctxOverModel && <VramStackBar
+                {!ctxOverModel && !launchOffload && <VramStackBar
                   weightsGB={result.modelWeightsGB}
                   kvGB={result.kvCacheGB}
                   activationsGB={result.activationsGB}
@@ -2424,7 +2446,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           )}
                         </div>
                       )}
-                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && !launchOffload && profileGpu.bandwidth && (() => {
+                      {selectedModel && selectedQuantObj && formatOk && !overBudget && !ctxOverModel && !launchOffload && !moeModel && profileGpu.bandwidth && (() => {
                         const bound = rigSpeedCeiling(profileGpu, profileCards, profileExtras, selectedModel, selectedQuantObj, v);
                         if (!bound) return null;
                         const text = bound.basis === 'moe'
@@ -2537,18 +2559,18 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           </div>
                         );
                       })()}
-                      {v === 'red' && formatOk && (() => {
+                      {launchOffload && formatOk && (() => {
                         const plan = launchOffload;
                         if (!plan) return null;
                         return (
                           <div className="mt-3 pt-2 border-t border-white/[0.05]">
                             <p className="text-xs font-medium text-slate-400">{t.calc.offloadTitle}</p>
-                            <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                            {!plan.moe && <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                               {(plan.gpuLayers === 0 ? t.calc.offloadNone : t.calc.offloadLine)
                                 .replace(/\{g\}/g, String(plan.gpuLayers))
                                 .replace('{l}', String(plan.layers))
                                 .replace('{ram}', plan.ramGB.toFixed(1))}
-                            </p>
+                            </p>}
                             {plan.tokS !== undefined && (
                               <>
                                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -2568,12 +2590,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                                     </button>
                                   ))}
                                 </div>
-                                <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                                {!moeModel && <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
                                   {t.calc.offloadSpeed
                                     .replace('{n}', String(plan.tokS))
                                     .replace('{ram}', RAM_SETUPS[ram].label)
                                     .replace('{gbs}', String(RAM_SETUPS[ram].gbs))}
-                                </p>
+                                </p>}
                               </>
                             )}
                             {plan.moe ? (
@@ -2582,25 +2604,17 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                                 <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                                   {(plan.moe.all ? t.calc.moeLineAll : t.calc.moeLine)
                                     .replace(/\{n\}/g, String(plan.moe.n))
+                                    .replace('{ngl}', String(Math.max(99, plan.layers + 1)))
                                     .replace('{k}', String(plan.moe.cpuMoeLayers))
                                     .replace('{m}', String(plan.moe.moeLayers))
                                     .replace('{gpu}', plan.moe.gpuGB.toFixed(1))
                                     .replace('{ram}', plan.moe.ramGB.toFixed(1))}
                                 </p>
-                                {plan.moe.tokS !== undefined && (
-                                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                                    {t.calc.moeSpeed
-                                      .replace('{n}', String(plan.moe.tokS))
-                                      .replace('{ram}', RAM_SETUPS[ram].label)}
-                                  </p>
-                                )}
                                 <p className="text-[11px] text-slate-600 leading-relaxed mt-1">{t.calc.moeNote}</p>
                               </div>
                             ) : plan.moeNoRoom ? (
                               <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.moeNoRoom}</p>
-                            ) : selectedModel && isMoE(selectedModel) && !selectedModel.arch.moe && (
-                              <p className="text-xs text-slate-500 leading-relaxed mt-1">{t.calc.offloadMoE}</p>
-                            )}
+                            ) : null}
                           </div>
                         );
                       })()}

@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-26',
+    en: 'The VRAM calculator now checks GPU and host memory separately for offloaded runs. Fourteen more MoE models have verified expert layouts. Expert placement is shown in tiers, with a RAM bandwidth note.',
+    zh: '显存计算器新增 14 款模型的专家层配置。卸载方案分别显示显存和系统内存占用，可输入本机内存判断是否装得下，并查看专家卸载比例和速度档位。',
+  },
+  {
+    date: '2026-11-26',
     en: 'Search all 28 setup guides by keyword on the Cookbook page. Model detail pages, deployment guides, format comparisons, error fixes and quick-answer pages now load with about a third less script, Chinese 404 pages render cleanly without a language flash, and modified GPU names stay localized across every tool and comparison.',
     zh: '部署指南页新增关键词即时搜索，可在 28 篇实战教程中按标题、标签或运行栈快速筛选。模型详情、部署教程、格式对比、报错速查和快答页面的客户端脚本体积缩减约三分之一，中文 404 页面直出中文且不再闪烁，改装显卡在全站工具与对比中统一显示中文名称。',
   },

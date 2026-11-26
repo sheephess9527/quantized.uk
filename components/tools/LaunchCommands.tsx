@@ -71,7 +71,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
       quantLevel: active.level,
       fileGB: ggufFileGB(model, active.level),
       // Expert offload applies to llama.cpp only; Ollama keeps its own layer split.
-      gpuLayers: active.fw === 'llamacpp' && cpuMoe ? 99 : gpuLayers ?? 99,
+      gpuLayers: gpuLayers ?? 99,
       cpuMoe: active.fw === 'llamacpp' ? cpuMoe : undefined,
       contextLen,
       threads: 8,
