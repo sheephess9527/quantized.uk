@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-26',
+    en: 'Search all 28 setup guides by keyword on the Cookbook page. Model detail pages, deployment guides, format comparisons, error fixes and quick-answer pages now load with about a third less script, Chinese 404 pages render cleanly without a language flash, and modified GPU names stay localized across every tool and comparison.',
+    zh: '部署指南页新增关键词即时搜索，可在 28 篇实战教程中按标题、标签或运行栈快速筛选。模型详情、部署教程、格式对比、报错速查和快答页面的客户端脚本体积缩减约三分之一，中文 404 页面直出中文且不再闪烁，改装显卡在全站工具与对比中统一显示中文名称。',
+  },
+  {
+    date: '2026-11-26',
     en: 'The benchmark, VRAM and model pages now say what you can compare before you scroll. The model catalog links to Qwen3 8B, the calculator and RTX 4090. Five Windows and Linux setup guides now lead with their hardware and first step.',
     zh: '基准测试、显存工具和模型库的首屏现在直接说明能查什么。模型库新增 Qwen3 8B、显存计算器和 RTX 4090 快捷入口。五篇英文部署指南先交代支持的硬件和第一步。',
   },

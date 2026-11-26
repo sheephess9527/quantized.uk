@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { AlertTriangle, Calculator, ExternalLink } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { textWithGuardedEmail } from '@/components/ui/EmailOffGuard';
@@ -44,8 +42,8 @@ const GROUP_ORDER: GroupKey[] = ['memory', 'file', 'gpu', 'amd', 'ollama'];
 
 export const errorGroup = (id: string): GroupKey => GROUP_OF[id] ?? 'file';
 
-export function ErrorIndexView() {
-  const { t, lang } = useLanguage();
+export function ErrorIndexView({ lang = 'en' }: { lang?: Lang } = {}) {
+  const t = translations[lang];
   const e = t.errorPages;
   const path = localizeHref('/errors/', lang);
   const cacheError = errorById(KV_CACHE_ERROR_ID);
@@ -117,8 +115,8 @@ export function ErrorIndexView() {
 /** Guide titles come from the server page, so the guide bodies stay out of this bundle. */
 export interface GuideLink { id: string; title: string; titleZh: string }
 
-export function ErrorDetailView({ id, guides }: { id: string; guides: GuideLink[] }) {
-  const { t, lang } = useLanguage();
+export function ErrorDetailView({ id, guides, lang = 'en' }: { id: string; guides: GuideLink[]; lang?: Lang }) {
+  const t = translations[lang];
   const e = t.errorPages;
   const err = errorById(id);
   if (!err) return null;

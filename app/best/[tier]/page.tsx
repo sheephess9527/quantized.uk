@@ -97,7 +97,7 @@ export default function BestTierPage({
           }}
         />
       )}
-      <BestTierContent tier={tier} />
+      <BestTierContent tier={tier} lang={lang} />
     </>
   );
 }

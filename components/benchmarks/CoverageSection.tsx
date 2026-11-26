@@ -1,9 +1,7 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { CheckCircle2, Circle, XCircle } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { translations, type Lang } from '@/lib/i18n/translations';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { measuredCards, measuredCardHref } from '@/lib/utils/bench-coverage';
 
 /**
@@ -13,8 +11,8 @@ import { measuredCards, measuredCardHref } from '@/lib/utils/bench-coverage';
  * doing instead (the same formula the calculator uses, not a second hidden
  * measurement).
  */
-export default function CoverageSection() {
-  const { t } = useLanguage();
+export default function CoverageSection({ lang = 'en' }: { lang?: Lang } = {}) {
+  const t = translations[lang];
   const c = t.bench.coverage;
   const measured = measuredCards();
   const estimatedCount = gpuDatabase.length - measured.length;
@@ -36,7 +34,7 @@ export default function CoverageSection() {
                   href={measuredCardHref(gpu)}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1.5 text-xs text-emerald-200/90 hover:border-emerald-500/40 transition-colors"
                 >
-                  {gpu.name}
+                  {gpuDisplayName(gpu, lang)}
                   <span className="text-emerald-400/60 font-mono">
                     {(runs === 1 ? c.runsLabel : c.runsLabelPlural).replace('{n}', String(runs))}
                   </span>

@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import type { QuantFormat } from '@/lib/data/formats';
@@ -19,8 +17,8 @@ import { formatLoss } from '@/lib/utils/quality';
  * bottom is the point as much as the prose, because it is real internal linking
  * between a format and every model that ships it.
  */
-export default function FormatSingleContent({ format }: { format: QuantFormat }) {
-  const { t, lang } = useLanguage();
+export default function FormatSingleContent({ format, lang = 'en' }: { format: QuantFormat; lang?: Lang }) {
+  const t = translations[lang];
   const c = t.formatCompare;
   const s = t.formatSingle;
   const { owning, levels, sections, faqs } = formatPage(format);

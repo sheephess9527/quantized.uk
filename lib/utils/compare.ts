@@ -2,7 +2,7 @@ import { QuantModel } from '@/lib/data/types';
 import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { contextLabel } from '@/lib/utils/context-label';
 import { bestQuant as pickBestQuant, referenceQuant } from '@/lib/utils/quality';
-import type { GPU } from '@/lib/data/gpus';
+import { gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import { usableCapacityGB, tightCeiling, formatAllowed } from '@/lib/utils/gpu-page';
 import { quantConfidence } from '@/lib/utils/model-meta';
 
@@ -200,7 +200,7 @@ export function compareModels(
     rows.push({
       key: 'gpuFit',
       labelEn: `Fits ${gpu.name} ${capLabel} at this context`,
-      labelZh: `在当前上下文下能否装进 ${gpu.name} ${capLabelZh}`,
+      labelZh: `在当前上下文下能否装进 ${gpuDisplayName(gpu, 'zh')} ${capLabelZh}`,
       valueA: fa.en,
       valueB: fb.en,
       valueAZh: fa.zh,

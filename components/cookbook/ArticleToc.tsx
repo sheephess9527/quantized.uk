@@ -2,23 +2,28 @@
 
 import { List } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
-import { Article } from '@/lib/data/cookbook';
+import { useActiveSection } from '@/lib/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
 
+interface TocSection {
+  heading: string;
+  headingZh: string;
+}
+
 interface Props {
-  article: Article;
-  activeIndex?: number;
+  sections: TocSection[];
 }
 
 export function sectionId(index: number): string {
   return `section-${index}`;
 }
 
-export default function ArticleToc({ article, activeIndex = 0 }: Props) {
+export default function ArticleToc({ sections }: Props) {
   const { t, lang } = useLanguage();
   const toc = t.cookbook.toc;
+  const activeIndex = useActiveSection(sections.length, 'section-');
 
-  if (article.content.length < 2) return null;
+  if (sections.length < 2) return null;
 
   return (
     <nav aria-label={toc.label} className="glass rounded-xl p-4 lg:sticky lg:top-28">
@@ -27,7 +32,7 @@ export default function ArticleToc({ article, activeIndex = 0 }: Props) {
         <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{toc.title}</span>
       </div>
       <ol className="space-y-1.5">
-        {article.content.map((section, i) => (
+        {sections.map((section, i) => (
           <li key={i}>
             <a
               href={`#${sectionId(i)}`}

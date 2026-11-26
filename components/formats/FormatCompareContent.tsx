@@ -1,15 +1,13 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Check, Minus } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
 import { headToHead, mergedPairs, modelsWithFormat, type FormatPair } from '@/lib/utils/format-compare';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
-export default function FormatCompareContent({ pair }: { pair: FormatPair }) {
-  const { t, lang } = useLanguage();
+export default function FormatCompareContent({ pair, lang = 'en' }: { pair: FormatPair; lang?: Lang }) {
+  const t = translations[lang];
   const c = t.formatCompare;
   const { a, b } = pair;
 

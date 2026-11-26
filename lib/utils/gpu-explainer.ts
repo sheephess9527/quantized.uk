@@ -1,5 +1,5 @@
 import { models } from '@/lib/data/models';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import { calcVRAM, getVerdict, quantWeights } from '@/lib/utils/vram';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { fitsOnGpu, largestAtQ4, countModelsFitting, sameBudgetCards, gpuSlug, GPU_PAGE_CONTEXT, usableCapacityGB, formatAllowed, tightCeiling, type GpuFit } from '@/lib/utils/gpu-page';
@@ -163,7 +163,7 @@ function ceilingText(gpu: GPU, fits: GpuFit[], total: number): { en: string; zh:
   if (twin && bw) {
     return {
       en: `Bandwidth, not capacity. The models on this page fit, but at ${gbs(bw)} GB/s this card reads the whole weight set once per generated token — a ${gbs(twin.bandwidth ?? 0)} GB/s ${twin.name} holds exactly the same ${gpu.vram} GB and moves those bytes ${((twin.bandwidth ?? 0) / bw).toFixed(1)}× faster. Expect the same quant to generate proportionally slower here.`,
-      zh: `瓶颈是带宽，不是容量。本页的模型都装得下，但在 ${gbs(bw)} GB/s 下，每生成一个 token 这张卡都要把整套权重读一遍 —— 同样是 ${gpu.vram} GB 的 ${twin.name} 带宽为 ${gbs(twin.bandwidth ?? 0)} GB/s，搬运这些字节要快 ${((twin.bandwidth ?? 0) / bw).toFixed(1)} 倍。同一量化档位在这张卡上生成速度会成比例地更慢。`,
+      zh: `瓶颈是带宽，不是容量。本页的模型都装得下，但在 ${gbs(bw)} GB/s 下，每生成一个 token 这张卡都要把整套权重读一遍 —— 同样是 ${gpu.vram} GB 的 ${gpuDisplayName(twin, 'zh')} 带宽为 ${gbs(twin.bandwidth ?? 0)} GB/s，搬运这些字节要快 ${((twin.bandwidth ?? 0) / bw).toFixed(1)} 倍。同一量化档位在这张卡上生成速度会成比例地更慢。`,
     };
   }
 
@@ -266,6 +266,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
 
   // ---- FAQ ----------------------------------------------------------------
   const faqs: GpuFaq[] = [];
+  const gpuNameZh = gpuDisplayName(gpu, 'zh');
 
   const q4 = largestAtQ4(gpu);
   if (q4) {
@@ -273,7 +274,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
     faqs.push({
       q: {
         en: `How big a model can ${article(gpu.name)} ${gpu.name} run?`,
-        zh: `${gpu.name} 能跑多大的模型？`,
+        zh: `${gpuNameZh} 能跑多大的模型？`,
       },
       a: {
         en: `At Q4_K_M and 4K context, comfortably up to about ${q4.model.paramLabel}: ${q4.model.name} needs about ${q4.totalGB.toFixed(1)} GB of the card's ${gpu.vram} GB.${lower ? ` With a smaller quant the largest that loads is ${lower.model.name} at ${quantLevelKey(lower.quant)} (${lower.totalGB.toFixed(1)} GB).` : ''} "Comfortably" leaves headroom for the display and the runtime; larger models can still load tightly with nothing else running. A longer context grows the KV cache, so the ceiling drops as the window grows.`,
@@ -287,7 +288,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
     faqs.push({
       q: {
         en: `What is the best local LLM for ${article(gpu.name)} ${gpu.name}?`,
-        zh: `${gpu.name} 上最适合本地运行的大模型是哪个？`,
+        zh: `${gpuNameZh} 上最适合本地运行的大模型是哪个？`,
       },
       a: {
         en: `For everyday use, ${pick.model.name} at ${quantLevelKey(pick.quant)} — about ${pick.totalGB.toFixed(1)} GB of the card's ${gpu.vram} GB at 4K context, leaving ${pick.headroomGB.toFixed(1)} GB for a longer window. If you want the largest thing that will load, that is ${biggest.model.name} at ${quantLevelKey(biggest.quant)} (${biggest.totalGB.toFixed(1)} GB, ${biggest.headroomGB.toFixed(1)} GB spare). "Best" here means best fit for the memory budget — this index does not run task benchmarks, so it cannot tell you which model is smarter.`,
@@ -321,7 +322,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
       faqs.push({
         q: {
           en: `Can ${article(gpu.name)} ${gpu.name} run ${nextUp.name}?`,
-          zh: `${gpu.name} 能跑 ${nextUp.name} 吗？`,
+          zh: `${gpuNameZh} 能跑 ${nextUp.name} 吗？`,
         },
         a: {
           en: !formatAllowed(gpu, best.q.format)
@@ -351,7 +352,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
     faqs.push({
       q: {
         en: `How many tokens per second does ${article(gpu.name)} ${gpu.name} do on an 8B model at Q4?`,
-        zh: `${gpu.name} 跑 8B 模型的 Q4 量化大概有多少 tok/s？`,
+        zh: `${gpuNameZh} 跑 8B 模型的 Q4 量化大概有多少 tok/s？`,
       },
       a: {
         en: `${measured.length
@@ -373,6 +374,7 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
     .sort((a, b) => Math.abs(a.vram - gpu.vram) - Math.abs(b.vram - gpu.vram))[0];
   const rival = twin ?? siblings[0] ?? nearest;
   if (rival) {
+    const rivalNameZh = gpuDisplayName(rival, 'zh');
     const rivalFits = fitsOnGpu(rival).length;
     // "The same models" was printed whatever the counts said — a 64 GB DGX
     // Spark against a 64 GB Mac fits 82 vs 76, because macOS keeps a quarter
@@ -382,14 +384,14 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
     const whyDiffers = sameSet ? { en: '', zh: '' }
       : capped && usableCapacityGB(gpu) !== usableCapacityGB(rival)
         ? { en: ` — macOS keeps part of the ${capped.name}'s unified memory from the GPU, leaving about ${usableCapacityGB(capped).toFixed(0)} GB usable`,
-            zh: `——macOS 会从 ${capped.name} 的统一内存里留出一部分不给 GPU，可用约 ${usableCapacityGB(capped).toFixed(0)} GB` }
+            zh: `——macOS 会从 ${gpuDisplayName(capped, 'zh')} 的统一内存里留出一部分不给 GPU，可用约 ${usableCapacityGB(capped).toFixed(0)} GB` }
         : gpu.vram !== rival.vram
           ? { en: '', zh: '' }
           : { en: ' — the cards load different formats', zh: '——两者能加载的格式不同' };
     faqs.push({
       q: {
         en: `${gpu.name} or ${rival.name} for local LLMs?`,
-        zh: `本地跑大模型，${gpu.name} 还是 ${rival.name}？`,
+        zh: `本地跑大模型，${gpuNameZh} 还是 ${rivalNameZh}？`,
       },
       a: {
         en: `${sameSet
@@ -399,8 +401,8 @@ export function gpuExplainer(gpu: GPU): GpuExplainer {
           : `Bandwidth is not recorded for both cards here, so this page will not rank them on speed.`}`,
         zh: `${sameSet
           ? `两张卡装得下的模型相同：${gpu.vram} GB 与 ${rival.vram} GB 在 4K 下分别可从容运行 ${total} 个中的 ${fits.length} 个与 ${rivalFits} 个。`
-          : `两者装得下的模型并不相同：4K 下 ${gpu.name} 可从容运行 ${total} 个中的 ${fits.length} 个，${rival.name} 为 ${rivalFits} 个${whyDiffers.zh}。`}${gpu.bandwidth && rival.bandwidth
-          ? `${sameSet ? '差别在吞吐' : '另一个差别在吞吐'} —— ${gbs(gpu.bandwidth)} GB/s 对 ${gbs(rival.bandwidth)} GB/s，读取权重的速度相差 ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)} 倍，而 token 生成正是受此限制。两张卡都装得下的模型，${(rival.bandwidth > gpu.bandwidth ? rival : gpu).name} 生成更快。`
+          : `两者装得下的模型并不相同：4K 下 ${gpuNameZh} 可从容运行 ${total} 个中的 ${fits.length} 个，${rivalNameZh} 为 ${rivalFits} 个${whyDiffers.zh}。`}${gpu.bandwidth && rival.bandwidth
+          ? `${sameSet ? '差别在吞吐' : '另一个差别在吞吐'} —— ${gbs(gpu.bandwidth)} GB/s 对 ${gbs(rival.bandwidth)} GB/s，读取权重的速度相差 ${(Math.max(gpu.bandwidth, rival.bandwidth) / Math.min(gpu.bandwidth, rival.bandwidth)).toFixed(1)} 倍，而 token 生成正是受此限制。两张卡都装得下的模型，${gpuDisplayName(rival.bandwidth > gpu.bandwidth ? rival : gpu, 'zh')} 生成更快。`
           : `本站没有同时记录两张卡的带宽，因此本页不就速度给出排序。`}`,
       },
     });

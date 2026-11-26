@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
+import QuestionPage from '@/components/tools/QuestionPage';
 
 export const metadata: Metadata = pageMetadata({
   title: '本地大模型速度：你的显卡每秒多少 token | quantized.uk',
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/tools/speed',
 });
 
-export { default } from '../../../tools/speed/page';
+export default function ZhSpeedPage() {
+  return <QuestionPage kind="speed" lang="zh" />;
+}

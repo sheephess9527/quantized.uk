@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Link from '@/components/i18n/LocalLink';
 import { useLanguage } from '@/lib/i18n/context';
-import type { GPU } from '@/lib/data/gpus';
+import { gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import { contextLabel } from '@/lib/utils/context-label';
 import { GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { compareGpuUpgrade, defaultGpuUpgrade, gpuUpgradeChoices } from '@/lib/utils/gpu-upgrade';
@@ -64,13 +64,13 @@ export default function GpuUpgradeComparison({ current, tierLabel, settings }: {
       <summary className="min-h-[44px] cursor-pointer py-3 font-semibold text-slate-100">{u.title}</summary>
       {open && (
         <div className="space-y-3 pb-4 text-sm">
-          <p className="text-slate-400">{u.current.replace('{name}', tierLabel ?? current.name)}</p>
+          <p className="text-slate-400">{u.current.replace('{name}', tierLabel ?? gpuDisplayName(current, lang))}</p>
           <label className="block max-w-sm text-slate-300">
             {u.candidate}
             <select value={candidate?.id ?? ''} onChange={event => setChoice(event.target.value)}
               className="mt-1 block min-h-[44px] w-full min-w-0 rounded-lg border border-white/15 bg-slate-900 px-2 py-1.5 text-slate-100">
               <option value="" disabled>{u.choose}</option>
-              {choices.map(gpu => <option key={gpu.id} value={gpu.id}>{gpu.name} · {gpu.vram} GB</option>)}
+              {choices.map(gpu => <option key={gpu.id} value={gpu.id}>{gpuDisplayName(gpu, lang)} · {gpu.vram} GB</option>)}
             </select>
           </label>
           {!settings && (

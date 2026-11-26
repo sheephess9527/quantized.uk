@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { Clock, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { getRelatedArticles } from '@/lib/utils/related-articles';
 import { cn } from '@/lib/utils/cn';
 import { readingMinutes } from '@/lib/utils/reading-time';
@@ -15,10 +13,11 @@ const difficultyColors = {
 
 interface Props {
   articleId: string;
+  lang?: Lang;
 }
 
-export default function RelatedArticles({ articleId }: Props) {
-  const { t, lang } = useLanguage();
+export default function RelatedArticles({ articleId, lang = 'en' }: Props) {
+  const t = translations[lang];
   const related = getRelatedArticles(articleId);
   if (related.length === 0) return null;
 

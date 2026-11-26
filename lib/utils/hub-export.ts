@@ -1,6 +1,7 @@
 import type { QuantModel } from '@/lib/data/models';
 import type { HubFilters } from '@/components/hub/FilterBar';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
+import type { Lang } from '@/lib/i18n/translations';
 import { qualityRank, referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 
@@ -46,11 +47,12 @@ function filterSummary(
   gpuFilterId: string | null,
   filters: HubFilters,
   labels: ExportLabels,
+  lang: Lang = 'en',
 ): string[] {
   const parts: string[] = [];
   if (gpuFilterId) {
     const gpu = gpuDatabase.find(g => g.id === gpuFilterId);
-    if (gpu) parts.push(`${labels.gpu}: ${gpu.name}`);
+    if (gpu) parts.push(`${labels.gpu}: ${gpuDisplayName(gpu, lang)}`);
   }
   if (filters.search) parts.push(`${labels.search}: ${filters.search}`);
   if (filters.paramRange) parts.push(`${labels.params}: ${filters.paramRange}`);
@@ -67,9 +69,10 @@ export function buildHubMarkdown(
   gpuFilterId: string | null,
   filters: HubFilters,
   labels: ExportLabels,
+  lang: Lang = 'en',
 ): string {
   const date = new Date().toISOString().slice(0, 10);
-  const filters_ = filterSummary(gpuFilterId, filters, labels);
+  const filters_ = filterSummary(gpuFilterId, filters, labels, lang);
   const lines: string[] = [
     `# ${labels.title}`,
     '',

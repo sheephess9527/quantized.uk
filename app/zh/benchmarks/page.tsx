@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
+import BenchmarksView from '@/components/benchmarks/BenchmarksView';
 
 export const metadata: Metadata = pageMetadata({
   title: '本地大模型量化实测：速度与显存 | quantized.uk',
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/benchmarks',
 });
 
-export { default } from '../../benchmarks/page';
+export default function ZhBenchmarksPage() {
+  return <BenchmarksView lang="zh" />;
+}

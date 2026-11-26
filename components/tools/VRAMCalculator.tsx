@@ -13,7 +13,7 @@ import { COMMUNITY_SPEED_ENABLED, type SpeedConfiguration } from '@/lib/data/com
 import VramStackBar from './VramStackBar';
 import { models } from '@/lib/data/models';
 import { liveBenchScores } from '@/lib/data/model-quality';
-import { gpuDatabase, gpuDisplayName, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName, GPU_GROUPS, rowsInGpuGroup, POPULAR_GPU_IDS, type GPU } from '@/lib/data/gpus';
 import { quantBPW, quantGroups, calcVRAM, getVerdict, KV_CACHE_TYPES, type KvCacheType, quantWeights } from '@/lib/utils/vram';
 import LaunchCommands from '@/components/tools/LaunchCommands';
 import ShareCard from '@/components/tools/ShareCard';
@@ -60,17 +60,6 @@ const verdictConfig: Record<VerdictColor, { bar: string; label: string; dot: str
 
 const CONTEXT_PRESETS = [512, 2048, 4096, 8192, 16384, 32768, 65536, 131072];
 
-const GPU_GROUPS = [
-  ['nvidia-consumer', 'gpuGroupNvidia'],
-  ['laptop', 'gpuGroupLaptop'],
-  ['nvidia-pro', 'gpuGroupPro'],
-  ['nvidia-unified', 'gpuGroupUnified'],
-  ['amd', 'gpuGroupAmd'],
-  ['intel', 'gpuGroupIntel'],
-  ['apple', 'gpuGroupApple'],
-  ['cpu', 'gpuGroupCpu'],
-] as const;
-
 /**
  * What a first-time reader sees before choosing anything, so the page opens on
  * an answer rather than an empty panel. Neither is written to the shared
@@ -111,7 +100,7 @@ function indexedModelFor(shape: ImportedShape) {
 /** Both card pickers (forward verdict, reverse lookup) list the same groups. */
 function gpuOptgroups(label: (key: (typeof GPU_GROUPS)[number][1]) => string, lang: 'en' | 'zh') {
   return GPU_GROUPS.map(([type, key]) => {
-    const rows = gpuDatabase.filter(g => (g.isLaptop ? 'laptop' : g.type) === type);
+    const rows = rowsInGpuGroup(type);
     return rows.length === 0 ? null : (
       <optgroup key={key} label={label(key)}>
         {rows.map(g => (
@@ -1605,10 +1594,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
                 {gpuHint?.kind === 'detected' && selectedGpu && (
-                  <p className="text-[11px] text-emerald-300/80 mt-1.5">{t.calc.gpuDetected.replace('{gpu}', selectedGpu.name)}</p>
+                  <p className="text-[11px] text-emerald-300/80 mt-1.5">{t.calc.gpuDetected.replace('{gpu}', gpuDisplayName(selectedGpu, lang))}</p>
                 )}
                 {gpuHint?.kind === 'pick' && gpuHint.detection?.candidates.length === 1 && selectedGpu && (
-                  <p className="text-[11px] text-amber-300/80 mt-1.5">{t.calc.gpuCheckSize.replace('{chip}', gpuHint.detection.label).replace('{gpu}', selectedGpu.name)}</p>
+                  <p className="text-[11px] text-amber-300/80 mt-1.5">{t.calc.gpuCheckSize.replace('{chip}', gpuHint.detection.label).replace('{gpu}', gpuDisplayName(selectedGpu, lang))}</p>
                 )}
                 {gpuHint?.kind === 'pick' && gpuHint.detection && gpuHint.detection.candidates.length > 1 && (
                   <div className="mt-2">
@@ -1620,14 +1609,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           onClick={() => chooseGpu(g.id)}
                           className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
                         >
-                          {g.name}
+                          {gpuDisplayName(g, lang)}
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
                 {gpuHint?.kind === 'example' && selectedGpu && (
-                  <p className="text-[11px] text-slate-500 mt-1.5">{t.calc.gpuExample.replace('{gpu}', selectedGpu.name)}</p>
+                  <p className="text-[11px] text-slate-500 mt-1.5">{t.calc.gpuExample.replace('{gpu}', gpuDisplayName(selectedGpu, lang))}</p>
                 )}
                 {showReverseResult && (
                   <a
@@ -1653,7 +1642,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           onClick={() => chooseGpu(g.id)}
                           className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
                         >
-                          {g.name}
+                          {gpuDisplayName(g, lang)}
                         </button>
                       ))}
                     </div>
@@ -1741,10 +1730,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button
                           key={`${g.id}-${i}`}
                           onClick={() => setExtraIds(ids => ids.filter((_, j) => j !== i))}
-                          aria-label={t.calc.extraCardRemove.replace('{gpu}', g.name)}
+                          aria-label={t.calc.extraCardRemove.replace('{gpu}', gpuDisplayName(g, lang))}
                           className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-violet-500/15 text-violet-200 border-violet-500/30"
                         >
-                          + {g.name} <span aria-hidden="true">×</span>
+                          + {gpuDisplayName(g, lang)} <span aria-hidden="true">×</span>
                         </button>
                       ))}
                     </div>
@@ -1760,7 +1749,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <option value="">+ {t.calc.extraCardAdd}</option>
                         {gpuDatabase
                           .filter(g => canStack(g) && backendFor(g) === backendFor(profileGpu))
-                          .map(g => <option key={g.id} value={g.id}>{g.name} ({g.vram} GB)</option>)}
+                          .map(g => <option key={g.id} value={g.id}>{gpuDisplayName(g, lang)} ({g.vram} GB)</option>)}
                       </select>
                       <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
                     </div>
@@ -1772,7 +1761,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               {mode === 'forward' && (profileGpu || savedRigs.length > 0) && (() => {
                 const nameOf = (r: { gpuId: string; cards: number; extra: string[] }) => {
                   const g = gpuDatabase.find(x => x.id === r.gpuId);
-                  return [`${r.cards > 1 ? `${r.cards}× ` : ''}${g?.name ?? r.gpuId}`, ...r.extra.map(id => gpuDatabase.find(x => x.id === id)?.name ?? id)].join(' + ');
+                  return [`${r.cards > 1 ? `${r.cards}× ` : ''}${g ? gpuDisplayName(g, lang) : r.gpuId}`, ...r.extra.map(id => {
+                    const ex = gpuDatabase.find(x => x.id === id);
+                    return ex ? gpuDisplayName(ex, lang) : id;
+                  })].join(' + ');
                 };
                 const current = profileGpu ? { gpuId: profileGpu.id, cards: profileCards, extra: profileExtras.map(g => g.id) } : null;
                 const same = (a: { gpuId: string; cards: number; extra: string[] }, b: typeof a) => a.gpuId === b.gpuId && a.cards === b.cards && a.extra.join() === b.extra.join();
@@ -2367,7 +2359,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     : t.calc.hwSummary
                         .replace('{green}', String(greenGpus.length))
                         .replace('{total}', String(GPU_COUNT))
-                        .replace('{smallest}', smallestGreen!.name)
+                        .replace('{smallest}', gpuDisplayName(smallestGreen!, lang))
                         .replace('{vram}', String(smallestGreen!.vram))}
                 </p>
 
@@ -2476,7 +2468,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           >
                             <span aria-hidden className="text-violet-300 text-base">▶</span>
                             <span className="min-w-0">
-                              <span className="block text-sm font-medium text-violet-200">{t.calc.feelThis.replace('{card}', profileGpu.name)}</span>
+                              <span className="block text-sm font-medium text-violet-200">{t.calc.feelThis.replace('{card}', gpuDisplayName(profileGpu, lang))}</span>
                               <span className="block text-xs text-slate-400">{t.calc.feelHint}</span>
                             </span>
                           </Link>
@@ -2630,7 +2622,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       <div key={gpu.id} className="flex items-center gap-2 group" title={formatOk ? undefined : t.calc.hwFormatMismatch.replace('{format}', forwardFormat ?? '')}>
                         <span className="text-sm w-4 shrink-0">{gpu.icon}</span>
                         <span className="text-xs text-slate-400 truncate w-36 shrink-0 group-hover:text-slate-200 transition-colors">
-                          {gpu.name}
+                          {gpuDisplayName(gpu, lang)}
                         </span>
                         <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
                           <div className={cn('h-full rounded-full transition-all duration-500', cfg.bar)} style={{ width: `${pct}%` }} />

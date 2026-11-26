@@ -75,6 +75,17 @@ for (const file of files) {
   }
 }
 
+// Cloudflare Pages serves the nearest `404.html` walking up the directory tree.
+// Copying the Chinese-prerendered `/zh/404/index.html` to `out/zh/404.html`
+// ensures missing `/zh/**` URLs receive Chinese static HTML and hydrate cleanly
+// without React #425/#418/#423 text mismatches against the root English 404.html.
+const zh404Index = join(ZH, '404', 'index.html');
+const zh404Html = join(ZH, '404.html');
+if (existsSync(zh404Index)) {
+  writeFileSync(zh404Html, readFileSync(zh404Index, 'utf8'));
+  if (!files.includes(zh404Html)) files.push(zh404Html);
+}
+
 // ------------------------------------------------------- 2. link leakage
 // A leak is a root-relative href, outside /zh, that resolves to a page this
 // export actually produced. Absolute URLs (hreflang alternates legitimately
@@ -234,9 +245,10 @@ if (existsSync(redirectsFile)) {
   const under = [];
   const missing = [];
   for (const file of allFiles) {
-    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
+    const rel = relative(OUT, file);
+    if (!file.endsWith('index.html') || rel.startsWith('404') || rel.startsWith('zh/404')) continue;
     const m = readFileSync(file, 'utf8').match(/<meta name="description" content="([^"]*)"/);
-    const page = relative(OUT, file);
+    const page = rel;
     if (!m) { missing.push(page); continue; }
     const d = decode(m[1]);
     if (width(d) > 160) over.push(`${width(d)}  ${page}`);
@@ -265,11 +277,12 @@ if (existsSync(redirectsFile)) {
   const seen = new Map();
   const over = [];
   for (const file of allFiles) {
-    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
+    const rel = relative(OUT, file);
+    if (!file.endsWith('index.html') || rel.startsWith('404') || rel.startsWith('zh/404')) continue;
     const m = readFileSync(file, 'utf8').match(/<title>([^<]*)<\/title>/);
     if (!m) continue;
     const t = decode(m[1]);
-    const page = relative(OUT, file);
+    const page = rel;
     if (width(t) > 60) over.push(`${width(t)}  ${page}  ${t}`);
     seen.set(t, [...(seen.get(t) ?? []), page]);
   }
@@ -299,8 +312,8 @@ if (existsSync(redirectsFile)) {
   };
   let entities = 0;
   for (const file of allFiles) {
-    if (!file.endsWith('index.html') || relative(OUT, file).startsWith('404')) continue;
     const page = relative(OUT, file);
+    if (!file.endsWith('index.html') || page.startsWith('404') || page.startsWith('zh/404')) continue;
     const zh = page.startsWith('zh/');
     const html = readFileSync(file, 'utf8');
     const canon = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
@@ -376,5 +389,9 @@ if (existsSync(redirectsFile)) {
   assert.ok(source('/zh/').includes('"urlTemplate":"https://quantized.uk/zh/quant-hub/?q={search_term_string}"'), '/zh/ WebSite SearchAction must target /zh/quant-hub/');
   assert.ok(!source('/').includes('rel="preload" href="https://plausible.io/js/script.js"'), 'analytics must not preload in <head>');
   assert.ok(!source('/').replace(/<script[\s\S]*?<\/script>/g, '').replace(/切换到中文版|中文/g, '').includes('改装'), 'English homepage must not leak untranslated Mod/改装 label');
-  console.log('localize-export: calculator and KV-cache search metadata, localized links, /zh/ SearchAction and head preload checked');
+  assert.ok(existsSync(zh404Html), 'out/zh/404.html must exist for Chinese 404 paths');
+  const zh404Content = readFileSync(zh404Html, 'utf8');
+  assert.match(zh404Content, /lang="zh-Hans"/, 'out/zh/404.html must carry lang="zh-Hans"');
+  assert.match(zh404Content, /<h1[^>]*>页面未找到<\/h1>/, 'out/zh/404.html must prerender Chinese 404 heading');
+  console.log('localize-export: calculator and KV-cache search metadata, localized links, /zh/ SearchAction, /zh/404.html and head preload checked');
 }

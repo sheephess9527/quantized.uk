@@ -1,10 +1,10 @@
 import { ExternalLink } from 'lucide-react';
 import CopyButton from '@/components/ui/CopyButton';
 import { macModelOptions } from '@/lib/data/mac-models';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 
-export default function MacModelSetup({ modelId }: { modelId: string }) {
-  const { t } = useLanguage();
+export default function MacModelSetup({ modelId, lang = 'en' }: { modelId: string; lang?: Lang }) {
+  const t = translations[lang];
   const options = macModelOptions(modelId);
   if (!options) return null;
 

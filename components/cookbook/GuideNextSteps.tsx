@@ -1,9 +1,7 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight, Calculator, Boxes } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { translations, type Lang } from '@/lib/i18n/translations';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import type { Article } from '@/lib/data/cookbook';
 
@@ -11,8 +9,8 @@ import type { Article } from '@/lib/data/cookbook';
  * Closes the loop between a guide and the tools: a reader who just learned how
  * to run one model on their hardware is one click from "what else fits".
  */
-export default function GuideNextSteps({ article }: { article: Article }) {
-  const { t, lang } = useLanguage();
+export default function GuideNextSteps({ article, lang = 'en' }: { article: Article; lang?: Lang }) {
+  const t = translations[lang];
   const n = t.cookbook.nextSteps;
 
   const gpu = article.gpuPreset
@@ -42,7 +40,7 @@ export default function GuideNextSteps({ article }: { article: Article }) {
           <Calculator size={16} className="text-violet-400 mt-0.5 shrink-0" />
           <span className="min-w-0">
             <span className="block text-sm text-slate-200 font-medium">
-              {n.fitsMyCard.replace('{gpu}', `${gpu.icon} ${gpu.name}`)}
+              {n.fitsMyCard.replace('{gpu}', `${gpu.icon} ${gpuDisplayName(gpu, lang)}`)}
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
               {n.fitsMyCardHint.replace('{vram}', String(gpu.vram)).replace('{ctx}', String(ctx))}

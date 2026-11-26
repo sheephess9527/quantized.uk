@@ -46,7 +46,7 @@ export default function HomeContent({ lang }: { lang: Lang }) {
             fifth, several screens down on a phone, while being the reason a
             returning reader comes back. */}
         <div className="flex justify-end">
-          <DataFreshness />
+          <DataFreshness lang={lang} />
         </div>
         <WeeklyUpdates lang={lang} />
 

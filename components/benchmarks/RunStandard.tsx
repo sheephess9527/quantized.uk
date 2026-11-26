@@ -1,9 +1,8 @@
-'use client';
-
 import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { ShieldCheck, Mail } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { benchmarkMethodology } from '@/lib/data/meta';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { calibrationRows, CEILING_TOLERANCE } from '@/lib/utils/bench-calibration';
 import { measuredCards } from '@/lib/utils/bench-coverage';
 import { FEEDBACK_EMAIL } from '@/lib/site';
@@ -31,8 +30,8 @@ function median(xs: number[]): number {
  * joined to the index. Rendered open, never behind a toggle — this text is
  * the point of the section and has to be in the exported HTML.
  */
-export default function RunStandard() {
-  const { t, lang } = useLanguage();
+export default function RunStandard({ lang = 'en' }: { lang?: Lang } = {}) {
+  const t = translations[lang];
   const s = t.bench.standard;
   const m = benchmarkMethodology;
   const tolPct = Math.round((CEILING_TOLERANCE - 1) * 100);
@@ -92,7 +91,7 @@ export default function RunStandard() {
               return (
                 <tr key={i} className="border-b border-white/[0.03]">
                   <td className="py-2 px-3 text-xs text-slate-200">{r.row.model}</td>
-                  <td className="py-2 px-3 text-xs text-slate-300 whitespace-nowrap">{r.gpu?.name ?? r.row.hardware}</td>
+                  <td className="py-2 px-3 text-xs text-slate-300 whitespace-nowrap">{r.gpu ? gpuDisplayName(r.gpu, lang) : r.row.hardware}</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">{r.row.quant}<RunProvenance row={r.row} /></td>
                   <td className="py-2 px-3 text-xs font-mono text-cyan-400">{r.row.vramUsedGB} GB</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-300">

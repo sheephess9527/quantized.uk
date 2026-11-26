@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/lib/i18n/context';
+import type { Lang } from '@/lib/i18n/translations';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical } from '@/lib/site';
 import { localizeHref } from '@/lib/i18n/routing';
@@ -20,6 +21,7 @@ export default function ToolExplainer({
   toolName,
   path,
   app = true,
+  lang: explicitLang,
 }: {
   content: ToolContent;
   toolName: string;
@@ -27,8 +29,10 @@ export default function ToolExplainer({
   path: string;
   /** False for a reference page that is a table, not an application. */
   app?: boolean;
+  lang?: Lang;
 }) {
-  const { lang } = useLanguage();
+  const ctx = useLanguage();
+  const lang = explicitLang ?? ctx.lang;
   const url = canonical(localizeHref(path, lang));
 
   return (

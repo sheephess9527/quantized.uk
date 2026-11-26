@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import GpuPageContent from '@/components/gpu/GpuPageContent';
 import { guidesForGpu } from '@/lib/utils/guide-references';
@@ -60,7 +60,7 @@ export default function GpuPage({ params, lang = 'en' }: { params: { gpuId: stri
           '@type': 'ItemList',
           name:
             lang === 'zh'
-              ? `${gpu.name} 可运行的量化模型`
+              ? `${gpuDisplayName(gpu, 'zh')} 可运行的量化模型`
               : `Quantized models that run on a ${gpu.name}`,
           url: canonical(path),
           inLanguage: lang === 'zh' ? 'zh-Hans' : 'en',

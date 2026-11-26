@@ -32,17 +32,17 @@ Next.js 14 **static-export** site (`output: 'export'`). No Next.js server — pu
 typed data in `lib/data/`. Cloudflare **Pages** Functions handle VRAM link previews and write
 visitor speed submissions to a private D1 Free queue.
 
-**Repository snapshot (2026-11-25; local export, not a deployment check):**
+**Repository snapshot (2026-11-26; local export, not a deployment check):**
 
 | Surface | Notes |
 |--------|--------|
 | Models | **164** in index (`models-extra` … `models-extra-19`), 144 active |
-| Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date |
+| Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date; instant keyword search + `aria-pressed` category filters on `/cookbook/` |
 | Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (164 models: 162 licensed, 55 image input) |
 | Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
 | Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,492 HTML files (3,825 files in `out/`) including 404 variants and 364 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,494 HTML files (3,814 files in `out/`) including English `404.html` and Chinese `zh/404.html` variants and 364 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -74,11 +74,14 @@ The fetcher uses four workers, a 10-second AbortController timeout per request/b
 uses `npx --yes serve@14.2.5 out -l 3000`; first use needs registry access, not a Next server.
 Homepage server content lives in `components/home/HomeContent.tsx`; each route passes its
 language explicitly so `StatsBar`, `HeroSection`, `WeeklyUpdates`, `PopularStarts`, `MeasuredCases`,
-`TodayBoard`, `HomeFaq`, `QuickAccess`, `ExploreStrip` and `DataChangelog` stay server-rendered.
-Static reference/index views (`AboutView`, `LegalView`, `PrivacyView`, `ToolIndexView`, `ChangelogView`,
-`FaqView`, `BestHubContent`, `FormatIndexView`, `PendingView`) also take explicit `lang` on the server,
+`TodayBoard`, `HomeFaq`, `QuickAccess`, `ExploreStrip`, `DataFreshness` and `DataChangelog` stay server-rendered.
+Static reference/index and read-only content views (`AboutView`, `LegalView`, `PrivacyView`, `ToolIndexView`, `ChangelogView`,
+`FaqView`, `BestHubContent`, `BestTierContent`, `FormatIndexView`, `FormatSingleContent`, `FormatCompareContent`, `PendingView`,
+`ErrorIndexView`, `ErrorDetailView`, `QuestionPage`, `ModelDetail`, `MacModelSetup`, `ModelExplainer`, `ModelPlacement`,
+`ModelGuides`, `SimilarModels`, `RelatedReports`, `ArticleView`, `GuideReferences`, `GuideNextSteps`, `RelatedArticles`,
+`BenchmarksView`, `BenchDataTables`, `CoverageSection`, `RunStandard`) also take explicit `lang` on the server,
 and long-form legal/about/privacy essays live in `lib/i18n/static-pages.ts` rather than `translations.ts`.
-Do not restore client language hooks on those static views.
+Do not restore client language hooks on those static views, and never call a synchronous helper exported from a `'use client'` module inside a Server Component.
 
 `build` fails on **data invariants** too: `app/sitemap.ts` calls `assertDataConsistent()`
 (`lib/data/validate.ts`) — broken `supersededBy`, a `todayFeed` level the model does not ship, a
@@ -96,7 +99,7 @@ what search engines are told changed. Never fails the build. **Do not delete or 
 `node scripts/indexnow.mjs --dry-run` shows what a deploy today would submit.
 
 `build` also runs a `postbuild` pass (`scripts/localize-export.mjs`) over `out/`: it patches
-`<html lang>` for the `/zh` tree, and **exits non-zero if any Chinese page links into the English
+`<html lang>` for the `/zh` tree, emits `out/zh/404.html` from `/zh/404/` (so Cloudflare Pages serves a Chinese-prerendered 404 for `/zh/**` URLs without a React hydration mismatch), and **exits non-zero if any Chinese page links into the English
 tree, renders the literal text `undefined`, any page's meta description is missing, duplicated or
 over 160 width, any `<title>` is duplicated or over 60 width (CJK = 2; use `fitTitle`), or any
 page's JSON-LD disagrees with the page (language, canonical url, `/zh` breadcrumbs, ItemList count,
@@ -1401,6 +1404,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-26 | **Site optimization round 2** — converted remaining read-only content surfaces (`ModelDetail` + 6 subviews, `ArticleView` + 3 subviews, `FormatSingleContent`, `FormatCompareContent`, `ErrorViews`, `QuestionPage`, `BestTierContent`, `BenchmarksView` + 3 subviews, `DataFreshness`) to Server Components taking explicit `lang`; First Load JS cut by 27–35% across 148+ content pages (`/cookbook/[slug]` 256 → 177 kB, `/cookbook` 250 → 176 kB, `/formats/[slug]` 257 → 167 kB, `/errors/**` 250 → 167 kB, `/tools/speed\|which-quant\|context-length` 248 → 168 kB, `/best/[tier]` 265 → 258 kB, `/benchmarks` 390 → 283 kB) plus server-rendered model detail sections on all 328 `/quant-hub/[modelId]` pages. Fixed `/zh/**` 404 React Hydration Error via `app/zh/404/page.tsx` → `out/zh/404.html` gated in `localize-export.mjs`. Replaced all 19 remaining reader-facing `gpu.name` usages with `gpuDisplayName(gpu, lang)`, unified `GPU_GROUPS` in `VRAMCalculator` & `SpeedFeel`, added instant guide search + `aria-pressed` filters on `/cookbook/`, and added edge `Cache-Control` headers for `/data/v1/*.json`, `/feed.xml`, `/zh/feed.xml`, `/llms.txt` and `/zh/llms.txt`. See `docs/changes/2026-11-26-site-optimization-round-2.md`. |
 | 2026-11-25 | **Site optimization & audit** — extracted static legal/about/privacy essays to `lib/i18n/static-pages.ts`; converted 9 reference/index routes (`/about`, `/legal`, `/privacy`, `/tools`, `/changelog`, `/faq`, `/best`, `/formats`, `/pending` → 167 kB First Load JS) and static homepage sections to Server Components (homepage assets 363.5 → 316.1 KB gz; `out/` 3,825 → 3,817 files); `public/_headers` `immutable` cache on `/_next/static/*` + SWR cache on OG/icons; Plausible `lazyOnload` + updated `/privacy/`; instant 126-GPU search on `/gpu/`, unified 8-group localized `<optgroup>`s, `nameZh` / `gpuDisplayName` fixing `改装` leak, `/zh/**` `WebSite` `SearchAction` JSON-LD, `.cv-card` on Hub cards, and pre-filled calculator link on pruned pair 404s. See `docs/changes/2026-11-25-site-optimization.md`. |
 | 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol and Granite 30B follow-up: 160 models (140 active), 122 GPU configurations + 4 CPU rows, 28 guides, 349 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |
 | 2026-11-23 | **Model/site patrol** — KORMo-Web-9B and Granite Switch 4.1 8B / 30B added in `models-extra-19.ts`, four sourced GGUF variants each; image projector and adapter-router KV accounted for respectively. Stable Windows pin remains b12409; launch-command shard-stem memo inputs corrected. Sources and limits: `docs/changes/2026-11-23-patrol.md`. |

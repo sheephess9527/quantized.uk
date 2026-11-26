@@ -89,7 +89,7 @@ export default function FormatComparePage({ params, lang = 'en' }: { params: { s
             })),
           }}
         />
-        <FormatSingleContent format={single} />
+        <FormatSingleContent format={single} lang={lang} />
       </>
     );
   }
@@ -125,7 +125,7 @@ export default function FormatComparePage({ params, lang = 'en' }: { params: { s
           publisher: { '@type': 'Organization', name: 'quantized.uk' },
         }}
       />
-      <FormatCompareContent pair={pair} />
+      <FormatCompareContent pair={pair} lang={lang} />
     </>
   );
 }

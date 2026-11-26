@@ -647,6 +647,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — Server-rendered content views, Chinese 404 hydration fix, cookbook search and data caching
+
+- Converted read-only content views (`ModelDetail`, `MacModelSetup`, `ModelExplainer`, `ModelPlacement`, `ModelGuides`, `SimilarModels`, `RelatedReports`, `ArticleView`, `GuideReferences`, `GuideNextSteps`, `RelatedArticles`, `FormatSingleContent`, `FormatCompareContent`, `ErrorIndexView`, `ErrorDetailView`, `QuestionPage`, `BestTierContent`, `BenchmarksView`, `BenchDataTables`, `CoverageSection`, `RunStandard`, and `DataFreshness`) from client components to Server Components taking explicit `lang`, and refactored `/cookbook/` to pass lightweight card summaries to `CookbookIndexContent` instead of all 28 full article bodies. First Load JS drops from 256 → **177 kB** on all 56 `/cookbook/[slug]` guides, 250 → **176 kB** on `/cookbook/`, 257 → **167 kB** on all 30 `/formats/[slug]` pages, 250 → **167 kB** on all 42 `/errors/` pages, 248 → **168 kB** on quick-answer tool pages, 265 → **258 kB** on `/best/[tier]`, and 390 → **283 kB** on `/benchmarks/`.
+- Fixed the `/zh/**` 404 React Hydration Error (`#425 / #418 / #423`) by adding `app/zh/404/page.tsx` and emitting `out/zh/404.html` in `scripts/localize-export.mjs` (with a postbuild assertion checking `lang="zh-Hans"` and `<h1>页面未找到</h1>`) so Cloudflare Pages serves a Chinese-prerendered 404 document for missing `/zh/*` routes.
+- Replaced all remaining reader-facing `gpu.name` usages with `gpuDisplayName(gpu, lang)` across 19 components, pages and prose generators (`gpu-explainer.ts`, `compare.ts`, `hub-export.ts`), and unified the hardware `<select>` `<optgroup>`s in `VRAMCalculator` and `SpeedFeel` on `GPU_GROUPS` / `rowsInGpuGroup` from `lib/data/gpus.ts`.
+- Added instant keyword search across all 28 deployment guides and `aria-pressed` state on category filter buttons on `/cookbook/` and `/zh/cookbook/`.
+- Added `Cache-Control: public, max-age=3600, stale-while-revalidate=86400` in `public/_headers` for `/data/v1/models.json`, `/data/v1/gpus.json`, `/feed.xml`, `/zh/feed.xml`, `/llms.txt` and `/zh/llms.txt`. [Implementation and verification](docs/changes/2026-11-26-site-optimization-round-2.md).
+
 ### 2026-11-26 — Search intent for benchmarks, VRAM and the model catalog
 
 - Refocused bilingual benchmarks, VRAM calculator, five memory tiers, three sizing guides and model catalog titles and first-screen copy. Five English cookbook guides put hardware and setup steps first. The model catalog links to three existing localized destinations. [Exported copy and self-check](docs/changes/2026-11-26-search-intent.md).

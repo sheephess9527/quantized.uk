@@ -5,6 +5,7 @@ import Link from '@/components/i18n/LocalLink';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import QuantFileLine from '@/components/hub/QuantFileLine';
 import { models } from '@/lib/data/models';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { gpuBySlug, gpuSlug } from '@/lib/utils/gpu-page';
 import {
   pairData,
@@ -50,7 +51,7 @@ export function pairMetadata(params: Params, lang: 'en' | 'zh'): Metadata {
   const t = translations[lang].pair;
   const values = {
     model: model.name,
-    gpu: gpu.name,
+    gpu: gpuDisplayName(gpu, lang),
     quant: r.quant.level,
     total: r.totalGB.toFixed(1),
     verdict: t[r.verdict],
@@ -102,6 +103,7 @@ export default function PairPage({
 }) {
   const { model, gpu, recommended: r, rows, measured } = data(params);
   const t = translations[lang].pair;
+  const gpuName = gpuDisplayName(gpu, lang);
   const answer = pairAnswer(model, gpu)!;
   const { weightBytes } = quantWeights(answer.quant);
   const worked = {
@@ -123,7 +125,7 @@ export default function PairPage({
   };
   const values = {
     model: model.name,
-    gpu: gpu.name,
+    gpu: gpuName,
     quant: `${r.quant.format} ${r.quant.level}`,
     total: r.totalGB.toFixed(1),
     headroom: r.headroomGB.toFixed(1),
@@ -157,7 +159,7 @@ export default function PairPage({
           { label: t.home, href: '/' },
           { label: t.hub, href: '/quant-hub/' },
           { label: model.name, href: `/quant-hub/${model.id}/` },
-          { label: gpu.name },
+          { label: gpuName },
         ]}
       />
       <h1 className="text-3xl font-bold text-slate-100">
@@ -303,7 +305,7 @@ export default function PairPage({
           {links.map(p => (
             <li key={pairHref(p.model, p.gpu)}>
               <Link href={pairHref(p.model, p.gpu)}>
-                {p.model.name} · {p.gpu.name}
+                {p.model.name} · {gpuDisplayName(p.gpu, lang)}
               </Link>
             </li>
           ))}

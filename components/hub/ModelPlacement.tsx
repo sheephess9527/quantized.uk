@@ -1,7 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { modelPlacement, gpuSlug } from '@/lib/utils/model-placement';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
@@ -18,8 +17,8 @@ import type { QuantModel } from '@/lib/data/types';
  *
  * Anchor text is always the target's own name, never "here".
  */
-export default function ModelPlacement({ model }: { model: QuantModel }) {
-  const { t, lang } = useLanguage();
+export default function ModelPlacement({ model, lang = 'en' }: { model: QuantModel; lang?: Lang }) {
+  const t = translations[lang];
   const p = t.hub.placement;
   const x = modelPlacement(model);
 
@@ -48,7 +47,7 @@ export default function ModelPlacement({ model }: { model: QuantModel }) {
           <Row label={p.comfortable}>
             {x.comfortable.map(c => (
               <Link key={c.gpu.id} href={`/gpu/${gpuSlug(c.gpu)}/`} className={chip}>
-                {c.gpu.name}
+                {gpuDisplayName(c.gpu, lang)}
                 <span className="ml-1.5 font-mono text-xs text-slate-500">
                   {c.gpu.vram}GB · +{c.headroomGB.toFixed(1)}
                 </span>
@@ -61,7 +60,7 @@ export default function ModelPlacement({ model }: { model: QuantModel }) {
           <Row label={p.tight}>
             {x.tight.map(c => (
               <Link key={c.gpu.id} href={`/gpu/${gpuSlug(c.gpu)}/`} className={chip}>
-                {c.gpu.name}
+                {gpuDisplayName(c.gpu, lang)}
                 <span className="ml-1.5 font-mono text-xs text-slate-500">{c.gpu.vram}GB</span>
               </Link>
             ))}
@@ -72,7 +71,7 @@ export default function ModelPlacement({ model }: { model: QuantModel }) {
           <Row label={p.misses}>
             {x.misses.map(c => (
               <Link key={c.gpu.id} href={`/gpu/${gpuSlug(c.gpu)}/`} className={chip}>
-                {c.gpu.name}
+                {gpuDisplayName(c.gpu, lang)}
                 <span className="ml-1.5 font-mono text-xs text-amber-400/70">
                   +{c.overBy?.toFixed(1)}GB {p.over}
                 </span>

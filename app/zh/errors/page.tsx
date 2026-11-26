@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
+import { ErrorIndexView } from '@/components/errors/ErrorViews';
 
 export const metadata: Metadata = pageMetadata({
   title: '本地大模型报错速查：llama.cpp、Ollama、ROCm | quantized.uk',
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/errors',
 });
 
-export { default } from '../../errors/page';
+export default function ZhErrorsPage() {
+  return <ErrorIndexView lang="zh" />;
+}

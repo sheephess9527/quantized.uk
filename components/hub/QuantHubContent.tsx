@@ -6,7 +6,7 @@ import { Link2, FileDown } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { localizeHref } from '@/lib/i18n/routing';
 import { models } from '@/lib/data/models';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
 import QueryNoindex from '@/components/seo/QueryNoindex';
 import FilterBar, { HubSearch, type HubFilters } from '@/components/hub/FilterBar';
@@ -149,7 +149,7 @@ export default function QuantHubContent() {
       hardwareLabels: t.hub.hardware,
       inputLabels: t.hub.input,
       licenceLabels: t.hub.licenceClasses,
-    });
+    }, lang);
     try {
       await navigator.clipboard.writeText(md);
       setExportCopied(true);
@@ -220,7 +220,7 @@ export default function QuantHubContent() {
             <Link className="text-cyan-300 hover:underline" href="/tools/vram-calc/">{t.nav.vramCalc}</Link>
             <Link className="text-cyan-300 hover:underline" href="/gpu/rtx-4090/">RTX 4090</Link>
           </nav>
-          <DataFreshness className="mt-1.5" />
+          <DataFreshness className="mt-1.5" lang={lang} />
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           {filtered.length > 0 && (
@@ -255,7 +255,7 @@ export default function QuantHubContent() {
               {t.hub.profileFilter
                 .replace('{count}', String(compatibleCount))
                 .replace('{total}', String(total))
-                .replace('{gpu}', filterGpu.name)}
+                .replace('{gpu}', gpuDisplayName(filterGpu, lang))}
             </p>
             {hiddenByGpu > 0 && (
               <p className="text-xs text-emerald-200/50 mt-0.5">

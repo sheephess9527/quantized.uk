@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import VRAMCalculator from '@/components/tools/VRAMCalculator';
 import { localGuides, localGuideSlugs, type LocalGuide } from '@/lib/data/local-guides';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { BEST_TIERS, APPLE_LADDER, bestPage } from '@/lib/utils/best-page';
 import { gpuSlug, GPU_PAGE_CONTEXT, type GpuFit } from '@/lib/utils/gpu-page';
 import { PARAM_RANGE_LABEL } from '@/lib/utils/param-buckets';
@@ -41,7 +41,7 @@ function Requirements({ lang }: { lang: Lang }) {
     <p>{zh ? '每格选一个能留出余量的模型，列出具体量化版本和预计占用。表头为总参数量区间。空格表示该档未找到符合条件的目录模型。' : 'Each cell shows one catalog model with headroom, its quantization and its estimated memory. Column headings are total-parameter ranges. A dash means no qualifying example was found in that size class.'}</p>
     <div className="overflow-x-auto"><table className="text-sm text-left w-full min-w-[760px]">
       <thead><tr>{[zh ? '显卡' : 'GPU', ...buckets.map(b => PARAM_RANGE_LABEL[b])].map(label => <th className={cell} scope="col" key={label}>{label}</th>)}</tr></thead>
-      <tbody>{rows.map(({ gpu, cells }) => <tr key={gpu.id}><th scope="row" className={cell}><Link className={link} href={`${zh ? '/zh' : ''}/gpu/${gpuSlug(gpu)}/`}>{gpu.name}</Link></th>
+      <tbody>{rows.map(({ gpu, cells }) => <tr key={gpu.id}><th scope="row" className={cell}><Link className={link} href={`${zh ? '/zh' : ''}/gpu/${gpuSlug(gpu)}/`}>{gpuDisplayName(gpu, lang)}</Link></th>
           {cells.map((fit, i) => <td className={cell} key={buckets[i]}>{fit ? <ModelFit fit={fit} lang={lang} /> : '—'}</td>)}</tr>)}</tbody></table></div>
   </section>;
 }

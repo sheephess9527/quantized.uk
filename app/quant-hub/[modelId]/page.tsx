@@ -17,6 +17,7 @@ import { modelMetaDescription } from '@/lib/utils/meta-description';
 import Link from '@/components/i18n/LocalLink';
 import { pairPages, pairHref } from '@/lib/utils/pair-pages';
 import { translations } from '@/lib/i18n/translations';
+import { gpuDisplayName } from '@/lib/data/gpus';
 
 export function generateStaticParams() {
   return models.map(m => ({ modelId: m.id }));
@@ -110,22 +111,22 @@ export default function ModelDetailPage({
           })),
         }}
       />
-      <ModelDetail model={model} />
-      <ModelExplainer model={model} />
+      <ModelDetail model={model} lang={lang} />
+      <ModelExplainer model={model} lang={lang} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16 space-y-6">
         {/* The model page's links out to hardware, formats and the picks. */}
-        <ModelPlacement model={model} />
+        <ModelPlacement model={model} lang={lang} />
         <section>
           <h2 className="text-xl font-semibold mb-3">{translations[lang].pair.cards}</h2>
           <ul className="flex flex-wrap gap-3 text-violet-300">
             {pairPages().filter(p => p.model.id === model.id).map(p => (
               <li key={p.gpu.id}>
-                <Link href={pairHref(model, p.gpu)}>{p.gpu.name}</Link>
+                <Link href={pairHref(model, p.gpu)}>{gpuDisplayName(p.gpu, lang)}</Link>
               </li>
             ))}
           </ul>
         </section>
-        <ModelGuides guides={guideLinksForModel(model)} />
+        <ModelGuides guides={guideLinksForModel(model)} lang={lang} />
         <PageFreshnessNote lang={lang} />
       </div>
     </>

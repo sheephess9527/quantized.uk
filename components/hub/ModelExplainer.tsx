@@ -1,6 +1,4 @@
-'use client';
-
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import type { QuantModel } from '@/lib/data/types';
 import { modelExplainer } from '@/lib/utils/model-explainer';
 
@@ -9,8 +7,8 @@ import { modelExplainer } from '@/lib/utils/model-explainer';
  * emitted as `FAQPage` schema by the route, so the questions a crawler sees are
  * the ones a reader sees — the rule the audit flagged for structured data.
  */
-export default function ModelExplainer({ model }: { model: QuantModel }) {
-  const { t, lang } = useLanguage();
+export default function ModelExplainer({ model, lang = 'en' }: { model: QuantModel; lang?: Lang }) {
+  const t = translations[lang];
   const { sections, faqs } = modelExplainer(model);
 
   return (

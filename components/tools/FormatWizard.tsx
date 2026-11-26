@@ -5,6 +5,7 @@ import Link from '@/components/i18n/LocalLink';
 import { Wand2, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { runFormatWizard, HardwareType, Priority, UseCase } from '@/lib/utils/format-wizard';
 import { cn } from '@/lib/utils/cn';
 
@@ -79,7 +80,7 @@ export default function FormatWizard() {
         {gpu && (
           <div className="glass rounded-xl px-4 py-3 flex items-center gap-2 text-xs text-slate-500">
             <CheckCircle2 size={12} className="text-emerald-400" />
-            {w.usingProfile.replace('{gpu}', gpu.name)}
+            {w.usingProfile.replace('{gpu}', gpuDisplayName(gpu, lang))}
           </div>
         )}
 

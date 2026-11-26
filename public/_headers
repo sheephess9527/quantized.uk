@@ -41,6 +41,24 @@
 /model-card-badge.svg
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+/data/v1/models.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/data/v1/gpus.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/feed.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/zh/feed.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/llms.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/zh/llms.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
 /gpu/*/opengraph-image
   Content-Type: image/png
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800

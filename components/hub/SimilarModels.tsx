@@ -1,8 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ChevronRight, GitCompareArrows } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { referenceQuant } from '@/lib/utils/quality';
 import { sizeAt4K } from '@/lib/utils/quant-source';
 import { getSimilarModels } from '@/lib/utils/related';
@@ -17,10 +15,11 @@ const hwColors: Record<string, string> = {
 
 interface Props {
   modelId: string;
+  lang?: Lang;
 }
 
-export default function SimilarModels({ modelId }: Props) {
-  const { t, lang } = useLanguage();
+export default function SimilarModels({ modelId, lang = 'en' }: Props) {
+  const t = translations[lang];
   const similar = getSimilarModels(modelId);
   if (similar.length === 0) return null;
 

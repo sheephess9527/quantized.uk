@@ -5,6 +5,7 @@ import Link from '@/components/i18n/LocalLink';
 import { GitCompare, Copy, Check } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { compareModels } from '@/lib/utils/compare';
 import { contextLabel } from '@/lib/utils/context-label';
@@ -121,7 +122,7 @@ export default function ModelCompare() {
             </button>
           ))}
         </div>
-        {gpu && <span className="text-xs text-slate-600 ml-auto">{c.usingGpu.replace('{gpu}', gpu.name)}</span>}
+        {gpu && <span className="text-xs text-slate-600 ml-auto">{c.usingGpu.replace('{gpu}', gpuDisplayName(gpu, lang))}</span>}
       </div>
 
       {modelAId === modelBId && modelAId && (

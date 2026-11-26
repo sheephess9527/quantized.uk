@@ -1,7 +1,6 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { guideReferences, gpuSlug } from '@/lib/utils/guide-references';
 import type { Article } from '@/lib/data/cookbook';
 
@@ -14,8 +13,8 @@ import type { Article } from '@/lib/data/cookbook';
  * from what the guide already declares, so it cannot name a card or a model the
  * guide is not about.
  */
-export default function GuideReferences({ article }: { article: Article }) {
-  const { t, lang } = useLanguage();
+export default function GuideReferences({ article, lang = 'en' }: { article: Article; lang?: Lang }) {
+  const t = translations[lang];
   const r = t.cookbook.references;
   const x = guideReferences(article);
 
@@ -45,12 +44,12 @@ export default function GuideReferences({ article }: { article: Article }) {
         {x.gpu && (
           <Row label={r.hardware}>
             <Link href={`/gpu/${gpuSlug(x.gpu)}/`} className={chip}>
-              {x.gpu.name}
+              {gpuDisplayName(x.gpu, lang)}
               <span className="ml-1.5 font-mono text-xs text-slate-500">{x.gpu.vram}GB</span>
             </Link>
             {x.siblings.map(s => (
               <Link key={s.id} href={`/gpu/${gpuSlug(s)}/`} className={chip}>
-                {s.name}
+                {gpuDisplayName(s, lang)}
               </Link>
             ))}
           </Row>

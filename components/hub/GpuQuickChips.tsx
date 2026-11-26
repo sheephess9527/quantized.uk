@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { countModelsFitting } from '@/lib/utils/gpu-page';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
@@ -36,7 +36,7 @@ interface Props {
 }
 
 export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { gpu: profileGpu } = useHardwareProfile();
   const q = t.hub.gpuChips;
 
@@ -68,6 +68,8 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
           return (
             <button
               key={id}
+              type="button"
+              aria-pressed={active}
               onClick={() => onSelect(active ? null : id)}
               className={cn(
                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
@@ -77,7 +79,7 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
               )}
             >
               <span>{gpu.icon}</span>
-              <span>{gpu.name}</span>
+              <span>{gpuDisplayName(gpu, lang)}</span>
               <span className={cn(
                 'font-mono text-[10px] px-1.5 py-0.5 rounded',
                 active ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/[0.04] text-slate-600',

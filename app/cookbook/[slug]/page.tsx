@@ -109,7 +109,7 @@ export default function CookbookArticlePage({
           }}
         />
       )}
-      <ArticleView article={article} />
+      <ArticleView article={article} lang={lang} />
     </>
   );
 }

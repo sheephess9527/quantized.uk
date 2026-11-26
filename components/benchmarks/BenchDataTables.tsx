@@ -1,6 +1,4 @@
-'use client';
-
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { speedBenchmarks, pplBenchmarks } from '@/lib/data/benchmarks';
 import ChartTable from '@/components/benchmarks/ChartTable';
 
@@ -15,8 +13,8 @@ import ChartTable from '@/components/benchmarks/ChartTable';
  * static document: available to a screen reader before any JavaScript runs,
  * and indexable.
  */
-export default function BenchDataTables() {
-  const { t } = useLanguage();
+export default function BenchDataTables({ lang = 'en' }: { lang?: Lang } = {}) {
+  const t = translations[lang];
 
   return (
     <section className="glass rounded-2xl p-6 space-y-2">

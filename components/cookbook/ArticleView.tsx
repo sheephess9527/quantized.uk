@@ -1,17 +1,14 @@
-'use client';
-
 import { Clock } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { Article } from '@/lib/data/cookbook';
 import RelatedArticles from '@/components/cookbook/RelatedArticles';
 import GuideNextSteps from '@/components/cookbook/GuideNextSteps';
 import GuideReferences from '@/components/cookbook/GuideReferences';
 import RunFeedback from '@/components/feedback/RunFeedback';
-import ArticleToc, { sectionId } from '@/components/cookbook/ArticleToc';
+import ArticleToc from '@/components/cookbook/ArticleToc';
 import CodeBlock from '@/components/cookbook/CodeBlock';
 import ReadingProgress from '@/components/cookbook/ReadingProgress';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import { useActiveSection } from '@/lib/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
 import { readingMinutes } from '@/lib/utils/reading-time';
 import { articleModifiedAt } from '@/lib/utils/article-dates';
@@ -24,14 +21,15 @@ const difficultyColors = {
 
 interface Props {
   article: Article;
+  lang?: Lang;
 }
 
-export default function ArticleView({ article }: Props) {
-  const { t, lang } = useLanguage();
+export default function ArticleView({ article, lang = 'en' }: Props) {
+  const t = translations[lang];
 
   const title = lang === 'zh' ? article.titleZh : article.title;
   const modified = articleModifiedAt(article);
-  const activeSection = useActiveSection(article.content.length, 'section-');
+  const tocSections = article.content.map(s => ({ heading: s.heading, headingZh: s.headingZh }));
 
   return (
     <>
@@ -109,25 +107,25 @@ export default function ArticleView({ article }: Props) {
       </header>
 
       <div className="lg:hidden mb-6">
-        <ArticleToc article={article} activeIndex={activeSection} />
+        <ArticleToc sections={tocSections} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
         <div className="hidden lg:block">
-          <ArticleToc article={article} activeIndex={activeSection} />
+          <ArticleToc sections={tocSections} />
         </div>
 
         <div id="article-content" className="space-y-8 min-w-0">
         {article.content.map((section, i) => (
-          <section key={i} id={sectionId(i)} className="glass rounded-2xl p-6 scroll-mt-28">
+          <section key={i} id={`section-${i}`} className="glass rounded-2xl p-6 scroll-mt-28">
             <h2 className="text-lg font-semibold text-slate-200 mb-3">
               {lang === 'zh' ? section.headingZh : section.heading}
             </h2>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">
               {lang === 'zh' ? section.bodyZh : section.body}
             </p>
-            {section.code && (Array.isArray(section.code) ? section.code : [section.code]).map(({ lang, content }, index) => (
-              <CodeBlock key={index} lang={lang} content={content} />
+            {section.code && (Array.isArray(section.code) ? section.code : [section.code]).map(({ lang: codeLang, content }, index) => (
+              <CodeBlock key={index} lang={codeLang} content={content} />
             ))}
           </section>
         ))}
@@ -147,12 +145,12 @@ export default function ArticleView({ article }: Props) {
           </section>
         )}
 
-        <GuideReferences article={article} />
-        <GuideNextSteps article={article} />
+        <GuideReferences article={article} lang={lang} />
+        <GuideNextSteps article={article} lang={lang} />
 
         <RunFeedback subject={`quantized.uk — ${article.id}`} context={title} />
 
-        <RelatedArticles articleId={article.id} />
+        <RelatedArticles articleId={article.id} lang={lang} />
 
         <div className="glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
           {t.cookbook.licenseNote}

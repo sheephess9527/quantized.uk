@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { useLanguage } from '@/lib/i18n/context';
-import { gpuDatabase, type GPU } from '@/lib/data/gpus';
+import { gpuDatabase, gpuDisplayName, GPU_GROUPS, rowsInGpuGroup, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import type { QuantModel, QuantVariant } from '@/lib/data/types';
 import { isMoE } from '@/lib/utils/model-meta';
@@ -36,7 +36,7 @@ function SpeedPane({
   ctx: SpeedContext;
   running: boolean;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const f = t.feel;
   const quote = useMemo(() => speedQuote(gpu, model, quant, ctx), [gpu, model, quant, ctx]);
   const rate = streamTokS(quote);
@@ -74,7 +74,7 @@ function SpeedPane({
   return (
     <div className="glass rounded-2xl p-5 flex flex-col gap-3 min-h-[280px]">
       <div>
-        <h2 className="text-sm font-semibold text-slate-200">{gpu.name}</h2>
+        <h2 className="text-sm font-semibold text-slate-200">{gpuDisplayName(gpu, lang)}</h2>
         <p className="text-xs text-slate-500 mt-1">{headline(quote, f, isMoE(model))}</p>
       </div>
       <p className="text-xs text-slate-500 leading-relaxed">{note(quote, f, isMoE(model))}</p>
@@ -124,7 +124,7 @@ function note(quote: SpeedQuote, f: ReturnType<typeof useLanguage>['t']['feel'],
 }
 
 export default function SpeedFeel() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const f = t.feel;
   // `useSearchParams()` would ship this whole tool as its Suspense fallback in the static export;
   // the query is read after mount instead, so the page prerenders on the defaults (CLAUDE.md).
@@ -178,6 +178,14 @@ export default function SpeedFeel() {
   }, [left.id, right.id, model.id, quant, ctx, params]);
 
   const select = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200';
+  const gpuOptions = GPU_GROUPS.map(([type, key]) => {
+    const rows = rowsInGpuGroup(type);
+    return rows.length === 0 ? null : (
+      <optgroup key={key} label={t.calc[key]}>
+        {rows.map(g => <option key={g.id} value={g.id}>{gpuDisplayName(g, lang)} ({g.vram} GB)</option>)}
+      </optgroup>
+    );
+  });
 
   return (
     <div>
@@ -185,13 +193,13 @@ export default function SpeedFeel() {
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.left}
           <select className={select} style={{ colorScheme: 'dark' }} value={left.id} onChange={e => { setRunning(false); setLeftId(e.target.value); }}>
-            {gpuDatabase.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+            {gpuOptions}
           </select>
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.right}
           <select className={select} style={{ colorScheme: 'dark' }} value={right.id} onChange={e => { setRunning(false); setRightId(e.target.value); }}>
-            {gpuDatabase.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+            {gpuOptions}
           </select>
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">

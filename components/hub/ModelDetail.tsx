@@ -1,9 +1,7 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { Calculator, ExternalLink, Zap } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import { QuantModel, models } from '@/lib/data/models';
 import { cn } from '@/lib/utils/cn';
 import { bestQuant as pickBestQuant, formatLoss, referenceQuant } from '@/lib/utils/quality';
@@ -34,15 +32,16 @@ const hwColors: Record<string, string> = {
   'consumer-gpu': 'bg-green-500/10 text-green-400 border-green-500/20',
   mac: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
   'cpu-vps': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'pro-gpu': 'bg-red-500/10 text-red-400 border-red-500/20',
+  'pro-gpu': 'bg-red-500/10 text-red-400 border-red-400/20',
 };
 
 interface Props {
   model: QuantModel;
+  lang?: Lang;
 }
 
-export default function ModelDetail({ model }: Props) {
-  const { t, lang } = useLanguage();
+export default function ModelDetail({ model, lang = 'en' }: Props) {
+  const t = translations[lang];
   const d = t.hub.detail;
   const hf = getHFStats(model.id);
   const hfRepo = hf?.repo ?? hfRepoMap[model.id];
@@ -191,7 +190,7 @@ export default function ModelDetail({ model }: Props) {
         />
       </div>
 
-      <MacModelSetup modelId={model.id} />
+      <MacModelSetup modelId={model.id} lang={lang} />
       <RerankerLink placement="model" />
       <div className="glass rounded-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/[0.06]">
@@ -296,8 +295,8 @@ export default function ModelDetail({ model }: Props) {
       </div>
 
       <ModelCardBadge key={model.id} modelId={model.id} />
-      <RelatedReports modelId={model.id} />
-      <SimilarModels modelId={model.id} />
+      <RelatedReports modelId={model.id} lang={lang} />
+      <SimilarModels modelId={model.id} lang={lang} />
     </div>
   );
 }

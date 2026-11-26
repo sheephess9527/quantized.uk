@@ -9,5 +9,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function ErrorsPage() {
-  return <ErrorIndexView />;
+  return <ErrorIndexView lang="en" />;
 }

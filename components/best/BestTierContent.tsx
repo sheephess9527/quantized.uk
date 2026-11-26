@@ -1,10 +1,9 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { ArrowRight } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { models } from '@/lib/data/models';
+import { gpuDisplayName } from '@/lib/data/gpus';
 import { bestPage, tierUpgradeBaseline, type BestTier } from '@/lib/utils/best-page';
 import { gpuSlug, GPU_PAGE_CONTEXT } from '@/lib/utils/gpu-page';
 import { quantLevelKey } from '@/lib/utils/recommend';
@@ -22,8 +21,8 @@ import GpuUpgradeComparison from '@/components/gpu/GpuUpgradeComparison';
  * is where the GPU pages get an inbound link from something other than the
  * index.
  */
-export default function BestTierContent({ tier }: { tier: BestTier }) {
-  const { t, lang } = useLanguage();
+export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier; lang?: Lang }) {
+  const t = translations[lang];
   const b = t.best;
   const { picks, cards, nearMiss, ladder, appleLadder, fitCount, faqs, q4 } = bestPage(tier);
   const upgradeBaseline = tierUpgradeBaseline(tier);
@@ -142,7 +141,7 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
                     href={`/gpu/${gpuSlug(c)}/`}
                     className="inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 border border-white/[0.07] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
                   >
-                    {c.name}
+                    {gpuDisplayName(c, lang)}
                     {c.bandwidth && <span className="ml-1.5 font-mono text-slate-500">{c.bandwidth.toLocaleString('en-US')} GB/s</span>}
                   </Link>
                 </li>
@@ -156,7 +155,7 @@ export default function BestTierContent({ tier }: { tier: BestTier }) {
             current={upgradeBaseline}
             tierLabel={fill(t.gpuUpgrade[tier.kind === 'apple' ? 'appleBaseline' : 'vramBaseline'], {
               gb: tier.vram,
-              card: upgradeBaseline.name,
+              card: gpuDisplayName(upgradeBaseline, lang),
             })}
           />
         )}

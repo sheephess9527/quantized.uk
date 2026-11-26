@@ -9,5 +9,5 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function Page() {
-  return <QuestionPage kind="speed" />;
+  return <QuestionPage kind="speed" lang="en" />;
 }

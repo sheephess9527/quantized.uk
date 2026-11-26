@@ -17,5 +17,5 @@ export default function ErrorPage({ params }: { params: { id: string } }) {
     const a = articles.find(x => x.id === g);
     return a ? [{ id: a.id, title: a.title, titleZh: a.titleZh }] : [];
   });
-  return <ErrorDetailView id={params.id} guides={guides} />;
+  return <ErrorDetailView id={params.id} guides={guides} lang="en" />;
 }

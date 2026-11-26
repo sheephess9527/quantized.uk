@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
+import QuestionPage from '@/components/tools/QuestionPage';
 
 export const metadata: Metadata = pageMetadata({
   title: '该下载哪个量化版本：Q4、Q5 还是 Q8 | quantized.uk',
@@ -7,4 +8,6 @@ export const metadata: Metadata = pageMetadata({
   path: '/zh/tools/which-quant',
 });
 
-export { default } from '../../../tools/which-quant/page';
+export default function ZhWhichQuantPage() {
+  return <QuestionPage kind="quant" lang="zh" />;
+}

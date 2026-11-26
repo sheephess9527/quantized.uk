@@ -1,12 +1,10 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { Calculator } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ToolExplainer from '@/components/tools/ToolExplainer';
 import { speedQContent, quantQContent, contextQContent } from '@/lib/data/tool-content';
-import type { GPU } from '@/lib/data/gpus';
+import { gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import { GPU_COUNT } from '@/lib/site';
 import { gpuSlug } from '@/lib/utils/gpu-page';
 import { formatLoss } from '@/lib/utils/quality';
@@ -32,8 +30,8 @@ const META = {
 
 const kTokens = (n: number) => `${Math.round(n / 1024)}K`;
 
-export default function QuestionPage({ kind }: { kind: QuestionKind }) {
-  const { t, lang } = useLanguage();
+export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind; lang?: Lang }) {
+  const t = translations[lang];
   const q = t.questions;
   const meta = META[kind];
   const page = q[kind];
@@ -88,7 +86,7 @@ export default function QuestionPage({ kind }: { kind: QuestionKind }) {
               {sec.cards.map((c, i) => (
                 <span key={c.id}>
                   {i > 0 && <span className="text-slate-600"> · </span>}
-                  <Link href={`/gpu/${gpuSlug(c)}/`} className="hover:text-violet-300 transition-colors">{c.name}</Link>
+                  <Link href={`/gpu/${gpuSlug(c)}/`} className="hover:text-violet-300 transition-colors">{gpuDisplayName(c, lang)}</Link>
                 </span>
               ))}
             </h2>
@@ -113,7 +111,7 @@ export default function QuestionPage({ kind }: { kind: QuestionKind }) {
         <Link href="/gpu/" className="text-violet-300 hover:text-violet-200">{q.allGpus}</Link>
       </p>
 
-      <ToolExplainer content={meta.content} toolName={page.title} path={meta.path} app={false} />
+      <ToolExplainer content={meta.content} toolName={page.title} path={meta.path} app={false} lang={lang} />
     </div>
   );
 
@@ -132,7 +130,7 @@ export default function QuestionPage({ kind }: { kind: QuestionKind }) {
       <td className="py-2 pl-2 text-right">
         <Link
           href={row.calcHref}
-          aria-label={q.openAria.replace('{model}', row.model.name).replace('{card}', card.name)}
+          aria-label={q.openAria.replace('{model}', row.model.name).replace('{card}', gpuDisplayName(card, lang))}
           className="inline-flex items-center gap-1 text-xs text-violet-300 hover:text-violet-200 whitespace-nowrap"
         >
           <Calculator size={12} /> {q.open}

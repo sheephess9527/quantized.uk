@@ -1,16 +1,14 @@
-'use client';
-
 import Link from '@/components/i18n/LocalLink';
 import { BookOpen, ArrowRight, Clock } from 'lucide-react';
-import { useLanguage } from '@/lib/i18n/context';
+import { translations, type Lang } from '@/lib/i18n/translations';
 import type { GuideLink } from '@/lib/utils/model-guides';
 
 /**
  * "You found the model — here's how to actually run it."
  * Completes the home → detail → calculator → guide path in the hub direction.
  */
-export default function ModelGuides({ guides }: { guides: GuideLink[] }) {
-  const { t, lang } = useLanguage();
+export default function ModelGuides({ guides, lang = 'en' }: { guides: GuideLink[]; lang?: Lang }) {
+  const t = translations[lang];
   const g = t.hub.guides;
 
   if (guides.length === 0) return null;
