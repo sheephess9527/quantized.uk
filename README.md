@@ -647,6 +647,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — MoE offload memory and coverage
+
+- The forward GGUF calculator compares llama.cpp placement with GPU capacity and reader-entered host RAM, including an estimated 4 GiB host reserve. Expert tiers use the fraction of routed layers in RAM (heavy at 50%). Unverified layouts retain whole-layer splitting.
+- Added 14 config-backed layouts and a warning-only coverage inventory in `npm test`. [Audit and handoff](docs/changes/2026-11-26-moe-offload.md).
+
 ### 2026-11-26 — Server-rendered content views, Chinese 404 hydration fix, cookbook search and data caching
 
 - Converted read-only content views (`ModelDetail`, `MacModelSetup`, `ModelExplainer`, `ModelPlacement`, `ModelGuides`, `SimilarModels`, `RelatedReports`, `ArticleView`, `GuideReferences`, `GuideNextSteps`, `RelatedArticles`, `FormatSingleContent`, `FormatCompareContent`, `ErrorIndexView`, `ErrorDetailView`, `QuestionPage`, `BestTierContent`, `BenchmarksView`, `BenchDataTables`, `CoverageSection`, `RunStandard`, and `DataFreshness`) from client components to Server Components taking explicit `lang`, and refactored `/cookbook/` to pass lightweight card summaries to `CookbookIndexContent` instead of all 28 full article bodies. First Load JS drops from 256 → **177 kB** on all 56 `/cookbook/[slug]` guides, 250 → **176 kB** on `/cookbook/`, 257 → **167 kB** on all 30 `/formats/[slug]` pages, 250 → **167 kB** on all 42 `/errors/` pages, 248 → **168 kB** on quick-answer tool pages, 265 → **258 kB** on `/best/[tier]`, and 390 → **283 kB** on `/benchmarks/`.

@@ -355,6 +355,7 @@ function moeOffload(
   const e = model.arch.moe!;
   const bpw = level === 'MXFP4' ? 4.25 : input.bpw;
   const expertGB = Math.min(result.modelWeightsGB, (e.expertParams * 1e9 * bpw / 8) / 1024 ** 3);
+  // TODO: include systemOverheadGB in the resident portion when the environment input lands.
   if (result.totalGB - expertGB > budget) return undefined;
   const perLayer = expertGB / e.moeLayers;
   const cpuMoeLayers = e.interleaved
