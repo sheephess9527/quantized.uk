@@ -647,6 +647,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — Homepage balanced rows
+
+- Removed two lopsided homepage grids (Latest additions vs Editor's Picks, Quick Tools vs Explore) that left large empty voids. Both are now full-width rows: Editor's Picks is a 3-column tile grid and Quick Tools is a 5-column row. [Details and handoff](docs/changes/2026-11-26-homepage-balanced-rows.md).
+
 ### 2026-11-26 — Dual-theme Day / Night / Auto appearance and de-rainbowed engineering palette
 
 - Replaced the single pitch-black (`#0a0a0f`) + violet theme with a zero-FOUC **Day (`B4` Clean Lab Light `#f4f6f9` / `#ffffff`) + Night (`B1` GitHub Dark Dimmed `#1c2128` / `#22272e`) + Auto (`prefers-color-scheme`)** design system (`lib/theme/context.tsx`, `components/layout/ThemeToggle.tsx`, `tailwind.config.ts`, `app/globals.css`, `app/layout.tsx`). Both themes clear WCAG 2.1 AA (`≥ 4.5:1`) across the entire `slate-100..600` ramp and inverted chromatic `200–400` text tokens, with media-aware `theme-color` metadata and theme-reactive Recharts benchmark charts.

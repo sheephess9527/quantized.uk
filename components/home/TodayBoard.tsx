@@ -39,7 +39,7 @@ export default function TodayBoard({ lang }: { lang: Lang }) {
         </Link>
       </div>
 
-      <ul className="flex flex-col gap-2 flex-1">
+      <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {picks.map((item) => {
           const cfg = typeConfig[item.type];
           const model = models.find(m => m.id === item.modelId);
@@ -52,7 +52,7 @@ export default function TodayBoard({ lang }: { lang: Lang }) {
             <li key={item.id}>
               <Link
                 href={href}
-                className="group flex items-start gap-3 p-3 rounded-xl hover:bg-ink/[0.03] transition-colors"
+                className="group flex items-start gap-3 p-3 h-full rounded-xl border border-ink/[0.06] bg-ink/[0.02] hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
               >
                 <span className={cn('badge shrink-0 mt-0.5', cfg.className)}>
                   {t.home.todayBoard[item.type]}

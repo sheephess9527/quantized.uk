@@ -42,19 +42,18 @@ export default function HomeContent({ lang }: { lang: Lang }) {
       <StatsBar lang={lang} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 space-y-12 pb-16">
-        {/* Act 1: Freshness & Latest Index Additions + Editor's Picks side-by-side on wide screens */}
-        <div className="space-y-4">
+        {/*
+          Act 1: Freshness, Latest additions, Editor's Picks.
+          Stacked full-width, each spreading its items across columns. They
+          used to sit side by side (7/5), but six two-line tiles against six
+          four-line list rows left a half-screen void under the left card.
+        */}
+        <div className="space-y-6">
           <div className="flex justify-end">
             <DataFreshness lang={lang} />
           </div>
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
-            <div className="xl:col-span-7">
-              <WeeklyUpdates lang={lang} />
-            </div>
-            <div className="xl:col-span-5">
-              <TodayBoard lang={lang} />
-            </div>
-          </div>
+          <WeeklyUpdates lang={lang} />
+          <TodayBoard lang={lang} />
         </div>
 
         {/* Act 2: Curated Hardware & Task Entry Points */}
@@ -71,14 +70,10 @@ export default function HomeContent({ lang }: { lang: Lang }) {
         {/* Act 4: Core FAQs & Site Navigation */}
         <div className="space-y-6 pt-4 border-t border-ink/[0.05]">
           <HomeFaq lang={lang} />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <QuickAccess lang={lang} />
-            </div>
-            <div className="lg:col-span-2">
-              <ExploreStrip guideCount={articles.length} lang={lang} />
-            </div>
-          </div>
+          {/* Full-width rows, not a 1/3 + 2/3 split: five stacked tool cards
+              against one short Explore card left the right two-thirds empty. */}
+          <QuickAccess lang={lang} />
+          <ExploreStrip guideCount={articles.length} lang={lang} />
         </div>
 
         {/* Act 5: Transparency, Contact & Changelog */}

@@ -49,33 +49,33 @@ export default function QuickAccess({ lang }: { lang: Lang }) {
   ];
 
   return (
-    <div className="flex flex-col gap-4 h-full">
-      <h2 className="section-title text-lg">{t.home.quickAccess.title}</h2>
-      {tools.map((tool) => {
-        const Icon = tool.icon;
-        return (
-          <Link
-            key={tool.href}
-            href={tool.href}
-            className="group glass glass-hover rounded-2xl p-5 flex flex-col gap-3 flex-1 transition-all duration-200 hover:border-sky-500/35"
-          >
-            <div className="flex items-start gap-3">
+    <section>
+      <h2 className="section-title text-lg mb-4">{t.home.quickAccess.title}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        {tools.map((tool) => {
+          const Icon = tool.icon;
+          return (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="group glass glass-hover rounded-2xl p-5 flex flex-col gap-3 h-full transition-all duration-200 hover:border-sky-500/35"
+            >
               <div
                 className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-200 ${tool.chipBg}`}
               >
                 <Icon size={16} className={tool.iconColor} />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-sm font-semibold text-slate-100 group-hover:text-sky-300 transition-colors mb-1">{tool.title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">{tool.desc}</p>
               </div>
-            </div>
-            <span className="text-xs font-medium text-sky-400 group-hover:text-sky-300 transition-colors">
-              {t.home.quickAccess.openTool}
-            </span>
-          </Link>
-        );
-      })}
-    </div>
+              <span className="text-xs font-medium text-sky-400 group-hover:text-sky-300 transition-colors">
+                {t.home.quickAccess.openTool}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
