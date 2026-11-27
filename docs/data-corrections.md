@@ -1,5 +1,14 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-27 — Four checkpoints with verified GGUF and projector bytes
+
+Indexed the exact Zhiman checkpoint from publisher config and licence, the
+Q4_K_M header and the pinned bartowski artifact listing. It has 26,895,998,464
+language tensor elements, 16 of 64 layers with a growing KV cache, and an
+F16 projector of 927,607,264 bytes. Four language GGUF sizes match the
+Hugging Face Registry manifests. The weights are published for non-commercial
+research. The same patrol verified OCRia-1, Surogate3.7 35B-A3B and Voltron 1.1 Mini from publisher configs, licences and matching GGUF headers. [Exact files, sources and limits](changes/2026-11-27-patrol.md#catalogue-additions)
+
 ## 2026-11-26 — Three Apache-2.0 checkpoints and llama.cpp v1.1.0 (`b12774`)
 
 Indexed three Apache-2.0 checkpoints alongside official `llama.cpp v1.1.0` (`nightly-tag.txt` → `b12774`):

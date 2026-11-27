@@ -272,6 +272,10 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 68, type: 'new', modelId: 'ocria-1', level: 'Q8_0', note: { en: "Official Q8_0 for document image parsing", zh: "面向文档图像解析的官方 Q8_0" }, quantizer: 'LlamaIndex' },
+  { id: 69, type: 'new', modelId: 'surogate-3-7-35b-a3b', level: 'Q4_K_M', note: { en: "Qwen3.5 MoE tune for coding and tool workflows", zh: "面向编程和工具任务的 Qwen3.5 MoE 微调" }, quantizer: 'prithivMLmods' },
+  { id: 70, type: 'new', modelId: 'voltron-1-1-mini', level: 'Q4_K_M', note: { en: "Compact LFM3 tune for code and reasoning", zh: "面向编程和推理的小型 LFM3 微调" }, quantizer: 'bartowski' },
+  { id: 67, type: 'new', modelId: 'micius-flash', level: 'Q4_K_M', note: { en: 'Vision-language model for hardware design', zh: '面向硬件设计的视觉语言模型' }, quantizer: 'bartowski' },
   { id: 66, type: 'new', modelId: 'inkling-2-mini', level: 'Q4_K_M', note: { en: 'Looped multimodal MoE; 8 of 48 slots grow KV', zh: '多模态循环 MoE；48 槽仅 8 个增长 KV' }, quantizer: 'bartowski' },
   { id: 65, type: 'new', modelId: 'mellum2-1-12b-a2-5b-instruct', level: 'Q4_K_M', note: { en: 'Official JetBrains coding MoE; 2.5B active', zh: 'JetBrains 官方编程 MoE；激活 2.5B' }, quantizer: 'JetBrains' },
   { id: 64, type: 'new', modelId: 'domyn-edge-sft', level: 'Q4_K_M', note: { en: '3.9B long-context SFT; 4 GB card at 4K', zh: '3.9B 长上下文 SFT；4K 下 4 GB 可跑' }, quantizer: 'prithivMLmods' },

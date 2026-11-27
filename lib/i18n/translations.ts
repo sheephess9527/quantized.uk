@@ -626,7 +626,8 @@ export const translations = {
         multimodal: 'Text + Image',
         textOnly: 'Text only',
         quickRunTitle: 'Quick Launch Command',
-        quickRunSub: 'Verified command for {quant} at 4K context · full options in CLI Generator',
+        quickRunSub: 'Commands for {quant} · adjust hardware and context in the CLI Generator',
+        quickRunCopyBlocked: 'Clipboard access is blocked. Copy the selected command manually.',
         openCliGen: 'More options in CLI Generator →',
         modelCardBadge: {
           title: 'Hugging Face model card badge',
@@ -2120,7 +2121,8 @@ export const translations = {
         multimodal: '文本 + 图像',
         textOnly: '纯文本',
         quickRunTitle: '一键运行命令',
-        quickRunSub: '基于 {quant}（4K 上下文）的已核实命令 · 更多参数可前往脚本生成器',
+        quickRunSub: '{quant} 启动命令 · 可在脚本生成器调整硬件和上下文',
+        quickRunCopyBlocked: '剪贴板不可用，请手动复制选中的命令。',
         openCliGen: '前往脚本生成器配置更多参数 →',
         modelCardBadge: {
           title: 'Hugging Face 模型卡片徽章',

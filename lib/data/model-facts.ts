@@ -180,6 +180,8 @@ export interface LicenceInfo {
 }
 
 export const LICENCES = {
+  'ocria-1-rail': { short: 'OCRia License', name: { en: 'OCRia-1 Model and Code License', zh: 'OCRia-1 模型与代码许可' }, class: 'restricted', url: 'https://huggingface.co/llamaindex/OCRia-1/blob/main/LICENSE' },
+  'zhiman-research': { short: 'Zhiman Research', name: { en: 'Zhiman Non-Commercial Research License v1.0', zh: '智蔓非商业研究许可 v1.0' }, class: 'noncommercial', url: 'https://huggingface.co/zhiman-ai/Micius-Flash/blob/main/LICENSE' },
   'webai-nc-1.0': { short: 'webAI NC', name: { en: 'webAI Non-Commercial License 1.0', zh: 'webAI 非商业许可 1.0' }, class: 'noncommercial', url: 'https://huggingface.co/webAI-Official/TwIL-8B/blob/main/LICENSE.md' },
   'apache-2.0': { short: 'Apache 2.0', name: { en: 'Apache 2.0', zh: 'Apache 2.0' }, class: 'commercial', url: 'https://www.apache.org/licenses/LICENSE-2.0' },
   'mit': { short: 'MIT', name: { en: 'MIT', zh: 'MIT' }, class: 'commercial', url: 'https://opensource.org/license/mit' },
@@ -217,6 +219,10 @@ export type LicenceId = keyof typeof LICENCES;
 export const MODEL_LICENCE: Record<string, LicenceId> = {
   'mellum2-1-12b-a2-5b-instruct': 'apache-2.0',
   'domyn-edge-sft': 'apache-2.0',
+  'ocria-1': 'ocria-1-rail',
+  'surogate-3-7-35b-a3b': 'apache-2.0',
+  'voltron-1-1-mini': 'lfm-open-1.0',
+  'micius-flash': 'zhiman-research',
   'inkling-2-mini': 'apache-2.0',
   'kormo-web-4b': 'apache-2.0',
   'kormo-web-9b': 'apache-2.0',
@@ -402,6 +408,9 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'ocria-1',
+  'surogate-3-7-35b-a3b',
+  'micius-flash',
   'inkling-2-mini',
   'deepseek-v4-1-flash-1017',
   'glm-5-3-flash',

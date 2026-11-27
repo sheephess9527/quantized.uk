@@ -647,6 +647,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-27 — Model and site patrol
+
+- Indexed Micius-Flash 27B, OCRia-1, Surogate3.7 35B-A3B and Voltron 1.1 Mini with verified GGUF and applicable projector sizes, model cards and licences. Rechecked stable runtime releases and refreshed pending evidence for Raon-1 mini, ZAYA1 and ERNIE.
+- Improved mobile model-page quick launch touch targets and added manual selection when clipboard access is blocked. [Sources, checks and deployment](docs/changes/2026-11-27-patrol.md).
+
 ### 2026-11-27 — Homepage picks: 4-bit quality floor, honest speed label, one-line hero badge
 
 - `homePicks` `capable` slot now requires `meetsQualityFloor()` (bpw ≥ 4 **and** not a GGUF level named Q1/Q2/Q3/IQ1–IQ3/TQ1–2, because some Q3_K_M rows report ~4.0 bpw). Falls back to the largest sub-4-bit fit only when nothing passes, flagged `lowBit` and labelled on the card. Before → after on the RTX 4060 Ti 16G example: Xing4.0 29B-A4B Q2_K → Mistral Small 24B Instruct AWQ INT4; RTX 4090: Apex 35B Q3_K_M → MiniCPM-V 4.7 35B-A3B Q4_K_S. Fallback currently fires on 0 of 122 GPUs × 3 use cases. `homePicks` also feeds `/best/`, question pages, the calculator's card picks and GPU OG images, so those move the same way. `headroom` / `fastest` unchanged.

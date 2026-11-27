@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-27',
+    en: 'Added Micius-Flash 27B, OCRia-1, Surogate3.7 35B-A3B and Voltron 1.1 Mini with verified GGUF file sizes and separate vision projector sizes where applicable. Quick launch buttons on model pages are larger on phones and select the command for manual copying when clipboard access is blocked.',
+    zh: '收录 Micius-Flash 27B、OCRia-1、Surogate3.7 35B-A3B 和 Voltron 1.1 Mini，核实 GGUF 权重以及各视觉版本投影的字节数。模型页的一键运行按钮更容易在手机上点击。浏览器限制剪贴板时，页面会选中命令，方便手动复制。',
+  },
+  {
+    date: '2026-11-27',
     en: 'Homepage "What fits your card" is clearer. The largest-model pick now only suggests 4-bit or better quants (it falls back to a lower-bit build only when nothing else fits, and says so), the speed pick is labelled as an RTX 4090 reference ranking rather than your card\'s speed, and the two small badges above the headline now share one line.',
     zh: '首页「你的卡能跑什么」更清楚了：「可容纳的最大模型」只推荐 4-bit 及以上的量化（实在装不下才退到更低位宽，并会标明）；速度卡片改标为「以 RTX 4090 为参考」的排序，不再像是你自己显卡的速度；标题上方两个小标签合并成一行。',
   },

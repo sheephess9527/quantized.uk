@@ -272,6 +272,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
             copyLabel={t.calc.launchCopy}
             copyTemplateLabel={t.calc.launchCopyTemplate}
             copiedLabel={d.hfCopied}
+            copyBlockedLabel={d.quickRunCopyBlocked}
             cliHref={`/tools/cli-gen/?model=${model.id}`}
             openCliLabel={d.openCliGen}
           />

@@ -1,5 +1,7 @@
 import type { QuantModel } from './types';
 
+const miciusRepo = 'bartowski/zhiman-ai_Micius-Flash-GGUF';
+
 /**
  * Publisher configs, GGUF headers and exact download byte counts audited on 2026-11-26
  * alongside the llama.cpp v1.1.0 (b12774) stable release.
@@ -294,6 +296,273 @@ export const extraModels20: QuantModel[] = [
           bytes: 27820099648,
           mmprojBytes: 641806112,
           checkedAt: '2026-11-26',
+        },
+      },
+    ],
+  },
+  {
+    id: 'micius-flash',
+    name: 'Micius-Flash 27B',
+    family: 'Zhiman Micius',
+    params: 26.895998464,
+    paramLabel: '27B',
+    categories: ['instruct', 'code'],
+    hardwareTags: ['consumer-gpu', 'pro-gpu', 'mac'],
+    contextLength: 262144,
+    arch: {
+      layers: 64,
+      attHeads: 24,
+      kvHeads: 4,
+      headDim: 256,
+      attention: {
+        fullLayers: 16,
+        note: {
+          en: '16 layers store context-length KV; the other 48 use fixed-size Gated DeltaNet state, which is excluded from this cache estimate.',
+          zh: '16 层的 KV 缓存随上下文增长；其余 48 层使用固定大小的 Gated DeltaNet 状态，未计入此缓存估算。',
+        },
+      },
+    },
+    addedAt: '2026-11-27',
+    description: {
+      en: 'Zhiman’s 27B vision-language model for semiconductor engineering and hardware design. The GGUF files use the Qwen3.5 hybrid architecture, with a separate F16 projector for image input. The publisher’s licence permits non-commercial research.',
+      zh: 'Zhiman 面向半导体工程和硬件设计发布的 27B 视觉语言模型。GGUF 采用 Qwen3.5 混合注意力架构，图像输入需另加载 F16 投影。原版权重许可限非商业研究。',
+    },
+    quants: [
+      {
+        format: 'GGUF',
+        level: 'Q4_K_M',
+        bpw: 5.10,
+        vramGB: 0,
+        hfSearchUrl: `https://huggingface.co/${miciusRepo}`,
+        confidence: 'estimated',
+        source: {
+          repo: miciusRepo,
+          file: 'zhiman-ai_Micius-Flash-Q4_K_M.gguf',
+          bytes: 17_137_833_760,
+          mmprojBytes: 927_607_264,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF',
+        level: 'Q5_K_M',
+        bpw: 6.13,
+        vramGB: 0,
+        hfSearchUrl: `https://huggingface.co/${miciusRepo}`,
+        confidence: 'estimated',
+        source: {
+          repo: miciusRepo,
+          file: 'zhiman-ai_Micius-Flash-Q5_K_M.gguf',
+          bytes: 20_611_405_600,
+          mmprojBytes: 927_607_264,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF',
+        level: 'Q6_K',
+        bpw: 7.00,
+        vramGB: 0,
+        hfSearchUrl: `https://huggingface.co/${miciusRepo}`,
+        confidence: 'estimated',
+        source: {
+          repo: miciusRepo,
+          file: 'zhiman-ai_Micius-Flash-Q6_K.gguf',
+          bytes: 23_544_653_600,
+          mmprojBytes: 927_607_264,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF',
+        level: 'Q8_0',
+        bpw: 8.51,
+        vramGB: 0,
+        hfSearchUrl: `https://huggingface.co/${miciusRepo}`,
+        confidence: 'estimated',
+        source: {
+          repo: miciusRepo,
+          file: 'zhiman-ai_Micius-Flash-Q8_0.gguf',
+          bytes: 28_595_758_880,
+          mmprojBytes: 927_607_264,
+          checkedAt: '2026-11-27',
+        },
+      },
+    ],
+  },
+  {
+    id: 'ocria-1',
+    name: "OCRia-1",
+    family: "LlamaIndex OCRia",
+    params: 4.841450496,
+    paramLabel: '4B',
+    categories: ['general', 'instruct'],
+    hardwareTags: ['consumer-gpu', 'mac'],
+    contextLength: 262144,
+    arch: {
+      layers: 32, attHeads: 16, kvHeads: 4, headDim: 256,
+      attention: {
+        fullLayers: 8,
+        note: {
+          en: "Eight layers grow a KV cache with context. The fixed recurrent state of the other 24 layers is outside the cache estimate.",
+          zh: "8 层的 KV 缓存随上下文增长。其余 24 层的固定循环状态未计入缓存估算。",
+        },
+      },
+    },
+    addedAt: '2026-11-27',
+    description: {
+      en: "LlamaIndex’s Qwen3.5-based parser turns document page images into structured text. The official Q8_0 build uses a separate F16 projector. For dense pages, the publisher recommends a 32K context, thinking disabled and its document parsing prompt. The licence restricts certain commercial uses.",
+      zh: "LlamaIndex 基于 Qwen3.5 的文档解析模型，可将页面图像转换为结构化文本。官方 Q8_0 需另加载 F16 投影。处理内容密集的页面时，发布方建议使用 32K 上下文、关闭思考并采用其文档解析提示词。许可限制部分商业用途。",
+    },
+    quants: [
+      {
+        format: 'GGUF', level: 'Q8_0', bpw: 8.52, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/llamaindex/OCRia-1-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'llamaindex/OCRia-1-GGUF', file: 'OCRia-1-Q8_0.gguf', bytes: 5_157_830_528,
+          mmprojBytes: 672_423_040,
+          checkedAt: '2026-11-27',
+        },
+      },
+    ],
+  },
+  {
+    id: 'surogate-3-7-35b-a3b',
+    name: "Surogate3.7 35B-A3B",
+    family: "Surogate",
+    params: 35.505251456,
+    paramLabel: '35B-A3B',
+    categories: ['instruct', 'code'],
+    hardwareTags: ['pro-gpu', 'consumer-gpu', 'mac'],
+    contextLength: 262144,
+    arch: {
+      layers: 40, attHeads: 16, kvHeads: 2, headDim: 256,
+      attention: {
+        fullLayers: 10,
+        note: {
+          en: "Ten of the 40 main layers grow KV with context; 30 use fixed recurrent state. The download includes a separate next-token prediction block. The cache estimate covers ordinary decoding without that draft block.",
+          zh: "主干 40 层中 10 层的 KV 缓存随上下文增长，30 层使用固定循环状态。下载文件还包含 1 个预测后续词元的草稿块，缓存估算按普通解码计算。",
+        },
+      },
+    },
+    addedAt: '2026-11-27',
+    description: {
+      en: "A Qwen3.5-based mixture-of-experts checkpoint for coding and tool-assisted workflows. The main model routes each token to 8 of 256 experts. The GGUF sizes include the bundled draft block. Image input uses a separate BF16 projector.",
+      zh: "基于 Qwen3.5 的混合专家模型，面向编程和工具辅助任务。主干每个词元路由至 256 个专家中的 8 个。GGUF 文件大小包含随附的草稿块，图像输入需另加载 BF16 投影。",
+    },
+    quants: [
+      {
+        format: 'GGUF', level: 'Q3_K_M', bpw: 3.87, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/prithivMLmods/Surogate3.7-35B-A3B-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'prithivMLmods/Surogate3.7-35B-A3B-GGUF', file: 'Surogate3.7-35B-A3B.Q3_K_M.gguf', bytes: 17_166_659_136,
+          mmprojBytes: 902_822_432,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q4_K_M', bpw: 4.89, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/prithivMLmods/Surogate3.7-35B-A3B-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'prithivMLmods/Surogate3.7-35B-A3B-GGUF', file: 'Surogate3.7-35B-A3B.Q4_K_M.gguf', bytes: 21_713_462_848,
+          mmprojBytes: 902_822_432,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q5_K_M', bpw: 5.71, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/prithivMLmods/Surogate3.7-35B-A3B-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'prithivMLmods/Surogate3.7-35B-A3B-GGUF', file: 'Surogate3.7-35B-A3B.Q5_K_M.gguf', bytes: 25_347_532_352,
+          mmprojBytes: 902_822_432,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q6_K', bpw: 6.58, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/prithivMLmods/Surogate3.7-35B-A3B-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'prithivMLmods/Surogate3.7-35B-A3B-GGUF', file: 'Surogate3.7-35B-A3B.Q6_K.gguf', bytes: 29_208_731_200,
+          mmprojBytes: 902_822_432,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q8_0', bpw: 8.52, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/prithivMLmods/Surogate3.7-35B-A3B-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'prithivMLmods/Surogate3.7-35B-A3B-GGUF', file: 'Surogate3.7-35B-A3B.Q8_0.gguf', bytes: 37_802_149_760,
+          mmprojBytes: 902_822_432,
+          checkedAt: '2026-11-27',
+        },
+      },
+    ],
+  },
+  {
+    id: 'voltron-1-1-mini',
+    name: "Voltron 1.1 Mini",
+    family: "Voltron",
+    params: 1.990945600,
+    paramLabel: '2B',
+    categories: ['instruct', 'code', 'reasoning', 'small'],
+    hardwareTags: ['consumer-gpu', 'mac', 'cpu-vps'],
+    contextLength: 262144,
+    arch: {
+      layers: 24, attHeads: 16, kvHeads: 4, headDim: 128,
+      attention: {
+        fullLayers: 6,
+        windowLayers: 5,
+        windowTokens: 768,
+        note: {
+          en: "Six global layers grow KV with context. Five sliding-window layers use 256 tokens plus a 512-token batch in the pinned llama.cpp runtime; 13 short convolution layers keep fixed state.",
+          zh: "6 层全局注意力的 KV 缓存随上下文增长。固定版本的 llama.cpp 中，5 层滑动注意力使用 256 token 窗口加 512 token 批次；13 个短卷积层保留固定状态。",
+        },
+      },
+    },
+    addedAt: '2026-11-27',
+    description: {
+      en: "A compact text model fine-tuned from Liquid AI LFM3-1.7B for reasoning, code and instruction following. The conversion uses llama.cpp’s LFM3 architecture. The publisher retains the LFM Open Licence.",
+      zh: "基于 Liquid AI LFM3-1.7B 微调的小型文本模型，面向推理、编程和指令执行。量化文件使用 llama.cpp 的 LFM3 架构，发布方沿用 LFM 开放许可。",
+    },
+    quants: [
+      {
+        format: 'GGUF', level: 'Q3_K_M', bpw: 4.00, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/bartowski/Akahsizrr_voltron-1.1-mini-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'bartowski/Akahsizrr_voltron-1.1-mini-GGUF', file: 'Akahsizrr_voltron-1.1-mini-Q3_K_M.gguf', bytes: 994_756_160,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q4_K_M', bpw: 5.22, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/bartowski/Akahsizrr_voltron-1.1-mini-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'bartowski/Akahsizrr_voltron-1.1-mini-GGUF', file: 'Akahsizrr_voltron-1.1-mini-Q4_K_M.gguf', bytes: 1_297_909_312,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q5_K_M', bpw: 6.16, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/bartowski/Akahsizrr_voltron-1.1-mini-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'bartowski/Akahsizrr_voltron-1.1-mini-GGUF', file: 'Akahsizrr_voltron-1.1-mini-Q5_K_M.gguf', bytes: 1_532_675_648,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q6_K', bpw: 6.96, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/bartowski/Akahsizrr_voltron-1.1-mini-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'bartowski/Akahsizrr_voltron-1.1-mini-GGUF', file: 'Akahsizrr_voltron-1.1-mini-Q6_K.gguf', bytes: 1_731_184_192,
+          checkedAt: '2026-11-27',
+        },
+      },
+      {
+        format: 'GGUF', level: 'Q8_0', bpw: 8.54, vramGB: 0,
+        hfSearchUrl: 'https://huggingface.co/bartowski/Akahsizrr_voltron-1.1-mini-GGUF', confidence: 'estimated',
+        source: {
+          repo: 'bartowski/Akahsizrr_voltron-1.1-mini-GGUF', file: 'Akahsizrr_voltron-1.1-mini-Q8_0.gguf', bytes: 2_124_766_784,
+          checkedAt: '2026-11-27',
         },
       },
     ],

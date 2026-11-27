@@ -25,6 +25,51 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'gigachat4-708b-a41b',
+    name: 'GigaChat4 708B-A41B',
+    vendor: 'SaluteDevices',
+    reason: 'no-runtime',
+    detail: {
+      en: 'The publisher provides MIT weights and sharded GGUFs. Its launch guide uses the still-open llama.cpp PR #32767. The sparse and recurrent cache needs review against a stable runtime.',
+      zh: '发布方提供 MIT 权重和分片 GGUF。其启动指南使用尚未合并的 llama.cpp PR #32767。稀疏和循环缓存仍需对照稳定版运行时审计。',
+    },
+    recheck: {
+      en: 'Verify a stable loader and audit cache sizes with and without the draft model.',
+      zh: '核实稳定版加载器，并审计启用或关闭草稿模型时的缓存占用。',
+    },
+    checkedAt: '2026-11-27',
+  },
+  {
+    id: 'sage-med-preview',
+    name: 'Sage-Med-Preview',
+    vendor: 'Shanghai AI Laboratory',
+    reason: 'not-sized',
+    detail: {
+      en: 'The publisher ships BF16 weights and documents a patched vLLM build for this 35B-A3B multimodal checkpoint. No matching quantized weights were found. Licence and memory for its vision and time-series modules still need verification.',
+      zh: '发布方提供这款 35B-A3B 多模态权重的 BF16 文件，并说明需使用打过补丁的 vLLM。尚未找到对应量化文件，许可、视觉与时序模块的内存占用也待核实。',
+    },
+    recheck: {
+      en: 'Verify the publisher licence, an exact quantized export and memory for the multimodal stack.',
+      zh: '核实发布方许可、对应量化文件和多模态模块的内存占用。',
+    },
+    checkedAt: '2026-11-27',
+  },
+  {
+    id: 'smith-v1',
+    name: 'SMITH-v1',
+    vendor: 'AI Forever',
+    reason: 'not-sized',
+    detail: {
+      en: 'The publisher released MIT-tagged safetensors and a custom vLLM tool parser for its retrieval agent. The exact-checkpoint search found no quantized export.',
+      zh: '发布方提供带 MIT 标记的 safetensors 权重，并为检索智能体提供自定义 vLLM 工具解析器。按准确版本搜索，尚未找到量化文件。',
+    },
+    recheck: {
+      en: 'Verify an exact quantized export and a compatible launcher.',
+      zh: '核实对应量化文件和兼容的启动方式。',
+    },
+    checkedAt: '2026-11-27',
+  },
+  {
     id: 'ling-3-2-air',
     name: 'Ling 3.2 Air',
     vendor: 'inclusionAI',
@@ -77,14 +122,14 @@ export const pendingModels: PendingModel[] = [
     vendor: 'KRAFTON',
     reason: 'not-sized',
     detail: {
-      en: 'llama.cpp v1.1.0 (b12774) adds upstream `raon1` support (7 K-only MLA layers + 18 recurrent RDA layers). KRAFTON’s official GGUF repository requires manual gated-access approval before download.',
-      zh: 'llama.cpp v1.1.0（b12774）已合入上游 `raon1` 支持（7 层仅 K 的 MLA 缓存 + 18 层循环 RDA）。KRAFTON 官方 GGUF 仓库目前下载前需申请门禁授权。',
+      en: 'llama.cpp v1.1.0 (b12774) adds upstream `raon1` support (7 K-only MLA layers + 18 recurrent RDA layers). KRAFTON’s official Q4_K_M now accepts anonymous downloads, and a community IQ4_NL is also public. Total recurrent-state and working memory still need verification.',
+      zh: 'llama.cpp v1.1.0（b12774）已合入上游 `raon1` 支持（7 层仅 K 的 MLA 缓存 + 18 层循环 RDA）。KRAFTON 官方 Q4_K_M 现可匿名下载，社区也发布了 IQ4_NL。循环状态和工作缓冲区的总内存占用仍待核实。',
     },
     recheck: {
-      en: 'Verify an ungated GGUF mirror or gated download workflow and reconcile mHC/RDA memory against an observed run.',
-      zh: '核实免门禁 GGUF 镜像或下载指引，并对照实测核对 mHC/RDA 内存占用。',
+      en: 'Reconcile mHC/RDA memory against a run of the official GGUF in stable llama.cpp.',
+      zh: '用稳定版 llama.cpp 运行官方 GGUF，核对 mHC/RDA 内存占用。',
     },
-    checkedAt: '2026-11-26',
+    checkedAt: '2026-11-27',
   },
   {
     id: 'ernie-5-5-flash-preview',
@@ -92,14 +137,14 @@ export const pendingModels: PendingModel[] = [
     vendor: 'Baidu',
     reason: 'not-sized',
     detail: {
-      en: 'The Apache-2.0 preview adds a DSpark draft head to the ERNIE 5.5 Flash architecture. The publisher ships FP8 and FP4 expert weights, and a community IQ1_S release has two parts. Its compressed attention and draft cache need runtime-specific sizing.',
-      zh: 'Apache 2.0 预览版在 ERNIE 5.5 Flash 架构上增加 DSpark 草稿头。官方提供 FP8 与 FP4 专家权重，社区有两分片 IQ1_S。压缩注意力及草稿缓存仍需按推理框架核算。',
+      en: 'The Apache-2.0 preview adds a DSpark draft head to the ERNIE 5.5 Flash architecture. The publisher ships FP8 and FP4 expert weights, and community GGUFs exist. Another export strips the draft head and requires the unmerged llama.cpp PR #31925. The exact checkpoint cache remains unaudited.',
+      zh: 'Apache 2.0 预览版在 ERNIE 5.5 Flash 架构上增加 DSpark 草稿头。官方提供 FP8 与 FP4 专家权重，社区已有 GGUF。另一份转换去掉了草稿头，并要求尚未合并的 llama.cpp PR #31925。该版本的缓存仍待审计。',
     },
     recheck: {
       en: 'Verify upstream GGUF loading and cache allocation for the same checkpoint.',
       zh: '核实相同权重的上游 GGUF 加载和缓存分配。',
     },
-    checkedAt: '2026-11-25',
+    checkedAt: '2026-11-27',
   },
   {
     id: 'orbitlm-1-8b-thinking',
@@ -330,16 +375,16 @@ export const pendingModels: PendingModel[] = [
     "id": "zaya1-8b",
     "name": "ZAYA1 8B",
     "vendor": "Zyphra",
-    "reason": "awaiting-data",
+    "reason": "no-runtime",
     "detail": {
-      "en": "llama.cpp v1.1.0 (b12774) includes upstream `zaya1` hybrid support. Zyphra’s `ZAYA1-8B-Instruct` repository returns HTTP 401 without gated access, so the instruct config, licence terms and matching GGUF bytes remain unread.",
-      "zh": "llama.cpp v1.1.0（b12774）已包含上游 `zaya1` 混合架构支持。Zyphra 的 `ZAYA1-8B-Instruct` 仓库未授权时返回 HTTP 401，指令版配置、许可条款与对应 GGUF 字节数仍待读取。"
+      "en": "Zyphra’s Apache-2.0 post-trained ZAYA1-8B config is public. Three inspected community Q4_K_M headers use the older `zaya` architecture ID. Stable llama.cpp v1.1.0 uses `zaya1` and expects a different tensor layout.",
+      "zh": "Zyphra 以 Apache 2.0 发布的后训练版 ZAYA1-8B 配置已公开。核查的三份社区 Q4_K_M 文件头均为旧架构标识 `zaya`；llama.cpp v1.1.0 稳定版使用 `zaya1` 并要求不同的张量布局。"
     },
     "recheck": {
-      "en": "Read the instruct config, licence and verified GGUF byte counts and audit its hybrid cache.",
-      "zh": "读取指令版配置、许可与经核实的 GGUF 字节数，并审计其混合缓存。"
+      "en": "Verify an exact ZAYA1-8B export for the upstream zaya1 loader and audit its hybrid cache.",
+      "zh": "核实适配上游 zaya1 加载器的 ZAYA1-8B 量化文件，并审计其混合缓存。"
     },
-    "checkedAt": "2026-11-26"
+    "checkedAt": "2026-11-27"
   },
   {
     "id": "maxwell-v1-flash",
