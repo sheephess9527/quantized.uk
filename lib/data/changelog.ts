@@ -12,6 +12,11 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-27',
+    en: 'Homepage "What fits your card" is clearer. The largest-model pick now only suggests 4-bit or better quants (it falls back to a lower-bit build only when nothing else fits, and says so), the speed pick is labelled as an RTX 4090 reference ranking rather than your card\'s speed, and the two small badges above the headline now share one line.',
+    zh: '首页「你的卡能跑什么」更清楚了：「可容纳的最大模型」只推荐 4-bit 及以上的量化（实在装不下才退到更低位宽，并会标明）；速度卡片改标为「以 RTX 4090 为参考」的排序，不再像是你自己显卡的速度；标题上方两个小标签合并成一行。',
+  },
+  {
     date: '2026-11-26',
     en: 'The homepage layout is now evenly balanced. Editor\'s Picks appear as a three-column grid below Latest additions, and the five quick tools sit side by side in one row, so neither section leaves a large empty gap on wide screens.',
     zh: '首页排版更均衡：编辑精选改为三列卡片，排在最新收录下方；五个快捷工具在宽屏上并排成一行，不再出现大块空白。',

@@ -47,6 +47,30 @@ export interface HomePick {
   quant: QuantVariant;
   totalGB: number;
   headroomGB: number;
+  /**
+   * Set on a `capable` pick only when no model reaches `MIN_RECOMMENDED_BPW`
+   * on this card and the slot fell back to a sub-4-bit quant. The card says so.
+   */
+  lowBit?: true;
+}
+
+/**
+ * Quality floor for the `capable` slot (2026-11-27). "Largest model that fits"
+ * used to mean "largest model at any quant", so a 16 GB card was handed a 29B
+ * model at Q2_K with no published perplexity — a big name at a level most
+ * readers should not run. The slot now prefers quants at or above 4 bits per
+ * weight (Q4_0 / IQ4_XS / Q4_K_* / AWQ-GPTQ INT4 / EXL2 ≥ 4.0bpw). Only when
+ * nothing reaches that does it fall back to the largest low-bit fit, flagged
+ * `lowBit` so the card can label it.
+ */
+export const MIN_RECOMMENDED_BPW = 4;
+
+/** GGUF levels named below 4-bit, whatever their measured bpw (a Q3_K_M with
+ *  bigger embeddings can report ~4.0 bpw and still be a 3-bit build). */
+const SUB4_LEVEL = /^(?:I?Q[123](?:_|$)|TQ[12]_|IQ1|IQ2|IQ3)/i;
+
+export function meetsQualityFloor(q: QuantVariant): boolean {
+  return q.bpw >= MIN_RECOMMENDED_BPW && !SUB4_LEVEL.test(q.level);
 }
 
 /**
@@ -72,11 +96,15 @@ export function homePicks(gpu: GPU, useCase: HomeUseCase, contextLength?: number
   const used = new Set<string>();
 
   /** Best still-unclaimed candidate from an already-ranked list. */
-  const take = (kind: HomePick['kind'], ranked: GpuFit[]) => {
+  const take = (kind: HomePick['kind'], ranked: GpuFit[], lowBit = false) => {
     const candidate = ranked.find(f => !used.has(f.model.id));
-    if (!candidate) return;
+    if (!candidate) return false;
     used.add(candidate.model.id);
-    picks.push({ kind, model: candidate.model, quant: candidate.quant, totalGB: candidate.totalGB, headroomGB: candidate.headroomGB });
+    picks.push({
+      kind, model: candidate.model, quant: candidate.quant, totalGB: candidate.totalGB, headroomGB: candidate.headroomGB,
+      ...(lowBit ? { lowBit: true as const } : {}),
+    });
+    return true;
   };
 
   // Largest first, ties broken by quality — `fitsOnGpu` already sorts by
@@ -85,7 +113,9 @@ export function homePicks(gpu: GPU, useCase: HomeUseCase, contextLength?: number
     (a, b) => b.model.params - a.model.params || qualityRank(a.quant) - qualityRank(b.quant),
   );
 
-  take('capable', bySize);
+  if (!take('capable', bySize.filter(f => meetsQualityFloor(f.quant)))) {
+    take('capable', bySize, true);
+  }
   take('headroom', bySize.filter(f => f.totalGB <= usableCapacityGB(gpu) * HEADROOM_BUDGET));
   // "Measured" as the slot promises: `speedRTX4090` is mostly an estimate, and
   // ranking estimates put a 0.5B model on the default homepage card under a

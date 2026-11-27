@@ -57,7 +57,7 @@ export default function HomeMatch() {
   const kindLabel: Record<HomePick['kind'], { title: string; why: string }> = {
     capable: { title: m.kindCapable, why: m.kindCapableWhy.replace('4K', contextLabel(contextLength)) },
     headroom: { title: m.kindHeadroom, why: m.kindHeadroomWhy },
-    fastest: { title: m.kindFastest, why: m.kindFastestWhy },
+    fastest: { title: m.kindFastest, why: m.kindFastestWhy.replace('{gpu}', gpuName) },
   };
 
   return (
@@ -178,7 +178,9 @@ export default function HomeMatch() {
                     </div>
                   </dl>
 
-                  <p className="text-xs text-slate-500 leading-relaxed mt-3 flex-1">{kindLabel[pick.kind].why}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-3 flex-1">
+                    {pick.lowBit ? m.kindCapableLowBit : kindLabel[pick.kind].why}
+                  </p>
 
                   <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-ink/[0.05]">
                     <Link href={`/quant-hub/${pick.model.id}/`} className="card-action text-xs">

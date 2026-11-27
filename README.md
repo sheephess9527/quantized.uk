@@ -647,6 +647,14 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-27 — Homepage picks: 4-bit quality floor, honest speed label, one-line hero badge
+
+- `homePicks` `capable` slot now requires `meetsQualityFloor()` (bpw ≥ 4 **and** not a GGUF level named Q1/Q2/Q3/IQ1–IQ3/TQ1–2, because some Q3_K_M rows report ~4.0 bpw). Falls back to the largest sub-4-bit fit only when nothing passes, flagged `lowBit` and labelled on the card. Before → after on the RTX 4060 Ti 16G example: Xing4.0 29B-A4B Q2_K → Mistral Small 24B Instruct AWQ INT4; RTX 4090: Apex 35B Q3_K_M → MiniCPM-V 4.7 35B-A3B Q4_K_S. Fallback currently fires on 0 of 122 GPUs × 3 use cases. `homePicks` also feeds `/best/`, question pages, the calculator's card picks and GPU OG images, so those move the same way. `headroom` / `fastest` unchanged.
+- `fastest` card relabelled "Fastest by measured speed (RTX 4090 reference)" / 「实测最快（以 RTX 4090 为参考）」 and its note names the selected card, so a 4060 Ti reader no longer reads 128 tok/s as their own speed. Per-card calibrated speed was not swapped in: `measuredSpeed()` is a dense-GGUF-only estimate, not a measurement.
+- Hero: the positioning badge and the latest-update link merged into one pill (wraps inside one rounded box on phones).
+- Mobile (390 px) check of the live homepage: no horizontal scroll (scrollWidth 384); nav search button widened to a 44 px tap target on phones. Not changed: see the change record.
+- [Details and handoff](docs/changes/2026-11-27-homepage-picks-quality-floor.md)
+
 ### 2026-11-26 — Homepage balanced rows
 
 - Removed two lopsided homepage grids (Latest additions vs Editor's Picks, Quick Tools vs Explore) that left large empty voids. Both are now full-width rows: Editor's Picks is a 3-column tile grid and Quick Tools is a 5-column row. [Details and handoff](docs/changes/2026-11-26-homepage-balanced-rows.md).
