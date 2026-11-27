@@ -227,6 +227,10 @@ export default function SpeedFeel() {
     }
     const c = Number(params.get('ctx'));
     if ((SPEED_CONTEXTS as readonly number[]).includes(c)) setCtx(c as SpeedContext);
+    const th = Number(params.get('think'));
+    if ((THINKING_BUDGETS as readonly number[]).includes(th)) setThinkTokens(th as ThinkingBudget);
+    const dr = params.get('draft');
+    if (dr && DRAFT_PRESETS.some(d => d.id === dr)) setDraftId(dr);
   }, [params]);
 
   const model = models.find(m => m.id === modelId) ?? defaultModel;
@@ -239,16 +243,19 @@ export default function SpeedFeel() {
   // defaults would overwrite the link the reader came in on.
   useEffect(() => {
     if (!params) return;
-    const next = new URLSearchParams({
+    const qp = new URLSearchParams({
       left: left.id,
       right: right.id,
       model: model.id,
       quant: quantKey(quant),
       ctx: String(ctx),
-    }).toString();
+    });
+    if (thinkTokens > 0) qp.set('think', String(thinkTokens));
+    if (draft.id !== 'none') qp.set('draft', draft.id);
+    const next = qp.toString();
     if (window.location.search.slice(1) === next) return;
     window.history.replaceState(null, '', `${window.location.pathname}?${next}`);
-  }, [left.id, right.id, model.id, quant, ctx, params]);
+  }, [left.id, right.id, model.id, quant, ctx, thinkTokens, draft.id, params]);
 
   const select = 'w-full bg-ink/[0.04] border border-ink/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200';
   const gpuOptions = GPU_GROUPS.map(([type, key]) => {

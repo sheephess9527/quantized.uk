@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from '@/components/i18n/LocalLink';
-import { Layers, Plus, Trash2, Terminal, Cpu, Zap, ArrowRight, Bookmark } from 'lucide-react';
+import { Layers, Plus, Trash2, Terminal, Cpu, Share2, Check, Bookmark } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
+import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 import { gpuDatabase, gpuDisplayName, GPU_GROUPS, rowsInGpuGroup, type GPU } from '@/lib/data/gpus';
 import { models } from '@/lib/data/models';
 import { usableCapacityGB } from '@/lib/utils/gpu-page';
@@ -17,14 +18,49 @@ const RIG_PRESETS: { id: string; labelEn: string; labelZh: string; gpus: string[
   { id: '5090-4090', labelEn: 'RTX 5090 32G + RTX 4090 24G (56 GB Workstation)', labelZh: 'RTX 5090 32G + RTX 4090 24G（56 GB 旗舰混插）', gpus: ['rtx5090', 'rtx4090'], ramGB: 128 },
 ];
 
+const VALID_CONCURRENCY = [1, 2, 4, 8, 16];
+const VALID_CTX = [4096, 8192, 16384, 32768];
+
 export default function EcosystemAndRigWorkbench() {
   const { t, lang } = useLanguage();
   const zh = lang === 'zh';
+  const params = useUrlQuery();
 
   const [rigGpuIds, setRigGpuIds] = useState<string[]>(['rtx3090', 'rtx4060ti16']);
   const [concurrency, setConcurrency] = useState<number>(4);
   const [ctxPerSeq, setCtxPerSeq] = useState<number>(8192);
   const [pickerGpuId, setPickerGpuId] = useState<string>('rtx4090');
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  useEffect(() => {
+    if (!params) return;
+    const rawRig = params.get('rig');
+    if (rawRig) {
+      const validIds = rawRig
+        .split(',')
+        .map(s => s.trim())
+        .filter(id => gpuDatabase.some(g => g.id === id && !g.isLaptop && !g.isCPU && !g.isUnified))
+        .slice(0, 4);
+      if (validIds.length > 0) setRigGpuIds(validIds);
+    }
+    const np = Number(params.get('np'));
+    if (VALID_CONCURRENCY.includes(np)) setConcurrency(np);
+    const c = Number(params.get('ctx'));
+    if (VALID_CTX.includes(c)) setCtxPerSeq(c);
+  }, [params]);
+
+  const copyRigShareUrl = () => {
+    const qp = new URLSearchParams({
+      rig: rigGpuIds.join(','),
+      np: String(concurrency),
+      ctx: String(ctxPerSeq),
+    });
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${qp.toString()}#rig-builder-heading`;
+    window.history.replaceState(null, '', `${window.location.pathname}?${qp.toString()}`);
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
 
   const rigGpus = useMemo(
     () => rigGpuIds.map(id => gpuDatabase.find(g => g.id === id)).filter((g): g is GPU => Boolean(g)),
@@ -103,6 +139,16 @@ export default function EcosystemAndRigWorkbench() {
                 : 'Combine different GPUs (e.g. RTX 3090 24G + RTX 4060 Ti 16G), generate the exact llama-server --tensor-split ratio, spot the pipeline bandwidth bottleneck, and size total KV cache across concurrent sequences.'}
             </p>
           </div>
+          <button
+            type="button"
+            onClick={copyRigShareUrl}
+            className="inline-flex items-center gap-1.5 min-h-[38px] px-3.5 py-1.5 rounded-xl bg-sky-600/20 border border-sky-500/30 text-sky-300 hover:bg-sky-600/30 text-xs font-semibold shrink-0 transition-colors"
+          >
+            {copiedLink ? <Check size={13} /> : <Share2 size={13} />}
+            {copiedLink
+              ? (zh ? '已复制装机单链接' : 'Copied Rig Link')
+              : (zh ? '分享当前装机单链接' : 'Share Rig Link')}
+          </button>
         </div>
 
         {/* Preset Rig Pills */}

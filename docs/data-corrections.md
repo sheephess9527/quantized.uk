@@ -23,6 +23,28 @@
 | `qwen3-8-27b` | [Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) | [mlx-community/Qwen3.8-27B-4bit](https://huggingface.co/api/models/mlx-community/Qwen3.8-27B-4bit) | 3 shards (16,054,541,349 B), [4-bit group 64 config](https://huggingface.co/mlx-community/Qwen3.8-27B-4bit/blob/b935172e4bb5dcd0543774a34748fb92422e3027/config.json) |
 | `qwen3-8-flash-next` | [Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) | [mlx-community/Qwen3.8-Flash-Next-4bit](https://huggingface.co/api/models/mlx-community/Qwen3.8-Flash-Next-4bit) | 22 shards (111,519,423,247 B), [4-bit group 32 config](https://huggingface.co/mlx-community/Qwen3.8-Flash-Next-4bit/blob/07b5dc6c54600a359b87f1e53e7adf6351c72a2c/config.json) |
 
+- **ModelScope GGUF download links (`lib/data/modelscope-repos.ts`)**: Expanded from 5 to **22** API-verified entries on 2026-11-27 UTC. Checked both `/api/v1/models/<repo>` (`Code: 200`, `Success: true`) and `/api/v1/models/<repo>/repo/files?Revision=master&Recursive=true` for positive `.gguf` file listings:
+
+| Indexed model | ModelScope listing (`Revision=master&Recursive=true`) | GGUF files | Uploader & notes |
+| --- | --- | ---: | --- |
+| `qwen2.5-0.5b` | [Qwen/Qwen2.5-0.5B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 9 | Qwen official GGUF release |
+| `qwen2.5-1.5b` | [Qwen/Qwen2.5-1.5B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-1.5B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 9 | Qwen official GGUF release |
+| `qwen2.5-3b` | [Qwen/Qwen2.5-3B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-3B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 10 | Qwen official GGUF release |
+| `qwen2.5-14b` | [Qwen/Qwen2.5-14B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-14B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 32 | Qwen official GGUF release |
+| `qwen2.5-32b` | [Qwen/Qwen2.5-32B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-32B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 64 | Qwen official GGUF release |
+| `qwen2.5-72b` | [Qwen/Qwen2.5-72B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-72B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 145 | Qwen official GGUF release |
+| `qwen2.5-coder-7b` | [Qwen/Qwen2.5-Coder-7B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 25 | Qwen official GGUF release |
+| `qwen2.5-coder-32b` | [Qwen/Qwen2.5-Coder-32B-Instruct-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/repo/files?Revision=master&Recursive=true) | 42 | Qwen official GGUF release |
+| `qwen3-4b` | [Qwen/Qwen3-4B-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen3-4B-GGUF/repo/files?Revision=master&Recursive=true) | 5 | Qwen official GGUF release (`Qwen3-4B-Q4_K_M.gguf` etc.) |
+| `qwen3-14b` | [Qwen/Qwen3-14B-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen3-14B-GGUF/repo/files?Revision=master&Recursive=true) | 5 | Qwen official GGUF release (`Qwen3-14B-Q4_K_M.gguf` etc.) |
+| `qwen3-32b` | [Qwen/Qwen3-32B-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen3-32B-GGUF/repo/files?Revision=master&Recursive=true) | 5 | Qwen official GGUF release (`Qwen3-32B-Q4_K_M.gguf` etc.) |
+| `qwen3-30b-a3b` | [Qwen/Qwen3-30B-A3B-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen3-30B-A3B-GGUF/repo/files?Revision=master&Recursive=true) | 5 | Qwen official GGUF release (`Qwen3-30B-A3B-Q4_K_M.gguf` etc.) |
+| `qwen3-235b-a22b` | [Qwen/Qwen3-235B-A22B-GGUF](https://modelscope.cn/api/v1/models/Qwen/Qwen3-235B-A22B-GGUF/repo/files?Revision=master&Recursive=true) | 33 | Qwen official split GGUF release |
+| `deepseek-r1-distill-qwen-7b` | [unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF](https://modelscope.cn/api/v1/models/unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF/repo/files?Revision=master&Recursive=true) | 8 | Community GGUF listing for the same checkpoint |
+| `deepseek-r1-distill-qwen-32b` | [unsloth/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://modelscope.cn/api/v1/models/unsloth/DeepSeek-R1-Distill-Qwen-32B-GGUF/repo/files?Revision=master&Recursive=true) | 9 | Community GGUF listing for the same checkpoint |
+| `deepseek-r1-distill-llama-70b` | [unsloth/DeepSeek-R1-Distill-Llama-70B-GGUF](https://modelscope.cn/api/v1/models/unsloth/DeepSeek-R1-Distill-Llama-70B-GGUF/repo/files?Revision=master&Recursive=true) | 37 | Community GGUF listing for the same checkpoint |
+| `glm-4.5-air` | [unsloth/GLM-4.5-Air-GGUF](https://modelscope.cn/api/v1/models/unsloth/GLM-4.5-Air-GGUF/repo/files?Revision=master&Recursive=true) | 52 | Community GGUF listing for Zhipu's GLM-4.5-Air checkpoint |
+
 ## 2026-11-27 — Four checkpoints with verified GGUF and projector bytes
 
 Indexed the exact Zhiman checkpoint from publisher config and licence, the

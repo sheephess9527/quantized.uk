@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-27T13:22:19.975Z",
+  "fetchedAt": "2026-11-27T14:06:10.283Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 152,
   "models": {
@@ -312,7 +312,7 @@
     "gpt-oss-20b": {
       "repo": "openai/gpt-oss-20b",
       "downloads": 5128622,
-      "likes": 5357,
+      "likes": 5358,
       "lastModified": "2025-08-26T17:25:47.000Z"
     },
     "gpt-oss-120b": {
@@ -432,7 +432,7 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 1146380,
-      "likes": 7588,
+      "likes": 7589,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -630,7 +630,7 @@
     "k2-horizon-mova-36b-a4b": {
       "repo": "IFM/K2-Horizon-MoVA-36B-A4B-GGUF",
       "downloads": 14977,
-      "likes": 160,
+      "likes": 161,
       "lastModified": "2026-11-22T01:07:01.000Z"
     },
     "k2-horizon-32b": {
@@ -816,7 +816,7 @@
     "deepseek-v4-1-flash-1017": {
       "repo": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
       "downloads": 552671,
-      "likes": 6777,
+      "likes": 6779,
       "lastModified": "2026-11-10T02:22:56.000Z"
     },
     "glm-5-3-flash": {
@@ -864,13 +864,13 @@
     "ccore-web-coder-4b": {
       "repo": "ccore/CCORE-Web-Coder-4B",
       "downloads": 8810,
-      "likes": 102,
+      "likes": 103,
       "lastModified": "2026-11-24T19:34:46.000Z"
     },
     "mellum2-1-12b-a2-5b-instruct": {
       "repo": "JetBrains/Mellum2.1-12B-A2.5B-Instruct-GGUF",
       "downloads": 10389,
-      "likes": 10,
+      "likes": 11,
       "lastModified": "2026-11-26T16:48:42.000Z"
     },
     "domyn-edge-sft": {

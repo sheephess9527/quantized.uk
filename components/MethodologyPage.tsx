@@ -4,6 +4,7 @@ import { benchmarkMethodology } from '@/lib/data/meta';
 import { translations, type Lang } from '@/lib/i18n/translations';
 import { memoryAccuracy } from '@/lib/utils/bench-calibration';
 import { ACTIVATION_BUFFER, KV_CACHE_TYPES, WEIGHT_OVERHEAD } from '@/lib/utils/vram';
+import AttentionArchitectureAtlas from '@/components/AttentionArchitectureAtlas';
 
 const link = 'font-medium text-sky-300 underline underline-offset-4 hover:text-sky-200';
 const panel = 'glass rounded-2xl p-5 sm:p-6';
@@ -71,6 +72,8 @@ export default function MethodologyPage({ lang }: { lang: Lang }) {
             {lang === 'zh' ? '用大模型显存计算器估算你的配置' : 'Estimate your setup with the LLM VRAM calculator'}
           </Link>
         </section>
+
+        <AttentionArchitectureAtlas lang={lang} />
 
         <section className={`${panel} space-y-3 text-sm leading-relaxed`} aria-labelledby="sources">
           <h2 id="sources" className={heading}>{m.sourcesTitle}</h2>
