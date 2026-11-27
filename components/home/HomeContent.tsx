@@ -41,36 +41,51 @@ export default function HomeContent({ lang }: { lang: Lang }) {
       <HomeMatch />
       <StatsBar lang={lang} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 space-y-6 pb-16">
-        {/* What is new comes straight after the picker (2026-10-05): it sat
-            fifth, several screens down on a phone, while being the reason a
-            returning reader comes back. */}
-        <div className="flex justify-end">
-          <DataFreshness lang={lang} />
-        </div>
-        <WeeklyUpdates lang={lang} />
-
-        <PopularStarts lang={lang} />
-        <JobPaths />
-
-        <MeasuredCases lang={lang} />
-
-        <TodayBoard lang={lang} />
-
-        <HomeFaq lang={lang} />
-
-        <MaintainerNote />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <QuickAccess lang={lang} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 space-y-12 pb-16">
+        {/* Act 1: Freshness & Latest Index Additions + Editor's Picks side-by-side on wide screens */}
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <DataFreshness lang={lang} />
           </div>
-          <div className="lg:col-span-2">
-            <ExploreStrip guideCount={articles.length} lang={lang} />
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+            <div className="xl:col-span-7">
+              <WeeklyUpdates lang={lang} />
+            </div>
+            <div className="xl:col-span-5">
+              <TodayBoard lang={lang} />
+            </div>
           </div>
         </div>
 
-        <DataChangelog latest={changelog[0]} total={changelog.length} lang={lang} />
+        {/* Act 2: Curated Hardware & Task Entry Points */}
+        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+          <PopularStarts lang={lang} />
+          <JobPaths />
+        </div>
+
+        {/* Act 3: Measured Hardware Evidence */}
+        <div className="pt-4 border-t border-white/[0.05]">
+          <MeasuredCases lang={lang} />
+        </div>
+
+        {/* Act 4: Core FAQs & Site Navigation */}
+        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+          <HomeFaq lang={lang} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <QuickAccess lang={lang} />
+            </div>
+            <div className="lg:col-span-2">
+              <ExploreStrip guideCount={articles.length} lang={lang} />
+            </div>
+          </div>
+        </div>
+
+        {/* Act 5: Transparency, Contact & Changelog */}
+        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+          <MaintainerNote />
+          <DataChangelog latest={changelog[0]} total={changelog.length} lang={lang} />
+        </div>
       </div>
     </>
   );

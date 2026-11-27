@@ -647,6 +647,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — llama.cpp v1.1.0 (`b12774`), Inkling 2 Mini, Domyn Edge SFT, Mellum2.1 Instruct and layout redesign
+
+- Upgraded the pinned llama.cpp release to official stable **v1.1.0** (`nightly-tag.txt` → `b12774`, all Windows CPU, CUDA 12.4/13.5, Vulkan, ROCm 10.0 and SYCL archives verified). Indexed three Apache-2.0 checkpoints from primary configs and verified GGUF byte counts (**167** models total, **385** model/GPU pairs per language): **Inkling 2 Mini** (26.07B language weights + 0.60 GiB BF16 projector, 5.4B effective active parameters across 3 loop passes, 8 of 48 execution slots growing KV), **Domyn Edge SFT** (3.93B, 12 full NoPE layers at `8×256` KV + 24 SWA layers at `8×64` KV), and **Mellum2.1 12B-A2.5B Instruct** (JetBrains official GGUFs). Gated `hf.co` Ollama GGUF commands on `domyn-edge-sft` and `inkling-2-mini` (`llama.cpp v1.1.0+`), and refreshed `/pending/` (added Ling 3.2 Air and GigaChat4 37B-A4B; updated Raon-1 mini, Hy4 Flash and ZAYA1 8B).
+- Added a lazy-loaded **`⌘K / Ctrl+K` global search palette** (`CommandPaletteModal`) in the navbar across all models, GPUs/Macs, guides, runtime errors and tools with zero initial bundle cost; redesigned `/quant-hub/[modelId]` into a **desktop 2-column layout** with a sticky specifications sidebar and server-precomputed 1-click `[llama.cpp | Ollama]` launch commands (`ModelQuickRun`); added a **`[Cards | Table]` view switcher** and sort selector on `/quant-hub/`; added a **sticky context + parameter-bucket jump bar** on `/gpu/[gpuId]`; reorganized the homepage into 5 clear visual acts; upgraded `/cookbook/[slug]` to cohesive technical documentation typography; and enabled `tabular-nums` alignment site-wide. [Sources, checks and handoff](docs/changes/2026-11-26-models-v1-1-and-layout-redesign.md).
+
 ### 2026-11-26 — MoE offload memory and coverage
 
 - The forward GGUF calculator compares llama.cpp placement with GPU capacity and reader-entered host RAM, including an estimated 4 GiB host reserve. Expert tiers use the fraction of routed layers in RAM (heavy at 50%). Unverified layouts retain whole-layer splitting.

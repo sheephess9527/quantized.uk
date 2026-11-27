@@ -19,6 +19,7 @@ import { extraModels16 } from './models-extra-16';
 import { extraModels17 } from './models-extra-17';
 import { extraModels18 } from './models-extra-18';
 import { extraModels19 } from './models-extra-19';
+import { extraModels20 } from './models-extra-20';
 
 function hf(q: string) {
   return `https://huggingface.co/models?search=${encodeURIComponent(q)}`;
@@ -254,7 +255,7 @@ const baseModels: QuantModel[] = [
   },
 ];
 
-export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17, ...extraModels18, ...extraModels19];
+export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraModels2, ...extraModels3, ...extraModels4, ...extraModels5, ...extraModels6, ...extraModels7, ...extraModels8, ...extraModels9, ...extraModels10, ...extraModels11, ...extraModels12, ...extraModels13, ...extraModels14, ...extraModels15, ...extraModels16, ...extraModels17, ...extraModels18, ...extraModels19, ...extraModels20];
 
 /**
  * Editor's Picks — refresh with each data cadence.
@@ -271,6 +272,9 @@ export const models: QuantModel[] = [...baseModels, ...extraModels, ...extraMode
  * comfortable) and four named cards were not in the GPU index at all.
  */
 export const todayFeed: { id: number; type: 'new' | 'hot' | 'upd'; modelId: string; level: string; note: { en: string; zh: string }; quantizer: string }[] = [
+  { id: 66, type: 'new', modelId: 'inkling-2-mini', level: 'Q4_K_M', note: { en: 'Looped multimodal MoE; 8 of 48 slots grow KV', zh: '多模态循环 MoE；48 槽仅 8 个增长 KV' }, quantizer: 'bartowski' },
+  { id: 65, type: 'new', modelId: 'mellum2-1-12b-a2-5b-instruct', level: 'Q4_K_M', note: { en: 'Official JetBrains coding MoE; 2.5B active', zh: 'JetBrains 官方编程 MoE；激活 2.5B' }, quantizer: 'JetBrains' },
+  { id: 64, type: 'new', modelId: 'domyn-edge-sft', level: 'Q4_K_M', note: { en: '3.9B long-context SFT; 4 GB card at 4K', zh: '3.9B 长上下文 SFT；4K 下 4 GB 可跑' }, quantizer: 'prithivMLmods' },
   { id: 60, type: 'new', modelId: 'ternary-bonsai-2-5-27b', level: 'Q2_0', note: { en: 'Official ternary Q2_0 for upstream llama.cpp', zh: '适用上游 llama.cpp 的官方三值 Q2_0' }, quantizer: 'Prism ML' },
   { id: 61, type: 'new', modelId: 'ccore-web-coder-4b', level: 'Q4_K_M', note: { en: 'Final checkpoint for single-file React pages', zh: '生成单文件 React 网页的最终权重' }, quantizer: 'CCORE' },
   { id: 62, type: 'new', modelId: 'minicpm-v-4-6', level: 'Q4_K_M', note: { en: 'Official GGUF with a separate F16 vision projector', zh: '官方 GGUF 与独立 F16 视觉投影' }, quantizer: 'OpenBMB' },

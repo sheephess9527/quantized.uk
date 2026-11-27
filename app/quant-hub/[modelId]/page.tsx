@@ -1,12 +1,7 @@
 import type { Metadata } from 'next';
 import { models } from '@/lib/data/models';
 import ModelDetail from '@/components/hub/ModelDetail';
-import ModelExplainer from '@/components/hub/ModelExplainer';
-import ModelPlacement from '@/components/hub/ModelPlacement';
 import { modelExplainer } from '@/lib/utils/model-explainer';
-import ModelGuides from '@/components/hub/ModelGuides';
-import { guideLinksForModel } from '@/lib/utils/model-guides';
-import PageFreshnessNote from '@/components/layout/PageFreshnessNote';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { canonical, defaultRobots, feedAlternates, languageAlternates, modelPageTitle, ogLocale, pageOgImage } from '@/lib/seo';
 import { isSuperseded } from '@/lib/utils/model-meta';
@@ -14,8 +9,6 @@ import { bestQuant, referenceQuant } from '@/lib/utils/quality';
 import { quantLevelKey } from '@/lib/utils/recommend';
 import { sizeAt, REF_CONTEXT } from '@/lib/utils/model-explainer';
 import { modelMetaDescription } from '@/lib/utils/meta-description';
-import Link from '@/components/i18n/LocalLink';
-import { pairPages, pairHref } from '@/lib/utils/pair-pages';
 import { translations } from '@/lib/i18n/translations';
 import { gpuDisplayName } from '@/lib/data/gpus';
 
@@ -112,23 +105,6 @@ export default function ModelDetailPage({
         }}
       />
       <ModelDetail model={model} lang={lang} />
-      <ModelExplainer model={model} lang={lang} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-10 pb-16 space-y-6">
-        {/* The model page's links out to hardware, formats and the picks. */}
-        <ModelPlacement model={model} lang={lang} />
-        <section>
-          <h2 className="text-xl font-semibold mb-3">{translations[lang].pair.cards}</h2>
-          <ul className="flex flex-wrap gap-3 text-violet-300">
-            {pairPages().filter(p => p.model.id === model.id).map(p => (
-              <li key={p.gpu.id}>
-                <Link href={pairHref(model, p.gpu)}>{gpuDisplayName(p.gpu, lang)}</Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-        <ModelGuides guides={guideLinksForModel(model)} lang={lang} />
-        <PageFreshnessNote lang={lang} />
-      </div>
     </>
   );
 }

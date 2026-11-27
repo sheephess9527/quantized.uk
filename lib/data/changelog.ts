@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-26',
+    en: 'Added Inkling 2 Mini, Domyn Edge SFT and JetBrains Mellum2.1 12B-A2.5B Instruct with verified GGUF sizes, and updated Windows llama.cpp commands to stable v1.1.0 (b12774). Press ⌘K / Ctrl+K anywhere to search models, GPUs, guides and errors; model pages now use a two-column layout with copyable launch commands, the Model Hub adds a sortable table view, GPU pages have a sticky size-jump bar, and setup guides read as continuous documentation.',
+    zh: '新增收录 Inkling 2 Mini、Domyn Edge SFT 与 JetBrains Mellum2.1 12B-A2.5B Instruct（均核实 GGUF 字节数），并将 Windows llama.cpp 命令升级至正式版 v1.1.0（b12774）。全站支持按 ⌘K / Ctrl+K 全局搜索模型、显卡、指南与报错；模型详情页升级为双栏布局并直出可复制启动命令，模型库新增紧凑对比表格视图，显卡页增加吸顶规模跳段栏，部署指南升级为连贯文档排版。',
+  },
+  {
+    date: '2026-11-26',
     en: 'The VRAM calculator now checks GPU and host memory separately for offloaded runs. Fourteen more MoE models have verified expert layouts. Expert placement is shown in tiers, with a RAM bandwidth note.',
     zh: '显存计算器新增 14 款模型的专家层配置。卸载方案分别显示显存和系统内存占用，可输入本机内存判断是否装得下，并查看专家卸载比例和速度档位。',
   },

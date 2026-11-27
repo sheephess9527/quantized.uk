@@ -143,4 +143,21 @@ for (const modelId of ['gemma-3-4b-it', 'llama-3.2-1b', 'llama-3.2-3b', 'mistral
   assert.equal(macModelOptions(modelId), undefined, `${modelId}: unverified Mac entries stay hidden`);
 }
 
+for (const id of ['domyn-edge-sft', 'inkling-2-mini']) {
+  const m = models.find(x => x.id === id)!;
+  const q4 = m.quants.find(q => q.level === 'Q4_K_M')!;
+  const src = q4.source!;
+  assert(!canOfferOllamaLaunch(id));
+  assert(!canOfferOllamaLaunch(undefined, src.repo));
+  for (const lang of ['en', 'zh'] as const) {
+    const winCmd = generateCLI({ ...opts, lang, env: 'windows', modelId: m.id, modelName: m.name, quantLevel: q4.level, hfRepo: src.repo, ggufFilename: src.file });
+    assert(winCmd.command.includes('b12774') && winCmd.command.includes(src.file!));
+    const ollamaOut = generateCLI({ ...opts, lang, framework: 'ollama', modelId: m.id, modelName: m.name, quantLevel: q4.level, hfRepo: src.repo, ggufFilename: src.file });
+    assert(!/ollama (run|pull)/.test(ollamaOut.command));
+    assert(ollamaOut.notes.some(n => n.includes('b12774')));
+  }
+}
+const mellumInst = models.find(x => x.id === 'mellum2-1-12b-a2-5b-instruct')!;
+assert(canOfferOllamaLaunch(mellumInst.id, mellumInst.quants[0].source!.repo));
+
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');

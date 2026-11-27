@@ -7,12 +7,12 @@ import { modelExplainer } from '@/lib/utils/model-explainer';
  * emitted as `FAQPage` schema by the route, so the questions a crawler sees are
  * the ones a reader sees — the rule the audit flagged for structured data.
  */
-export default function ModelExplainer({ model, lang = 'en' }: { model: QuantModel; lang?: Lang }) {
+export default function ModelExplainer({ model, lang = 'en', bare = false }: { model: QuantModel; lang?: Lang; bare?: boolean }) {
   const t = translations[lang];
   const { sections, faqs } = modelExplainer(model);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6 space-y-4">
+    <div className={bare ? 'space-y-5' : 'max-w-7xl mx-auto px-4 sm:px-6 mt-6 space-y-4'}>
       {sections.map((s, i) => (
         <section key={i} className="glass rounded-2xl p-5 sm:p-6">
           <h2 className="text-lg font-bold text-slate-100 mb-2">{s.heading[lang]}</h2>

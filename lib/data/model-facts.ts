@@ -49,6 +49,8 @@ export type LicenceClass = 'commercial' | 'restricted' | 'noncommercial';
  * Each URL below is the exact evidence read; this is template support, not a runtime test.
  */
 export const TOOL_CALLING_SOURCES: Readonly<Record<string, string>> = {
+  'mellum2-1-12b-a2-5b-instruct': 'https://huggingface.co/api/models/JetBrains/Mellum2.1-12B-A2.5B-Instruct-GGUF?expand[]=gguf',
+  'inkling-2-mini': 'https://huggingface.co/api/models/bartowski/Inkling-2-Mini-GGUF?expand[]=gguf',
   'ternary-bonsai-2-5-27b': 'https://huggingface.co/prism-ml/Ternary-Bonsai-2.5-27B-GGUF',
   'jamba-1.5-mini': 'https://huggingface.co/api/models/mradermacher/AI21-Jamba-Mini-1.5-GGUF?expand[]=gguf',
   'llama-3.1-8b': 'https://huggingface.co/api/models/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF?expand[]=gguf',
@@ -213,6 +215,9 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'mellum2-1-12b-a2-5b-instruct': 'apache-2.0',
+  'domyn-edge-sft': 'apache-2.0',
+  'inkling-2-mini': 'apache-2.0',
   'kormo-web-4b': 'apache-2.0',
   'kormo-web-9b': 'apache-2.0',
   'granite-switch-4.1-8b': 'apache-2.0',
@@ -397,6 +402,7 @@ export const MODEL_LICENCE: Record<string, LicenceId> = {
  * are not separated yet — several entries above accept them too.
  */
 export const IMAGE_INPUT_MODEL_IDS: readonly string[] = [
+  'inkling-2-mini',
   'deepseek-v4-1-flash-1017',
   'glm-5-3-flash',
   'kimi-k3-1-pro',

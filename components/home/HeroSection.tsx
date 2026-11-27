@@ -25,7 +25,7 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
     // Deliberately not a 70vh hero any more: the panel directly below it is the
     // page's actual entry point (pick a card → get models that fit), and a
     // full-viewport hero pushed it off the first screen on every laptop.
-    <section className="relative flex items-center justify-center overflow-hidden pt-[4.5rem] pb-5 sm:pt-24 sm:pb-12">
+    <section className="relative flex items-center justify-center overflow-hidden pt-[4.5rem] pb-4 sm:pt-20 sm:pb-8">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

@@ -34,7 +34,7 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
   return (
     <>
       <ReadingProgress targetId="article-content" />
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-16">
       <Breadcrumbs
         items={[
           { label: t.nav.home, href: '/' },
@@ -43,16 +43,16 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         ]}
       />
 
-      <header className="mb-8">
-        <div className="flex flex-wrap items-center gap-2 mb-3">
+      <header className="mb-8 pb-6 border-b border-white/[0.06]">
+        <div className="flex flex-wrap items-center gap-2.5 mb-3">
           <span className={cn('badge text-xs', difficultyColors[article.difficulty])}>
             {t.cookbook.difficulty[article.difficulty]}
           </span>
-          <span className="badge text-xs bg-white/[0.04] text-slate-500 border-white/[0.07]">
+          <span className="badge text-xs bg-white/[0.04] text-slate-400 border-white/[0.08]">
             {t.cookbook.categories[article.category]}
           </span>
-          <span className="flex items-center gap-1 text-xs text-slate-500">
-            <Clock size={10} /> {readingMinutes(article, lang)} {t.cookbook.readTime}
+          <span className="flex items-center gap-1 text-xs text-slate-400">
+            <Clock size={11} /> {readingMinutes(article, lang)} {t.cookbook.readTime}
           </span>
           <span className="text-xs text-slate-500">
             {t.cookbook.publishedOn}{' '}
@@ -65,34 +65,27 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
             )}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-slate-100 mb-3">{title}</h1>
-        <p className="text-slate-400 leading-relaxed">
+        <h1 className="text-3xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-3">{title}</h1>
+        <p className="text-slate-300 text-base leading-relaxed max-w-3xl">
           {lang === 'zh' ? article.descriptionZh : article.description}
         </p>
-        {/*
-          Two different claims, and they used to be one badge. The stack line
-          says what the guide is *written against*; `verifiedAt` says the
-          commands were re-run on that date. A guide rewritten since its last
-          run keeps the first and must lose the second — so the panel renders
-          from `verifiedStack` alone and only adds the date, and the cyan
-          "verified" styling, when there is a date to stand behind.
-        */}
+
         {article.verifiedStack && (
           <div
             className={cn(
-              'mt-4 rounded-xl border px-4 py-3 text-xs text-slate-400 max-w-2xl',
+              'mt-5 rounded-xl border px-4 py-3 text-xs text-slate-400 max-w-2xl',
               article.verifiedAt
-                ? 'border-cyan-500/20 bg-cyan-500/[0.06]'
-                : 'border-white/[0.08] bg-white/[0.02]',
+                ? 'border-cyan-500/25 bg-cyan-500/[0.06]'
+                : 'border-white/[0.08] bg-[#111218]',
             )}
           >
-            <p className={cn('font-semibold mb-1', article.verifiedAt ? 'text-cyan-300/90' : 'text-slate-400')}>
+            <p className={cn('font-semibold mb-1', article.verifiedAt ? 'text-cyan-300' : 'text-slate-300')}>
               {article.verifiedAt ? t.cookbook.verified : t.cookbook.writtenAgainst}
             </p>
-            <p className="font-mono text-slate-300 leading-relaxed">
+            <p className="font-mono text-slate-200 leading-relaxed">
               {lang === 'zh' ? article.verifiedStack.zh : article.verifiedStack.en}
             </p>
-            <p className="text-slate-600 mt-1.5">
+            <p className="text-slate-500 mt-1.5">
               {article.verifiedAt
                 ? t.cookbook.verifiedOn.replace('{date}', article.verifiedAt)
                 : t.cookbook.notVerified}
@@ -101,7 +94,7 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         )}
         <div className="flex flex-wrap gap-1.5 mt-4">
           {article.tags.map(tag => (
-            <span key={tag} className="badge text-xs bg-white/[0.04] text-slate-500 border-white/[0.07] font-mono">{tag}</span>
+            <span key={tag} className="badge text-xs bg-white/[0.04] text-slate-400 border-white/[0.08] font-mono">{tag}</span>
           ))}
         </div>
       </header>
@@ -110,51 +103,62 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         <ArticleToc sections={tocSections} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)] gap-8 lg:gap-10 items-start">
         <div className="hidden lg:block">
           <ArticleToc sections={tocSections} />
         </div>
 
         <div id="article-content" className="space-y-8 min-w-0">
-        {article.content.map((section, i) => (
-          <section key={i} id={`section-${i}`} className="glass rounded-2xl p-6 scroll-mt-28">
-            <h2 className="text-lg font-semibold text-slate-200 mb-3">
-              {lang === 'zh' ? section.headingZh : section.heading}
-            </h2>
-            <p className="text-sm text-slate-400 leading-relaxed mb-4">
-              {lang === 'zh' ? section.bodyZh : section.body}
-            </p>
-            {section.code && (Array.isArray(section.code) ? section.code : [section.code]).map(({ lang: codeLang, content }, index) => (
-              <CodeBlock key={index} lang={codeLang} content={content} />
-            ))}
-          </section>
-        ))}
-
-        {article.faqs && article.faqs.length > 0 && (
-          <section className="glass rounded-2xl p-5 sm:p-6">
-            {/* Same array the route emits as FAQPage, so the two cannot diverge. */}
-            <h2 className="section-title text-base mb-4">{t.cookbook.faqTitle}</h2>
-            <div className="space-y-4">
-              {article.faqs.map((f, i) => (
-                <div key={i}>
-                  <h3 className="text-sm font-semibold text-slate-200 mb-1">{lang === 'zh' ? f.qZh : f.q}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{lang === 'zh' ? f.aZh : f.a}</p>
+          <article className="rounded-2xl border border-white/[0.08] bg-[#111218] p-6 sm:p-8 lg:p-10 divide-y divide-white/[0.06]">
+            {article.content.map((section, i) => (
+              <section key={i} id={`section-${i}`} className="py-7 first:pt-0 last:pb-0 scroll-mt-24">
+                <div className="flex items-baseline gap-2.5 mb-3">
+                  <span className="font-mono text-xs font-semibold text-cyan-400/80 select-none">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h2 className="text-xl font-bold text-slate-100 leading-snug">
+                    {lang === 'zh' ? section.headingZh : section.heading}
+                  </h2>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <p className="text-[15px] text-slate-300 leading-7 whitespace-pre-line">
+                  {lang === 'zh' ? section.bodyZh : section.body}
+                </p>
+                {section.code && (
+                  <div className="mt-4 space-y-3">
+                    {(Array.isArray(section.code) ? section.code : [section.code]).map(({ lang: codeLang, content }, index) => (
+                      <CodeBlock key={index} lang={codeLang} content={content} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </article>
 
-        <GuideReferences article={article} lang={lang} />
-        <GuideNextSteps article={article} lang={lang} />
+          {article.faqs && article.faqs.length > 0 && (
+            <section className="rounded-2xl border border-white/[0.08] bg-[#111218] p-6 sm:p-8">
+              {/* Same array the route emits as FAQPage, so the two cannot diverge. */}
+              <h2 className="section-title text-lg mb-5">{t.cookbook.faqTitle}</h2>
+              <div className="divide-y divide-white/[0.05]">
+                {article.faqs.map((f, i) => (
+                  <div key={i} className="py-4 first:pt-0 last:pb-0">
+                    <h3 className="text-sm sm:text-[15px] font-semibold text-slate-100 mb-1.5">{lang === 'zh' ? f.qZh : f.q}</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">{lang === 'zh' ? f.aZh : f.a}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
-        <RunFeedback subject={`quantized.uk — ${article.id}`} context={title} />
+          <GuideReferences article={article} lang={lang} />
+          <GuideNextSteps article={article} lang={lang} />
 
-        <RelatedArticles articleId={article.id} lang={lang} />
+          <RunFeedback subject={`quantized.uk — ${article.id}`} context={title} />
 
-        <div className="glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
-          {t.cookbook.licenseNote}
-        </div>
+          <RelatedArticles articleId={article.id} lang={lang} />
+
+          <div className="glass rounded-xl px-4 py-3 text-xs text-slate-500 leading-relaxed">
+            {t.cookbook.licenseNote}
+          </div>
         </div>
       </div>
     </div>

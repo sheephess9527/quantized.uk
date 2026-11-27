@@ -25,6 +25,38 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'ling-3-2-air',
+    name: 'Ling 3.2 Air',
+    vendor: 'inclusionAI',
+    announced: '2026-11-23',
+    reason: 'not-sized',
+    detail: {
+      en: 'MIT weights and community GGUFs are public. The checkpoint uses BailingMoeV3VL hybrid sparse attention, whose indexer and vision residency still need a verified sizing audit.',
+      zh: 'MIT 原始权重与社区 GGUF 已公开。模型采用 BailingMoeV3VL 混合稀疏注意力，其索引缓存和视觉加载仍待核实内存估算。',
+    },
+    recheck: {
+      en: 'Audit the BailingMoeV3VL sparse cache layout and vision projector against a supported runtime.',
+      zh: '对照受支持的运行时审计 BailingMoeV3VL 稀疏缓存布局和视觉投影。',
+    },
+    checkedAt: '2026-11-26',
+  },
+  {
+    id: 'gigachat4-37b-a4b',
+    name: 'GigaChat4 37B-A4B',
+    vendor: 'SaluteDevices',
+    announced: '2026-11-20',
+    reason: 'no-runtime',
+    detail: {
+      en: 'Publisher weights and GGUFs use a custom GigaChat4ForCausalLM architecture and custom terms. Upstream llama.cpp v1.1.0 does not list a GigaChat4 architecture.',
+      zh: '官方权重与 GGUF 采用自定义 GigaChat4ForCausalLM 架构与自定义条款；上游 llama.cpp v1.1.0 尚未收录 GigaChat4 架构。',
+    },
+    recheck: {
+      en: 'Verify upstream runtime support, licence terms and per-layer cache sizing.',
+      zh: '核实上游运行时支持、许可条款与逐层缓存占用。',
+    },
+    checkedAt: '2026-11-26',
+  },
+  {
     id: 'kolibri-1-1',
     name: 'Kolibri 1.1',
     vendor: 'Aleph Alpha',
@@ -37,22 +69,22 @@ export const pendingModels: PendingModel[] = [
       en: 'Verify a supported release and audit the local and global cache layout.',
       zh: '核实支持该架构的发行版本，审计局部和全局缓存布局。',
     },
-    checkedAt: '2026-11-25',
+    checkedAt: '2026-11-26',
   },
   {
     id: 'raon-1-mini',
     name: 'Raon-1 mini',
     vendor: 'KRAFTON',
-    reason: 'no-runtime',
+    reason: 'not-sized',
     detail: {
-      en: 'Official Apache-2.0 GGUFs for the final 28.8B MoE are available. The publisher instructs readers to build its raon-1-mini llama.cpp branch. The Raon attention and per-layer state need verified sizing.',
-      zh: '最终版 28.8B MoE 已有官方 Apache 2.0 GGUF。发布方要求编译其 raon-1-mini llama.cpp 分支。Raon 注意力和逐层状态仍需核实内存占用。',
+      en: 'llama.cpp v1.1.0 (b12774) adds upstream `raon1` support (7 K-only MLA layers + 18 recurrent RDA layers). KRAFTON’s official GGUF repository requires manual gated-access approval before download.',
+      zh: 'llama.cpp v1.1.0（b12774）已合入上游 `raon1` 支持（7 层仅 K 的 MLA 缓存 + 18 层循环 RDA）。KRAFTON 官方 GGUF 仓库目前下载前需申请门禁授权。',
     },
     recheck: {
-      en: 'Verify upstream support and size the final checkpoint cache.',
-      zh: '核实上游兼容性并审计最终权重的缓存。',
+      en: 'Verify an ungated GGUF mirror or gated download workflow and reconcile mHC/RDA memory against an observed run.',
+      zh: '核实免门禁 GGUF 镜像或下载指引，并对照实测核对 mHC/RDA 内存占用。',
     },
-    checkedAt: '2026-11-25',
+    checkedAt: '2026-11-26',
   },
   {
     id: 'ernie-5-5-flash-preview',
@@ -175,21 +207,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-11-23',
   },
   {
-    "id": "inkling-2-mini",
-    "name": "Inkling 2 Mini",
-    "vendor": "Thinking Machines",
-    "reason": "not-sized",
-    "detail": {
-      "en": "Apache-2.0 weights and GGUFs are available. Upstream inkling2_loop expands 24 physical layers to 48 execution slots with separate KV and convolution state for loop passes. Ollama 0.40.18 lists Metal improvements and no PC support announcement.",
-      "zh": "Apache 2.0 权重及 GGUF 可获取。上游 inkling2_loop 将 24 个物理层扩为 48 个执行槽，循环各次有独立 KV 和卷积状态。Ollama 0.40.18 更新说明列出 Metal 优化，未公告 PC 支持。"
-    },
-    "recheck": {
-      "en": "Audit the loop cache and projector with an observed memory result before adding a sizing row.",
-      "zh": "对照实际内存结果核实循环缓存和投影后再添加估算。"
-    },
-    "checkedAt": "2026-11-25"
-  },
-  {
     "id": "olala-mini-7a1b",
     "name": "Olala v1.0 Mini 7A1B",
     "vendor": "OVHaiLLM",
@@ -201,21 +218,6 @@ export const pendingModels: PendingModel[] = [
     "recheck": {
       "en": "Recheck upstream load support and its actual attention memory.",
       "zh": "复查上游加载支持并核实注意力内存。"
-    },
-    "checkedAt": "2026-11-21"
-  },
-  {
-    "id": "domyn-edge-sft",
-    "name": "Domyn Edge SFT",
-    "vendor": "Domyn",
-    "reason": "no-runtime",
-    "detail": {
-      "en": "The original config and community GGUFs are accessible. domyn-edge.cpp is present on the current upstream development line; the pinned Windows build predates that support.",
-      "zh": "可读取原始配置与社区 GGUF。当前上游开发版已有 domyn-edge.cpp，本站 Windows 固定版本早于该支持。"
-    },
-    "recheck": {
-      "en": "Confirm a supported runtime and cache sizing before exposing launch commands.",
-      "zh": "核实受支持运行时和缓存估算后再提供启动命令。"
     },
     "checkedAt": "2026-11-21"
   },
@@ -285,14 +287,14 @@ export const pendingModels: PendingModel[] = [
     "vendor": "Tencent",
     "reason": "not-sized",
     "detail": {
-      "en": "The original weights, Tencent Hy licence and GGUF files are accessible. Its attention mixes sparse indexer caches with sliding windows. Some GGUFs store the separate Engram table on SSD and use a dedicated runtime port. File totals do not describe resident memory.",
-      "zh": "原始权重、腾讯 Hy 许可和 GGUF 均可访问。注意力混合稀疏索引缓存与滑窗。部分 GGUF 将独立 Engram 表留在 SSD，并采用专门的运行时移植版，文件总量不能代表常驻内存。"
+      "en": "llama.cpp v1.1.0 includes `hy_v4_flash` DSA+SWA support. Its attention mixes sparse indexer caches with sliding windows, and some GGUFs store a separate Engram table on SSD; file totals alone do not describe resident VRAM.",
+      "zh": "llama.cpp v1.1.0 已合入 `hy_v4_flash`（DSA + 滑窗）支持。注意力混合稀疏索引缓存与滑窗，且部分 GGUF 将独立 Engram 表留在 SSD，文件总量不能代表常驻显存。"
     },
     "recheck": {
-      "en": "Verify upstream support, cache layout, Engram residency and projector memory against a documented run.",
-      "zh": "核实上游支持、缓存布局、Engram 驻留及视觉投影内存，并与有记录的运行结果对照。"
+      "en": "Verify cache layout, Engram residency and projector memory against a documented run.",
+      "zh": "核实缓存布局、Engram 驻留及视觉投影内存，并与有记录的运行结果对照。"
     },
-    "checkedAt": "2026-11-19"
+    "checkedAt": "2026-11-26"
   },
   {
     "id": "aion-1-instruct-2-3b",
@@ -300,14 +302,14 @@ export const pendingModels: PendingModel[] = [
     "vendor": "Microsoft",
     "reason": "no-runtime",
     "detail": {
-      "en": "The original MIT checkpoint and config are public. AtomicChat ships GGUFs, but documents a patch for its custom Aion architecture. The current upstream b12534 architecture list has no Aion Instruct entry.",
-      "zh": "MIT 原始权重和配置已公开。AtomicChat 提供 GGUF，但自定义 Aion 架构需要其补丁。上游 b12534 的架构列表没有 Aion Instruct。"
+      "en": "The original MIT checkpoint and config are public. AtomicChat ships GGUFs, but documents a patch for its custom Aion architecture. The current upstream b12774 architecture list has no Aion Instruct entry.",
+      "zh": "MIT 原始权重和配置已公开。AtomicChat 提供 GGUF，但自定义 Aion 架构需要其补丁。上游 b12774 的架构列表没有 Aion Instruct。"
     },
     "recheck": {
       "en": "Recheck when the runtime ships support and its mixed sliding/full cache can be verified.",
       "zh": "正式运行时支持落地后，核实混合滑窗与全注意力缓存。"
     },
-    "checkedAt": "2026-11-19"
+    "checkedAt": "2026-11-26"
   },
   {
     "id": "sensenova-loop-9b",
@@ -328,16 +330,16 @@ export const pendingModels: PendingModel[] = [
     "id": "zaya1-8b",
     "name": "ZAYA1 8B",
     "vendor": "Zyphra",
-    "reason": "not-sized",
+    "reason": "awaiting-data",
     "detail": {
-      "en": "The public config, a community GGUF listing and new upstream zaya1 code are readable. Its hybrid attention and recurrent state need a verified sizing model, and the pinned Windows build predates that upstream implementation.",
-      "zh": "原始配置、社区 GGUF 列表及新的上游 zaya1 实现可读取。混合注意力和循环状态需要核实估算，当前 Windows 固定版本早于该上游实现。"
+      "en": "llama.cpp v1.1.0 (b12774) includes upstream `zaya1` hybrid support. Zyphra’s `ZAYA1-8B-Instruct` repository returns HTTP 401 without gated access, so the instruct config, licence terms and matching GGUF bytes remain unread.",
+      "zh": "llama.cpp v1.1.0（b12774）已包含上游 `zaya1` 混合架构支持。Zyphra 的 `ZAYA1-8B-Instruct` 仓库未授权时返回 HTTP 401，指令版配置、许可条款与对应 GGUF 字节数仍待读取。"
     },
     "recheck": {
-      "en": "Check a supported release and audit the cache against a reproducible memory result.",
-      "zh": "核实受支持的发行版，并用可复现实测核对缓存。"
+      "en": "Read the instruct config, licence and verified GGUF byte counts and audit its hybrid cache.",
+      "zh": "读取指令版配置、许可与经核实的 GGUF 字节数，并审计其混合缓存。"
     },
-    "checkedAt": "2026-11-19"
+    "checkedAt": "2026-11-26"
   },
   {
     "id": "maxwell-v1-flash",

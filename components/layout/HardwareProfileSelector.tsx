@@ -18,16 +18,12 @@ export default function HardwareProfileSelector({ compact = false }: { compact?:
           onChange={e => setGpuId(e.target.value)}
           aria-label={t.profile.selectGpu}
           className={cn(
-            // w-full is what makes the navbar's max-w-[9.5rem] cap actually
-            // bite. Without it the select sizes to its widest <option>
-            // ("Radeon PRO W7900 48G") — 239px — and pushed itself and the
-            // language toggle off the right edge at the md breakpoint.
-            'w-full appearance-none pl-7 pr-7 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer',
+            'w-full appearance-none pl-6 pr-6 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer truncate',
             hasProfile
-              ? 'bg-violet-500/10 text-violet-300 border-violet-500/20'
-              : 'bg-white/[0.03] text-slate-500 border-white/[0.06] hover:text-slate-300',
+              ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
+              : 'bg-white/[0.03] text-slate-400 border-white/[0.08] hover:text-slate-200 hover:border-white/[0.14]',
           )}
-          title={t.profile.selectGpu}
+          title={gpu ? `${gpuDisplayName(gpu, lang)} (${gpu.vram} GB)` : t.profile.selectGpu}
         >
           <option value="">{t.profile.myGpu}</option>
           {GPU_GROUPS.map(([type, key]) => {
@@ -41,8 +37,12 @@ export default function HardwareProfileSelector({ compact = false }: { compact?:
             );
           })}
         </select>
-        <Cpu size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-        <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
+        {hasProfile ? (
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-emerald-400 pointer-events-none" aria-hidden />
+        ) : (
+          <Cpu size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+        )}
+        <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
       </div>
     );
   }

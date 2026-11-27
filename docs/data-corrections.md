@@ -1,5 +1,17 @@
 # Model/GPU data verification and corrections
 
+## 2026-11-26 — Three Apache-2.0 checkpoints and llama.cpp v1.1.0 (`b12774`)
+
+Indexed three Apache-2.0 checkpoints alongside official `llama.cpp v1.1.0` (`nightly-tag.txt` → `b12774`):
+
+| Checkpoint | Language params (GGUF `total`) | Verified text GGUF bytes | Vision projector bytes | Cache / MoE basis |
+| --- | ---: | --- | ---: | --- |
+| `mellum2-1-12b-a2-5b-instruct` ([JetBrains](https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Instruct)) | 12,149,923,072 | [Official GGUF](https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Instruct-GGUF/tree/main): Q4_K_M 8,071,294,048 · Q6_K 10,879,833,184 · Q8_0 12,925,416,544 | — | 7 full + 21 SWA (1,024 padded to 1,536), 64 experts (top-8, 11.10B routed). Separate MTP draft GGUF excluded. |
+| `domyn-edge-sft` ([Domyn](https://huggingface.co/Domyn/Domyn-Edge-SFT)) | 3,928,787,968 | [prithivMLmods GGUF](https://huggingface.co/prithivMLmods/Domyn-Edge-SFT-GGUF/tree/main): Q3_K_M 2,001,074,496 · Q4_K_M 2,423,095,616 · Q5_K_M 2,814,837,056 · Q6_K 3,231,062,336 · Q8_0 4,182,474,656 | — | `b12774` `domyn-edge.cpp`: 12 full NoPE layers (`8 × 256` KV) + 24 SWA layers (`8 × 64` KV, window 1,025 padded to 1,536). Stage-1 SFT checkpoint. |
+| `inkling-2-mini` ([Thinking Machines](https://huggingface.co/thinkingmachines/Inkling-2-Mini)) | 26,070,385,152 | [bartowski GGUF](https://huggingface.co/bartowski/Inkling-2-Mini-GGUF/tree/main): Q3_K_M 14,554,690,624 · Q4_K_M 18,658,096,192 · Q5_K_M 21,216,752,704 · Q6_K 24,699,073,600 · Q8_0 27,820,099,648 | BF16 `mmproj`: 641,806,112 | `b12774` `inkling2-loop.cpp`: 24 physical layers expand to 48 execution slots (`core [6, 18)` × 3 passes → 8 full + 40 SWA slots at `8 × 128`); publisher-stated 5.4B effective active params/token; fixed shortconv kernel-4 state excluded; whole-layer offload retained. |
+
+No runtime speed or perplexity measurement was added.
+
 ## 2026-11-25 — Four official vision-capable GGUF checkpoints
 
 Prism ML, CCORE and OpenBMB provide the files for the new Ternary Bonsai, CCORE and two MiniCPM entries. The exact weight and projector byte counts, GGUF block and tensor counts, publisher terms and runtime audits are in the dated patrol. The CCORE final checkpoint replaces its earlier preview in the same publisher repository. No runtime measurements were introduced. [Catalogue evidence](changes/2026-11-25-patrol.md#catalogue-additions)

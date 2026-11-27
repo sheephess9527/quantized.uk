@@ -34,6 +34,7 @@ export default function Footer() {
         { label: t.nav.formatWizard, href: '/tools/format-wizard/' },
         { label: t.nav.modelCompare, href: '/tools/compare/' },
         { label: t.nav.feelSpeed,    href: '/tools/feel/' },
+        { label: t.nav.errors,       href: '/errors/' },
       ],
     },
     {
@@ -43,7 +44,7 @@ export default function Footer() {
         { label: 'llama.cpp',    href: 'https://github.com/ggml-org/llama.cpp', external: true },
         { label: 'Ollama',       href: 'https://ollama.com', external: true },
         { label: 'vLLM',         href: 'https://github.com/vllm-project/vllm', external: true },
-        { label: 'ExLlamaV2',    href: 'https://github.com/turboderp-org/exllamav2', external: true },
+        { label: 'ExLlamaV3',    href: 'https://github.com/turboderp-org/exllamav3', external: true },
       ],
     },
   ];

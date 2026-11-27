@@ -91,8 +91,6 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         </p>
       </div>
 
-      <FitControls contextLength={contextLength} batchSize={batchSize} onContextChange={setContextLength} onBatchChange={setBatchSize} />
-
       {/*
         Until this block existed these 61 pages were the same page with a name
         swapped in — the fit list is a function of VRAM alone, so every 16 GB
@@ -136,11 +134,6 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
             <dd className="text-sm text-slate-400 leading-relaxed">{x.ceiling[lang]}</dd>
           </div>
         </dl>
-        {/*
-          This page answers "what fits this card". `/best/` answers "what
-          should I actually run", which is the question people type — and it
-          is the only inbound link most GPU pages get from outside the index.
-        */}
         {bestTier && (
           <Link
             href={`/best/${bestTier.slug}/`}
@@ -156,12 +149,44 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         <GpuUpgradeComparison current={gpu} settings={{ contextLength, batchSize }} />
       </div>
 
+      {/* Sticky context / concurrency & parameter-bucket jump bar */}
+      <div className="sticky top-14 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-6 bg-[#0a0a0f]/90 backdrop-blur-xl border-y border-white/[0.07]">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <FitControls
+            compact
+            contextLength={contextLength}
+            batchSize={batchSize}
+            onContextChange={setContextLength}
+            onBatchChange={setBatchSize}
+          />
+          {groups.length > 1 && (
+            <div>
+              <p className="text-xs font-medium text-slate-400 mb-1.5">{g.jumpToSize}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {groups.map(group => (
+                  <button
+                    key={group.bucket}
+                    type="button"
+                    onClick={() => {
+                      document.getElementById(`bucket-${group.bucket}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-white/[0.04] hover:bg-violet-500/20 border border-white/[0.08] hover:border-violet-500/30 transition-colors"
+                  >
+                    {PARAM_RANGE_LABEL[group.bucket]} <span className="text-slate-500">({group.fits.length})</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {fits.length === 0 ? (
         <p className="glass rounded-2xl p-6 text-sm text-slate-400">{fill(g.noFits.replace('4K', contextLabel(contextLength)), { vram: gpu.vram })}</p>
       ) : (
         <div className="space-y-6">
           {groups.map(group => (
-            <section key={group.bucket} className="glass rounded-2xl p-5 sm:p-6">
+            <section key={group.bucket} id={`bucket-${group.bucket}`} className="glass rounded-2xl p-5 sm:p-6 scroll-mt-36">
               <h2 className="text-lg font-bold text-slate-100 mb-4">
                 {PARAM_RANGE_LABEL[group.bucket]} <span className="text-sm font-normal text-slate-500">· {group.fits.length}</span>
               </h2>

@@ -5,15 +5,16 @@ import { GPU_BATCH_PRESETS, GPU_CONTEXT_PRESETS } from '@/lib/utils/gpu-page';
 import { contextLabel, exactLabel } from '@/lib/utils/context-label';
 import { cn } from '@/lib/utils/cn';
 
-export default function FitControls({ contextLength, batchSize, onContextChange, onBatchChange }: {
+export default function FitControls({ contextLength, batchSize, onContextChange, onBatchChange, compact = false }: {
   contextLength: number;
   batchSize: number;
   onContextChange: (value: number) => void;
   onBatchChange: (value: number) => void;
+  compact?: boolean;
 }) {
   const { t } = useLanguage();
   return (
-    <div className="flex flex-wrap gap-4 my-4">
+    <div className={cn('flex flex-wrap gap-4', compact ? 'my-0' : 'my-4')}>
       {[
         { label: t.gpuPage.contextControl, values: GPU_CONTEXT_PRESETS, value: contextLength, change: onContextChange, format: contextLabel, accessible: (value: number) => exactLabel(value, t.calc.tokens) },
         { label: t.gpuPage.batchControl, values: GPU_BATCH_PRESETS, value: batchSize, change: onBatchChange, format: String, accessible: String },

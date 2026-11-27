@@ -36,13 +36,13 @@ visitor speed submissions to a private D1 Free queue.
 
 | Surface | Notes |
 |--------|--------|
-| Models | **164** in index (`models-extra` … `models-extra-19`), 144 active |
+| Models | **167** in index (`models-extra` … `models-extra-20`), 147 active |
 | Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date; instant keyword search + `aria-pressed` category filters on `/cookbook/` |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`); licence + image-input facts live in `lib/data/model-facts.ts` (164 models: 162 licensed, 55 image input) |
-| Home | Hardware+task picker → 3 matched models, popular cards, measured sample, weekly updates, collapsed changelog |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`), plus `[Cards \| Table]` view switcher and sort selector (never sorting across LiveBench releases); licence + image-input facts live in `lib/data/model-facts.ts` (167 models: 165 licensed, 56 image input) |
+| Home | 5-act visual hierarchy: hardware+task picker → weekly updates + editor's picks → popular cards + job paths → measured sample → FAQ + tools + collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | Quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,494 HTML files (3,814 files in `out/`) including English `404.html` and Chinese `zh/404.html` variants and 364 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| Tools | Global `⌘K / Ctrl+K` command palette (`next/dynamic`, `ssr: false`); quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,542 HTML files including English `404.html` and Chinese `zh/404.html` variants and 385 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands
@@ -144,11 +144,11 @@ flaky network. Never "fix" it by removing the postbuild hook.
 - **GPU upgrade comparison:** compare the same context and concurrency using `fitsOnGpu`. Tier comparisons name a real card at the tier capacity, preferring the first listed popular card and otherwise the first listed at that capacity. Static picks stay independent. Context gains keep the current card's quantization fixed and use the shared pair-page comfortable boundary search. No prices, new URLs or persisted choices.
 - **Homepage picks sort by `addedAt`, then unique feed ID**, before slicing.
   `dataProblems()` rejects duplicate feed IDs; do not reuse old IDs in new packs.
-- **Stable runtime versus binary pin:** llama.cpp v1.0.0's `nightly-tag.txt`
-  resolves to b12359. Keep the verified Windows pin explicit; newer GitHub
+- **Stable runtime versus binary pin:** llama.cpp v1.1.0's `nightly-tag.txt`
+  resolves to b12774 (`LLAMACPP_BUILD`). Keep the verified Windows pin explicit; newer GitHub
   b-builds flagged prerelease are not a new stable semantic release. Runtime
   checks record both rather than silently upgrading to a prerelease or
-  downgrading the existing b12409 pin. The Windows CUDA, ROCm and Arc cookbook
+  downgrading the existing b12774 pin. The Windows CUDA, ROCm and Arc cookbook
   examples also use this pin; recheck their asset suffixes and matching runtime
   versions before changing it.
 
@@ -1404,6 +1404,7 @@ November only — older rows are in README §9a, full detail in README §9.
 
 | When | Commit theme |
 |------|----------------|
+| 2026-11-26 (ii) | **llama.cpp v1.1.0 (`b12774`), +3 models (167) & full-site layout redesign** — bumped `LLAMACPP_BUILD` to `b12774` (`v1.1.0` stable, Windows CPU/CUDA/Vulkan/ROCm/SYCL zips verified); indexed **Inkling 2 Mini** (26.07B + 0.60 GiB BF16 projector, 5.4B active across 3 passes, 8/48 growing KV slots), **Domyn Edge SFT** (3.93B, 12 full `8×256` + 24 SWA `8×64` layers), and **Mellum2.1 12B-A2.5B Instruct** (JetBrains official GGUFs), gating Ollama `hf.co` GGUF launch on Domyn/Inkling (`v1.1.0+`) and refreshing `/pending/`. Added lazy-loaded `⌘K / Ctrl+K` `CommandPaletteModal` in `Navbar`, 2-column `/quant-hub/[modelId]` layout with sticky specs sidebar + 1-click `ModelQuickRun`, `/quant-hub/` `[Cards \| Table]` switcher + sort, sticky context + size-jump bar on `/gpu/[gpuId]`, 5-act homepage rhythm, cohesive `/cookbook/[slug]` doc typography, and `tabular-nums`. See `docs/changes/2026-11-26-models-v1-1-and-layout-redesign.md`. |
 | 2026-11-26 | **Site optimization round 2** — converted remaining read-only content surfaces (`ModelDetail` + 6 subviews, `ArticleView` + 3 subviews, `FormatSingleContent`, `FormatCompareContent`, `ErrorViews`, `QuestionPage`, `BestTierContent`, `BenchmarksView` + 3 subviews, `DataFreshness`) to Server Components taking explicit `lang`; First Load JS cut by 27–35% across 148+ content pages (`/cookbook/[slug]` 256 → 177 kB, `/cookbook` 250 → 176 kB, `/formats/[slug]` 257 → 167 kB, `/errors/**` 250 → 167 kB, `/tools/speed\|which-quant\|context-length` 248 → 168 kB, `/best/[tier]` 265 → 258 kB, `/benchmarks` 390 → 283 kB) plus server-rendered model detail sections on all 328 `/quant-hub/[modelId]` pages. Fixed `/zh/**` 404 React Hydration Error via `app/zh/404/page.tsx` → `out/zh/404.html` gated in `localize-export.mjs`. Replaced all 19 remaining reader-facing `gpu.name` usages with `gpuDisplayName(gpu, lang)`, unified `GPU_GROUPS` in `VRAMCalculator` & `SpeedFeel`, added instant guide search + `aria-pressed` filters on `/cookbook/`, and added edge `Cache-Control` headers for `/data/v1/*.json`, `/feed.xml`, `/zh/feed.xml`, `/llms.txt` and `/zh/llms.txt`. See `docs/changes/2026-11-26-site-optimization-round-2.md`. |
 | 2026-11-25 | **Site optimization & audit** — extracted static legal/about/privacy essays to `lib/i18n/static-pages.ts`; converted 9 reference/index routes (`/about`, `/legal`, `/privacy`, `/tools`, `/changelog`, `/faq`, `/best`, `/formats`, `/pending` → 167 kB First Load JS) and static homepage sections to Server Components (homepage assets 363.5 → 316.1 KB gz; `out/` 3,825 → 3,817 files); `public/_headers` `immutable` cache on `/_next/static/*` + SWR cache on OG/icons; Plausible `lazyOnload` + updated `/privacy/`; instant 126-GPU search on `/gpu/`, unified 8-group localized `<optgroup>`s, `nameZh` / `gpuDisplayName` fixing `改装` leak, `/zh/**` `WebSite` `SearchAction` JSON-LD, `.cv-card` on Hub cards, and pre-filled calculator link on pruned pair 404s. See `docs/changes/2026-11-25-site-optimization.md`. |
 | 2026-11-23 | **PRs #28–#49 documentation audit** — the original 21 merged PRs have README §9 entries; subsequently merged #45 records KORMo-Web-4B in its own README/data-log entries, preserved here. After the separate November 23 patrol and Granite 30B follow-up: 160 models (140 active), 122 GPU configurations + 4 CPU rows, 28 guides, 349 model/GPU pairs per language. See `docs/changes/2026-11-23-pr-28-49-docs-audit.md` for the per-PR record and local verification. |

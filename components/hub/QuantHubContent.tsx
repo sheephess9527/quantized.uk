@@ -2,12 +2,13 @@
 
 import { Suspense, useState, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Link2, FileDown } from 'lucide-react';
+import { Link2, FileDown, LayoutGrid, Table2 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { localizeHref } from '@/lib/i18n/routing';
 import { models } from '@/lib/data/models';
 import { gpuDatabase, gpuDisplayName } from '@/lib/data/gpus';
 import ModelCard from '@/components/hub/ModelCard';
+import ModelTable from '@/components/hub/ModelTable';
 import QueryNoindex from '@/components/seo/QueryNoindex';
 import FilterBar, { HubSearch, type HubFilters } from '@/components/hub/FilterBar';
 import HubScaleStats from '@/components/hub/HubScaleStats';
@@ -17,6 +18,8 @@ import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import Link from '@/components/i18n/LocalLink';
 import { useHardwareProfile } from '@/lib/hardware-profile/context';
 import { getRecommendations } from '@/lib/utils/recommend';
+import { referenceQuant } from '@/lib/utils/quality';
+import { sizeAt4K } from '@/lib/utils/quant-source';
 import {
   parseHubSearchParams,
   buildHubSearchParams,
@@ -33,6 +36,8 @@ import DataFreshness from '@/components/home/DataFreshness';
 import { modelMatchesQuery } from '@/lib/utils/model-search';
 import { hasImageInput, licenceClassOf } from '@/lib/utils/model-facts';
 
+type HubSort = 'default' | 'newest' | 'params' | 'vram' | 'speed';
+
 const HUB_STATS = (() => {
   const families = new Set(models.map(m => m.family)).size;
   const formats = new Set(models.flatMap(m => m.quants.map(q => q.format))).size;
@@ -48,6 +53,8 @@ export default function QuantHubContent() {
 
   const [gpuFilterId, setGpuFilterId] = useState<string | null>(null);
   const [filters, setFilters] = useState<HubFilters>(EMPTY_HUB_FILTERS);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [sortBy, setSortBy] = useState<HubSort>('default');
   const [linkCopied, setLinkCopied] = useState(false);
   const [exportCopied, setExportCopied] = useState(false);
 
@@ -290,7 +297,7 @@ export default function QuantHubContent() {
             className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 border border-white/[0.08] hover:text-slate-200 hover:border-white/15 transition-all"
           >
             {t.hub.filterByMyGpu
-              .replace('{gpu}', profileGpu.name)
+              .replace('{gpu}', gpuDisplayName(profileGpu, lang))
               .replace('{count}', String(countModelsForGpu(profileGpu.id)))}
           </button>
         </div>
@@ -309,33 +316,66 @@ export default function QuantHubContent() {
         />
       </div>
 
-      {/*
-        Hiding legacy models by default (QTZ-029) should not read as an
-        unexplained filter on first visit — "69 of 81" with nothing else
-        selected looks like the page is broken. `effectiveTotal` is the count
-        for the current legacy visibility, so an untouched page reads as
-        "all 69 models" and the "Show 12 legacy models" toggle is what
-        explains the other 12.
-      */}
-      <p className={cn(
-        'text-sm mb-6',
-        filtered.length === effectiveTotal ? 'text-violet-400/80' : 'text-slate-500',
-      )}>
-        {filtered.length === effectiveTotal
-          ? t.hub.resultsAll.replace('{total}', String(effectiveTotal))
-          : t.hub.resultsFiltered
-              .replace('{visible}', String(filtered.length))
-              .replace('{total}', String(effectiveTotal))}
-      </p>
+      {/* Results summary + Sort + [Cards | Table] view switcher */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <p className={cn(
+          'text-sm',
+          filtered.length === effectiveTotal ? 'text-violet-400/80' : 'text-slate-500',
+        )}>
+          {filtered.length === effectiveTotal
+            ? t.hub.resultsAll.replace('{total}', String(effectiveTotal))
+            : t.hub.resultsFiltered
+                .replace('{visible}', String(filtered.length))
+                .replace('{total}', String(effectiveTotal))}
+        </p>
+
+        {filtered.length > 0 && (
+          <div className="flex items-center gap-2">
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as HubSort)}
+              aria-label={t.hub.tableView.sortDefault}
+              className="appearance-none px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.03] text-slate-300 border border-white/[0.08] hover:border-white/[0.15] cursor-pointer"
+            >
+              <option value="default">{t.hub.tableView.sortDefault}</option>
+              <option value="newest">{t.hub.tableView.sortNewest}</option>
+              <option value="params">{t.hub.tableView.sortParamsDesc}</option>
+              <option value="vram">{t.hub.tableView.sortVramAsc}</option>
+              <option value="speed">{t.hub.tableView.sortSpeedDesc}</option>
+            </select>
+
+            <div className="inline-flex rounded-lg bg-white/[0.03] p-0.5 border border-white/[0.08]">
+              <button
+                type="button"
+                aria-pressed={viewMode === 'cards'}
+                onClick={() => setViewMode('cards')}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors',
+                  viewMode === 'cards' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200',
+                )}
+              >
+                <LayoutGrid size={12} aria-hidden />
+                {t.hub.tableView.cards}
+              </button>
+              <button
+                type="button"
+                aria-pressed={viewMode === 'table'}
+                onClick={() => setViewMode('table')}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors',
+                  viewMode === 'table' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200',
+                )}
+              >
+                <Table2 size={12} aria-hidden />
+                {t.hub.tableView.table}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-16">
-          {/*
-            An empty result used to be a sentence and a "clear" button, which
-            tells the reader they were wrong and offers them the start again.
-            The suggestions are drawn from the index, so every one of them
-            returns results.
-          */}
           <p className="text-lg text-slate-400 mb-1">
             {filters.search
               ? t.hub.noResultsFor.replace('{q}', filters.search)
@@ -360,9 +400,11 @@ export default function QuantHubContent() {
             {t.hub.browseAll.replace('{n}', String(total))}
           </button>
         </div>
+      ) : viewMode === 'table' ? (
+        <ModelTable models={sortHubModels(filtered, sortBy)} lang={lang} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {filtered.map(model => (
+          {sortHubModels(filtered, sortBy).map(model => (
             <ModelCard key={model.id} model={model} lang={lang} />
           ))}
         </div>
@@ -372,6 +414,24 @@ export default function QuantHubContent() {
       </Link>
     </div>
   );
+}
+
+function sortHubModels(list: typeof models, sortBy: HubSort): typeof models {
+  if (sortBy === 'default') return list;
+  const copy = [...list];
+  if (sortBy === 'newest') {
+    return copy.sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''));
+  }
+  if (sortBy === 'params') {
+    return copy.sort((a, b) => b.params - a.params);
+  }
+  if (sortBy === 'vram') {
+    return copy.sort((a, b) => sizeAt4K(a, referenceQuant(a.quants)) - sizeAt4K(b, referenceQuant(b.quants)));
+  }
+  if (sortBy === 'speed') {
+    return copy.sort((a, b) => (referenceQuant(b.quants).speedRTX4090 ?? -1) - (referenceQuant(a.quants).speedRTX4090 ?? -1));
+  }
+  return copy;
 }
 
 function countModelsForGpu(gpuId: string): number {

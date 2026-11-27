@@ -27,7 +27,7 @@ export default function ModelCardBadge({ modelId }: { modelId: string }) {
   }
 
   return (
-    <section aria-labelledby="model-card-badge-title" className="glass rounded-2xl p-4 sm:px-5 mb-8">
+    <section aria-labelledby="model-card-badge-title" className="rounded-2xl border border-white/[0.08] bg-[#111218] p-4 sm:px-5">
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
           <h2 id="model-card-badge-title" className="text-sm font-semibold text-slate-200">{d.title}</h2>

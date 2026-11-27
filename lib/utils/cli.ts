@@ -177,12 +177,19 @@ function isGraniteSwitchGGUF(modelId?: string, repo?: string): boolean {
     /^ibm-granite\/granite-switch-4\.1-(8b|30b)-gguf$/i.test(repo ?? '');
 }
 
+function isLlamaCppV11GGUF(modelId?: string, repo?: string): boolean {
+  return /^(domyn-edge-sft|inkling-2-mini)$/.test(modelId ?? '') ||
+    /^(prithivmlmods\/domyn-edge-sft-gguf|(?:bartowski|unsloth|ggml-org)\/inkling-2-mini-gguf)$/i.test(repo ?? '');
+}
+
 export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {
   // The publisher verifies stock llama.cpp for this rotated GGUF. Ollama's
-  // handling of its Hadamard metadata and of Granite Switch's adapters is unverified.
+  // handling of its Hadamard metadata, Granite Switch's adapters, and newly
+  // added llama.cpp v1.1.0 (b12774) architectures is unverified for hf.co GGUF imports.
   return !/^ternary-bonsai-2(?:-5)?-27b$/.test(modelId ?? '') &&
     !/^prism-ml\/ternary-bonsai-2(?:\.5)?-27b-gguf$/i.test(repo ?? '') &&
-    !isGraniteSwitchGGUF(modelId, repo);
+    !isGraniteSwitchGGUF(modelId, repo) &&
+    !isLlamaCppV11GGUF(modelId, repo);
 }
 
 export function generateCLI(opts: CLIOptions): CLIOutput {
@@ -200,8 +207,11 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
       const note = isGraniteSwitchGGUF(opts.modelId, opts.hfRepo)
         ? L(lang, 'IBM publishes these Granite Switch GGUFs for llama.cpp b11798 or newer. Ollama support is unverified.',
           'IBM 为 llama.cpp b11798 或更新版本发布了这批 Granite Switch GGUF。Ollama 支持尚未核实。')
-        : L(lang, 'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
-          '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
+        : isLlamaCppV11GGUF(opts.modelId, opts.hfRepo)
+          ? L(lang, 'This architecture requires llama.cpp v1.1.0 (b12774) or newer for GGUF loading. Ollama v0.40.18 bundles an earlier llama.cpp build (its inkling-2-mini library tag targets Apple Silicon only).',
+            '此架构加载 GGUF 需要 llama.cpp v1.1.0（b12774）或更新版本。Ollama v0.40.18 内置较早的 llama.cpp 构建（其 inkling-2-mini 官方库标签目前仅面向 Apple Silicon）。')
+          : L(lang, 'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
+            '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
       return { command: '# ' + note, notes: [note] };
     }
     return generateOllama(opts);
