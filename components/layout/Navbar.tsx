@@ -144,7 +144,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setPaletteOpen(true)}
             aria-label={t.nav.searchPlaceholder}
-            className="inline-flex items-center gap-2 min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-100 bg-ink/[0.03] hover:bg-ink/[0.06] border border-ink/[0.08] hover:border-ink/[0.15] transition-all"
+            className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-100 bg-ink/[0.03] hover:bg-ink/[0.06] border border-ink/[0.08] hover:border-ink/[0.15] transition-all"
           >
             <Search size={13} className="text-slate-400" aria-hidden />
             <span className="hidden xl:inline">{t.nav.searchButton}</span>

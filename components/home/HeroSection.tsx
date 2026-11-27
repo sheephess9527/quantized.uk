@@ -36,28 +36,34 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
           this the whole hero block sized to 480px and the section's
           overflow-hidden silently clipped the CTAs off the right edge. */}
       <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 text-center">
-        <div className="hero-rise flex flex-col items-center gap-2 mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-300 text-xs font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-            {t.home.hero.badge}
+        {/*
+          One row, not two stacked pills (2026-11-27): the positioning badge and
+          the latest-update link used to sit on separate lines and read as
+          clutter above the headline. They now share one pill. On a phone the
+          pill wraps to two lines inside the same rounded box instead of
+          overflowing; the date stays a link to /changelog/, never the entry
+          prose itself (that used to repeat the same paragraph three times).
+        */}
+        <div className="hero-rise flex justify-center mb-4 sm:mb-6">
+          <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 px-3 py-1 rounded-2xl sm:rounded-full bg-sky-500/10 border border-sky-500/25 text-xs font-medium">
+            <span className="inline-flex items-center gap-2 text-sky-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse shrink-0" />
+              {t.home.hero.badge}
+            </span>
+            {latestDate && (
+              <>
+                <span aria-hidden="true" className="hidden sm:inline text-sky-500/40">|</span>
+                <Link
+                  href="/changelog/"
+                  className="inline-flex items-center gap-1.5 text-slate-300 hover:text-sky-300 transition-colors"
+                >
+                  <Sparkles size={12} className="shrink-0 text-sky-400" />
+                  <span className="text-slate-500 font-mono">{latestDate}</span>
+                  {t.home.hero.changelogLink}
+                </Link>
+              </>
+            )}
           </div>
-          {/*
-            The date and a link, not the entry itself. This pill used to render
-            the full latest changelog line — the same prose that "This week's
-            updates" and the changelog block further down both also rendered, so
-            one page carried the same paragraph three times, with a truncated
-            copy of it occupying the first screen above the picker.
-          */}
-          {latestDate && (
-            <Link
-              href="/changelog/"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/[0.04] border border-ink/[0.10] text-slate-300 text-xs font-medium hover:border-sky-500/30 hover:text-sky-300 transition-colors"
-            >
-              <Sparkles size={12} className="shrink-0 text-sky-400" />
-              <span className="text-slate-500 font-mono">{latestDate}</span>
-              {t.home.hero.changelogLink}
-            </Link>
-          )}
         </div>
 
         {/* .hero-lift, not .hero-rise: this is the LCP element, so it animates
