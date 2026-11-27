@@ -22,4 +22,4 @@ No copy or data changes; EN and ZH share these components.
 ## Handoff notes
 
 - Don't put a list of unknown or growing length next to a fixed short block in a 2-column grid on the homepage. Use full-width rows and spread items across columns inside the row instead.
-- No `lib/data/changelog.ts` entry: layout-only, nothing new for readers to act on.
+- Reader-facing entry added to `lib/data/changelog.ts` (CLAUDE.md line 17: every reader-visible change gets one). `dataLastUpdated` is already `2026-11-26`.

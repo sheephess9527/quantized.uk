@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-26',
+    en: 'The homepage layout is now evenly balanced. Editor\'s Picks appear as a three-column grid below Latest additions, and the five quick tools sit side by side in one row, so neither section leaves a large empty gap on wide screens.',
+    zh: '首页排版更均衡：编辑精选改为三列卡片，排在最新收录下方；五个快捷工具在宽屏上并排成一行，不再出现大块空白。',
+  },
+  {
+    date: '2026-11-26',
     en: 'Added Day, Night and Auto system appearance modes in the navigation bar — pairing a glare-free fog-white light theme with a lifted GitHub-style dimmed slate dark theme — and refreshed the site palette around calm engineering blue so green, amber and red stay reserved for memory fit verdicts and warnings.',
     zh: '顶部导航栏新增「白天 / 夜间 / 自动跟随系统」三种外观模式：白天采用清爽雾白浅色主题，夜间升级为柔和不刺眼的炭灰蓝暗色主题，彻底告别纯黑底色眩光；同时全站统一为工程天青蓝主色调并精简标签杂色，让绿、黄、红严格只代表显存适配结论与风险提示。',
   },
