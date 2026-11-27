@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-27',
+    en: 'Graduated KRAFTON Raon-1 mini (30B-A4.3B MoE, Apache 2.0, 256K window) from the pending list with five verified official GGUF levels; expanded verified Apple Silicon 4-bit MLX downloads (`mlx-lm` generate & API server commands + exact safetensors sizes) to 15 models; documented EXL3 and NVFP4 on the Formats index; added a Size × Speed Pareto Frontier and 3 Sweet-Spot picks on every GPU page, an instant llama-bench / Ollama terminal parser and shareable SVG report card on /tools/speed/, a Thinking Token & Speculative Decoding wait-time simulator on /tools/feel/, and a Heterogeneous Multi-GPU Rig Builder (`--tensor-split`, concurrent KV pool sizing, terminal JSON CLI one-liner and Hugging Face bookmarklet) on /tools/ and /tools/cli-gen/.',
+    zh: '将 KRAFTON Raon-1 mini（30B-A4.3B 混合专家、Apache 2.0、256K 上下文）从待收录列表正式转入模型索引并核实官方 5 档 GGUF 字节数；Apple Silicon 已核实 4-bit MLX 下载扩展至 15 款模型（附精确 safetensors 体积与 mlx_lm.server 命令）；量化格式页新增 EXL3 与 NVFP4 参考说明；每张显卡页新增「体量 × 速度 帕累托前沿与 3 大黄金甜点推荐」，/tools/speed/ 新增 llama-bench / Ollama 终端输出一键解析器与 SVG 战报卡，/tools/feel/ 新增思考链 Token 耗时与投机采样推演，/tools/ 与命令生成器新增异构多卡攒机台（--tensor-split）、多并发 KV 缓存池规划、终端 JSON 查询命令与 Hugging Face 书签脚本。',
+  },
+  {
+    date: '2026-11-27',
     en: 'Added Micius-Flash 27B, OCRia-1, Surogate3.7 35B-A3B and Voltron 1.1 Mini with verified GGUF file sizes and separate vision projector sizes where applicable. Quick launch buttons on model pages are larger on phones and select the command for manual copying when clipboard access is blocked.',
     zh: '收录 Micius-Flash 27B、OCRia-1、Surogate3.7 35B-A3B 和 Voltron 1.1 Mini，核实 GGUF 权重以及各视觉版本投影的字节数。模型页的一键运行按钮更容易在手机上点击。浏览器限制剪贴板时，页面会选中命令，方便手动复制。',
   },

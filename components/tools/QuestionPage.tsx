@@ -3,6 +3,7 @@ import { Calculator } from 'lucide-react';
 import { translations, type Lang } from '@/lib/i18n/translations';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ToolExplainer from '@/components/tools/ToolExplainer';
+import LlamaBenchParser from '@/components/tools/LlamaBenchParser';
 import { speedQContent, quantQContent, contextQContent } from '@/lib/data/tool-content';
 import { gpuDisplayName, type GPU } from '@/lib/data/gpus';
 import { GPU_COUNT } from '@/lib/site';
@@ -78,6 +79,8 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
           </>
         )}
       </div>
+
+      {kind === 'speed' && <LlamaBenchParser />}
 
       <div className="space-y-6">
         {sections.map(sec => (

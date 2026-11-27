@@ -137,13 +137,17 @@ assert.deepEqual(macModelOptions('qwen3-4b'), {
   repo: 'mlx-community/Qwen3-4B-4bit',
   repoUrl: 'https://huggingface.co/mlx-community/Qwen3-4B-4bit',
   command: 'mlx_lm.generate --model mlx-community/Qwen3-4B-4bit --prompt "Hello"',
+  serverCommand: 'mlx_lm.server --model mlx-community/Qwen3-4B-4bit --port 8080',
   studioUrl: 'lmstudio://open_from_hf?model=mlx-community/Qwen3-4B-4bit',
+  weightGiB: 2.11,
+  shards: 1,
+  groupSize: 64,
 });
 for (const modelId of ['gemma-3-4b-it', 'llama-3.2-1b', 'llama-3.2-3b', 'mistral-7b-v0.3']) {
   assert.equal(macModelOptions(modelId), undefined, `${modelId}: unverified Mac entries stay hidden`);
 }
 
-for (const id of ['domyn-edge-sft', 'inkling-2-mini']) {
+for (const id of ['domyn-edge-sft', 'inkling-2-mini', 'raon-1-mini']) {
   const m = models.find(x => x.id === id)!;
   const q4 = m.quants.find(q => q.level === 'Q4_K_M')!;
   const src = q4.source!;
@@ -161,3 +165,4 @@ const mellumInst = models.find(x => x.id === 'mellum2-1-12b-a2-5b-instruct')!;
 assert(canOfferOllamaLaunch(mellumInst.id, mellumInst.quants[0].source!.repo));
 
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');
+

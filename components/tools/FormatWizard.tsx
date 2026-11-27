@@ -10,11 +10,13 @@ import { runFormatWizard, HardwareType, Priority, UseCase } from '@/lib/utils/fo
 import { cn } from '@/lib/utils/cn';
 
 const formatColors: Record<string, string> = {
-  GGUF: 'bg-sky-500/12 text-sky-300 border-sky-500/25',
-  AWQ:  'bg-cyan-500/12 text-cyan-300 border-cyan-500/25',
-  EXL2: 'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
-  GPTQ: 'bg-teal-500/12 text-teal-300 border-teal-500/25',
-  HQQ:  'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
+  GGUF:  'bg-sky-500/12 text-sky-300 border-sky-500/25',
+  AWQ:   'bg-cyan-500/12 text-cyan-300 border-cyan-500/25',
+  EXL2:  'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
+  GPTQ:  'bg-teal-500/12 text-teal-300 border-teal-500/25',
+  HQQ:   'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
+  EXL3:  'bg-blue-500/12 text-blue-300 border-blue-500/25',
+  NVFP4: 'bg-emerald-500/12 text-emerald-300 border-emerald-500/25',
 };
 
 export default function FormatWizard() {

@@ -36,13 +36,13 @@ visitor speed submissions to a private D1 Free queue.
 
 | Surface | Notes |
 |--------|--------|
-| Models | **171** in index (`models-extra` … `models-extra-20`), 151 active |
+| Models | **172** in index (`models-extra` … `models-extra-20`), 152 active |
 | Cookbook | **28** guides, all rewritten with 3–5 FAQs each, reading time derived, `verifiedStack` shown with or without a `verifiedAt` date; instant keyword search + `aria-pressed` category filters on `/cookbook/` |
-| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`), plus `[Cards \| Table]` view switcher and sort selector (never sorting across LiveBench releases); licence + image-input facts live in `lib/data/model-facts.ts` (171 models: 169 licensed, 59 image input) |
+| Hub | Filters: size / category / hardware / format / **input** (`?input=multimodal`) / **licence** (`?lic=commercial\|restricted\|noncommercial`) / **recency** (`?recency=recent`), plus `[Cards \| Table]` view switcher and sort selector (never sorting across LiveBench releases); licence + image-input facts live in `lib/data/model-facts.ts` (172 models: 170 licensed, 59 image input) |
 | Home | 5-act visual hierarchy: hardware+task picker → weekly updates + editor's picks → popular cards + job paths → measured sample → FAQ + tools + collapsed changelog |
 | Feed | `/feed.xml` — RSS of changelog + recent models |
-| Tools | Global `⌘K / Ctrl+K` command palette (`next/dynamic`, `ssr: false`); quick answers (speed / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows), CLI, format wizard, compare |
-| i18n | **English `/` + Chinese `/zh/**`** — 1,580 HTML files including English `404.html` and Chinese `zh/404.html` variants and 400 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
+| Tools | Global `⌘K / Ctrl+K` command palette (`next/dynamic`, `ssr: false`); quick answers (speed + `llama-bench` parser / which quant / context) + `/errors/` lookup (20); VRAM (**122** GPU configurations, including laptops and APUs, + 4 CPU-only RAM rows) + GPU Pareto frontier, CLI (`--tensor-split`, `-np`, `--draft-max`), format wizard, compare, feel (thinking wait + speculative decoding), heterogeneous multi-GPU rig builder (`/tools/`) |
+| i18n | **English `/` + Chinese `/zh/**`** — 1,590 HTML files including English `404.html` and Chinese `zh/404.html` variants and 404 model/GPU pairs per language, hreflang-paired, Chinese baked into static HTML |
 | Privacy | No public repo link on site pages; one contact address `zjy@quantized.uk` (`FEEDBACK_EMAIL`) in Footer, `/about/`, 404, JSON-LD |
 
 ## Commands

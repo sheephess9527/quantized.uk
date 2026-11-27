@@ -46,6 +46,9 @@ export default function CLIGenerator() {
   const [threads, setThreads] = useState(8);
   const [port, setPort] = useState(8080);
   const [apiKey, setApiKey] = useState('');
+  const [parallel, setParallel] = useState(1);
+  const [tensorSplit, setTensorSplit] = useState('');
+  const [draftMode, setDraftMode] = useState<'none' | 'mtp' | 'draft'>('none');
   const [activeTab, setActiveTab] = useState<OutputTab>('cmd');
   const [copied, setCopied] = useState(false);
 
@@ -106,7 +109,7 @@ export default function CLIGenerator() {
   const output = useMemo(() => {
     if (!modelId) return null;
     const source = selectedModel?.quants.find(q => q.format === 'GGUF' && q.level === quantLevel)?.source;
-    return generateCLI({
+    const base = generateCLI({
       framework,
       env,
       modelId,
@@ -124,7 +127,36 @@ export default function CLIGenerator() {
       lang,
       gpuName: profileGpu?.name,
     });
-  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang, profileGpu]);
+
+    const extraFlags: string[] = [];
+    const extraNotes = [...base.notes];
+    const cleanSplit = tensorSplit.trim().replace(/[^0-9.,]/g, '');
+
+    if (framework === 'llamacpp') {
+      if (parallel > 1) extraFlags.push(`-np ${parallel}`);
+      if (cleanSplit) extraFlags.push(`-sm layer -ts ${cleanSplit}`);
+      if (draftMode === 'mtp') extraFlags.push(`--spec-type mtp --draft-max 4`);
+      if (draftMode === 'draft') extraFlags.push(`-md ./draft-0.6b-Q8_0.gguf --draft-max 12`);
+    } else if (framework === 'vllm') {
+      if (parallel > 1) extraFlags.push(`--max-num-seqs ${parallel}`);
+      if (cleanSplit) {
+        const tpCount = cleanSplit.split(',').filter(Boolean).length;
+        if (tpCount > 1) extraFlags.push(`--tensor-parallel-size ${tpCount}`);
+      }
+    } else if (framework === 'ollama' && parallel > 1) {
+      extraNotes.push(
+        lang === 'zh'
+          ? `多并发设置：在启动 ollama serve 前设置环境变量 OLLAMA_NUM_PARALLEL=${parallel}`
+          : `Concurrency: set environment variable OLLAMA_NUM_PARALLEL=${parallel} before starting ollama serve`,
+      );
+    }
+
+    const command = extraFlags.length
+      ? `${base.command} \\\n  ${extraFlags.join(' ')}`
+      : base.command;
+
+    return { ...base, command, notes: extraNotes };
+  }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang, profileGpu, parallel, tensorSplit, draftMode]);
 
   const copyText = () => {
     const text = activeTab === 'compose' ? output?.compose : output?.command;
@@ -266,6 +298,52 @@ export default function CLIGenerator() {
               onChange={e => setApiKey(e.target.value)}
               className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-400 focus:outline-none focus:border-sky-500/40 font-mono"
             />
+          </div>
+
+          {/* Heterogeneous Multi-GPU Rig, Concurrency & Speculative Decoding */}
+          <div className="pt-3 border-t border-ink/[0.06] grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label className="block">
+              <span className="block text-xs text-slate-500 mb-1">
+                {lang === 'zh' ? '并发序列 (-np / seqs)' : 'Concurrency (-np / seqs)'}
+              </span>
+              <select
+                value={parallel}
+                onChange={e => setParallel(Number(e.target.value))}
+                className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono"
+              >
+                {[1, 2, 4, 8, 16, 32].map(n => (
+                  <option key={n} value={n}>{n}× {lang === 'zh' ? '并发' : 'seqs'}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="block text-xs text-slate-500 mb-1">
+                {lang === 'zh' ? '异构多卡分片 (--tensor-split)' : 'Multi-GPU Split (--tensor-split)'}
+              </span>
+              <input
+                type="text"
+                placeholder={lang === 'zh' ? '例如 24,16' : 'e.g. 24,16'}
+                value={tensorSplit}
+                onChange={e => setTensorSplit(e.target.value)}
+                className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono"
+              />
+            </label>
+
+            <label className="block">
+              <span className="block text-xs text-slate-500 mb-1">
+                {lang === 'zh' ? '投机采样草稿 (--draft-max)' : 'Speculative Draft'}
+              </span>
+              <select
+                value={draftMode}
+                onChange={e => setDraftMode(e.target.value as 'none' | 'mtp' | 'draft')}
+                className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono"
+              >
+                <option value="none">{lang === 'zh' ? '关闭' : 'Off'}</option>
+                <option value="mtp">{lang === 'zh' ? 'MTP 内置草稿头' : 'Built-in MTP head'}</option>
+                <option value="draft">{lang === 'zh' ? '独立 Draft GGUF (-md)' : 'Separate Draft GGUF (-md)'}</option>
+              </select>
+            </label>
           </div>
         </div>
       </div>

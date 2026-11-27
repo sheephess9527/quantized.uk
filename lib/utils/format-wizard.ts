@@ -27,7 +27,7 @@ function scoreFormat(input: WizardInput, format: string): { score: number; reaso
   const reasons: { en: string; zh: string }[] = [];
 
   if (input.hardware === 'mac') {
-    if (format === 'GGUF') { score += 30; reasons.push({ en: 'GGUF is the only format with full Apple Silicon support via llama.cpp Metal', zh: 'GGUF 是唯一通过 llama.cpp Metal 完整支持 Apple Silicon 的格式' }); }
+    if (format === 'GGUF') { score += 30; reasons.push({ en: 'GGUF (via llama.cpp Metal / Ollama) runs every indexed model on Apple Silicon; 15 models here also link verified 4-bit MLX safetensors (`mlx-lm`)', zh: 'GGUF（经 llama.cpp Metal / Ollama）可在 Apple Silicon 上运行所有收录模型；本站另有 15 个模型提供已核实的 4-bit MLX 权重（`mlx-lm`）' }); }
     else { score -= 40; reasons.push({ en: 'AWQ/EXL2/GPTQ have limited or no native Mac support', zh: 'AWQ/EXL2/GPTQ 在 Mac 上支持有限或不可用' }); }
   }
 

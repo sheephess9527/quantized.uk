@@ -217,6 +217,7 @@ export type LicenceId = keyof typeof LICENCES;
 
 /** Model id → licence. Anything absent has no licence recorded (see above). */
 export const MODEL_LICENCE: Record<string, LicenceId> = {
+  'raon-1-mini': 'apache-2.0',
   'mellum2-1-12b-a2-5b-instruct': 'apache-2.0',
   'domyn-edge-sft': 'apache-2.0',
   'ocria-1': 'ocria-1-rail',

@@ -117,21 +117,6 @@ export const pendingModels: PendingModel[] = [
     checkedAt: '2026-11-26',
   },
   {
-    id: 'raon-1-mini',
-    name: 'Raon-1 mini',
-    vendor: 'KRAFTON',
-    reason: 'not-sized',
-    detail: {
-      en: 'llama.cpp v1.1.0 (b12774) adds upstream `raon1` support (7 K-only MLA layers + 18 recurrent RDA layers). KRAFTON’s official Q4_K_M now accepts anonymous downloads, and a community IQ4_NL is also public. Total recurrent-state and working memory still need verification.',
-      zh: 'llama.cpp v1.1.0（b12774）已合入上游 `raon1` 支持（7 层仅 K 的 MLA 缓存 + 18 层循环 RDA）。KRAFTON 官方 Q4_K_M 现可匿名下载，社区也发布了 IQ4_NL。循环状态和工作缓冲区的总内存占用仍待核实。',
-    },
-    recheck: {
-      en: 'Reconcile mHC/RDA memory against a run of the official GGUF in stable llama.cpp.',
-      zh: '用稳定版 llama.cpp 运行官方 GGUF，核对 mHC/RDA 内存占用。',
-    },
-    checkedAt: '2026-11-27',
-  },
-  {
     id: 'ernie-5-5-flash-preview',
     name: 'ERNIE 5.5 Flash Preview',
     vendor: 'Baidu',

@@ -178,8 +178,8 @@ function isGraniteSwitchGGUF(modelId?: string, repo?: string): boolean {
 }
 
 function isLlamaCppV11GGUF(modelId?: string, repo?: string): boolean {
-  return /^(domyn-edge-sft|inkling-2-mini)$/.test(modelId ?? '') ||
-    /^(prithivmlmods\/domyn-edge-sft-gguf|(?:bartowski|unsloth|ggml-org)\/inkling-2-mini-gguf)$/i.test(repo ?? '');
+  return /^(domyn-edge-sft|inkling-2-mini|raon-1-mini)$/.test(modelId ?? '') ||
+    /^(prithivmlmods\/domyn-edge-sft-gguf|(?:bartowski|unsloth|ggml-org)\/inkling-2-mini-gguf|krafton\/raon-1-mini-gguf)$/i.test(repo ?? '');
 }
 
 export function canOfferOllamaLaunch(modelId?: string, repo?: string): boolean {

@@ -7,6 +7,7 @@ import { vramCalcContent, cliGenContent, formatWizardContent, compareContent, fe
 import { errorsIndexSummary } from '@/lib/data/errors';
 import { models } from '@/lib/data/models';
 import { formatPairs } from '@/lib/utils/format-compare';
+import EcosystemAndRigWorkbench from '@/components/tools/EcosystemAndRigWorkbench';
 
 /**
  * `/tools/` was a 404 while four tool pages lived under it — the one path a
@@ -102,6 +103,8 @@ export default function ToolIndexView({ lang }: { lang: Lang }) {
           </Link>
         </li>
       </ul>
+
+      <EcosystemAndRigWorkbench />
     </div>
   );
 }

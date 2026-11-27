@@ -4,6 +4,7 @@ import RunProvenance from '@/components/benchmarks/RunProvenance';
 import { useState } from 'react';
 import FitControls from './FitControls';
 import GpuUpgradeComparison from './GpuUpgradeComparison';
+import GpuParetoFrontier from './GpuParetoFrontier';
 import { contextLabel } from '@/lib/utils/context-label';
 import Link from '@/components/i18n/LocalLink';
 import { Cpu, ArrowRight } from 'lucide-react';
@@ -144,6 +145,8 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           </Link>
         )}
       </section>
+
+      <GpuParetoFrontier gpu={gpu} fits={fits} contextLength={contextLength} batchSize={batchSize} />
 
       <div className="mb-6">
         <GpuUpgradeComparison current={gpu} settings={{ contextLength, batchSize }} />
