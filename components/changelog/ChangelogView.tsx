@@ -29,7 +29,7 @@ export default function ChangelogView({ lang }: { lang: Lang }) {
         <p className="text-xs text-slate-500 font-mono mt-2">{c.subtitle.replace('{date}', dataLastUpdated)}</p>
         <a
           href={lang === 'zh' ? '/zh/feed.xml' : '/feed.xml'}
-          className="inline-flex items-center gap-1.5 min-h-[44px] mt-1 text-xs text-slate-400 hover:text-orange-400"
+          className="inline-flex items-center gap-1.5 min-h-[44px] mt-1 text-xs text-slate-400 hover:text-sky-400"
         >
           <Rss size={12} /> {t.home.weekly.rss}
         </a>
@@ -47,10 +47,10 @@ export default function ChangelogView({ lang }: { lang: Lang }) {
       <div className="glass rounded-2xl p-5 mt-10 space-y-2">
         <p className="text-xs text-slate-400 leading-relaxed">{c.disclaimer}</p>
         <p className="text-xs text-slate-500 leading-relaxed">{dataSources.models[lang]}</p>
-        <Link href="/quant-hub/?recency=recent" className="inline-flex items-center min-h-[44px] text-xs text-violet-400 hover:text-violet-300">
+        <Link href="/quant-hub/?recency=recent" className="inline-flex items-center min-h-[44px] text-xs text-sky-400 hover:text-sky-300">
           {t.home.weekly.viewHub} →
         </Link>
-        <Link href="/pending/" className="inline-flex items-center min-h-[44px] ml-4 text-xs text-violet-400 hover:text-violet-300">
+        <Link href="/pending/" className="inline-flex items-center min-h-[44px] ml-4 text-xs text-sky-400 hover:text-sky-300">
           {t.pending.title} →
         </Link>
       </div>

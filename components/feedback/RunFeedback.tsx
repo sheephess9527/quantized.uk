@@ -72,7 +72,7 @@ export default function RunFeedback({ subject, context }: { subject: string; con
             'inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 min-h-[44px] text-xs font-medium transition-all',
             outcome === 'ok'
               ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
-              : 'text-slate-400 border-white/[0.08] hover:text-slate-200 hover:border-white/15',
+              : 'text-slate-400 border-ink/[0.08] hover:text-slate-200 hover:border-ink/15',
           )}
         >
           <CheckCircle2 size={13} /> {f.itRan}
@@ -85,7 +85,7 @@ export default function RunFeedback({ subject, context }: { subject: string; con
             'inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 min-h-[44px] text-xs font-medium transition-all',
             outcome === 'problem'
               ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
-              : 'text-slate-400 border-white/[0.08] hover:text-slate-200 hover:border-white/15',
+              : 'text-slate-400 border-ink/[0.08] hover:text-slate-200 hover:border-ink/15',
           )}
         >
           <AlertTriangle size={13} /> {f.hadProblem}
@@ -97,7 +97,7 @@ export default function RunFeedback({ subject, context }: { subject: string; con
       {outcome === 'problem' && (
         <div className="mt-3">
           <p className="text-xs text-slate-400 leading-relaxed">{f.willSend}</p>
-          <pre className="mt-2 rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 text-[11px] font-mono text-slate-400 whitespace-pre-wrap break-words">
+          <pre className="mt-2 rounded-xl border border-ink/[0.08] bg-ink/[0.02] p-3 text-[11px] font-mono text-slate-400 whitespace-pre-wrap break-words">
 {body.trim()}
           </pre>
           <a

@@ -647,6 +647,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-26 — Dual-theme Day / Night / Auto appearance and de-rainbowed engineering palette
+
+- Replaced the single pitch-black (`#0a0a0f`) + violet theme with a zero-FOUC **Day (`B4` Clean Lab Light `#f4f6f9` / `#ffffff`) + Night (`B1` GitHub Dark Dimmed `#1c2128` / `#22272e`) + Auto (`prefers-color-scheme`)** design system (`lib/theme/context.tsx`, `components/layout/ThemeToggle.tsx`, `tailwind.config.ts`, `app/globals.css`, `app/layout.tsx`). Both themes clear WCAG 2.1 AA (`≥ 4.5:1`) across the entire `slate-100..600` ramp and inverted chromatic `200–400` text tokens, with media-aware `theme-color` metadata and theme-reactive Recharts benchmark charts.
+- Migrated site-wide interactive accents from AI-template `violet-*` to engineering `sky-*` / `cyan-*` / `teal-*`, neutralized decorative hardware pills (`pro-gpu` is no longer red), unified non-verdict card/table metrics to high-contrast tabular `slate-100` / `slate-200`, and harmonized format badges so emerald, amber and rose remain strictly reserved for VRAM fit verdicts, measured provenance, licence restrictions and superseded warnings. [WCAG audit and handoff](docs/changes/2026-11-26-dual-theme-palette.md).
+
 ### 2026-11-26 — llama.cpp v1.1.0 (`b12774`), Inkling 2 Mini, Domyn Edge SFT, Mellum2.1 Instruct and layout redesign
 
 - Upgraded the pinned llama.cpp release to official stable **v1.1.0** (`nightly-tag.txt` → `b12774`, all Windows CPU, CUDA 12.4/13.5, Vulkan, ROCm 10.0 and SYCL archives verified). Indexed three Apache-2.0 checkpoints from primary configs and verified GGUF byte counts (**167** models total, **385** model/GPU pairs per language): **Inkling 2 Mini** (26.07B language weights + 0.60 GiB BF16 projector, 5.4B effective active parameters across 3 loop passes, 8 of 48 execution slots growing KV), **Domyn Edge SFT** (3.93B, 12 full NoPE layers at `8×256` KV + 24 SWA layers at `8×64` KV), and **Mellum2.1 12B-A2.5B Instruct** (JetBrains official GGUFs). Gated `hf.co` Ollama GGUF commands on `domyn-edge-sft` and `inkling-2-mini` (`llama.cpp v1.1.0+`), and refreshed `/pending/` (added Ling 3.2 Air and GigaChat4 37B-A4B; updated Raon-1 mini, Hy4 Flash and ZAYA1 8B).

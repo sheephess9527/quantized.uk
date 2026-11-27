@@ -23,7 +23,7 @@ export default function StatsBar({ lang }: { lang: Lang }) {
           belonging to that card (reader feedback, 2026-10-23). */}
       <p className="text-xs text-slate-500 mb-2 px-1">{t.home.stats.heading}</p>
       <div className="glass rounded-2xl p-1">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-ink/[0.06]">
           {stats.map(({ value, keyName }) => (
             <div key={keyName} className="flex flex-col items-center py-4 px-6">
               <span className="text-2xl font-bold text-gradient">{value}</span>

@@ -32,7 +32,7 @@ import { trackEvent } from '@/lib/analytics';
 const EXAMPLE_GPU_ID = 'rtx4060ti16';
 
 const KIND_STYLE: Record<HomePick['kind'], { icon: typeof ShieldCheck; color: string; ring: string }> = {
-  capable: { icon: Sparkles, color: 'text-violet-300', ring: 'border-violet-500/25' },
+  capable: { icon: Sparkles, color: 'text-sky-300', ring: 'border-sky-500/25' },
   headroom: { icon: ShieldCheck, color: 'text-emerald-300', ring: 'border-emerald-500/25' },
   fastest: { icon: Gauge, color: 'text-cyan-300', ring: 'border-cyan-500/25' },
 };
@@ -77,7 +77,7 @@ export default function HomeMatch() {
                 updateConfig({ gpuId: e.target.value });
                 if (e.target.value) trackEvent('Home Match', { gpu: e.target.value });
               }}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40"
+              className="w-full min-h-[44px] rounded-xl bg-ink/[0.03] border border-ink/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-sky-500/40"
             >
               <option value="">{m.gpuPlaceholder}</option>
               {GPU_GROUPS.map(([type, key]) => {
@@ -100,7 +100,7 @@ export default function HomeMatch() {
             <select
               value={useCase}
               onChange={e => setUseCase(e.target.value as HomeUseCase)}
-              className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/40"
+              className="w-full min-h-[44px] rounded-xl bg-ink/[0.03] border border-ink/[0.14] px-3 py-2.5 text-sm text-slate-200 focus:border-sky-500/40"
             >
               <option value="chat">{m.useChat}</option>
               <option value="code">{m.useCode}</option>
@@ -125,7 +125,7 @@ export default function HomeMatch() {
         </p>
 
         {picks.length === 0 ? (
-          <p className="text-sm text-slate-400 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <p className="text-sm text-slate-400 rounded-xl border border-ink/[0.06] bg-ink/[0.02] p-4">
             {m.none.replace('{gpu}', gpuName)}
           </p>
         ) : (
@@ -143,14 +143,14 @@ export default function HomeMatch() {
                 `&quant=${encodeURIComponent(quantLevelKey(pick.quant))}` +
                 `&gpu=${encodeURIComponent(gpu.id)}&ctx=${contextLength}&batch=${batchSize}`;
               return (
-                <li key={pick.kind} className={`rounded-xl border bg-white/[0.02] p-4 flex flex-col ${style.ring}`}>
+                <li key={pick.kind} className={`rounded-xl border bg-ink/[0.02] p-4 flex flex-col ${style.ring}`}>
                   <div className={`flex items-center gap-1.5 text-xs font-semibold ${style.color}`}>
                     <Icon size={13} />
                     {kindLabel[pick.kind].title}
                   </div>
                   <Link
                     href={`/quant-hub/${pick.model.id}/`}
-                    className="mt-2 text-base font-semibold text-slate-100 hover:text-violet-200 transition-colors"
+                    className="mt-2 text-base font-semibold text-slate-100 hover:text-sky-200 transition-colors"
                   >
                     {pick.model.name}
                   </Link>
@@ -180,7 +180,7 @@ export default function HomeMatch() {
 
                   <p className="text-xs text-slate-500 leading-relaxed mt-3 flex-1">{kindLabel[pick.kind].why}</p>
 
-                  <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-white/[0.05]">
+                  <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-ink/[0.05]">
                     <Link href={`/quant-hub/${pick.model.id}/`} className="card-action text-xs">
                       {m.openModel}
                     </Link>
@@ -196,7 +196,7 @@ export default function HomeMatch() {
 
         <Link
           href={`/gpu/${gpuSlug(gpu)}/`}
-          className="inline-flex items-center gap-1 mt-4 min-h-[44px] text-xs text-violet-400 hover:text-violet-300"
+          className="inline-flex items-center gap-1 mt-4 min-h-[44px] text-xs text-sky-400 hover:text-sky-300"
         >
           {m.allFits.replace('{gpu}', gpuName)} <ArrowRight size={12} />
         </Link>

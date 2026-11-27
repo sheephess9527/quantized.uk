@@ -21,20 +21,20 @@ export default function ExploreStrip({ guideCount, lang }: { guideCount: number;
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/quant-hub/"
-          className="group rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+          className="group rounded-xl border border-ink/[0.06] bg-ink/[0.02] p-4 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Layers size={14} className="text-violet-400" />
-            <span className="text-xs font-semibold text-violet-300 uppercase tracking-wider">{e.hubLabel}</span>
+            <Layers size={14} className="text-sky-400" />
+            <span className="text-xs font-semibold text-sky-300 uppercase tracking-wider">{e.hubLabel}</span>
           </div>
           <p className="text-2xl font-bold text-slate-100 mb-1">{stats.modelCount}</p>
           <p className="text-xs text-slate-500 mb-3">{e.hubDesc}</p>
-          <span className="flex items-center gap-1 text-xs text-violet-400 group-hover:text-violet-300">
+          <span className="flex items-center gap-1 text-xs text-sky-400 group-hover:text-sky-300">
             {e.hubCta} <ChevronRight size={12} />
           </span>
         </Link>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-ink/[0.06] bg-ink/[0.02] p-4">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen size={14} className="text-cyan-400" />
             <span className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">{e.cookbookLabel}</span>
@@ -58,7 +58,7 @@ export default function ExploreStrip({ guideCount, lang }: { guideCount: number;
 
         <Link
           href="/benchmarks/"
-          className="group rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-emerald-500/25 hover:bg-emerald-500/[0.04] transition-all"
+          className="group rounded-xl border border-ink/[0.06] bg-ink/[0.02] p-4 hover:border-emerald-500/25 hover:bg-emerald-500/[0.04] transition-all"
         >
           <div className="flex items-center gap-2 mb-2">
             <BarChart3 size={14} className="text-emerald-400" />

@@ -18,7 +18,7 @@ export default function ConfidenceTag({ modelId, quant }: { modelId: string; qua
   return (
     <span
       title={t.hub.confidence.hint}
-      className="ml-1 align-middle text-[10px] font-sans font-medium px-1 py-px rounded bg-white/[0.05] text-slate-500"
+      className="ml-1 align-middle text-[10px] font-sans font-medium px-1 py-px rounded bg-ink/[0.05] text-slate-500"
     >
       {t.hub.confidence[conf]}
     </span>

@@ -41,10 +41,10 @@ export default function VramStackBar({
   const free = cap ? cap - total : 0;
 
   const segments = [
-    { gb: weightsGB, cls: 'bg-violet-500', label: t.calc.modelWeights },
-    { gb: kvGB, cls: 'bg-cyan-400', label: t.calc.kvCache },
-    { gb: activationsGB, cls: 'bg-orange-400', label: t.calc.activations },
-    { gb: extraGB, cls: 'bg-pink-400', label: t.calc.mmprojRow },
+    { gb: weightsGB, cls: 'bg-sky-500', label: t.calc.modelWeights },
+    { gb: kvGB, cls: 'bg-cyan-500', label: t.calc.kvCache },
+    { gb: activationsGB, cls: 'bg-teal-500', label: t.calc.activations },
+    { gb: extraGB, cls: 'bg-slate-400', label: t.calc.mmprojRow },
   ].filter(s => s.gb > 0);
 
   const summary = cap
@@ -57,19 +57,19 @@ export default function VramStackBar({
 
   return (
     <div className="mt-4">
-      <div role="img" aria-label={aria} className="relative h-3 w-full rounded-full bg-white/[0.06] overflow-hidden flex">
+      <div role="img" aria-label={aria} className="relative h-3 w-full rounded-full bg-ink/[0.08] overflow-hidden flex">
         {segments.map(s => (
           <div key={s.label} className={`${s.cls} h-full shrink-0`} style={{ width: pct(s.gb) }} title={`${s.label} ${s.gb.toFixed(2)} GiB`} />
         ))}
         {cap && total > cap && (
           // Past the card: hatch the part that does not fit (amber when it only spills).
           <div
-            className={`absolute top-0 bottom-0 right-0 ${total / cap <= tightCeiling ? 'bg-amber-400/70' : 'bg-red-500/60'}`}
+            className={`absolute top-0 bottom-0 right-0 ${total / cap <= tightCeiling ? 'bg-amber-500/75' : 'bg-red-500/65'}`}
             style={{ width: `${((total - cap) / scale) * 100}%`, backgroundImage: 'repeating-linear-gradient(45deg, transparent 0 3px, rgba(0,0,0,0.35) 3px 6px)' }}
           />
         )}
         {cap && (
-          <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-white" style={{ left: pct(cap * 0.88) }} />
+          <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-slate-100/80" style={{ left: pct(cap * 0.88) }} />
         )}
       </div>
       <p className={`text-xs mt-2 ${cap && free < 0 ? (total / cap <= tightCeiling ? 'text-amber-300' : 'text-red-300') : 'text-slate-400'}`}>{summary}</p>

@@ -13,19 +13,14 @@ import { isRecentModel, isSuperseded } from '@/lib/utils/model-meta';
 import { licenceOf } from '@/lib/utils/model-facts';
 
 const formatColors: Record<string, string> = {
-  GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
-  AWQ:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/25',
-  EXL2: 'bg-orange-500/15 text-orange-300 border-orange-500/25',
-  GPTQ: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
-  HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
+  GGUF: 'bg-sky-500/12 text-sky-300 border-sky-500/25',
+  AWQ:  'bg-cyan-500/12 text-cyan-300 border-cyan-500/25',
+  EXL2: 'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
+  GPTQ: 'bg-teal-500/12 text-teal-300 border-teal-500/25',
+  HQQ:  'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
 };
 
-const hwColors: Record<string, string> = {
-  'consumer-gpu': 'bg-green-500/10 text-green-400 border-green-500/20',
-  'mac': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  'cpu-vps': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'pro-gpu': 'bg-red-500/10 text-red-400 border-red-500/20',
-};
+const hwPillClass = 'bg-ink/[0.04] text-slate-400 border-ink/[0.10]';
 
 interface Props {
   model: QuantModel;
@@ -63,22 +58,22 @@ export default function ModelCard({ model, lang }: Props) {
       {/* Header */}
       <div>
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-sm font-semibold text-slate-100 leading-snug group-hover:text-violet-200 transition-colors">{model.name}</h3>
-          <span className="badge shrink-0 bg-white/[0.05] text-slate-400 border-white/[0.08] font-mono text-xs">
+          <h3 className="text-sm font-semibold text-slate-100 leading-snug group-hover:text-sky-300 transition-colors">{model.name}</h3>
+          <span className="badge shrink-0 bg-ink/[0.05] text-slate-400 border-ink/[0.10] font-mono text-xs">
             {model.paramLabel}
           </span>
         </div>
         <div className="flex flex-wrap gap-1 mb-1.5">
           {isRecentModel(model) && (
-            <span title={t.hub.model.newBadgeHint} className="badge text-[10px] bg-cyan-500/15 text-cyan-300 border-cyan-500/25">{t.hub.model.newBadge}</span>
+            <span title={t.hub.model.newBadgeHint} className="badge text-[10px] bg-sky-500/12 text-sky-300 border-sky-500/25">{t.hub.model.newBadge}</span>
           )}
           {isSuperseded(model) && (
-            <span className="badge text-[10px] bg-amber-500/10 text-amber-400/90 border-amber-500/20">{t.hub.model.superseded}</span>
+            <span className="badge text-[10px] bg-amber-500/12 text-amber-300 border-amber-500/25">{t.hub.model.superseded}</span>
           )}
           {licence && (
             <span
               title={`${licence.name[lang]} — ${licence.url}`}
-              className="badge text-[10px] bg-white/[0.04] text-slate-400 border-white/[0.08]"
+              className="badge text-[10px] bg-ink/[0.04] text-slate-400 border-ink/[0.10]"
             >
               {licence.short}
             </span>
@@ -86,7 +81,7 @@ export default function ModelCard({ model, lang }: Props) {
         </div>
         <p className="text-xs text-slate-500 mb-2">{model.family}</p>
         {isSuperseded(model) && model.supersededBy && (
-          <p className="text-[11px] text-amber-400/80 mb-1.5">
+          <p className="text-[11px] text-amber-300 mb-1.5">
             {t.hub.model.prefer.replace(
               '{name}',
               MODEL_NAME_BY_ID.get(model.supersededBy) ?? model.supersededBy,
@@ -104,26 +99,26 @@ export default function ModelCard({ model, lang }: Props) {
           .replace('{level}', refQuant.format === 'GGUF' ? refQuant.level : `${refQuant.format} ${refQuant.level}`)}
       </p>
       <div className="grid grid-cols-3 gap-2">
-        <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-          <p className="text-xs font-bold text-violet-300">{sizeAt4K(model, refQuant).toFixed(1)} GB</p>
-          <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.vramAtRef}</p>
+        <div className="text-center p-2 rounded-lg bg-bg-recessed border border-ink/[0.06]">
+          <p className="text-xs font-bold font-mono text-slate-100">{sizeAt4K(model, refQuant).toFixed(1)} GB</p>
+          <p className="text-xs text-slate-500 mt-0.5">{t.hub.model.vramAtRef}</p>
         </div>
-        <div className="text-center p-2 rounded-lg bg-white/[0.02]">
-          <p className="text-xs font-bold text-cyan-300">
+        <div className="text-center p-2 rounded-lg bg-bg-recessed border border-ink/[0.06]">
+          <p className="text-xs font-bold font-mono text-slate-100">
             {contextLabel(model.contextLength)}
           </p>
-          <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.context}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{t.hub.model.context}</p>
         </div>
-        <div className="text-center p-2 rounded-lg bg-white/[0.02]">
+        <div className="text-center p-2 rounded-lg bg-bg-recessed border border-ink/[0.06]">
           {refQuant.speedRTX4090 ? (
             <>
-              <p className="text-xs font-bold text-orange-300">{refQuant.speedRTX4090}</p>
-              <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.speed}<ConfidenceTag modelId={model.id} quant={refQuant} /></p>
+              <p className="text-xs font-bold font-mono text-slate-100">{refQuant.speedRTX4090}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t.hub.model.speed}<ConfidenceTag modelId={model.id} quant={refQuant} /></p>
             </>
           ) : (
             <>
-              <p className="text-xs font-bold text-slate-500">—</p>
-              <p className="text-xs text-slate-600 mt-0.5">{t.hub.model.speed}</p>
+              <p className="text-xs font-bold font-mono text-slate-500">—</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t.hub.model.speed}</p>
             </>
           )}
         </div>
@@ -134,7 +129,7 @@ export default function ModelCard({ model, lang }: Props) {
         <p className="text-xs text-slate-600 mb-1.5">{t.hub.model.formats}</p>
         <div className="flex flex-wrap gap-1.5">
           {uniqueFormats.map(fmt => (
-            <span key={fmt} className={cn('badge text-xs font-mono', formatColors[fmt] ?? 'bg-slate-500/10 text-slate-400 border-slate-500/20')}>
+            <span key={fmt} className={cn('badge text-xs font-mono', formatColors[fmt] ?? hwPillClass)}>
               {fmt}
             </span>
           ))}
@@ -145,18 +140,18 @@ export default function ModelCard({ model, lang }: Props) {
           list where every card stacks; the Hub's hardware filter carries them. */}
       <div className="hidden sm:flex flex-wrap gap-1.5">
         {model.hardwareTags.map(hw => (
-          <span key={hw} className={cn('badge text-xs', hwColors[hw] ?? 'bg-slate-500/10 text-slate-400 border-slate-500/20')}>
+          <span key={hw} className={cn('badge text-xs', hwPillClass)}>
             {t.hub.hardware[hw as keyof typeof t.hub.hardware] ?? hw}
           </span>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="mt-auto pt-3 border-t border-white/[0.05] flex items-center justify-between">
-        <div className="flex items-center gap-1 text-xs text-slate-600">
+      <div className="mt-auto pt-3 border-t border-ink/[0.07] flex items-center justify-between">
+        <div className="flex items-center gap-1 text-xs text-slate-500 font-mono">
           {bestQuant && (
             <>
-              <Zap size={10} className="text-yellow-500" />
+              <Zap size={10} className="text-sky-400" />
               <span>{bestQuant.format} {bestQuant.level}</span>
             </>
           )}
@@ -176,7 +171,7 @@ export default function ModelCard({ model, lang }: Props) {
               window.open(model.quants[0]?.hfSearchUrl ?? '#', '_blank', 'noopener,noreferrer');
             }
           }}
-          className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-xs text-sky-400 hover:text-sky-300 transition-colors cursor-pointer"
         >
           {t.hub.model.viewHF}
           <ExternalLink size={10} />

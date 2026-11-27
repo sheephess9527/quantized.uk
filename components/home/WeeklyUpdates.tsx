@@ -34,7 +34,7 @@ export default function WeeklyUpdates({ lang }: { lang: Lang }) {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/quant-hub/?recency=recent"
-            className="inline-flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 py-2.5 -my-2.5 min-h-[44px]"
+            className="inline-flex items-center gap-1 text-xs text-sky-400 hover:text-sky-300 py-2.5 -my-2.5 min-h-[44px]"
           >
             {w.viewHub} <ArrowRight size={12} />
           </Link>
@@ -44,7 +44,7 @@ export default function WeeklyUpdates({ lang }: { lang: Lang }) {
               language is resolved explicitly here. */}
           <a
             href={lang === 'zh' ? '/zh/feed.xml' : '/feed.xml'}
-            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-orange-400 py-2.5 -my-2.5 min-h-[44px]"
+            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-sky-400 py-2.5 -my-2.5 min-h-[44px]"
           >
             <Rss size={12} /> {w.rss}
           </a>
@@ -57,7 +57,7 @@ export default function WeeklyUpdates({ lang }: { lang: Lang }) {
             <li key={e.model.id}>
               <Link
                 href={`/quant-hub/${e.model.id}/`}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+                className="block rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
               >
                 {isRecentModel(e.model) && (
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
@@ -80,7 +80,7 @@ export default function WeeklyUpdates({ lang }: { lang: Lang }) {
                   links its same-budget siblings. */}
               <Link
                 href={`/gpu/${gpuSlug(e.gpus[0])}/`}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+                className="block rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
               >
                 {isRecentDate(e.date) && (
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-400/90 mr-1.5">
@@ -106,7 +106,7 @@ export default function WeeklyUpdates({ lang }: { lang: Lang }) {
       */}
       <Link
         href="/changelog/"
-        className="inline-flex items-center min-h-[44px] mt-1 text-xs text-slate-500 hover:text-slate-300 border-t border-white/[0.05] pt-3 w-full"
+        className="inline-flex items-center min-h-[44px] mt-1 text-xs text-slate-500 hover:text-slate-300 border-t border-ink/[0.05] pt-3 w-full"
       >
         {w.viewChangelog} →
       </Link>

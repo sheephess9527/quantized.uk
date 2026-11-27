@@ -56,13 +56,13 @@ export default function BenchmarkMatrix() {
           type="button"
           onClick={download}
           disabled={!rows.length}
-          className="min-h-11 inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
+          className="min-h-11 inline-flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
         >
           <Download size={16} aria-hidden="true" />
           {bench.matrixDownload}
         </button>
         {hasFilters && (
-          <button type="button" onClick={() => setFilters({})} className="min-h-11 px-2 text-sm text-violet-300 hover:text-violet-200">
+          <button type="button" onClick={() => setFilters({})} className="min-h-11 px-2 text-sm text-sky-300 hover:text-sky-200">
             {bench.matrixReset}
           </button>
         )}
@@ -76,7 +76,7 @@ export default function BenchmarkMatrix() {
           <table className="w-full text-sm">
             <caption className="sr-only">{bench.tableTitle} — {bench.tableSubtitle}</caption>
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-ink/[0.06]">
                 {Object.values(bench.cols).map(col => (
                   <th key={col} scope="col" className="text-left py-2 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {col}
@@ -86,12 +86,12 @@ export default function BenchmarkMatrix() {
             </thead>
             <tbody>
               {rows.map((row, i) => (
-                <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                <tr key={i} className="border-b border-ink/[0.03] hover:bg-ink/[0.02] transition-colors">
                   <td className="py-2.5 px-3 text-slate-200 text-xs font-medium">{row.model}</td>
                   <td className="py-2.5 px-3 text-slate-300 text-xs">{row.hardware}</td>
                   <td className="py-2.5 px-3 text-slate-400 text-xs font-mono"><RunProvenance row={row} /></td>
                   <td className="py-2.5 px-3">
-                    <span className="badge bg-violet-500/10 text-violet-300 border-violet-500/20 text-xs font-mono">
+                    <span className="badge bg-sky-500/10 text-sky-300 border-sky-500/20 text-xs font-mono">
                       {row.quant}
                     </span>
                   </td>

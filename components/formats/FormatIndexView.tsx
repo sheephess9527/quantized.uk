@@ -34,7 +34,7 @@ export default function FormatIndexView({ lang }: { lang: Lang }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[720px]">
             <thead>
-              <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+              <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.08]">
                 <th scope="col" className="font-medium py-2 pr-3">{c.colFormat}</th>
                 <th scope="col" className="font-medium py-2 pr-3">{c.colRuns}</th>
                 <th scope="col" className="font-medium py-2 pr-3">{c.colHardware}</th>
@@ -45,17 +45,17 @@ export default function FormatIndexView({ lang }: { lang: Lang }) {
             </thead>
             <tbody>
               {rows.map(r => (
-                <tr key={r.format.id} className="border-b border-white/[0.04] align-top">
+                <tr key={r.format.id} className="border-b border-ink/[0.06] align-top">
                   <td className="py-3 pr-3 font-semibold">
                     {/* Links only where a page exists — a format the index does
                         not ship (HQQ) stays plain text rather than pointing at
                         a page that would have nothing to list. */}
                     {FORMAT_PAGES.some(f => f.id === r.format.id) ? (
-                      <Link href={`/formats/${r.format.id}/`} className="hover:underline" style={{ color: r.format.textColor }}>
+                      <Link href={`/formats/${r.format.id}/`} className={`hover:underline ${r.format.textClass}`}>
                         {r.format.name}
                       </Link>
                     ) : (
-                      <span style={{ color: r.format.textColor }}>{r.format.name}</span>
+                      <span className={r.format.textClass}>{r.format.name}</span>
                     )}
                   </td>
                   <td className="py-3 pr-3 text-slate-400 text-xs">{r.format.framework}</td>
@@ -107,9 +107,9 @@ export default function FormatIndexView({ lang }: { lang: Lang }) {
               className="block glass glass-hover rounded-2xl p-5 h-full"
             >
               <span className="text-base font-semibold text-slate-100">
-                <span style={{ color: pair.a.textColor }}>{pair.a.name}</span>
+                <span className={pair.a.textClass}>{pair.a.name}</span>
                 <span className="text-slate-600 mx-1.5">vs</span>
-                <span style={{ color: pair.b.textColor }}>{pair.b.name}</span>
+                <span className={pair.b.textClass}>{pair.b.name}</span>
               </span>
               <span className="block text-xs text-slate-500 font-mono mt-1.5">
                 {modelsWithFormat(pair.a.name).length} · {modelsWithFormat(pair.b.name).length} · ⇄ {headToHead(pair).length}

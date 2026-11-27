@@ -52,16 +52,16 @@ export default function Footer() {
   const feedHref = lang === 'zh' ? '/zh/feed.xml' : '/feed.xml';
 
   return (
-    <footer className="mt-24 border-t border-white/[0.06]">
+    <footer className="mt-24 border-t border-ink/[0.06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center">
                 <Zap size={14} className="text-white" />
               </div>
               <span className="font-bold text-slate-100">
-                quantized<span className="text-violet-400">.uk</span>
+                quantized<span className="text-sky-400">.uk</span>
               </span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed max-w-48 mb-3">
@@ -71,7 +71,7 @@ export default function Footer() {
               <a
                 href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20feedback`}
                 onClick={() => trackEvent('Feedback Click')}
-                className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors"
               >
                 <Mail size={12} />
                 {t.footer.feedback}: {FEEDBACK_EMAIL}
@@ -94,7 +94,7 @@ export default function Footer() {
                   href={X_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-wrap items-center gap-1.5 text-sm text-slate-300 hover:text-violet-300 transition-colors"
+                  className="flex flex-wrap items-center gap-1.5 text-sm text-slate-300 hover:text-sky-300 transition-colors"
                 >
                   {t.footer.xLabel} <span className="text-xs">@{X_HANDLE}</span>
                   <ExternalLink size={10} className="opacity-50" />
@@ -104,20 +104,20 @@ export default function Footer() {
               <li>
                 <a
                   href={feedHref}
-                  className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-violet-300 transition-colors"
+                  className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-sky-300 transition-colors"
                 >
                   <Rss size={12} /> {t.footer.rssLabel}
                 </a>
                 <p className="text-xs text-slate-600 mt-0.5">{t.footer.rssDesc}</p>
               </li>
               <li>
-                <Link href="/changelog/" className="text-sm text-slate-300 hover:text-violet-300 transition-colors">
+                <Link href="/changelog/" className="text-sm text-slate-300 hover:text-sky-300 transition-colors">
                   {t.home.changelog.title}
                 </Link>
                 <p className="text-xs text-slate-600 mt-0.5">{t.footer.changelogDesc}</p>
               </li>
               <li>
-                <Link href="/pending/" className="text-sm text-slate-300 hover:text-violet-300 transition-colors">
+                <Link href="/pending/" className="text-sm text-slate-300 hover:text-sky-300 transition-colors">
                   {t.pending.title}
                 </Link>
                 <p className="text-xs text-slate-600 mt-0.5">{t.pending.footerDesc}</p>
@@ -129,7 +129,7 @@ export default function Footer() {
                 <a
                   href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk%20correction`}
                   onClick={() => trackEvent('Feedback Click')}
-                  className="text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-sky-400 hover:text-sky-300 transition-colors"
                 >
                   {FEEDBACK_EMAIL}
                 </a>
@@ -165,7 +165,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-10 pt-6 border-t border-ink/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-600">© 2026 quantized.uk</p>
           <div className="flex items-center gap-4">
             <Link href="/legal/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">

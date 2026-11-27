@@ -79,7 +79,7 @@ export default function ToolExplainer({
           </h2>
           <dl className="space-y-4">
             {content.faqs.map(faq => (
-              <div key={faq.q.en} className="border-t border-white/[0.05] pt-4 first:border-0 first:pt-0">
+              <div key={faq.q.en} className="border-t border-ink/[0.05] pt-4 first:border-0 first:pt-0">
                 <dt className="text-sm font-semibold text-slate-200 mb-1.5">{faq.q[lang]}</dt>
                 <dd className="text-sm text-slate-400 leading-relaxed">
                   <Rich text={faq.a[lang]} />
@@ -101,7 +101,7 @@ function Rich({ text }: { text: string }) {
       {parts.map((part, i) => {
         if (part.startsWith('`') && part.endsWith('`')) {
           return (
-            <code key={i} className="font-mono text-xs text-cyan-300 bg-white/[0.04] rounded px-1 py-0.5">
+            <code key={i} className="font-mono text-xs text-cyan-300 bg-ink/[0.04] rounded px-1 py-0.5">
               {part.slice(1, -1)}
             </code>
           );

@@ -21,7 +21,7 @@ export default function HardwareProfileSelector({ compact = false }: { compact?:
             'w-full appearance-none pl-6 pr-6 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer truncate',
             hasProfile
               ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
-              : 'bg-white/[0.03] text-slate-400 border-white/[0.08] hover:text-slate-200 hover:border-white/[0.14]',
+              : 'bg-ink/[0.03] text-slate-400 border-ink/[0.08] hover:text-slate-200 hover:border-ink/[0.14]',
           )}
           title={gpu ? `${gpuDisplayName(gpu, lang)} (${gpu.vram} GB)` : t.profile.selectGpu}
         >
@@ -51,13 +51,13 @@ export default function HardwareProfileSelector({ compact = false }: { compact?:
     <div className="glass rounded-xl p-4">
       <label className="block">
         <span className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-2">
-          <Cpu size={12} className="text-violet-400" />
+          <Cpu size={12} className="text-sky-400" />
           {t.profile.myGpu}
         </span>
         <select
           value={gpuId}
           onChange={e => setGpuId(e.target.value)}
-          className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:border-violet-500/50"
+          className="w-full appearance-none bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:border-sky-500/50"
         >
           <option value="">{t.profile.selectGpu}</option>
           {GPU_GROUPS.map(([type, key]) => {

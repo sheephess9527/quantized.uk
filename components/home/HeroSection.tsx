@@ -26,20 +26,9 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
     // page's actual entry point (pick a card → get models that fit), and a
     // full-viewport hero pushed it off the first screen on every laptop.
     <section className="relative flex items-center justify-center overflow-hidden pt-[4.5rem] pb-4 sm:pt-20 sm:pb-8">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 90% 60% at 50% -10%, rgba(109,40,217,0.22) 0%, transparent 70%)',
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none hero-glow-primary" />
       <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
-      <div
-        className="absolute top-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
+      <div className="absolute top-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none hero-glow-secondary" />
 
       {/* min-w-0: this is a flex item, and the default min-width:auto refuses to
           shrink below its content's min-content width. The changelog pill below
@@ -48,8 +37,8 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
           overflow-hidden silently clipped the CTAs off the right edge. */}
       <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 text-center">
         <div className="hero-rise flex flex-col items-center gap-2 mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-300 text-xs font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
             {t.home.hero.badge}
           </div>
           {/*
@@ -62,10 +51,10 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
           {latestDate && (
             <Link
               href="/changelog/"
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-medium hover:bg-cyan-500/15 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/[0.04] border border-ink/[0.10] text-slate-300 text-xs font-medium hover:border-sky-500/30 hover:text-sky-300 transition-colors"
             >
-              <Sparkles size={12} className="shrink-0" />
-              <span className="text-cyan-500/70 font-mono">{latestDate}</span>
+              <Sparkles size={12} className="shrink-0 text-sky-400" />
+              <span className="text-slate-500 font-mono">{latestDate}</span>
               {t.home.hero.changelogLink}
             </Link>
           )}
@@ -102,7 +91,7 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
           */}
           <Link
             href="/gpu/"
-            className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
+            className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm transition-all duration-150 hover:scale-[1.02] glow-purple"
           >
             {t.home.hero.ctaPrimary}
             <ArrowRight size={14} />
@@ -111,7 +100,7 @@ export default function HeroSection({ latestDate, lang }: { latestDate?: string;
             href="/tools/vram-calc/"
             className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] rounded-xl glass glass-hover text-slate-200 font-semibold text-sm transition-all duration-150 hover:scale-[1.02]"
           >
-            <Calculator size={14} className="text-cyan-400" />
+            <Calculator size={14} className="text-sky-400" />
             {t.home.hero.ctaSecondary}
           </Link>
         </div>

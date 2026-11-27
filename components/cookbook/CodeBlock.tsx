@@ -24,17 +24,12 @@ export default function CodeBlock({ lang, content }: Props) {
 
   return (
     <div className="code-block">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
-          <span className="ml-1 text-xs text-slate-600">{lang}</span>
-        </div>
+      <div className="flex items-center justify-between gap-2 pb-2 mb-2.5 border-b border-ink/[0.07]">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500">{lang}</span>
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-cyan-300 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-sky-400 transition-colors"
         >
           {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           {copied ? c.copied : c.copy}

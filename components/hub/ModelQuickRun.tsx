@@ -48,8 +48,8 @@ export default function ModelQuickRun({
   };
 
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-[#111218] overflow-hidden">
-      <div className="px-4 sm:px-5 py-3.5 border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-3">
+    <section className="rounded-2xl border border-ink/[0.08] bg-bg-surface overflow-hidden">
+      <div className="px-4 sm:px-5 py-3.5 border-b border-ink/[0.06] flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
             <Terminal size={14} className="text-cyan-400 shrink-0" aria-hidden />
@@ -60,7 +60,7 @@ export default function ModelQuickRun({
 
         <div className="flex items-center gap-2">
           {tabs.length > 1 && (
-            <div className="inline-flex rounded-lg bg-white/[0.04] p-0.5 border border-white/[0.07]">
+            <div className="inline-flex rounded-lg bg-ink/[0.04] p-0.5 border border-ink/[0.07]">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
@@ -70,7 +70,7 @@ export default function ModelQuickRun({
                   className={cn(
                     'px-2.5 py-1 rounded-md text-xs font-medium transition-colors',
                     active.id === tab.id
-                      ? 'bg-violet-600 text-white'
+                      ? 'bg-sky-600 text-white'
                       : 'text-slate-400 hover:text-slate-200',
                   )}
                 >
@@ -83,7 +83,7 @@ export default function ModelQuickRun({
           <button
             type="button"
             onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 border border-white/[0.1] transition-colors"
+            className="inline-flex items-center gap-1.5 min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-ink/[0.06] hover:bg-ink/[0.1] text-slate-200 border border-ink/[0.1] transition-colors"
           >
             {copiedId === active.id ? (
               <>
@@ -100,12 +100,12 @@ export default function ModelQuickRun({
         </div>
       </div>
 
-      <pre className="p-4 sm:px-5 text-xs font-mono text-slate-300 bg-[#0b0c11] overflow-x-auto leading-relaxed max-h-56">
+      <pre className="p-4 sm:px-5 text-xs font-mono text-slate-300 bg-bg-recessed overflow-x-auto leading-relaxed max-h-56">
         <code>{active.command}</code>
       </pre>
 
-      <div className="px-4 sm:px-5 py-2.5 border-t border-white/[0.05] bg-white/[0.015] flex justify-end">
-        <Link href={cliHref} className="text-xs text-violet-400 hover:text-violet-300 transition-colors">
+      <div className="px-4 sm:px-5 py-2.5 border-t border-ink/[0.05] bg-ink/[0.015] flex justify-end">
+        <Link href={cliHref} className="text-xs text-sky-400 hover:text-sky-300 transition-colors">
           {openCliLabel}
         </Link>
       </div>

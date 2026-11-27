@@ -24,7 +24,7 @@ export default function VRAMCalcPage() {
         ]}
       />
       <div className="mb-5 sm:mb-8">
-        <div className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
+        <div className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium mb-4">
           ⚡ {t.nav.vramCalc}
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{title}</h1>

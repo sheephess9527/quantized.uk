@@ -20,7 +20,7 @@ export default function VramQuickReference() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[560px]">
           <thead>
-            <tr className="border-b border-white/[0.06] text-xs text-slate-500 text-left">
+            <tr className="border-b border-ink/[0.06] text-xs text-slate-500 text-left">
               <th scope="col" className="py-2 pr-3 font-medium">{r.colClass}</th>
               <th scope="col" className="py-2 pr-3 font-medium text-right">{r.colModels}</th>
               <th scope="col" className="py-2 pr-3 font-medium text-right">{r.col4k}</th>
@@ -30,14 +30,14 @@ export default function VramQuickReference() {
           </thead>
           <tbody>
             {rows.map(row => (
-              <tr key={row.bucket} className="border-b border-white/[0.04] last:border-0">
+              <tr key={row.bucket} className="border-b border-ink/[0.04] last:border-0">
                 <th scope="row" className="py-2.5 pr-3 text-left font-mono text-slate-200">{PARAM_RANGE_LABEL[row.bucket]}</th>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-400">{row.count}</td>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-300">{range(row.at4k)}</td>
                 <td className="py-2.5 pr-3 text-right font-mono text-slate-300">{row.at32k ? range(row.at32k) : '—'}</td>
                 <td className="py-2.5 text-slate-400">
                   {row.wholeClass ? (
-                    <Link href={`/gpu/${gpuSlug(row.wholeClass)}/`} className="hover:text-violet-300">
+                    <Link href={`/gpu/${gpuSlug(row.wholeClass)}/`} className="hover:text-sky-300">
                       {row.wholeClass.name}
                       {!new RegExp(`\\b${row.wholeClass.vram}\\s?GB?\\b`, 'i').test(row.wholeClass.name) && ` (${row.wholeClass.vram} GB)`}
                     </Link>

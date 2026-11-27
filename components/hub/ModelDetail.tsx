@@ -31,19 +31,14 @@ import { guideLinksForModel } from '@/lib/utils/model-guides';
 import { pairHref, pairPages } from '@/lib/utils/pair-pages';
 
 const formatColors: Record<string, string> = {
-  GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
-  AWQ:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/25',
-  EXL2: 'bg-orange-500/15 text-orange-300 border-orange-500/25',
-  GPTQ: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
-  HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
+  GGUF: 'bg-sky-500/12 text-sky-300 border-sky-500/25',
+  AWQ:  'bg-cyan-500/12 text-cyan-300 border-cyan-500/25',
+  EXL2: 'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
+  GPTQ: 'bg-teal-500/12 text-teal-300 border-teal-500/25',
+  HQQ:  'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
 };
 
-const hwColors: Record<string, string> = {
-  'consumer-gpu': 'bg-green-500/10 text-green-400 border-green-500/20',
-  mac: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  'cpu-vps': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'pro-gpu': 'bg-red-500/10 text-red-400 border-red-500/20',
-};
+const hwPillClass = 'bg-ink/[0.04] text-slate-400 border-ink/[0.10]';
 
 interface Props {
   model: QuantModel;
@@ -168,10 +163,10 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
       />
 
       {/* Top Hero Header */}
-      <header className="mb-8 pb-6 border-b border-white/[0.06]">
+      <header className="mb-8 pb-6 border-b border-ink/[0.08]">
         <div className="flex flex-wrap items-center gap-3 mb-2">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-100 tracking-tight">{model.name}</h1>
-          <span className="badge bg-violet-500/15 text-violet-300 border-violet-500/25 font-mono">
+          <span className="badge bg-sky-500/12 text-sky-300 border-sky-500/25 font-mono">
             {model.paramLabel}
           </span>
           {licence && (
@@ -179,7 +174,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
               href={licence.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="badge bg-white/[0.04] text-slate-300 border-white/[0.1] hover:border-violet-400/40 transition-colors"
+              className="badge bg-ink/[0.04] text-slate-300 border-ink/[0.10] hover:border-sky-500/40 transition-colors"
             >
               {licence.short} ↗
             </a>
@@ -190,27 +185,27 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
         {isSuperseded(model) && (() => {
           const successor = model.supersededBy ? models.find(m => m.id === model.supersededBy) : undefined;
           return (
-            <div className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/90 max-w-3xl">
+            <div className="mb-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 max-w-3xl">
               <p>
                 <span className="font-semibold">⚠ {t.hub.model.superseded}</span>
                 {successor && (
                   <>
                     {' · '}
-                    <Link href={`/quant-hub/${successor.id}/`} className="underline text-amber-100 hover:text-white">
+                    <Link href={`/quant-hub/${successor.id}/`} className="underline text-amber-100 hover:text-amber-300">
                       {t.hub.model.prefer.replace('{name}', successor.name)}
                     </Link>
                   </>
                 )}
               </p>
               {successor && (
-                <p className="mt-1.5 text-amber-200/70">
+                <p className="mt-1.5 text-amber-200/85">
                   {t.hub.model.supersededBody
                     .replace('{name}', successor.name)
                     .replace('{reason}', supersededDiffNote(model, successor, lang))}
                   {' '}
                   <Link
                     href={`/tools/compare/?a=${model.id}&b=${successor.id}`}
-                    className="underline text-amber-100 hover:text-white whitespace-nowrap"
+                    className="underline text-amber-100 hover:text-amber-300 whitespace-nowrap"
                   >
                     {t.hub.model.compareLink} →
                   </Link>
@@ -225,7 +220,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
         <div className="flex flex-wrap items-center gap-2.5 mt-5">
           <Link
             href={calcUrl(quantLevelKey(defaultQuant))}
-            className="inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors glow-purple"
+            className="inline-flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold transition-colors glow-purple"
           >
             <Calculator size={14} />
             {d.calcVram}
@@ -282,8 +277,8 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
           />
 
           {/* Quantization Variants Table */}
-          <div className="rounded-2xl border border-white/[0.08] bg-[#111218] overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/[0.06]">
+          <div className="rounded-2xl border border-ink/[0.10] bg-bg-surface overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-ink/[0.08]">
               <h2 className="text-lg font-semibold text-slate-100">{d.quantTable}</h2>
               <p className="text-xs text-slate-400 mt-1">{d.quantTableSub}</p>
               <p className="text-[11px] text-slate-500 mt-1">{t.hub.confidence.legend}</p>
@@ -291,7 +286,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-xs text-slate-500 border-b border-white/[0.06] bg-white/[0.015]">
+                  <tr className="text-xs text-slate-500 border-b border-ink/[0.08] bg-bg-recessed/60">
                     <th className="text-left px-4 sm:px-5 py-3 font-medium">{d.colFormat}</th>
                     <th className="text-left px-3 py-3 font-medium">{d.colLevel}</th>
                     <th className="text-right px-3 py-3 font-medium">{d.colBpw}</th>
@@ -312,35 +307,35 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
                       <tr
                         key={`${quant.format}-${quant.level}-${i}`}
                         className={cn(
-                          'border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors',
-                          isRef && 'bg-violet-500/[0.04]',
+                          'border-b border-ink/[0.06] hover:bg-ink/[0.03] transition-colors',
+                          isRef && 'bg-sky-500/[0.05]',
                         )}
                       >
                         <td className="px-4 sm:px-5 py-3">
-                          <span className={cn('badge text-xs font-mono', formatColors[quant.format])}>
+                          <span className={cn('badge text-xs font-mono', formatColors[quant.format] ?? hwPillClass)}>
                             {quant.format}
                           </span>
                         </td>
                         <td className="px-3 py-3 font-mono text-slate-200 whitespace-nowrap">
                           <span className="inline-flex items-center gap-1.5">
                             {quant.level}
-                            {isBest && <Zap size={11} className="text-amber-400" aria-label={d.bestQuality} />}
+                            {isBest && <Zap size={11} className="text-sky-400" aria-label={d.bestQuality} />}
                           </span>
                         </td>
                         <td className="px-3 py-3 text-right font-mono text-slate-400">{quant.bpw}</td>
-                        <td className="px-3 py-3 text-right font-mono font-medium text-violet-300 whitespace-nowrap">
+                        <td className="px-3 py-3 text-right font-mono font-semibold text-slate-100 whitespace-nowrap">
                           {sizeAt4K(model, quant).toFixed(1)} GB
                         </td>
                         <td className="px-3 py-3 text-right font-mono text-slate-400">{formatLoss(quant)}</td>
-                        <td className="px-3 py-3 text-right font-mono text-orange-300 whitespace-nowrap">
-                          {quant.speedRTX4090 ? `${quant.speedRTX4090} tok/s` : '—'}
+                        <td className="px-3 py-3 text-right font-mono text-slate-200 whitespace-nowrap">
+                          {quant.speedRTX4090 ? `${quant.speedRTX4090} tok/s` : <span className="text-slate-600">—</span>}
                         </td>
                         <td className="px-3 py-3">
                           <span className={cn(
                             'badge text-[10px]',
-                            conf === 'measured' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                            conf === 'community' && 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                            conf === 'estimated' && 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+                            conf === 'measured' && 'bg-emerald-500/12 text-emerald-400 border-emerald-500/25',
+                            conf === 'community' && 'bg-sky-500/12 text-sky-400 border-sky-500/25',
+                            conf === 'estimated' && 'bg-ink/[0.05] text-slate-400 border-ink/[0.12]',
                           )}>
                             {t.hub.confidence[conf]}
                           </span>
@@ -349,7 +344,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
                           <div className="flex items-center justify-end gap-2">
                             <Link
                               href={calcUrl(level)}
-                              className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
+                              className="text-xs font-medium text-sky-400 hover:text-sky-300 transition-colors"
                             >
                               {d.calc}
                             </Link>
@@ -357,7 +352,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
                               href={quant.hfSearchUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-slate-500 hover:text-slate-300 transition-colors inline-flex items-center gap-0.5"
+                              className="text-xs text-slate-500 hover:text-slate-200 transition-colors inline-flex items-center gap-0.5"
                             >
                               HF
                               <ExternalLink size={9} />
@@ -376,7 +371,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
                 </tbody>
               </table>
             </div>
-            <div className="px-5 py-4 border-t border-white/[0.06] bg-white/[0.01]">
+            <div className="px-5 py-4 border-t border-ink/[0.08] bg-bg-recessed/40">
               <h3 className="text-sm font-semibold text-slate-300">{d.filesTitle}</h3>
               <p className="text-xs text-slate-500 mt-1">{d.filesSub}</p>
               <ul className="mt-3 space-y-1.5 text-xs">
@@ -398,50 +393,50 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
         {/* Right Sticky Specs & Ecosystem Sidebar */}
         <aside className="space-y-5 lg:sticky lg:top-20">
           {/* Compact Model Specifications Card */}
-          <section className="rounded-2xl border border-white/[0.08] bg-[#111218] p-5">
+          <section className="rounded-2xl border border-ink/[0.10] bg-bg-surface p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3.5">
               {d.specsTitle}
             </h2>
             <dl className="space-y-2.5 text-sm">
-              <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                 <dt className="text-slate-500">{d.totalParams}</dt>
-                <dd className="font-mono font-semibold text-slate-200">{model.params.toFixed(2)}B</dd>
+                <dd className="font-mono font-semibold text-slate-100">{model.params.toFixed(2)}B</dd>
               </div>
               {moeActive !== undefined && (
-                <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+                <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                   <dt className="text-slate-500">{d.activeParams}</dt>
-                  <dd className="font-mono font-semibold text-cyan-300">{moeActive}B</dd>
+                  <dd className="font-mono font-semibold text-slate-200">{moeActive}B</dd>
                 </div>
               )}
-              <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                 <dt className="text-slate-500">{d.context}</dt>
-                <dd className="font-mono font-semibold text-slate-200">{contextFormatted}</dd>
+                <dd className="font-mono font-semibold text-slate-100">{contextFormatted}</dd>
               </div>
-              <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                 <dt className="text-slate-500">{d.bestQuality}</dt>
-                <dd className="font-mono text-violet-300">{bestQuant.format} {bestQuant.level}</dd>
+                <dd className="font-mono text-sky-400">{bestQuant.format} {bestQuant.level}</dd>
               </div>
-              <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                 <dt className="text-slate-500">{d.bestAccuracy}</dt>
                 <dd className="font-mono text-slate-300">
                   {bestQuant.pplLossPercent === undefined ? '—' : `+${bestQuant.pplLossPercent.toFixed(1)}%`}
                 </dd>
               </div>
-              <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+              <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                 <dt className="text-slate-500">{d.modality}</dt>
                 <dd className="text-slate-300 text-xs font-medium">
                   {multimodal ? d.multimodal : d.textOnly}
                 </dd>
               </div>
               {licence && (
-                <div className="flex items-center justify-between gap-2 py-1 border-b border-white/[0.04]">
+                <div className="flex items-center justify-between gap-2 py-1 border-b border-ink/[0.06]">
                   <dt className="text-slate-500">{d.licence}</dt>
                   <dd className="text-right">
                     <a
                       href={licence.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-medium text-cyan-300 hover:underline"
+                      className="text-xs font-medium text-sky-400 hover:underline"
                     >
                       {licence.short} ↗
                     </a>
@@ -452,14 +447,14 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
 
             <div className="flex flex-wrap gap-1.5 mt-4">
               {model.hardwareTags.map(hw => (
-                <span key={hw} className={cn('badge text-[11px]', hwColors[hw])}>
+                <span key={hw} className={cn('badge text-[11px]', hwPillClass)}>
                   {t.hub.hardware[hw as keyof typeof t.hub.hardware] ?? hw}
                 </span>
               ))}
             </div>
 
             {hf && hf.downloads > 0 && (
-              <div className="mt-4 pt-3.5 border-t border-white/[0.06] text-xs text-slate-500 space-y-1">
+              <div className="mt-4 pt-3.5 border-t border-ink/[0.08] text-xs text-slate-500 space-y-1">
                 <div className="flex items-center justify-between">
                   <span>⬇ {formatDownloads(hf.downloads)} {d.hfDownloads}</span>
                   <span>♥ {hf.likes} {d.hfLikes}</span>
@@ -469,7 +464,7 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
                     href={`https://huggingface.co/${hfRepo}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block truncate text-violet-400 hover:text-violet-300 font-mono"
+                    className="block truncate text-sky-400 hover:text-sky-300 font-mono"
                   >
                     {hfRepo}
                   </a>
@@ -483,14 +478,14 @@ export default function ModelDetail({ model, lang = 'en' }: Props) {
 
           {/* Popular GPU Pair Answers */}
           {pairs.length > 0 && (
-            <section className="rounded-2xl border border-white/[0.08] bg-[#111218] p-5">
+            <section className="rounded-2xl border border-ink/[0.10] bg-bg-surface p-5 shadow-sm">
               <h2 className="text-sm font-semibold text-slate-200 mb-3">{t.pair.cards}</h2>
               <ul className="flex flex-wrap gap-2">
                 {pairs.map(p => (
                   <li key={p.gpu.id}>
                     <Link
                       href={pairHref(model, p.gpu)}
-                      className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-violet-500/15 text-violet-300 border border-white/[0.08] hover:border-violet-500/30 transition-colors"
+                      className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-ink/[0.04] hover:bg-sky-500/15 text-sky-300 border border-ink/[0.10] hover:border-sky-500/30 transition-colors"
                     >
                       {gpuDisplayName(p.gpu, lang)}
                     </Link>

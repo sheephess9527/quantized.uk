@@ -7,7 +7,7 @@ import { readingMinutes } from '@/lib/utils/reading-time';
 
 const difficultyColors = {
   beginner: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  intermediate: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  intermediate: 'bg-amber-500/12 text-amber-300 border-amber-500/25',
   advanced: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
@@ -31,7 +31,7 @@ export default function RelatedArticles({ articleId, lang = 'en' }: Props) {
           <Link
             key={article.id}
             href={`/cookbook/${article.id}/`}
-            className="group glass rounded-xl p-4 hover:bg-white/[0.04] transition-colors"
+            className="group glass rounded-xl p-4 hover:bg-ink/[0.04] transition-colors"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -39,7 +39,7 @@ export default function RelatedArticles({ articleId, lang = 'en' }: Props) {
                   <span className={cn('badge text-xs', difficultyColors[article.difficulty])}>
                     {t.cookbook.difficulty[article.difficulty]}
                   </span>
-                  <span className="badge text-xs bg-white/[0.04] text-slate-500 border-white/[0.07]">
+                  <span className="badge text-xs bg-ink/[0.04] text-slate-500 border-ink/[0.07]">
                     {t.cookbook.categories[article.category]}
                   </span>
                   <span className="flex items-center gap-1 text-xs text-slate-600">

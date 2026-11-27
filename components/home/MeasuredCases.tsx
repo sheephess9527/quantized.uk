@@ -46,7 +46,7 @@ export default function MeasuredCases({ lang }: { lang: Lang }) {
       <div className="overflow-x-auto -mx-1 px-1">
         <table className="w-full text-sm min-w-[560px]">
           <thead>
-            <tr className="text-left text-xs text-slate-600 border-b border-white/[0.06]">
+            <tr className="text-left text-xs text-slate-600 border-b border-ink/[0.06]">
               <th scope="col" className="font-medium py-2 pr-3">{m.colModel}</th>
               <th scope="col" className="font-medium py-2 pr-3">{m.colHardware}</th>
               <th scope="col" className="font-medium py-2 pr-3">{m.colStack}</th>
@@ -56,7 +56,7 @@ export default function MeasuredCases({ lang }: { lang: Lang }) {
           </thead>
           <tbody>
             {sample.map(row => (
-              <tr key={`${row.model}-${row.hardware}-${row.framework}`} className="border-b border-white/[0.04]">
+              <tr key={`${row.model}-${row.hardware}-${row.framework}`} className="border-b border-ink/[0.04]">
                 <td className="py-2.5 pr-3 text-slate-200">{row.model}</td>
                 <td className="py-2.5 pr-3 text-slate-400 font-mono text-xs">{row.hardware}</td>
                 <td className="py-2.5 pr-3 text-slate-500 font-mono text-xs">

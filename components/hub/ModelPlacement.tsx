@@ -26,14 +26,14 @@ export default function ModelPlacement({ model, lang = 'en' }: { model: QuantMod
     Object.entries(v).reduce((acc, [k, val]) => acc.replaceAll(`{${k}}`, String(val)), s);
 
   const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="grid grid-cols-1 sm:grid-cols-[11rem_1fr] gap-1 sm:gap-4 py-2.5 border-b border-white/[0.04] last:border-0">
+    <div className="grid grid-cols-1 sm:grid-cols-[11rem_1fr] gap-1 sm:gap-4 py-2.5 border-b border-ink/[0.04] last:border-0">
       <dt className="text-xs font-semibold uppercase tracking-wider text-cyan-400/90 pt-0.5">{label}</dt>
       <dd className="flex flex-wrap gap-x-3 gap-y-1.5 items-center text-sm">{children}</dd>
     </div>
   );
 
   const chip =
-    'inline-flex items-center min-h-[44px] text-sm text-slate-300 hover:text-violet-300 transition-colors';
+    'inline-flex items-center min-h-[44px] text-sm text-slate-300 hover:text-sky-300 transition-colors';
 
   return (
     <section className="glass rounded-2xl p-5 sm:p-6">

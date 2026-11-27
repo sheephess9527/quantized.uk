@@ -10,7 +10,7 @@ export function ModelQualityScore({ modelId }: { modelId: string }) {
 
   const [score, release] = result;
   return (
-    <a href={LIVEBENCH_RELEASE_URL + release} className="rounded-md bg-violet-400/10 px-1.5 py-0.5 text-xs text-violet-200 hover:underline underline-offset-2">
+    <a href={LIVEBENCH_RELEASE_URL + release} className="rounded-md bg-sky-400/10 px-1.5 py-0.5 text-xs text-sky-200 hover:underline underline-offset-2">
       {t.calc.modelQualityScore.replace('{score}', score.toFixed(1)).replace('{release}', release)}
     </a>
   );

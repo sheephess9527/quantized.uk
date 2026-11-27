@@ -75,14 +75,14 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
                 active
                   ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                  : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
+                  : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10',
               )}
             >
               <span>{gpu.icon}</span>
               <span>{gpuDisplayName(gpu, lang)}</span>
               <span className={cn(
                 'font-mono text-[10px] px-1.5 py-0.5 rounded',
-                active ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/[0.04] text-slate-600',
+                active ? 'bg-emerald-500/20 text-emerald-200' : 'bg-ink/[0.04] text-slate-600',
               )}>
                 {count}
               </span>
@@ -92,7 +92,7 @@ export default function GpuQuickChips({ selectedGpuId, onSelect }: Props) {
         {selectedGpuId && (
           <button
             onClick={() => onSelect(null)}
-            className="px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-all"
+            className="px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-ink/[0.06] hover:border-ink/10 transition-all"
           >
             {q.clear}
           </button>

@@ -57,7 +57,7 @@ export default function GpuIndexContent() {
         {/* A card page answers "what fits"; /best/ answers "what should I run". */}
         <Link
           href="/best/"
-          className="inline-flex items-center gap-1.5 min-h-[44px] mt-2 text-sm text-violet-400 hover:text-violet-300"
+          className="inline-flex items-center gap-1.5 min-h-[44px] mt-2 text-sm text-sky-400 hover:text-sky-300"
         >
           {t.best.hubTitle} <ArrowRight size={14} />
         </Link>
@@ -71,7 +71,7 @@ export default function GpuIndexContent() {
           onChange={e => setQuery(e.target.value)}
           placeholder={g.gpuSearchPlaceholder.replace('{n}', String(gpuDatabase.length))}
           aria-label={g.gpuSearchPlaceholder.replace('{n}', String(gpuDatabase.length))}
-          className="w-full min-h-[44px] rounded-xl bg-white/[0.03] border border-white/[0.12] pl-9 pr-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-violet-500/40"
+          className="w-full min-h-[44px] rounded-xl bg-ink/[0.03] border border-ink/[0.12] pl-9 pr-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-sky-500/40"
         />
       </div>
 
@@ -91,7 +91,7 @@ export default function GpuIndexContent() {
                   <li key={gpu.id}>
                     <Link
                       href={`/gpu/${gpuSlug(gpu)}/`}
-                      className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+                      className="block rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
                     >
                       <span className="text-sm text-slate-200 font-medium">{gpuDisplayName(gpu, lang)}</span>
                       <span className="block text-xs text-slate-600 font-mono mt-0.5">

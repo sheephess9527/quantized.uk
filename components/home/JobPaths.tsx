@@ -10,8 +10,8 @@ const paths = [
     id: '8gb',
     href: '/cookbook/8gb-gpu-starter-guide/',
     icon: MemoryStick,
-    color: 'text-emerald-400',
-    border: 'hover:border-emerald-500/30 hover:bg-emerald-500/[0.04]',
+    color: 'text-sky-400',
+    border: 'hover:border-sky-500/30 hover:bg-sky-500/[0.04]',
     titleKey: 'path8gb' as const,
     descKey: 'path8gbDesc' as const,
   },
@@ -28,8 +28,8 @@ const paths = [
     id: 'format',
     href: '/tools/format-wizard/',
     icon: Wand2,
-    color: 'text-violet-400',
-    border: 'hover:border-violet-500/30 hover:bg-violet-500/[0.04]',
+    color: 'text-teal-400',
+    border: 'hover:border-teal-500/30 hover:bg-teal-500/[0.04]',
     titleKey: 'pathFormat' as const,
     descKey: 'pathFormatDesc' as const,
   },
@@ -55,14 +55,14 @@ export default function JobPaths() {
               key={p.id}
               href={p.href}
               onClick={() => trackEvent('Job Path', { path: p.id })}
-              className={`group glass rounded-xl p-4 border border-white/[0.06] transition-all ${p.border}`}
+              className={`group glass rounded-xl p-4 border border-ink/[0.08] transition-all ${p.border}`}
             >
               <div className="flex items-start gap-3">
                 <div className={`mt-0.5 ${p.color}`}>
                   <Icon size={18} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-semibold text-slate-200 group-hover:text-slate-100 transition-colors">
                     {j[p.titleKey]}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{j[p.descKey]}</p>

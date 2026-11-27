@@ -17,14 +17,11 @@ import { useUrlQuery } from '@/lib/hooks/useUrlQuery';
 
 type OutputTab = 'cmd' | 'compose' | 'notes';
 
-// `textColor` is the variant that clears 4.5:1 on this background; `color`
-// stays the brand value for the chip's fill and border. Only violet needed to
-// move — see the note on QuantFormat in lib/data/formats.ts.
-const FRAMEWORKS: { id: Framework; label: string; color: string; textColor: string }[] = [
-  { id: 'llamacpp', label: 'llama.cpp',  color: '#7c3aed', textColor: '#a78bfa' },
-  { id: 'ollama',   label: 'Ollama',     color: '#06b6d4', textColor: '#06b6d4' },
-  { id: 'vllm',     label: 'vLLM',       color: '#f97316', textColor: '#f97316' },
-  { id: 'exllama',  label: 'ExLlamaV2',  color: '#eab308', textColor: '#eab308' },
+const FRAMEWORKS: { id: Framework; label: string; activeClass: string }[] = [
+  { id: 'llamacpp', label: 'llama.cpp',  activeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
+  { id: 'ollama',   label: 'Ollama',     activeClass: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' },
+  { id: 'vllm',     label: 'vLLM',       activeClass: 'bg-teal-500/15 text-teal-300 border-teal-500/30' },
+  { id: 'exllama',  label: 'ExLlamaV2',  activeClass: 'bg-ink/[0.06] text-slate-200 border-ink/[0.18]' },
 ];
 
 const ENVS: { id: Env; labelKey: keyof ReturnType<typeof useLanguage>['t']['cli']['envOptions'] }[] = [
@@ -158,12 +155,12 @@ export default function CLIGenerator() {
                 key={f.id}
                 onClick={() => setFramework(f.id)}
                 aria-pressed={framework === f.id}
-                className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-150 border"
-                style={
+                className={cn(
+                  'flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-150 border',
                   framework === f.id
-                    ? { background: `${f.color}18`, color: f.textColor, borderColor: `${f.color}30` }
-                    : { background: 'transparent', color: '#8092aa', borderColor: 'rgba(255,255,255,0.06)' }
-                }
+                    ? f.activeClass
+                    : 'text-slate-500 border-ink/[0.08] hover:text-slate-200',
+                )}
               >
                 {f.label}
               </button>
@@ -183,8 +180,8 @@ export default function CLIGenerator() {
                 className={cn(
                   'py-2 rounded-xl text-xs font-medium transition-all duration-150 border',
                   env === e.id
-                    ? 'bg-violet-500/15 text-violet-300 border-violet-500/25'
-                    : 'text-slate-500 border-white/[0.06] hover:text-slate-300'
+                    ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+                    : 'text-slate-500 border-ink/[0.06] hover:text-slate-300'
                 )}
               >
                 {t.cli.envOptions[e.labelKey]}
@@ -201,7 +198,7 @@ export default function CLIGenerator() {
               id="cli-model"
               value={modelId}
               onChange={e => setModelId(e.target.value)}
-              className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+              className="w-full appearance-none bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/50 transition-colors"
             >
               <option value="">{t.calc.modelPlaceholder}</option>
               {groupedModels().map(group => (
@@ -228,8 +225,8 @@ export default function CLIGenerator() {
                 className={cn(
                   'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                   quantLevel === q
-                    ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                    : 'text-slate-500 border-white/[0.06] hover:text-slate-300'
+                    ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                    : 'text-slate-500 border-ink/[0.06] hover:text-slate-300'
                 )}
               >
                 {q}
@@ -254,7 +251,7 @@ export default function CLIGenerator() {
                   type={type}
                   value={value}
                   onChange={e => setter(e.target.value)}
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/40 font-mono"
+                  className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/40 font-mono"
                 />
               </label>
             ))}
@@ -267,7 +264,7 @@ export default function CLIGenerator() {
               placeholder="sk-..."
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
-              className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-400 focus:outline-none focus:border-violet-500/40 font-mono"
+              className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-2.5 py-1.5 text-sm text-slate-400 focus:outline-none focus:border-sky-500/40 font-mono"
             />
           </div>
         </div>
@@ -278,7 +275,7 @@ export default function CLIGenerator() {
         {output ? (
           <div className="glass rounded-2xl overflow-hidden h-full flex flex-col">
             {/* Tabs */}
-            <div className="flex items-center border-b border-white/[0.06]">
+            <div className="flex items-center border-b border-ink/[0.06]">
               {(['cmd', 'compose', 'notes'] as OutputTab[]).map(tab => (
                 <button
                   key={tab}
@@ -287,7 +284,7 @@ export default function CLIGenerator() {
                   className={cn(
                     'px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px',
                     activeTab === tab
-                      ? 'text-violet-300 border-violet-500'
+                      ? 'text-sky-300 border-sky-500'
                       : 'text-slate-500 border-transparent hover:text-slate-300',
                     tab === 'compose' && !output.compose && 'opacity-30 cursor-not-allowed'
                   )}
@@ -298,7 +295,7 @@ export default function CLIGenerator() {
               <div className="flex-1" />
               <button
                 onClick={copyText}
-                className="flex items-center gap-1.5 mr-3 px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-all"
+                className="flex items-center gap-1.5 mr-3 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 transition-all"
               >
                 {copied ? <Check size={12} /> : <Copy size={12} />}
                 {copied ? t.cli.copied : t.cli.copy}

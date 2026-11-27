@@ -5,7 +5,7 @@ import { translations, type Lang } from '@/lib/i18n/translations';
 import { memoryAccuracy } from '@/lib/utils/bench-calibration';
 import { ACTIVATION_BUFFER, KV_CACHE_TYPES, WEIGHT_OVERHEAD } from '@/lib/utils/vram';
 
-const link = 'font-medium text-violet-300 underline underline-offset-4 hover:text-violet-200';
+const link = 'font-medium text-sky-300 underline underline-offset-4 hover:text-sky-200';
 const panel = 'glass rounded-2xl p-5 sm:p-6';
 const heading = 'text-xl font-semibold text-slate-100';
 
@@ -44,9 +44,9 @@ export default function MethodologyPage({ lang }: { lang: Lang }) {
           <h2 id="accuracy" className={heading}>{m.accuracyTitle}</h2>
           <dl className="grid gap-3 sm:grid-cols-3">
             {metrics.map(({ label, value }) => (
-              <div key={label} className="flex flex-col rounded-xl border border-violet-400/20 bg-violet-500/5 px-4 py-3">
+              <div key={label} className="flex flex-col rounded-xl border border-sky-400/20 bg-sky-500/5 px-4 py-3">
                 <dt className="text-slate-300">{label}</dt>
-                <dd className="order-first font-mono text-2xl font-semibold text-violet-200 tabular-nums">{value}</dd>
+                <dd className="order-first font-mono text-2xl font-semibold text-sky-200 tabular-nums">{value}</dd>
               </div>
             ))}
           </dl>
@@ -62,7 +62,7 @@ export default function MethodologyPage({ lang }: { lang: Lang }) {
           {formulas.map(({ title, formula, body, note }) => (
             <div key={title} className={`${panel} space-y-2 text-sm leading-relaxed`}>
               <h3 className="font-semibold text-slate-100">{title}</h3>
-              <p className="rounded-lg bg-black/25 px-3 py-2 font-mono text-violet-200">{formula}</p>
+              <p className="rounded-lg bg-bg-recessed px-3 py-2 font-mono text-sky-200">{formula}</p>
               <p>{body}</p>
               {note && <p className="text-slate-400">{note}</p>}
             </div>

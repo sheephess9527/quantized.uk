@@ -46,7 +46,7 @@ export default function Breadcrumbs({ items }: Props) {
                 {item.href && !isLast ? (
                   <Link
                     href={item.href}
-                    className="hover:text-violet-300 transition-colors truncate max-w-[12rem] sm:max-w-none"
+                    className="hover:text-sky-300 transition-colors truncate max-w-[12rem] sm:max-w-none"
                   >
                     {item.label}
                   </Link>

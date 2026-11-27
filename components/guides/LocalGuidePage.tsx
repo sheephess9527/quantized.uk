@@ -11,7 +11,7 @@ import { activeFits, gpuRequirementsTable } from '@/lib/utils/gpu-requirements';
 type Lang = 'en' | 'zh';
 const panel = 'glass rounded-2xl p-5 sm:p-6 space-y-3';
 const link = 'text-cyan-300 hover:underline';
-const cell = 'px-3 py-3 align-top border-b border-white/10';
+const cell = 'px-3 py-3 align-top border-b border-ink/10';
 
 function ModelFit({ fit, lang }: { fit: GpuFit; lang: Lang }) {
   return <div>

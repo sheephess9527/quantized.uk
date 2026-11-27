@@ -82,7 +82,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       />
 
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium mb-4">
           <Cpu size={12} /> {gpu.vram}GB {g.vramLabel}
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{fill(g.title, { gpu: gpuName })}</h1>
@@ -101,7 +101,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         <h2 className="text-lg font-bold text-slate-100 mb-2">{fill(g.shortTitle, { gpu: gpuName })}</h2>
         <p className="text-sm text-slate-400 leading-relaxed mb-4">{!isBaseline && <span className="block text-xs text-amber-300 mb-2">{g.baselineNote}</span>}{x.specLine[lang]}</p>
         {gpu.specUrl && (
-          <a href={gpu.specUrl} className="inline-block mb-4 text-sm text-violet-400 hover:text-violet-300 underline">
+          <a href={gpu.specUrl} className="inline-block mb-4 text-sm text-sky-400 hover:text-sky-300 underline">
             {g.specSource}
           </a>
         )}
@@ -114,7 +114,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
               </dt>
               <dd className="text-sm text-slate-300 leading-relaxed">
                 {row.fit && (
-                  <Link href={`/quant-hub/${row.fit.model.id}/`} className="font-medium text-slate-200 hover:text-violet-300">
+                  <Link href={`/quant-hub/${row.fit.model.id}/`} className="font-medium text-slate-200 hover:text-sky-300">
                     {row.fit.model.name}
                   </Link>
                 )}
@@ -129,7 +129,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
               </dd>
             </div>
           ))}
-          <div className="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-1 sm:gap-4 border-t border-white/[0.05] pt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-1 sm:gap-4 border-t border-ink/[0.05] pt-3">
             <dt className="text-xs font-semibold uppercase tracking-wider text-amber-400/90 pt-0.5">{g.wallTitle}</dt>
             <dd className="text-sm text-slate-400 leading-relaxed">{x.ceiling[lang]}</dd>
           </div>
@@ -137,7 +137,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         {bestTier && (
           <Link
             href={`/best/${bestTier.slug}/`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] mt-3 text-sm text-violet-400 hover:text-violet-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] mt-3 text-sm text-sky-400 hover:text-sky-300"
           >
             {t.best.tierTitle.replace('{label}', bestTier.kind === 'apple' ? t.best.appleLabel : `${bestTier.vram}GB`)}
             <ArrowRight size={14} />
@@ -150,7 +150,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
       </div>
 
       {/* Sticky context / concurrency & parameter-bucket jump bar */}
-      <div className="sticky top-14 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-6 bg-[#0a0a0f]/90 backdrop-blur-xl border-y border-white/[0.07]">
+      <div className="sticky top-14 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-6 bg-bg/90 backdrop-blur-xl border-y border-ink/[0.07]">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <FitControls
             compact
@@ -170,7 +170,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                     onClick={() => {
                       document.getElementById(`bucket-${group.bucket}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-white/[0.04] hover:bg-violet-500/20 border border-white/[0.08] hover:border-violet-500/30 transition-colors"
+                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-slate-100 bg-ink/[0.04] hover:bg-sky-500/20 border border-ink/[0.08] hover:border-sky-500/30 transition-colors"
                   >
                     {PARAM_RANGE_LABEL[group.bucket]} <span className="text-slate-500">({group.fits.length})</span>
                   </button>
@@ -196,7 +196,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                     {fill(g.title, { gpu: gpuName })} — {PARAM_RANGE_LABEL[group.bucket]}
                   </caption>
                   <thead>
-                    <tr className="border-b border-white/[0.06] text-xs text-slate-500 uppercase tracking-wider">
+                    <tr className="border-b border-ink/[0.06] text-xs text-slate-500 uppercase tracking-wider">
                       <th className="text-left py-2 px-3 font-semibold">{g.tableModel}</th>
                       <th className="text-left py-2 px-3 font-semibold">{g.tableQuant}</th>
                       <th className="text-right py-2 px-3 font-semibold">{g.tableVram}</th>
@@ -206,13 +206,13 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                   </thead>
                   <tbody>
                     {group.fits.map(fit => (
-                      <tr key={fit.model.id} className="border-b border-white/[0.04] last:border-0">
+                      <tr key={fit.model.id} className="border-b border-ink/[0.04] last:border-0">
                         <td className="py-2.5 px-3">
-                          <Link href={`/quant-hub/${fit.model.id}/`} className="text-slate-200 hover:text-violet-300">
+                          <Link href={`/quant-hub/${fit.model.id}/`} className="text-slate-200 hover:text-sky-300">
                             {fit.model.name}
                           </Link>
                           <span className="block text-xs text-slate-600">{fit.model.paramLabel}</span>
-                          {pairData(fit.model, gpu).eligible && <Link className="block text-xs text-violet-300" href={pairHref(fit.model, gpu)}>{t.pair.details}</Link>}
+                          {pairData(fit.model, gpu).eligible && <Link className="block text-xs text-sky-300" href={pairHref(fit.model, gpu)}>{t.pair.details}</Link>}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-xs text-cyan-300">{quantLevelKey(fit.quant)}</td>
                         <td className="py-2.5 px-3 text-right font-mono text-xs text-slate-300">{fit.totalGB} GB</td>
@@ -248,14 +248,14 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
         <div className="flex flex-wrap gap-4 mt-4">
           <Link
             href={`/tools/vram-calc/?mode=reverse&gpu=${gpu.id}&ctx=${contextLength}&batch=${batchSize}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300"
           >
             {g.openCalc} <ArrowRight size={14} />
           </Link>
           {(!gpu.isLaptop || !!prefillData[gpu.id] || measured.length > 0) && (
             <Link
               href={`/tools/feel/?left=${gpu.id}&ctx=${GPU_PAGE_CONTEXT}`}
-              className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+              className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300"
             >
               {g.feelSpeed} <ArrowRight size={14} />
             </Link>
@@ -285,7 +285,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[440px]">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+                  <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
                     <th scope="col" className="font-medium py-2 pr-3">{g.colModel}</th>
                     <th scope="col" className="font-medium py-2 pr-3">{g.colStack}</th>
                     <th scope="col" className="font-medium py-2 pr-3 text-right">{g.colSpeed}</th>
@@ -294,7 +294,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
                 </thead>
                 <tbody>
                   {measured.map((row, i) => (
-                    <tr key={i} className="border-b border-white/[0.04]">
+                    <tr key={i} className="border-b border-ink/[0.04]">
                       <td className="py-2 pr-3 text-slate-200">{row.model}</td>
                       <td className="py-2 pr-3 text-slate-500 font-mono text-xs">{row.quant}<RunProvenance row={row} /></td>
                       <td className="py-2 pr-3 text-right font-mono text-emerald-300">{row.speedTokSec}</td>
@@ -334,7 +334,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           {ramTwin && (
             <p className="text-sm text-slate-500 leading-relaxed mt-2">
               {fill(g.sameBudgetRam, { vram: gpu.vram })}{' '}
-              <Link href={`/gpu/${gpuSlug(ramTwin)}/`} className="text-violet-400 hover:text-violet-300">
+              <Link href={`/gpu/${gpuSlug(ramTwin)}/`} className="text-sky-400 hover:text-sky-300">
                 {gpuDisplayName(ramTwin, lang)}
               </Link>
             </p>
@@ -344,7 +344,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
               <li key={sib.id}>
                 <Link
                   href={`/gpu/${gpuSlug(sib)}/`}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 min-h-[44px] text-sm text-slate-300 hover:border-violet-500/25 hover:text-white transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2 min-h-[44px] text-sm text-slate-300 hover:border-sky-500/25 hover:text-slate-100 transition-all"
                 >
                   <span aria-hidden>{sib.icon}</span> {gpuDisplayName(sib, lang)}
                 </Link>
@@ -357,7 +357,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
               {feelSiblings.map(({ sib, pick }, i) => (
                 <span key={sib.id}>
                   {i > 0 && ' · '}
-                  <Link href={feelHref(gpu, sib, pick, GPU_PAGE_CONTEXT)} className="text-violet-400 hover:text-violet-300">
+                  <Link href={feelHref(gpu, sib, pick, GPU_PAGE_CONTEXT)} className="text-sky-400 hover:text-sky-300">
                     {fill(g.feelVs, { a: gpuName, b: gpuDisplayName(sib, lang), model: pick.model.name })}
                   </Link>
                 </span>
@@ -374,7 +374,7 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           <ul className="mt-3 space-y-2">
             {guides.map(a => (
               <li key={a.id}>
-                <Link href={`/cookbook/${a.id}/`} className="inline-flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 min-h-[44px]">
+                <Link href={`/cookbook/${a.id}/`} className="inline-flex items-center gap-1.5 text-sm text-sky-400 hover:text-sky-300 min-h-[44px]">
                   {lang === 'zh' ? a.titleZh : a.title} <ArrowRight size={14} aria-hidden />
                 </Link>
               </li>
@@ -388,14 +388,14 @@ export default function GpuPageContent({ gpu, guides }: { gpu: GPU; guides: { id
           <h2 className="text-lg font-bold text-slate-100 mb-2">{g.stepUpTitle}</h2>
           <p className="text-sm text-slate-400 leading-relaxed">
             {fill(g.stepUpBody, { gpu: gpuDisplayName(step.gpu, lang), vram: step.gpu.vram, extra: step.extraModels })}{' '}
-            <Link href={`/gpu/${gpuSlug(step.gpu)}/`} className="text-violet-400 hover:text-violet-300">
+            <Link href={`/gpu/${gpuSlug(step.gpu)}/`} className="text-sky-400 hover:text-sky-300">
               {gpuDisplayName(step.gpu, lang)} →
             </Link>
           </p>
           {stepPick && (
             <p className="text-sm text-slate-500 leading-relaxed mt-2">
               {g.stepUpFeel}{' '}
-              <Link href={feelHref(gpu, step.gpu, stepPick, GPU_PAGE_CONTEXT)} className="text-violet-400 hover:text-violet-300">
+              <Link href={feelHref(gpu, step.gpu, stepPick, GPU_PAGE_CONTEXT)} className="text-sky-400 hover:text-sky-300">
                 {fill(g.feelVs, { a: gpuName, b: gpuDisplayName(step.gpu, lang), model: stepPick.model.name })} →
               </Link>
             </p>

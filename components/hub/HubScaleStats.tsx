@@ -42,8 +42,8 @@ export default function HubScaleStats({ total, families, formats, buckets }: Pro
           className={cn(
             'px-2.5 py-1 rounded-lg text-xs font-medium border',
             pill.highlight
-              ? 'bg-violet-500/15 text-violet-300 border-violet-500/25'
-              : 'bg-white/[0.03] text-slate-500 border-white/[0.06]',
+              ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+              : 'bg-ink/[0.03] text-slate-500 border-ink/[0.06]',
           )}
         >
           {pill.label}

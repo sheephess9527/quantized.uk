@@ -30,7 +30,7 @@ export default function DataChangelog({ latest, total, lang }: { latest?: Change
         </div>
         <Link
           href="/changelog/"
-          className="inline-flex items-center gap-1 min-h-[44px] text-xs font-medium text-violet-400 hover:text-violet-300"
+          className="inline-flex items-center gap-1 min-h-[44px] text-xs font-medium text-sky-400 hover:text-sky-300"
         >
           {c.showAll.replace('{n}', String(total))} <ArrowRight size={12} />
         </Link>
@@ -43,7 +43,7 @@ export default function DataChangelog({ latest, total, lang }: { latest?: Change
         </p>
       )}
 
-      <p className="text-xs text-slate-500 mt-4 pt-3 border-t border-white/[0.05]">{c.disclaimer}</p>
+      <p className="text-xs text-slate-500 mt-4 pt-3 border-t border-ink/[0.05]">{c.disclaimer}</p>
     </div>
   );
 }

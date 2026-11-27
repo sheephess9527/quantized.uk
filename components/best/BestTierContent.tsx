@@ -85,7 +85,7 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[760px]">
               <thead>
-                <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+                <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
                   <th scope="col" className="font-medium py-2 pr-3">{b.colUse}</th>
                   <th scope="col" className="font-medium py-2 pr-3">{b.colModel}</th>
                   <th scope="col" className="font-medium py-2 pr-3">{b.colQuant}</th>
@@ -97,12 +97,12 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
               </thead>
               <tbody>
                 {picks.map(p => (
-                  <tr key={p.model.id} className="border-b border-white/[0.04] align-top">
+                  <tr key={p.model.id} className="border-b border-ink/[0.04] align-top">
                     <td className="py-3 pr-3 text-xs font-semibold uppercase tracking-wider text-cyan-400/90">
                       {p.useCases.map(useCaseLabel).join(' · ')}
                     </td>
                     <td className="py-3 pr-3">
-                      <Link href={`/quant-hub/${p.model.id}/`} className="text-slate-200 font-medium hover:text-violet-300">
+                      <Link href={`/quant-hub/${p.model.id}/`} className="text-slate-200 font-medium hover:text-sky-300">
                         {p.model.name}
                       </Link>
                       <span className="block text-xs text-slate-500 font-mono">{p.model.paramLabel}</span>
@@ -139,7 +139,7 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
                 <li key={c.id}>
                   <Link
                     href={`/gpu/${gpuSlug(c)}/`}
-                    className="inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 border border-white/[0.07] hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                    className="inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 border border-ink/[0.07] hover:border-sky-500/30 hover:text-sky-300 transition-colors"
                   >
                     {gpuDisplayName(c, lang)}
                     {c.bandwidth && <span className="ml-1.5 font-mono text-slate-500">{c.bandwidth.toLocaleString('en-US')} GB/s</span>}
@@ -193,7 +193,7 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
               cctx: ladder[2].context / 1024,
             })}
           </p>
-          <Link href="/tools/vram-calc/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+          <Link href="/tools/vram-calc/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300">
             {b.contextCta} <ArrowRight size={14} />
           </Link>
         </section>
@@ -205,7 +205,7 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[420px]">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+                  <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
                     <th scope="col" className="font-medium py-2 pr-3">{b.colMemory}</th>
                     <th scope="col" className="font-medium py-2 pr-3">{b.colLargest}</th>
                     <th scope="col" className="font-medium py-2 text-right">{b.colFits}</th>
@@ -213,11 +213,11 @@ export default function BestTierContent({ tier, lang = 'en' }: { tier: BestTier;
                 </thead>
                 <tbody>
                   {appleLadder.map(row => (
-                    <tr key={row.vram} className="border-b border-white/[0.04]">
+                    <tr key={row.vram} className="border-b border-ink/[0.04]">
                       <td className="py-2.5 pr-3 font-mono text-slate-300">{row.vram} GB</td>
                       <td className="py-2.5 pr-3 text-slate-400">
                         {row.model ? (
-                          <Link href={`/quant-hub/${row.model.id}/`} className="hover:text-violet-300">
+                          <Link href={`/quant-hub/${row.model.id}/`} className="hover:text-sky-300">
                             {row.model.name}
                           </Link>
                         ) : '—'}

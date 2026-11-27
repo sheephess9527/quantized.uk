@@ -37,36 +37,36 @@ export default function ShareCard(p: Props) {
     c.width = W; c.height = H;
     const g = c.getContext('2d')!;
     const bg = g.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, '#0b1020'); bg.addColorStop(1, '#1e1338');
+    bg.addColorStop(0, '#161b22'); bg.addColorStop(1, '#22272e');
     g.fillStyle = bg; g.fillRect(0, 0, W, H);
     const font = (w: number, s: number) => `${w} ${s}px ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif`;
-    g.fillStyle = '#a78bfa'; g.font = font(600, 28);
+    g.fillStyle = '#58a6ff'; g.font = font(600, 28);
     g.fillText(t.calc.cardKicker, 64, 84);
-    g.fillStyle = '#f1f5f9'; g.font = font(700, 60);
+    g.fillStyle = '#cdd9e5'; g.font = font(700, 60);
     g.fillText(p.modelName, 64, 168, W - 128);
-    g.fillStyle = '#94a3b8'; g.font = font(500, 32);
+    g.fillStyle = '#8f9fb0'; g.font = font(500, 32);
     g.fillText(`${p.level} · ${t.calc.cardContext.replace('{ctx}', p.contextLabel)}`, 64, 222, W - 128);
 
-    g.fillStyle = '#f8fafc'; g.font = font(800, 120);
+    g.fillStyle = '#f0f6fc'; g.font = font(800, 120);
     const big = `${p.totalGB.toFixed(1)} GB`;
     g.fillText(big, 64, 372);
-    g.fillStyle = '#94a3b8'; g.font = font(500, 28);
+    g.fillStyle = '#8f9fb0'; g.font = font(500, 28);
     g.fillText(t.calc.cardBreakdown.replace('{w}', p.weightsGB.toFixed(1)).replace('{kv}', p.kvGB.toFixed(1)), 64, 420, W - 128);
 
     let y = 492;
     if (p.rigLabel && p.verdict) {
       g.fillStyle = VERDICT_COLOR[p.verdict];
       g.beginPath(); g.arc(78, y - 10, 12, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#e2e8f0'; g.font = font(600, 32);
+      g.fillStyle = '#cdd9e5'; g.font = font(600, 32);
       const vt = p.verdict === 'green' ? t.calc.green : p.verdict === 'yellow' ? t.calc.yellow : t.calc.red;
       g.fillText(`${p.rigLabel} · ${vt}`, 104, y, W - 168);
       y += 50;
     }
     if (p.speed) {
-      g.fillStyle = '#6ee7b7'; g.font = font(500, 28);
+      g.fillStyle = '#79c0ff'; g.font = font(500, 28);
       g.fillText(t.calc.cardSpeed.replace('{n}', String(p.speed.tokS)).replace('{low}', String(p.speed.low)).replace('{high}', String(p.speed.high)), 64, y, W - 128);
     }
-    g.fillStyle = '#64748b'; g.font = font(500, 24);
+    g.fillStyle = '#8090a2'; g.font = font(500, 24);
     g.fillText(lang === 'zh' ? 'quantized.uk/zh/tools/vram-calc' : 'quantized.uk/tools/vram-calc', 64, H - 40);
     g.textAlign = 'right';
     g.fillText(t.calc.cardEstimate, W - 64, H - 40);
@@ -93,7 +93,7 @@ export default function ShareCard(p: Props) {
       onClick={save}
       disabled={busy}
       data-testid="share-card"
-      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300 disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300 disabled:opacity-50"
     >
       <ImageDown size={15} /> {t.calc.cardSave}
     </button>

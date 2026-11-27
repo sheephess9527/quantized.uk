@@ -12,7 +12,7 @@ export default function CommunitySpeedReports({ configuration }: { configuration
   return <section className="glass rounded-2xl p-5 space-y-3" aria-label={d.label}>
     <h3 className="text-sm font-semibold text-cyan-300">{d.label}</h3>
     <p className="text-xs text-slate-400">{d.reviewedNote}</p>
-    {rows.map(row => <article key={row.id} className="rounded-xl border border-white/10 p-3 space-y-2 text-xs">
+    {rows.map(row => <article key={row.id} className="rounded-xl border border-ink/10 p-3 space-y-2 text-xs">
       <p className="font-semibold text-slate-200">{row.runtime} {row.version}</p>
       {row.processor && <p className="text-slate-300">{d.processor}: {row.processor}</p>}
       <p className="text-slate-300">{t.evidence.prefill}: {row.prefill} tok/s · {t.evidence.decode}: {row.decode} tok/s</p>

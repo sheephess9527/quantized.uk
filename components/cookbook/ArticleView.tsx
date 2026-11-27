@@ -15,7 +15,7 @@ import { articleModifiedAt } from '@/lib/utils/article-dates';
 
 const difficultyColors = {
   beginner:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  intermediate: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  intermediate: 'bg-amber-500/12 text-amber-300 border-amber-500/25',
   advanced:     'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
@@ -43,12 +43,12 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         ]}
       />
 
-      <header className="mb-8 pb-6 border-b border-white/[0.06]">
+      <header className="mb-8 pb-6 border-b border-ink/[0.06]">
         <div className="flex flex-wrap items-center gap-2.5 mb-3">
           <span className={cn('badge text-xs', difficultyColors[article.difficulty])}>
             {t.cookbook.difficulty[article.difficulty]}
           </span>
-          <span className="badge text-xs bg-white/[0.04] text-slate-400 border-white/[0.08]">
+          <span className="badge text-xs bg-ink/[0.04] text-slate-400 border-ink/[0.08]">
             {t.cookbook.categories[article.category]}
           </span>
           <span className="flex items-center gap-1 text-xs text-slate-400">
@@ -76,7 +76,7 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
               'mt-5 rounded-xl border px-4 py-3 text-xs text-slate-400 max-w-2xl',
               article.verifiedAt
                 ? 'border-cyan-500/25 bg-cyan-500/[0.06]'
-                : 'border-white/[0.08] bg-[#111218]',
+                : 'border-ink/[0.08] bg-bg-surface',
             )}
           >
             <p className={cn('font-semibold mb-1', article.verifiedAt ? 'text-cyan-300' : 'text-slate-300')}>
@@ -94,7 +94,7 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         )}
         <div className="flex flex-wrap gap-1.5 mt-4">
           {article.tags.map(tag => (
-            <span key={tag} className="badge text-xs bg-white/[0.04] text-slate-400 border-white/[0.08] font-mono">{tag}</span>
+            <span key={tag} className="badge text-xs bg-ink/[0.04] text-slate-400 border-ink/[0.08] font-mono">{tag}</span>
           ))}
         </div>
       </header>
@@ -109,7 +109,7 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
         </div>
 
         <div id="article-content" className="space-y-8 min-w-0">
-          <article className="rounded-2xl border border-white/[0.08] bg-[#111218] p-6 sm:p-8 lg:p-10 divide-y divide-white/[0.06]">
+          <article className="rounded-2xl border border-ink/[0.08] bg-bg-surface p-6 sm:p-8 lg:p-10 divide-y divide-ink/[0.06]">
             {article.content.map((section, i) => (
               <section key={i} id={`section-${i}`} className="py-7 first:pt-0 last:pb-0 scroll-mt-24">
                 <div className="flex items-baseline gap-2.5 mb-3">
@@ -135,10 +135,10 @@ export default function ArticleView({ article, lang = 'en' }: Props) {
           </article>
 
           {article.faqs && article.faqs.length > 0 && (
-            <section className="rounded-2xl border border-white/[0.08] bg-[#111218] p-6 sm:p-8">
+            <section className="rounded-2xl border border-ink/[0.08] bg-bg-surface p-6 sm:p-8">
               {/* Same array the route emits as FAQPage, so the two cannot diverge. */}
               <h2 className="section-title text-lg mb-5">{t.cookbook.faqTitle}</h2>
-              <div className="divide-y divide-white/[0.05]">
+              <div className="divide-y divide-ink/[0.05]">
                 {article.faqs.map((f, i) => (
                   <div key={i} className="py-4 first:pt-0 last:pb-0">
                     <h3 className="text-sm sm:text-[15px] font-semibold text-slate-100 mb-1.5">{lang === 'zh' ? f.qZh : f.q}</h3>

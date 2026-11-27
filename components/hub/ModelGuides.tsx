@@ -16,7 +16,7 @@ export default function ModelGuides({ guides, lang = 'en' }: { guides: GuideLink
   return (
     <div className="glass rounded-2xl p-5 sm:p-6 mt-6">
       <h2 className="section-title text-base flex items-center gap-2 mb-1">
-        <BookOpen size={15} className="text-orange-400" />
+        <BookOpen size={15} className="text-sky-400" />
         {g.title}
       </h2>
       <p className="section-subtitle text-xs mb-4">{g.subtitle}</p>
@@ -26,7 +26,7 @@ export default function ModelGuides({ guides, lang = 'en' }: { guides: GuideLink
           <li key={guide.id}>
             <Link
               href={`/cookbook/${guide.id}/`}
-              className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-orange-500/25 hover:bg-orange-500/[0.04] transition-all group h-full"
+              className="flex items-start gap-3 rounded-xl border border-ink/[0.08] bg-ink/[0.02] px-3 py-2.5 hover:border-sky-500/30 hover:bg-sky-500/[0.04] transition-all group h-full"
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm text-slate-200 font-medium">
@@ -41,12 +41,12 @@ export default function ModelGuides({ guides, lang = 'en' }: { guides: GuideLink
                   {guide.exact && (
                     <>
                       <span>·</span>
-                      <span className="text-orange-400/90">{g.coversThis}</span>
+                      <span className="text-sky-400">{g.coversThis}</span>
                     </>
                   )}
                 </span>
               </span>
-              <ArrowRight size={14} className="text-slate-600 group-hover:text-orange-400 shrink-0 mt-1" />
+              <ArrowRight size={14} className="text-slate-600 group-hover:text-sky-400 shrink-0 mt-1" />
             </Link>
           </li>
         ))}

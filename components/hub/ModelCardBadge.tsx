@@ -27,7 +27,7 @@ export default function ModelCardBadge({ modelId }: { modelId: string }) {
   }
 
   return (
-    <section aria-labelledby="model-card-badge-title" className="rounded-2xl border border-white/[0.08] bg-[#111218] p-4 sm:px-5">
+    <section aria-labelledby="model-card-badge-title" className="rounded-2xl border border-ink/[0.08] bg-bg-surface p-4 sm:px-5">
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
           <h2 id="model-card-badge-title" className="text-sm font-semibold text-slate-200">{d.title}</h2>
@@ -38,7 +38,7 @@ export default function ModelCardBadge({ modelId }: { modelId: string }) {
           <button
             type="button"
             onClick={copyMarkdown}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-200 glass glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-400"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-200 glass glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-400"
           >
             {status === 'copied' ? <Check size={16} className="text-emerald-400" aria-hidden /> : <Copy size={16} aria-hidden />}
             {status === 'copied' ? d.copied : d.copy}

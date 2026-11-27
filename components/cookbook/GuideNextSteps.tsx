@@ -35,9 +35,9 @@ export default function GuideNextSteps({ article, lang = 'en' }: { article: Arti
       {gpu && calcHref && (
         <Link
           href={calcHref}
-          className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 mb-3 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all group"
+          className="flex items-start gap-3 rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-4 py-3 mb-3 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all group"
         >
-          <Calculator size={16} className="text-violet-400 mt-0.5 shrink-0" />
+          <Calculator size={16} className="text-sky-400 mt-0.5 shrink-0" />
           <span className="min-w-0">
             <span className="block text-sm text-slate-200 font-medium">
               {n.fitsMyCard.replace('{gpu}', `${gpu.icon} ${gpuDisplayName(gpu, lang)}`)}
@@ -46,7 +46,7 @@ export default function GuideNextSteps({ article, lang = 'en' }: { article: Arti
               {n.fitsMyCardHint.replace('{vram}', String(gpu.vram)).replace('{ctx}', String(ctx))}
             </span>
           </span>
-          <ArrowRight size={14} className="text-slate-600 group-hover:text-violet-400 ml-auto mt-1 shrink-0" />
+          <ArrowRight size={14} className="text-slate-600 group-hover:text-sky-400 ml-auto mt-1 shrink-0" />
         </Link>
       )}
 
@@ -60,7 +60,7 @@ export default function GuideNextSteps({ article, lang = 'en' }: { article: Arti
               <li key={m.id}>
                 <Link
                   href={`/quant-hub/${m.id}/`}
-                  className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-cyan-500/25 hover:bg-cyan-500/[0.04] transition-all"
+                  className="block rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 hover:border-cyan-500/25 hover:bg-cyan-500/[0.04] transition-all"
                 >
                   <span className="block text-sm text-slate-200 font-medium truncate">{m.name}</span>
                   <span className="block text-xs text-slate-600 font-mono mt-0.5">

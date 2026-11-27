@@ -73,7 +73,7 @@ export function ErrorIndexView({ lang = 'en' }: { lang?: Lang } = {}) {
         {cacheError && (
           <p className="mt-3 text-sm text-slate-400">
             {e.jumpToKvCache}{' '}
-            <a className="font-mono text-violet-300 hover:text-violet-200 underline" href={`#${cacheError.id}`}>
+            <a className="font-mono text-sky-300 hover:text-sky-200 underline" href={`#${cacheError.id}`}>
               {cacheError.message}
             </a>
           </p>
@@ -93,7 +93,7 @@ export function ErrorIndexView({ lang = 'en' }: { lang?: Lang } = {}) {
                   <li key={err.id} id={err.id === KV_CACHE_ERROR_ID ? err.id : undefined} className={err.id === KV_CACHE_ERROR_ID ? 'scroll-mt-24' : undefined}>
                     <Link href={`/errors/${err.id}/`} className="block glass glass-hover rounded-2xl p-4">
                       <span className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mb-1.5">
-                        <span className="badge bg-white/[0.05] border-white/[0.08] text-slate-400">{err.runtime}</span>
+                        <span className="badge bg-ink/[0.05] border-ink/[0.08] text-slate-400">{err.runtime}</span>
                       </span>
                       <span className="block font-semibold text-slate-200">{err.title[lang]}</span>
                       <code className="block mt-1.5 font-mono text-xs text-amber-300/90 break-words">{err.message}</code>
@@ -155,7 +155,7 @@ export function ErrorDetailView({ id, guides, lang = 'en' }: { id: string; guide
 
       <section className="mb-6">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{err.setting ? e.messageSetting : e.message}</h2>
-        <pre className="bg-black/30 border border-white/[0.06] rounded-xl p-4 font-mono text-sm text-amber-200 whitespace-pre-wrap break-words">{err.message}</pre>
+        <pre className="bg-bg-recessed border border-ink/[0.06] rounded-xl p-4 font-mono text-sm text-amber-200 whitespace-pre-wrap break-words">{err.message}</pre>
         {err.message.includes('<') && <p className="text-xs text-slate-500 mt-1.5">{e.placeholders}</p>}
       </section>
 
@@ -183,7 +183,7 @@ export function ErrorDetailView({ id, guides, lang = 'en' }: { id: string; guide
           <h2 className="text-base font-semibold text-slate-100 mb-1">{e.calcTitle}</h2>
           <p className="text-sm text-slate-400 leading-relaxed mb-3">{e.calcBody}</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            <Link href="/tools/vram-calc/" className="inline-flex items-center gap-1.5 text-violet-300 hover:text-violet-200">
+            <Link href="/tools/vram-calc/" className="inline-flex items-center gap-1.5 text-sky-300 hover:text-sky-200">
               <Calculator size={14} aria-hidden /> {e.calcLink}
             </Link>
             <Link href="/tools/context-length/" className="text-cyan-300 hover:text-cyan-200">{e.contextLink}</Link>
@@ -197,7 +197,7 @@ export function ErrorDetailView({ id, guides, lang = 'en' }: { id: string; guide
           <ul className="space-y-1.5">
             {guides.map(a => (
               <li key={a.id}>
-                <Link href={`/cookbook/${a.id}/`} className="text-violet-300 hover:text-violet-200">
+                <Link href={`/cookbook/${a.id}/`} className="text-sky-300 hover:text-sky-200">
                   {lang === 'zh' ? a.titleZh : a.title}
                 </Link>
               </li>
@@ -212,14 +212,14 @@ export function ErrorDetailView({ id, guides, lang = 'en' }: { id: string; guide
           <ul className="space-y-1.5">
             {related.map(r => (
               <li key={r.id}>
-                <Link href={`/errors/${r.id}/`} className="text-violet-300 hover:text-violet-200">{r.title[lang]}</Link>
+                <Link href={`/errors/${r.id}/`} className="text-sky-300 hover:text-sky-200">{r.title[lang]}</Link>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <section className="border-t border-white/[0.06] pt-4">
+      <section className="border-t border-ink/[0.06] pt-4">
         <h2 className="text-sm font-semibold text-slate-300 mb-2">{e.sources}</h2>
         <ul className="space-y-1 text-sm">
           {err.sources.map(s => (
@@ -242,7 +242,7 @@ function Rich({ text }: { text: string }) {
     <>
       {text.split(/(`[^`]+`)/g).map((part, i) =>
         part.startsWith('`') && part.endsWith('`')
-          ? <code key={i} className="font-mono text-xs text-cyan-300 bg-white/[0.04] rounded px-1 py-0.5 break-words">{part.slice(1, -1)}</code>
+          ? <code key={i} className="font-mono text-xs text-cyan-300 bg-ink/[0.04] rounded px-1 py-0.5 break-words">{part.slice(1, -1)}</code>
           : <span key={i}>{part}</span>,
       )}
     </>

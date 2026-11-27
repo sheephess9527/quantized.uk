@@ -18,18 +18,18 @@ import { formatPairs } from '@/lib/utils/format-compare';
  * tool that no longer behaves that way.
  */
 const tools = [
-  { href: '/tools/vram-calc/',     icon: Calculator,        accent: 'text-violet-300',  content: vramCalcContent,     key: 'vramCalc' as const },
-  { href: '/tools/cli-gen/',       icon: Terminal,          accent: 'text-cyan-300',    content: cliGenContent,       key: 'cliGen' as const },
-  { href: '/tools/format-wizard/', icon: Wand2,             accent: 'text-orange-300',  content: formatWizardContent, key: 'formatWizard' as const },
-  { href: '/tools/compare/',       icon: GitCompareArrows,  accent: 'text-emerald-300', content: compareContent,      key: 'modelCompare' as const },
-  { href: '/tools/feel/',          icon: Gauge,             accent: 'text-amber-300',   content: feelContent,         key: 'feelSpeed' as const },
+  { href: '/tools/vram-calc/',     icon: Calculator,        accent: 'text-sky-300',   content: vramCalcContent,     key: 'vramCalc' as const },
+  { href: '/tools/cli-gen/',       icon: Terminal,          accent: 'text-cyan-300',  content: cliGenContent,       key: 'cliGen' as const },
+  { href: '/tools/format-wizard/', icon: Wand2,             accent: 'text-teal-300',  content: formatWizardContent, key: 'formatWizard' as const },
+  { href: '/tools/compare/',       icon: GitCompareArrows,  accent: 'text-sky-300',   content: compareContent,      key: 'modelCompare' as const },
+  { href: '/tools/feel/',          icon: Gauge,             accent: 'text-cyan-300',  content: feelContent,         key: 'feelSpeed' as const },
 ];
 
 const questions = [
-  { href: '/tools/speed/',          icon: Zap,           accent: 'text-emerald-300', summary: speedQContent.summary,   key: 'speedQ' as const },
-  { href: '/tools/which-quant/',    icon: ListChecks,    accent: 'text-violet-300',  summary: quantQContent.summary,   key: 'quantQ' as const },
-  { href: '/tools/context-length/', icon: Ruler,         accent: 'text-cyan-300',    summary: contextQContent.summary, key: 'contextQ' as const },
-  { href: '/errors/',               icon: AlertTriangle, accent: 'text-amber-300',   summary: errorsIndexSummary,      key: 'errors' as const },
+  { href: '/tools/speed/',          icon: Zap,           accent: 'text-sky-300',   summary: speedQContent.summary,   key: 'speedQ' as const },
+  { href: '/tools/which-quant/',    icon: ListChecks,    accent: 'text-sky-300',   summary: quantQContent.summary,   key: 'quantQ' as const },
+  { href: '/tools/context-length/', icon: Ruler,         accent: 'text-cyan-300',  summary: contextQContent.summary, key: 'contextQ' as const },
+  { href: '/errors/',               icon: AlertTriangle, accent: 'text-amber-300', summary: errorsIndexSummary,      key: 'errors' as const },
 ];
 
 export default function ToolIndexView({ lang }: { lang: Lang }) {
@@ -83,7 +83,7 @@ export default function ToolIndexView({ lang }: { lang: Lang }) {
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <li>
           <Link href="/gpu/" className="block glass glass-hover rounded-2xl p-5 h-full">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-violet-300">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-sky-300">
               <Cpu size={15} /> {i.gpuTitle}
             </span>
             <p className="text-sm text-slate-400 leading-relaxed mt-2">

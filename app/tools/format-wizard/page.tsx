@@ -19,7 +19,7 @@ export default function FormatWizardPage() {
         ]}
       />
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-300 text-xs font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-teal-500/10 border border-teal-500/25 text-teal-300 text-xs font-medium mb-4">
           🧭 {t.wizard.badge}
         </div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">{t.wizard.title}</h1>

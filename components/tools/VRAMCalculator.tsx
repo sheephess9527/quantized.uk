@@ -55,7 +55,7 @@ type VerdictColor = 'green' | 'yellow' | 'red';
 
 const verdictConfig: Record<VerdictColor, { bar: string; label: string; dot: string }> = {
   green:  { bar: 'bg-emerald-500', label: 'text-emerald-400',  dot: 'bg-emerald-400' },
-  yellow: { bar: 'bg-yellow-500',  label: 'text-yellow-400',   dot: 'bg-yellow-400'  },
+  yellow: { bar: 'bg-amber-500',   label: 'text-amber-300',    dot: 'bg-amber-400'   },
   red:    { bar: 'bg-red-500',     label: 'text-red-400',      dot: 'bg-red-400'      },
 };
 
@@ -947,11 +947,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   };
 
   const formatColors: Record<string, string> = {
-    GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
+    GGUF: 'bg-sky-500/15 text-sky-300 border-sky-500/25',
     AWQ:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/25',
-    EXL2: 'bg-orange-500/15 text-orange-300 border-orange-500/25',
-    GPTQ: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
-    HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
+    EXL2: 'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
+    GPTQ: 'bg-teal-500/15 text-teal-300 border-teal-500/25',
+    HQQ:  'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
   };
 
   const advancedChanged = changedAdvancedSettings(mode, { cards, extraIds, kvType, batchSize, mmprojGB, reverseInput, sortBy, includeYellow, bestPerModel }) + (mode === 'reverse' ? Number(minTok > 0) + Number(requireTools) + Number(requireCode) : 0);
@@ -977,7 +977,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
       type="button"
       onClick={copyShareLink}
       disabled={!configReady || (mode === 'reverse' && !showReverseResult) || (mode === 'forward' && !showForwardResult)}
-      className="inline-flex min-h-[44px] sm:min-h-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] hover:border-white/10 transition-colors disabled:opacity-50"
+      className="inline-flex min-h-[44px] sm:min-h-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-ink/[0.06] hover:border-ink/10 transition-colors disabled:opacity-50"
     >
       {linkCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
       {linkCopied ? t.calc.shareCopied : t.calc.shareLink}
@@ -986,7 +986,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
   const shareFallback = uncopiedLink && (
     <label className="block text-xs text-slate-300">
       {t.calc.shareCopyFailed}
-      <input readOnly value={uncopiedLink} onFocus={e => e.currentTarget.select()} className="mt-1 w-full rounded-lg border border-white/10 bg-transparent p-2" />
+      <input readOnly value={uncopiedLink} onFocus={e => e.currentTarget.select()} className="mt-1 w-full rounded-lg border border-ink/10 bg-transparent p-2" />
     </label>
   );
 
@@ -1006,8 +1006,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               className={cn(
                 'flex min-h-[44px] sm:min-h-0 items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
                 mode === m
-                  ? 'bg-violet-500/15 text-violet-300 border-violet-500/30'
-                  : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
+                  ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                  : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10',
               )}
             >
               {m === 'forward' ? <Calculator size={14} /> : m === 'reverse' ? <ArrowRightLeft size={14} /> : <Wrench size={14} />}
@@ -1043,10 +1043,10 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       autoComplete="off"
                       spellCheck={false}
                       aria-describedby="calc-hf-file-help"
-                      className="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-violet-500/50"
+                      className="flex-1 min-w-0 bg-ink/[0.04] border border-ink/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50"
                     />
                     <button type="submit" disabled={fileBusy || !fileInput.trim()}
-                      className="min-h-[44px] shrink-0 px-3 rounded-lg text-xs font-medium text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50">
+                      className="min-h-[44px] shrink-0 px-3 rounded-lg text-xs font-medium text-sky-200 bg-sky-500/15 border border-sky-500/30 disabled:opacity-50">
                       {fileBusy ? t.calc.hfLoading : t.calc.hfFileButton}
                     </button>
                   </form>
@@ -1062,11 +1062,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   {activeFile && (
                     <div role="status" className="mt-2 space-y-1 text-xs">
                       <a href={quantFileUrl(activeFile)} target="_blank" rel="noopener noreferrer"
-                        className="break-all text-violet-300 hover:underline">{fileName}</a>
+                        className="break-all text-sky-300 hover:underline">{fileName}</a>
                       <p className="text-emerald-300">{fileQuant} · {t.calc.hfFileSize.replace('{gb}', (activeFile.bytes / 1024 ** 3).toFixed(2))}
                         {shardCount(activeFile.path) > 1 ? ` · ${t.calc.hfFileShards.replace('{n}', String(shardCount(activeFile.path)))}` : ''}
                       </p>
-                      <button type="button" onClick={clearFile} className="min-h-[36px] text-violet-300 hover:underline">{t.calc.hfFileClear}</button>
+                      <button type="button" onClick={clearFile} className="min-h-[36px] text-sky-300 hover:underline">{t.calc.hfFileClear}</button>
                     </div>
                   )}
                 </div>
@@ -1078,7 +1078,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     id="calc-model"
                     value={selectedModelId}
                     onChange={e => selectModel(e.target.value)}
-                    className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full appearance-none bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/50 transition-colors"
                   >
                     <option value="">{t.calc.modelPlaceholder}</option>
                     {groupedModels().map(group => (
@@ -1124,7 +1124,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     }}
                     aria-label={t.calc.searchLabel}
                     placeholder={t.calc.searchPlaceholder}
-                    className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full bg-ink/[0.03] border border-ink/[0.06] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-sky-500/50 transition-colors"
                   />
                 </div>
                 {modelQuery.trim() && tagResult ? (
@@ -1136,7 +1136,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       <button
                         type="button"
                         onClick={() => applyTag(tagResult)}
-                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg border border-violet-500/40 text-violet-200 hover:bg-violet-500/10"
+                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg border border-sky-500/40 text-sky-200 hover:bg-sky-500/10"
                       >
                         {t.calc.ollamaUse}
                       </button>
@@ -1152,7 +1152,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           : t.calc.ollamaHfNeedsQuant.replace('{repo}', tagResult.repo)}
                       </p>
                       {tagResult.kind === 'hfNotIndexed' && (
-                        <button type="button" onClick={() => runImport(tagResult.repo)} className="text-violet-300 hover:text-violet-200">
+                        <button type="button" onClick={() => runImport(tagResult.repo)} className="text-sky-300 hover:text-sky-200">
                           {t.calc.hfLabel}: {tagResult.repo} →
                         </button>
                       )}
@@ -1167,7 +1167,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button
                           key={m.id}
                           onClick={() => chooseModel(m.id)}
-                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200')}
                         >
                           {nameCarriesLabel(m.name, m.paramLabel) ? m.name : `${m.name} (${m.paramLabel})`}
                         </button>
@@ -1188,8 +1188,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               aria-pressed={selectedModelId === pick.model.id}
                               title={pick.kind === 'capable' ? t.home.match.kindCapable : pick.kind === 'headroom' ? t.home.match.kindHeadroom : t.home.match.kindFastest}
                               className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', selectedModelId === pick.model.id
-                                ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                                : 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                                ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                                : 'text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200')}
                             >
                               <span className="text-slate-500 mr-1">
                                 {pick.kind === 'capable' ? t.home.match.kindCapable : pick.kind === 'headroom' ? t.home.match.kindHeadroom : t.home.match.kindFastest}
@@ -1204,8 +1204,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               onClick={() => chooseModel(m.id)}
                               aria-pressed={selectedModelId === m.id}
                               className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', selectedModelId === m.id
-                                ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                                : 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                                ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                                : 'text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200')}
                             >
                               {m.name}
                             </button>
@@ -1223,7 +1223,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 <button
                   type="button"
                   onClick={openImport}
-                  className="mt-2 inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 text-xs text-violet-300 hover:text-violet-200"
+                  className="mt-2 inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 text-xs text-sky-300 hover:text-sky-200"
                 >
                   {pastedRepo ? `${t.calc.hfLabel}: ${pastedRepo}` : t.calc.hfOpen} →
                 </button>
@@ -1239,7 +1239,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     id="calc-card"
                     value={profileGpuId}
                     onChange={e => setGpuId(e.target.value)}
-                    className="w-full appearance-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full appearance-none bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/50 transition-colors"
                   >
                     <option value="">{t.calc.yourCardPlaceholder}</option>
                     {gpuOptgroups(k => t.calc[k], lang)}
@@ -1254,7 +1254,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button
                           key={g.id}
                           onClick={() => setGpuId(g.id)}
-                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200')}
+                          className={cn('inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors', 'text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200')}
                         >
                           {g.name}
                         </button>
@@ -1278,12 +1278,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         placeholder={t.calc.hfPlaceholder}
                         autoComplete="off"
                         spellCheck={false}
-                        className="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
+                        className="flex-1 min-w-0 bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-sky-500/40"
                       />
                       <button
                         type="submit"
                         disabled={hfBusy || !hfInput.trim()}
-                        className="shrink-0 px-3 py-2 rounded-lg text-xs font-medium text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
+                        className="shrink-0 px-3 py-2 rounded-lg text-xs font-medium text-sky-200 bg-sky-500/15 border border-sky-500/30 disabled:opacity-50"
                       >
                         {hfBusy ? t.calc.hfLoading : t.calc.hfButton}
                       </button>
@@ -1337,7 +1337,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                             <button
                               type="button"
                               onClick={() => chooseModel(indexed.id)}
-                              className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-violet-200 border-violet-500/30 bg-violet-500/10"
+                              className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-sky-200 border-sky-500/30 bg-sky-500/10"
                             >
                               {t.calc.hfInIndex.replace('{name}', indexed.name)}
                             </button>
@@ -1363,7 +1363,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           type="number"
                           value={value}
                           onChange={e => { setter(e.target.value); if (hfShape) setHfEdited(true); }}
-                          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-violet-500/40"
+                          className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500/40"
                           />
                         </label>
                       </div>
@@ -1380,13 +1380,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   {commonQuants.map(q => (
                     <button key={q} type="button" aria-pressed={selectedQuant === q}
                       onClick={() => { setSelectedQuant(q); setFormatGroup(findFormatGroup(q)); }}
-                      className={cn('px-2.5 py-1 rounded-lg text-xs font-mono border', selectedQuant === q ? 'bg-violet-500/20 text-violet-200 border-violet-500/30' : 'text-slate-400 border-white/[0.06] hover:text-slate-200')}
+                      className={cn('px-2.5 py-1 rounded-lg text-xs font-mono border', selectedQuant === q ? 'bg-sky-500/20 text-sky-200 border-sky-500/30' : 'text-slate-400 border-ink/[0.06] hover:text-slate-200')}
                     >{q}</button>
                   ))}
                 </div>
                 <button type="button" aria-expanded={showAllQuants} aria-controls="calc-all-quants"
                   onClick={() => setAllQuantsOpen(!showAllQuants)}
-                  className="min-h-[36px] text-xs text-violet-300 hover:text-violet-200 mb-2"
+                  className="min-h-[36px] text-xs text-sky-300 hover:text-sky-200 mb-2"
                 >{t.calc.allQuantLevels.replace('{n}', String(quantCount))}</button>
                 <div id="calc-all-quants" hidden={!showAllQuants}>
                 <div className="flex flex-wrap gap-1 mb-2">
@@ -1398,8 +1398,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all duration-150',
                         formatGroup === g
-                          ? 'bg-violet-500/15 text-violet-300 border border-violet-500/25'
-                          : 'text-slate-500 border border-white/[0.06] hover:text-slate-300',
+                          ? 'bg-sky-500/15 text-sky-300 border border-sky-500/25'
+                          : 'text-slate-500 border border-ink/[0.06] hover:text-slate-300',
                       )}
                     >
                       {g === 'Full' ? t.calc.fullPrecision : g}
@@ -1415,8 +1415,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                         selectedQuant === q
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10',
                       )}
                     >
                       {q}
@@ -1438,8 +1438,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtMethod(v)}
                         aria-pressed={ftMethod === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftMethod === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1456,8 +1456,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtRank(v)}
                         aria-pressed={ftRank === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftRank === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1474,8 +1474,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtOpt(v)}
                         aria-pressed={ftOpt === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftOpt === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1491,8 +1491,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtSeq(v)}
                         aria-pressed={ftSeq === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftSeq === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1508,8 +1508,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtBatch(v)}
                         aria-pressed={ftBatch === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors font-mono', ftBatch === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1525,8 +1525,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         onClick={() => setFtCkpt(v)}
                         aria-pressed={ftCkpt === v}
                         className={cn('px-2.5 py-1 rounded-lg text-xs border transition-colors', ftCkpt === v
-                          ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}
+                          ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}
                       >
                         {l}
                       </button>
@@ -1545,7 +1545,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           value={ftHidden}
                           placeholder={String(ftHubShape?.hidden ?? ftHiddenGuess ?? '')}
                           onChange={e => setFtHidden(e.target.value)}
-                          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-violet-500/40"
+                          className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/40"
                         />
                         <p className="text-[11px] text-slate-600 mt-1">
                           {ftHiddenSource === 'config' ? t.calc.ftFromConfig : ftHiddenSource === 'heads' ? t.calc.ftFromHeads : ftHiddenSource === 'missing' ? t.calc.ftMissing : ''}
@@ -1559,7 +1559,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           value={ftVocab}
                           placeholder={ftHubShape?.vocab ? String(ftHubShape.vocab) : ''}
                           onChange={e => setFtVocab(e.target.value)}
-                          className="w-full bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-violet-500/40"
+                          className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/40"
                         />
                         <p className="text-[11px] text-slate-600 mt-1">
                           {ftVocab ? '' : ftHubShape?.vocab ? t.calc.ftFromConfig : t.calc.ftMissing}
@@ -1571,7 +1571,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         type="button"
                         onClick={() => void readFtHub()}
                         disabled={ftHubEntry === 'loading'}
-                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-violet-200 border-violet-500/30 bg-violet-500/10 disabled:opacity-50"
+                        className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border text-sky-200 border-sky-500/30 bg-sky-500/10 disabled:opacity-50"
                       >
                         {ftHubEntry === 'loading' ? t.calc.hfLoading : t.calc.ftReadHub}
                       </button>
@@ -1591,7 +1591,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     id="calc-reverse-card"
                     value={selectedGpuId}
                     onChange={e => chooseGpu(e.target.value)}
-                    className="w-full min-h-[44px] sm:min-h-0 appearance-none bg-white/[0.04] border border-white/[0.14] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full min-h-[44px] sm:min-h-0 appearance-none bg-ink/[0.04] border border-ink/[0.14] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/50 transition-colors"
                   >
                     <option value="">{t.calc.selectGpuPlaceholder}</option>
                     {gpuOptgroups(k => t.calc[k], lang)}
@@ -1612,7 +1612,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button
                           key={g.id}
                           onClick={() => chooseGpu(g.id)}
-                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
+                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200"
                         >
                           {gpuDisplayName(g, lang)}
                         </button>
@@ -1645,7 +1645,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button
                           key={g.id}
                           onClick={() => chooseGpu(g.id)}
-                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-white/[0.08] hover:border-violet-500/40 hover:text-violet-200"
+                          className="inline-flex items-center min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border transition-colors text-slate-300 border-ink/[0.08] hover:border-sky-500/40 hover:text-sky-200"
                         >
                           {gpuDisplayName(g, lang)}
                         </button>
@@ -1664,7 +1664,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-medium text-slate-400">{t.calc.context}</label>
-              <span className="font-mono text-xs text-violet-300">
+              <span className="font-mono text-xs text-sky-300">
                 {contextLabel(contextLen)}
                 <span className="ml-1.5 text-[10px] font-normal text-slate-500">
                   {contextLen.toLocaleString('en-US')} {t.calc.tokens}
@@ -1685,7 +1685,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                     contextLen === p
                       ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                      : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                      : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                   )}
                 >
                   {contextLabel(p)}
@@ -1697,7 +1697,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           <div>
             <button type="button" aria-expanded={moreOpen} aria-controls="calc-more-options"
               onClick={() => setMoreOpen(!moreOpen)}
-              className="flex items-center gap-2 min-h-[44px] text-sm text-violet-300 hover:text-violet-200"
+              className="flex items-center gap-2 min-h-[44px] text-sm text-sky-300 hover:text-sky-200"
             >
               <ChevronDown size={14} className={moreOpen ? 'rotate-180' : ''} />
               {t.calc.moreOptions}{advancedChanged > 0 ? ` · ${t.calc.advancedChanged.replace('{n}', String(advancedChanged))}` : ''}
@@ -1717,8 +1717,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         className={cn(
                           'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
                           cards === n
-                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                            ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                            : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                         )}
                       >
                         {n}×
@@ -1736,7 +1736,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           key={`${g.id}-${i}`}
                           onClick={() => setExtraIds(ids => ids.filter((_, j) => j !== i))}
                           aria-label={t.calc.extraCardRemove.replace('{gpu}', gpuDisplayName(g, lang))}
-                          className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-violet-500/15 text-violet-200 border-violet-500/30"
+                          className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded-lg text-xs border bg-sky-500/15 text-sky-200 border-sky-500/30"
                         >
                           + {gpuDisplayName(g, lang)} <span aria-hidden="true">×</span>
                         </button>
@@ -1749,7 +1749,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         aria-label={t.calc.extraCardAdd}
                         value=""
                         onChange={e => { const id = e.target.value; if (id) setExtraIds(ids => [...ids, id]); }}
-                        className="w-full appearance-none bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-violet-500/50"
+                        className="w-full appearance-none bg-ink/[0.03] border border-ink/[0.06] rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-sky-500/50"
                       >
                         <option value="">+ {t.calc.extraCardAdd}</option>
                         {gpuDatabase
@@ -1777,18 +1777,18 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <div className="flex flex-wrap items-center gap-1.5">
                     {savedRigs.length > 0 && <span className="text-[11px] text-slate-600">{t.calc.rigSaved}</span>}
                     {savedRigs.map((r, i) => (
-                      <span key={i} className="inline-flex items-center rounded-lg border border-white/[0.08] text-xs">
+                      <span key={i} className="inline-flex items-center rounded-lg border border-ink/[0.08] text-xs">
                         <button
                           onClick={() => { setGpuId(r.gpuId); setCards(r.cards); setExtraIds(r.extra); }}
                           aria-pressed={!!current && same(current, r)}
-                          className={cn('px-2.5 py-1 min-h-[36px] sm:min-h-0', current && same(current, r) ? 'text-violet-200' : 'text-slate-300 hover:text-violet-200')}
+                          className={cn('px-2.5 py-1 min-h-[36px] sm:min-h-0', current && same(current, r) ? 'text-sky-200' : 'text-slate-300 hover:text-sky-200')}
                         >
                           {nameOf(r)}
                         </button>
                         <button
                           onClick={() => storeRigs(savedRigs.filter((_, j) => j !== i))}
                           aria-label={t.calc.rigRemove.replace('{rig}', nameOf(r))}
-                          className="px-2 py-1 text-slate-600 hover:text-slate-300 border-l border-white/[0.06]"
+                          className="px-2 py-1 text-slate-600 hover:text-slate-300 border-l border-ink/[0.06]"
                         >
                           ×
                         </button>
@@ -1797,7 +1797,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     {current && !savedRigs.some(r => same(r, current)) && (
                       <button
                         onClick={() => storeRigs([...savedRigs, current].slice(-5))}
-                        className="px-2.5 py-1 min-h-[36px] sm:min-h-0 rounded-lg text-xs text-violet-300 border border-dashed border-violet-500/30 hover:text-violet-200"
+                        className="px-2.5 py-1 min-h-[36px] sm:min-h-0 rounded-lg text-xs text-sky-300 border border-dashed border-sky-500/30 hover:text-sky-200"
                       >
                         + {t.calc.rigSave}
                       </button>
@@ -1822,7 +1822,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         value={mmprojGB}
                         onChange={e => { setMmprojGB(e.target.value); setMmprojFile(''); }}
                         placeholder={t.calc.mmprojPlaceholder}
-                        className="w-32 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-violet-500/40"
+                        className="w-32 bg-ink/[0.04] border border-ink/[0.07] rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-sky-500/40"
                       />
                       {gguf && (
                         <button
@@ -1836,7 +1836,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                             setMmprojGB(r.gb.toFixed(2));
                             setMmprojFile(r.file);
                           }}
-                          className="px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30 disabled:opacity-50"
+                          className="px-3 py-2 rounded-lg text-xs text-sky-200 bg-sky-500/15 border border-sky-500/30 disabled:opacity-50"
                         >
                           {mmprojState === 'loading' ? t.calc.hfLoading : t.calc.mmprojRead}
                         </button>
@@ -1866,8 +1866,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         className={cn(
                           'px-3 py-1 rounded-lg text-xs font-mono border transition-colors',
                           cards === n
-                            ? 'bg-violet-500/20 text-violet-200 border-violet-500/30'
-                            : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                            ? 'bg-sky-500/20 text-sky-200 border-sky-500/30'
+                            : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                         )}
                       >
                         {n}×
@@ -1923,7 +1923,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
                         recommendationSort === s.id
                           ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                       )}
                     >
                       {s.label}
@@ -1937,7 +1937,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   type="checkbox"
                   checked={includeYellow}
                   onChange={e => setIncludeYellow(e.target.checked)}
-                  className="accent-violet-500"
+                  className="accent-sky-500"
                 />
                 <span className="text-xs text-slate-400">{t.calc.includeYellow}</span>
               </label>
@@ -1946,7 +1946,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   type="checkbox"
                   checked={bestPerModel}
                   onChange={e => setBestPerModel(e.target.checked)}
-                  className="accent-violet-500"
+                  className="accent-sky-500"
                 />
                 <span className="text-xs text-slate-400">{t.calc.bestPerModel}</span>
               </label>
@@ -1965,7 +1965,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     'px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
                     kvType === k
                       ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                      : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                      : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                   )}
                 >
                   {k}
@@ -1985,7 +1985,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label htmlFor="calc-batch" className="text-xs font-medium text-slate-400">{t.calc.batch}</label>
-              <span className="font-mono text-xs text-violet-300">{batchSize}</span>
+              <span className="font-mono text-xs text-sky-300">{batchSize}</span>
             </div>
             <input
               type="range"
@@ -1993,7 +1993,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               min={1} max={16} step={1}
               value={batchSize}
               onChange={e => setBatchSize(Number(e.target.value))}
-              className="w-full accent-violet-500 h-11 sm:h-1.5 rounded-full"
+              className="w-full accent-sky-500 h-11 sm:h-1.5 rounded-full"
             />
             <div className="flex justify-between text-xs text-slate-600 mt-1">
               <span>1</span><span>4</span><span>8</span><span>16</span>
@@ -2014,7 +2014,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               <p className="text-sm text-amber-300">
                 {t.calc.unknownModel.replace('{id}', invalidModelId ?? selectedModelId)}
               </p>
-              <Link href="/quant-hub/" className="text-xs text-violet-400 hover:text-violet-300 mt-2 inline-block">
+              <Link href="/quant-hub/" className="text-xs text-sky-400 hover:text-sky-300 mt-2 inline-block">
                 {t.calc.browseModels}
               </Link>
             </div>
@@ -2097,14 +2097,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <button type="button" onClick={() => {
                           setSelectedQuant(quantFix.key);
                           setFormatGroup(findFormatGroup(quantFix.key));
-                        }} className="min-h-[44px] rounded-lg border border-violet-500/30 px-3 text-left text-xs text-violet-200 hover:bg-violet-500/10">
+                        }} className="min-h-[44px] rounded-lg border border-sky-500/30 px-3 text-left text-xs text-sky-200 hover:bg-sky-500/10">
                           {t.calc.runPlanQuant.replace('{level}', quantFix.key).replace('{gb}', quantFix.totalGB.toFixed(2))}
                           {' · '}{quantFix.verdict === 'green' ? t.calc.green : t.calc.yellow}
                         </button>
                       )}
                       {contextFix && (
                         <button type="button" onClick={() => setContextLen(contextFix.ctx)}
-                          className="min-h-[44px] rounded-lg border border-violet-500/30 px-3 text-left text-xs text-violet-200 hover:bg-violet-500/10">
+                          className="min-h-[44px] rounded-lg border border-sky-500/30 px-3 text-left text-xs text-sky-200 hover:bg-sky-500/10">
                           {t.calc.runPlanContext.replace('{ctx}', contextLabel(contextFix.ctx)).replace('{gb}', contextFix.totalGB.toFixed(2))}
                           {' · '}{contextFix.verdict === 'green' ? t.calc.green : t.calc.yellow}
                         </button>
@@ -2133,8 +2133,8 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <OffloadMemory plan={launchOffload} result={result} capacity={rigCapacity} ceiling={tightCeiling(profileGpu)} />
                 )}
                 {launchCommands && launchOffload ? (
-                  <details className="mt-3 rounded-lg border border-white/10 px-3">
-                    <summary className="cursor-pointer py-3 text-sm text-violet-200">{t.calc.runPlanOffload}</summary>
+                  <details className="mt-3 rounded-lg border border-ink/10 px-3">
+                    <summary className="cursor-pointer py-3 text-sm text-sky-200">{t.calc.runPlanOffload}</summary>
                     <div className="pb-3">
                       <p className="text-xs text-slate-400">
                         {t.calc.runPlanReserve
@@ -2160,9 +2160,9 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 <h3 className="text-sm font-semibold text-slate-300 mb-4">{t.calc.resultsTitle}</h3>
                 <div className="space-y-3">
                   {[
-                    { icon: Cpu,         label: t.calc.modelWeights, value: result.modelWeightsGB, color: 'text-violet-400' },
+                    { icon: Cpu,         label: t.calc.modelWeights, value: result.modelWeightsGB, color: 'text-sky-400' },
                     { icon: MemoryStick, label: t.calc.kvCache,      value: result.kvCacheGB,      color: 'text-cyan-400'   },
-                    { icon: Zap,         label: t.calc.activations,  value: result.activationsGB,  color: 'text-orange-400' },
+                    { icon: Zap,         label: t.calc.activations,  value: result.activationsGB,  color: 'text-teal-400' },
                     ...(result.extraGB ? [{ icon: ImageIcon, label: t.calc.mmprojRow, value: result.extraGB, color: 'text-pink-400' }] : []),
                   ].map(({ icon: Icon, label, value, color }) => (
                     <div key={label} className="flex items-center gap-3">
@@ -2173,7 +2173,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       </span>
                     </div>
                   ))}
-                  <div className="pt-3 border-t border-white/[0.06]">
+                  <div className="pt-3 border-t border-ink/[0.06]">
                     <div className="flex items-center gap-3">
                       <Calculator size={13} className="text-slate-400" />
                       <span className="text-xs font-semibold text-slate-300 flex-1">{t.calc.total}</span>
@@ -2206,7 +2206,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     </div>
                   );
                   return pinned ? (
-                    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 space-y-1.5">
+                    <div className="mt-3 rounded-xl border border-ink/[0.07] bg-ink/[0.02] p-3 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-medium text-slate-400">{t.calc.pinTitle}</p>
                         <button onClick={() => setPinned(null)} className="text-[11px] text-slate-500 hover:text-slate-300">{t.calc.pinClear}</button>
@@ -2220,7 +2220,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   ) : (
                     <button
                       onClick={() => setPinned({ desc, totalGB: result.totalGB, verdict: nowVerdict, capacity: comparisonCapacity })}
-                      className="mt-2 text-xs text-violet-300 hover:text-violet-200 min-h-[32px]"
+                      className="mt-2 text-xs text-sky-300 hover:text-sky-200 min-h-[32px]"
                     >
                       {t.calc.pinA} →
                     </button>
@@ -2260,20 +2260,20 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   );
                 })()}
                 {selectedModel && (
-                  <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-white/[0.06]">
+                  <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-ink/[0.06]">
                     {!ctxOverModel && selectedQuantObj && !profileGpu && (() => {
                       // With a card picked the player is offered as a button beside the speed line
                       // above; with none it opens on the defaults from here.
                       const href = feelTarget(undefined, selectedModel, selectedQuantObj, contextLen);
                       return href ? (
-                        <Link href={href} className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+                        <Link href={href} className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300">
                           {t.calc.feelThisNoCard} →
                         </Link>
                       ) : null;
                     })()}
                     <Link
                       href={`/tools/cli-gen/?model=${selectedModel.id}`}
-                      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+                      className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300"
                     >
                       {t.calc.nextCommand} →
                     </Link>
@@ -2323,7 +2323,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="text-left text-slate-500 border-b border-white/[0.06]">
+                        <tr className="text-left text-slate-500 border-b border-ink/[0.06]">
                           <th scope="col" className="py-1.5 pr-2 font-medium">{t.calc.levelsColLevel}</th>
                           <th scope="col" className="py-1.5 pr-2 font-medium text-right">{t.calc.levelsColSize}</th>
                           <th scope="col" className="py-1.5 pr-2 font-medium text-right">{t.calc.levelsColLoss}</th>
@@ -2332,12 +2332,12 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       </thead>
                       <tbody>
                         {levels.map(row => (
-                          <tr key={row.key} className={cn('border-b border-white/[0.03]', row.key === selectedQuant && 'bg-violet-500/[0.06]')}>
+                          <tr key={row.key} className={cn('border-b border-ink/[0.03]', row.key === selectedQuant && 'bg-sky-500/[0.06]')}>
                             <td className="py-1 pr-2">
                               <button
                                 onClick={() => { setSelectedQuant(row.key); setFormatGroup(findFormatGroup(row.key)); }}
                                 aria-pressed={row.key === selectedQuant}
-                                className="font-mono text-left text-slate-300 hover:text-violet-300 min-h-[32px]"
+                                className="font-mono text-left text-slate-300 hover:text-sky-300 min-h-[32px]"
                               >
                                 {row.key}
                               </button>
@@ -2389,13 +2389,13 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                   const capacity = rigCapacity;
                   const v = getVerdict(result.totalGB, capacity, tightCeiling(profileGpu));
                   return (
-                    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 mb-3">
+                    <div className="rounded-xl border border-ink/[0.07] bg-ink/[0.02] p-3 mb-3">
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <span className="text-xs text-slate-500">{t.calc.hwYourCard}</span>
                         <span className="text-xs text-slate-300 font-medium">{rigLabel}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-ink/[0.05] rounded-full overflow-hidden">
                           <div
                             className={cn('h-full rounded-full', formatOk ? verdictConfig[v].bar : verdictConfig.red.bar)}
                             style={{ width: formatOk ? `${Math.min(100, (result.totalGB / capacity) * 100)}%` : '100%' }}
@@ -2422,7 +2422,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               : t.calc.hwAdviceRed}
                       </p>
                       {reach && (
-                        <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                        <div className="mt-3 pt-2 border-t border-ink/[0.05]">
                           <p className="text-xs font-medium text-slate-400">{t.calc.reachTitle}</p>
                           <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                             {reach.tight === 0
@@ -2439,7 +2439,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           {reachPreset && reachPreset !== contextLen && (
                             <button
                               onClick={() => setContextLen(reachPreset)}
-                              className="mt-1 text-xs text-violet-400 hover:text-violet-300 min-h-[32px]"
+                              className="mt-1 text-xs text-sky-400 hover:text-sky-300 min-h-[32px]"
                             >
                               {t.calc.reachApply.replace('{ctx}', contextLabel(reachPreset))} →
                             </button>
@@ -2486,11 +2486,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           <Link
                             href={href}
                             data-testid="feel-button"
-                            className="mt-3 flex items-center gap-3 rounded-xl border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 px-4 py-2.5 min-h-[44px] transition-colors"
+                            className="mt-3 flex items-center gap-3 rounded-xl border border-sky-400/30 bg-sky-500/10 hover:bg-sky-500/20 px-4 py-2.5 min-h-[44px] transition-colors"
                           >
-                            <span aria-hidden className="text-violet-300 text-base">▶</span>
+                            <span aria-hidden className="text-sky-300 text-base">▶</span>
                             <span className="min-w-0">
-                              <span className="block text-sm font-medium text-violet-200">{t.calc.feelThis.replace('{card}', gpuDisplayName(profileGpu, lang))}</span>
+                              <span className="block text-sm font-medium text-sky-200">{t.calc.feelThis.replace('{card}', gpuDisplayName(profileGpu, lang))}</span>
                               <span className="block text-xs text-slate-400">{t.calc.feelHint}</span>
                             </span>
                           </Link>
@@ -2542,14 +2542,14 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         const rows = servingCapacity(shape, shapeBpw, servCap, [4096, 8192, 32768].filter(c => c <= limit));
                         if (rows.length === 0) return null;
                         return (
-                          <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                          <div className="mt-3 pt-2 border-t border-ink/[0.05]">
                             <p className="text-xs font-medium text-slate-400">{t.calc.servingTitle}</p>
                             <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                               {(vllmRuns ? t.calc.servingIntro : t.calc.servingIntroLocal).replace('{util}', String(Math.round(VLLM_MEMORY_UTILIZATION * 100)))}
                             </p>
                             <div className="grid grid-cols-3 gap-1.5 mt-2">
                               {rows.map(r => (
-                                <div key={r.ctx} className="rounded-lg border border-white/[0.06] px-2 py-1.5 text-center">
+                                <div key={r.ctx} className="rounded-lg border border-ink/[0.06] px-2 py-1.5 text-center">
                                   <p className="text-[11px] text-slate-500">{t.calc.servingRow.replace('{ctx}', contextLabel(r.ctx))}</p>
                                   <p className="font-mono text-sm text-slate-200">{r.users > 0 ? t.calc.servingUsers.replace('{n}', String(r.users)) : t.calc.servingNone}</p>
                                 </div>
@@ -2563,7 +2563,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         const plan = launchOffload;
                         if (!plan) return null;
                         return (
-                          <div className="mt-3 pt-2 border-t border-white/[0.05]">
+                          <div className="mt-3 pt-2 border-t border-ink/[0.05]">
                             <p className="text-xs font-medium text-slate-400">{t.calc.offloadTitle}</p>
                             {!plan.moe && <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                               {(plan.gpuLayers === 0 ? t.calc.offloadNone : t.calc.offloadLine)
@@ -2583,7 +2583,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                                         'px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors',
                                         ram === k
                                           ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25'
-                                          : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                                          : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
                                       )}
                                     >
                                       {RAM_SETUPS[k].label}
@@ -2599,7 +2599,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                               </>
                             )}
                             {plan.moe ? (
-                              <div className="mt-2 pt-2 border-t border-white/[0.05]" data-testid="moe-offload">
+                              <div className="mt-2 pt-2 border-t border-ink/[0.05]" data-testid="moe-offload">
                                 <p className="text-xs font-medium text-slate-400">{t.calc.moeTitle}</p>
                                 <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
                                   {(plan.moe.all ? t.calc.moeLineAll : t.calc.moeLine)
@@ -2623,7 +2623,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 })()}
 
                 <details className="group">
-                  <summary className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer min-h-[44px] flex items-center">
+                  <summary className="text-xs text-sky-400 hover:text-sky-300 cursor-pointer min-h-[44px] flex items-center">
                     {t.calc.hwShowAll.replace('{total}', String(GPU_COUNT)).replace('{cpu}', String(gpuDatabase.length - GPU_COUNT))}
                   </summary>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-1 mt-2">
@@ -2638,7 +2638,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         <span className="text-xs text-slate-400 truncate w-36 shrink-0 group-hover:text-slate-200 transition-colors">
                           {gpuDisplayName(gpu, lang)}
                         </span>
-                        <div className="flex-1 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-ink/[0.05] rounded-full overflow-hidden">
                           <div className={cn('h-full rounded-full transition-all duration-500', cfg.bar)} style={{ width: `${pct}%` }} />
                         </div>
                         <span className="font-mono text-xs text-slate-600 w-12 text-right shrink-0">{gpu.vram}G</span>
@@ -2650,7 +2650,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                 </details>
                 <div className="flex items-center gap-4 mt-3 text-xs text-slate-600">
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />{t.calc.green}</span>
-                  <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />{t.calc.yellow}</span>
+                  <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-400" />{t.calc.yellow}</span>
                   <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-400" />{t.calc.red}</span>
                 </div>
               </div>}
@@ -2672,7 +2672,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                     type="checkbox"
                     checked={scoredOnly}
                     onChange={e => setScoredOnly(e.target.checked)}
-                    className="accent-violet-500"
+                    className="accent-sky-500"
                   />
                   {t.calc.modelQualityFilter.replace('{count}', String(scoredRecommendations.length))}
                 </label>
@@ -2699,7 +2699,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                       <div
                         key={`${model.id}-${quant.format}-${quant.level}`}
                         data-model-id={model.id}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-ink/[0.02] hover:bg-ink/[0.04] transition-colors"
                       >
                         <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', cfg.dot)} />
                         <div className="flex-1 min-w-0">
@@ -2735,7 +2735,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           <Link
                             href={`/tools/vram-calc/?${forwardParams}`}
                             onClick={e => openForward(e, model.id, level, extraGB)}
-                            className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                            className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
                           >
                             {t.hub.detail.calc}
                           </Link>
@@ -2758,11 +2758,11 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
             const pct = (ftResult.trainableParams / (ftShape.paramsB * 1e9)) * 100;
             const fmtCount = (n: number) => (n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : `${(n / 1e6).toFixed(1)}M`);
             const rows: [string, number | undefined, string][] = [
-              [t.calc.ftBase, ftResult.baseGB, 'bg-violet-400'],
+              [t.calc.ftBase, ftResult.baseGB, 'bg-sky-400'],
               [t.calc.ftTrainable, ftResult.trainableGB, 'bg-emerald-400'],
               [t.calc.ftActivations, ftResult.activationsGB, 'bg-cyan-400'],
               [t.calc.ftLogits, ftResult.logitsGB, 'bg-pink-400'],
-              [t.calc.ftOverhead, ftResult.overheadGB, 'bg-orange-400'],
+              [t.calc.ftOverhead, ftResult.overheadGB, 'bg-teal-500'],
             ];
             return (
               <div className="space-y-4">
@@ -2778,7 +2778,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                         </span>
                       </div>
                     ))}
-                    <div className="pt-3 border-t border-white/[0.06] flex items-center gap-3">
+                    <div className="pt-3 border-t border-ink/[0.06] flex items-center gap-3">
                       <Calculator size={13} className="text-slate-400" />
                       <span className="text-xs font-semibold text-slate-300 flex-1">{t.calc.total}</span>
                       <span className="font-mono text-lg font-bold text-slate-100">
@@ -2811,7 +2811,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
                           onClick={() => setFtMethod(m)}
                           aria-pressed={ftMethod === m}
                           className={cn('w-full flex items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors',
-                            ftMethod === m ? 'border-violet-500/30 bg-violet-500/10' : 'border-white/[0.06] hover:border-white/10')}
+                            ftMethod === m ? 'border-sky-500/30 bg-sky-500/10' : 'border-ink/[0.06] hover:border-ink/10')}
                         >
                           <span className="text-xs text-slate-300 flex-1">{m === 'qlora' ? t.calc.ftQlora : m === 'lora' ? t.calc.ftLora : t.calc.ftFull}</span>
                           <span className="font-mono text-sm text-slate-200">{partial ? '≥ ' : ''}{r.totalGB.toFixed(1)} {t.calc.gbUnit}</span>
@@ -2854,7 +2854,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
         const v = currentVerdict;
         return (
           <div
-            className="fixed inset-x-0 bottom-0 z-40 lg:hidden border-t border-white/[0.08] bg-[#0a0a0f]/95 backdrop-blur px-4 pt-2.5"
+            className="fixed inset-x-0 bottom-0 z-40 lg:hidden border-t border-ink/[0.08] bg-bg/95 backdrop-blur px-4 pt-2.5"
             style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom))' }}
           >
             <div className="flex items-center gap-3 max-w-7xl mx-auto">
@@ -2878,7 +2878,7 @@ export default function VRAMCalculator({ defaultMode = 'reverse' }: { defaultMod
               <a
                 href="#calc-result"
                 onClick={e => { e.preventDefault(); resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-                className="shrink-0 inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-violet-200 bg-violet-500/15 border border-violet-500/30"
+                className="shrink-0 inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-sky-200 bg-sky-500/15 border border-sky-500/30"
               >
                 {t.calc.stickyDetails}
                 <ChevronDown size={12} />

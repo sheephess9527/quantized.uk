@@ -48,7 +48,7 @@ export default function ChartTable({
           <table className="w-full text-xs min-w-[420px]">
             <caption className="sr-only">{caption}</caption>
             <thead>
-              <tr className="text-left text-slate-500 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-500 border-b border-ink/[0.06]">
                 {columns.map((c, i) => (
                   <th key={c} scope="col" className={cn('font-medium py-2 pr-3', i > 0 && 'text-right')}>
                     {c}
@@ -58,7 +58,7 @@ export default function ChartTable({
             </thead>
             <tbody>
               {rows.map((row, i) => (
-                <tr key={i} className="border-b border-white/[0.04]">
+                <tr key={i} className="border-b border-ink/[0.04]">
                   {row.map((cell, j) => (
                     <td key={j} className={cn('py-2 pr-3', j === 0 ? 'text-slate-300' : 'text-right font-mono text-slate-400')}>
                       {cell}

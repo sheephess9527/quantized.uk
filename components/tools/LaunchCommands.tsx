@@ -98,7 +98,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
   };
 
   return (
-    <div className="mt-4 pt-3 border-t border-white/[0.06]" data-testid="launch-commands">
+    <div className="mt-4 pt-3 border-t border-ink/[0.06]" data-testid="launch-commands">
       <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
         <p className="text-xs font-medium text-slate-400">{needsSourceCheck ? t.calc.launchTemplateTitle : t.calc.launchTitle}</p>
         <div className="flex gap-1.5" role="tablist">
@@ -110,7 +110,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
               onClick={() => setFw(l.fw)}
               className={cn(
                 'px-2.5 py-1 rounded-lg text-xs font-medium border min-h-[32px]',
-                l.fw === active.fw ? 'bg-violet-500/15 text-violet-300 border-violet-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                l.fw === active.fw ? 'bg-sky-500/15 text-sky-300 border-sky-500/25' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
               )}
             >
               {l.label}
@@ -128,7 +128,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
               aria-pressed={os === o}
               className={cn(
                 'px-2 py-1 rounded-lg text-[11px] border min-h-[32px]',
-                os === o ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300',
+                os === o ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300',
               )}
             >
               {o === 'windows' ? 'Windows' : 'Linux'}
@@ -141,7 +141,7 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
           type="button"
           onClick={copy}
           aria-label={copyLabel}
-          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-violet-500/15 px-3 text-xs text-violet-200 hover:bg-violet-500/25"
+          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-sky-500/15 px-3 text-xs text-sky-200 hover:bg-sky-500/25"
         >
           {copiedCommand === out.command ? <Check size={14} /> : <Copy size={14} />}
           {copiedCommand === out.command ? t.calc.launchCopied : copyLabel}
@@ -159,10 +159,10 @@ export default function LaunchCommands({ model, quant, contextLen, gpu, gpuLayer
         <p className="mt-1.5 text-xs text-amber-300/90">{out.notes[0]}</p>
       )}
       <details ref={scriptRef} className="mt-1 min-w-0">
-        <summary className="min-h-[44px] cursor-pointer py-3 text-sm text-violet-200">
+        <summary className="min-h-[44px] cursor-pointer py-3 text-sm text-sky-200">
           {t.calc.launchShowScript}
         </summary>
-        <pre className="overflow-x-auto whitespace-pre rounded-xl bg-black/30 p-3 font-mono text-[11px] leading-relaxed text-slate-300">{out.command}</pre>
+        <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-recessed p-3 font-mono text-[11px] leading-relaxed text-slate-300">{out.command}</pre>
         {out.notes.length > 0 && (
           <ul className="mt-1 space-y-0.5">
             {out.notes.slice(0, 3).map((n, i) => <li key={i} className="text-[11px] leading-relaxed text-slate-400">· {n}</li>)}

@@ -50,7 +50,7 @@ export function HubSearch({ filters, onChange, gpuFilterId, id }: Pick<Props, 'f
         placeholder={t.hub.searchPlaceholder}
         value={filters.search}
         onChange={e => onChange({ ...filters, search: e.target.value })}
-        className="w-full min-h-[44px] sm:min-h-0 bg-white/[0.04] border border-white/[0.14] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
+        className="w-full min-h-[44px] sm:min-h-0 bg-ink/[0.04] border border-ink/[0.14] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500/40"
       />
       {gpuFilterId && <input type="hidden" name="gpu" value={gpuFilterId} />}
       {filters.paramRange && <input type="hidden" name="size" value={filters.paramRange} />}
@@ -103,8 +103,8 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
             className={cn(
               'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 border',
               filters[key] === value
-                ? 'bg-violet-500/15 text-violet-300 border-violet-500/25'
-                : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10'
+                ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+                : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10'
             )}
           >
             {l}
@@ -138,7 +138,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
       <div className="hidden sm:block mb-4">{desktopSearch}</div>
       <button type="button" aria-expanded={expanded} aria-controls="hub-filters"
         onClick={() => setExpanded(!expanded)}
-        className="flex sm:hidden w-full min-h-[44px] items-center justify-between gap-2 text-left text-sm font-medium text-violet-300"
+        className="flex sm:hidden w-full min-h-[44px] items-center justify-between gap-2 text-left text-sm font-medium text-sky-300"
       >
         {t.hub.moreFilters}{activeCount > 0 && ` (${activeCount})`}
         <ChevronDown size={14} aria-hidden="true" className={expanded ? 'rotate-180' : undefined} />
@@ -197,7 +197,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
           <p className={cn(
             'text-xs font-medium',
             count < total
-              ? profileFilterActive ? 'text-amber-400/80' : 'text-violet-400'
+              ? profileFilterActive ? 'text-amber-400/80' : 'text-sky-400'
               : 'text-slate-500',
           )}>
             {t.hub.modelCount.replace('{count}', String(count)).replace('{total}', String(total))}
@@ -217,7 +217,7 @@ export default function FilterBar({ filters, onChange, count, total, profileFilt
                 'px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150 border',
                 filters.showLegacy === 'show'
                   ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
-                  : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10',
+                  : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10',
               )}
             >
               {t.hub.showLegacy.replace('{n}', String(legacyCount))}

@@ -149,7 +149,7 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
   const groupIcon = (g: PaletteItem['group']) => {
     switch (g) {
       case 'tools': return <Wrench size={13} className="text-cyan-400 shrink-0" />;
-      case 'models': return <Box size={13} className="text-violet-400 shrink-0" />;
+      case 'models': return <Box size={13} className="text-sky-400 shrink-0" />;
       case 'gpus': return <Cpu size={13} className="text-emerald-400 shrink-0" />;
       case 'guides': return <BookOpen size={13} className="text-amber-400 shrink-0" />;
       case 'errors': return <AlertTriangle size={13} className="text-rose-400 shrink-0" />;
@@ -190,10 +190,10 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
         }
       }}
     >
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
-      <div className="relative z-10 w-full max-w-xl rounded-2xl border border-white/[0.12] bg-[#111218] shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.08]">
-          <Search size={16} className="text-violet-400 shrink-0" aria-hidden />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="relative z-10 w-full max-w-xl rounded-2xl border border-ink/[0.12] bg-bg-surface shadow-2xl overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-ink/[0.08]">
+          <Search size={16} className="text-sky-400 shrink-0" aria-hidden />
           <input
             ref={inputRef}
             type="search"
@@ -219,7 +219,7 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
           <button
             type="button"
             onClick={onClose}
-            className="px-2 py-0.5 rounded border border-white/[0.1] text-[11px] font-mono text-slate-400 hover:text-slate-200"
+            className="px-2 py-0.5 rounded border border-ink/[0.1] text-[11px] font-mono text-slate-400 hover:text-slate-200"
           >
             Esc
           </button>
@@ -247,7 +247,7 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
                           onClick={() => openItem(item)}
                           className={cn(
                             'w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors',
-                            active ? 'bg-violet-500/15 text-slate-100' : 'text-slate-300 hover:bg-white/[0.04]',
+                            active ? 'bg-sky-500/15 text-slate-100' : 'text-slate-300 hover:bg-ink/[0.04]',
                           )}
                         >
                           <span className="flex items-center gap-2.5 min-w-0">
@@ -260,7 +260,7 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
                                 {item.meta}
                               </span>
                             )}
-                            {active && <CornerDownLeft size={12} className="text-violet-400" aria-hidden />}
+                            {active && <CornerDownLeft size={12} className="text-sky-400" aria-hidden />}
                           </span>
                         </button>
                       </li>
@@ -272,7 +272,7 @@ export default function CommandPaletteModal({ onClose }: { onClose: () => void }
           )}
         </div>
 
-        <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.015] flex items-center justify-between text-[11px] text-slate-500 font-mono">
+        <div className="px-4 py-2 border-t border-ink/[0.06] bg-ink/[0.015] flex items-center justify-between text-[11px] text-slate-500 font-mono">
           <span>{t.nav.searchHint}</span>
           <span>⌘K / Ctrl+K</span>
         </div>

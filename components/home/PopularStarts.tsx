@@ -54,7 +54,7 @@ export default function PopularStarts({ lang }: { lang: Lang }) {
               <li key={gpu.id}>
                 <Link
                   href={`/gpu/${slug}/`}
-                  className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 min-h-[44px] hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+                  className="flex items-center gap-2 rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 min-h-[44px] hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
                 >
                   <span aria-hidden className="text-sm">{gpu.icon}</span>
                   <span className="text-sm text-slate-200 font-medium flex-1 min-w-0 truncate">{gpuDisplayName(gpu, lang)}</span>
@@ -65,7 +65,7 @@ export default function PopularStarts({ lang }: { lang: Lang }) {
               </li>
             ))}
           </ul>
-          <Link href="/gpu/" className="inline-flex items-center min-h-[44px] mt-2 text-xs text-violet-400 hover:text-violet-300">
+          <Link href="/gpu/" className="inline-flex items-center min-h-[44px] mt-2 text-xs text-sky-400 hover:text-sky-300">
             {p.allGpus.replace('{n}', String(GPU_COUNT))}
           </Link>
         </div>
@@ -78,7 +78,7 @@ export default function PopularStarts({ lang }: { lang: Lang }) {
               <li key={task.href}>
                 <Link
                   href={task.href}
-                  className="group flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 min-h-[44px] hover:border-cyan-500/25 hover:bg-cyan-500/[0.04] transition-all"
+                  className="group flex items-center gap-2 rounded-xl border border-ink/[0.06] bg-ink/[0.02] px-3 py-2.5 min-h-[44px] hover:border-cyan-500/25 hover:bg-cyan-500/[0.04] transition-all"
                 >
                   <span className="text-sm text-slate-300 flex-1">{task.label}</span>
                   <ChevronRight size={14} className="text-slate-600 group-hover:text-slate-400 shrink-0" />

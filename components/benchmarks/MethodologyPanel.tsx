@@ -21,7 +21,7 @@ export default function MethodologyPanel() {
     <div className="glass rounded-2xl overflow-hidden">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-ink/[0.02] transition-colors"
       >
         <div className="flex items-center gap-2">
           <Info size={14} className="text-cyan-400" />
@@ -30,7 +30,7 @@ export default function MethodologyPanel() {
         <ChevronDown size={14} className={cn('text-slate-500 transition-transform', open && 'rotate-180')} />
       </button>
       {open && (
-        <div className="px-5 pb-5 space-y-4 border-t border-white/[0.06]">
+        <div className="px-5 pb-5 space-y-4 border-t border-ink/[0.06]">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4">
             {[
               { label: t.bench.methodology.model, value: m.model },
@@ -38,7 +38,7 @@ export default function MethodologyPanel() {
               { label: t.bench.methodology.context, value: `${m.context} tokens` },
               { label: t.bench.methodology.batch, value: String(m.batch) },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-white/[0.02] rounded-lg p-3">
+              <div key={label} className="bg-ink/[0.02] rounded-lg p-3">
                 <p className="text-xs text-slate-600 mb-1">{label}</p>
                 <p className="text-xs font-mono text-slate-300">{value}</p>
               </div>
@@ -48,7 +48,7 @@ export default function MethodologyPanel() {
             <p className="text-xs text-slate-600 mb-2">{t.bench.methodology.frameworks}</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(m.frameworks).map(([k, v]) => (
-                <span key={k} className="badge bg-white/[0.03] text-slate-400 border-white/[0.06] text-xs font-mono">
+                <span key={k} className="badge bg-ink/[0.03] text-slate-400 border-ink/[0.06] text-xs font-mono">
                   {k}: {v}
                 </span>
               ))}
@@ -83,7 +83,7 @@ export default function MethodologyPanel() {
             gap — "not recorded" is a more credible answer than a plausible
             guess.
           */}
-          <div className="grid sm:grid-cols-3 gap-4 pt-2 border-t border-white/[0.06]">
+          <div className="grid sm:grid-cols-3 gap-4 pt-2 border-t border-ink/[0.06]">
             <div>
               <p className="text-xs font-semibold text-slate-400 mb-1.5">{tm.throughputTitle}</p>
               <dl className="space-y-1 text-xs">
@@ -109,7 +109,7 @@ export default function MethodologyPanel() {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+          <div className="pt-2 border-t border-ink/[0.06] space-y-1.5">
             <p className="text-xs font-semibold text-slate-400">{tm.hardwareTitle}</p>
             <p className="text-xs text-slate-500 leading-relaxed">
               {tm.hardwareDrivers.replace('{drivers}', m.drivers)}
@@ -117,7 +117,7 @@ export default function MethodologyPanel() {
             <Row label={tm.hardwareCpuRam} value={tm.notRecorded} muted />
           </div>
 
-          <div className="pt-2 border-t border-white/[0.06] flex flex-wrap gap-x-6 gap-y-1">
+          <div className="pt-2 border-t border-ink/[0.06] flex flex-wrap gap-x-6 gap-y-1">
             <Row label={tm.runsRecorded} value={tm.notRecorded} muted />
             <Row label={tm.lastRerun} value={tm.notRecorded} muted />
           </div>

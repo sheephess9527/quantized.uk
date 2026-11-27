@@ -51,7 +51,7 @@ export default function MaintainerNote() {
       {showDraft && (
         <div className="mt-4 max-w-2xl">
           <p className="text-xs text-slate-400 leading-relaxed">{f.willSend}</p>
-          <pre className="mt-2 rounded-xl border border-white/[0.08] bg-white/[0.02] p-3 text-[11px] font-mono text-slate-400 whitespace-pre-wrap break-words">
+          <pre className="mt-2 rounded-xl border border-ink/[0.08] bg-ink/[0.02] p-3 text-[11px] font-mono text-slate-400 whitespace-pre-wrap break-words">
 {body.trim()}
           </pre>
           <a

@@ -9,57 +9,42 @@ export default function QuickAccess({ lang }: { lang: Lang }) {
     {
       href: '/tools/vram-calc/',
       icon: Calculator,
-      iconColor: 'text-violet-400',
-      glowClass: 'group-hover:glow-purple',
-      borderHover: 'group-hover:border-violet-500/30',
+      iconColor: 'text-sky-400',
+      chipBg: 'bg-sky-500/12 border-sky-500/25',
       title: t.home.quickAccess.vramTitle,
       desc: t.home.quickAccess.vramDesc,
-      accent: '#7c3aed',
-      accentText: '#a78bfa',
     },
     {
       href: '/tools/cli-gen/',
       icon: Terminal,
       iconColor: 'text-cyan-400',
-      glowClass: 'group-hover:glow-cyan',
-      borderHover: 'group-hover:border-cyan-500/30',
+      chipBg: 'bg-cyan-500/12 border-cyan-500/25',
       title: t.home.quickAccess.cliTitle,
       desc: t.home.quickAccess.cliDesc,
-      accent: '#06b6d4',
-      accentText: '#06b6d4',
     },
     {
       href: '/tools/format-wizard/',
       icon: Wand2,
-      iconColor: 'text-orange-400',
-      glowClass: 'group-hover:glow-cyan',
-      borderHover: 'group-hover:border-orange-500/30',
+      iconColor: 'text-teal-400',
+      chipBg: 'bg-teal-500/12 border-teal-500/25',
       title: t.home.quickAccess.wizardTitle,
       desc: t.home.quickAccess.wizardDesc,
-      accent: '#f97316',
-      accentText: '#f97316',
     },
     {
       href: '/tools/compare/',
       icon: GitCompareArrows,
-      iconColor: 'text-emerald-400',
-      glowClass: 'group-hover:glow-cyan',
-      borderHover: 'group-hover:border-emerald-500/30',
+      iconColor: 'text-sky-400',
+      chipBg: 'bg-sky-500/12 border-sky-500/25',
       title: t.home.quickAccess.compareTitle,
       desc: t.home.quickAccess.compareDesc,
-      accent: '#22c55e',
-      accentText: '#22c55e',
     },
     {
       href: '/tools/feel/',
       icon: Gauge,
-      iconColor: 'text-amber-400',
-      glowClass: 'group-hover:glow-cyan',
-      borderHover: 'group-hover:border-amber-500/30',
+      iconColor: 'text-cyan-400',
+      chipBg: 'bg-cyan-500/12 border-cyan-500/25',
       title: t.home.quickAccess.feelTitle,
       desc: t.home.quickAccess.feelDesc,
-      accent: '#f59e0b',
-      accentText: '#fbbf24',
     },
   ];
 
@@ -72,23 +57,20 @@ export default function QuickAccess({ lang }: { lang: Lang }) {
           <Link
             key={tool.href}
             href={tool.href}
-            className={`group glass rounded-2xl p-5 flex flex-col gap-3 flex-1 transition-all duration-200 ${tool.borderHover} hover:bg-white/[0.045]`}
+            className="group glass glass-hover rounded-2xl p-5 flex flex-col gap-3 flex-1 transition-all duration-200 hover:border-sky-500/35"
           >
             <div className="flex items-start gap-3">
               <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${tool.glowClass} transition-all duration-200`}
-                style={{ background: `${tool.accent}18`, border: `1px solid ${tool.accent}25` }}
+                className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-200 ${tool.chipBg}`}
               >
                 <Icon size={16} className={tool.iconColor} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-slate-200 mb-1">{tool.title}</h3>
+                <h3 className="text-sm font-semibold text-slate-100 group-hover:text-sky-300 transition-colors mb-1">{tool.title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">{tool.desc}</p>
               </div>
             </div>
-            {/* accentText, not accent: violet-600 is 3.3:1 as 12px text here. The
-                icon chip above keeps the brand colour, which is a fill. */}
-            <span className="text-xs font-medium" style={{ color: tool.accentText }}>
+            <span className="text-xs font-medium text-sky-400 group-hover:text-sky-300 transition-colors">
               {t.home.quickAccess.openTool}
             </span>
           </Link>

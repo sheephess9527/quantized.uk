@@ -72,7 +72,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
         {kind === 'context' && (
           <>
             <p>{q.context.legend}</p>
-            <Link href="/tools/vram-calc/" className="inline-block text-violet-300 hover:text-violet-200">
+            <Link href="/tools/vram-calc/" className="inline-block text-sky-300 hover:text-sky-200">
               {lang === 'zh' ? '用大模型显存计算器估算你的上下文长度' : 'Check your context length with the LLM VRAM calculator'}
             </Link>
           </>
@@ -86,7 +86,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
               {sec.cards.map((c, i) => (
                 <span key={c.id}>
                   {i > 0 && <span className="text-slate-600"> · </span>}
-                  <Link href={`/gpu/${gpuSlug(c)}/`} className="hover:text-violet-300 transition-colors">{gpuDisplayName(c, lang)}</Link>
+                  <Link href={`/gpu/${gpuSlug(c)}/`} className="hover:text-sky-300 transition-colors">{gpuDisplayName(c, lang)}</Link>
                 </span>
               ))}
             </h2>
@@ -108,7 +108,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
 
       <p className="text-sm text-slate-400 mt-6">
         {q.otherCards.replace('{n}', String(GPU_COUNT))}{' '}
-        <Link href="/gpu/" className="text-violet-300 hover:text-violet-200">{q.allGpus}</Link>
+        <Link href="/gpu/" className="text-sky-300 hover:text-sky-200">{q.allGpus}</Link>
       </p>
 
       <ToolExplainer content={meta.content} toolName={page.title} path={meta.path} app={false} lang={lang} />
@@ -118,7 +118,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
   function ModelCell({ row }: { row: QuestionRow }) {
     return (
       <td className="py-2 pr-3">
-        <Link href={`/quant-hub/${row.model.id}/`} className="text-slate-200 hover:text-violet-300 transition-colors">
+        <Link href={`/quant-hub/${row.model.id}/`} className="text-slate-200 hover:text-sky-300 transition-colors">
           {row.model.name}
         </Link>
       </td>
@@ -131,7 +131,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
         <Link
           href={row.calcHref}
           aria-label={q.openAria.replace('{model}', row.model.name).replace('{card}', gpuDisplayName(card, lang))}
-          className="inline-flex items-center gap-1 text-xs text-violet-300 hover:text-violet-200 whitespace-nowrap"
+          className="inline-flex items-center gap-1 text-xs text-sky-300 hover:text-sky-200 whitespace-nowrap"
         >
           <Calculator size={12} /> {q.open}
         </Link>
@@ -144,7 +144,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
     return (
       <table className="w-full text-sm min-w-[560px]">
         <thead>
-          <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+          <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
             <th className="py-2 pr-3 font-medium">{q.model}</th>
             <th className="py-2 pr-3 font-medium">{q.level}</th>
             <th className="py-2 pr-3 font-medium">{q.at4k}</th>
@@ -155,7 +155,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.model.id} className="border-b border-white/[0.04] last:border-0">
+            <tr key={r.model.id} className="border-b border-ink/[0.04] last:border-0">
               <ModelCell row={r} />
               <td className="py-2 pr-3 font-mono text-xs text-slate-300">{r.pick.key}</td>
               <td className="py-2 pr-3 font-mono text-xs text-slate-400">{r.pick.totalGB.toFixed(1)} GB</td>
@@ -188,7 +188,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
     return (
       <table className="w-full text-sm min-w-[640px]">
         <thead>
-          <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+          <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
             <th className="py-2 pr-3 font-medium">{q.model}</th>
             <th className="py-2 pr-3 font-medium">{s.pick}</th>
             <th className="py-2 pr-3 font-medium">{s.ppl}</th>
@@ -198,7 +198,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.model.id} className="border-b border-white/[0.04] last:border-0 align-top">
+            <tr key={r.model.id} className="border-b border-ink/[0.04] last:border-0 align-top">
               <ModelCell row={r} />
               <td className="py-2 pr-3 font-mono text-xs text-emerald-300 whitespace-nowrap">
                 {r.pick.key} · {r.pick.totalGB.toFixed(1)} GB
@@ -252,7 +252,7 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
     return (
       <table className="w-full text-sm min-w-[620px]">
         <thead>
-          <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+          <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.06]">
             <th className="py-2 pr-3 font-medium">{q.model}</th>
             <th className="py-2 pr-3 font-medium">{q.level}</th>
             <th className="py-2 pr-3 font-medium">{s.f16}</th>
@@ -263,9 +263,9 @@ export default function QuestionPage({ kind, lang = 'en' }: { kind: QuestionKind
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.model.id} className="border-b border-white/[0.04] last:border-0 align-top">
+            <tr key={r.model.id} className="border-b border-ink/[0.04] last:border-0 align-top">
               <td className="py-2 pr-3">
-                <Link href={`/quant-hub/${r.model.id}/`} className="text-slate-200 hover:text-violet-300 transition-colors">
+                <Link href={`/quant-hub/${r.model.id}/`} className="text-slate-200 hover:text-sky-300 transition-colors">
                   {r.model.name}
                 </Link>
                 <span className="block text-[11px] text-slate-500">{s.window.replace('{n}', kTokens(r.model.contextLength))}</span>

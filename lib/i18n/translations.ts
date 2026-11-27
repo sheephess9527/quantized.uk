@@ -202,6 +202,10 @@ export const translations = {
         guides: 'Cookbook Guides',
         errors: 'Error Lookup',
       },
+      themeLabel: 'Appearance',
+      themeLight: 'Day',
+      themeDark: 'Night',
+      themeSystem: 'Auto',
     },
     toolsIndex: {
       title: 'Tools',
@@ -1691,6 +1695,10 @@ export const translations = {
         guides: '部署指南',
         errors: '报错速查',
       },
+      themeLabel: '外观模式',
+      themeLight: '白天',
+      themeDark: '夜间',
+      themeSystem: '自动',
     },
     toolsIndex: {
       title: '工具',

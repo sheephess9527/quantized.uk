@@ -78,7 +78,7 @@ export default function NotFoundContent({ counts }: { counts: { models: number; 
           <ul className="space-y-1.5">
             {suggestions.map(s => (
               <li key={s.href}>
-                <Link href={s.href} className="text-sm text-violet-400 hover:text-violet-300 transition-colors">
+                <Link href={s.href} className="text-sm text-sky-400 hover:text-sky-300 transition-colors">
                   {s.label}
                 </Link>
               </li>
@@ -98,7 +98,7 @@ export default function NotFoundContent({ counts }: { counts: { models: number; 
             name="q"
             aria-label={n.searchTitle}
             placeholder={n.searchPlaceholder}
-            className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-violet-500/40"
+            className="w-full bg-ink/[0.04] border border-ink/[0.07] rounded-xl pl-8 pr-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500/40"
           />
         </form>
       </div>
@@ -110,7 +110,7 @@ export default function NotFoundContent({ counts }: { counts: { models: number; 
             <Link
               key={href}
               href={href}
-              className="glass glass-hover rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm text-slate-400 hover:text-violet-300 transition-colors min-h-[44px]"
+              className="glass glass-hover rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm text-slate-400 hover:text-sky-300 transition-colors min-h-[44px]"
             >
               <Icon size={14} className="shrink-0" />
               {label}
@@ -124,7 +124,7 @@ export default function NotFoundContent({ counts }: { counts: { models: number; 
         <a
           href={`mailto:${FEEDBACK_EMAIL}?subject=Broken%20link%20on%20quantized.uk`}
           onClick={() => trackEvent('Feedback Click')}
-          className="inline-flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+          className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 transition-colors"
         >
           <Mail size={11} />
           {FEEDBACK_EMAIL}

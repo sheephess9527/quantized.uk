@@ -73,12 +73,12 @@ export default function ModelCompare() {
     }
   };
 
-  const selectCls = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500/50';
+  const selectCls = 'w-full bg-ink/[0.04] border border-ink/[0.08] rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500/50';
 
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
-        <button onClick={copyLink} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-white/[0.06] transition-colors">
+        <button onClick={copyLink} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-500 hover:text-slate-300 border border-ink/[0.06] transition-colors">
           {linkCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           {linkCopied ? c.shareCopied : c.shareLink}
         </button>
@@ -117,7 +117,7 @@ export default function ModelCompare() {
           {[4096, 8192, 32768, 131072, 262144].map(p => (
             <button key={p} onClick={() => setContextLen(p)} aria-pressed={contextLen === p}
               className={cn('px-2 py-1 rounded-lg text-xs font-mono border transition-all',
-                contextLen === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06]')}>
+                contextLen === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-ink/[0.06]')}>
               {contextLabel(p)}
             </button>
           ))}
@@ -147,7 +147,7 @@ export default function ModelCompare() {
           <div className="glass rounded-2xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] text-xs text-slate-500">
+                <tr className="border-b border-ink/[0.06] text-xs text-slate-500">
                   <th className="text-left px-5 py-3">{c.metric}</th>
                   <th className="text-right px-3 py-3">{modelA!.paramLabel}</th>
                   <th className="text-right px-5 py-3">{modelB!.paramLabel}</th>
@@ -157,14 +157,14 @@ export default function ModelCompare() {
                 {result.rows.map(row => {
                   const label = lang === 'zh' ? row.labelZh : row.labelEn;
                   return (
-                    <tr key={row.key} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
+                    <tr key={row.key} className="border-b border-ink/[0.04] hover:bg-ink/[0.02]">
                       <td className="px-5 py-3 text-slate-400 text-xs">
                         {label}
                         <span className={cn(
                           'ml-2 align-middle text-[10px] px-1.5 py-0.5 rounded font-medium',
                           row.basis === 'estimated' && 'bg-cyan-500/10 text-cyan-400',
-                          row.basis === 'fixed' && 'bg-white/[0.05] text-slate-500',
-                          row.basis === 'spec' && 'bg-white/[0.03] text-slate-600',
+                          row.basis === 'fixed' && 'bg-ink/[0.05] text-slate-500',
+                          row.basis === 'spec' && 'bg-ink/[0.03] text-slate-600',
                           row.basis === 'measured' && 'bg-emerald-500/10 text-emerald-400',
                           row.basis === 'unverified' && 'bg-amber-500/10 text-amber-300',
                         )}>
@@ -185,8 +185,8 @@ export default function ModelCompare() {
           </div>
 
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href={`/quant-hub/${modelA!.id}/`} className="text-xs text-violet-400 hover:text-violet-300">{modelA!.name} →</Link>
-            <Link href={`/quant-hub/${modelB!.id}/`} className="text-xs text-violet-400 hover:text-violet-300">{modelB!.name} →</Link>
+            <Link href={`/quant-hub/${modelA!.id}/`} className="text-xs text-sky-400 hover:text-sky-300">{modelA!.name} →</Link>
+            <Link href={`/quant-hub/${modelB!.id}/`} className="text-xs text-sky-400 hover:text-sky-300">{modelB!.name} →</Link>
             <Link href={`/tools/vram-calc/?mode=forward&model=${modelA!.id}&quant=${encodeURIComponent(quantLevelKey(referenceQuant(modelA!.quants)))}&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcA}</Link>
             <Link href={`/tools/vram-calc/?mode=forward&model=${modelB!.id}&quant=${encodeURIComponent(quantLevelKey(referenceQuant(modelB!.quants)))}&ctx=${contextLen}`} className="text-xs text-slate-500 hover:text-slate-300">{c.calcB}</Link>
           </div>

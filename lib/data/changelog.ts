@@ -13,6 +13,11 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: '2026-11-26',
+    en: 'Added Day, Night and Auto system appearance modes in the navigation bar — pairing a glare-free fog-white light theme with a lifted GitHub-style dimmed slate dark theme — and refreshed the site palette around calm engineering blue so green, amber and red stay reserved for memory fit verdicts and warnings.',
+    zh: '顶部导航栏新增「白天 / 夜间 / 自动跟随系统」三种外观模式：白天采用清爽雾白浅色主题，夜间升级为柔和不刺眼的炭灰蓝暗色主题，彻底告别纯黑底色眩光；同时全站统一为工程天青蓝主色调并精简标签杂色，让绿、黄、红严格只代表显存适配结论与风险提示。',
+  },
+  {
+    date: '2026-11-26',
     en: 'Added Inkling 2 Mini, Domyn Edge SFT and JetBrains Mellum2.1 12B-A2.5B Instruct with verified GGUF sizes, and updated Windows llama.cpp commands to stable v1.1.0 (b12774). Press ⌘K / Ctrl+K anywhere to search models, GPUs, guides and errors; model pages now use a two-column layout with copyable launch commands, the Model Hub adds a sortable table view, GPU pages have a sticky size-jump bar, and setup guides read as continuous documentation.',
     zh: '新增收录 Inkling 2 Mini、Domyn Edge SFT 与 JetBrains Mellum2.1 12B-A2.5B Instruct（均核实 GGUF 字节数），并将 Windows llama.cpp 命令升级至正式版 v1.1.0（b12774）。全站支持按 ⌘K / Ctrl+K 全局搜索模型、显卡、指南与报错；模型详情页升级为双栏布局并直出可复制启动命令，模型库新增紧凑对比表格视图，显卡页增加吸顶规模跳段栏，部署指南升级为连贯文档排版。',
   },

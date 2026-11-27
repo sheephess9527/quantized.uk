@@ -48,15 +48,15 @@ export default function FormatCompareContent({ pair, lang = 'en' }: { pair: Form
           <table className="w-full text-sm">
             <caption className="sr-only">{fill(c.title, { a: a.name, b: b.name })}</caption>
             <thead>
-              <tr className="border-b border-white/[0.06] text-xs uppercase tracking-wider">
+              <tr className="border-b border-ink/[0.08] text-xs uppercase tracking-wider">
                 <th className="text-left py-2 px-3 font-semibold text-slate-500"> </th>
-                <th className="text-left py-2 px-3 font-semibold" style={{ color: a.textColor }}>{a.name}</th>
-                <th className="text-left py-2 px-3 font-semibold" style={{ color: b.textColor }}>{b.name}</th>
+                <th className={`text-left py-2 px-3 font-semibold ${a.textClass}`}>{a.name}</th>
+                <th className={`text-left py-2 px-3 font-semibold ${b.textClass}`}>{b.name}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map(row => (
-                <tr key={row.label} className="border-b border-white/[0.04] last:border-0">
+                <tr key={row.label} className="border-b border-ink/[0.06] last:border-0">
                   <td className="py-2.5 px-3 text-xs text-slate-500">{row.label}</td>
                   <td className="py-2.5 px-3 text-slate-300">{row.a}</td>
                   <td className="py-2.5 px-3 text-slate-300">{row.b}</td>
@@ -70,7 +70,7 @@ export default function FormatCompareContent({ pair, lang = 'en' }: { pair: Form
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {[a, b].map(fmt => (
           <section key={fmt.id} className="glass rounded-2xl p-5 sm:p-6">
-            <h2 className="text-lg font-bold mb-3" style={{ color: fmt.textColor }}>{fmt.name}</h2>
+            <h2 className={`text-lg font-bold mb-3 ${fmt.textClass}`}>{fmt.name}</h2>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">{fmt.description[lang]}</p>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{c.strengths}</p>
             <ul className="space-y-1.5 mb-4">
@@ -105,19 +105,19 @@ export default function FormatCompareContent({ pair, lang = 'en' }: { pair: Form
               <table className="w-full text-sm">
                 <caption className="sr-only">{c.headToHeadTitle}</caption>
                 <thead>
-                  <tr className="border-b border-white/[0.06] text-xs text-slate-500 uppercase tracking-wider">
+                  <tr className="border-b border-ink/[0.08] text-xs text-slate-500 uppercase tracking-wider">
                     <th className="text-left py-2 px-3 font-semibold">{c.thModel}</th>
-                    <th className="text-left py-2 px-3 font-semibold" style={{ color: a.textColor }}>{a.name} {c.thLevel}</th>
+                    <th className={`text-left py-2 px-3 font-semibold ${a.textClass}`}>{a.name} {c.thLevel}</th>
                     <th className="text-right py-2 px-3 font-semibold">{c.thLoss}</th>
-                    <th className="text-left py-2 px-3 font-semibold" style={{ color: b.textColor }}>{b.name} {c.thLevel}</th>
+                    <th className={`text-left py-2 px-3 font-semibold ${b.textClass}`}>{b.name} {c.thLevel}</th>
                     <th className="text-right py-2 px-3 font-semibold">{c.thLoss}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {both.slice(0, 20).map(row => (
-                    <tr key={row.model.id} className="border-b border-white/[0.04] last:border-0">
+                    <tr key={row.model.id} className="border-b border-ink/[0.06] last:border-0">
                       <td className="py-2.5 px-3">
-                        <Link href={`/quant-hub/${row.model.id}/`} className="text-slate-200 hover:text-violet-300">
+                        <Link href={`/quant-hub/${row.model.id}/`} className="text-slate-200 hover:text-sky-300">
                           {row.model.name}
                         </Link>
                       </td>
@@ -167,19 +167,19 @@ export default function FormatCompareContent({ pair, lang = 'en' }: { pair: Form
         <div className="flex flex-wrap gap-4">
           <Link
             href="/tools/format-wizard/"
-            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300"
           >
             {c.wizardCta} <ArrowRight size={14} />
           </Link>
           <Link
             href={`/quant-hub/?fmt=${a.name}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-200"
           >
             {fill(c.browseA, { format: a.name })}
           </Link>
           <Link
             href={`/quant-hub/?fmt=${b.name}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-500 hover:text-slate-200"
           >
             {fill(c.browseA, { format: b.name })}
           </Link>

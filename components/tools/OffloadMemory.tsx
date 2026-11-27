@@ -38,14 +38,14 @@ export default function OffloadMemory({ plan, capacity, result, ceiling }: {
       <label className="flex items-center gap-2">
         {zh ? '本机内存容量（GiB）' : 'Installed RAM (GiB)'}
         <input type="number" min="1" value={installed} onChange={e => setInstalled(e.target.value)}
-          className="w-20 rounded border border-white/20 bg-slate-900 px-2 py-1" />
+          className="w-20 rounded border border-ink/20 bg-slate-900 px-2 py-1" />
       </label>
       <div aria-live="polite">
         <p>{zh ? '卸载占用内存' : 'Offloaded RAM'} · {used.toFixed(1)} / {known ? host : '—'} GiB · {
           known ? (hostFits ? fits : insufficient) : (zh ? '填入容量后判断' : 'Enter capacity to check fit')
         }</p>
         <p>{zh ? '预估为系统预留' : 'Estimated OS reserve'} · {HOST_RESERVE_GIB} GiB</p>
-        {known && <div aria-hidden="true" className="mt-1 flex h-2 overflow-hidden rounded bg-white/10">
+        {known && <div aria-hidden="true" className="mt-1 flex h-2 overflow-hidden rounded bg-ink/10">
           <div className="bg-cyan-400" style={{ width: `${100 * used / Math.max(host, used + HOST_RESERVE_GIB)}%` }} />
           <div className="bg-amber-400" style={{ width: `${100 * HOST_RESERVE_GIB / Math.max(host, used + HOST_RESERVE_GIB)}%` }} />
         </div>}

@@ -8,8 +8,8 @@ import { sizeAt, cardsFitting, REF_CONTEXT } from '@/lib/utils/model-explainer';
 import { quantLevelKey } from '@/lib/utils/recommend';
 
 const typeConfig = {
-  new:  { className: 'bg-violet-500/15 text-violet-300 border-violet-500/25' },
-  hot:  { className: 'bg-orange-500/15 text-orange-300 border-orange-500/25' },
+  new:  { className: 'bg-sky-500/15 text-sky-300 border-sky-500/25' },
+  hot:  { className: 'bg-teal-500/15 text-teal-300 border-teal-500/25' },
   upd:  { className: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' },
 };
 
@@ -52,14 +52,14 @@ export default function TodayBoard({ lang }: { lang: Lang }) {
             <li key={item.id}>
               <Link
                 href={href}
-                className="group flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors"
+                className="group flex items-start gap-3 p-3 rounded-xl hover:bg-ink/[0.03] transition-colors"
               >
                 <span className={cn('badge shrink-0 mt-0.5', cfg.className)}>
                   {t.home.todayBoard[item.type]}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-medium text-slate-200 truncate group-hover:text-violet-200 transition-colors">
+                    <span className="text-sm font-medium text-slate-200 truncate group-hover:text-sky-200 transition-colors">
                       {model.name}
                     </span>
                     <span className={cn('badge text-xs shrink-0', cfg.className)}>

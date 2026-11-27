@@ -7,7 +7,7 @@ import { speedSubmissionFromReport, speedSubmissionKey, type SpeedConfiguration 
 import { buildRunReport, measurementFields, type RunConfiguration, type RunMeasurements } from '@/lib/utils/run-report';
 
 const numeric = new Set(['peak', 'decodeField', 'prefillField', 'prompt', 'output', 'runs']);
-const inputClass = 'mt-1 block w-full rounded-lg bg-slate-900 border border-white/10 p-2 text-slate-200';
+const inputClass = 'mt-1 block w-full rounded-lg bg-slate-900 border border-ink/10 p-2 text-slate-200';
 type ReviewStatus = 'idle' | 'sending' | 'saved' | 'invalid' | 'limited' | 'unavailable';
 
 export default function RunReportForm({ configuration, speedConfiguration, requiresProcessor, submittedReviewKeys }: {
@@ -85,7 +85,7 @@ export default function RunReportForm({ configuration, speedConfiguration, requi
       }
     }} className="space-y-3">
       <label className="block text-xs text-slate-400">{d.outcome}
-        <select name="outcome" required defaultValue="" className="mt-1 block w-full rounded-lg bg-slate-900 border border-white/10 p-2 text-slate-200">
+        <select name="outcome" required defaultValue="" className="mt-1 block w-full rounded-lg bg-slate-900 border border-ink/10 p-2 text-slate-200">
           <option value="" disabled>{d.chooseOutcome}</option>
           <option>{d.ok}</option><option>{d.oom}</option><option>{d.failed}</option>
         </select>
@@ -114,12 +114,12 @@ export default function RunReportForm({ configuration, speedConfiguration, requi
           </label>
         </>}
       </div>
-      <button className="rounded-lg border border-violet-400/30 px-3 py-2 text-xs text-violet-200" type="submit">{d.generate}</button>
+      <button className="rounded-lg border border-sky-400/30 px-3 py-2 text-xs text-sky-200" type="submit">{d.generate}</button>
     </form>
     {(report || speedConfiguration) && <div className="mt-4 space-y-3">
       {report && <>
         <h4 className="text-sm text-slate-200">{d.preview}</h4>
-        <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-black/20 p-3 text-xs text-slate-400">{report}</pre>
+        <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-bg-recessed p-3 text-xs text-slate-400">{report}</pre>
       </>}
       {speedConfiguration && <p className="text-xs text-slate-400">{review.instructions}</p>}
       <div className="flex flex-wrap gap-3 text-xs text-cyan-300">
@@ -128,7 +128,7 @@ export default function RunReportForm({ configuration, speedConfiguration, requi
           <button type="button" className="py-2" onClick={download}>{d.download}</button>
           <a className="py-2" href={`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(d.emailSubject)}&body=${encodeURIComponent(d.emailBody)}`}>{d.email}</a>
         </>}
-        {speedConfiguration && <button type="button" className="min-h-[44px] rounded-lg border border-violet-400/30 px-3 py-2 text-violet-200 disabled:opacity-60"
+        {speedConfiguration && <button type="button" className="min-h-[44px] rounded-lg border border-sky-400/30 px-3 py-2 text-sky-200 disabled:opacity-60"
           onClick={submitForReview} disabled={reviewStatus === 'sending' || reviewStatus === 'saved'}>
           {reviewStatus === 'sending' ? review.sending : review.send}
         </button>}

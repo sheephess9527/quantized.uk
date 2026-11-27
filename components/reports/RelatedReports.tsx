@@ -10,7 +10,7 @@ export default function RelatedReports({ modelId, gpuId, lang = 'en' }: { modelI
     <p className="text-xs text-slate-400">{d.relatedOnly}</p>
     {reports.length === 0 ? <p className="text-xs text-slate-500">{d.noReports}</p> : reports.map(r => {
       const card = gpuDatabase.find(g => g.id === r.gpuId);
-      return <article key={r.id} className="rounded-xl border border-white/10 p-3 space-y-2 text-xs">
+      return <article key={r.id} className="rounded-xl border border-ink/10 p-3 space-y-2 text-xs">
         <p className="font-semibold text-cyan-300">{r.gpuCount} × {card ? gpuDisplayName(card, lang) : r.gpuId}
           {gpuId && gpuId !== r.gpuId ? ` · ${d.otherGpu}` : ''}</p>
         <p className="text-slate-200">{d.decode}: {r.decodeTokS} tok/s · {d.prefill}: {r.prefillTokS} tok/s</p>
@@ -20,6 +20,6 @@ export default function RelatedReports({ modelId, gpuId, lang = 'en' }: { modelI
         <a className="inline-block py-2 text-cyan-300 hover:underline" href={r.url} target="_blank" rel="noopener noreferrer">{d.source} ↗</a>
       </article>;
     })}
-    <a className="inline-block py-2 text-xs text-violet-300 hover:underline" href="https://llamaperf.com/" target="_blank" rel="noopener noreferrer">{d.browse} ↗</a>
+    <a className="inline-block py-2 text-xs text-sky-300 hover:underline" href="https://llamaperf.com/" target="_blank" rel="noopener noreferrer">{d.browse} ↗</a>
   </section>;
 }

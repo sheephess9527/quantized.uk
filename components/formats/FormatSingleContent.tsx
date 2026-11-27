@@ -38,7 +38,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
       />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2" style={{ color: format.textColor }}>
+        <h1 className={`text-3xl font-bold mb-2 ${format.textClass}`}>
           {fill(s.title, { format: format.name })}
         </h1>
         <p className="text-slate-400 max-w-3xl leading-relaxed">
@@ -60,7 +60,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[520px]">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
+                  <tr className="text-left text-xs text-slate-500 border-b border-ink/[0.08]">
                     <th scope="col" className="font-medium py-2 pr-3">{s.colLevel}</th>
                     <th scope="col" className="font-medium py-2 pr-3 text-right">{s.colBpw}</th>
                     <th scope="col" className="font-medium py-2 pr-3 text-right">{s.colModels}</th>
@@ -69,7 +69,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
                 </thead>
                 <tbody>
                   {levels.map(l => (
-                    <tr key={l.level} className="border-b border-white/[0.04]">
+                    <tr key={l.level} className="border-b border-ink/[0.06]">
                       <td className="py-2.5 pr-3 font-mono text-slate-300">{l.level}</td>
                       <td className="py-2.5 pr-3 text-right font-mono text-slate-400">
                         {l.bpwLow === l.bpwHigh ? l.bpwLow : `${l.bpwLow}–${l.bpwHigh}`}
@@ -115,7 +115,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
                 <li key={m.id}>
                   <Link
                     href={`/quant-hub/${m.id}/`}
-                    className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+                    className="block rounded-xl border border-ink/[0.08] bg-ink/[0.02] px-3 py-2.5 hover:border-sky-500/30 hover:bg-sky-500/[0.05] transition-all"
                   >
                     <span className="block text-sm text-slate-200 font-medium">{m.name}</span>
                     <span className="block text-xs text-slate-500 font-mono mt-0.5">
@@ -128,7 +128,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
           </ul>
           <Link
             href={`/quant-hub/?fmt=${format.name}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] mt-3 text-sm text-violet-400 hover:text-violet-300"
+            className="inline-flex items-center gap-1.5 min-h-[44px] mt-3 text-sm text-sky-400 hover:text-sky-300"
           >
             {fill(c.browseA, { format: format.name })} <ArrowRight size={14} />
           </Link>
@@ -156,7 +156,7 @@ export default function FormatSingleContent({ format, lang = 'en' }: { format: Q
                 <li key={p.slug}>
                   <Link
                     href={`/formats/${p.slug}/`}
-                    className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300"
+                    className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300"
                   >
                     {p.a.name} vs {p.b.name} <ArrowRight size={14} />
                   </Link>

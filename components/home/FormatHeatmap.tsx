@@ -23,8 +23,7 @@ export default function FormatHeatmap({ lang }: { lang: Lang }) {
           <li key={fmt.id} className="flex items-center gap-2">
             <span className="text-xs text-slate-500 w-3">{i + 1}</span>
             <span
-              className="badge text-xs font-mono font-semibold"
-              style={{ background: `${fmt.color}18`, color: fmt.textColor, borderColor: `${fmt.color}30` }}
+              className={`badge text-xs font-mono font-semibold ${fmt.bgClass} ${fmt.textClass} ${fmt.borderClass}`}
             >
               {fmt.name}
             </span>

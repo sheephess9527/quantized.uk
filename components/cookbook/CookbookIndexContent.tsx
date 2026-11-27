@@ -29,7 +29,7 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 const difficultyColors = {
   beginner:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  intermediate: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  intermediate: 'bg-amber-500/12 text-amber-300 border-amber-500/25',
   advanced:     'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
@@ -77,8 +77,8 @@ export default function CookbookIndexContent({ items }: { items: CookbookCardSum
                 className={cn(
                   'flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-medium transition-all duration-150 border',
                   active
-                    ? 'bg-violet-500/15 text-violet-300 border-violet-500/25'
-                    : 'text-slate-500 border-white/[0.06] hover:text-slate-300 hover:border-white/10'
+                    ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+                    : 'text-slate-500 border-ink/[0.06] hover:text-slate-300 hover:border-ink/10'
                 )}
               >
                 <Icon size={12} />
@@ -96,7 +96,7 @@ export default function CookbookIndexContent({ items }: { items: CookbookCardSum
             onChange={e => setQuery(e.target.value)}
             aria-label={t.cookbook.searchPlaceholder.replace('{n}', String(items.length))}
             placeholder={t.cookbook.searchPlaceholder.replace('{n}', String(items.length))}
-            className="w-full min-h-[40px] rounded-xl bg-white/[0.03] border border-white/[0.12] pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500/50"
+            className="w-full min-h-[40px] rounded-xl bg-ink/[0.03] border border-ink/[0.12] pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function CookbookIndexContent({ items }: { items: CookbookCardSum
                   <span className={cn('badge text-xs', difficultyColors[article.difficulty])}>
                     {t.cookbook.difficulty[article.difficulty]}
                   </span>
-                  <span className="badge text-xs bg-white/[0.04] text-slate-500 border-white/[0.07]">
+                  <span className="badge text-xs bg-ink/[0.04] text-slate-500 border-ink/[0.07]">
                     {t.cookbook.categories[article.category]}
                   </span>
                 </div>
@@ -137,13 +137,13 @@ export default function CookbookIndexContent({ items }: { items: CookbookCardSum
 
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {article.tags.slice(0, 4).map(tag => (
-                  <span key={tag} className="badge text-xs bg-white/[0.03] text-slate-500 border-white/[0.05] font-mono">
+                  <span key={tag} className="badge text-xs bg-ink/[0.03] text-slate-500 border-ink/[0.05] font-mono">
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <span className="flex items-center gap-1 text-xs text-violet-400 group-hover:text-violet-300 transition-colors">
+              <span className="flex items-center gap-1 text-xs text-sky-400 group-hover:text-sky-300 transition-colors">
                 {t.cookbook.readGuide}
                 <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
               </span>

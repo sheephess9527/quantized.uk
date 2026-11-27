@@ -8,7 +8,7 @@ const reasonColors: Record<PendingReason, string> = {
   'no-weights': 'bg-slate-500/10 text-slate-300 border-slate-500/20',
   'no-runtime': 'bg-amber-500/10 text-amber-300 border-amber-500/20',
   'not-sized': 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
-  'awaiting-data': 'bg-violet-500/10 text-violet-300 border-violet-500/20',
+  'awaiting-data': 'bg-sky-500/10 text-sky-300 border-sky-500/20',
   'community-only': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
 };
 
@@ -53,10 +53,10 @@ export default function PendingView({ lang }: { lang: Lang }) {
       </ol>
 
       <div className="glass rounded-2xl p-5 mt-10 flex flex-wrap gap-x-6 gap-y-2">
-        <Link href="/quant-hub/" className="inline-flex items-center min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+        <Link href="/quant-hub/" className="inline-flex items-center min-h-[44px] text-sm text-sky-400 hover:text-sky-300">
           {t.nav.quantHub} →
         </Link>
-        <Link href="/changelog/" className="inline-flex items-center min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+        <Link href="/changelog/" className="inline-flex items-center min-h-[44px] text-sm text-sky-400 hover:text-sky-300">
           {t.home.changelog.title} →
         </Link>
       </div>

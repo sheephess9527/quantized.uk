@@ -47,7 +47,7 @@ export default function ReadingProgress({ targetId }: Props) {
       aria-valuemax={100}
     >
       <div
-        className="h-full bg-gradient-to-r from-violet-500 via-cyan-400 to-emerald-400 transition-[width] duration-150 ease-out"
+        className="h-full bg-gradient-to-r from-sky-500 via-cyan-400 to-emerald-400 transition-[width] duration-150 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>

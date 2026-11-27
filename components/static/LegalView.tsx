@@ -44,9 +44,9 @@ export default function LegalView({ lang }: { lang: Lang }) {
 
       <p className="text-xs text-slate-600 mt-10 text-center leading-relaxed">
         {l.footerNote}{' '}
-        <Link href="/about/" className="text-violet-400 hover:text-violet-300">{t.about.linkLabel}</Link>
+        <Link href="/about/" className="text-sky-400 hover:text-sky-300">{t.about.linkLabel}</Link>
         {' · '}
-        <Link href="/privacy/" className="text-violet-400 hover:text-violet-300">{t.privacy.linkLabel}</Link>
+        <Link href="/privacy/" className="text-sky-400 hover:text-sky-300">{t.privacy.linkLabel}</Link>
       </p>
     </div>
   );

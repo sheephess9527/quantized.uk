@@ -219,7 +219,7 @@ export default function QuantHubContent() {
             {t.hub.subtitle}
             <span className="hidden sm:inline">
               <span className="text-slate-500"> · </span>
-              <span className="text-violet-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
+              <span className="text-sky-400/80 font-medium">{t.hub.indexedCount.replace('{total}', String(total))}</span>
             </span>
           </p>
           <nav aria-label={lang === 'zh' ? '常用入口' : 'Common destinations'} className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
@@ -242,7 +242,7 @@ export default function QuantHubContent() {
           {filtersActive && (
             <button
               onClick={copyShareLink}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-violet-300 border border-violet-500/25 bg-violet-500/10 hover:bg-violet-500/20 transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sky-300 border border-sky-500/25 bg-sky-500/10 hover:bg-sky-500/20 transition-all"
             >
               <Link2 size={12} />
               {linkCopied ? t.hub.shareCopied : t.hub.shareLink}
@@ -273,13 +273,13 @@ export default function QuantHubContent() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => handleGpuSelect(null)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-500/15 text-violet-300 border border-violet-500/25 hover:bg-violet-500/25 transition-all"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-500/15 text-sky-300 border border-sky-500/25 hover:bg-sky-500/25 transition-all"
             >
               {t.hub.showAllModels.replace('{total}', String(total))}
             </button>
             <Link
               href={`/tools/vram-calc/?mode=reverse&gpu=${filterGpu.id}&ctx=4096&sort=quality`}
-              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+              className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
             >
               {t.hub.profileLink} →
             </Link>
@@ -294,7 +294,7 @@ export default function QuantHubContent() {
           </p>
           <button
             onClick={() => handleGpuSelect(profileGpu.id)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 border border-white/[0.08] hover:text-slate-200 hover:border-white/15 transition-all"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 border border-ink/[0.08] hover:text-slate-200 hover:border-ink/15 transition-all"
           >
             {t.hub.filterByMyGpu
               .replace('{gpu}', gpuDisplayName(profileGpu, lang))
@@ -320,7 +320,7 @@ export default function QuantHubContent() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <p className={cn(
           'text-sm',
-          filtered.length === effectiveTotal ? 'text-violet-400/80' : 'text-slate-500',
+          filtered.length === effectiveTotal ? 'text-sky-400/80' : 'text-slate-500',
         )}>
           {filtered.length === effectiveTotal
             ? t.hub.resultsAll.replace('{total}', String(effectiveTotal))
@@ -335,7 +335,7 @@ export default function QuantHubContent() {
               value={sortBy}
               onChange={e => setSortBy(e.target.value as HubSort)}
               aria-label={t.hub.tableView.sortDefault}
-              className="appearance-none px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.03] text-slate-300 border border-white/[0.08] hover:border-white/[0.15] cursor-pointer"
+              className="appearance-none px-3 py-1.5 rounded-lg text-xs font-medium bg-ink/[0.03] text-slate-300 border border-ink/[0.08] hover:border-ink/[0.15] cursor-pointer"
             >
               <option value="default">{t.hub.tableView.sortDefault}</option>
               <option value="newest">{t.hub.tableView.sortNewest}</option>
@@ -344,14 +344,14 @@ export default function QuantHubContent() {
               <option value="speed">{t.hub.tableView.sortSpeedDesc}</option>
             </select>
 
-            <div className="inline-flex rounded-lg bg-white/[0.03] p-0.5 border border-white/[0.08]">
+            <div className="inline-flex rounded-lg bg-ink/[0.03] p-0.5 border border-ink/[0.08]">
               <button
                 type="button"
                 aria-pressed={viewMode === 'cards'}
                 onClick={() => setViewMode('cards')}
                 className={cn(
                   'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors',
-                  viewMode === 'cards' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200',
+                  viewMode === 'cards' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200',
                 )}
               >
                 <LayoutGrid size={12} aria-hidden />
@@ -363,7 +363,7 @@ export default function QuantHubContent() {
                 onClick={() => setViewMode('table')}
                 className={cn(
                   'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors',
-                  viewMode === 'table' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200',
+                  viewMode === 'table' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200',
                 )}
               >
                 <Table2 size={12} aria-hidden />
@@ -387,7 +387,7 @@ export default function QuantHubContent() {
               <button
                 key={sug.label}
                 onClick={() => handleFiltersChange({ ...EMPTY_HUB_FILTERS, ...sug.filters })}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-violet-300 bg-violet-500/10 border border-violet-500/20 hover:bg-violet-500/20 transition-colors min-h-[44px]"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-sky-300 bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-colors min-h-[44px]"
               >
                 {sug.label}
               </button>
@@ -409,7 +409,7 @@ export default function QuantHubContent() {
           ))}
         </div>
       )}
-      <Link href="/pending/" className="inline-flex items-center min-h-[44px] mt-6 text-sm text-violet-400 hover:text-violet-300">
+      <Link href="/pending/" className="inline-flex items-center min-h-[44px] mt-6 text-sm text-sky-400 hover:text-sky-300">
         {t.pending.hubLink}
       </Link>
     </div>

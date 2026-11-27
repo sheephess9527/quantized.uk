@@ -21,7 +21,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
       />
 
       <div className="mb-10">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium mb-4">
           <Heart size={12} />
           {a.badge}
         </div>
@@ -32,7 +32,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
         </p>
       </div>
 
-      <div className="glass rounded-2xl p-6 mb-8 border border-violet-500/10">
+      <div className="glass rounded-2xl p-6 mb-8 border border-sky-500/10">
         <p className="text-sm font-medium text-slate-200 mb-2">{a.maintainerTitle}</p>
         <p className="text-sm text-slate-400 leading-relaxed">{a.maintainerBody}</p>
         <p className="text-sm text-slate-400 leading-relaxed mt-3">
@@ -40,7 +40,7 @@ export default function AboutView({ lang }: { lang: Lang }) {
           <EmailOffGuard>
             <a
               href={`mailto:${FEEDBACK_EMAIL}?subject=quantized.uk`}
-              className="text-violet-400 hover:text-violet-300 transition-colors"
+              className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               {FEEDBACK_EMAIL}
             </a>
@@ -66,10 +66,10 @@ export default function AboutView({ lang }: { lang: Lang }) {
       <div className="mt-10 glass rounded-xl px-4 py-4 text-center">
         <p className="text-sm text-slate-400 mb-3">{a.cta}</p>
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
-          <Link href="/" className="text-violet-400 hover:text-violet-300 transition-colors">
+          <Link href="/" className="text-sky-400 hover:text-sky-300 transition-colors">
             {a.ctaChangelog}
           </Link>
-          <Link href="/quant-hub/" className="text-violet-400 hover:text-violet-300 transition-colors">
+          <Link href="/quant-hub/" className="text-sky-400 hover:text-sky-300 transition-colors">
             {a.ctaHub}
           </Link>
           <Link href="/legal/" className="text-slate-500 hover:text-slate-400 transition-colors">

@@ -24,10 +24,10 @@ export default function BestHubContent({ lang }: { lang: Lang }) {
           <li key={tier.slug}>
             <Link
               href={`/best/${tier.slug}/`}
-              className="block h-full rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+              className="block h-full rounded-2xl border border-ink/[0.06] bg-ink/[0.02] p-4 hover:border-sky-500/25 hover:bg-sky-500/[0.04] transition-all"
             >
               <span className="flex items-center gap-2 text-slate-100 font-semibold mb-1">
-                <Cpu size={14} className="text-violet-400" />
+                <Cpu size={14} className="text-sky-400" />
                 {b.tierTitle.replace('{label}', tier.kind === 'apple' ? b.appleLabel : `${tier.vram}GB`)}
               </span>
               <span className="block text-sm text-slate-400 leading-relaxed">{tierSummary(tier, lang)}</span>
@@ -42,7 +42,7 @@ export default function BestHubContent({ lang }: { lang: Lang }) {
       </ul>
 
       <div className="glass rounded-2xl p-5 sm:p-6 flex flex-wrap gap-4">
-        <Link href="/gpu/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-violet-400 hover:text-violet-300">
+        <Link href="/gpu/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-sky-400 hover:text-sky-300">
           {t.gpuPage.indexTitle} ({GPU_COUNT}) <ArrowRight size={14} />
         </Link>
         <Link href="/quant-hub/" className="inline-flex items-center gap-1.5 min-h-[44px] text-sm text-slate-400 hover:text-slate-200">

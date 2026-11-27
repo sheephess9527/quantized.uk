@@ -77,7 +77,7 @@ export default function RunStandard({ lang = 'en' }: { lang?: Lang } = {}) {
         <table className="w-full text-sm">
           <caption className="sr-only">{s.calTitle}</caption>
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-ink/[0.06]">
               {Object.values(s.calCols).map(col => (
                 <th key={col} className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {col}
@@ -89,7 +89,7 @@ export default function RunStandard({ lang = 'en' }: { lang?: Lang } = {}) {
             {rows.map((r, i) => {
               const diff = r.estimateGB !== undefined ? r.estimateGB - r.row.vramUsedGB : undefined;
               return (
-                <tr key={i} className="border-b border-white/[0.03]">
+                <tr key={i} className="border-b border-ink/[0.03]">
                   <td className="py-2 px-3 text-xs text-slate-200">{r.row.model}</td>
                   <td className="py-2 px-3 text-xs text-slate-300 whitespace-nowrap">{r.gpu ? gpuDisplayName(r.gpu, lang) : r.row.hardware}</td>
                   <td className="py-2 px-3 text-xs font-mono text-slate-400 whitespace-nowrap">{r.row.quant}<RunProvenance row={r.row} /></td>
@@ -114,13 +114,13 @@ export default function RunStandard({ lang = 'en' }: { lang?: Lang } = {}) {
 
       <section className="glass rounded-2xl p-6">
         <h2 className="flex items-center gap-2 text-xl font-bold text-slate-100">
-          <Mail size={18} className="text-violet-300" />
+          <Mail size={18} className="text-sky-300" />
           {s.submitTitle}
         </h2>
         <p className="text-sm text-slate-300 mt-2 leading-relaxed">
           {fill(s.submitBody, { c: measuredCards().length })}
         </p>
-        <div className="mt-3 flex items-center gap-2 rounded-xl bg-black/30 border border-white/[0.06] px-4 py-3 overflow-x-auto">
+        <div className="mt-3 flex items-center gap-2 rounded-xl bg-bg-recessed border border-ink/[0.06] px-4 py-3 overflow-x-auto">
           <code lang="en" className="font-mono text-xs text-slate-200 whitespace-nowrap">{BENCH_COMMAND}</code>
           <CopyButton text={BENCH_COMMAND} label={t.cookbook.code.copy} copiedLabel={t.cookbook.code.copied} size="sm" className="ml-auto shrink-0" />
         </div>
@@ -129,12 +129,12 @@ export default function RunStandard({ lang = 'en' }: { lang?: Lang } = {}) {
         </ul>
         <p className="text-sm text-slate-500 mt-4 leading-relaxed">{s.submitCheck}</p>
         <p className="text-xs text-slate-500 mt-4 mb-1.5">{s.submitPreview}</p>
-        <pre className="rounded-xl bg-black/30 border border-white/[0.06] px-4 py-3 text-xs text-slate-300 whitespace-pre-wrap">
+        <pre className="rounded-xl bg-bg-recessed border border-ink/[0.06] px-4 py-3 text-xs text-slate-300 whitespace-pre-wrap">
           {`${lang === 'zh' ? '主题' : 'Subject'}: ${s.mailSubject}\n\n${s.mailBody}`}
         </pre>
         <a
           href={mailHref}
-          className="mt-3 inline-flex items-center gap-2 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2.5 text-sm text-violet-200 hover:bg-violet-500/20 transition-colors min-h-[44px]"
+          className="mt-3 inline-flex items-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-2.5 text-sm text-sky-200 hover:bg-sky-500/20 transition-colors min-h-[44px]"
         >
           <Mail size={14} />
           {s.submitButton}

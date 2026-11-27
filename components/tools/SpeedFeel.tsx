@@ -88,7 +88,7 @@ function SpeedPane({
           ? f.noPrefill
           : f.ttft.replace('{s}', quote.ttftSeconds.toFixed(2))}
       </p>
-      <div className="mt-auto rounded-xl bg-black/30 border border-white/[0.06] p-4 min-h-[7.5rem] text-sm text-slate-200 leading-relaxed">
+      <div className="mt-auto rounded-xl bg-bg-recessed border border-ink/[0.06] p-4 min-h-[7.5rem] text-sm text-slate-200 leading-relaxed">
         {!quote.fits && f.wontFit.replace('{total}', quote.totalGB.toFixed(1)).replace('{cap}', cap.toFixed(1))}
         {quote.fits && !rate && <span className="text-slate-500">{headline(quote, f, isMoE(model))}</span>}
         {quote.fits && rate && waiting && <span className="text-slate-500">{f.waiting}</span>}
@@ -177,7 +177,7 @@ export default function SpeedFeel() {
     window.history.replaceState(null, '', `${window.location.pathname}?${next}`);
   }, [left.id, right.id, model.id, quant, ctx, params]);
 
-  const select = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200';
+  const select = 'w-full bg-ink/[0.04] border border-ink/[0.08] rounded-lg px-3 py-2 text-sm text-slate-200';
   const gpuOptions = GPU_GROUPS.map(([type, key]) => {
     const rows = rowsInGpuGroup(type);
     return rows.length === 0 ? null : (
@@ -192,19 +192,19 @@ export default function SpeedFeel() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.left}
-          <select className={select} style={{ colorScheme: 'dark' }} value={left.id} onChange={e => { setRunning(false); setLeftId(e.target.value); }}>
+          <select className={select} value={left.id} onChange={e => { setRunning(false); setLeftId(e.target.value); }}>
             {gpuOptions}
           </select>
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.right}
-          <select className={select} style={{ colorScheme: 'dark' }} value={right.id} onChange={e => { setRunning(false); setRightId(e.target.value); }}>
+          <select className={select} value={right.id} onChange={e => { setRunning(false); setRightId(e.target.value); }}>
             {gpuOptions}
           </select>
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.model}
-          <select className={select} style={{ colorScheme: 'dark' }} value={model.id} onChange={e => {
+          <select className={select} value={model.id} onChange={e => {
             setRunning(false);
             const next = models.find(m => m.id === e.target.value)!;
             setModelId(next.id);
@@ -216,13 +216,13 @@ export default function SpeedFeel() {
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.quant}
-          <select className={select} style={{ colorScheme: 'dark' }} value={quantKey(quant)} onChange={e => { setRunning(false); setQuantId(e.target.value); }}>
+          <select className={select} value={quantKey(quant)} onChange={e => { setRunning(false); setQuantId(e.target.value); }}>
             {model.quants.map(q => <option key={quantKey(q)} value={quantKey(q)}>{q.format} {q.level}</option>)}
           </select>
         </label>
         <label className="text-xs text-slate-500 flex flex-col gap-1">
           {f.context}
-          <select className={select} style={{ colorScheme: 'dark' }} value={ctx} onChange={e => { setRunning(false); setCtx(Number(e.target.value) as SpeedContext); }}>
+          <select className={select} value={ctx} onChange={e => { setRunning(false); setCtx(Number(e.target.value) as SpeedContext); }}>
             {SPEED_CONTEXTS.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
         </label>
@@ -231,7 +231,7 @@ export default function SpeedFeel() {
       <button
         type="button"
         onClick={() => setRunning(v => !v)}
-        className="mb-4 inline-flex items-center min-h-[44px] px-4 rounded-lg bg-violet-600 hover:bg-violet-500 text-sm font-medium text-white"
+        className="mb-4 inline-flex items-center min-h-[44px] px-4 rounded-lg bg-sky-600 hover:bg-sky-500 text-sm font-medium text-white"
       >
         {running ? f.running : f.run}
       </button>

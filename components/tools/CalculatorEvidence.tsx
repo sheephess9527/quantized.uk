@@ -12,9 +12,9 @@ export default function CalculatorEvidence({ quant, file, context, batch, kv, en
   const d = t.evidence;
   return <section className="glass rounded-2xl p-5 space-y-3" aria-label={d.title}>
     <h3 className="text-sm font-semibold text-slate-200">{d.title}</h3>
-    <p className="text-xs text-slate-400"><strong className="text-violet-300">{d.memory}</strong> · {file ? d.fileMemoryNote : d.memoryNote}</p>
+    <p className="text-xs text-slate-400"><strong className="text-sky-300">{d.memory}</strong> · {file ? d.fileMemoryNote : d.memoryNote}</p>
     <div className="text-xs break-words">{file
-      ? <a href={quantFileUrl(file)} target="_blank" rel="noopener noreferrer" className="text-violet-300 hover:underline">
+      ? <a href={quantFileUrl(file)} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:underline">
           {file.repo} / {file.path} · {t.calc.hfFileSize.replace('{gb}', (file.bytes / 1024 ** 3).toFixed(2))}
         </a>
       : quant ? <QuantFileLine quant={quant} /> : <span className="text-slate-400">{d.custom}</span>}</div>

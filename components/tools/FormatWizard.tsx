@@ -10,11 +10,11 @@ import { runFormatWizard, HardwareType, Priority, UseCase } from '@/lib/utils/fo
 import { cn } from '@/lib/utils/cn';
 
 const formatColors: Record<string, string> = {
-  GGUF: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
-  AWQ:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/25',
-  EXL2: 'bg-orange-500/15 text-orange-300 border-orange-500/25',
-  GPTQ: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
-  HQQ:  'bg-yellow-500/15 text-yellow-300 border-yellow-500/25',
+  GGUF: 'bg-sky-500/12 text-sky-300 border-sky-500/25',
+  AWQ:  'bg-cyan-500/12 text-cyan-300 border-cyan-500/25',
+  EXL2: 'bg-ink/[0.05] text-slate-300 border-ink/[0.12]',
+  GPTQ: 'bg-teal-500/12 text-teal-300 border-teal-500/25',
+  HQQ:  'bg-ink/[0.04] text-slate-400 border-ink/[0.10]',
 };
 
 export default function FormatWizard() {
@@ -44,7 +44,7 @@ export default function FormatWizard() {
         {(['nvidia', 'amd', 'intel', 'mac', 'cpu'] as HardwareType[]).map(h => (
           <button key={h} onClick={() => setHardware(h)} aria-pressed={hardware === h}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
-              hardware === h ? 'bg-violet-500/15 text-violet-300 border-violet-500/30' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
+              hardware === h ? 'bg-sky-500/15 text-sky-300 border-sky-500/30' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}>
             {w.hardware[h]}
           </button>
         ))}
@@ -55,7 +55,7 @@ export default function FormatWizard() {
         {(['quality', 'speed', 'ease'] as Priority[]).map(p => (
           <button key={p} onClick={() => setPriority(p)} aria-pressed={priority === p}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
-              priority === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
+              priority === p ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}>
             {w.priority[p]}
           </button>
         ))}
@@ -66,7 +66,7 @@ export default function FormatWizard() {
         {(['chat', 'code', 'api'] as UseCase[]).map(u => (
           <button key={u} onClick={() => setUseCase(u)} aria-pressed={useCase === u}
             className={cn('px-4 py-2.5 rounded-xl text-sm font-medium border transition-all',
-              useCase === u ? 'bg-orange-500/15 text-orange-300 border-orange-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
+              useCase === u ? 'bg-teal-500/15 text-teal-300 border-teal-500/25' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}>
             {w.useCase[u]}
           </button>
         ))}
@@ -87,7 +87,7 @@ export default function FormatWizard() {
         {steps.map((s, i) => (
           <div key={i}>
             <p className="text-xs font-medium text-slate-500 mb-2">
-              <span className="text-violet-400 mr-1.5">{i + 1}.</span>{s.label}
+              <span className="text-sky-400 mr-1.5">{i + 1}.</span>{s.label}
             </p>
             {s.content}
           </div>
@@ -95,7 +95,7 @@ export default function FormatWizard() {
 
         <button
           onClick={() => setShowResults(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold transition-colors"
         >
           <Wand2 size={14} />
           {w.getRecommendation}
@@ -105,8 +105,8 @@ export default function FormatWizard() {
       <div>
         {showResults ? (
           <div className="space-y-4">
-            <div className="glass rounded-2xl p-6 border border-violet-500/20">
-              <p className="text-xs text-violet-400 font-medium mb-2">{w.recommended}</p>
+            <div className="glass rounded-2xl p-6 border border-sky-500/20">
+              <p className="text-xs text-sky-400 font-medium mb-2">{w.recommended}</p>
               <div className="flex items-center gap-3 mb-4">
                 <span className={cn('badge text-lg font-mono font-bold px-3 py-1', formatColors[top.format])}>
                   {top.format}
@@ -127,7 +127,7 @@ export default function FormatWizard() {
               <div className="flex flex-wrap gap-2 mt-5">
                 <Link
                   href={`/tools/vram-calc/?mode=reverse&gpu=${gpu?.id ?? 'rtx4090'}&sort=quality`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/20 text-violet-300 text-xs font-medium hover:bg-violet-600/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600/20 text-sky-300 text-xs font-medium hover:bg-sky-600/30 transition-colors"
                 >
                   {w.seeModels} <ArrowRight size={12} />
                 </Link>
@@ -144,12 +144,12 @@ export default function FormatWizard() {
               <p className="text-xs font-medium text-slate-500 mb-3">{w.allFormats}</p>
               <div className="space-y-2">
                 {results.map((r, i) => (
-                  <div key={r.format} className="flex items-center gap-3 py-2 border-b border-white/[0.04] last:border-0">
+                  <div key={r.format} className="flex items-center gap-3 py-2 border-b border-ink/[0.04] last:border-0">
                     <span className="text-xs text-slate-600 w-4">{i + 1}</span>
                     <span className={cn('badge text-xs font-mono', formatColors[r.format])}>{r.format}</span>
                     <span className="text-xs text-slate-500 flex-1">{r.framework}</span>
-                    <div className="w-20 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
-                      <div className="h-full bg-violet-500 rounded-full" style={{ width: `${r.score}%` }} />
+                    <div className="w-20 h-1.5 bg-ink/[0.05] rounded-full overflow-hidden">
+                      <div className="h-full bg-sky-500 rounded-full" style={{ width: `${r.score}%` }} />
                     </div>
                   </div>
                 ))}

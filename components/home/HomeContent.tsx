@@ -58,18 +58,18 @@ export default function HomeContent({ lang }: { lang: Lang }) {
         </div>
 
         {/* Act 2: Curated Hardware & Task Entry Points */}
-        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+        <div className="space-y-6 pt-4 border-t border-ink/[0.05]">
           <PopularStarts lang={lang} />
           <JobPaths />
         </div>
 
         {/* Act 3: Measured Hardware Evidence */}
-        <div className="pt-4 border-t border-white/[0.05]">
+        <div className="pt-4 border-t border-ink/[0.05]">
           <MeasuredCases lang={lang} />
         </div>
 
         {/* Act 4: Core FAQs & Site Navigation */}
-        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+        <div className="space-y-6 pt-4 border-t border-ink/[0.05]">
           <HomeFaq lang={lang} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
@@ -82,7 +82,7 @@ export default function HomeContent({ lang }: { lang: Lang }) {
         </div>
 
         {/* Act 5: Transparency, Contact & Changelog */}
-        <div className="space-y-6 pt-4 border-t border-white/[0.05]">
+        <div className="space-y-6 pt-4 border-t border-ink/[0.05]">
           <MaintainerNote />
           <DataChangelog latest={changelog[0]} total={changelog.length} lang={lang} />
         </div>

@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/lib/i18n/context';
 import { HardwareProfileProvider } from '@/lib/hardware-profile/context';
+import { ThemeProvider } from '@/lib/theme/context';
 import SiteChrome from '@/components/layout/SiteChrome';
 import { SiteJsonLd } from '@/components/seo/SiteJsonLd';
 import { buildVerification, canonical, defaultRobots, feedAlternates, OG_IMAGE } from '@/lib/seo';
@@ -74,7 +75,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0f',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f4f6f9' },
+    { media: '(prefers-color-scheme: dark)', color: '#1c2128' },
+  ],
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
@@ -86,22 +90,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            // Belt and braces for `<html lang>`: the exported /zh HTML is patched
-            // to zh-Hans at build time (scripts/localize-export.mjs) so crawlers
-            // see it, and LanguageProvider keeps it right across client-side
-            // navigation. This runs before paint on the one page the build step
-            // cannot patch — the shared 404, served at any URL.
-            __html: `(function(){try{var p=location.pathname;document.documentElement.lang=(p==='/zh'||p.indexOf('/zh/')===0)?'zh-Hans':'en';}catch(e){}})();`,
+            // Belt and braces for `<html lang>` + zero-FOUC dual theme (`B4` Clean Lab Light
+            // `#f4f6f9` / `B1` GitHub Dark Dimmed `#1c2128` / `system` auto). Setting
+            // `data-theme` and `colorScheme` synchronously before first paint prevents any
+            // white-to-dark or dark-to-white flash across all 1,284 static pages.
+            __html: `(function(){try{var p=location.pathname;document.documentElement.lang=(p==='/zh'||p.indexOf('/zh/')===0)?'zh-Hans':'en';var s=localStorage.getItem('qtz-theme');var d=(s==='light'||s==='dark')?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=d;document.documentElement.style.colorScheme=d;}catch(e){}})();`,
           }}
         />
       </head>
       <body className="bg-bg text-slate-100 font-sans antialiased">
         <SiteJsonLd />
-        <LanguageProvider>
-          <HardwareProfileProvider>
-            <SiteChrome>{children}</SiteChrome>
-          </HardwareProfileProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <HardwareProfileProvider>
+              <SiteChrome>{children}</SiteChrome>
+            </HardwareProfileProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

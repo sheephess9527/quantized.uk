@@ -19,7 +19,7 @@ function ChangeList({ title, rows }: { title: string; rows: { id: string; name: 
     <ul className="space-y-1.5">
       {entries.map(row => (
         <li key={row.id} className="break-words">
-          <Link href={`/quant-hub/${row.id}/`} className="text-violet-300 hover:underline">{row.name}</Link>
+          <Link href={`/quant-hub/${row.id}/`} className="text-sky-300 hover:underline">{row.name}</Link>
           <span className="block text-xs text-slate-400">{row.detail}</span>
         </li>
       ))}
@@ -32,7 +32,7 @@ function ChangeList({ title, rows }: { title: string; rows: { id: string; name: 
       {preview.length ? list(preview) : <p className="text-slate-400">{t.gpuUpgrade.none}</p>}
       {rest.length > 0 && (
         <details className="mt-1">
-          <summary className="cursor-pointer py-2 text-xs text-violet-300">{t.gpuUpgrade.more.replace('{count}', String(rest.length))}</summary>
+          <summary className="cursor-pointer py-2 text-xs text-sky-300">{t.gpuUpgrade.more.replace('{count}', String(rest.length))}</summary>
           {list(rest)}
         </details>
       )}
@@ -68,7 +68,7 @@ export default function GpuUpgradeComparison({ current, tierLabel, settings }: {
           <label className="block max-w-sm text-slate-300">
             {u.candidate}
             <select value={candidate?.id ?? ''} onChange={event => setChoice(event.target.value)}
-              className="mt-1 block min-h-[44px] w-full min-w-0 rounded-lg border border-white/15 bg-slate-900 px-2 py-1.5 text-slate-100">
+              className="mt-1 block min-h-[44px] w-full min-w-0 rounded-lg border border-ink/15 bg-slate-900 px-2 py-1.5 text-slate-100">
               <option value="" disabled>{u.choose}</option>
               {choices.map(gpu => <option key={gpu.id} value={gpu.id}>{gpuDisplayName(gpu, lang)} · {gpu.vram} GB</option>)}
             </select>

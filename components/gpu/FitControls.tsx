@@ -25,7 +25,7 @@ export default function FitControls({ contextLength, batchSize, onContextChange,
             {control.values.map(value => (
               <button key={value} type="button" onClick={() => control.change(value)} aria-pressed={control.value === value} aria-label={control.accessible(value)} title={control.accessible(value)}
                 className={cn('min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2 py-1 rounded-lg text-xs font-mono transition-all duration-150 border',
-                  control.value === value ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-white/[0.06] hover:text-slate-300')}>
+                  control.value === value ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25' : 'text-slate-500 border-ink/[0.06] hover:text-slate-300')}>
                 {control.format(value)}
               </button>
             ))}

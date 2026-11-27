@@ -26,17 +26,17 @@ export default function HomeFaq({ lang }: { lang: Lang }) {
         </h2>
         <Link
           href="/faq/"
-          className="inline-flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 py-2.5 -my-2.5 min-h-[44px]"
+          className="inline-flex items-center gap-1 text-xs text-sky-400 hover:text-sky-300 py-2.5 -my-2.5 min-h-[44px]"
         >
           {t.faq.homeAll.replace('{n}', String(all.length))} <ArrowRight size={12} />
         </Link>
       </div>
 
-      <div className="divide-y divide-white/[0.05]">
+      <div className="divide-y divide-ink/[0.05]">
         {picked.map((item, i) => (
           <details key={item.id} open={i === 0} className="group py-3 first:pt-0">
             <summary className="cursor-pointer list-none min-h-[44px] flex items-start gap-2">
-              <span className="text-violet-400 mt-0.5 transition-transform group-open:rotate-90" aria-hidden="true">
+              <span className="text-sky-400 mt-0.5 transition-transform group-open:rotate-90" aria-hidden="true">
                 &rsaquo;
               </span>
               <h3 className="text-sm font-semibold text-slate-200">{item.q[lang]}</h3>

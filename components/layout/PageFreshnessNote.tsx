@@ -30,7 +30,7 @@ export default function PageFreshnessNote({ lang }: { lang: Lang }) {
       <span aria-hidden className="text-slate-700">·</span>
       <a
         href={feedHref}
-        className="inline-flex items-center gap-1 min-h-[24px] text-violet-400 hover:text-violet-300 transition-colors"
+        className="inline-flex items-center gap-1 min-h-[24px] text-sky-400 hover:text-sky-300 transition-colors"
       >
         <Rss size={11} /> RSS → {feedHref}
       </a>

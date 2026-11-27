@@ -57,7 +57,7 @@ export default function CookbookArticlePage({
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-16 text-center">
         <h1 className="text-2xl font-bold text-slate-300 mb-4">Article not found</h1>
-        <a href={lang === 'zh' ? '/zh/cookbook/' : '/cookbook/'} className="text-violet-400 text-sm">
+        <a href={lang === 'zh' ? '/zh/cookbook/' : '/cookbook/'} className="text-sky-400 text-sm">
           ← Back to Cookbook
         </a>
       </div>

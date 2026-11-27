@@ -165,8 +165,8 @@ export default function PairPage({
       <h1 className="text-3xl font-bold text-slate-100">
         {fill(t.question, values)}
       </h1>
-      <section className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-5 space-y-3" aria-label={t.details}>
-        <p className="text-lg font-semibold text-violet-200">
+      <section className="rounded-xl border border-sky-400/40 bg-sky-500/10 p-5 space-y-3" aria-label={t.details}>
+        <p className="text-lg font-semibold text-sky-200">
           {answer.contextLength ? fill(t.download, worked) : answer.anyQuantFits ? t.noContext : t.noQuant}
         </p>
         {answer.quant.source && <p className="text-sm"><QuantFileLine quant={answer.quant} /></p>}
@@ -174,7 +174,7 @@ export default function PairPage({
         <p className="text-sm text-slate-300 leading-relaxed">{fill(t.calculation, { ...worked, ctx: answer.workedContext.toLocaleString('en-US') })}</p>
         <p className="text-xs text-slate-400">{t.sizingCaveat}</p>
       </section>
-      <p className="text-xl text-violet-300">{fill(t.answer, values)}</p>
+      <p className="text-xl text-sky-300">{fill(t.answer, values)}</p>
       <p className="text-sm text-slate-400">{t.note}</p>
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">{t.measured}</h2>
@@ -192,7 +192,7 @@ export default function PairPage({
               </thead>
               <tbody>
                 {measured.map((row, i) => (
-                  <tr key={i} className="border-t border-white/10">
+                  <tr key={i} className="border-t border-ink/10">
                     <td className="p-2">{row.framework}</td>
                     <td className="p-2">{row.quant}</td>
                     <td className="p-2">{row.speedTokSec}</td>
@@ -223,7 +223,7 @@ export default function PairPage({
               {rows.map(row => (
                 <tr
                   key={`${row.quant.format}:${row.quant.level}`}
-                  className="border-t border-white/10"
+                  className="border-t border-ink/10"
                 >
                   <td className="p-2">
                     {row.quant.format} {row.quant.level}
@@ -259,7 +259,7 @@ export default function PairPage({
               .map(ctx => {
                 const row = pairSize(model, gpu, r.quant, ctx);
                 return (
-                  <tr key={ctx} className="border-t border-white/10">
+                  <tr key={ctx} className="border-t border-ink/10">
                     <td className="p-2">{ctx / 1024}K</td>
                     <td className="p-2">{row.totalGB.toFixed(1)}</td>
                     <td className="p-2">{t[row.verdict]}</td>
@@ -294,14 +294,14 @@ export default function PairPage({
                 : t.ceiling}
         </p>
       </section>
-      <nav className="flex flex-wrap gap-5 text-violet-300">
+      <nav className="flex flex-wrap gap-5 text-sky-300">
         <Link href={`/quant-hub/${model.id}/`}>{t.model}</Link>
         <Link href={`/gpu/${gpuSlug(gpu)}/`}>{t.gpu}</Link>
         <Link href={calculator}>{t.calculator}</Link>
       </nav>
       <section>
         <h2 className="text-xl font-semibold mb-3">{t.related}</h2>
-        <ul className="space-y-2 text-violet-300">
+        <ul className="space-y-2 text-sky-300">
           {links.map(p => (
             <li key={pairHref(p.model, p.gpu)}>
               <Link href={pairHref(p.model, p.gpu)}>
