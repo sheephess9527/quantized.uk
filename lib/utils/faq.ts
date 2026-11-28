@@ -149,7 +149,7 @@ export function faqGroups(): FaqGroup[] {
           },
           a: {
             en: `About ${one(s7.totalGB)} GB at Q4_K_M with a ${CTX / 1024}K context window — ${one(s7.modelWeightsGB)} GB of weights, ${one(s7.kvCacheGB)} GB of KV cache and a ${one(s7.activationsGB)} GB activation buffer, measured on ${b7.model.name} (${b7.model.paramLabel}). Every 8 GB card in this index clears that with room left. The figure rises with context, not with how hard you use the model: the same file at ${LONG_CTX / 1024}K needs about ${one(s7long.totalGB)} GB, because the KV cache grows to ${one(s7long.kvCacheGB)} GB.`,
-            zh: `在 Q4_K_M、${CTX / 1024}K 上下文下约 ${one(s7.totalGB)} GB —— 权重 ${one(s7.modelWeightsGB)} GB、KV 缓存 ${one(s7.kvCacheGB)} GB、激活缓冲 ${one(s7.activationsGB)} GB，以 ${b7.model.name}（${b7.model.paramLabel}）实算。本索引中每一张 8 GB 显卡都能从容跑下，还有余量。这个数字随上下文增长，而不是随你用得多不多：同一个文件在 ${LONG_CTX / 1024}K 下约需 ${one(s7long.totalGB)} GB，因为 KV 缓存涨到了 ${one(s7long.kvCacheGB)} GB。`,
+            zh: `在 Q4_K_M、${CTX / 1024}K 上下文下约需 ${one(s7.totalGB)} GB 显存（VRAM / 显示记忆体）—— 权重 ${one(s7.modelWeightsGB)} GB、KV 缓存（快取）${one(s7.kvCacheGB)} GB、激活缓冲 ${one(s7.activationsGB)} GB，以 ${b7.model.name}（${b7.model.paramLabel}）实算。本索引中每一张 8 GB 显卡（显示卡）都能从容跑下，还有余量。这个数字随上下文增长，而不是随你用得多不多：同一个文件在 ${LONG_CTX / 1024}K 下约需 ${one(s7long.totalGB)} GB，因为 KV 缓存涨到了 ${one(s7long.kvCacheGB)} GB。`,
           },
           link: { href: '/tools/vram-calc/', label: { en: 'Size your exact combination', zh: '算你自己的组合' } },
         },
@@ -169,7 +169,7 @@ export function faqGroups(): FaqGroup[] {
               (s24awq
                 ? `在 4-bit、短上下文下可以 —— ${b24.model.name} 在 ${quantLevelKey(awq24!)} 下约需 16 GB 中的 ${one(s24awq.totalGB)} GB，还剩 ${one(16 - s24awq.totalGB)} GB。`
                 : '') +
-              `档位比参数量更关键：同一个模型在 Q4_K_M 下是 ${one(s24.totalGB)} GB，占这张卡的 ${Math.round((s24.totalGB / 16) * 100)}% —— 在显卡完全空闲时能加载，但没有余量留给更长的窗口。16 GB 显卡能从容运行本索引 ${total} 个模型中的 ${fits16} 个。`,
+              `档位比参数量更关键：同一个模型在 Q4_K_M 下是 ${one(s24.totalGB)} GB，占这张卡的 ${Math.round((s24.totalGB / 16) * 100)}% —— 在显卡（显示卡）完全空闲时能加载，但没有余量留给更长的窗口。16 GB 显卡能从容运行本索引 ${total} 个模型中的 ${fits16} 个。`,
           },
           link: { href: `/gpu/rtx-4060-ti-16g/`, label: { en: 'See everything a 16GB card runs', zh: '看 16G 显卡能跑的全部模型' } },
         },

@@ -86,12 +86,20 @@ export default function ZhScriptToggle() {
     convertSubtree(document.body, targetMode, fn);
   }, [lang, convertSubtree]);
 
-  // Read saved preference on mount
+  // Read saved preference on mount, or auto-enable Traditional Chinese for zh-TW / zh-HK / zh-MO / zh-Hant browsers
   useEffect(() => {
     if (lang !== 'zh') return;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'hant') {
+      if (saved === 'hant' || saved === 'hans') {
+        setMode(saved);
+        return;
+      }
+      const navLangs = typeof navigator !== 'undefined'
+        ? (navigator.languages?.length ? navigator.languages : [navigator.language || ''])
+        : [];
+      const prefersHant = navLangs.some(l => /^zh-(tw|hk|mo|hant)\b/i.test(l.trim()));
+      if (prefersHant) {
         setMode('hant');
       }
     } catch {

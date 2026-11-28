@@ -30,21 +30,21 @@ export interface ToolContent {
 export const vramCalcContent: ToolContent = {
   summary: {
     en: 'Estimate VRAM for any quantized LLM — or any model on Hugging Face — with a verdict for your card or mixed cards, the speed ceiling, the wait before the first token, how many people it can serve, and the memory to fine-tune it.',
-    zh: '估算任意量化大模型（或 Hugging Face 上任意模型）的显存占用，并给出你的显卡或混搭多卡能否装下、速度上限、首字等待时间、能同时服务几个人，以及微调所需显存。',
+    zh: '估算任意量化大模型（或 Hugging Face 上任意模型）的显存（VRAM / 显示记忆体）与系统内存（系统记忆体）占用，并给出你的显卡（显示卡）或混搭多卡能否装下、速度上限、首字等待时间、伺服器并发人数，以及微调所需显存。',
   },
   sections: [
     {
       heading: { en: 'How the estimate is calculated', zh: '这个估算是怎么算出来的' },
       body: {
         en: 'Three terms are added. **Model weights** use recorded file bytes when available. Otherwise use `params × bpw ÷ 8`. Add a separate 2% planning allowance to either weight basis. **KV cache** is `2 (K and V) × layers × kv_heads × head_dim × context × batch × bytes per value`: 2 for the default fp16 cache, and ggml\'s block sizes when you pick a quantized one — q8_0 stores 32 values in 34 bytes, q4_0 in 18. **Activation buffer** is a flat 10% of the weights and cache (and a vision encoder, when you add one), covering the transient tensors an inference runtime allocates per forward pass. **Units:** memory estimates use GiB (1024³ bytes). When you pick an indexed model the calculator uses that model\'s own measured bits-per-weight rather than the generic per-level table, because the two can differ sharply — GPT-OSS ships mostly-MXFP4 weights, so its Q8_0 is 5.10 bpw, not 8.5.',
-        zh: '三项相加。**模型权重** 优先采用已记录的文件字节数，缺少字节数时按 `参数量 × bpw ÷ 8` 估算，两种方式均另留 2% 规划余量。**KV 缓存** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 每个值的字节数`：默认 fp16 缓存为 2 字节；选择量化缓存时按 ggml 的块大小计算 —— q8_0 每 32 个值占 34 字节，q4_0 占 18 字节。**激活缓冲**取权重与缓存之和（加入视觉编码器时也计入）的 10%，对应推理运行时每次前向分配的临时张量。**单位：**显存估算使用 GiB（1024³ 字节）。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
+        zh: '三项相加。**模型权重** 优先采用已记录的文件字节数，缺少字节数时按 `参数量 × bpw ÷ 8` 估算，两种方式均另留 2% 规划余量。**KV 缓存（快取）** = `2（K 和 V）× 层数 × kv_heads × head_dim × 上下文 × batch × 每个值的字节数`：默认 fp16 缓存为 2 字节；选择量化缓存时按 ggml 的块大小计算 —— q8_0 每 32 个值占 34 字节，q4_0 占 18 字节。**激活缓冲**取权重与缓存之和（加入视觉编码器时也计入）的 10%，对应推理运行时每次前向分配的临时张量。**单位：**显存（VRAM / 显示记忆体）估算使用 GiB（1024³ 字节）。选中索引内的模型时，计算器使用该模型自身实测的 bpw，而不是通用档位表 —— 两者可能相差很大：GPT-OSS 权重多为原生 MXFP4，其 Q8_0 实际是 5.10 bpw 而非 8.5。',
       },
     },
     {
       heading: { en: 'What else it answers once you pick a card', zh: '选好显卡后它还能回答什么' },
       body: {
         en: '**Mixed cards**: add a second, different card on the same backend and capacity adds the way llama.cpp and Ollama split layers, in proportion to each card\'s memory; the speed ceiling follows the cards in turn, so a slower card pulls it down. **Speed**: token generation is bounded by memory bandwidth over the bytes read per token. **Time to first token**: each card\'s measured Llama 2 7B prompt speed from llama.cpp\'s community scoreboards, scaled by the chosen model\'s compute per token — cards with no published run get no figure. **Serving**: how many full-length requests fit at once at 4K, 8K and 32K, with the 85% memory share this site\'s vLLM commands use; paged caches fit more short chats than that. **Fine-tuning**: QLoRA, LoRA or a full fine-tune, from the byte counts in the transformers documentation, the QLoRA paper and the transformers loss code. **Any Hugging Face model**: paste a repo and the calculator reads its own config.json in your browser.',
-        zh: '**混搭显卡**：再加一张同一类的不同型号显卡，显存按 llama.cpp 和 Ollama 的拆分方式相加（按每张卡的显存比例分层）；速度上限按各卡轮流计算，较慢的卡会拉低整体。**速度**：生成速度的上限是显存带宽除以每个 token 要读取的字节数。**首字等待**：以 llama.cpp 社区跑分里每张卡实测的 Llama 2 7B 提示词速度为起点，按所选模型每个 token 的计算量换算；没有公开跑分的卡不给数字。**多人使用**：按本站 vLLM 命令使用的 85% 显存占比，算出 4K、8K、32K 下能同时容纳几个满长度请求；短对话实际能容纳更多。**微调**：QLoRA、LoRA 或全参数微调，字节数取自 transformers 文档、QLoRA 论文和 transformers 损失函数代码。**任意 Hugging Face 模型**：粘贴仓库名，计算器会在你的浏览器里读取它自己的 config.json。',
+        zh: '**混搭显卡（显示卡）**：再加一张同一类的不同型号显卡，显存按 llama.cpp 和 Ollama 的拆分方式相加（按每张卡的显存比例分层）；速度上限按各卡轮流计算，较慢的卡会拉低整体。**速度**：生成速度的上限是显存带宽除以每个 token 要读取的字节数。**首字等待**：以 llama.cpp 社区跑分里每张卡实测的 Llama 2 7B 提示词速度为起点，按所选模型每个 token 的计算量换算；没有公开跑分的卡不给数字。**多人并发与伺服器部署**：按本站 vLLM 命令使用的 85% 显存占比，算出 4K、8K、32K 下能同时容纳几个满长度请求；短对话实际能容纳更多。**微调**：QLoRA、LoRA 或全参数微调，字节数取自 transformers 文档、QLoRA 论文和 transformers 损失函数代码。**任意 Hugging Face 模型**：粘贴仓库名，计算器会在你的浏览器里读取它自己的 config.json。',
       },
     },
     {

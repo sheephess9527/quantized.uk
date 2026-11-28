@@ -53,7 +53,7 @@ function localizeSiteJsonLd(html) {
   return html
     .replace(
       '"description":"LLM quantization reference — VRAM calculator, quantized model hub, benchmarks, and deployment cookbook."',
-      '"description":"本地大模型量化参考站 —— 显存计算器、量化模型库、真机基准测试与部署指南。"',
+      '"description":"本地大模型量化参考站 —— 显存（VRAM / 显示记忆体）与系统记忆体计算器、显示卡（显卡）选型、量化模型库、真机基准测试与部署指南。"',
     )
     .replace(
       '"urlTemplate":"https://quantized.uk/quant-hub/?q={search_term_string}"',
@@ -61,7 +61,7 @@ function localizeSiteJsonLd(html) {
     )
     .replace(
       '"description":"An independent, hand-maintained reference for running quantized open-weight LLMs on local hardware — per-quant VRAM, measured throughput, and deployment guides."',
-      '"description":"独立人工维护的开源大模型本地量化部署参考 —— 提供各量化档位显存估算、实测吞吐与部署指南。"',
+      '"description":"独立人工维护的开源大模型本地量化部署参考 —— 提供各量化档位显存（显示记忆体）与 KV 快取估算、实测吞吐量与伺服器/个人电脑部署指南。"',
     );
 }
 

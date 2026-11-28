@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-28T07:03:30.327Z",
+  "fetchedAt": "2026-11-28T07:46:07.269Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 152,
   "models": {
@@ -36,7 +36,7 @@
     "qwen2.5-7b": {
       "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF",
       "downloads": 366949,
-      "likes": 226,
+      "likes": 227,
       "lastModified": "2024-09-20T06:38:28.000Z"
     },
     "qwen2.5-14b": {
@@ -60,7 +60,7 @@
     "qwen2.5-3b": {
       "repo": "Qwen/Qwen2.5-3B-Instruct-GGUF",
       "downloads": 374790,
-      "likes": 247,
+      "likes": 248,
       "lastModified": "2024-09-20T06:34:33.000Z"
     },
     "qwen2.5-coder-7b": {
@@ -204,7 +204,7 @@
     "qwen3-8b": {
       "repo": "Qwen/Qwen3-8B-GGUF",
       "downloads": 866048,
-      "likes": 417,
+      "likes": 418,
       "lastModified": "2025-05-21T06:31:50.000Z"
     },
     "qwen3-14b": {
@@ -306,7 +306,7 @@
     "qwen3-1.7b": {
       "repo": "Qwen/Qwen3-1.7B-GGUF",
       "downloads": 192848,
-      "likes": 102,
+      "likes": 103,
       "lastModified": "2025-05-09T07:16:01.000Z"
     },
     "gpt-oss-20b": {
@@ -396,7 +396,7 @@
     "gemma-4-e4b": {
       "repo": "unsloth/gemma-4-E4B-it-GGUF",
       "downloads": 808566,
-      "likes": 706,
+      "likes": 707,
       "lastModified": "2026-07-17T12:49:21.000Z"
     },
     "gemma-4-e2b": {
@@ -432,7 +432,7 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 1146380,
-      "likes": 7614,
+      "likes": 7615,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -456,7 +456,7 @@
     "qwen3-5-4b": {
       "repo": "Qwen/Qwen3.5-4B",
       "downloads": 3426735,
-      "likes": 1288,
+      "likes": 1290,
       "lastModified": "2026-03-02T00:52:52.000Z"
     },
     "qwen3-5-2b": {
@@ -534,7 +534,7 @@
     "beam-1.0-501b-a23b": {
       "repo": "reflection/Beam-1.0-501B-A23B",
       "downloads": 12436,
-      "likes": 333,
+      "likes": 334,
       "lastModified": "2026-11-24T13:19:54.000Z"
     },
     "gemma-4-12b": {
@@ -630,7 +630,7 @@
     "k2-horizon-mova-36b-a4b": {
       "repo": "IFM/K2-Horizon-MoVA-36B-A4B-GGUF",
       "downloads": 14977,
-      "likes": 161,
+      "likes": 162,
       "lastModified": "2026-11-22T01:07:01.000Z"
     },
     "k2-horizon-32b": {
@@ -810,13 +810,13 @@
     "deepseek-v4-flash-0731": {
       "repo": "deepseek-ai/DeepSeek-V4-Flash-0731",
       "downloads": 975480,
-      "likes": 4124,
+      "likes": 4125,
       "lastModified": "2026-08-01T03:07:41.000Z"
     },
     "deepseek-v4-1-flash-1017": {
       "repo": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
       "downloads": 552671,
-      "likes": 6819,
+      "likes": 6821,
       "lastModified": "2026-11-10T02:22:56.000Z"
     },
     "glm-5-3-flash": {
@@ -846,7 +846,7 @@
     "ternary-bonsai-2-5-27b": {
       "repo": "prism-ml/Ternary-Bonsai-2.5-27B-GGUF",
       "downloads": 382546,
-      "likes": 652,
+      "likes": 653,
       "lastModified": "2026-11-24T21:12:50.000Z"
     },
     "minicpm-v-4-6": {
