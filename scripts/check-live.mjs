@@ -81,6 +81,9 @@ async function checkPhoneUi(browser, { prefix }, base = origin) {
       assert.equal(response?.status(), 200, path);
     };
     const rect = async locator => {
+      // boundingBox() only waits for attachment; wait for layout/CSS so a slow
+      // stylesheet or hydration pass is not reported as a missing control.
+      await locator.waitFor({ state: 'visible', timeout }).catch(() => {});
       const box = await locator.boundingBox({ timeout });
       assert(box, `not visible: ${locator}`);
       return box;
