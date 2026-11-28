@@ -164,5 +164,24 @@ for (const id of ['domyn-edge-sft', 'inkling-2-mini', 'raon-1-mini']) {
 const mellumInst = models.find(x => x.id === 'mellum2-1-12b-a2-5b-instruct')!;
 assert(canOfferOllamaLaunch(mellumInst.id, mellumInst.quants[0].source!.repo));
 
+for (const env of ['linux', 'mac', 'windows', 'docker', 'compose'] as const) {
+  const llama = generateCLI({ ...opts, env, parallel: 4, tensorSplit: '24, 16', draftMode: 'mtp' });
+  const templates = llama.command + (llama.compose ?? '');
+  assert.match(templates, /-np 4/);
+  assert.match(templates, /-sm layer -ts 24,16/);
+  assert.match(templates, /--spec-type draft-mtp --spec-draft-n-max 4/);
+  assert.doesNotMatch(templates, /--draft-max|--spec-type mtp/);
+  if (env === 'windows') assert.match(llama.command, /llama-server\.exe[^\n]+--spec-type draft-mtp/);
+  if (env === 'compose') assert.match(llama.compose ?? '', /command: >[\s\S]+-np 4[\s\S]+-ts 24,16/);
+}
+const invalidSplit = generateCLI({ ...opts, tensorSplit: '24,-16' });
+assert.doesNotMatch(invalidSplit.command, /-ts 24/);
+const composeDraft = generateCLI({ ...opts, env: 'compose', draftMode: 'draft' });
+assert.match(composeDraft.command, /-md \.\/models\/compatible-draft\.gguf/);
+assert.match(composeDraft.compose ?? '', /-md \/models\/compatible-draft\.gguf/);
+const vllmCompose = generateCLI({ ...opts, framework: 'vllm', env: 'compose', parallel: 4, tensorSplit: '24,16' });
+assert.match(vllmCompose.compose ?? '', /command: >[\s\S]+--max-num-seqs 4[\s\S]+--tensor-parallel-size 2/);
+assert.doesNotMatch(vllmCompose.command, /--max-num-seqs|--tensor-parallel-size/);
+
 console.log('CLI source checks passed: both languages, five environments, llama.cpp/Ollama exact variants, unknown-source/split fallbacks and new-model evidence.');
 

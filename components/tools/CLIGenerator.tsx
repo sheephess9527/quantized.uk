@@ -120,6 +120,9 @@ export default function CLIGenerator() {
       fileGB: selectedModel ? ggufFileGB(selectedModel, quantLevel) : undefined,
       gpuLayers,
       contextLen,
+      parallel,
+      tensorSplit,
+      draftMode,
       threads,
       port,
       apiKey: apiKey || undefined,
@@ -128,22 +131,8 @@ export default function CLIGenerator() {
       gpuName: profileGpu?.name,
     });
 
-    const extraFlags: string[] = [];
     const extraNotes = [...base.notes];
-    const cleanSplit = tensorSplit.trim().replace(/[^0-9.,]/g, '');
-
-    if (framework === 'llamacpp') {
-      if (parallel > 1) extraFlags.push(`-np ${parallel}`);
-      if (cleanSplit) extraFlags.push(`-sm layer -ts ${cleanSplit}`);
-      if (draftMode === 'mtp') extraFlags.push(`--spec-type mtp --draft-max 4`);
-      if (draftMode === 'draft') extraFlags.push(`-md ./draft-0.6b-Q8_0.gguf --draft-max 12`);
-    } else if (framework === 'vllm') {
-      if (parallel > 1) extraFlags.push(`--max-num-seqs ${parallel}`);
-      if (cleanSplit) {
-        const tpCount = cleanSplit.split(',').filter(Boolean).length;
-        if (tpCount > 1) extraFlags.push(`--tensor-parallel-size ${tpCount}`);
-      }
-    } else if (framework === 'ollama' && parallel > 1) {
+    if (framework === 'ollama' && parallel > 1) {
       extraNotes.push(
         lang === 'zh'
           ? `多并发设置：在启动 ollama serve 前设置环境变量 OLLAMA_NUM_PARALLEL=${parallel}`
@@ -151,11 +140,7 @@ export default function CLIGenerator() {
       );
     }
 
-    const command = extraFlags.length
-      ? `${base.command} \\\n  ${extraFlags.join(' ')}`
-      : base.command;
-
-    return { ...base, command, notes: extraNotes };
+    return { ...base, notes: extraNotes };
   }, [framework, env, modelId, selectedModel, quantLevel, gpuLayers, contextLen, threads, port, apiKey, backend, lang, profileGpu, parallel, tensorSplit, draftMode]);
 
   const copyText = () => {
@@ -332,7 +317,7 @@ export default function CLIGenerator() {
 
             <label className="block">
               <span className="block text-xs text-slate-500 mb-1">
-                {lang === 'zh' ? '投机采样草稿 (--draft-max)' : 'Speculative Draft'}
+                {lang === 'zh' ? '投机采样草稿' : 'Speculative Draft'}
               </span>
               <select
                 value={draftMode}

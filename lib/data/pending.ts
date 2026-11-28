@@ -25,6 +25,81 @@ export interface PendingModel {
 
 export const pendingModels: PendingModel[] = [
   {
+    id: 'tess-4-5-26b-a3b',
+    name: 'Tess 4.5 26B-A3B',
+    vendor: 'Continuity Research',
+    reason: 'not-sized',
+    detail: {
+      en: 'Apache-2.0 Inkling 2 Mini derivative. The official 17,627,963,520-byte GGUF mixes native NVFP4 expert weights with Q8_0 and F32 tensors. It has a separate vision projector and optional DSpark draft. The catalogue still needs a supported entry for this exact GGUF level and a platform-specific load check.',
+      zh: '基于 Inkling 2 Mini 的 Apache 2.0 衍生模型。官方 GGUF 为 17,627,963,520 字节，混用原生 NVFP4 专家权重、Q8_0 和 F32 张量，另有视觉投影和可选 DSpark 草稿。该 GGUF 档位尚待计算器支持，并需核实各平台加载方式。',
+    },
+    recheck: {
+      en: 'Verify the backend requirements and size the exact language, vision and optional draft components.',
+      zh: '核实后端要求，分别核算实际语言权重、视觉投影和可选草稿。',
+    },
+    checkedAt: '2026-11-28',
+  },
+  {
+    id: 'tess-4-5-594b-a17b',
+    name: 'Tess 4.5 594B-A17B',
+    vendor: 'Continuity Research',
+    reason: 'not-sized',
+    detail: {
+      en: 'The Apache-2.0 Inkling 2 Small derivative ships safetensors. A matching GGUF was not found in the reviewed files and the looped cache needs a runtime-specific audit.',
+      zh: '基于 Inkling 2 Small 的 Apache 2.0 衍生模型已发布 safetensors。核查的文件中未找到对应 GGUF，循环层缓存仍需按运行时审计。',
+    },
+    recheck: {
+      en: 'Verify a compatible quantized export and cache requirements for this exact checkpoint.',
+      zh: '核实该版本的兼容量化文件及缓存占用。',
+    },
+    checkedAt: '2026-11-28',
+  },
+  {
+    id: 'nemotron-3-5-parse',
+    name: 'Nemotron 3.5 Parse',
+    vendor: 'NVIDIA',
+    reason: 'no-runtime',
+    detail: {
+      en: 'NVIDIA publishes OpenMDW 1.1 weights. The reviewed community Q8_0 is a complete document parser for SkyVision.cpp with a custom RadioMBartPrefix architecture.',
+      zh: 'NVIDIA 提供 OpenMDW 1.1 权重。核实的社区 Q8_0 是面向 SkyVision.cpp 的完整文档解析模型，采用自定义 RadioMBartPrefix 架构。',
+    },
+    recheck: {
+      en: 'Verify support in a tracked runtime and size the vision tower and decoder together.',
+      zh: '核实本站跟踪的运行时是否支持，并一并核算视觉编码器和解码器。',
+    },
+    checkedAt: '2026-11-28',
+  },
+  {
+    id: 'openthai-2-2-ocr-markdown',
+    name: 'OpenThai 2.2 OCR Markdown',
+    vendor: 'iApp',
+    reason: 'no-runtime',
+    detail: {
+      en: 'The exact checkpoint and community GGUFs are public under OpenMDW 1.1. The launch instructions require an iApp llama.cpp fork. The OCR decoder and shared vision projector are separate files.',
+      zh: '原始权重和对应社区 GGUF 已按 OpenMDW 1.1 公开。启动说明要求使用 iApp 的 llama.cpp 分支。OCR 解码器与共用视觉投影是独立文件。',
+    },
+    recheck: {
+      en: 'Verify a supported runtime and account for both parts of the model.',
+      zh: '核实受支持的运行时，并计入模型两部分的开销。',
+    },
+    checkedAt: '2026-11-28',
+  },
+  {
+    id: 'nanotex-3b-128k',
+    name: 'NanoTeX 3B 128K',
+    vendor: 'anjomj',
+    reason: 'not-sized',
+    detail: {
+      en: 'The Qwen Research-licensed Qwen2.5-Coder derivative publishes a safetensors checkpoint and a custom PyramidKV example. No matching GGUF export or cache size for the custom path was verified.',
+      zh: '该 Qwen2.5-Coder 衍生模型沿用 Qwen Research 许可，发布了 safetensors 和 PyramidKV 示例。尚未核实对应 GGUF 或自定义路径的缓存占用。',
+    },
+    recheck: {
+      en: 'Verify exact quantized files and the cache behavior of a supported runtime.',
+      zh: '核实对应量化文件及受支持运行时的缓存行为。',
+    },
+    checkedAt: '2026-11-28',
+  },
+  {
     id: 'gigachat4-708b-a41b',
     name: 'GigaChat4 708B-A41B',
     vendor: 'SaluteDevices',

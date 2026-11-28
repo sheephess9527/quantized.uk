@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { buildFeed } from '../lib/feed/build';
 import { models } from '../lib/data/models';
+import { changelog } from '../lib/data/changelog';
+import { dataLastUpdated } from '../lib/data/meta';
+
+assert.equal(changelog[0]?.date, dataLastUpdated, 'the homepage release date must match the latest changelog entry');
 
 const newestModelDate = models.flatMap(model => model.addedAt ? [model.addedAt] : []).sort().at(-1);
 assert(newestModelDate, 'the catalog has dated additions');

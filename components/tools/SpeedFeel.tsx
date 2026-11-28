@@ -10,6 +10,7 @@ import { isMoE } from '@/lib/utils/model-meta';
 import { usableCapacityGB } from '@/lib/utils/gpu-page';
 import { SPEED_CONTEXTS, speedQuote, streamTokS, type SpeedContext, type SpeedQuote } from '@/lib/utils/speed-label';
 import CopyButton from '@/components/ui/CopyButton';
+import { LLAMACPP_MTP_FLAGS } from '@/lib/data/runtime-build';
 
 const DEFAULT_LEFT = 'rtx4060ti16';
 const DEFAULT_RIGHT = 'rtx4090';
@@ -29,9 +30,9 @@ interface DraftPreset {
 
 const DRAFT_PRESETS: readonly DraftPreset[] = [
   { id: 'none', labelEn: 'Off (Standard decoding)', labelZh: '关闭（常规自回归解码）', vramGB: 0, speedup: 1.0, flag: '' },
-  { id: 'mtp', labelEn: 'Built-in MTP / NextN head (~1.35×)', labelZh: '内置 MTP / NextN 草稿头 (~1.35×)', vramGB: 0.35, speedup: 1.35, flag: '--spec-type mtp --draft-max 4' },
-  { id: 'dflash', labelEn: '0.6B–0.8B Q8_0 Draft / DFlash2 (~1.6×, +0.75 GB)', labelZh: '0.6B–0.8B Q8_0 独立草稿 / DFlash2 (~1.6×, +0.75 GB)', vramGB: 0.75, speedup: 1.6, flag: '-md ./draft-0.6b-Q8_0.gguf --draft-max 12' },
-  { id: 'draft1b', labelEn: '1.5B–1.7B Q4_K_M Draft (~1.8×, +1.20 GB)', labelZh: '1.5B–1.7B Q4_K_M 独立草稿 (~1.8×, +1.20 GB)', vramGB: 1.2, speedup: 1.8, flag: '-md ./draft-1.5b-Q4_K_M.gguf --draft-max 16' },
+  { id: 'mtp', labelEn: 'Built-in MTP / NextN head (~1.35×)', labelZh: '内置 MTP / NextN 草稿头 (~1.35×)', vramGB: 0.35, speedup: 1.35, flag: LLAMACPP_MTP_FLAGS },
+  { id: 'dflash', labelEn: 'DFlash2 draft (~1.6×, +0.75 GB)', labelZh: 'DFlash2 草稿 (~1.6×, +0.75 GB)', vramGB: 0.75, speedup: 1.6, flag: '--spec-type draft-dflash2 -md ./compatible-dflash2-draft.gguf --spec-draft-n-max 12' },
+  { id: 'draft1b', labelEn: '1.5B–1.7B Q4_K_M Draft (~1.8×, +1.20 GB)', labelZh: '1.5B–1.7B Q4_K_M 独立草稿 (~1.8×, +1.20 GB)', vramGB: 1.2, speedup: 1.8, flag: '--spec-type draft-simple -md ./compatible-draft.gguf --spec-draft-n-max 16' },
 ];
 
 function quantKey(q: QuantVariant) {
@@ -267,9 +268,9 @@ export default function SpeedFeel() {
     );
   });
 
-  const mainFile = quant.source?.file ?? `${model.id}-${quant.level}.gguf`;
-  const specCmd = draft.id !== 'none'
-    ? `llama-server -m ./${mainFile} ${draft.flag} -c ${Math.max(4096, ctx + thinkTokens)} -ngl 99`
+  const mainFile = quant.format === 'GGUF' ? quant.source?.file : undefined;
+  const specCmd = draft.id !== 'none' && mainFile
+    ? `llama-server -m "./${mainFile}" ${draft.flag} -c ${Math.max(4096, ctx + thinkTokens)} -ngl 99`
     : null;
 
   return (
@@ -354,6 +355,10 @@ export default function SpeedFeel() {
               </option>
             ))}
           </select>
+          <p className="mt-2 text-xs text-slate-500">
+            {zh ? '加速比和草稿显存为推演假设。运行模板前请核实模型的 MTP 草稿头或替换为兼容的草稿文件。'
+              : 'Speedup and draft memory are simulation assumptions. Check MTP support or substitute a compatible draft file before running the template.'}
+          </p>
         </div>
 
         {specCmd && (
@@ -361,7 +366,7 @@ export default function SpeedFeel() {
             <code className="text-xs font-mono text-sky-300 break-all">{specCmd}</code>
             <CopyButton
               text={specCmd}
-              label={zh ? '复制投机采样命令' : 'Copy speculative CLI'}
+              label={zh ? '复制投机采样模板' : 'Copy speculative template'}
               copiedLabel={zh ? '已复制' : 'Copied'}
               className="min-h-9 text-xs shrink-0"
             />

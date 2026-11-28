@@ -647,6 +647,11 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-28 — Chinese script switch and extra patrol
+
+- Recorded the Simplified/Traditional switch and Traditional Chinese browser detection on their November 28 release date. Both homepages and the RSS feeds use that date. Switching back to Simplified Chinese restores the browser tab title.
+- Updated the runtime reference to Ollama v0.40.19. Matched the speculative decoding templates to llama.cpp b12774 and put concurrency and split settings inside the generated server commands. Reviewed five new pending candidates. [Evidence and deployment](docs/changes/2026-11-28-patrol.md).
+
 ### 2026-11-27 — Raon-1 mini graduation, 15-checkpoint Apple Silicon MLX & 22-model ModelScope expansion, Attention Architecture Atlas & 6-pillar local LLM workbench
 
 - **Graduated KRAFTON `Raon-1 mini` (`raon-1-mini`, 30B-A4.3B MoE, Apache-2.0, 256K window)** from `lib/data/pending.ts` into `lib/data/models-extra-20.ts` (**172** models total, **152** active, **404** eligible model/GPU pairs per language). Verified that [`KRAFTON/Raon-1-mini-gguf`](https://huggingface.co/KRAFTON/Raon-1-mini-gguf) is now ungated (`gated: false`) with five official GGUF levels (`IQ4_XS` 16.21 GB to `Q8_0` 30.69 GB), audited the `b12774` `raon1` tensor layout (`28,783,231,402` total elements, `25,669,140,480` routed-expert elements across 24 MoE layers, 7 K-only Gated MLA layers caching 576 values/token + 18 fixed-state RDA layers), and gated Ollama GGUF imports behind `isLlamaCppV11GGUF()`.
@@ -657,7 +662,7 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
   3. **Thinking Token Budget & Speculative Decoding Simulator with URL Deep-Linking** (`components/tools/SpeedFeel.tsx` on `/tools/feel/?think=&draft=`): models reasoning chain-of-thought wait time (`0` to `16K` thinking tokens → `Time-to-Final-Answer`) and speculative draft acceleration (`--spec-type mtp` or separate `-md draft.gguf --draft-max`).
   4. **Heterogeneous Multi-GPU Rig Builder (`?rig=&np=&ctx=`), Concurrency KV Planner & Developer Ecosystem Hooks** (`components/tools/EcosystemAndRigWorkbench.tsx` on `/tools/` and extended flags in `components/tools/CLIGenerator.tsx`): mixes different GPUs (`--tensor-split`), sizes multi-slot concurrent KV cache pools (`-np` / `--max-num-seqs`), provides a 1-click shareable rig URL button, a one-liner `curl + jq` terminal query against `/data/v1/models.json`, and a Hugging Face model-card instant-fit bookmarklet.
   5. **2026 Attention & KV Cache Architecture Atlas** (`components/AttentionArchitectureAtlas.tsx` on `/methodology/` and `/zh/methodology/`): server-rendered live classification of all 152 active models into Full GQA/MQA, Hybrid Linear Attention, Interleaved Sliding-Window, and Compressed Latent MLA/CSA, with head-to-head 4K/32K/128K KV cache costs across 26B–32B architectures.
-  6. **Simplified / Traditional Chinese (`简/繁`) In-Place Toggle, `zh-TW`/`zh-HK` Auto-Detection & TW/HK Search Keyword Seeding on `/zh/**`** (`components/i18n/ZhScriptToggle.tsx`, `lib/i18n/zh-hant-dict.ts`, `lib/data/tool-content.ts`, `lib/utils/faq.ts`, `scripts/localize-export.mjs`): lazy-loads the OpenCC character map (3,881 chars) + 746 context-sensitive & Taiwan/HK hardware/AI terminology phrases (`顯示卡`, `記憶體`, `快取`, `權重`, `程式碼`, `執行緒`, `伺服器`, `吞吐量`, `量化位寬`), automatically switches to Traditional Chinese on first visit for `zh-TW`/`zh-HK`/`zh-MO`/`zh-Hant` browser locales, seeds TW/HK search stems (`显示卡`, `显示记忆体`, `系统记忆体`, `快取`, `伺服器`) into prerendered `/zh/` pages and `WebSite` JSON-LD for zero-bloat search indexing, persists in `localStorage` (`qtz_zh_script`), and skips `<pre>`, `<code>`, `<kbd>`, and `[data-no-tc]` elements. [Audit and handoff](docs/changes/2026-11-27-workbench-and-raon1.md).
+  - [Audit and handoff](docs/changes/2026-11-27-workbench-and-raon1.md).
 
 ### 2026-11-27 — Model and site patrol
 

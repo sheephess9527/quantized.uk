@@ -7,3 +7,5 @@
  * release page lists the `llama-<build>-bin-win-*` assets (patrols re-check it).
  */
 export const LLAMACPP_BUILD = 'b12774';
+
+export const LLAMACPP_MTP_FLAGS = '--spec-type draft-mtp --spec-draft-n-max 4';

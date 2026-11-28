@@ -1,7 +1,7 @@
 import { vllmRocmSupported } from '@/lib/utils/gpu-page';
 import { quantWeights } from '@/lib/utils/vram';
 import type { QuantVariant } from '@/lib/data/types';
-import { LLAMACPP_BUILD } from '@/lib/data/runtime-build';
+import { LLAMACPP_BUILD, LLAMACPP_MTP_FLAGS } from '@/lib/data/runtime-build';
 
 export type Framework = 'llamacpp' | 'ollama' | 'vllm' | 'exllama';
 /** `windows` is PowerShell on the host (prebuilt llama.cpp zips, Ollama's Windows installer). */
@@ -39,6 +39,9 @@ export interface CLIOptions {
    */
   cpuMoe?: { n: number; all: boolean };
   contextLen: number;
+  parallel?: number;
+  tensorSplit?: string;
+  draftMode?: 'none' | 'mtp' | 'draft';
   /** Pin num_ctx in a local Ollama model for the calculator's native commands. */
   ollamaSetContext?: boolean;
   threads: number;
@@ -208,8 +211,8 @@ export function generateCLI(opts: CLIOptions): CLIOutput {
         ? L(lang, 'IBM publishes these Granite Switch GGUFs for llama.cpp b11798 or newer. Ollama support is unverified.',
           'IBM 为 llama.cpp b11798 或更新版本发布了这批 Granite Switch GGUF。Ollama 支持尚未核实。')
         : isLlamaCppV11GGUF(opts.modelId, opts.hfRepo)
-          ? L(lang, 'This architecture requires llama.cpp v1.1.0 (b12774) or newer for GGUF loading. Ollama v0.40.18 bundles an earlier llama.cpp build (its inkling-2-mini library tag targets Apple Silicon only).',
-            '此架构加载 GGUF 需要 llama.cpp v1.1.0（b12774）或更新版本。Ollama v0.40.18 内置较早的 llama.cpp 构建（其 inkling-2-mini 官方库标签目前仅面向 Apple Silicon）。')
+          ? L(lang, 'Use llama.cpp v1.1.0 (b12774) or newer for this GGUF. Importing this exact file into Ollama is unverified.',
+            '此 GGUF 请使用 llama.cpp v1.1.0（b12774）或更新版本。该文件导入 Ollama 的兼容性尚未核实。')
           : L(lang, 'Ollama support for this Hadamard-rotated GGUF is unverified. Select llama.cpp b11556 or newer.',
             '此 Hadamard 旋转 GGUF 尚未核实 Ollama 支持。请选择 llama.cpp b11556 或更新版本。');
       return { command: '# ' + note, notes: [note] };
@@ -326,6 +329,12 @@ function linuxBuild(backend: Backend): string {
   return `# Prerequisites: a CUDA toolkit matching your driver (nvcc --version), Python 3\n# Install on Linux (with CUDA)\n${clone}\ncmake -B build -DGGML_CUDA=ON`;
 }
 
+function splitWeights(input?: string): string[] {
+  const weights = input?.split(',').map(weight => weight.trim()) ?? [];
+  return weights.length >= 2 && weights.every(weight => /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(weight) && Number.isFinite(Number(weight))) &&
+    weights.some(weight => Number(weight) > 0) ? weights : [];
+}
+
 function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const { env, modelName, quantLevel, gpuLayers, contextLen, threads, port, apiKey, cpuMoe } = opts;
   const moeFlag = cpuMoe ? (cpuMoe.all ? '--cpu-moe' : `--n-cpu-moe ${cpuMoe.n}`) : '';
@@ -351,7 +360,25 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
   const containerModelPath = sharded ? `"/models/$(cd models && find . -name '${filePattern}' | sort | head -1)"` : `/models/${modelFile}`;
   const composeModelPath = sharded ? `/models/<first part: ${modelFile.replace(/\.gguf$/, '')}-00001-of-NNNNN.gguf, or the single file>` : `/models/${modelFile}`;
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
-  if (env === 'windows') return llamaCppWindows(opts, { repoId, modelFile, filePattern, sharded, moeFlag, lang, backend });
+  const weights = splitWeights(opts.tensorSplit);
+  const flags = [
+    ...(moeFlag ? [moeFlag] : []),
+    ...((opts.parallel ?? 1) > 1 ? [`-np ${opts.parallel}`] : []),
+    ...(weights.length ? [`-sm layer -ts ${weights.join(',')}`] : []),
+    ...(opts.draftMode === 'mtp' ? [LLAMACPP_MTP_FLAGS] : []),
+  ];
+  const draftFlag = (directory: string) => `--spec-type draft-simple -md ${directory}/compatible-draft.gguf --spec-draft-n-max 12`;
+  const nativeFlags = opts.draftMode === 'draft' ? [...flags, draftFlag('./models')] : flags;
+  const containerFlags = opts.draftMode === 'draft' ? [...flags, draftFlag('/models')] : flags;
+  const draftNotes = opts.draftMode === 'mtp'
+    ? [L(lang, 'MTP requires a model and GGUF that contain a compatible MTP head.', 'MTP 需要模型和 GGUF 文件包含兼容的 MTP 草稿头。')]
+    : opts.draftMode === 'draft'
+      ? [L(lang, 'Save a compatible draft GGUF as models/compatible-draft.gguf before starting the server.', '启动前，请将兼容的草稿 GGUF 保存为 models/compatible-draft.gguf。')]
+      : [];
+  if (env === 'windows') {
+    const output = llamaCppWindows(opts, { repoId, modelFile, filePattern, sharded, extraFlags: nativeFlags, lang, backend });
+    return { ...output, notes: [...output.notes, ...draftNotes] };
+  }
 
   // Loopback by default. `--host 0.0.0.0` publishes an unauthenticated
   // inference server to every interface on the machine, which is not what
@@ -365,7 +392,7 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
     `  -m ${hostModelPath} \\`,
     `  --host 127.0.0.1 --port ${port} \\`,
     `  -ngl ${gpuLayers} \\`,
-    ...(moeFlag ? [`  ${moeFlag} \\`] : []),
+    ...nativeFlags.map(flag => `  ${flag} \\`),
     `  -c ${contextLen} \\`,
     `  -t ${threads}${apiKeyFlag}`,
   ].join('\n');
@@ -380,12 +407,12 @@ function generateLlamaCpp(opts: CLIOptions): CLIOutput {
       `  -m ${containerModelPath} \\`,
       `  --host 0.0.0.0 --port ${port} \\`,
       `  -ngl ${gpuLayers} \\`,
-      ...(moeFlag ? [`  ${moeFlag} \\`] : []),
+      ...containerFlags.map(flag => `  ${flag} \\`),
       `  -c ${contextLen}${apiKey ? ` \\\n  --api-key "${apiKey}"` : ''}`,
     ].join('\n');
     // `:server` is the CPU-only image (llama.cpp docs/docker.md); with it,
     // `--gpus all -ngl` starts cleanly and silently runs everything on the CPU.
-    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD, :server-intel is Intel (SYCL)`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD，:server-intel 用于英特尔（SYCL）`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下')] };
+    return { command, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, `Image :${llamaImageTag(backend)} — :server is CPU-only, :server-cuda is NVIDIA, :server-rocm is AMD, :server-intel is Intel (SYCL)`, `镜像 :${llamaImageTag(backend)}——:server 是纯 CPU 版，:server-cuda 用于 NVIDIA，:server-rocm 用于 AMD，:server-intel 用于英特尔（SYCL）`), L(lang, 'Model file must be in ./models/ directory', '模型文件需放在 ./models/ 目录下'), ...draftNotes] };
   }
 
   if (env === 'compose') {
@@ -402,10 +429,10 @@ services:
       -m ${composeModelPath}
       --host 0.0.0.0
       --port ${port}
-      -ngl ${gpuLayers}${moeFlag ? `\n      ${moeFlag}` : ''}
+      -ngl ${gpuLayers}${containerFlags.map(flag => `\n      ${flag}`).join('')}
       -c ${contextLen}${apiKey ? `\n      --api-key ${apiKey}` : ''}
     restart: unless-stopped${composeGpuBlock(backend)}`;
-    return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录')] };
+    return { command: serverCmd, compose, notes: [...containerNotes(backend, lang), exposureNote(lang), L(lang, 'Edit the compose file to mount your model directory', '修改 compose 文件，挂载你的模型目录'), ...draftNotes] };
   }
 
   // Build flags: llama.cpp renamed every LLAMA_* CMake option to GGML_*. Its
@@ -425,6 +452,7 @@ services:
   return {
     command: `${installCmd}\n${serverCmd}`,
     notes: [
+      ...draftNotes,
       L(lang, `-ngl ${gpuLayers}: number of layers offloaded to GPU (set to 99 for full GPU)`, `-ngl ${gpuLayers}：放到 GPU 上的层数（设为 99 即全部放到 GPU）`),
       ...(cpuMoe ? [cpuMoe.all
         ? L(lang, '--cpu-moe: every expert weight stays in system RAM; attention, shared weights and the KV cache stay on the GPU', '--cpu-moe：全部专家权重留在系统内存，注意力、共享权重和 KV 缓存留在 GPU')
@@ -461,7 +489,7 @@ function ollamaIntelNote(lang: Lang): string {
  */
 function llamaCppWindows(
   opts: CLIOptions,
-  f: { repoId: string; modelFile: string; filePattern: string; sharded: boolean; moeFlag: string; lang: Lang; backend: Backend },
+  f: { repoId: string; modelFile: string; filePattern: string; sharded: boolean; extraFlags: string[]; lang: Lang; backend: Backend },
 ): CLIOutput {
   const { gpuLayers, contextLen, port, apiKey } = opts;
   const { lang, backend } = f;
@@ -475,7 +503,7 @@ function llamaCppWindows(
     `-m ${modelPath}`,
     `--host 127.0.0.1 --port ${port}`,
     `-ngl ${gpuLayers}`,
-    ...(f.moeFlag ? [f.moeFlag] : []),
+    ...f.extraFlags,
     `-c ${contextLen}`,
     ...(apiKey ? [`--api-key "${apiKey}"`] : []),
   ].join(' ');
@@ -703,6 +731,11 @@ function generateVLLM(opts: CLIOptions): CLIOutput {
   const repoId = isAWQ ? '<hf-awq-repo-id>' : isGPTQ ? '<hf-gptq-repo-id>' : '<hf-repo-id>';
   const quantFlag = isAWQ ? ' \\\n  --quantization awq' : isGPTQ ? ' \\\n  --quantization gptq' : '';
   const apiKeyFlag = apiKey ? ` \\\n  --api-key "${apiKey}"` : '';
+  const devices = splitWeights(opts.tensorSplit).length;
+  const options = [
+    ...((opts.parallel ?? 1) > 1 ? [`--max-num-seqs ${opts.parallel}`] : []),
+    ...(devices > 1 ? [`--tensor-parallel-size ${devices}`] : []),
+  ];
 
   if (env === 'compose') {
     const compose = `version: "3.8"
@@ -718,7 +751,7 @@ services:
       --model ${repoId}${isAWQ ? '\n      --quantization awq' : ''}
       --max-model-len ${contextLen}
       --port ${port}
-      --gpu-memory-utilization 0.85${apiKey ? `\n      --api-key ${apiKey}` : ''}${rocm ? `
+      --gpu-memory-utilization 0.85${options.map(flag => `\n      ${flag}`).join('')}${apiKey ? `\n      --api-key ${apiKey}` : ''}${rocm ? `
     devices:
       - /dev/kfd
       - /dev/dri
@@ -763,6 +796,7 @@ volumes:
       `  --model ${repoId}${quantFlag} \\`,
       `  --max-model-len ${contextLen} \\`,
       `  --gpu-memory-utilization 0.85 \\`,
+      ...options.map(flag => `  ${flag} \\`),
       `  --port ${port}${apiKeyFlag}`,
     ].join('\n');
     return { command, notes: [...hwNotes, exposureNote(lang), rocm ? L(lang, 'AMD: official vllm/vllm-openai-rocm image; needs ROCm drivers on the host', 'AMD：使用官方 vllm/vllm-openai-rocm 镜像；主机需要安装 ROCm 驱动') : L(lang, 'Requires NVIDIA Container Toolkit and an R580 or newer driver: vLLM\'s images are built on CUDA 13 since v0.33.0', '需要 NVIDIA Container Toolkit 和 R580 或更新的驱动：vLLM 镜像自 v0.33.0 起基于 CUDA 13'), L(lang, 'Set HF_TOKEN env var for gated models', '需要授权的模型请设置 HF_TOKEN 环境变量')] };
@@ -780,6 +814,7 @@ volumes:
     `vllm serve ${repoId}${quantFlag} \\`,
     `  --max-model-len ${contextLen} \\`,
     `  --gpu-memory-utilization 0.85 \\`,
+    ...options.map(flag => `  ${flag} \\`),
     // `--host` defaults to None (every interface) in vllm serve; loopback, as
     // the llama.cpp command does.
     `  --host 127.0.0.1 --port ${port}${apiKeyFlag}`,

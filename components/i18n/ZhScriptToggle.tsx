@@ -23,7 +23,7 @@ export default function ZhScriptToggle() {
   const pathname = usePathname();
   const [mode, setMode] = useState<ZhScriptMode>('hans');
   const origTextRef = useRef<WeakMap<Node, string>>(new WeakMap());
-  const origTitleRef = useRef<string | null>(null);
+  const titleRef = useRef<{ original: string; converted: string } | null>(null);
   const applyingRef = useRef(false);
   const converterRef = useRef<((s: string) => string) | null>(null);
 
@@ -49,8 +49,11 @@ export default function ZhScriptToggle() {
       }
 
       if (root === document.body || root === document.documentElement) {
-        if (origTitleRef.current === null) origTitleRef.current = document.title;
-        document.title = targetMode === 'hant' ? toTrad(origTitleRef.current) : origTitleRef.current;
+        const lastTitle = titleRef.current;
+        const original = lastTitle?.converted === document.title ? lastTitle.original : document.title;
+        const converted = targetMode === 'hant' ? toTrad(original) : original;
+        titleRef.current = { original, converted };
+        document.title = converted;
         document.documentElement.dataset.zhScript = targetMode;
       }
 
@@ -110,7 +113,6 @@ export default function ZhScriptToggle() {
   // Apply conversion on mode or route change, and observe dynamic DOM updates when in 'hant'
   useEffect(() => {
     if (lang !== 'zh') return;
-    origTitleRef.current = null;
     if (mode === 'hant') {
       void runConversion('hant');
       const observer = new MutationObserver(mutations => {
