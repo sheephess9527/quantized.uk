@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-27T14:06:10.283Z",
+  "fetchedAt": "2026-11-28T07:03:30.327Z",
   "source": "https://huggingface.co/api/models",
   "modelCount": 152,
   "models": {
@@ -24,7 +24,7 @@
     "llama-3.2-1b": {
       "repo": "bartowski/Llama-3.2-1B-Instruct-GGUF",
       "downloads": 291982,
-      "likes": 193,
+      "likes": 194,
       "lastModified": "2024-10-08T14:00:29.000Z"
     },
     "llama-3.3-70b": {
@@ -150,7 +150,7 @@
     "qwen2.5-1.5b": {
       "repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
       "downloads": 759907,
-      "likes": 209,
+      "likes": 210,
       "lastModified": "2024-09-20T06:31:38.000Z"
     },
     "mistral-7b-v0.3": {
@@ -204,7 +204,7 @@
     "qwen3-8b": {
       "repo": "Qwen/Qwen3-8B-GGUF",
       "downloads": 866048,
-      "likes": 416,
+      "likes": 417,
       "lastModified": "2025-05-21T06:31:50.000Z"
     },
     "qwen3-14b": {
@@ -246,13 +246,13 @@
     "deepseek-v3": {
       "repo": "deepseek-ai/DeepSeek-V3",
       "downloads": 963084,
-      "likes": 4472,
+      "likes": 4473,
       "lastModified": "2025-03-27T04:01:45.000Z"
     },
     "deepseek-r1": {
       "repo": "deepseek-ai/DeepSeek-R1",
       "downloads": 1425096,
-      "likes": 14491,
+      "likes": 14492,
       "lastModified": "2025-03-27T04:01:59.000Z"
     },
     "yi-1.5-34b": {
@@ -282,7 +282,7 @@
     "qwen3-coder-30b-a3b": {
       "repo": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
       "downloads": 480618,
-      "likes": 1242,
+      "likes": 1243,
       "lastModified": "2026-01-30T06:29:38.000Z"
     },
     "gemma-3-27b-it": {
@@ -306,19 +306,19 @@
     "qwen3-1.7b": {
       "repo": "Qwen/Qwen3-1.7B-GGUF",
       "downloads": 192848,
-      "likes": 101,
+      "likes": 102,
       "lastModified": "2025-05-09T07:16:01.000Z"
     },
     "gpt-oss-20b": {
       "repo": "openai/gpt-oss-20b",
       "downloads": 5128622,
-      "likes": 5358,
+      "likes": 5365,
       "lastModified": "2025-08-26T17:25:47.000Z"
     },
     "gpt-oss-120b": {
       "repo": "openai/gpt-oss-120b",
       "downloads": 2243236,
-      "likes": 5573,
+      "likes": 5577,
       "lastModified": "2025-08-26T17:25:03.000Z"
     },
     "glm-4.5-air": {
@@ -336,7 +336,7 @@
     "qwen3-vl-8b": {
       "repo": "Qwen/Qwen3-VL-8B-Instruct",
       "downloads": 4284875,
-      "likes": 1281,
+      "likes": 1283,
       "lastModified": "2025-10-15T16:16:59.000Z"
     },
     "qwen3-vl-30b-a3b": {
@@ -384,13 +384,13 @@
     "gemma-4-26b-a4b": {
       "repo": "google/gemma-4-26B-A4B-it",
       "downloads": 4403882,
-      "likes": 1826,
+      "likes": 1828,
       "lastModified": "2026-07-20T16:42:12.000Z"
     },
     "gemma-4-31b": {
       "repo": "google/gemma-4-31B-it",
       "downloads": 5123349,
-      "likes": 4465,
+      "likes": 4467,
       "lastModified": "2026-07-20T16:42:18.000Z"
     },
     "gemma-4-e4b": {
@@ -402,13 +402,13 @@
     "gemma-4-e2b": {
       "repo": "google/gemma-4-E2B-it",
       "downloads": 2420398,
-      "likes": 1178,
+      "likes": 1181,
       "lastModified": "2026-11-03T16:10:29.000Z"
     },
     "smollm3-3b": {
       "repo": "HuggingFaceTB/SmolLM3-3B",
       "downloads": 132602,
-      "likes": 1093,
+      "likes": 1094,
       "lastModified": "2025-09-10T12:28:11.000Z"
     },
     "olmo-3-7b": {
@@ -432,7 +432,7 @@
     "qwen3-8-flash-next": {
       "repo": "Qwen/Qwen3.8-Flash-Next",
       "downloads": 1146380,
-      "likes": 7589,
+      "likes": 7614,
       "lastModified": "2026-11-07T04:42:40.000Z"
     },
     "qwen3-6-35b-a3b": {
@@ -456,7 +456,7 @@
     "qwen3-5-4b": {
       "repo": "Qwen/Qwen3.5-4B",
       "downloads": 3426735,
-      "likes": 1285,
+      "likes": 1288,
       "lastModified": "2026-03-02T00:52:52.000Z"
     },
     "qwen3-5-2b": {
@@ -468,7 +468,7 @@
     "qwen3-5-0.8b": {
       "repo": "Qwen/Qwen3.5-0.8B",
       "downloads": 1836203,
-      "likes": 863,
+      "likes": 865,
       "lastModified": "2026-03-02T11:26:58.000Z"
     },
     "mimo-v2-6-pro": {
@@ -540,7 +540,7 @@
     "gemma-4-12b": {
       "repo": "unsloth/gemma-4-12b-it-GGUF",
       "downloads": 2415369,
-      "likes": 997,
+      "likes": 999,
       "lastModified": "2026-07-17T12:52:56.000Z"
     },
     "north-mini-code-1.0": {
@@ -552,13 +552,13 @@
     "ling-3.1-flash": {
       "repo": "inclusionAI/Ling-3.1-flash",
       "downloads": 5781,
-      "likes": 184,
+      "likes": 185,
       "lastModified": "2026-11-23T12:56:20.000Z"
     },
     "minicpm-v-4-7-35b-a3b": {
       "repo": "openbmb/MiniCPM-V-4.7-35B-A3B",
       "downloads": 853086,
-      "likes": 1128,
+      "likes": 1127,
       "lastModified": "2026-11-03T06:16:58.000Z"
     },
     "mimo-v2-6-flash": {
@@ -570,13 +570,13 @@
     "lfm3-1-7b": {
       "repo": "LiquidAI/LFM3-1.7B-GGUF",
       "downloads": 444180,
-      "likes": 358,
+      "likes": 362,
       "lastModified": "2026-11-03T14:48:57.000Z"
     },
     "lfm3-vl-2b": {
       "repo": "LiquidAI/LFM3-VL-2B-GGUF",
       "downloads": 163843,
-      "likes": 79,
+      "likes": 80,
       "lastModified": "2026-11-03T14:49:00.000Z"
     },
     "metis-1-6-praxis": {
@@ -600,7 +600,7 @@
     "ripple-65b-preview": {
       "repo": "ricursiveAI/Ripple-65B-Preview",
       "downloads": 18985,
-      "likes": 608,
+      "likes": 609,
       "lastModified": "2026-11-16T23:52:42.000Z"
     },
     "hy-memory-30b-a3b": {
@@ -624,7 +624,7 @@
     "mimo-v2-6-distill-qwen-9b": {
       "repo": "bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF",
       "downloads": 1020131,
-      "likes": 206,
+      "likes": 205,
       "lastModified": "2026-09-21T22:44:19.000Z"
     },
     "k2-horizon-mova-36b-a4b": {
@@ -642,7 +642,7 @@
     "k2-horizon-7b": {
       "repo": "IFM/K2-Horizon-7B-GGUF",
       "downloads": 27419,
-      "likes": 95,
+      "likes": 96,
       "lastModified": "2026-11-22T01:06:46.000Z"
     },
     "flint-40b-a2-5b": {
@@ -708,7 +708,7 @@
     "lfm2-5-8b-a1b": {
       "repo": "LiquidAI/LFM2.5-8B-A1B-GGUF",
       "downloads": 162852,
-      "likes": 341,
+      "likes": 342,
       "lastModified": "2026-08-24T19:41:51.000Z"
     },
     "ministral-3-3b": {
@@ -726,13 +726,13 @@
     "arete-27b": {
       "repo": "bartowski/NousResearch_Arete-27B-GGUF",
       "downloads": 106422,
-      "likes": 58,
+      "likes": 59,
       "lastModified": "2026-11-06T22:22:09.000Z"
     },
     "twil-8b-balanced": {
       "repo": "webAI-Official/TwIL-8B",
       "downloads": 87363,
-      "likes": 424,
+      "likes": 425,
       "lastModified": "2026-11-08T09:57:35.000Z"
     },
     "botpsy-0-8b": {
@@ -816,19 +816,19 @@
     "deepseek-v4-1-flash-1017": {
       "repo": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
       "downloads": 552671,
-      "likes": 6779,
+      "likes": 6819,
       "lastModified": "2026-11-10T02:22:56.000Z"
     },
     "glm-5-3-flash": {
       "repo": "zai-org/GLM-5.3-Flash",
       "downloads": 6054355,
-      "likes": 3339,
+      "likes": 3365,
       "lastModified": "2026-10-15T06:32:52.000Z"
     },
     "kimi-k3-1-pro": {
       "repo": "moonshotai/Kimi-K3.1-Pro",
       "downloads": 111764,
-      "likes": 2542,
+      "likes": 2571,
       "lastModified": "2026-11-25T03:03:38.000Z"
     },
     "minimax-m3-1-flash": {
@@ -846,7 +846,7 @@
     "ternary-bonsai-2-5-27b": {
       "repo": "prism-ml/Ternary-Bonsai-2.5-27B-GGUF",
       "downloads": 382546,
-      "likes": 575,
+      "likes": 652,
       "lastModified": "2026-11-24T21:12:50.000Z"
     },
     "minicpm-v-4-6": {
@@ -864,7 +864,7 @@
     "ccore-web-coder-4b": {
       "repo": "ccore/CCORE-Web-Coder-4B",
       "downloads": 8810,
-      "likes": 103,
+      "likes": 130,
       "lastModified": "2026-11-24T19:34:46.000Z"
     },
     "mellum2-1-12b-a2-5b-instruct": {
@@ -888,7 +888,7 @@
     "raon-1-mini": {
       "repo": "KRAFTON/Raon-1-mini-gguf",
       "downloads": 18778,
-      "likes": 38,
+      "likes": 53,
       "lastModified": "2026-11-27T12:25:29.000Z"
     },
     "ocria-1": {
@@ -900,7 +900,7 @@
     "surogate-3-7-35b-a3b": {
       "repo": "prithivMLmods/Surogate3.7-35B-A3B-GGUF",
       "downloads": 13971,
-      "likes": 10,
+      "likes": 11,
       "lastModified": "2026-11-22T11:45:38.000Z"
     },
     "voltron-1-1-mini": {

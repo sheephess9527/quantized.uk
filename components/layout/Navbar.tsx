@@ -2,6 +2,7 @@
 
 import Link from '@/components/i18n/LocalLink';
 import LanguageSwitchLink from '@/components/i18n/LanguageSwitchLink';
+import ZhScriptToggle from '@/components/i18n/ZhScriptToggle';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -158,6 +159,8 @@ export default function Navbar() {
           </div>
 
           <ThemeToggle />
+
+          <ZhScriptToggle />
 
           <LanguageSwitchLink
             hrefLang={lang === 'en' ? 'zh-Hans' : 'en'}

@@ -22,6 +22,7 @@
    - **Pillars 5 & 6 — Heterogeneous Multi-GPU Rig Builder, Concurrency KV Planner, Terminal JSON CLI & Hugging Face Bookmarklet (`components/tools/EcosystemAndRigWorkbench.tsx`, `components/tools/CLIGenerator.tsx`)**: Mounted on `/tools/` and `/zh/tools/` with deep-link URL state (`?rig=rtx3090,rtx4060ti16&np=4&ctx=8192`) and a 1-click "Share Rig Link" button, plus corresponding `-np` / `--max-num-seqs`, `--tensor-split`, and `--draft-max` controls in `/tools/cli-gen/`.
    - **2026 Attention & KV Cache Architecture Atlas (`components/AttentionArchitectureAtlas.tsx` on `/methodology/` & `/zh/methodology/`)**: Server-rendered live classification of all 152 active models across Full-Context GQA/MQA, Hybrid Linear Attention, Interleaved Sliding-Window, and Latent/Compressed K-Only MLA/CSA, plus a head-to-head 26B–32B KV cache cost table at 4K / 32K / 128K context.
    - **ModelScope GGUF Download Expansion (`lib/data/modelscope-repos.ts`)**: Verified 17 additional repositories against the ModelScope JSON API (`/api/v1/models/<repo>` and `/repo/files?Revision=master&Recursive=true`), expanding `modelscopeRepoMap` from 5 to **22** models across Qwen2.5, Qwen3, DeepSeek-R1 Distill, and GLM-4.5/4.7.
+   - **Simplified / Traditional Chinese (`简/繁`) Toggle (`components/i18n/ZhScriptToggle.tsx`, `lib/i18n/zh-hant-dict.ts`)**: Mounted beside `<LanguageSwitchLink>` in `components/layout/Navbar.tsx` when `lang === 'zh'`. Dynamically imports the 3,881-character OpenCC map + 742 context-sensitive and TW/HK hardware/AI phrase overrides only when `mode === 'hant'`, converts DOM text nodes and `placeholder`/`title`/`aria-label` attributes via `MutationObserver` while excluding `<pre>`, `<code>`, `<kbd>`, and `[data-no-tc]` elements, and adds zero static routes.
 
 ## Verification
 
@@ -31,7 +32,7 @@
 
 ## Handoff notes
 
-- **What is done**: `raon-1-mini` is graduated into `lib/data/models-extra-20.ts` and removed from `lib/data/pending.ts`; `lib/data/mac-models.ts` covers 15 verified 4-bit MLX checkpoints; `lib/data/modelscope-repos.ts` covers 22 API-verified ModelScope GGUF repositories; `lib/data/formats.ts` documents `EXL3` and `NVFP4`; `/methodology/` renders `AttentionArchitectureAtlas`; and all 6 workbench upgrades (with shareable URL parameters on `/tools/` and `/tools/feel/`) are live.
+- **What is done**: `raon-1-mini` is graduated into `lib/data/models-extra-20.ts` and removed from `lib/data/pending.ts`; `lib/data/mac-models.ts` covers 15 verified 4-bit MLX checkpoints; `lib/data/modelscope-repos.ts` covers 22 API-verified ModelScope GGUF repositories; `lib/data/formats.ts` documents `EXL3` and `NVFP4`; `/methodology/` renders `AttentionArchitectureAtlas`; all 6 workbench upgrades (with shareable URL parameters on `/tools/` and `/tools/feel/`) are live; and `/zh/**` includes the lazy-loaded `简/繁` (`ZhScriptToggle`) toggle.
 - **What is verified**: `npm test`, `npm run build`, and `npm run check:live` pass.
 - **Traps to avoid**:
   - Keep `EXL3` and `NVFP4` as reference entries in `lib/data/formats.ts` until a model row in `models*.ts` carries them in `quants` (`SHIPPED_FORMATS` automatically controls single-format and head-to-head pages).
