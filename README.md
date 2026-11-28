@@ -647,6 +647,10 @@ Shared types live in `lib/data/types.ts`. `models.ts` style uses nested `{ en, z
 
 ## 9. Changelog
 
+### 2026-11-28 — Live check: wait for phone controls to become visible
+
+- `scripts/check-live.mjs` phone UI check now waits (up to the existing 15 s timeout) for each control to be visible before reading its bounding box. The 2026-11-27 scheduled run failed once on `zh phone UI — not visible: getByRole('searchbox')` while a manual re-run on 2026-11-28 passed 25/25 with no site change, so this was a timing flake, not a site bug. Test-only; no reader-visible change. [Audit and handoff](docs/changes/2026-11-28-live-check-phone-visibility.md).
+
 ### 2026-11-27 — Raon-1 mini graduation, 15-checkpoint Apple Silicon MLX & 22-model ModelScope expansion, Attention Architecture Atlas & 6-pillar local LLM workbench
 
 - **Graduated KRAFTON `Raon-1 mini` (`raon-1-mini`, 30B-A4.3B MoE, Apache-2.0, 256K window)** from `lib/data/pending.ts` into `lib/data/models-extra-20.ts` (**172** models total, **152** active, **404** eligible model/GPU pairs per language). Verified that [`KRAFTON/Raon-1-mini-gguf`](https://huggingface.co/KRAFTON/Raon-1-mini-gguf) is now ungated (`gated: false`) with five official GGUF levels (`IQ4_XS` 16.21 GB to `Q8_0` 30.69 GB), audited the `b12774` `raon1` tensor layout (`28,783,231,402` total elements, `25,669,140,480` routed-expert elements across 24 MoE layers, 7 K-only Gated MLA layers caching 576 values/token + 18 fixed-state RDA layers), and gated Ollama GGUF imports behind `isLlamaCppV11GGUF()`.
